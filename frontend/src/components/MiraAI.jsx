@@ -184,20 +184,50 @@ const MiraAI = () => {
     if (step === 10) {
       const ctx = conversationContext.data;
       return {
-        text: `Celebration Summary\n\nDog's Name: ${ctx.dogName}\nLife Stage: ${ctx.lifeStage}\nOccasion: ${ctx.occasion}\nDate: ${ctx.date}\nCity: ${ctx.city}\nDietary Notes: ${ctx.allergies}\nSelected Celebration: ${ctx.selectedProduct}\nContact: ${userMessage} (${ctx.contactMethod})\n\nImportant Note:\nAll products are handcrafted in limited batches and subject to freshness windows and breed suitability.\n\nTo proceed, please type: I confirm`,
-        suggestions: ['I confirm'],
+        text: `Celebration Summary\n\nDog's Name: ${ctx.dogName}\nLife Stage: ${ctx.lifeStage}\nOccasion: ${ctx.occasion}\nDate: ${ctx.date}\nCity: ${ctx.city}\nDietary Notes: ${ctx.allergies}\nSelected Celebration: ${ctx.selectedProduct}\nContact: ${userMessage} (${ctx.contactMethod})\n\nImportant Note:\nAll products are handcrafted in limited batches and subject to freshness windows and breed suitability.\n\nTo proceed, please confirm below:`,
+        suggestions: ['✓ Confirm & Send to WhatsApp'],
         nextStep: 11,
         updateContext: { data: { ...conversationContext.data, contactDetail: userMessage } }
       };
     }
     
-    // Step 12: Confirmation
-    if (step === 11 && msg.includes('confirm')) {
+    // Step 12: Confirmation - Open WhatsApp with order details
+    if (step === 11 && (msg.includes('confirm') || msg.includes('whatsapp'))) {
+      const ctx = conversationContext.data;
+      
+      // Generate WhatsApp message with all order details
+      const whatsappMessage = `🐕 *New Mira AI Celebration Order*
+
+*Customer Contact:*
+${ctx.contactMethod}: ${ctx.contactDetail}
+
+*Pet Details:*
+Dog's Name: ${ctx.dogName}
+Life Stage: ${ctx.lifeStage}
+
+*Celebration Details:*
+Occasion: ${ctx.occasion}
+Date: ${ctx.date}
+City: ${ctx.city}
+Dietary Notes: ${ctx.allergies}
+
+*Selected Package:*
+${ctx.selectedProduct}
+${ctx.enhancement && ctx.enhancement !== 'No, continue' ? `Enhancement: ${ctx.enhancement}` : ''}
+
+_Order placed via Mira AI Concierge_`;
+
+      // Open WhatsApp with the message
+      const encodedMessage = encodeURIComponent(whatsappMessage);
+      window.open(`https://wa.me/919663185747?text=${encodedMessage}`, '_blank');
+      
       return {
-        text: 'Your celebration is now reserved in principle.\n\nOur Concierge® team at woof@thedoggybakery.com or WhatsApp +91 96631 85747 will reach out shortly with the secure payment link and final details.\n\nThank you for trusting us with this precious moment.\n\nIs there anything else I may help you with today?',
+        text: '🎉 Wonderful! I\'ve opened WhatsApp with your celebration details.\n\nPlease send the message to complete your order. Our Concierge® team will respond within minutes to confirm availability and arrange payment.\n\nIf WhatsApp didn\'t open, you can also:\n📧 Email: woof@thedoggybakery.com\n📱 Call: +91 96631 85747\n\nIs there anything else I may help you with today?',
         suggestions: ['Plan another celebration', 'Find services', 'That\'s all, thank you'],
         nextStep: 0,
         updateContext: { flow: null, step: 0, data: {} }
+      };
+    }
       };
     }
     
