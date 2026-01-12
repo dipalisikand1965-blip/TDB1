@@ -75,6 +75,10 @@ Order placed via Birthday Demo Site 🎂`;
     const deliveryFee = 75;
     const total = getCartTotal() + deliveryFee;
     
+    // Generate WhatsApp URL before clearing cart
+    const waUrl = generateWhatsAppUrl(formData);
+    setWhatsappUrl(waUrl);
+    
     // Store order details for confirmation screen
     setOrderDetails({
       items: [...cartItems],
