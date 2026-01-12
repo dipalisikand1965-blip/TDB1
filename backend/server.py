@@ -131,15 +131,25 @@ async def chat_with_mira(request: ChatRequest):
     try:
         # Search for context
         with DDGS() as ddgs:
-            # We add 'India' context if not present, as the site is Indian
-            search_query = f"{user_query} India dog pet care"
-            results = list(ddgs.text(search_query, max_results=3))
+            # Try a broader query first
+            search_query = f"{user_query} India"
+            logger.info(f"Searching for: {search_query}")
+            results = list(ddgs.text(search_query, max_results=4))
             
+            if not results:
+                 # Fallback
+                 logger.info("No results, trying simpler query")
+                 results = list(ddgs.text(user_query, max_results=4))
+
             if results:
+                logger.info(f"Found {len(results)} results")
                 search_results = "\n".join([f"- {r['title']}: {r['body']}" for r in results])
+            else:
+                logger.warning("No search results found.")
+                search_results = "No external search results available. Use your internal knowledge."
     except Exception as e:
         logger.error(f"Search failed: {e}")
-        search_results = "No external search results available."
+        search_results = "Search unavailable. Use your internal knowledge."
 
     # 2. Call LLM with Context
     try:
