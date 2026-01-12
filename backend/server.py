@@ -9,6 +9,10 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List
 import uuid
 from datetime import datetime, timezone
+from fastapi import File, UploadFile, Form
+from fastapi.staticfiles import StaticFiles
+import shutil
+
 
 
 ROOT_DIR = Path(__file__).parent
@@ -74,6 +78,43 @@ app.add_middleware(
     allow_credentials=True,
     allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
     allow_methods=["*"],
+# Mount uploads directory
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+@api_router.post("/custom-cakes/request")
+async def request_custom_cake(
+    name: str = Form(...),
+    email: str = Form(...),
+    phone: str = Form(...),
+    notes: str = Form(None),
+    image: UploadFile = File(...)
+):
+    # Create unique filename
+    file_extension = os.path.splitext(image.filename)[1]
+    unique_filename = f"{uuid.uuid4()}{file_extension}"
+    file_path = f"uploads/{unique_filename}"
+    
+    # Save file
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(image.file, buffer)
+        
+    # Save metadata to MongoDB
+    request_data = {
+        "id": str(uuid.uuid4()),
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "notes": notes,
+        "image_path": file_path,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "status": "pending"
+    }
+    
+    await db.custom_cake_requests.insert_one(request_data)
+    
+    return {"message": "Request received successfully", "id": request_data["id"]}
+
     allow_headers=["*"],
 )
 
