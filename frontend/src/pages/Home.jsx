@@ -101,15 +101,27 @@ const Home = () => {
                   </p>
                   
                   <div className="flex flex-wrap gap-4">
-                    <Link to="/cakes">
+                    {slide.cta === 'Chat with Mira' ? (
                       <Button
                         size="lg"
+                        onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
                         className="bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 hover:from-purple-700 hover:via-pink-700 hover:to-yellow-600 text-white text-lg px-8 py-7 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105"
+                        data-testid="hero-chat-mira-btn"
                       >
                         {slide.cta}
-                        <ArrowRight className="w-5 h-5 ml-2" />
+                        <Sparkles className="w-5 h-5 ml-2" />
                       </Button>
-                    </Link>
+                    ) : (
+                      <Link to={slide.cta === 'Design Now' ? '/custom-cake' : '/cakes'}>
+                        <Button
+                          size="lg"
+                          className="bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 hover:from-purple-700 hover:via-pink-700 hover:to-yellow-600 text-white text-lg px-8 py-7 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105"
+                        >
+                          {slide.cta}
+                          <ArrowRight className="w-5 h-5 ml-2" />
+                        </Button>
+                      </Link>
+                    )}
                     <Link to="/custom-cake">
                       <Button
                         size="lg"
