@@ -64,7 +64,7 @@ const MiraAI = () => {
     // Step 2: Dog's name captured
     if (step === 1 && !conversationContext.data.dogName) {
       return {
-        text: `${userMessage} — what a lovely name.\n\n**How old is ${userMessage}, and would you describe them as a puppy, adult, or a cherished senior?**`,
+        text: `${userMessage} — what a lovely name.\n\nHow old is ${userMessage}, and would you describe them as a puppy, adult, or a cherished senior?`,
         suggestions: ['Puppy (under 1 year)', 'Adult (1-7 years)', 'Senior (7+ years)'],
         nextStep: 2,
         updateContext: { data: { ...conversationContext.data, dogName: userMessage } }
@@ -74,7 +74,7 @@ const MiraAI = () => {
     // Step 3: Life stage captured
     if (step === 2 && !conversationContext.data.lifeStage) {
       return {
-        text: 'Thank you.\n\n**What is the occasion we\'re celebrating?**\n\nIs it a birthday, a Gotcha Day, perhaps a first festival, or simply a moment of gratitude?',
+        text: 'Thank you.\n\nWhat is the occasion we\'re celebrating?\n\nIs it a birthday, a Gotcha Day, perhaps a first festival, or simply a moment of gratitude?',
         suggestions: ['Birthday', 'Gotcha Day', 'First Festival', 'Just Because'],
         nextStep: 3,
         updateContext: { data: { ...conversationContext.data, lifeStage: userMessage } }
@@ -84,7 +84,7 @@ const MiraAI = () => {
     // Step 4: Occasion captured
     if (step === 3 && !conversationContext.data.occasion) {
       return {
-        text: 'How special.\n\n**When is this celebration taking place?**\n\nPlease share the date so I may ensure everything is crafted with care and delivered in time.',
+        text: 'How special.\n\nWhen is this celebration taking place?\n\nPlease share the date so I may ensure everything is crafted with care and delivered in time.',
         suggestions: [],
         nextStep: 4,
         updateContext: { data: { ...conversationContext.data, occasion: userMessage } }
@@ -94,7 +94,7 @@ const MiraAI = () => {
     // Step 5: Date captured
     if (step === 4 && !conversationContext.data.date) {
       return {
-        text: 'Noted.\n\n**Which city are you in?**\n\nThis helps me recommend the most suitable delivery options and trusted local services.',
+        text: 'Noted.\n\nWhich city are you in?\n\nThis helps me recommend the most suitable delivery options and trusted local services.',
         suggestions: ['Bangalore', 'Mumbai', 'Gurgaon', 'Other'],
         nextStep: 5,
         updateContext: { data: { ...conversationContext.data, date: userMessage } }
@@ -104,7 +104,7 @@ const MiraAI = () => {
     // Step 6: City captured
     if (step === 5 && !conversationContext.data.city) {
       return {
-        text: 'Perfect.\n\n**Does your companion have any dietary sensitivities or allergies I should be mindful of?**\n\nGrain allergies, chicken sensitivity, or perhaps they prefer vegetarian options?',
+        text: 'Perfect.\n\nDoes your companion have any dietary sensitivities or allergies I should be mindful of?\n\nGrain allergies, chicken sensitivity, or perhaps they prefer vegetarian options?',
         suggestions: ['No allergies', 'Grain-free needed', 'No chicken', 'Vegetarian'],
         nextStep: 6,
         updateContext: { data: { ...conversationContext.data, city: userMessage } }
