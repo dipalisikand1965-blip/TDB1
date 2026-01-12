@@ -3,7 +3,7 @@ import { ShoppingCart, Heart, Star } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { useCart } from '../context/CartContext';
-import { toast } from './ui/use-toast';
+import { toast } from '../hooks/use-toast';
 
 const ProductCard = ({ product }) => {
   const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
