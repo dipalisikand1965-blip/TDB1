@@ -10,6 +10,7 @@ import { Toaster } from "./components/ui/toaster";
 import Home from "./pages/Home";
 import ProductListing from "./pages/ProductListing";
 import CustomCakeDesigner from "./pages/CustomCakeDesigner";
+import MiraConcierge from "./pages/MiraConcierge";
 import Checkout from "./pages/Checkout";
 import About from "./pages/About";
 
@@ -26,6 +27,7 @@ function App() {
             <Route path="/meals" element={<ProductListing category="meals" />} />
             <Route path="/custom" element={<ProductListing category="custom" />} />
             <Route path="/desi" element={<ProductListing category="desi" />} />
+            <Route path="/concierge" element={<MiraConcierge />} />
             <Route path="/pan-india" element={<ProductListing category="pan-india" />} />
             <Route path="/merchandise" element={<ProductListing category="merchandise" />} />
             <Route path="/mini-cakes" element={<ProductListing category="mini-cakes" />} />
