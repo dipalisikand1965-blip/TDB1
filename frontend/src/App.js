@@ -25,6 +25,11 @@ function App() {
             <Route path="/treats" element={<ProductListing category="treats" />} />
             <Route path="/meals" element={<ProductListing category="meals" />} />
             <Route path="/custom" element={<ProductListing category="custom" />} />
+            <Route path="/desi" element={<ProductListing category="desi" />} />
+            <Route path="/merchandise" element={<ProductListing category="merchandise" />} />
+            <Route path="/mini-cakes" element={<ProductListing category="mini-cakes" />} />
+            <Route path="/frozen" element={<ProductListing category="frozen" />} />
+            <Route path="/accessories" element={<ProductListing category="accessories" />} />
             <Route path="/all" element={<ProductListing category="all" />} />
             <Route path="/custom-cake" element={<CustomCakeDesigner />} />
             <Route path="/checkout" element={<Checkout />} />
