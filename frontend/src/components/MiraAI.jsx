@@ -217,13 +217,14 @@ ${ctx.enhancement && ctx.enhancement !== 'No, continue' ? `Enhancement: ${ctx.en
 
 _Order placed via Mira AI Concierge_`;
 
-      // Open WhatsApp with the message
+      // Generate WhatsApp URL for clickable link
       const encodedMessage = encodeURIComponent(whatsappMessage);
-      window.open(`https://wa.me/919663185747?text=${encodedMessage}`, '_blank');
+      const whatsappUrl = `https://wa.me/919663185747?text=${encodedMessage}`;
       
       return {
-        text: '🎉 Wonderful! I\'ve opened WhatsApp with your celebration details.\n\nPlease send the message to complete your order. Our Concierge® team will respond within minutes to confirm availability and arrange payment.\n\nIf WhatsApp didn\'t open, you can also:\n📧 Email: woof@thedoggybakery.com\n📱 Call: +91 96631 85747\n\nIs there anything else I may help you with today?',
+        text: '🎉 Wonderful! Your celebration order is ready to be sent.\n\nClick the button below to send your order details via WhatsApp. Our Concierge® team will respond within minutes to confirm availability and arrange payment.',
         suggestions: ['Plan another celebration', 'Find services', 'That\'s all, thank you'],
+        whatsappLink: whatsappUrl,
         nextStep: 0,
         updateContext: { flow: null, step: 0, data: {} }
       };
