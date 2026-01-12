@@ -10,9 +10,11 @@ const Footer = () => {
           {/* About */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center">
-                <span className="text-lg">🐾</span>
-              </div>
+              <img 
+                src="https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png?v=1718969706" 
+                alt="The Doggy Bakery Logo"
+                className="h-10 w-auto"
+              />
               <h3 className="text-white font-bold text-lg">The Doggy Bakery</h3>
             </div>
             <p className="text-sm mb-4">
@@ -22,7 +24,7 @@ const Footer = () => {
               <a href="#" className="hover:text-pink-500 transition-colors">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="hover:text-pink-500 transition-colors">
+              <a href="https://www.instagram.com/the_doggy_bakery/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-500 transition-colors">
                 <Instagram className="w-5 h-5" />
               </a>
               <a href="#" className="hover:text-pink-500 transition-colors">
