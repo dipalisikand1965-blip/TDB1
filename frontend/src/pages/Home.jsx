@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { products, testimonials, faqs, categories } from '../mockData';
 import ProductCard from '../components/ProductCard';
+import InstagramFeed from '../components/InstagramFeed';
+import VideoSection from '../components/VideoSection';
 import { Button } from '../components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import { Card } from '../components/ui/card';
-import { Star, Award, Leaf, Clock, Shield, ArrowRight, Sparkles, Heart, Users, Check, TrendingUp } from 'lucide-react';
+import { Star, Award, Leaf, Clock, Shield, ArrowRight, Sparkles, Heart, Users, Check, TrendingUp, Play, Instagram } from 'lucide-react';
+import { useInView, useCountUp } from '../hooks/useAnimations';
 
 const Home = () => {
   const [activeSlide, setActiveSlide] = useState(0);
