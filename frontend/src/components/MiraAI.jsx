@@ -402,7 +402,8 @@ _Order placed via Mira AI Concierge_`;
           id: Date.now() + 1,
           type: 'bot',
           text: response.text,
-          suggestions: response.suggestions
+          suggestions: response.suggestions,
+          whatsappLink: response.whatsappLink || null
         };
         
         setMessages(prev => [...prev, botMessage]);
