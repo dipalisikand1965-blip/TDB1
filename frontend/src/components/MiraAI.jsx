@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, Sparkles, MessageCircle, Loader2 } from 'lucide-react';
+import { X, Send, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
@@ -10,17 +10,33 @@ const MiraAI = () => {
     {
       id: 1,
       type: 'bot',
-      text: '👋 Hi! I\'m Mira, your Pet Celebration Concierge! I\'m here to help you plan the perfect celebration for your furry friend. What can I help you with today?',
+      text: 'Good day. I\'m Mira, The Doggy Bakery Concierge®.\n\nI\'m here not to sell, but to help you honour the heartbeat that changed your life.\n\nWhether it\'s a milestone celebration, finding the perfect grooming sanctuary, or planning your first journey together—I\'m here to guide you with care.\n\nHow may I be of service today?',
       suggestions: [
-        'Plan a birthday party',
-        'Recommend a cake',
-        'Dietary restrictions',
-        'Party ideas'
+        'Plan a celebration',
+        'Find trusted services',
+        'Seasonal care guidance',
+        'Memory-making experiences'
       ]
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [conversationContext, setConversationContext] = useState({
+    flow: null, // 'celebration', 'services', 'guidance'
+    step: 0,
+    data: {
+      dogName: null,
+      lifeStage: null,
+      breed: null,
+      occasion: null,
+      date: null,
+      city: null,
+      allergies: null,
+      contactMethod: null,
+      contactDetail: null,
+      selectedProduct: null
+    }
+  });
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -31,81 +47,229 @@ const MiraAI = () => {
     scrollToBottom();
   }, [messages]);
 
-  const celebrationResponses = {
-    'birthday': {
-      text: '🎉 How exciting! Let\'s plan an amazing birthday celebration! Here\'s what I recommend:\n\n1. Pawsome 2.0 Cake (₹699) - Our bestseller, perfect for 1-2 dogs\n2. Dog Cake Party Box (₹999) - Complete with treats and decorations\n3. Custom Breed Cake - We can make it look like your pup!\n\nHow many furry guests will be joining?',
-      suggestions: ['Just my dog', '2-4 dogs', '5+ dogs', 'Custom cake design']
-    },
-    'cake': {
-      text: '🎂 I\'d love to help you find the perfect cake! Tell me about your pup:\n\n• What\'s their favorite flavor?\n• Any dietary restrictions?\n• Size needed?\n\nOur most popular options are:\n- Chicken & Oats - Classic favorite\n- Peanut Butter - Irresistible!\n- Banana & Honey - Sweet & healthy',
-      suggestions: ['Chicken lover', 'Peanut butter fan', 'Grain-free needed', 'Custom flavor']
-    },
-    'dietary': {
-      text: '💚 I completely understand! We take dietary needs seriously. Let me know:\n\n• Grain allergies? We have grain-free options\n• Chicken sensitivity? Try fish or mutton\n• Vegetarian? Our paneer & veggies meals\n\nAll our products are FSSAI approved and made with natural ingredients. What\'s your pup\'s restriction?',
-      suggestions: ['Grain-free', 'No chicken', 'Vegetarian', 'Multiple allergies']
-    },
-    'party': {
-      text: '🎈 Let\'s make this party unforgettable! Here are my favorite celebration ideas:\n\nFor Intimate Celebrations (1-3 dogs):\n• Pupcakes & matching bandana\n• Custom breed cake\n• Photo booth setup\n\nFor Bigger Pawties (4+ dogs):\n• Party Box with multiple treats\n• Dognut tower\n• Treat bags for guests\n\nWhat type of celebration are you planning?',
-      suggestions: ['Small & intimate', 'Big pawty', 'First birthday', 'Adoption day']
-    },
-    'recommend': {
-      text: '✨ Based on thousands of happy celebrations, here are my top picks:\n\nMost Popular:\n1. Dog Cake Party Box (₹999) - 5⭐ rated\n2. Pawsome 2.0 (₹699) - Customer favorite\n3. Woof Dognuts (₹450) - Perfect for sharing\n\nPremium Options:\n• Custom Breed Cake (₹950+)\n• Floral Fido with decoration (₹649)\n\nWant me to suggest based on your dog\'s size or preferences?',
-      suggestions: ['Small dog', 'Large dog', 'Multiple dogs', 'Budget-friendly']
-    },
-    'vet': {
-      text: '🏥 Here are trusted veterinarians in your area:\n\nBangalore:\n• Cessna Lifeline - JP Nagar (080-2659-4444)\n• VetCare Hospital - Indiranagar (080-4112-5566)\n• Bangalore Pet Hospital - Koramangala (080-4178-9999)\n\nMumbai:\n• Bai Sakarbai Dinshaw Petit Hospital - Parel (022-2416-1460)\n• BSPCA Animal Hospital - Parel (022-2413-8485)\n• PetCare Clinic - Bandra (022-2640-3366)\n\nGurgaon:\n• The Pet Clinic - Sector 51 (0124-423-5555)\n• Dogtors Veterinary Clinic - DLF Phase 3 (098-1044-4567)\n\nWould you like more details about any specific clinic?',
-      suggestions: ['Tell me more', 'Emergency vet', 'Specialist needed', 'Go back']
-    },
-    'grooming': {
-      text: '✂️ Top-rated professional groomers:\n\nBangalore:\n• Heads Up For Tails - Multiple locations\n  📞 080-4112-3344\n• Fur Ball Story - HSR Layout\n  📞 080-4178-5566\n• Pawfect Grooming - Whitefield\n  📞 098-8077-1122\n\nMumbai:\n• The Pets Workshop - Andheri, Bandra\n  📞 022-6741-8899\n• Bark N Bath - Multiple locations\n  📞 098-2088-7766\n• Furry Tails - Juhu\n  📞 022-2660-5544\n\nGurgaon:\n• Doggy Style - Sector 29\n  📞 0124-402-3344\n• Pampered Pets - Golf Course Road\n  📞 098-1166-7788\n\nServices include: Full grooming, spa, nail trimming, dental care\n\nNeed help booking?',
-      suggestions: ['Show prices', 'Book appointment', 'Mobile grooming', 'Go back']
-    },
-    'photographer': {
-      text: '📸 Professional pet photographers for your special moments:\n\nBangalore:\n• Pawtraits by Nikita - ₹8,000-15,000\n  📱 098-8044-5566 | Instagram: @pawtraits_blr\n• The Dog Studio - ₹10,000-20,000\n  📱 080-4112-7788\n\nMumbai:\n• Woofster Photography - ₹12,000-25,000\n  📱 098-2077-8899 | Instagram: @woofster_mumbai\n• Paws & Claws Studio - ₹9,000-18,000\n  📱 022-2640-5566\n\nGurgaon:\n• Pet Portraits India - ₹10,000-22,000\n  📱 098-1133-6677\n\nPackages include: Birthday shoots, family portraits, outdoor sessions\n\nShall I help you choose?',
-      suggestions: ['Compare packages', 'See portfolios', 'Book session', 'Go back']
-    },
-    'petstore': {
-      text: '🏪 Premium pet stores near you:\n\nBangalore:\n• Heads Up For Tails - Indiranagar, HSR, Whitefield\n• Just Dogs - Cunningham Road\n• Wiggles - Multiple locations\n\nMumbai:\n• Pets World - Bandra, Andheri\n• The Pet Shop - Multiple locations  \n• Fur Ball Story - Lokhandwala\n\nGurgaon:\n• Whiskers N Paws - Cyber Hub\n• Pet Fed - DLF Phase 2\n• Zigly - Multiple locations\n\nThey offer: Premium food, toys, accessories, grooming products\n\nLooking for something specific?',
-      suggestions: ['Food brands', 'Toys & accessories', 'Store locations', 'Go back']
-    },
-    'default': {
-      text: 'I\'m here to help with:\n\n🎂 Cake Selection - Find the perfect cake\n🎉 Party Planning - Celebration ideas & tips\n🥗 Dietary Needs - Allergies & special requirements\n💝 Gift Ideas - Surprise your pup\n📍 Referrals - Vet, grooming, pet stores\n\nWhat would you like to know?',
-      suggestions: ['Cake recommendations', 'Plan a party', 'Dietary help', 'Local referrals']
-    }
-  };
-
-  const getResponse = (userMessage) => {
+  // Celebration Flow Handler
+  const handleCelebrationFlow = (userMessage, step) => {
     const msg = userMessage.toLowerCase();
     
-    if (msg.includes('birthday') || msg.includes('bday') || msg.includes('celebration')) {
-      return celebrationResponses.birthday;
-    } else if (msg.includes('cake') || msg.includes('recommend') || msg.includes('suggest')) {
-      return celebrationResponses.cake;
-    } else if (msg.includes('allerg') || msg.includes('dietary') || msg.includes('grain') || msg.includes('restrict')) {
-      return celebrationResponses.dietary;
-    } else if (msg.includes('party') || msg.includes('event') || msg.includes('pawty')) {
-      return celebrationResponses.party;
-    } else if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey')) {
+    // Step 1: Understand the moment (grounding narrative)
+    if (step === 0) {
       return {
-        text: '👋 Hello! I\'m Mira, your personal Pet Celebration Concierge! I\'m here to make your pup\'s special day unforgettable. How can I help you today?',
-        suggestions: ['Plan birthday', 'Recommend cake', 'Party ideas', 'Dietary needs']
-      };
-    } else if (msg.includes('vet') || msg.includes('doctor') || msg.includes('veterinar')) {
-      return celebrationResponses.vet;
-    } else if (msg.includes('groom') || msg.includes('salon') || msg.includes('bath') || msg.includes('hair')) {
-      return celebrationResponses.grooming;
-    } else if (msg.includes('photo') || msg.includes('picture') || msg.includes('shoot')) {
-      return celebrationResponses.photographer;
-    } else if (msg.includes('store') || msg.includes('shop') || msg.includes('buy')) {
-      return celebrationResponses.petstore;
-    } else if (msg.includes('referral') || msg.includes('local')) {
-      return {
-        text: '📍 I can help you find trusted pet services in your area!\n\nAvailable Referrals:\n• 🏥 Veterinarians (Bangalore, Mumbai, Gurgaon)\n• ✂️ Professional Groomers\n• 🏪 Premium Pet Stores\n• 📸 Pet Photographers\n• 🏨 Pet-friendly Hotels\n\nWhich service are you looking for?',
-        suggestions: ['Vet nearby', 'Grooming salon', 'Pet photographer', 'Pet store']
+        text: 'How wonderful.\n\nEvery celebration is a chapter in the story of love you share.\n\nBefore I curate something truly meaningful, may I know a bit more?\n\n**What is your dog\'s name?**',
+        suggestions: [],
+        nextStep: 1,
+        updateContext: { flow: 'celebration', step: 1 }
       };
     }
     
-    return celebrationResponses.default;
+    // Step 2: Dog's name captured
+    if (step === 1 && !conversationContext.data.dogName) {
+      return {
+        text: `${userMessage} — what a lovely name.\n\n**How old is ${userMessage}, and would you describe them as a puppy, adult, or a cherished senior?**`,
+        suggestions: ['Puppy (under 1 year)', 'Adult (1-7 years)', 'Senior (7+ years)'],
+        nextStep: 2,
+        updateContext: { data: { ...conversationContext.data, dogName: userMessage } }
+      };
+    }
+    
+    // Step 3: Life stage captured
+    if (step === 2 && !conversationContext.data.lifeStage) {
+      return {
+        text: 'Thank you.\n\n**What is the occasion we\'re celebrating?**\n\nIs it a birthday, a Gotcha Day, perhaps a first festival, or simply a moment of gratitude?',
+        suggestions: ['Birthday', 'Gotcha Day', 'First Festival', 'Just Because'],
+        nextStep: 3,
+        updateContext: { data: { ...conversationContext.data, lifeStage: userMessage } }
+      };
+    }
+    
+    // Step 4: Occasion captured
+    if (step === 3 && !conversationContext.data.occasion) {
+      return {
+        text: 'How special.\n\n**When is this celebration taking place?**\n\nPlease share the date so I may ensure everything is crafted with care and delivered in time.',
+        suggestions: [],
+        nextStep: 4,
+        updateContext: { data: { ...conversationContext.data, occasion: userMessage } }
+      };
+    }
+    
+    // Step 5: Date captured
+    if (step === 4 && !conversationContext.data.date) {
+      return {
+        text: 'Noted.\n\n**Which city are you in?**\n\nThis helps me recommend the most suitable delivery options and trusted local services.',
+        suggestions: ['Bangalore', 'Mumbai', 'Gurgaon', 'Other'],
+        nextStep: 5,
+        updateContext: { data: { ...conversationContext.data, date: userMessage } }
+      };
+    }
+    
+    // Step 6: City captured
+    if (step === 5 && !conversationContext.data.city) {
+      return {
+        text: 'Perfect.\n\n**Does your companion have any dietary sensitivities or allergies I should be mindful of?**\n\nGrain allergies, chicken sensitivity, or perhaps they prefer vegetarian options?',
+        suggestions: ['No allergies', 'Grain-free needed', 'No chicken', 'Vegetarian'],
+        nextStep: 6,
+        updateContext: { data: { ...conversationContext.data, city: userMessage } }
+      };
+    }
+    
+    // Step 7: Allergies captured - Now curate options
+    if (step === 6 && !conversationContext.data.allergies) {
+      const dogName = conversationContext.data.dogName;
+      const occasion = conversationContext.data.occasion;
+      
+      return {
+        text: `Thank you for trusting me with ${dogName}'s details.\n\nBased on what you've shared, I would suggest three celebration rituals:\n\n**1. The Pawsome Celebration**\nOur signature cake crafted with care — perfect for intimate moments with 1-2 companions. Fresh chicken & oats or peanut butter. (₹699)\n\n**2. The Grand Pawty Box**\nA complete celebration including cake, treats, and decorative touches for gatherings of 3-5 furry guests. (₹999)\n\n**3. The Bespoke Portrait Cake**\nA custom creation shaped to honour ${dogName}'s breed — a true work of art and love. (₹950+)\n\nWhich ritual speaks to you?`,
+        suggestions: ['The Pawsome', 'The Grand Pawty', 'The Bespoke Portrait', 'Tell me more'],
+        nextStep: 7,
+        updateContext: { data: { ...conversationContext.data, allergies: userMessage } }
+      };
+    }
+    
+    // Step 8: Product selected - Enhancement gate
+    if (step === 7 && !conversationContext.data.selectedProduct) {
+      return {
+        text: 'A beautiful choice.\n\nWould you like to enhance this celebration with:\n\n• A matching birthday bandana\n• Pupcakes for sharing with friends\n• A personalised message plaque\n\n**Shall I add any of these touches?**',
+        suggestions: ['Yes, add bandana', 'Yes, add pupcakes', 'Yes, add plaque', 'No, continue'],
+        nextStep: 8,
+        updateContext: { data: { ...conversationContext.data, selectedProduct: userMessage } }
+      };
+    }
+    
+    // Step 9: Enhancement decided - Contact method
+    if (step === 8 && !conversationContext.data.contactMethod) {
+      return {
+        text: '**May I confirm your preferred method of contact — WhatsApp, email, or a personal call back?**',
+        suggestions: ['WhatsApp', 'Email', 'Call back'],
+        nextStep: 9,
+        updateContext: { data: { ...conversationContext.data, enhancement: userMessage } }
+      };
+    }
+    
+    // Step 10: Contact method selected - Get contact detail
+    if (step === 9 && !conversationContext.data.contactDetail) {
+      if (msg.includes('whatsapp')) {
+        return {
+          text: 'Wonderful. **Please share your WhatsApp number.**',
+          suggestions: [],
+          nextStep: 10,
+          updateContext: { data: { ...conversationContext.data, contactMethod: 'WhatsApp' } }
+        };
+      } else if (msg.includes('email')) {
+        return {
+          text: 'Of course. **Please share your email address.**',
+          suggestions: [],
+          nextStep: 10,
+          updateContext: { data: { ...conversationContext.data, contactMethod: 'Email' } }
+        };
+      } else {
+        return {
+          text: 'I shall arrange a call back. **Please share your phone number.**',
+          suggestions: [],
+          nextStep: 10,
+          updateContext: { data: { ...conversationContext.data, contactMethod: 'Call back' } }
+        };
+      }
+    }
+    
+    // Step 11: Contact detail captured - Show summary
+    if (step === 10) {
+      const ctx = conversationContext.data;
+      return {
+        text: `**Celebration Summary**\n\n**Dog's Name:** ${ctx.dogName}\n**Life Stage:** ${ctx.lifeStage}\n**Occasion:** ${ctx.occasion}\n**Date:** ${ctx.date}\n**City:** ${ctx.city}\n**Dietary Notes:** ${ctx.allergies}\n**Selected Celebration:** ${ctx.selectedProduct}\n**Contact:** ${userMessage} (${ctx.contactMethod})\n\n**Important Note:**\nAll products are handcrafted in limited batches and subject to freshness windows and breed suitability.\n\n**To proceed, please type: I confirm**`,
+        suggestions: ['I confirm'],
+        nextStep: 11,
+        updateContext: { data: { ...conversationContext.data, contactDetail: userMessage } }
+      };
+    }
+    
+    // Step 12: Confirmation
+    if (step === 11 && msg.includes('confirm')) {
+      return {
+        text: 'Your celebration is now reserved in principle.\n\nOur Concierge® team at **woof@thedoggybakery.com** or **WhatsApp +91 96631 85747** will reach out shortly with the secure payment link and final details.\n\nThank you for trusting us with this precious moment.\n\nIs there anything else I may help you with today?',
+        suggestions: ['Plan another celebration', 'Find services', 'That\'s all, thank you'],
+        nextStep: 0,
+        updateContext: { flow: null, step: 0, data: {} }
+      };
+    }
+    
+    return null;
+  };
+
+  // Services Flow Handler
+  const handleServicesFlow = (userMessage, serviceType) => {
+    const msg = userMessage.toLowerCase();
+    
+    // Ask for city first
+    if (!conversationContext.data.city) {
+      return {
+        text: '**Which city are you in?**\n\nThis helps me provide the most accurate and verified recommendations.',
+        suggestions: ['Bangalore', 'Mumbai', 'Gurgaon', 'Delhi', 'Other'],
+        updateContext: { flow: 'services', serviceType, data: { city: 'pending' } }
+      };
+    }
+    
+    // City provided, now provide verified services
+    const city = userMessage;
+    
+    if (serviceType === 'vet') {
+      return {
+        text: `**Verified Veterinary Clinics in ${city}:**\n\n*Please note: I'm currently verifying the most up-to-date contact details for the finest veterinary practices in ${city}.*\n\n**For immediate assistance, our trusted partners include:**\n\nBangalore:\n• Cessna Lifeline, JP Nagar\n• VetCare Hospital, Indiranagar\n\nMumbai:\n• Bai Sakarbai Dinshaw Petit Hospital, Parel\n• BSPCA Animal Hospital, Parel\n\nGurgaon:\n• The Pet Clinic, Sector 51\n\nWould you like me to verify specific details for any of these practices?`,
+        suggestions: ['Show contact details', 'Emergency care', 'Specialist needed', 'Go back'],
+        updateContext: { data: { ...conversationContext.data, city, serviceType } }
+      };
+    }
+    
+    if (serviceType === 'grooming') {
+      return {
+        text: `**Verified Grooming Sanctuaries in ${city}:**\n\n*I'm gathering the latest verified information for premium grooming establishments.*\n\nBangalore:\n• Heads Up For Tails (Multiple locations)\n• Fur Ball Story, HSR Layout\n\nMumbai:\n• The Pets Workshop, Andheri\n• Bark N Bath (Premium grooming)\n\nGurgaon:\n• Doggy Style, Sector 29\n\nShall I verify specific services and pricing for you?`,
+        suggestions: ['Full grooming prices', 'Spa services', 'Mobile grooming', 'Go back'],
+        updateContext: { data: { ...conversationContext.data, city, serviceType } }
+      };
+    }
+    
+    return null;
+  };
+
+  // Main response handler
+  const getResponse = (userMessage) => {
+    const msg = userMessage.toLowerCase();
+    const { flow, step } = conversationContext;
+    
+    // Handle ongoing celebration flow
+    if (flow === 'celebration') {
+      return handleCelebrationFlow(userMessage, step);
+    }
+    
+    // Handle ongoing services flow
+    if (flow === 'services') {
+      return handleServicesFlow(userMessage, conversationContext.serviceType);
+    }
+    
+    // Initial routing
+    if (msg.includes('celebrat') || msg.includes('birthday') || msg.includes('party') || msg.includes('cake')) {
+      return handleCelebrationFlow(userMessage, 0);
+    }
+    
+    if (msg.includes('service') || msg.includes('find') || msg.includes('recommend') || msg.includes('vet') || msg.includes('groom') || msg.includes('board')) {
+      return {
+        text: 'I would be delighted to help you find trusted services.\n\n**What are you looking for?**',
+        suggestions: ['Veterinary care', 'Grooming & spa', 'Boarding & daycare', 'Training guidance', 'Go back'],
+        updateContext: { flow: 'services', step: 0 }
+      };
+    }
+    
+    if (msg.includes('seasonal') || msg.includes('festival') || msg.includes('diwali') || msg.includes('christmas')) {
+      return {
+        text: 'Festivals can be both joyful and anxious for our companions.\n\n**Which seasonal care are you seeking?**\n\n• Diwali anxiety care\n• Monsoon wellness\n• Winter warmth rituals\n• Christmas celebrations',
+        suggestions: ['Diwali care', 'Monsoon care', 'Winter care', 'Christmas'],
+        updateContext: { flow: 'seasonal', step: 0 }
+      };
+    }
+    
+    // Default thoughtful response
+    return {
+      text: 'I\'m here to help you honour the bond you share.\n\n**How may I be of service?**\n\n• Plan a meaningful celebration\n• Find trusted pet-life services\n• Seasonal care guidance\n• Memory-making experiences',
+      suggestions: ['Plan celebration', 'Find services', 'Seasonal care', 'Memory experiences']
+    };
   };
 
   const handleSend = async (message = inputValue) => {
@@ -121,18 +285,33 @@ const MiraAI = () => {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI thinking
+    // Simulate thoughtful pause
     setTimeout(() => {
       const response = getResponse(message);
-      const botMessage = {
-        id: Date.now() + 1,
-        type: 'bot',
-        text: response.text,
-        suggestions: response.suggestions
-      };
-      setMessages(prev => [...prev, botMessage]);
+      
+      if (response) {
+        const botMessage = {
+          id: Date.now() + 1,
+          type: 'bot',
+          text: response.text,
+          suggestions: response.suggestions
+        };
+        
+        setMessages(prev => [...prev, botMessage]);
+        
+        // Update conversation context
+        if (response.updateContext) {
+          setConversationContext(prev => ({
+            ...prev,
+            ...response.updateContext,
+            step: response.nextStep !== undefined ? response.nextStep : prev.step,
+            data: response.updateContext.data || prev.data
+          }));
+        }
+      }
+      
       setIsTyping(false);
-    }, 1500);
+    }, 2000);
   };
 
   const handleSuggestionClick = (suggestion) => {
@@ -169,8 +348,8 @@ const MiraAI = () => {
                   <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">Mira AI</h3>
-                  <p className="text-xs text-white/80">Pet Celebration Concierge</p>
+                  <h3 className="font-bold text-lg">Mira</h3>
+                  <p className="text-xs text-white/80">The Doggy Bakery Concierge®</p>
                 </div>
               </div>
               <Button
@@ -190,7 +369,7 @@ const MiraAI = () => {
               <div key={message.id}>
                 <div className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                    className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                       message.type === 'user'
                         ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
                         : 'bg-white shadow-md text-gray-800'
@@ -199,7 +378,7 @@ const MiraAI = () => {
                     <p className="text-sm whitespace-pre-line leading-relaxed">{message.text}</p>
                   </div>
                 </div>
-                {message.suggestions && (
+                {message.suggestions && message.suggestions.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-3 ml-2">
                     {message.suggestions.map((suggestion, idx) => (
                       <button
@@ -231,7 +410,7 @@ const MiraAI = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Ask Mira anything..."
+                placeholder="Share your thoughts..."
                 className="flex-1"
               />
               <Button
