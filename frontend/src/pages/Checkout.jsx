@@ -127,14 +127,16 @@ Order placed via Birthday Demo Site 🎂`;
                 To complete your order and get real-time updates, please confirm via WhatsApp. 
                 Our team will respond within minutes!
               </p>
-              <Button
-                onClick={openWhatsApp}
-                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full font-semibold text-lg flex items-center gap-2 mx-auto"
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full font-semibold text-lg inline-flex items-center gap-2"
                 data-testid="whatsapp-confirm-btn"
               >
                 <MessageCircle className="w-5 h-5" />
                 Confirm on WhatsApp
-              </Button>
+              </a>
             </div>
 
             {/* Order Summary */}
