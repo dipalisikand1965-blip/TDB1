@@ -71,7 +71,7 @@ async def get_status_checks():
     return status_checks
 
 # Include the router in the main app
-app.include_router(api_router)
+# Include router moved to end
 
 app.add_middleware(
     CORSMiddleware,
@@ -128,3 +128,5 @@ logger = logging.getLogger(__name__)
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+# Include the router in the main app
+app.include_router(api_router)
