@@ -6,8 +6,10 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 
 const ProductCard = ({ product }) => {
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
-  const [selectedFlavor, setSelectedFlavor] = useState(product.flavors[0]);
+  const sizes = product.sizes || ['Standard'];
+  const flavors = product.flavors || ['Classic'];
+  const [selectedSize, setSelectedSize] = useState(sizes[0]);
+  const [selectedFlavor, setSelectedFlavor] = useState(flavors[0]);
   const { addToCart } = useCart();
 
   const handleAddToCart = () => {
