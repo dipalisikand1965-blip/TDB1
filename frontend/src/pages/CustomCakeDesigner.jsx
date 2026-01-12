@@ -189,31 +189,195 @@ const CustomCakeDesigner = () => {
 
             {/* Decoration Selection */}
             <Card className="p-6">
-              <Label className="text-lg font-semibold mb-4 block">5. Choose Decoration</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {cakeDesignerOptions.decorations.map((decoration) => (
-                  <button
-                    key={decoration.id}
-                    onClick={() => setDesign({ ...design, decoration })}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
-                      design.decoration.id === decoration.id
-                        ? 'border-purple-600 bg-purple-50 shadow-md'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-medium mb-1">{decoration.name}</p>
-                        {decoration.price > 0 && (
-                          <p className="text-sm text-gray-600">+₹{decoration.price}</p>
-                        )}
-                      </div>
-                      {design.decoration.id === decoration.id && (
-                        <Check className="w-5 h-5 text-purple-600" />
-                      )}
+              <Label className="text-lg font-semibold mb-4 block">5. Choose Decoration Style</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* No Decoration */}
+                <button
+                  onClick={() => setDesign({ ...design, decoration: cakeDesignerOptions.decorations[0] })}
+                  className={`rounded-lg border-2 transition-all overflow-hidden ${
+                    design.decoration.id === 'none'
+                      ? 'border-purple-600 shadow-lg ring-2 ring-purple-200'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="aspect-square bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center">
+                    <div className="text-center p-4">
+                      <div className="text-5xl mb-2">🎂</div>
+                      <p className="font-medium text-gray-700">Simple & Clean</p>
                     </div>
-                  </button>
-                ))}
+                  </div>
+                  <div className="p-3 bg-white">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">No Decoration</span>
+                      <span className="text-green-600 text-sm font-semibold">Included</span>
+                    </div>
+                    {design.decoration.id === 'none' && (
+                      <div className="flex items-center text-purple-600 text-sm mt-1">
+                        <Check className="w-4 h-4 mr-1" /> Selected
+                      </div>
+                    )}
+                  </div>
+                </button>
+
+                {/* Paw Print Design */}
+                <button
+                  onClick={() => setDesign({ ...design, decoration: cakeDesignerOptions.decorations[1] })}
+                  className={`rounded-lg border-2 transition-all overflow-hidden ${
+                    design.decoration.id === 'paw-prints'
+                      ? 'border-purple-600 shadow-lg ring-2 ring-purple-200'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="aspect-square relative">
+                    <img 
+                      src="https://thedoggybakery.com/cdn/shop/files/Pawsome2.0_1.png?v=1703995833&width=400" 
+                      alt="Paw Print Design"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-2 right-2 bg-purple-600 text-white text-xs px-2 py-1 rounded-full">
+                      Popular
+                    </div>
+                  </div>
+                  <div className="p-3 bg-white">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Paw Print Design</span>
+                      <span className="text-purple-600 text-sm font-semibold">+₹100</span>
+                    </div>
+                    {design.decoration.id === 'paw-prints' && (
+                      <div className="flex items-center text-purple-600 text-sm mt-1">
+                        <Check className="w-4 h-4 mr-1" /> Selected
+                      </div>
+                    )}
+                  </div>
+                </button>
+
+                {/* Floral Design */}
+                <button
+                  onClick={() => setDesign({ ...design, decoration: cakeDesignerOptions.decorations[2] })}
+                  className={`rounded-lg border-2 transition-all overflow-hidden ${
+                    design.decoration.id === 'flowers'
+                      ? 'border-purple-600 shadow-lg ring-2 ring-purple-200'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="aspect-square relative">
+                    <img 
+                      src="https://thedoggybakery.com/cdn/shop/files/FloralBoney.png?v=1703992528&width=400" 
+                      alt="Floral Design"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-2 right-2 bg-pink-500 text-white text-xs px-2 py-1 rounded-full">
+                      Elegant
+                    </div>
+                  </div>
+                  <div className="p-3 bg-white">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Floral Design</span>
+                      <span className="text-purple-600 text-sm font-semibold">+₹150</span>
+                    </div>
+                    {design.decoration.id === 'flowers' && (
+                      <div className="flex items-center text-purple-600 text-sm mt-1">
+                        <Check className="w-4 h-4 mr-1" /> Selected
+                      </div>
+                    )}
+                  </div>
+                </button>
+
+                {/* Custom Name */}
+                <button
+                  onClick={() => setDesign({ ...design, decoration: cakeDesignerOptions.decorations[3] })}
+                  className={`rounded-lg border-2 transition-all overflow-hidden ${
+                    design.decoration.id === 'custom-name'
+                      ? 'border-purple-600 shadow-lg ring-2 ring-purple-200'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="aspect-square relative">
+                    <img 
+                      src="https://thedoggybakery.com/cdn/shop/files/TDB2024Cakes_40.png?v=1704514829&width=400" 
+                      alt="Custom Name Design"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
+                      Personalized
+                    </div>
+                  </div>
+                  <div className="p-3 bg-white">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Custom Name</span>
+                      <span className="text-purple-600 text-sm font-semibold">+₹200</span>
+                    </div>
+                    {design.decoration.id === 'custom-name' && (
+                      <div className="flex items-center text-purple-600 text-sm mt-1">
+                        <Check className="w-4 h-4 mr-1" /> Selected
+                      </div>
+                    )}
+                  </div>
+                </button>
+
+                {/* Sprinkles & Hearts */}
+                <button
+                  onClick={() => setDesign({ ...design, decoration: { id: 'sprinkles', name: 'Sprinkles & Hearts', price: 100 } })}
+                  className={`rounded-lg border-2 transition-all overflow-hidden ${
+                    design.decoration.id === 'sprinkles'
+                      ? 'border-purple-600 shadow-lg ring-2 ring-purple-200'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="aspect-square relative">
+                    <img 
+                      src="https://thedoggybakery.com/cdn/shop/files/HeartNose.png?v=1703994048&width=400" 
+                      alt="Sprinkles & Hearts"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                      Festive
+                    </div>
+                  </div>
+                  <div className="p-3 bg-white">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Sprinkles & Hearts</span>
+                      <span className="text-purple-600 text-sm font-semibold">+₹100</span>
+                    </div>
+                    {design.decoration.id === 'sprinkles' && (
+                      <div className="flex items-center text-purple-600 text-sm mt-1">
+                        <Check className="w-4 h-4 mr-1" /> Selected
+                      </div>
+                    )}
+                  </div>
+                </button>
+
+                {/* Breed Face (Photo) */}
+                <button
+                  onClick={() => setDesign({ ...design, decoration: cakeDesignerOptions.decorations[4] })}
+                  className={`rounded-lg border-2 transition-all overflow-hidden ${
+                    design.decoration.id === 'photo'
+                      ? 'border-purple-600 shadow-lg ring-2 ring-purple-200'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="aspect-square relative">
+                    <img 
+                      src="https://thedoggybakery.com/cdn/shop/files/GoldenRetriever.png?v=1704004351&width=400" 
+                      alt="Breed Face / Edible Photo"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                      Premium
+                    </div>
+                  </div>
+                  <div className="p-3 bg-white">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Breed Face / Photo</span>
+                      <span className="text-purple-600 text-sm font-semibold">+₹300</span>
+                    </div>
+                    {design.decoration.id === 'photo' && (
+                      <div className="flex items-center text-purple-600 text-sm mt-1">
+                        <Check className="w-4 h-4 mr-1" /> Selected
+                      </div>
+                    )}
+                  </div>
+                </button>
               </div>
             </Card>
 
