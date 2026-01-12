@@ -13,7 +13,7 @@ const ProductListing = ({ category = 'all' }) => {
   const getProductsByCategory = () => {
     switch (category) {
       case 'cakes':
-        return [...birthdayCakes, ...miniCakes];
+        return [...birthdayCakes, ...miniCakes, ...panIndiaCakes];
       case 'custom':
         return breedCakes;
       case 'treats':
