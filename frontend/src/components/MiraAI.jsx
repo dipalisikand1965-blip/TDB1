@@ -33,27 +33,43 @@ const MiraAI = () => {
 
   const celebrationResponses = {
     'birthday': {
-      text: '🎉 How exciting! Let\'s plan an amazing birthday celebration! Here\'s what I recommend:\n\n1. **Pawsome 2.0 Cake** (₹699) - Our bestseller, perfect for 1-2 dogs\n2. **Dog Cake Party Box** (₹999) - Complete with treats and decorations\n3. **Custom Breed Cake** - We can make it look like your pup!\n\nHow many furry guests will be joining?',
+      text: '🎉 How exciting! Let\'s plan an amazing birthday celebration! Here\'s what I recommend:\n\n1. Pawsome 2.0 Cake (₹699) - Our bestseller, perfect for 1-2 dogs\n2. Dog Cake Party Box (₹999) - Complete with treats and decorations\n3. Custom Breed Cake - We can make it look like your pup!\n\nHow many furry guests will be joining?',
       suggestions: ['Just my dog', '2-4 dogs', '5+ dogs', 'Custom cake design']
     },
     'cake': {
-      text: '🎂 I\'d love to help you find the perfect cake! Tell me about your pup:\n\n• What\'s their favorite flavor?\n• Any dietary restrictions?\n• Size needed?\n\nOur most popular options are:\n- **Chicken & Oats** - Classic favorite\n- **Peanut Butter** - Irresistible!\n- **Banana & Honey** - Sweet & healthy',
+      text: '🎂 I\'d love to help you find the perfect cake! Tell me about your pup:\n\n• What\'s their favorite flavor?\n• Any dietary restrictions?\n• Size needed?\n\nOur most popular options are:\n- Chicken & Oats - Classic favorite\n- Peanut Butter - Irresistible!\n- Banana & Honey - Sweet & healthy',
       suggestions: ['Chicken lover', 'Peanut butter fan', 'Grain-free needed', 'Custom flavor']
     },
     'dietary': {
-      text: '💚 I completely understand! We take dietary needs seriously. Let me know:\n\n• Grain allergies? We have **grain-free options**\n• Chicken sensitivity? Try **fish or mutton**\n• Vegetarian? Our **paneer & veggies** meals\n\nAll our products are FSSAI approved and made with natural ingredients. What\'s your pup\'s restriction?',
+      text: '💚 I completely understand! We take dietary needs seriously. Let me know:\n\n• Grain allergies? We have grain-free options\n• Chicken sensitivity? Try fish or mutton\n• Vegetarian? Our paneer & veggies meals\n\nAll our products are FSSAI approved and made with natural ingredients. What\'s your pup\'s restriction?',
       suggestions: ['Grain-free', 'No chicken', 'Vegetarian', 'Multiple allergies']
     },
     'party': {
-      text: '🎈 Let\'s make this party unforgettable! Here are my favorite celebration ideas:\n\n**For Intimate Celebrations (1-3 dogs):**\n• Pupcakes & matching bandana\n• Custom breed cake\n• Photo booth setup\n\n**For Bigger Pawties (4+ dogs):**\n• Party Box with multiple treats\n• Dognut tower\n• Treat bags for guests\n\nWhat type of celebration are you planning?',
+      text: '🎈 Let\'s make this party unforgettable! Here are my favorite celebration ideas:\n\nFor Intimate Celebrations (1-3 dogs):\n• Pupcakes & matching bandana\n• Custom breed cake\n• Photo booth setup\n\nFor Bigger Pawties (4+ dogs):\n• Party Box with multiple treats\n• Dognut tower\n• Treat bags for guests\n\nWhat type of celebration are you planning?',
       suggestions: ['Small & intimate', 'Big pawty', 'First birthday', 'Adoption day']
     },
     'recommend': {
-      text: '✨ Based on thousands of happy celebrations, here are my top picks:\n\n**Most Popular:**\n1. Dog Cake Party Box (₹999) - 5⭐ rated\n2. Pawsome 2.0 (₹699) - Customer favorite\n3. Woof Dognuts (₹450) - Perfect for sharing\n\n**Premium Options:**\n• Custom Breed Cake (₹950+)\n• Floral Fido with decoration (₹649)\n\nWant me to suggest based on your dog\'s size or preferences?',
+      text: '✨ Based on thousands of happy celebrations, here are my top picks:\n\nMost Popular:\n1. Dog Cake Party Box (₹999) - 5⭐ rated\n2. Pawsome 2.0 (₹699) - Customer favorite\n3. Woof Dognuts (₹450) - Perfect for sharing\n\nPremium Options:\n• Custom Breed Cake (₹950+)\n• Floral Fido with decoration (₹649)\n\nWant me to suggest based on your dog\'s size or preferences?',
       suggestions: ['Small dog', 'Large dog', 'Multiple dogs', 'Budget-friendly']
     },
+    'vet': {
+      text: '🏥 Here are trusted veterinarians in your area:\n\nBangalore:\n• Cessna Lifeline - JP Nagar (080-2659-4444)\n• VetCare Hospital - Indiranagar (080-4112-5566)\n• Bangalore Pet Hospital - Koramangala (080-4178-9999)\n\nMumbai:\n• Bai Sakarbai Dinshaw Petit Hospital - Parel (022-2416-1460)\n• BSPCA Animal Hospital - Parel (022-2413-8485)\n• PetCare Clinic - Bandra (022-2640-3366)\n\nGurgaon:\n• The Pet Clinic - Sector 51 (0124-423-5555)\n• Dogtors Veterinary Clinic - DLF Phase 3 (098-1044-4567)\n\nWould you like more details about any specific clinic?',
+      suggestions: ['Tell me more', 'Emergency vet', 'Specialist needed', 'Go back']
+    },
+    'grooming': {
+      text: '✂️ Top-rated professional groomers:\n\nBangalore:\n• Heads Up For Tails - Multiple locations\n  📞 080-4112-3344\n• Fur Ball Story - HSR Layout\n  📞 080-4178-5566\n• Pawfect Grooming - Whitefield\n  📞 098-8077-1122\n\nMumbai:\n• The Pets Workshop - Andheri, Bandra\n  📞 022-6741-8899\n• Bark N Bath - Multiple locations\n  📞 098-2088-7766\n• Furry Tails - Juhu\n  📞 022-2660-5544\n\nGurgaon:\n• Doggy Style - Sector 29\n  📞 0124-402-3344\n• Pampered Pets - Golf Course Road\n  📞 098-1166-7788\n\nServices include: Full grooming, spa, nail trimming, dental care\n\nNeed help booking?',
+      suggestions: ['Show prices', 'Book appointment', 'Mobile grooming', 'Go back']
+    },
+    'photographer': {
+      text: '📸 Professional pet photographers for your special moments:\n\nBangalore:\n• Pawtraits by Nikita - ₹8,000-15,000\n  📱 098-8044-5566 | Instagram: @pawtraits_blr\n• The Dog Studio - ₹10,000-20,000\n  📱 080-4112-7788\n\nMumbai:\n• Woofster Photography - ₹12,000-25,000\n  📱 098-2077-8899 | Instagram: @woofster_mumbai\n• Paws & Claws Studio - ₹9,000-18,000\n  📱 022-2640-5566\n\nGurgaon:\n• Pet Portraits India - ₹10,000-22,000\n  📱 098-1133-6677\n\nPackages include: Birthday shoots, family portraits, outdoor sessions\n\nShall I help you choose?',
+      suggestions: ['Compare packages', 'See portfolios', 'Book session', 'Go back']
+    },
+    'petstore': {
+      text: '🏪 Premium pet stores near you:\n\nBangalore:\n• Heads Up For Tails - Indiranagar, HSR, Whitefield\n• Just Dogs - Cunningham Road\n• Wiggles - Multiple locations\n\nMumbai:\n• Pets World - Bandra, Andheri\n• The Pet Shop - Multiple locations  \n• Fur Ball Story - Lokhandwala\n\nGurgaon:\n• Whiskers N Paws - Cyber Hub\n• Pet Fed - DLF Phase 2\n• Zigly - Multiple locations\n\nThey offer: Premium food, toys, accessories, grooming products\n\nLooking for something specific?',
+      suggestions: ['Food brands', 'Toys & accessories', 'Store locations', 'Go back']
+    },
     'default': {
-      text: 'I\'m here to help with:\n\n🎂 **Cake Selection** - Find the perfect cake\n🎉 **Party Planning** - Celebration ideas & tips\n🥗 **Dietary Needs** - Allergies & special requirements\n💝 **Gift Ideas** - Surprise your pup\n📍 **Referrals** - Vet, grooming, pet stores\n\nWhat would you like to know?',
+      text: 'I\'m here to help with:\n\n🎂 Cake Selection - Find the perfect cake\n🎉 Party Planning - Celebration ideas & tips\n🥗 Dietary Needs - Allergies & special requirements\n💝 Gift Ideas - Surprise your pup\n📍 Referrals - Vet, grooming, pet stores\n\nWhat would you like to know?',
       suggestions: ['Cake recommendations', 'Plan a party', 'Dietary help', 'Local referrals']
     }
   };
