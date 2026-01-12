@@ -4,6 +4,8 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
 
+import { conciergeServices } from '../mockData';
+
 const MiraAI = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -22,7 +24,7 @@ const MiraAI = () => {
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [conversationContext, setConversationContext] = useState({
-    flow: null, // 'celebration', 'services', 'guidance'
+    flow: null, 
     step: 0,
     data: {
       dogName: null,
@@ -34,7 +36,8 @@ const MiraAI = () => {
       allergies: null,
       contactMethod: null,
       contactDetail: null,
-      selectedProduct: null
+      selectedProduct: null,
+      serviceType: null // Added for concierge
     }
   });
   const messagesEndRef = useRef(null);
@@ -49,8 +52,63 @@ const MiraAI = () => {
 
   // Listen for custom event to open Mira AI
   useEffect(() => {
-    const handleOpenMira = () => {
+    const handleOpenMira = (event) => {
       setIsOpen(true);
+      
+      // Handle specific context if provided (e.g., from Concierge page)
+      if (event.detail && event.detail.mode) {
+        const mode = event.detail.mode;
+        
+        if (mode === 'general') {
+           // Default greeting is fine
+           return;
+        }
+
+        let initialText = '';
+        let initialFlow = 'services';
+        let initialStep = 1;
+        let serviceType = null;
+
+        switch (mode) {
+          case 'vet':
+            initialText = "I understand you're looking for veterinary care.\n\nTo help me find the best professionals near you, which city are you in?";
+            serviceType = 'vet';
+            initialStep = 2; // Skip asking "what service"
+            break;
+          case 'travel':
+            initialText = "Planning a journey with your companion? I can help with travel rules and relocation experts.\n\nAre you looking for:\n1. Train Travel Rules\n2. Flight Travel Rules\n3. Relocation Agents";
+            initialFlow = 'concierge_travel';
+            initialStep = 1;
+            break;
+          case 'grooming':
+            initialText = "Let's find a pampering session for your pup.\n\nWhich city are you located in?";
+            serviceType = 'grooming';
+            initialStep = 2;
+            break;
+          case 'boarding':
+            initialText = "Finding a safe home-away-from-home is priority.\n\nWhich city do you need boarding in?";
+            serviceType = 'boarding';
+            initialStep = 2;
+            break;
+          default:
+            initialText = "How may I assist with your Concierge request today?";
+            initialStep = 0;
+        }
+
+        const newMessage = {
+          id: Date.now(),
+          type: 'bot',
+          text: initialText,
+          suggestions: mode === 'travel' ? ['Train Rules', 'Flight Rules', 'Agents'] : ['Bangalore', 'Mumbai', 'Gurgaon', 'Other']
+        };
+
+        setMessages(prev => [...prev, newMessage]);
+        setConversationContext({
+          flow: initialFlow,
+          step: initialStep,
+          data: { serviceType }
+        });
+      }
     };
     
     window.addEventListener('openMiraAI', handleOpenMira);
@@ -233,6 +291,103 @@ _Order placed via Mira AI Concierge_`;
     return null;
   };
 
+  // Medical & Illegal Safety Filter
+  const checkSafety = (text) => {
+    const lower = text.toLowerCase();
+    const medicalKeywords = ['vomit', 'blood', 'sick', 'pain', 'dying', 'poison', 'emergency', 'fracture', 'broken leg', 'swallowed', 'fever'];
+    const illegalKeywords = ['buy dog', 'sell dog', 'fight', 'drug', 'illegal', 'smuggle'];
+
+    if (medicalKeywords.some(k => lower.includes(k))) {
+      return {
+        isUnsafe: true,
+        response: {
+          text: "⚠️ Medical Disclaimer: I am an AI concierge, not a veterinarian.\n\nYour message suggests a potential medical concern. Please contact a qualified vet immediately.\n\nWould you like me to show you a list of emergency veterinary clinics in your area?",
+          suggestions: ['Yes, find vet', 'No, return to menu'],
+          nextStep: 2, // Jump to city selection for vets
+          updateContext: { flow: 'services', step: 2, data: { serviceType: 'vet' } }
+        }
+      };
+    }
+
+    if (illegalKeywords.some(k => lower.includes(k))) {
+      return {
+        isUnsafe: true,
+        response: {
+          text: "I cannot assist with this request. Mira Concierge strictly adheres to all animal welfare laws and ethical guidelines. We do not support the trading of dogs or any illegal activities.\n\nHow else may I help you with responsible pet care?",
+          suggestions: ['Find trusted services', 'Plan a celebration'],
+          nextStep: 0,
+          updateContext: { flow: null, step: 0 }
+        }
+      };
+    }
+
+    return { isUnsafe: false };
+  };
+
+  // Concierge Travel Flow
+  const handleTravelFlow = (userMessage, step) => {
+    const msg = userMessage.toLowerCase();
+    
+    if (step === 1) {
+      if (msg.includes('train')) {
+        const info = conciergeServices.documentation.find(d => d.topic === 'train');
+        return {
+          text: `${info.title}\n\n${info.content}\n\nWould you like to know about flight rules too?`,
+          suggestions: ['Show Flight Rules', 'Back to Menu'],
+          nextStep: 1,
+          updateContext: { flow: 'concierge_travel', step: 1 }
+        };
+      }
+      if (msg.includes('flight') || msg.includes('air')) {
+        const info = conciergeServices.documentation.find(d => d.topic === 'flight');
+        return {
+          text: `${info.title}\n\n${info.content}\n\nWould you like to know about train rules too?`,
+          suggestions: ['Show Train Rules', 'Back to Menu'],
+          nextStep: 1,
+          updateContext: { flow: 'concierge_travel', step: 1 }
+        };
+      }
+      if (msg.includes('agent')) {
+        const agents = conciergeServices.travel;
+        const agentList = agents.map(a => `• ${a.name} (${a.desc})`).join('\n');
+        return {
+          text: `Trusted Relocation Agents:\n\n${agentList}\n\nShall I connect you with one of them?`,
+          suggestions: ['Connect via WhatsApp', 'Back to Menu'],
+          nextStep: 2,
+          updateContext: { flow: 'concierge_travel', step: 2 }
+        };
+      }
+      // Default fallback
+      return {
+        text: "Are you looking for:\n1. Train Travel Rules\n2. Flight Travel Rules\n3. Relocation Agents",
+        suggestions: ['Train Rules', 'Flight Rules', 'Agents'],
+        nextStep: 1,
+        updateContext: { flow: 'concierge_travel', step: 1 }
+      };
+    }
+
+    if (step === 2 && (msg.includes('connect') || msg.includes('whatsapp'))) {
+       return {
+        text: 'I have noted your request. Please click below to send a WhatsApp message to our Concierge Team, and they will personally introduce you to the relocation expert.',
+        whatsappLink: 'https://wa.me/919663185747?text=I%20need%20help%20with%20Pet%20Relocation',
+        suggestions: ['Back to Menu'],
+        nextStep: 0,
+        updateContext: { flow: null, step: 0 }
+       };
+    }
+
+    if (msg.includes('back')) {
+        return {
+          text: 'How else may I be of service?',
+          suggestions: ['Find Services', 'Plan Celebration'],
+          nextStep: 0,
+          updateContext: { flow: null, step: 0 }
+        };
+    }
+
+    return null;
+  };
+
   // Services Flow Handler
   const handleServicesFlow = (userMessage, step) => {
     const msg = userMessage.toLowerCase();
@@ -277,45 +432,41 @@ _Order placed via Mira AI Concierge_`;
       }
     }
     
-    // Step 2: City provided, now provide verified services
+    // Step 2: City provided, now provide verified services from MOCK DB
     if (step === 2) {
-      const city = userMessage;
+      let city = 'all';
+      if (msg.includes('bangalore') || msg.includes('bengaluru')) city = 'bangalore';
+      else if (msg.includes('mumbai') || msg.includes('bombay')) city = 'mumbai';
+      else if (msg.includes('gurgaon') || msg.includes('gurugram')) city = 'gurgaon';
+      else city = 'other';
+
       const serviceType = conversationContext.data.serviceType;
       
-      if (serviceType === 'vet') {
-        return {
-          text: `Verified Veterinary Clinics in ${city}:\n\nPlease note: I'm currently verifying the most up-to-date contact details for the finest veterinary practices in ${city}.\n\nFor immediate assistance, our trusted partners include:\n\nBangalore:\n• Cessna Lifeline, JP Nagar\n• VetCare Hospital, Indiranagar\n\nMumbai:\n• Bai Sakarbai Dinshaw Petit Hospital, Parel\n• BSPCA Animal Hospital, Parel\n\nGurgaon:\n• The Pet Clinic, Sector 51\n\nWould you like me to verify specific details for any of these practices?`,
-          suggestions: ['Show contact details', 'Emergency care', 'Specialist needed', 'Start over'],
-          nextStep: 3,
-          updateContext: { data: { ...conversationContext.data, city } }
-        };
+      // Fetch from Mock DB
+      let results = [];
+      if (serviceType === 'vet' && conciergeServices.vets) {
+         results = conciergeServices.vets.filter(s => s.city === city);
+      } else if (serviceType === 'grooming' && conciergeServices.grooming) {
+         results = conciergeServices.grooming.filter(s => s.city === city);
       }
-      
-      if (serviceType === 'grooming') {
+
+      // Generic response generation
+      if (results.length > 0) {
+        const list = results.map(r => `• ${r.name}, ${r.location} (${r.rating}★)`).join('\n');
         return {
-          text: `Verified Grooming Sanctuaries in ${city}:\n\nI'm gathering the latest verified information for premium grooming establishments.\n\nBangalore:\n• Heads Up For Tails (Multiple locations)\n• Fur Ball Story, HSR Layout\n\nMumbai:\n• The Pets Workshop, Andheri\n• Bark N Bath (Premium grooming)\n\nGurgaon:\n• Doggy Style, Sector 29\n\nShall I verify specific services and pricing for you?`,
-          suggestions: ['Full grooming prices', 'Spa services', 'Mobile grooming', 'Start over'],
+          text: `Here are our verified partners in ${userMessage}:\n\n${list}\n\nWould you like contact details for any of these?`,
+          suggestions: ['Yes, contact details', 'Search another city', 'Back to Menu'],
           nextStep: 3,
-          updateContext: { data: { ...conversationContext.data, city } }
+          updateContext: { data: { ...conversationContext.data, city, searchResults: results } }
         };
-      }
-      
-      if (serviceType === 'boarding') {
-        return {
-          text: `Trusted Boarding & Daycare in ${city}:\n\nI'm gathering the latest verified information for pet boarding facilities.\n\nBangalore:\n• Canine Country Club, Whitefield\n• Pet Retreat, Sarjapur Road\n\nMumbai:\n• Pawfect Stay, Andheri\n• Happy Tails Boarding, Bandra\n\nGurgaon:\n• The Pet Boarding House, Sector 49\n\nWould you like more details about any of these facilities?`,
-          suggestions: ['Pricing info', 'Facility details', 'Day boarding', 'Start over'],
-          nextStep: 3,
-          updateContext: { data: { ...conversationContext.data, city } }
-        };
-      }
-      
-      if (serviceType === 'training') {
-        return {
-          text: `Professional Dog Trainers in ${city}:\n\nI'm gathering the latest verified information for professional trainers.\n\nBangalore:\n• Pawsitive Training Academy, Koramangala\n• K9 Trainers India, HSR Layout\n\nMumbai:\n• Canine Coaching, Andheri\n• The Dog School, Bandra\n\nGurgaon:\n• Perfect Paws Training, Sector 56\n\nWould you like more details about training programs?`,
-          suggestions: ['Puppy training', 'Behaviour correction', 'Advanced training', 'Start over'],
-          nextStep: 3,
-          updateContext: { data: { ...conversationContext.data, city } }
-        };
+      } else {
+         // Fallback for "Other" or no data
+         return {
+           text: `I'm currently expanding my network in ${userMessage}. \n\nHowever, I can connect you with our Concierge Team who can personally find a trusted ${serviceType} for you.\n\nShall I connect you?`,
+           suggestions: ['Yes, connect me', 'Try another city'],
+           nextStep: 3,
+           updateContext: { data: { ...conversationContext.data, city } }
+         };
       }
     }
     
@@ -343,18 +494,19 @@ _Order placed via Mira AI Concierge_`;
 
   // Main response handler
   const getResponse = (userMessage) => {
+    // 1. Check Safety First
+    const safetyCheck = checkSafety(userMessage);
+    if (safetyCheck.isUnsafe) {
+      return safetyCheck.response;
+    }
+
     const msg = userMessage.toLowerCase();
     const { flow, step } = conversationContext;
     
-    // Handle ongoing celebration flow
-    if (flow === 'celebration') {
-      return handleCelebrationFlow(userMessage, step);
-    }
-    
-    // Handle ongoing services flow
-    if (flow === 'services') {
-      return handleServicesFlow(userMessage, step);
-    }
+    // Handle ongoing flows
+    if (flow === 'celebration') return handleCelebrationFlow(userMessage, step);
+    if (flow === 'services') return handleServicesFlow(userMessage, step);
+    if (flow === 'concierge_travel') return handleTravelFlow(userMessage, step);
     
     // Initial routing
     if (msg.includes('celebrat') || msg.includes('birthday') || msg.includes('party') || msg.includes('cake')) {
@@ -363,6 +515,10 @@ _Order placed via Mira AI Concierge_`;
     
     if (msg.includes('service') || msg.includes('find') || msg.includes('recommend') || msg.includes('vet') || msg.includes('groom') || msg.includes('board') || msg.includes('train')) {
       return handleServicesFlow(userMessage, 0);
+    }
+
+    if (msg.includes('travel') || msg.includes('fly') || msg.includes('rail')) {
+       return handleTravelFlow(userMessage, 1); // Jump to travel
     }
     
     if (msg.includes('seasonal') || msg.includes('festival') || msg.includes('diwali') || msg.includes('christmas')) {
