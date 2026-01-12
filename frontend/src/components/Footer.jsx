@@ -1,10 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, MessageCircle } from 'lucide-react';
+
+const WHATSAPP_NUMBER = '919663185747';
 
 const Footer = () => {
+  const openWhatsApp = () => {
+    const message = encodeURIComponent("Hi! I'm interested in ordering from The Doggy Bakery 🐕");
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
+  };
+
   return (
     <footer className="bg-gray-900 text-gray-300">
+      {/* Floating WhatsApp Button */}
+      <button
+        onClick={openWhatsApp}
+        className="fixed bottom-6 left-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
+        data-testid="whatsapp-float-btn"
+        aria-label="Contact on WhatsApp"
+      >
+        <MessageCircle className="w-6 h-6" />
+        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
+          Chat with us
+        </span>
+      </button>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About */}
@@ -30,6 +50,9 @@ const Footer = () => {
               <a href="#" className="hover:text-pink-500 transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
+              <button onClick={openWhatsApp} className="hover:text-green-500 transition-colors">
+                <MessageCircle className="w-5 h-5" />
+              </button>
             </div>
           </div>
 
@@ -70,11 +93,20 @@ const Footer = () => {
               </li>
               <li className="flex items-start space-x-2">
                 <Mail className="w-4 h-4 mt-1 flex-shrink-0" />
-                <p>hello@thedoggybakery.com</p>
+                <p>woof@thedoggybakery.com</p>
               </li>
               <li className="flex items-start space-x-2">
                 <MapPin className="w-4 h-4 mt-1 flex-shrink-0" />
                 <p>Bengaluru | Mumbai | Gurgaon</p>
+              </li>
+              <li>
+                <button 
+                  onClick={openWhatsApp}
+                  className="flex items-center space-x-2 mt-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full text-sm transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>WhatsApp Us</span>
+                </button>
               </li>
             </ul>
           </div>
