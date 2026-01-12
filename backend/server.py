@@ -198,7 +198,7 @@ async def chat_with_mira(request: ChatRequest):
         Search Results & Location Context:
         {search_results}
         
-        Task: Answer the user as Mira the Super Concierge. Be concise. Verify location before recommending.
+        Task: Act as Mira the World-Class Concierge. Use the search results to advise the user warmly. If results are empty, guide the user to provide more details without sounding like a broken bot.
         """
 
         chat = LlmChat(
