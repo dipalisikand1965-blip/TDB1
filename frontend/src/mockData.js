@@ -1928,6 +1928,314 @@ export const merchandise = [
 ];
 
 // ============================================
+// MINI CAKES (BOWTO)
+// ============================================
+export const miniCakes = [
+  {
+    id: 'mini-1',
+    name: 'You are My Sunshine',
+    category: 'cakes',
+    subcategory: 'mini-cakes',
+    price: 499,
+    originalPrice: 499,
+    image: 'https://thedoggybakery.com/cdn/shop/files/2_2c160d51-a374-48fa-a07f-23c3ced4e5d0.png?v=1719723512&width=800',
+    description: 'Adorable sunshine-themed mini cake for any celebration!',
+    sizes: ['200g'],
+    flavors: ['Chicken & Oats', 'Banana & Honey'],
+    rating: 4.9,
+    reviews: 145,
+    isNew: true
+  },
+  {
+    id: 'mini-2',
+    name: 'Festival of Colours Bowto Cake',
+    category: 'cakes',
+    subcategory: 'mini-cakes',
+    price: 549,
+    originalPrice: 549,
+    image: 'https://thedoggybakery.com/cdn/shop/files/Untitled_design_10.png?v=1720693857&width=800',
+    description: 'Colorful celebration cake perfect for Holi!',
+    sizes: ['200g'],
+    flavors: ['Chicken & Oats'],
+    rating: 4.8,
+    reviews: 123
+  },
+  {
+    id: 'mini-3',
+    name: 'Mini Mutt Munch',
+    category: 'cakes',
+    subcategory: 'mini-cakes',
+    price: 499,
+    originalPrice: 499,
+    image: 'https://thedoggybakery.com/cdn/shop/files/TDB_cakes_19.png?v=1734594320&width=800',
+    description: 'Perfect mini cake for your adorable mutt!',
+    sizes: ['200g'],
+    flavors: ['Chicken & Oats'],
+    rating: 4.9,
+    reviews: 167,
+    isNew: true
+  },
+  {
+    id: 'mini-4',
+    name: 'Bowto Love!',
+    category: 'cakes',
+    subcategory: 'mini-cakes',
+    price: 549,
+    originalPrice: 549,
+    image: 'https://thedoggybakery.com/cdn/shop/files/5_c2c382c6-300b-4796-a67a-f88f54c9a379.png?v=1719723522&width=800',
+    description: 'Heart-shaped mini cake for Valentine\'s Day!',
+    sizes: ['200g'],
+    flavors: ['Chicken & Oats', 'Berry Mix'],
+    rating: 4.8,
+    reviews: 134
+  },
+  {
+    id: 'mini-5',
+    name: 'Hoppy Bunny',
+    category: 'cakes',
+    subcategory: 'mini-cakes',
+    price: 649,
+    originalPrice: 649,
+    image: 'https://thedoggybakery.com/cdn/shop/files/4_dd01347f-7883-4948-bc4b-e2da3d3db642.png?v=1720693029&width=800',
+    description: 'Cute bunny-themed mini cake!',
+    sizes: ['200g'],
+    flavors: ['Chicken & Oats'],
+    rating: 4.7,
+    reviews: 98
+  },
+  {
+    id: 'mini-6',
+    name: 'Scoops of Joy',
+    category: 'cakes',
+    subcategory: 'mini-cakes',
+    price: 649,
+    originalPrice: 649,
+    image: 'https://thedoggybakery.com/cdn/shop/files/3_50099bdc-8019-47ad-8983-85dcbcc30483.png?v=1720693038&width=800',
+    description: 'Ice cream-themed mini cake for summer celebrations!',
+    sizes: ['200g'],
+    flavors: ['Chicken & Oats', 'Banana'],
+    rating: 4.8,
+    reviews: 112
+  },
+  {
+    id: 'mini-7',
+    name: 'Mother\'s Day Mini Cake',
+    category: 'cakes',
+    subcategory: 'mini-cakes',
+    price: 549,
+    originalPrice: 549,
+    image: 'https://thedoggybakery.com/cdn/shop/files/7_dfd55b51-8b3d-4a5f-b99d-84a6b251e275.png?v=1746685342&width=800',
+    description: 'Special mini cake for dog moms!',
+    sizes: ['200g'],
+    flavors: ['Chicken & Oats'],
+    rating: 4.9,
+    reviews: 145
+  },
+  {
+    id: 'mini-8',
+    name: 'Cluck',
+    category: 'cakes',
+    subcategory: 'mini-cakes',
+    price: 649,
+    originalPrice: 649,
+    image: 'https://thedoggybakery.com/cdn/shop/files/Untitled_design_9.png?v=1720693672&width=800',
+    description: 'Chicken-themed mini cake!',
+    sizes: ['200g'],
+    flavors: ['Chicken & Oats'],
+    rating: 4.7,
+    reviews: 89
+  },
+  {
+    id: 'mini-9',
+    name: 'One Love Bowto',
+    category: 'cakes',
+    subcategory: 'mini-cakes',
+    price: 549,
+    originalPrice: 549,
+    image: 'https://thedoggybakery.com/cdn/shop/files/6_639873be-d8c4-4fb7-9b33-010fc1e0d641.png?v=1719723538&width=800',
+    description: 'One love-themed Valentine\'s mini cake!',
+    sizes: ['200g'],
+    flavors: ['Chicken & Oats', 'Berry Mix'],
+    rating: 4.8,
+    reviews: 112
+  }
+];
+
+// ============================================
+// DESI DOGGY TREATS (INDIAN SWEETS)
+// ============================================
+export const desiTreats = [
+  {
+    id: 'desi-1',
+    name: 'Assorted Ladoos',
+    category: 'treats',
+    subcategory: 'desi-sweets',
+    price: 295,
+    originalPrice: 349,
+    image: 'https://thedoggybakery.com/cdn/shop/files/Untitled_Design_-_6_-_Edited.png?v=1759236333&width=800',
+    description: 'Assorted traditional ladoos made with dog-safe ingredients!',
+    sizes: ['Box of 6', 'Box of 12'],
+    flavors: ['Assorted'],
+    rating: 4.9,
+    reviews: 234,
+    isBestseller: true
+  },
+  {
+    id: 'desi-2',
+    name: 'Jalebi Box (Cheddar & Oat)',
+    category: 'treats',
+    subcategory: 'desi-sweets',
+    price: 295,
+    originalPrice: 349,
+    image: 'https://thedoggybakery.com/cdn/shop/files/Untitled_Design_-_1_-_Edited.png?v=1759233574&width=800',
+    description: 'Dog-safe jalebis with cheddar and oat!',
+    sizes: ['Box of 6'],
+    flavors: ['Cheddar & Oat'],
+    rating: 4.8,
+    reviews: 167
+  },
+  {
+    id: 'desi-3',
+    name: 'Desi Doggy Sweet Box',
+    category: 'treats',
+    subcategory: 'desi-sweets',
+    price: 349,
+    originalPrice: 399,
+    image: 'https://thedoggybakery.com/cdn/shop/files/Untitled_Design_-_2_-_Edited.png?v=1759233577&width=800',
+    description: 'Assorted traditional Indian sweets for dogs!',
+    sizes: ['Gift Box'],
+    flavors: ['Assorted'],
+    rating: 4.9,
+    reviews: 189
+  },
+  {
+    id: 'desi-4',
+    name: 'Desi Tails Diwali Treat Box',
+    category: 'treats',
+    subcategory: 'desi-sweets',
+    price: 349,
+    originalPrice: 399,
+    image: 'https://thedoggybakery.com/cdn/shop/files/UntitledDesign-3-Edited.png?v=1759234000&width=800',
+    description: 'Special Diwali celebration box!',
+    sizes: ['Gift Box'],
+    flavors: ['Assorted'],
+    rating: 4.8,
+    reviews: 156
+  },
+  {
+    id: 'desi-5',
+    name: 'Coconut & Honey Ladoos',
+    category: 'treats',
+    subcategory: 'desi-sweets',
+    price: 295,
+    originalPrice: 349,
+    image: 'https://thedoggybakery.com/cdn/shop/files/UntitledDesign-5-Edited.png?v=1759234529&width=800',
+    description: 'Sweet coconut and honey ladoos!',
+    sizes: ['Box of 6', 'Box of 12'],
+    flavors: ['Coconut & Honey'],
+    rating: 4.9,
+    reviews: 178
+  },
+  {
+    id: 'desi-6',
+    name: 'Oat Ladoos',
+    category: 'treats',
+    subcategory: 'desi-sweets',
+    price: 295,
+    originalPrice: 349,
+    image: 'https://thedoggybakery.com/cdn/shop/files/UntitledDesign-7-Edited_20a2b448-87aa-42d6-be43-9414817d2c4e.png?v=1759234438&width=800',
+    description: 'Healthy oat-based ladoos!',
+    sizes: ['Box of 6', 'Box of 12'],
+    flavors: ['Oats'],
+    rating: 4.7,
+    reviews: 134
+  },
+  {
+    id: 'desi-7',
+    name: 'Diwali Cracker Cookie Box',
+    category: 'treats',
+    subcategory: 'desi-sweets',
+    price: 349,
+    originalPrice: 449,
+    image: 'https://thedoggybakery.com/cdn/shop/files/Untitled_design_-_2025-10-01T105943.961.png?v=1759296616&width=800',
+    description: 'Cracker-shaped cookies for Diwali!',
+    sizes: ['Gift Box'],
+    flavors: ['Assorted'],
+    rating: 4.8,
+    reviews: 145
+  },
+  {
+    id: 'desi-8',
+    name: 'Desi Doggy Modaks',
+    category: 'treats',
+    subcategory: 'desi-sweets',
+    price: 249,
+    originalPrice: 249,
+    image: 'https://thedoggybakery.com/cdn/shop/files/IMG-1370.png?v=1756116884&width=800',
+    description: 'Traditional modaks for Ganesh Chaturthi!',
+    sizes: ['Box of 6'],
+    flavors: ['Coconut & Jaggery'],
+    rating: 4.9,
+    reviews: 167
+  }
+];
+
+// ============================================
+// NUT BUTTERS
+// ============================================
+export const nutButters = [
+  {
+    id: 'nb-1',
+    name: 'Homemade Doggo Peanut Butter',
+    category: 'treats',
+    subcategory: 'nut-butters',
+    price: 339,
+    originalPrice: 375,
+    image: 'https://thedoggybakery.com/cdn/shop/files/TDB_cakes_28.png?v=1738050579&width=800',
+    description: 'All-natural homemade peanut butter for dogs - no sugar, no salt!',
+    sizes: ['200g', '400g'],
+    flavors: ['Peanut Butter'],
+    rating: 4.9,
+    reviews: 345,
+    isBestseller: true
+  },
+  {
+    id: 'nb-2',
+    name: 'Coconut Butter',
+    category: 'treats',
+    subcategory: 'nut-butters',
+    price: 349,
+    originalPrice: 375,
+    image: 'https://thedoggybakery.com/cdn/shop/files/5_7.png?v=1704367544&width=800',
+    description: 'Smooth coconut butter packed with healthy fats!',
+    sizes: ['200g', '400g'],
+    flavors: ['Coconut'],
+    rating: 4.8,
+    reviews: 234
+  }
+];
+
+// ============================================
+// CAKE MIX (DIY)
+// ============================================
+export const cakeMix = [
+  {
+    id: 'mix-1',
+    name: 'DIY Cake Mix',
+    category: 'treats',
+    subcategory: 'diy',
+    price: 550,
+    originalPrice: 550,
+    image: 'https://thedoggybakery.com/cdn/shop/files/4_5.png?v=1685945202&width=800',
+    description: 'Bake your own dog cake at home! Easy-to-use cake mix with simple instructions.',
+    sizes: ['Single Pack', 'Double Pack'],
+    flavors: ['Chicken & Oats', 'Banana & Honey'],
+    rating: 4.8,
+    reviews: 189
+  }
+];
+
+// ============================================
 // COMBINED PRODUCTS EXPORT
 // ============================================
 export const products = [
@@ -1941,7 +2249,11 @@ export const products = [
   ...accessories,
   ...catTreats,
   ...giftCards,
-  ...merchandise
+  ...merchandise,
+  ...miniCakes,
+  ...desiTreats,
+  ...nutButters,
+  ...cakeMix
 ];
 
 // ============================================
