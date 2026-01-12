@@ -2435,6 +2435,39 @@ export const conciergeServices = {
 ];
 
 // ============================================
+// CONCIERGE SERVICES (MOCK DB)
+// ============================================
+export const conciergeServices = {
+  vets: [
+    { city: 'mumbai', name: 'Bai Sakarbai Dinshaw Petit Hospital', location: 'Parel', rating: 4.5, contact: '022 2413 7518', type: 'Hospital' },
+    { city: 'mumbai', name: 'Crown Vet', location: 'Worli', rating: 4.8, contact: '022 4004 4000', type: 'Clinic' },
+    { city: 'bangalore', name: 'Cessna Lifeline', location: 'Domlur', rating: 4.7, contact: '080 4115 3115', type: 'Hospital' },
+    { city: 'bangalore', name: 'Precise Pet Clinic', location: 'Indiranagar', rating: 4.6, contact: '080 2525 2525', type: 'Clinic' },
+    { city: 'gurgaon', name: 'CGS Hospital', location: 'DLF Phase 3', rating: 4.6, contact: '0124 424 4444', type: 'Hospital' }
+  ],
+  grooming: [
+    { city: 'mumbai', name: 'Bark N Bath', location: 'Bandra', rating: 4.8, contact: 'Book via App' },
+    { city: 'bangalore', name: 'Fuzzy Wuzzy', location: 'HSR Layout', rating: 4.7, contact: 'Book via App' }
+  ],
+  travel: [
+    { city: 'all', name: 'Carry My Pet', location: 'Pan India', type: 'Relocation Agent', desc: 'Specialists in domestic and international pet relocation.' },
+    { city: 'all', name: 'Pet Fly', location: 'Pan India', type: 'Relocation Agent', desc: 'Expert pet travel services.' }
+  ],
+  documentation: [
+    { 
+      topic: 'train', 
+      title: 'Train Travel Rules (India)', 
+      content: '1. Dogs can travel in First Class AC (2-berth coupe or 4-berth cabin) if you book the entire cabin.\n2. You must carry a fit-to-travel certificate from a vet (issued 24-48 hrs prior).\n3. Book luggage ticket at the parcel office before departure.' 
+    },
+    { 
+      topic: 'flight', 
+      title: 'Flight Travel Rules (India)', 
+      content: '1. Air India allows pets in cabin (up to 5kg inc. crate) or cargo.\n2. Akasa Air allows pets in cabin (up to 7kg) and cargo.\n3. Valid vaccination record & health certificate required.' 
+    }
+  ]
+};
+
+// ============================================
 // COMBINED PRODUCTS EXPORT
 // ============================================
 export const products = [

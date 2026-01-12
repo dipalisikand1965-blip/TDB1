@@ -18,6 +18,7 @@ const Navbar = () => {
     { name: 'Desi Treats', path: '/desi' },
     { name: 'Pan India Cakes', path: '/pan-india' },
     { name: 'Merchandise', path: '/merchandise' },
+    { name: 'Mira Concierge', path: '/concierge' },
     { name: 'Custom Designer', path: '/custom-cake' },
   ];
 
@@ -28,7 +29,6 @@ const Navbar = () => {
       {/* Top Banner */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 text-center text-sm font-medium">
         🎉 Same Day Delivery in Mumbai & Bangalore for orders by 6 PM! 🚚
-    { name: 'Mira Concierge', path: '/concierge' },
       </div>
 
       {/* Main Navbar */}
