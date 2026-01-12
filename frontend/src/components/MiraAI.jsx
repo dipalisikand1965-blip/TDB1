@@ -535,6 +535,39 @@ _Order placed via Mira AI Concierge_`;
       suggestions: ['Plan celebration', 'Find services', 'Seasonal care', 'Memory experiences']
     };
   };
+  const getAiResponse = async (userMessage) => {
+    // 1. Check Safety First (Client Side)
+    const safetyCheck = checkSafety(userMessage);
+    if (safetyCheck.isUnsafe) {
+      return safetyCheck.response;
+    }
+
+    // 2. Try rule-based logic first (e.g. for flow continuation)
+    const ruleBasedResponse = getResponse(userMessage);
+    if (ruleBasedResponse) return ruleBasedResponse;
+
+    // 3. Fallback to LLM + Web Search
+    try {
+      const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+      const res = await fetch(`${API_URL}/api/mira/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage })
+      });
+      
+      const data = await res.json();
+      return {
+        text: data.response || "I apologize, I'm having trouble connecting right now.",
+        suggestions: ['Ask another question', 'Plan a celebration', 'Find services']
+      };
+    } catch (e) {
+      return {
+        text: "I seem to be having trouble reaching my knowledge base. Please try again in a moment.",
+        suggestions: ['Try again']
+      };
+    }
+  };
+
 
   const handleSend = async (message = inputValue) => {
     if (!message.trim()) return;
@@ -550,8 +583,9 @@ _Order placed via Mira AI Concierge_`;
     setIsTyping(true);
 
     // Simulate thoughtful pause
-    setTimeout(() => {
-      const response = getResponse(message);
+    setTimeout(async () => {
+      // Use getAiResponse instead of getResponse
+      const response = await getAiResponse(message);
       
       if (response) {
         const botMessage = {
