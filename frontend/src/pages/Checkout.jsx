@@ -7,11 +7,16 @@ import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Card } from '../components/ui/card';
 import { toast } from '../hooks/use-toast';
-import { ArrowLeft, CreditCard, Truck, MapPin, Phone } from 'lucide-react';
+import { ArrowLeft, CreditCard, Truck, MapPin, Phone, MessageCircle, CheckCircle } from 'lucide-react';
+
+const WHATSAPP_NUMBER = '919663185747';
+const BUSINESS_EMAIL = 'woof@thedoggybakery.com';
 
 const Checkout = () => {
   const { cartItems, getCartTotal, clearCart } = useCart();
   const navigate = useNavigate();
+  const [isOrderPlaced, setIsOrderPlaced] = useState(false);
+  const [orderDetails, setOrderDetails] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -27,18 +32,149 @@ const Checkout = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Generate order summary for WhatsApp
+  const generateOrderMessage = () => {
+    const orderItems = cartItems.map(item => 
+      `• ${item.name} (${item.selectedSize}, ${item.selectedFlavor}) x${item.quantity} - ₹${item.price * item.quantity}`
+    ).join('\n');
+    
+    const deliveryFee = 75;
+    const total = getCartTotal() + deliveryFee;
+    
+    const message = `🐕 *New Order from The Doggy Bakery Demo*
+
+*Customer Details:*
+Name: ${formData.name}
+Phone: ${formData.phone}
+Email: ${formData.email}
+${formData.petName ? `Pet's Name: ${formData.petName}` : ''}
+
+*Delivery Address:*
+${formData.address}
+${formData.city} - ${formData.pincode}
+${formData.deliveryNotes ? `Notes: ${formData.deliveryNotes}` : ''}
+
+*Order Items:*
+${orderItems}
+
+*Order Total:*
+Subtotal: ₹${getCartTotal()}
+Delivery: ₹${deliveryFee}
+*Grand Total: ₹${total}*
+
+Payment: Cash on Delivery
+Order placed via Birthday Demo Site 🎂`;
+
+    return encodeURIComponent(message);
+  };
+
+  // Open WhatsApp with pre-filled message
+  const openWhatsApp = () => {
+    const message = generateOrderMessage();
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Mock order placement
+    
+    const deliveryFee = 75;
+    const total = getCartTotal() + deliveryFee;
+    
+    // Store order details for confirmation screen
+    setOrderDetails({
+      items: [...cartItems],
+      customer: { ...formData },
+      total,
+      orderId: `TDB-${Date.now().toString(36).toUpperCase()}`
+    });
+    
+    // Show order placed
+    setIsOrderPlaced(true);
+    
     toast({
       title: 'Order placed successfully! 🎉',
-      description: `Order total: ₹${getCartTotal()}. We'll contact you shortly to confirm.`,
+      description: 'Please confirm your order on WhatsApp to complete.',
     });
+    
     clearCart();
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
   };
+
+  // Order confirmation screen with WhatsApp CTA
+  if (isOrderPlaced && orderDetails) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-pink-50 py-20">
+        <div className="max-w-2xl mx-auto px-4 text-center">
+          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-12 h-12 text-green-600" />
+            </div>
+            
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Order Received! 🎉
+            </h1>
+            
+            <p className="text-gray-600 mb-2">Order ID: <span className="font-mono font-bold text-purple-600">{orderDetails.orderId}</span></p>
+            <p className="text-gray-600 mb-8">
+              Thank you, {orderDetails.customer.name}! Your pawsome treats are being prepared.
+            </p>
+
+            {/* WhatsApp Confirmation CTA */}
+            <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 mb-8">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <MessageCircle className="w-6 h-6 text-green-600" />
+                <h3 className="text-lg font-semibold text-green-800">Confirm on WhatsApp</h3>
+              </div>
+              <p className="text-sm text-green-700 mb-4">
+                To complete your order and get real-time updates, please confirm via WhatsApp. 
+                Our team will respond within minutes!
+              </p>
+              <Button
+                onClick={openWhatsApp}
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full font-semibold text-lg flex items-center gap-2 mx-auto"
+                data-testid="whatsapp-confirm-btn"
+              >
+                <MessageCircle className="w-5 h-5" />
+                Confirm on WhatsApp
+              </Button>
+            </div>
+
+            {/* Order Summary */}
+            <div className="bg-gray-50 rounded-xl p-6 text-left mb-8">
+              <h3 className="font-semibold text-gray-900 mb-4">Order Summary</h3>
+              <div className="space-y-3">
+                {orderDetails.items.map((item, idx) => (
+                  <div key={idx} className="flex justify-between text-sm">
+                    <span className="text-gray-600">{item.name} x{item.quantity}</span>
+                    <span className="font-medium">₹{item.price * item.quantity}</span>
+                  </div>
+                ))}
+                <div className="border-t pt-3 flex justify-between font-bold text-purple-600">
+                  <span>Total</span>
+                  <span>₹{orderDetails.total}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Info */}
+            <div className="text-sm text-gray-500 space-y-2">
+              <p>Questions? Contact us:</p>
+              <p className="font-medium">📧 {BUSINESS_EMAIL}</p>
+              <p className="font-medium">📱 +91 96631 85747</p>
+            </div>
+
+            <Button
+              variant="outline"
+              onClick={() => navigate('/')}
+              className="mt-8"
+            >
+              Continue Shopping
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
