@@ -3,18 +3,16 @@ import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, MessageCircle } from 'lucide-react';
 
 const WHATSAPP_NUMBER = '919663185747';
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I'm interested in ordering from The Doggy Bakery 🐕")}`;
 
 const Footer = () => {
-  const openWhatsApp = () => {
-    const message = encodeURIComponent("Hi! I'm interested in ordering from The Doggy Bakery 🐕");
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
-  };
-
   return (
     <footer className="bg-gray-900 text-gray-300">
-      {/* Floating WhatsApp Button */}
-      <button
-        onClick={openWhatsApp}
+      {/* Floating WhatsApp Button - Using anchor tag */}
+      <a
+        href={WHATSAPP_URL}
+        target="_blank"
+        rel="noopener noreferrer"
         className="fixed bottom-6 left-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
         data-testid="whatsapp-float-btn"
         aria-label="Contact on WhatsApp"
@@ -23,7 +21,7 @@ const Footer = () => {
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
           Chat with us
         </span>
-      </button>
+      </a>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -50,9 +48,9 @@ const Footer = () => {
               <a href="#" className="hover:text-pink-500 transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
-              <button onClick={openWhatsApp} className="hover:text-green-500 transition-colors">
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="hover:text-green-500 transition-colors">
                 <MessageCircle className="w-5 h-5" />
-              </button>
+              </a>
             </div>
           </div>
 
@@ -100,13 +98,15 @@ const Footer = () => {
                 <p>Bengaluru | Mumbai | Gurgaon</p>
               </li>
               <li>
-                <button 
-                  onClick={openWhatsApp}
-                  className="flex items-center space-x-2 mt-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full text-sm transition-colors"
+                <a 
+                  href={WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-2 mt-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full text-sm transition-colors inline-flex"
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span>WhatsApp Us</span>
-                </button>
+                </a>
               </li>
             </ul>
           </div>
