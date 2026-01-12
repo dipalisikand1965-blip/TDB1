@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { products } from '../mockData';
 import ProductCard from '../components/ProductCard';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { SlidersHorizontal } from 'lucide-react';
 
-const ProductListing = () => {
-  const { category } = useParams();
+const ProductListing = ({ category = 'all' }) => {
   const [sortBy, setSortBy] = useState('featured');
   const [priceRange, setPriceRange] = useState('all');
 
