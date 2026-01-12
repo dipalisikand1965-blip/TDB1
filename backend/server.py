@@ -13,6 +13,9 @@ from fastapi import File, UploadFile, Form
 from fastapi.staticfiles import StaticFiles
 import shutil
 
+from duckduckgo_search import DDGS
+from emergentintegrations.llm.chat import LlmChat, UserMessage
+
 
 
 ROOT_DIR = Path(__file__).parent
@@ -115,6 +118,79 @@ async def request_custom_cake(
     }
     
     await db.custom_cake_requests.insert_one(request_data)
+class ChatRequest(BaseModel):
+    message: str
+    history: List[dict] = []
+
+@api_router.post("/mira/chat")
+async def chat_with_mira(request: ChatRequest):
+    user_query = request.message
+    
+    # 1. Perform Web Search (DuckDuckGo)
+    search_results = ""
+    try:
+        # Search for context
+        with DDGS() as ddgs:
+            # We add 'India' context if not present, as the site is Indian
+            search_query = f"{user_query} India dog pet care"
+            results = list(ddgs.text(search_query, max_results=3))
+            
+            if results:
+                search_results = "\n".join([f"- {r['title']}: {r['body']}" for r in results])
+    except Exception as e:
+        logger.error(f"Search failed: {e}")
+        search_results = "No external search results available."
+
+    # 2. Call LLM with Context
+    try:
+        api_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not api_key:
+            return {"response": "I'm having trouble connecting to my brain right now. Please check my API key configuration."}
+
+        system_prompt = """You are Mira, 'The Doggy Bakery Concierge®'. 
+        You are an empathetic, knowledgeable, and sophisticated pet concierge.
+        Your goal is to help pet parents with advice, services, and care.
+        
+        TONE & STYLE:
+        - Empathetic, warm, and professional.
+        - Use phrases like "How wonderful", "I understand", "Let's find the best for [Dog Name]".
+        - NEVER sound like a search engine or a robot. 
+        - Do not say "Based on my search". Instead say "I recommend..." or "Here is what I found...".
+        - If the user asks for medical advice, provide general info but ALWAYS add a disclaimer to consult a vet.
+        
+        CONTEXT:
+        - You are part of 'The Doggy Bakery' (TDB) in India.
+        - You can recommend TDB products (cakes, treats) if relevant.
+        - Use the provided search results to answer the user's specific question.
+        """
+
+        full_prompt = f"""
+        User Question: {user_query}
+        
+        Relevant Search Information:
+        {search_results}
+        
+        Please answer the user's question using the search information but in your unique Mira persona.
+        """
+
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"mira-{uuid.uuid4()}",
+            system_message=system_prompt
+        )
+        
+        # Default to gpt-5.2 as per playbook
+        chat.with_model("openai", "gpt-5.2")
+
+        user_msg_obj = UserMessage(text=full_prompt)
+        response = await chat.send_message(user_msg_obj)
+        
+        return {"response": response}
+
+    except Exception as e:
+        logger.error(f"LLM failed: {e}")
+        return {"response": "I apologize, but I'm having a moment of pause. Could you please repeat that?"}
+
     
     return {"message": "Request received successfully", "id": request_data["id"]}
 
