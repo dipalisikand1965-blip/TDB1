@@ -1,0 +1,106 @@
+import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { products } from '../mockData';
+import ProductCard from '../components/ProductCard';
+import { Button } from '../components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { SlidersHorizontal } from 'lucide-react';
+
+const ProductListing = () => {
+  const { category } = useParams();
+  const [sortBy, setSortBy] = useState('featured');
+  const [priceRange, setPriceRange] = useState('all');
+
+  // Filter products by category
+  let filteredProducts = category === 'all'
+    ? products
+    : products.filter(p => p.category === category);
+
+  // Filter by price range
+  if (priceRange === 'under500') {
+    filteredProducts = filteredProducts.filter(p => p.price < 500);
+  } else if (priceRange === '500-1000') {
+    filteredProducts = filteredProducts.filter(p => p.price >= 500 && p.price <= 1000);
+  } else if (priceRange === 'over1000') {
+    filteredProducts = filteredProducts.filter(p => p.price > 1000);
+  }
+
+  // Sort products
+  if (sortBy === 'price-low') {
+    filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
+  } else if (sortBy === 'price-high') {
+    filteredProducts = [...filteredProducts].sort((a, b) => b.price - a.price);
+  } else if (sortBy === 'rating') {
+    filteredProducts = [...filteredProducts].sort((a, b) => b.rating - a.rating);
+  }
+
+  const getCategoryTitle = () => {
+    switch (category) {
+      case 'cakes': return 'Dog Cakes';
+      case 'treats': return 'Treats & Snacks';
+      case 'meals': return 'Fresh Meals';
+      case 'custom': return 'Custom Cakes';
+      default: return 'All Products';
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{getCategoryTitle()}</h1>
+          <p className="text-gray-600">Showing {filteredProducts.length} products</p>
+        </div>
+
+        {/* Filters & Sort */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-8 p-4 bg-white rounded-lg shadow-sm">
+          <div className="flex items-center gap-2 flex-1">
+            <SlidersHorizontal className="w-5 h-5 text-gray-500" />
+            <span className="text-sm font-medium text-gray-700">Filters:</span>
+          </div>
+          <Select value={priceRange} onValueChange={setPriceRange}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="Price Range" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Prices</SelectItem>
+              <SelectItem value="under500">Under ₹500</SelectItem>
+              <SelectItem value="500-1000">₹500 - ₹1000</SelectItem>
+              <SelectItem value="over1000">Over ₹1000</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="Sort By" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="featured">Featured</SelectItem>
+              <SelectItem value="price-low">Price: Low to High</SelectItem>
+              <SelectItem value="price-high">Price: High to Low</SelectItem>
+              <SelectItem value="rating">Highest Rated</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Products Grid */}
+        {filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <p className="text-xl text-gray-600 mb-4">No products found</p>
+            <Button onClick={() => { setPriceRange('all'); setSortBy('featured'); }}>
+              Clear Filters
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ProductListing;
