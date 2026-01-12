@@ -5,6 +5,7 @@ import { CartProvider } from "./context/CartContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import CartSidebar from "./components/CartSidebar";
+import MiraAI from "./components/MiraAI";
 import { Toaster } from "./components/ui/toaster";
 import Home from "./pages/Home";
 import ProductListing from "./pages/ProductListing";
@@ -31,6 +32,7 @@ function App() {
           </Routes>
           <Footer />
           <CartSidebar />
+          <MiraAI />
           <Toaster />
         </div>
       </BrowserRouter>
