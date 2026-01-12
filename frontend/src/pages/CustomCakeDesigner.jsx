@@ -42,6 +42,13 @@ const CustomCakeDesigner = () => {
       sizes: [design.size.name],
       flavors: [design.flavor.name]
     };
+      customDetails: {
+        shape: design.shape.name,
+        topping: design.topping.name,
+        decoration: design.decoration.name,
+        customName: design.customName,
+        instructions: design.specialInstructions
+      },
 
     addToCart(customCake, design.size.name, design.flavor.name);
     toast({

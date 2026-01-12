@@ -53,6 +53,15 @@ const CartSidebar = () => {
                       <p className="text-sm text-gray-600 mt-1">
                         {item.selectedSize} | {item.selectedFlavor}
                       </p>
+                      {item.customDetails && (
+                        <div className="mt-2 text-xs text-gray-500 space-y-1 bg-white p-2 rounded border border-gray-100">
+                           <p><span className="font-semibold">Shape:</span> {item.customDetails.shape}</p>
+                           {item.customDetails.topping !== 'None' && <p><span className="font-semibold">Topping:</span> {item.customDetails.topping}</p>}
+                           {item.customDetails.decoration !== 'None' && <p><span className="font-semibold">Decoration:</span> {item.customDetails.decoration}</p>}
+                           {item.customDetails.customName && <p><span className="font-semibold">Pet Name:</span> {item.customDetails.customName}</p>}
+                           {item.customDetails.instructions && <p><span className="font-semibold">Note:</span> {item.customDetails.instructions}</p>}
+                        </div>
+                      )}
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center gap-2">
                           <Button
