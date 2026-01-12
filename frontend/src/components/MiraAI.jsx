@@ -201,7 +201,7 @@ const MiraAI = () => {
     // Ask for city first
     if (!conversationContext.data.city) {
       return {
-        text: '**Which city are you in?**\n\nThis helps me provide the most accurate and verified recommendations.',
+        text: 'Which city are you in?\n\nThis helps me provide the most accurate and verified recommendations.',
         suggestions: ['Bangalore', 'Mumbai', 'Gurgaon', 'Delhi', 'Other'],
         updateContext: { flow: 'services', serviceType, data: { city: 'pending' } }
       };
@@ -212,7 +212,7 @@ const MiraAI = () => {
     
     if (serviceType === 'vet') {
       return {
-        text: `**Verified Veterinary Clinics in ${city}:**\n\n*Please note: I'm currently verifying the most up-to-date contact details for the finest veterinary practices in ${city}.*\n\n**For immediate assistance, our trusted partners include:**\n\nBangalore:\n• Cessna Lifeline, JP Nagar\n• VetCare Hospital, Indiranagar\n\nMumbai:\n• Bai Sakarbai Dinshaw Petit Hospital, Parel\n• BSPCA Animal Hospital, Parel\n\nGurgaon:\n• The Pet Clinic, Sector 51\n\nWould you like me to verify specific details for any of these practices?`,
+        text: `Verified Veterinary Clinics in ${city}:\n\nPlease note: I'm currently verifying the most up-to-date contact details for the finest veterinary practices in ${city}.\n\nFor immediate assistance, our trusted partners include:\n\nBangalore:\n• Cessna Lifeline, JP Nagar\n• VetCare Hospital, Indiranagar\n\nMumbai:\n• Bai Sakarbai Dinshaw Petit Hospital, Parel\n• BSPCA Animal Hospital, Parel\n\nGurgaon:\n• The Pet Clinic, Sector 51\n\nWould you like me to verify specific details for any of these practices?`,
         suggestions: ['Show contact details', 'Emergency care', 'Specialist needed', 'Go back'],
         updateContext: { data: { ...conversationContext.data, city, serviceType } }
       };
@@ -220,7 +220,7 @@ const MiraAI = () => {
     
     if (serviceType === 'grooming') {
       return {
-        text: `**Verified Grooming Sanctuaries in ${city}:**\n\n*I'm gathering the latest verified information for premium grooming establishments.*\n\nBangalore:\n• Heads Up For Tails (Multiple locations)\n• Fur Ball Story, HSR Layout\n\nMumbai:\n• The Pets Workshop, Andheri\n• Bark N Bath (Premium grooming)\n\nGurgaon:\n• Doggy Style, Sector 29\n\nShall I verify specific services and pricing for you?`,
+        text: `Verified Grooming Sanctuaries in ${city}:\n\nI'm gathering the latest verified information for premium grooming establishments.\n\nBangalore:\n• Heads Up For Tails (Multiple locations)\n• Fur Ball Story, HSR Layout\n\nMumbai:\n• The Pets Workshop, Andheri\n• Bark N Bath (Premium grooming)\n\nGurgaon:\n• Doggy Style, Sector 29\n\nShall I verify specific services and pricing for you?`,
         suggestions: ['Full grooming prices', 'Spa services', 'Mobile grooming', 'Go back'],
         updateContext: { data: { ...conversationContext.data, city, serviceType } }
       };
