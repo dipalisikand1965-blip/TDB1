@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { products } from '../mockData';
+import { products, birthdayCakes, breedCakes, treats, dognuts, desiTreats, nutButters, cakeMix, merchandise, giftCards, miniCakes, frozenTreats, accessories, freshMeals, pizzasBurgers, catTreats } from '../mockData';
 import ProductCard from '../components/ProductCard';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
@@ -9,10 +9,36 @@ const ProductListing = ({ category = 'all' }) => {
   const [sortBy, setSortBy] = useState('featured');
   const [priceRange, setPriceRange] = useState('all');
 
-  // Filter products by category
-  let filteredProducts = category === 'all'
-    ? products
-    : products.filter(p => p.category === category);
+  // Get products based on category
+  const getProductsByCategory = () => {
+    switch (category) {
+      case 'cakes':
+        return [...birthdayCakes, ...miniCakes];
+      case 'custom':
+        return breedCakes;
+      case 'treats':
+        return [...treats, ...dognuts, ...nutButters, ...cakeMix];
+      case 'desi':
+        return desiTreats;
+      case 'merchandise':
+        return [...merchandise, ...giftCards];
+      case 'meals':
+        return [...freshMeals, ...pizzasBurgers];
+      case 'frozen':
+        return frozenTreats;
+      case 'accessories':
+        return accessories;
+      case 'mini-cakes':
+        return miniCakes;
+      case 'cat':
+        return catTreats;
+      case 'all':
+      default:
+        return products;
+    }
+  };
+
+  let filteredProducts = getProductsByCategory();
 
   // Filter by price range
   if (priceRange === 'under500') {
@@ -34,11 +60,33 @@ const ProductListing = ({ category = 'all' }) => {
 
   const getCategoryTitle = () => {
     switch (category) {
-      case 'cakes': return 'Dog Cakes';
+      case 'cakes': return 'Dog Cakes & Mini Cakes';
+      case 'custom': return 'Breed-Specific Cakes';
       case 'treats': return 'Treats & Snacks';
-      case 'meals': return 'Fresh Meals';
-      case 'custom': return 'Custom Cakes';
+      case 'desi': return 'Desi Doggy Treats 🪔';
+      case 'merchandise': return 'Gift Hampers & Merchandise';
+      case 'meals': return 'Fresh Meals & Pizzas';
+      case 'frozen': return 'Frozen Treats';
+      case 'accessories': return 'Accessories & Toys';
+      case 'mini-cakes': return 'Mini Cakes (Bowto)';
+      case 'cat': return 'Cat Treats';
       default: return 'All Products';
+    }
+  };
+
+  const getCategoryDescription = () => {
+    switch (category) {
+      case 'cakes': return 'Freshly baked cakes for birthdays and special celebrations';
+      case 'custom': return 'Custom cakes shaped like your beloved breed - Golden Retriever, Labrador, Beagle & more!';
+      case 'treats': return 'Healthy biscuits, jerky, training treats, nut butters and more';
+      case 'desi': return 'Traditional Indian sweets made pet-friendly - Ladoos, Jalebis, Modaks & more!';
+      case 'merchandise': return 'Premium gift hampers, subscription boxes, and exclusive merchandise';
+      case 'meals': return 'Freshly cooked nutritious meals and fun doggy pizzas';
+      case 'frozen': return 'Cool frozen yogurt and jello treats for hot days';
+      case 'accessories': return 'Bandanas, toys, collars, and celebration accessories';
+      case 'mini-cakes': return 'Perfect 200g mini cakes for everyday celebrations';
+      case 'cat': return 'Delicious treats for our feline friends too!';
+      default: return 'Browse our complete collection of pet treats and cakes';
     }
   };
 
