@@ -483,65 +483,6 @@ const CustomCakeDesigner = () => {
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-gray-600">Add-ons:</span>
                     <span className="font-medium">
-        {/* Upload Reference Image Section */}
-        <div className="mt-16 bg-white rounded-xl shadow-lg p-8 border border-purple-100">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Have a Specific Design in Mind?</h2>
-            <p className="text-gray-600">Upload a photo of a cake you love, and we'll get back to you with a quote!</p>
-          </div>
-          
-          <form onSubmit={handleUploadSubmit} className="max-w-2xl mx-auto space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label htmlFor="req-name">Your Name</Label>
-                <Input id="req-name" required placeholder="John Doe" name="name" />
-              </div>
-              <div>
-                <Label htmlFor="req-phone">Phone Number</Label>
-                <Input id="req-phone" required placeholder="+91 98765 43210" name="phone" />
-              </div>
-            </div>
-            
-            <div>
-              <Label htmlFor="req-email">Email Address</Label>
-              <Input id="req-email" required type="email" placeholder="john@example.com" name="email" />
-            </div>
-
-            <div>
-              <Label htmlFor="req-file">Upload Reference Image</Label>
-              <div className="mt-2 flex justify-center rounded-lg border border-dashed border-2 border-gray-300 px-6 py-10 hover:border-purple-400 transition-colors bg-gray-50">
-                <div className="text-center">
-                  <Upload className="mx-auto h-12 w-12 text-gray-400" aria-hidden="true" />
-                  <div className="mt-4 flex text-sm leading-6 text-gray-600 justify-center">
-                    <label
-                      htmlFor="file-upload"
-                      className="relative cursor-pointer rounded-md bg-white font-semibold text-purple-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-purple-600 focus-within:ring-offset-2 hover:text-purple-500 px-2"
-                    >
-                      <span>Upload a file</span>
-                      <input id="file-upload" name="image" type="file" className="sr-only" required accept="image/*" onChange={(e) => {
-                        if(e.target.files?.[0]) {
-                           toast({ title: "File selected", description: e.target.files[0].name });
-                        }
-                      }} />
-                    </label>
-                    <p className="pl-1">or drag and drop</p>
-                  </div>
-                  <p className="text-xs leading-5 text-gray-600 mt-2">PNG, JPG up to 10MB</p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="req-notes">Additional Notes</Label>
-              <Textarea id="req-notes" name="notes" placeholder="Tell us about flavors, date needed, etc." className="min-h-[100px]" />
-            </div>
-
-            <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-lg py-6">
-              Submit Request
-            </Button>
-          </form>
-        </div>
-
                       ₹{design.shape.price + design.flavor.price + design.topping.price + design.decoration.price}
                     </span>
                   </div>
