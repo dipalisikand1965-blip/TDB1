@@ -195,34 +195,107 @@ const MiraAI = () => {
   };
 
   // Services Flow Handler
-  const handleServicesFlow = (userMessage, serviceType) => {
+  const handleServicesFlow = (userMessage, step) => {
     const msg = userMessage.toLowerCase();
     
-    // Ask for city first
-    if (!conversationContext.data.city) {
+    // Step 0: Ask what service type they need
+    if (step === 0) {
       return {
-        text: 'Which city are you in?\n\nThis helps me provide the most accurate and verified recommendations.',
-        suggestions: ['Bangalore', 'Mumbai', 'Gurgaon', 'Delhi', 'Other'],
-        updateContext: { flow: 'services', serviceType, data: { city: 'pending' } }
+        text: 'I would be delighted to help you find trusted services.\n\nWhat are you looking for?',
+        suggestions: ['Veterinary care', 'Grooming & spa', 'Boarding & daycare', 'Training guidance', 'Go back'],
+        nextStep: 1,
+        updateContext: { flow: 'services', step: 1 }
       };
     }
     
-    // City provided, now provide verified services
-    const city = userMessage;
-    
-    if (serviceType === 'vet') {
-      return {
-        text: `Verified Veterinary Clinics in ${city}:\n\nPlease note: I'm currently verifying the most up-to-date contact details for the finest veterinary practices in ${city}.\n\nFor immediate assistance, our trusted partners include:\n\nBangalore:\n• Cessna Lifeline, JP Nagar\n• VetCare Hospital, Indiranagar\n\nMumbai:\n• Bai Sakarbai Dinshaw Petit Hospital, Parel\n• BSPCA Animal Hospital, Parel\n\nGurgaon:\n• The Pet Clinic, Sector 51\n\nWould you like me to verify specific details for any of these practices?`,
-        suggestions: ['Show contact details', 'Emergency care', 'Specialist needed', 'Go back'],
-        updateContext: { data: { ...conversationContext.data, city, serviceType } }
-      };
+    // Step 1: Service type selected, now ask for city
+    if (step === 1) {
+      let serviceType = null;
+      if (msg.includes('vet') || msg.includes('veterinary') || msg.includes('doctor') || msg.includes('clinic')) {
+        serviceType = 'vet';
+      } else if (msg.includes('groom') || msg.includes('spa') || msg.includes('bath')) {
+        serviceType = 'grooming';
+      } else if (msg.includes('board') || msg.includes('daycare') || msg.includes('stay')) {
+        serviceType = 'boarding';
+      } else if (msg.includes('train') || msg.includes('behavio')) {
+        serviceType = 'training';
+      } else if (msg.includes('back') || msg.includes('go back')) {
+        return {
+          text: 'No problem. How else may I assist you today?',
+          suggestions: ['Plan a celebration', 'Find trusted services', 'Seasonal care guidance', 'Memory-making experiences'],
+          nextStep: 0,
+          updateContext: { flow: null, step: 0, data: {} }
+        };
+      }
+      
+      if (serviceType) {
+        return {
+          text: 'Which city are you in?\n\nThis helps me provide the most accurate and verified recommendations.',
+          suggestions: ['Bangalore', 'Mumbai', 'Gurgaon', 'Delhi', 'Other'],
+          nextStep: 2,
+          updateContext: { flow: 'services', step: 2, data: { ...conversationContext.data, serviceType } }
+        };
+      }
     }
     
-    if (serviceType === 'grooming') {
+    // Step 2: City provided, now provide verified services
+    if (step === 2) {
+      const city = userMessage;
+      const serviceType = conversationContext.data.serviceType;
+      
+      if (serviceType === 'vet') {
+        return {
+          text: `Verified Veterinary Clinics in ${city}:\n\nPlease note: I'm currently verifying the most up-to-date contact details for the finest veterinary practices in ${city}.\n\nFor immediate assistance, our trusted partners include:\n\nBangalore:\n• Cessna Lifeline, JP Nagar\n• VetCare Hospital, Indiranagar\n\nMumbai:\n• Bai Sakarbai Dinshaw Petit Hospital, Parel\n• BSPCA Animal Hospital, Parel\n\nGurgaon:\n• The Pet Clinic, Sector 51\n\nWould you like me to verify specific details for any of these practices?`,
+          suggestions: ['Show contact details', 'Emergency care', 'Specialist needed', 'Start over'],
+          nextStep: 3,
+          updateContext: { data: { ...conversationContext.data, city } }
+        };
+      }
+      
+      if (serviceType === 'grooming') {
+        return {
+          text: `Verified Grooming Sanctuaries in ${city}:\n\nI'm gathering the latest verified information for premium grooming establishments.\n\nBangalore:\n• Heads Up For Tails (Multiple locations)\n• Fur Ball Story, HSR Layout\n\nMumbai:\n• The Pets Workshop, Andheri\n• Bark N Bath (Premium grooming)\n\nGurgaon:\n• Doggy Style, Sector 29\n\nShall I verify specific services and pricing for you?`,
+          suggestions: ['Full grooming prices', 'Spa services', 'Mobile grooming', 'Start over'],
+          nextStep: 3,
+          updateContext: { data: { ...conversationContext.data, city } }
+        };
+      }
+      
+      if (serviceType === 'boarding') {
+        return {
+          text: `Trusted Boarding & Daycare in ${city}:\n\nI'm gathering the latest verified information for pet boarding facilities.\n\nBangalore:\n• Canine Country Club, Whitefield\n• Pet Retreat, Sarjapur Road\n\nMumbai:\n• Pawfect Stay, Andheri\n• Happy Tails Boarding, Bandra\n\nGurgaon:\n• The Pet Boarding House, Sector 49\n\nWould you like more details about any of these facilities?`,
+          suggestions: ['Pricing info', 'Facility details', 'Day boarding', 'Start over'],
+          nextStep: 3,
+          updateContext: { data: { ...conversationContext.data, city } }
+        };
+      }
+      
+      if (serviceType === 'training') {
+        return {
+          text: `Professional Dog Trainers in ${city}:\n\nI'm gathering the latest verified information for professional trainers.\n\nBangalore:\n• Pawsitive Training Academy, Koramangala\n• K9 Trainers India, HSR Layout\n\nMumbai:\n• Canine Coaching, Andheri\n• The Dog School, Bandra\n\nGurgaon:\n• Perfect Paws Training, Sector 56\n\nWould you like more details about training programs?`,
+          suggestions: ['Puppy training', 'Behaviour correction', 'Advanced training', 'Start over'],
+          nextStep: 3,
+          updateContext: { data: { ...conversationContext.data, city } }
+        };
+      }
+    }
+    
+    // Step 3: Follow-up questions or start over
+    if (step === 3) {
+      if (msg.includes('start over') || msg.includes('back')) {
+        return {
+          text: 'Of course. How else may I assist you today?',
+          suggestions: ['Plan a celebration', 'Find trusted services', 'Seasonal care guidance', 'Memory-making experiences'],
+          nextStep: 0,
+          updateContext: { flow: null, step: 0, data: {} }
+        };
+      }
+      
       return {
-        text: `Verified Grooming Sanctuaries in ${city}:\n\nI'm gathering the latest verified information for premium grooming establishments.\n\nBangalore:\n• Heads Up For Tails (Multiple locations)\n• Fur Ball Story, HSR Layout\n\nMumbai:\n• The Pets Workshop, Andheri\n• Bark N Bath (Premium grooming)\n\nGurgaon:\n• Doggy Style, Sector 29\n\nShall I verify specific services and pricing for you?`,
-        suggestions: ['Full grooming prices', 'Spa services', 'Mobile grooming', 'Go back'],
-        updateContext: { data: { ...conversationContext.data, city, serviceType } }
+        text: 'I appreciate your interest. For the most accurate and up-to-date information, I recommend:\n\n1. Our concierge team can provide verified details\n2. Contact us at woof@thedoggybakery.com\n3. WhatsApp us at +91 96631 85747\n\nIs there anything else I can help you with?',
+        suggestions: ['Plan a celebration', 'Find other services', 'That\'s all, thank you'],
+        nextStep: 0,
+        updateContext: { flow: null, step: 0, data: {} }
       };
     }
     
