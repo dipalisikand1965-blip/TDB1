@@ -2408,6 +2408,13 @@ export const categories = [
     count: birthdayCakes.length
   },
   {
+    id: 'mini-cakes',
+    name: 'Mini Cakes (Bowto)',
+    description: 'Seasonal celebration mini cakes - perfect for any occasion!',
+    image: 'https://thedoggybakery.com/cdn/shop/files/2_2c160d51-a374-48fa-a07f-23c3ced4e5d0.png?v=1719723512&width=800',
+    count: miniCakes.length
+  },
+  {
     id: 'custom',
     name: 'Breed Cakes',
     description: 'Custom cakes shaped like your beloved breed',
@@ -2419,7 +2426,14 @@ export const categories = [
     name: 'Treats & Biscuits',
     description: 'Healthy treats for everyday joy',
     image: 'https://thedoggybakery.com/cdn/shop/products/IMG-8036.png?v=1680145248&width=800',
-    count: treats.length + dognuts.length
+    count: treats.length + dognuts.length + nutButters.length + cakeMix.length
+  },
+  {
+    id: 'desi',
+    name: 'Desi Doggy Treats',
+    description: 'Traditional Indian sweets made pet-friendly!',
+    image: 'https://thedoggybakery.com/cdn/shop/files/Untitled_Design_-_6_-_Edited.png?v=1759236333&width=800',
+    count: desiTreats.length
   },
   {
     id: 'meals',
