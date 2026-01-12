@@ -117,7 +117,7 @@ const MiraAI = () => {
       const occasion = conversationContext.data.occasion;
       
       return {
-        text: `Thank you for trusting me with ${dogName}'s details.\n\nBased on what you've shared, I would suggest three celebration rituals:\n\n**1. The Pawsome Celebration**\nOur signature cake crafted with care — perfect for intimate moments with 1-2 companions. Fresh chicken & oats or peanut butter. (₹699)\n\n**2. The Grand Pawty Box**\nA complete celebration including cake, treats, and decorative touches for gatherings of 3-5 furry guests. (₹999)\n\n**3. The Bespoke Portrait Cake**\nA custom creation shaped to honour ${dogName}'s breed — a true work of art and love. (₹950+)\n\nWhich ritual speaks to you?`,
+        text: `Thank you for trusting me with ${dogName}'s details.\n\nBased on what you've shared, I would suggest three celebration rituals:\n\n1. The Pawsome Celebration\nOur signature cake crafted with care — perfect for intimate moments with 1-2 companions. Fresh chicken & oats or peanut butter. (₹699)\n\n2. The Grand Pawty Box\nA complete celebration including cake, treats, and decorative touches for gatherings of 3-5 furry guests. (₹999)\n\n3. The Bespoke Portrait Cake\nA custom creation shaped to honour ${dogName}'s breed — a true work of art and love. (₹950+)\n\nWhich ritual speaks to you?`,
         suggestions: ['The Pawsome', 'The Grand Pawty', 'The Bespoke Portrait', 'Tell me more'],
         nextStep: 7,
         updateContext: { data: { ...conversationContext.data, allergies: userMessage } }
@@ -127,7 +127,7 @@ const MiraAI = () => {
     // Step 8: Product selected - Enhancement gate
     if (step === 7 && !conversationContext.data.selectedProduct) {
       return {
-        text: 'A beautiful choice.\n\nWould you like to enhance this celebration with:\n\n• A matching birthday bandana\n• Pupcakes for sharing with friends\n• A personalised message plaque\n\n**Shall I add any of these touches?**',
+        text: 'A beautiful choice.\n\nWould you like to enhance this celebration with:\n\n• A matching birthday bandana\n• Pupcakes for sharing with friends\n• A personalised message plaque\n\nShall I add any of these touches?',
         suggestions: ['Yes, add bandana', 'Yes, add pupcakes', 'Yes, add plaque', 'No, continue'],
         nextStep: 8,
         updateContext: { data: { ...conversationContext.data, selectedProduct: userMessage } }
@@ -137,7 +137,7 @@ const MiraAI = () => {
     // Step 9: Enhancement decided - Contact method
     if (step === 8 && !conversationContext.data.contactMethod) {
       return {
-        text: '**May I confirm your preferred method of contact — WhatsApp, email, or a personal call back?**',
+        text: 'May I confirm your preferred method of contact — WhatsApp, email, or a personal call back?',
         suggestions: ['WhatsApp', 'Email', 'Call back'],
         nextStep: 9,
         updateContext: { data: { ...conversationContext.data, enhancement: userMessage } }
@@ -148,21 +148,21 @@ const MiraAI = () => {
     if (step === 9 && !conversationContext.data.contactDetail) {
       if (msg.includes('whatsapp')) {
         return {
-          text: 'Wonderful. **Please share your WhatsApp number.**',
+          text: 'Wonderful. Please share your WhatsApp number.',
           suggestions: [],
           nextStep: 10,
           updateContext: { data: { ...conversationContext.data, contactMethod: 'WhatsApp' } }
         };
       } else if (msg.includes('email')) {
         return {
-          text: 'Of course. **Please share your email address.**',
+          text: 'Of course. Please share your email address.',
           suggestions: [],
           nextStep: 10,
           updateContext: { data: { ...conversationContext.data, contactMethod: 'Email' } }
         };
       } else {
         return {
-          text: 'I shall arrange a call back. **Please share your phone number.**',
+          text: 'I shall arrange a call back. Please share your phone number.',
           suggestions: [],
           nextStep: 10,
           updateContext: { data: { ...conversationContext.data, contactMethod: 'Call back' } }
@@ -174,7 +174,7 @@ const MiraAI = () => {
     if (step === 10) {
       const ctx = conversationContext.data;
       return {
-        text: `**Celebration Summary**\n\n**Dog's Name:** ${ctx.dogName}\n**Life Stage:** ${ctx.lifeStage}\n**Occasion:** ${ctx.occasion}\n**Date:** ${ctx.date}\n**City:** ${ctx.city}\n**Dietary Notes:** ${ctx.allergies}\n**Selected Celebration:** ${ctx.selectedProduct}\n**Contact:** ${userMessage} (${ctx.contactMethod})\n\n**Important Note:**\nAll products are handcrafted in limited batches and subject to freshness windows and breed suitability.\n\n**To proceed, please type: I confirm**`,
+        text: `Celebration Summary\n\nDog's Name: ${ctx.dogName}\nLife Stage: ${ctx.lifeStage}\nOccasion: ${ctx.occasion}\nDate: ${ctx.date}\nCity: ${ctx.city}\nDietary Notes: ${ctx.allergies}\nSelected Celebration: ${ctx.selectedProduct}\nContact: ${userMessage} (${ctx.contactMethod})\n\nImportant Note:\nAll products are handcrafted in limited batches and subject to freshness windows and breed suitability.\n\nTo proceed, please type: I confirm`,
         suggestions: ['I confirm'],
         nextStep: 11,
         updateContext: { data: { ...conversationContext.data, contactDetail: userMessage } }
@@ -184,7 +184,7 @@ const MiraAI = () => {
     // Step 12: Confirmation
     if (step === 11 && msg.includes('confirm')) {
       return {
-        text: 'Your celebration is now reserved in principle.\n\nOur Concierge® team at **woof@thedoggybakery.com** or **WhatsApp +91 96631 85747** will reach out shortly with the secure payment link and final details.\n\nThank you for trusting us with this precious moment.\n\nIs there anything else I may help you with today?',
+        text: 'Your celebration is now reserved in principle.\n\nOur Concierge® team at woof@thedoggybakery.com or WhatsApp +91 96631 85747 will reach out shortly with the secure payment link and final details.\n\nThank you for trusting us with this precious moment.\n\nIs there anything else I may help you with today?',
         suggestions: ['Plan another celebration', 'Find services', 'That\'s all, thank you'],
         nextStep: 0,
         updateContext: { flow: null, step: 0, data: {} }
