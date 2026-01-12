@@ -40,15 +40,15 @@ const CustomCakeDesigner = () => {
       image: 'https://images.unsplash.com/photo-1641029902225-f2a0907ee22d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwyfHxkb2clMjBiaXJ0aGRheSUyMGNha2V8ZW58MHx8fHwxNzY4MTgwOTEyfDA&ixlib=rb-4.1.0&q=85',
       description: `Custom ${design.shape.name} - ${design.flavor.name}`,
       sizes: [design.size.name],
-      flavors: [design.flavor.name]
-    };
+      flavors: [design.flavor.name],
       customDetails: {
         shape: design.shape.name,
         topping: design.topping.name,
         decoration: design.decoration.name,
         customName: design.customName,
         instructions: design.specialInstructions
-      },
+      }
+    };
 
     addToCart(customCake, design.size.name, design.flavor.name);
     toast({
