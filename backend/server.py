@@ -241,13 +241,28 @@ async def chat_with_mira(request: ChatRequest):
         Always adhere to the specific Bold lines and phrasing for each step.
         """
 
+        # Construct Conversation History
+        history_text = ""
+        if request.history:
+            history_text = "\n\nCONVERSATION HISTORY:\n"
+            for msg in request.history[-10:]: # Keep last 10 messages for context
+                role = msg.get("role", "unknown")
+                content = msg.get("content", "")
+                history_text += f"{role.upper()}: {content}\n"
+
         full_prompt = f"""
-        User Question: {user_query}
+        {history_text}
         
-        Search Results & Location Context:
+        CURRENT USER INPUT: {user_query}
+        
+        SEARCH RESULTS & LOCATION CONTEXT (For this turn):
         {search_results}
         
-        Task: Act as Mira the World-Class Concierge. Use the search results to advise the user warmly. If results are empty, guide the user to provide more details without sounding like a broken bot.
+        TASK:
+        Continue the conversation flow as Mira based on the 'FLOW OF SERVICE' rules.
+        - If this is the first message (or history is empty), start at Step 1.
+        - If history exists, determine which Step (1-9) comes next based on the user's reply.
+        - Adhere strictly to the bolding and phrasing rules.
         """
 
         chat = LlmChat(

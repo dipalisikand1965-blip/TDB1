@@ -129,7 +129,7 @@ const MiraAI = () => {
     return { isUnsafe: false };
   };
 
-  const getAiResponse = async (userMessage) => {
+    const getAiResponse = async (userMessage) => {
     // 1. Safety Check
     const safetyCheck = checkSafety(userMessage);
     if (safetyCheck.isUnsafe) {
@@ -138,11 +138,20 @@ const MiraAI = () => {
 
     // 2. Call Backend
     try {
+      // Prepare history
+      const history = messages.map(m => ({
+        role: m.type === 'user' ? 'user' : 'assistant',
+        content: m.text
+      }));
+
       const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
       const res = await fetch(`${API_URL}/api/mira/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage })
+        body: JSON.stringify({ 
+            message: userMessage,
+            history: history
+        })
       });
       
       const data = await res.json();
