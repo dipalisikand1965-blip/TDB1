@@ -71,40 +71,44 @@ const ProductCard = ({ product }) => {
         <p className="text-sm text-gray-600 line-clamp-2">{product.description}</p>
 
         {/* Size Selection */}
-        <div>
-          <label className="text-xs font-medium text-gray-700 block mb-1">Size</label>
-          <div className="flex gap-2">
-            {product.sizes.map((size) => (
-              <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={`px-3 py-1 text-xs rounded-md border transition-all ${
-                  selectedSize === size
-                    ? 'border-purple-600 bg-purple-50 text-purple-600 font-medium'
-                    : 'border-gray-300 hover:border-gray-400'
-                }`}
-              >
-                {size.split(' ')[0]}
-              </button>
-            ))}
+        {sizes.length > 0 && (
+          <div>
+            <label className="text-xs font-medium text-gray-700 block mb-1">Size</label>
+            <div className="flex gap-2 flex-wrap">
+              {sizes.map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={`px-3 py-1 text-xs rounded-md border transition-all ${
+                    selectedSize === size
+                      ? 'border-purple-600 bg-purple-50 text-purple-600 font-medium'
+                      : 'border-gray-300 hover:border-gray-400'
+                  }`}
+                >
+                  {size.split(' ')[0]}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Flavor Selection */}
-        <div>
-          <label className="text-xs font-medium text-gray-700 block mb-1">Flavor</label>
-          <select
-            value={selectedFlavor}
-            onChange={(e) => setSelectedFlavor(e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            {product.flavors.map((flavor) => (
-              <option key={flavor} value={flavor}>
-                {flavor}
-              </option>
-            ))}
-          </select>
-        </div>
+        {flavors.length > 1 && (
+          <div>
+            <label className="text-xs font-medium text-gray-700 block mb-1">Flavor</label>
+            <select
+              value={selectedFlavor}
+              onChange={(e) => setSelectedFlavor(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              {flavors.map((flavor) => (
+                <option key={flavor} value={flavor}>
+                  {flavor}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Price & Add to Cart */}
         <div className="flex items-center justify-between pt-2">
