@@ -251,7 +251,7 @@ const MiraAI = () => {
     
     if (msg.includes('service') || msg.includes('find') || msg.includes('recommend') || msg.includes('vet') || msg.includes('groom') || msg.includes('board')) {
       return {
-        text: 'I would be delighted to help you find trusted services.\n\n**What are you looking for?**',
+        text: 'I would be delighted to help you find trusted services.\n\nWhat are you looking for?',
         suggestions: ['Veterinary care', 'Grooming & spa', 'Boarding & daycare', 'Training guidance', 'Go back'],
         updateContext: { flow: 'services', step: 0 }
       };
@@ -259,7 +259,7 @@ const MiraAI = () => {
     
     if (msg.includes('seasonal') || msg.includes('festival') || msg.includes('diwali') || msg.includes('christmas')) {
       return {
-        text: 'Festivals can be both joyful and anxious for our companions.\n\n**Which seasonal care are you seeking?**\n\n• Diwali anxiety care\n• Monsoon wellness\n• Winter warmth rituals\n• Christmas celebrations',
+        text: 'Festivals can be both joyful and anxious for our companions.\n\nWhich seasonal care are you seeking?\n\n• Diwali anxiety care\n• Monsoon wellness\n• Winter warmth rituals\n• Christmas celebrations',
         suggestions: ['Diwali care', 'Monsoon care', 'Winter care', 'Christmas'],
         updateContext: { flow: 'seasonal', step: 0 }
       };
@@ -267,7 +267,7 @@ const MiraAI = () => {
     
     // Default thoughtful response
     return {
-      text: 'I\'m here to help you honour the bond you share.\n\n**How may I be of service?**\n\n• Plan a meaningful celebration\n• Find trusted pet-life services\n• Seasonal care guidance\n• Memory-making experiences',
+      text: 'I\'m here to help you honour the bond you share.\n\nHow may I be of service?\n\n• Plan a meaningful celebration\n• Find trusted pet-life services\n• Seasonal care guidance\n• Memory-making experiences',
       suggestions: ['Plan celebration', 'Find services', 'Seasonal care', 'Memory experiences']
     };
   };
