@@ -12,10 +12,12 @@ const Navbar = () => {
 
   const navigation = [
     { name: 'Dog Cakes', path: '/cakes' },
+    { name: 'Breed Cakes', path: '/custom' },
     { name: 'Treats', path: '/treats' },
     { name: 'Fresh Meals', path: '/meals' },
+    { name: 'Desi Treats', path: '/desi' },
+    { name: 'Merchandise', path: '/merchandise' },
     { name: 'Custom Designer', path: '/custom-cake' },
-    { name: 'About Us', path: '/about' }
   ];
 
   const isActive = (path) => location.pathname === path;
