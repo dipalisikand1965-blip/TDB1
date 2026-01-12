@@ -54,7 +54,7 @@ const MiraAI = () => {
     // Step 1: Understand the moment (grounding narrative)
     if (step === 0) {
       return {
-        text: 'How wonderful.\n\nEvery celebration is a chapter in the story of love you share.\n\nBefore I curate something truly meaningful, may I know a bit more?\n\n**What is your dog\'s name?**',
+        text: 'How wonderful.\n\nEvery celebration is a chapter in the story of love you share.\n\nBefore I curate something truly meaningful, may I know a bit more?\n\nWhat is your dog\'s name?',
         suggestions: [],
         nextStep: 1,
         updateContext: { flow: 'celebration', step: 1 }
