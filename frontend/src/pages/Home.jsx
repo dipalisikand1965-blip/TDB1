@@ -217,6 +217,8 @@ const Home = () => {
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6 shadow-xl"
+                onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+                data-testid="chat-with-mira-btn"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
                 Chat with Mira Now
