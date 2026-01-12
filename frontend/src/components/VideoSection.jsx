@@ -1,0 +1,108 @@
+import React, { useState } from 'react';
+import { Card } from './ui/card';
+import { Play, X } from 'lucide-react';
+import { Button } from './ui/button';
+
+const VideoSection = () => {
+  const [activeVideo, setActiveVideo] = useState(null);
+
+  const videos = [
+    {
+      id: '1',
+      title: 'Behind the Scenes: Baking with Love',
+      thumbnail: 'https://images.unsplash.com/photo-1612940960267-4549a58fb257?w=600',
+      description: 'Watch how we craft each cake with care in our kitchen',
+      // Placeholder - will use actual Instagram video URL
+      videoUrl: 'https://www.instagram.com/the_doggy_bakery/'
+    },
+    {
+      id: '2',
+      title: 'Customer Celebrations',
+      thumbnail: 'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=600',
+      description: 'Real celebrations from our happy customers',
+      videoUrl: 'https://www.instagram.com/the_doggy_bakery/'
+    },
+    {
+      id: '3',
+      title: 'How to Store Your Cake',
+      thumbnail: 'https://images.unsplash.com/photo-1646157763904-d7d184329c72?w=600',
+      description: 'Tips for keeping treats fresh and delicious',
+      videoUrl: 'https://www.instagram.com/the_doggy_bakery/'
+    },
+    {
+      id: '4',
+      title: 'Meet Our Team',
+      thumbnail: 'https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600',
+      description: 'The passionate team behind The Doggy Bakery',
+      videoUrl: 'https://www.instagram.com/the_doggy_bakery/'
+    }
+  ];
+
+  return (
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {videos.map((video) => (
+          <Card
+            key={video.id}
+            className="group cursor-pointer overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+            onClick={() => setActiveVideo(video)}
+          >
+            <div className="relative aspect-video overflow-hidden">
+              <img
+                src={video.thumbnail}
+                alt={video.title}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              />
+              {/* Play overlay */}
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/60 transition-colors">
+                <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Play className="w-8 h-8 text-purple-600 ml-1" fill="currentColor" />
+                </div>
+              </div>
+            </div>
+            <div className="p-4">
+              <h3 className="font-bold text-gray-900 mb-2">{video.title}</h3>
+              <p className="text-sm text-gray-600">{video.description}</p>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Video Modal */}
+      {activeVideo && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+          <div className="relative w-full max-w-4xl">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setActiveVideo(null)}
+              className="absolute -top-12 right-0 text-white hover:bg-white/20"
+            >
+              <X className="w-6 h-6" />
+            </Button>
+            
+            <div className="bg-white rounded-xl overflow-hidden">
+              <div className="aspect-video bg-black flex items-center justify-center">
+                {/* Instagram embed would go here */}
+                <div className="text-center p-8">
+                  <p className="text-white mb-4">{activeVideo.title}</p>
+                  <a
+                    href={activeVideo.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full hover:from-purple-700 hover:to-pink-700 transition-all"
+                  >
+                    <Play className="w-4 h-4" />
+                    Watch on Instagram
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default VideoSection;
