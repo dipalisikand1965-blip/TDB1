@@ -314,7 +314,7 @@ const MiraAI = () => {
     
     // Handle ongoing services flow
     if (flow === 'services') {
-      return handleServicesFlow(userMessage, conversationContext.serviceType);
+      return handleServicesFlow(userMessage, step);
     }
     
     // Initial routing
@@ -322,12 +322,8 @@ const MiraAI = () => {
       return handleCelebrationFlow(userMessage, 0);
     }
     
-    if (msg.includes('service') || msg.includes('find') || msg.includes('recommend') || msg.includes('vet') || msg.includes('groom') || msg.includes('board')) {
-      return {
-        text: 'I would be delighted to help you find trusted services.\n\nWhat are you looking for?',
-        suggestions: ['Veterinary care', 'Grooming & spa', 'Boarding & daycare', 'Training guidance', 'Go back'],
-        updateContext: { flow: 'services', step: 0 }
-      };
+    if (msg.includes('service') || msg.includes('find') || msg.includes('recommend') || msg.includes('vet') || msg.includes('groom') || msg.includes('board') || msg.includes('train')) {
+      return handleServicesFlow(userMessage, 0);
     }
     
     if (msg.includes('seasonal') || msg.includes('festival') || msg.includes('diwali') || msg.includes('christmas')) {
