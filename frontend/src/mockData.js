@@ -1,4 +1,4 @@
-// Mock data for The Doggy Bakery
+// Mock data for The Doggy Bakery - Premium Edition
 
 export const products = [
   {
@@ -7,13 +7,14 @@ export const products = [
     category: 'cakes',
     price: 699,
     originalPrice: 699,
-    image: 'https://images.unsplash.com/photo-1644732649135-5926c0945d2d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwxfHxkb2clMjBiaXJ0aGRheSUyMGNha2V8ZW58MHx8fHwxNzY4MTgwOTEyfDA&ixlib=rb-4.1.0&q=85',
+    image: 'https://images.unsplash.com/photo-1612940960267-4549a58fb257?w=800',
     description: 'A classic favorite with fresh ingredients, perfect for celebrating your pup\'s special day',
     sizes: ['Small (500g)', 'Medium (1kg)', 'Large (1.5kg)'],
     flavors: ['Chicken & Oats', 'Banana & Honey', 'Peanut Butter'],
     isNew: true,
     rating: 4.8,
-    reviews: 234
+    reviews: 234,
+    featured: true
   },
   {
     id: '2',
@@ -21,12 +22,13 @@ export const products = [
     category: 'cakes',
     price: 649,
     originalPrice: 649,
-    image: 'https://images.unsplash.com/photo-1641029902225-f2a0907ee22d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwyfHxkb2clMjBiaXJ0aGRheSUyMGNha2V8ZW58MHx8fHwxNzY4MTgwOTEyfDA&ixlib=rb-4.1.0&q=85',
+    image: 'https://images.unsplash.com/photo-1646157763904-d7d184329c72?w=800',
     description: 'Beautiful floral design with healthy ingredients your dog will love',
     sizes: ['Small (500g)', 'Medium (1kg)', 'Large (1.5kg)'],
     flavors: ['Berry & Chicken', 'Apple & Oats', 'Carrot & Honey'],
     rating: 4.9,
-    reviews: 189
+    reviews: 189,
+    featured: true
   },
   {
     id: '3',
@@ -34,13 +36,14 @@ export const products = [
     category: 'cakes',
     price: 999,
     originalPrice: 999,
-    image: 'https://images.unsplash.com/photo-1641029894827-2964c9889bec?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHw0fHxkb2clMjBiaXJ0aGRheSUyMGNha2V8ZW58MHx8fHwxNzY4MTgwOTEyfDA&ixlib=rb-4.1.0&q=85',
+    image: 'https://images.unsplash.com/photo-1763901326419-8d4f126c081b?w=800',
     description: 'Complete party package with cake, treats, and decorations',
     sizes: ['Party Pack'],
     flavors: ['Mixed Flavors'],
     isBestseller: true,
     rating: 5.0,
-    reviews: 456
+    reviews: 456,
+    featured: true
   },
   {
     id: '4',
@@ -48,12 +51,13 @@ export const products = [
     category: 'custom',
     price: 950,
     originalPrice: 950,
-    image: 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDF8MHwxfHNlYXJjaHwxfHxkb2clMjB0cmVhdHN8ZW58MHx8fHwxNzY4MTgwOTE4fDA&ixlib=rb-4.1.0&q=85',
+    image: 'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=800',
     description: 'Custom cake shaped like your dog\'s breed',
     sizes: ['Medium (1kg)', 'Large (1.5kg)'],
     flavors: ['Mutton & Veggies', 'Chicken & Rice'],
     rating: 4.9,
-    reviews: 145
+    reviews: 145,
+    featured: true
   },
   {
     id: '5',
@@ -61,7 +65,7 @@ export const products = [
     category: 'treats',
     price: 450,
     originalPrice: 450,
-    image: 'https://images.unsplash.com/photo-1592468257342-8375cb556a69?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDF8MHwxfHNlYXJjaHwyfHxkb2clMjB0cmVhdHN8ZW58MHx8fHwxNzY4MTgwOTE4fDA&ixlib=rb-4.1.0&q=85',
+    image: 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=800',
     description: 'Mini donut-shaped treats packed with nutrition',
     sizes: ['6 Pack', '12 Pack'],
     flavors: ['Chicken & Oats', 'Peanut Butter', 'Berry Mix'],
@@ -70,25 +74,11 @@ export const products = [
   },
   {
     id: '6',
-    name: 'Chicken Jerky',
-    category: 'treats',
-    price: 420,
-    originalPrice: 475,
-    image: 'https://images.unsplash.com/photo-1662973544396-2885509b1d90?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDF8MHwxfHNlYXJjaHwzfHxkb2clMjB0cmVhdHN8ZW58MHx8fHwxNzY4MTgwOTE4fDA&ixlib=rb-4.1.0&q=85',
-    description: 'Premium chicken jerky, slowly dried to perfection',
-    sizes: ['100g', '250g', '500g'],
-    flavors: ['Plain Chicken'],
-    onSale: true,
-    rating: 4.9,
-    reviews: 892
-  },
-  {
-    id: '7',
-    name: 'Pupcakes Variety Box',
+    name: 'Celebration Pupcakes',
     category: 'treats',
     price: 550,
     originalPrice: 550,
-    image: 'https://images.pexels.com/photos/230785/pexels-photo-230785.jpeg',
+    image: 'https://images.unsplash.com/photo-1763901326328-ecf25f2643a2?w=800',
     description: 'Assorted mini cupcakes perfect for sharing',
     sizes: ['6 Pack', '12 Pack'],
     flavors: ['Mixed Flavors'],
@@ -96,12 +86,26 @@ export const products = [
     reviews: 345
   },
   {
+    id: '7',
+    name: 'Premium Treat Box',
+    category: 'treats',
+    price: 799,
+    originalPrice: 899,
+    image: 'https://images.unsplash.com/photo-1624976066674-ed900e3f699e?w=800',
+    description: 'Curated selection of our finest treats',
+    sizes: ['Deluxe Box'],
+    flavors: ['Assorted'],
+    onSale: true,
+    rating: 4.9,
+    reviews: 234
+  },
+  {
     id: '8',
     name: 'Chicken & Veggies Meal',
     category: 'meals',
     price: 199,
     originalPrice: 199,
-    image: 'https://images.pexels.com/photos/933498/pexels-photo-933498.jpeg',
+    image: 'https://images.unsplash.com/photo-1534361960057-19889db9621e?w=800',
     description: 'Fresh, nutritious meal made with real chicken and vegetables',
     sizes: ['250g', '500g', '1kg'],
     flavors: ['Chicken & Veggies'],
@@ -119,7 +123,8 @@ export const testimonials = [
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun',
     rating: 5,
     text: 'Ordering from The Doggy Bakery was seamless. Every bite was savored, and I felt at ease knowing he was enjoying a treat made with natural, dog-friendly ingredients.',
-    date: '2024-12-15'
+    date: '2024-12-15',
+    petName: 'Bruno'
   },
   {
     id: '2',
@@ -128,7 +133,8 @@ export const testimonials = [
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Priya',
     rating: 5,
     text: 'Bhadra loves The Doggy Bakery\'s chicken and oat Woof Dognuts! It\'s our go-to treat to brighten her day. Thank you for these healthy delights!',
-    date: '2024-12-10'
+    date: '2024-12-10',
+    petName: 'Bhadra'
   },
   {
     id: '3',
@@ -137,7 +143,8 @@ export const testimonials = [
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul',
     rating: 5,
     text: 'Wanted to make Archie\'s birthday special, so I ordered the Floral Fido Cake. The banana flavor was a hit—Archie enjoyed his cake very much.',
-    date: '2024-11-28'
+    date: '2024-11-28',
+    petName: 'Archie'
   },
   {
     id: '4',
@@ -146,7 +153,28 @@ export const testimonials = [
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Shreya',
     rating: 5,
     text: 'For Leo\'s birthday, I ordered a custom Chow Chow mutton-flavored cake. The resemblance was spot-on, and Leo thoroughly enjoyed the celebration. Thanks for making his day so special!',
-    date: '2024-11-20'
+    date: '2024-11-20',
+    petName: 'Leo'
+  },
+  {
+    id: '5',
+    name: 'Anjali Mehta',
+    location: 'Gurgaon',
+    image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Anjali',
+    rating: 5,
+    text: 'Mira AI helped me plan the perfect first birthday for my pup! The recommendations were spot-on and the cake was absolutely stunning. Worth every rupee!',
+    date: '2024-12-20',
+    petName: 'Coco'
+  },
+  {
+    id: '6',
+    name: 'Vikram Sharma',
+    location: 'Bengaluru',
+    image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Vikram',
+    rating: 5,
+    text: 'The quality is unmatched! Fresh ingredients, beautiful presentation, and my Golden Retriever absolutely loved it. This is now our go-to for all celebrations.',
+    date: '2024-12-18',
+    petName: 'Max'
   }
 ];
 
@@ -159,31 +187,36 @@ export const faqs = [
   {
     id: '2',
     question: 'Are Your Dog Cakes Safe For Dogs With Allergies?',
-    answer: 'Absolutely! We understand that some dogs have specific dietary needs or allergies. Since our cakes are made to order, we can customize them to be grain-free or adjust ingredients based on your pet\'s needs. Contact us at 9739982582 to discuss any specific concerns before placing your order.'
+    answer: 'Absolutely! We understand that some dogs have specific dietary needs or allergies. Since our cakes are made to order, we can customize them to be grain-free or adjust ingredients based on your pet\'s needs. You can also ask Mira AI for personalized recommendations based on your dog\'s dietary restrictions. Contact us at 9739982582 to discuss any specific concerns before placing your order.'
   },
   {
     id: '3',
-    question: 'Can I Customize A Dog Cake?',
-    answer: 'Absolutely! Since our cakes are made fresh, we can personalize flavors, sizes, and decorations for birthdays or special occasions. For custom designs, please call or WhatsApp us at 9739982582 / 9663185747 or send us an image on Instagram. We recommend sharing your design at least 2-3 days in advance.'
+    question: 'What is Mira AI and how can it help me?',
+    answer: 'Mira AI is your personal Pet Celebration Concierge! She\'s an intelligent assistant that helps you plan perfect celebrations, recommends products based on your dog\'s preferences, suggests party ideas, provides dietary guidance, and even offers referrals to trusted pet services like vets, groomers, and photographers. Just click the sparkle icon and start chatting!'
   },
   {
     id: '4',
+    question: 'Can I Customize A Dog Cake?',
+    answer: 'Absolutely! Since our cakes are made fresh, we can personalize flavors, sizes, and decorations for birthdays or special occasions. Use our Custom Cake Designer tool or ask Mira AI for suggestions! For custom designs, please call or WhatsApp us at 9739982582 / 9663185747 or send us an image on Instagram. We recommend sharing your design at least 2-3 days in advance.'
+  },
+  {
+    id: '5',
     question: 'How Long Do Dog Cakes Stay Fresh & How To Store Them?',
     answer: 'Our dog cakes are baked fresh daily without preservatives. To maintain freshness, store them in an airtight container in the refrigerator. If kept overnight, they can be stored for 2-3 days and should be consumed within this period for the best taste and quality.'
   },
   {
-    id: '5',
+    id: '6',
     question: 'Do you offer same-day delivery?',
-    answer: 'Yes! We offer same-day delivery in Mumbai and Bangalore for all orders placed by 6:00 PM. For other locations, standard delivery takes 2-3 business days.'
+    answer: 'Yes! We offer same-day delivery in Mumbai and Bangalore for all orders placed by 6:00 PM. For other locations, standard delivery takes 2-3 business days. Mira AI can help you check delivery availability in your area!'
   }
 ];
 
 export const cakeDesignerOptions = {
   shapes: [
-    { id: 'round', name: 'Round Cake', price: 0 },
-    { id: 'bone', name: 'Bone Shape', price: 100 },
-    { id: 'paw', name: 'Paw Shape', price: 100 },
-    { id: 'heart', name: 'Heart Shape', price: 100 }
+    { id: 'round', name: 'Round Cake', price: 0, icon: '🎂' },
+    { id: 'bone', name: 'Bone Shape', price: 100, icon: '🦴' },
+    { id: 'paw', name: 'Paw Shape', price: 100, icon: '🐾' },
+    { id: 'heart', name: 'Heart Shape', price: 100, icon: '❤️' }
   ],
   sizes: [
     { id: 'small', name: 'Small (500g)', price: 649, serves: '1-2 dogs' },
@@ -218,28 +251,24 @@ export const categories = [
     id: 'cakes',
     name: 'Dog Cakes',
     description: 'Freshly baked cakes for special celebrations',
-    icon: '🎂',
-    image: 'https://images.unsplash.com/photo-1644732649135-5926c0945d2d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwxfHxkb2clMjBiaXJ0aGRheSUyMGNha2V8ZW58MHx8fHwxNzY4MTgwOTEyfDA&ixlib=rb-4.1.0&q=85'
+    image: 'https://images.unsplash.com/photo-1612940960267-4549a58fb257?w=800'
   },
   {
     id: 'treats',
     name: 'Treats & Snacks',
     description: 'Healthy treats for everyday joy',
-    icon: '🦴',
-    image: 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDF8MHwxfHNlYXJjaHwxfHxkb2clMjB0cmVhdHN8ZW58MHx8fHwxNzY4MTgwOTE4fDA&ixlib=rb-4.1.0&q=85'
+    image: 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=800'
   },
   {
     id: 'meals',
     name: 'Fresh Meals',
     description: 'Nutritious meals made daily',
-    icon: '🍖',
-    image: 'https://images.pexels.com/photos/933498/pexels-photo-933498.jpeg'
+    image: 'https://images.unsplash.com/photo-1534361960057-19889db9621e?w=800'
   },
   {
     id: 'custom',
     name: 'Custom Designer',
     description: 'Design your perfect cake',
-    icon: '✨',
-    image: 'https://images.unsplash.com/photo-1641029902225-f2a0907ee22d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwyfHxkb2clMjBiaXJ0aGRheSUyMGNha2V8ZW58MHx8fHwxNzY4MTgwOTEyfDA&ixlib=rb-4.1.0&q=85'
+    image: 'https://images.unsplash.com/photo-1646157763904-d7d184329c72?w=800'
   }
 ];
