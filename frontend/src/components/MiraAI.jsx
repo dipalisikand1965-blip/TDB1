@@ -228,8 +228,6 @@ _Order placed via Mira AI Concierge_`;
         updateContext: { flow: null, step: 0, data: {} }
       };
     }
-      };
-    }
     
     return null;
   };
