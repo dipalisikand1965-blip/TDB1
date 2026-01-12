@@ -13,6 +13,11 @@ import { useInView, useCountUp } from '../hooks/useAnimations';
 const Home = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const featuredProducts = products.filter(p => p.featured);
+  const [statsRef, statsInView] = useInView({ threshold: 0.3 });
+  
+  const customersCount = useCountUp(45000, 2000, statsInView);
+  const productsCount = useCountUp(500, 2000, statsInView);
+  const citiesCount = useCountUp(3, 1500, statsInView);
 
   const heroSlides = [
     {
