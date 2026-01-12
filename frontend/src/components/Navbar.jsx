@@ -33,10 +33,12 @@ const Navbar = () => {
           <div className="flex justify-between items-center h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-3">
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
-                <span className="text-2xl">🐾</span>
-              </div>
-              <div>
+              <img 
+                src="https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png?v=1718969706" 
+                alt="The Doggy Bakery Logo"
+                className="h-14 w-auto transform hover:scale-105 transition-transform"
+              />
+              <div className="hidden sm:block">
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                   The Doggy Bakery
                 </h1>
