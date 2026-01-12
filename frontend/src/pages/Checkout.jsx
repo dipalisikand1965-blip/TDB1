@@ -17,6 +17,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
+  const [whatsappUrl, setWhatsappUrl] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -33,7 +34,7 @@ const Checkout = () => {
   };
 
   // Generate order summary for WhatsApp
-  const generateOrderMessage = () => {
+  const generateWhatsAppUrl = (orderData) => {
     const orderItems = cartItems.map(item => 
       `• ${item.name} (${item.selectedSize}, ${item.selectedFlavor}) x${item.quantity} - ₹${item.price * item.quantity}`
     ).join('\n');
@@ -44,15 +45,15 @@ const Checkout = () => {
     const message = `🐕 *New Order from The Doggy Bakery Demo*
 
 *Customer Details:*
-Name: ${formData.name}
-Phone: ${formData.phone}
-Email: ${formData.email}
-${formData.petName ? `Pet's Name: ${formData.petName}` : ''}
+Name: ${orderData.name}
+Phone: ${orderData.phone}
+Email: ${orderData.email}
+${orderData.petName ? `Pet's Name: ${orderData.petName}` : ''}
 
 *Delivery Address:*
-${formData.address}
-${formData.city} - ${formData.pincode}
-${formData.deliveryNotes ? `Notes: ${formData.deliveryNotes}` : ''}
+${orderData.address}
+${orderData.city} - ${orderData.pincode}
+${orderData.deliveryNotes ? `Notes: ${orderData.deliveryNotes}` : ''}
 
 *Order Items:*
 ${orderItems}
@@ -65,14 +66,7 @@ Delivery: ₹${deliveryFee}
 Payment: Cash on Delivery
 Order placed via Birthday Demo Site 🎂`;
 
-    return encodeURIComponent(message);
-  };
-
-  // Open WhatsApp with pre-filled message
-  const openWhatsApp = () => {
-    const message = generateOrderMessage();
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
-    window.open(whatsappUrl, '_blank');
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
   };
 
   const handleSubmit = (e) => {
