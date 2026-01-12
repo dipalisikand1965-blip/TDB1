@@ -47,6 +47,16 @@ const MiraAI = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Listen for custom event to open Mira AI
+  useEffect(() => {
+    const handleOpenMira = () => {
+      setIsOpen(true);
+    };
+    
+    window.addEventListener('openMiraAI', handleOpenMira);
+    return () => window.removeEventListener('openMiraAI', handleOpenMira);
+  }, []);
+
   // Celebration Flow Handler
   const handleCelebrationFlow = (userMessage, step) => {
     const msg = userMessage.toLowerCase();
