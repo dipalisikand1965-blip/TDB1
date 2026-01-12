@@ -78,6 +78,9 @@ app.add_middleware(
     allow_credentials=True,
     allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
     allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Mount uploads directory
 os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
@@ -114,9 +117,6 @@ async def request_custom_cake(
     await db.custom_cake_requests.insert_one(request_data)
     
     return {"message": "Request received successfully", "id": request_data["id"]}
-
-    allow_headers=["*"],
-)
 
 # Configure logging
 logging.basicConfig(
