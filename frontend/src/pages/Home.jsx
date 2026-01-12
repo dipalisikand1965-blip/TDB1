@@ -406,6 +406,75 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Video Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 bg-purple-100 rounded-full mb-6">
+              <Play className="w-5 h-5 text-purple-600 mr-2" />
+              <span className="text-purple-600 text-sm font-semibold">Behind the Scenes</span>
+            </div>
+            <h2 className="text-5xl font-black text-gray-900 mb-4">
+              See How We Bake with Love
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Every cake tells a story. Watch our journey from kitchen to celebration
+            </p>
+          </div>
+
+          <VideoSection />
+
+          <div className="text-center mt-12">
+            <a
+              href="https://www.instagram.com/the_doggy_bakery/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium"
+            >
+              <Instagram className="w-5 h-5" />
+              Follow us for more videos
+              <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Instagram Feed */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 bg-pink-100 rounded-full mb-6">
+              <Instagram className="w-5 h-5 text-pink-600 mr-2" />
+              <span className="text-pink-600 text-sm font-semibold">@the_doggy_bakery</span>
+            </div>
+            <h2 className="text-5xl font-black text-gray-900 mb-4">
+              Celebrations We've Crafted
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Real moments, real joy. See how we've helped pet parents celebrate their companions
+            </p>
+          </div>
+
+          <InstagramFeed />
+
+          <div className="text-center mt-12">
+            <a
+              href="https://www.instagram.com/the_doggy_bakery/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              >
+                <Instagram className="w-5 h-5 mr-2" />
+                Follow on Instagram
+              </Button>
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="relative py-32 overflow-hidden">
         <img
