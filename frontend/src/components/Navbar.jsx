@@ -16,6 +16,7 @@ const Navbar = () => {
     { name: 'Treats', path: '/treats' },
     { name: 'Fresh Meals', path: '/meals' },
     { name: 'Desi Treats', path: '/desi' },
+    { name: 'Pan India Cakes', path: '/pan-india' },
     { name: 'Merchandise', path: '/merchandise' },
     { name: 'Custom Designer', path: '/custom-cake' },
   ];

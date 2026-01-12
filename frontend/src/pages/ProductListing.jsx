@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { products, birthdayCakes, breedCakes, treats, dognuts, desiTreats, nutButters, cakeMix, merchandise, giftCards, miniCakes, frozenTreats, accessories, freshMeals, pizzasBurgers, catTreats } from '../mockData';
+import { products, birthdayCakes, breedCakes, treats, dognuts, desiTreats, nutButters, cakeMix, merchandise, giftCards, miniCakes, frozenTreats, accessories, freshMeals, pizzasBurgers, catTreats, panIndiaCakes } from '../mockData';
 import ProductCard from '../components/ProductCard';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
@@ -34,6 +34,8 @@ const ProductListing = ({ category = 'all' }) => {
         return catTreats;
       case 'all':
       default:
+      case 'pan-india':
+        return panIndiaCakes;
         return products;
     }
   };
@@ -68,6 +70,7 @@ const ProductListing = ({ category = 'all' }) => {
       case 'meals': return 'Fresh Meals & Pizzas';
       case 'frozen': return 'Frozen Treats';
       case 'accessories': return 'Accessories & Toys';
+      case 'pan-india': return 'Pan India Delivery Cakes';
       case 'mini-cakes': return 'Mini Cakes (Bowto)';
       case 'cat': return 'Cat Treats';
       default: return 'All Products';
@@ -83,6 +86,7 @@ const ProductListing = ({ category = 'all' }) => {
       case 'merchandise': return 'Premium gift hampers, subscription boxes, and exclusive merchandise';
       case 'meals': return 'Freshly cooked nutritious meals and fun doggy pizzas';
       case 'frozen': return 'Cool frozen yogurt and jello treats for hot days';
+      case 'pan-india': return 'Delicious cakes delivered nationwide across India!';
       case 'accessories': return 'Bandanas, toys, collars, and celebration accessories';
       case 'mini-cakes': return 'Perfect 200g mini cakes for everyday celebrations';
       case 'cat': return 'Delicious treats for our feline friends too!';
