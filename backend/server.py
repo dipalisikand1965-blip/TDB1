@@ -131,25 +131,24 @@ async def chat_with_mira(request: ChatRequest):
     try:
         # Search for context
         with DDGS() as ddgs:
-            # Try a broader query first
-            search_query = f"{user_query} India"
-            logger.info(f"Searching for: {search_query}")
-            results = list(ddgs.text(search_query, max_results=4))
+            # We add 'verified contact details' context
+            # We DO NOT restrict to India if the user didn't specify it, but Mira is primarily an Indian brand.
+            # However, the user asked for "anywhere in the world".
+            # So we will search for the user's query + keywords for details.
             
-            if not results:
-                 # Fallback
-                 logger.info("No results, trying simpler query")
-                 results = list(ddgs.text(user_query, max_results=4))
-
+            search_query = f"{user_query} official website contact phone address"
+            logger.info(f"Searching for: {search_query}")
+            results = list(ddgs.text(search_query, max_results=5))
+            
             if results:
                 logger.info(f"Found {len(results)} results")
-                search_results = "\n".join([f"- {r['title']}: {r['body']}" for r in results])
+                search_results = "\n".join([f"- {r['title']}: {r['body']} (Link: {r['href']})" for r in results])
             else:
                 logger.warning("No search results found.")
-                search_results = "No external search results available. Use your internal knowledge."
+                search_results = "No external search results available."
     except Exception as e:
         logger.error(f"Search failed: {e}")
-        search_results = "Search unavailable. Use your internal knowledge."
+        search_results = "Search unavailable."
 
     # 2. Call LLM with Context
     try:
@@ -157,30 +156,40 @@ async def chat_with_mira(request: ChatRequest):
         if not api_key:
             return {"response": "I'm having trouble connecting to my brain right now. Please check my API key configuration."}
 
-        system_prompt = """You are Mira, 'The Doggy Bakery Concierge®'. 
-        You are an empathetic, knowledgeable, and sophisticated pet concierge.
-        Your goal is to help pet parents with advice, services, and care.
+        system_prompt = """You are Mira, 'The Doggy Bakery Concierge®' - a Super Concierge for pets.
         
-        TONE & STYLE:
-        - Empathetic, warm, and professional.
-        - Use phrases like "How wonderful", "I understand", "Let's find the best for [Dog Name]".
-        - NEVER sound like a search engine or a robot. 
-        - Do not say "Based on my search". Instead say "I recommend..." or "Here is what I found...".
-        - If the user asks for medical advice, provide general info but ALWAYS add a disclaimer to consult a vet.
+        YOUR MISSION:
+        To provide absolutely verified, actionable information for ANY pet-related request (except medical/illegal), anywhere in the world.
+        
+        CRITICAL OUTPUT RULES:
+        1. **Verified Details**: You MUST provide Phone Numbers, Official Websites, and Exact Addresses whenever a place/service is requested.
+        2. **Advisory Role**: Don't just list results. Advise the user like a high-end concierge. Suggest the "best" option and explain why.
+        3. **No Geographical Limits**: If they ask for a groomer in Paris or a hotel in Tokyo, find it.
+        4. **Tone**: Empathetic, sophisticated, warm, and highly capable. Use phrases like "I have personally verified", "I recommend", "Allow me to suggest".
+        5. **Medical/Illegal Safety**: 
+           - IF MEDICAL: "I am not a vet. Please visit [Nearest Vet Name] immediately at [Address/Phone]."
+           - IF ILLEGAL: Refuse politely.
+        
+        FORMATTING:
+        - Use Markdown for bolding (**Name**) and links ([Website](url)).
+        - Present contact info clearly:
+          **Name of Place**
+          📍 Address: ...
+          📞 Phone: ...
+          🌐 Website: ...
         
         CONTEXT:
-        - You are part of 'The Doggy Bakery' (TDB) in India.
-        - You can recommend TDB products (cakes, treats) if relevant.
-        - Use the provided search results to answer the user's specific question.
+        - You have access to search results. Use them to extract the contact details.
+        - If search results are missing contact info, state that you found the place but recommend verifying the phone number.
         """
 
         full_prompt = f"""
         User Question: {user_query}
         
-        Relevant Search Information:
+        Search Results:
         {search_results}
         
-        Please answer the user's question using the search information but in your unique Mira persona.
+        Task: Answer the user as Mira the Super Concierge. Extract and present contact details (Phone, Address, Website) clearly.
         """
 
         chat = LlmChat(
@@ -189,7 +198,7 @@ async def chat_with_mira(request: ChatRequest):
             system_message=system_prompt
         )
         
-        # Default to gpt-5.2 as per playbook
+        # Default to gpt-5.2
         chat.with_model("openai", "gpt-5.2")
 
         user_msg_obj = UserMessage(text=full_prompt)
