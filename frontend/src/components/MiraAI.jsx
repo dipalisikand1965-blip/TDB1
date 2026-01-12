@@ -90,9 +90,17 @@ const MiraAI = () => {
         text: '👋 Hello! I\'m Mira, your personal Pet Celebration Concierge! I\'m here to make your pup\'s special day unforgettable. How can I help you today?',
         suggestions: ['Plan birthday', 'Recommend cake', 'Party ideas', 'Dietary needs']
       };
-    } else if (msg.includes('referral') || msg.includes('vet') || msg.includes('grooming') || msg.includes('recommend')) {
+    } else if (msg.includes('vet') || msg.includes('doctor') || msg.includes('veterinar')) {
+      return celebrationResponses.vet;
+    } else if (msg.includes('groom') || msg.includes('salon') || msg.includes('bath') || msg.includes('hair')) {
+      return celebrationResponses.grooming;
+    } else if (msg.includes('photo') || msg.includes('picture') || msg.includes('shoot')) {
+      return celebrationResponses.photographer;
+    } else if (msg.includes('store') || msg.includes('shop') || msg.includes('buy')) {
+      return celebrationResponses.petstore;
+    } else if (msg.includes('referral') || msg.includes('local')) {
       return {
-        text: '📍 I can help you find trusted pet services in your area!\n\n**Available Referrals:**\n• 🏥 Veterinarians (Bangalore, Mumbai, Gurgaon)\n• ✂️ Professional Groomers\n• 🏪 Premium Pet Stores\n• 📸 Pet Photographers\n• 🏨 Pet-friendly Hotels\n\nWhich service are you looking for?',
+        text: '📍 I can help you find trusted pet services in your area!\n\nAvailable Referrals:\n• 🏥 Veterinarians (Bangalore, Mumbai, Gurgaon)\n• ✂️ Professional Groomers\n• 🏪 Premium Pet Stores\n• 📸 Pet Photographers\n• 🏨 Pet-friendly Hotels\n\nWhich service are you looking for?',
         suggestions: ['Vet nearby', 'Grooming salon', 'Pet photographer', 'Pet store']
       };
     }
