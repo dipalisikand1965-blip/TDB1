@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { products, testimonials, faqs, categories } from '../mockData';
+import { testimonials, faqs, categories } from '../mockData';
 import ProductCard from '../components/ProductCard';
 import InstagramFeed from '../components/InstagramFeed';
 import VideoSection from '../components/VideoSection';
@@ -10,14 +10,34 @@ import { Card } from '../components/ui/card';
 import { Star, Award, Leaf, Clock, Shield, ArrowRight, Sparkles, Heart, Users, Check, TrendingUp, Play, Instagram, CreditCard, Gift, Crown } from 'lucide-react';
 import { useInView, useCountUp } from '../hooks/useAnimations';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
 const Home = () => {
   const [activeSlide, setActiveSlide] = useState(0);
-  const featuredProducts = products.filter(p => p.featured);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
   const [statsRef, statsInView] = useInView({ threshold: 0.3 });
   
   const customersCount = useCountUp(45000, 2000, statsInView);
   const productsCount = useCountUp(500, 2000, statsInView);
   const citiesCount = useCountUp(3, 1500, statsInView);
+
+  // Fetch featured/bestseller products from API
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        // Fetch bestseller/featured products from cakes category
+        const response = await fetch(`${API_URL}/api/products?limit=8&category=cakes`);
+        if (response.ok) {
+          const data = await response.json();
+          // Take first 4 products as featured
+          setFeaturedProducts((data.products || []).slice(0, 4));
+        }
+      } catch (error) {
+        console.error('Failed to fetch featured products:', error);
+      }
+    };
+    fetchFeaturedProducts();
+  }, []);
 
   const heroSlides = [
     {
