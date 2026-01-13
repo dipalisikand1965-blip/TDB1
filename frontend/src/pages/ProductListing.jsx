@@ -194,11 +194,34 @@ const ProductListing = ({ category = 'all' }) => {
             <p className="text-gray-500 text-lg">No products found in this category.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.slice(0, visibleCount).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+            
+            {/* Load More Button */}
+            {visibleCount < filteredProducts.length && (
+              <div className="text-center mt-12">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-purple-600 text-purple-600 hover:bg-purple-50 px-8"
+                  onClick={() => setVisibleCount(prev => prev + PRODUCTS_PER_PAGE)}
+                  data-testid="load-more-btn"
+                >
+                  <ChevronDown className="w-5 h-5 mr-2" />
+                  Load More ({filteredProducts.length - visibleCount} remaining)
+                </Button>
+              </div>
+            )}
+            
+            {/* Showing count */}
+            <p className="text-center text-gray-500 text-sm mt-4">
+              Showing {Math.min(visibleCount, filteredProducts.length)} of {filteredProducts.length} products
+            </p>
+          </>
         )}
       </div>
     </div>
