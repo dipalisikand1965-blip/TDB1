@@ -15,6 +15,7 @@ import Checkout from "./pages/Checkout";
 import About from "./pages/About";
 import Membership from "./pages/Membership";
 import Admin from "./pages/Admin";
+import Policies from "./pages/Policies";
 
 function App() {
   return (
@@ -41,6 +42,11 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/membership" element={<Membership />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/policies" element={<Policies />} />
+            <Route path="/refund-policy" element={<Policies />} />
+            <Route path="/privacy-policy" element={<Policies />} />
+            <Route path="/terms-of-service" element={<Policies />} />
+            <Route path="/shipping-policy" element={<Policies />} />
           </Routes>
           <Footer />
           <CartSidebar />
