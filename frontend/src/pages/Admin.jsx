@@ -217,6 +217,70 @@ const Admin = () => {
     }
   };
 
+  const fetchOrders = async () => {
+    try {
+      let url = `${API_URL}/api/admin/orders?limit=100`;
+      if (orderFilter) url += `&status=${orderFilter}`;
+      
+      const response = await fetch(url, { headers: getAuthHeaders() });
+      if (response.ok) {
+        const data = await response.json();
+        setOrders(data.orders);
+        setOrderStats(data.stats);
+      }
+    } catch (error) {
+      console.error('Failed to fetch orders:', error);
+    }
+  };
+
+  const fetchMembers = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/members`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMembers(data.members);
+        setMemberStats(data.stats);
+      }
+    } catch (error) {
+      console.error('Failed to fetch members:', error);
+    }
+  };
+
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/orders/${orderId}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status })
+      });
+      if (response.ok) {
+        fetchOrders();
+        alert('Order updated!');
+      }
+    } catch (error) {
+      console.error('Failed to update order:', error);
+    }
+  };
+
+  const updateMemberTier = async (userId, tier) => {
+    try {
+      const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+      const response = await fetch(`${API_URL}/api/admin/members/${userId}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ membership_tier: tier, membership_expires: expires })
+      });
+      if (response.ok) {
+        fetchMembers();
+        alert('Member tier updated!');
+      }
+    } catch (error) {
+      console.error('Failed to update member:', error);
+    }
+  };
+
   const syncFromShopify = async () => {
     if (!window.confirm('This will sync all products from thedoggybakery.com. Continue?')) return;
     
