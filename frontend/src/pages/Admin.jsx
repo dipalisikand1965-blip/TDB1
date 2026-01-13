@@ -461,8 +461,10 @@ const Admin = () => {
         fetchSyncStatus();
       }
       else if (activeTab === 'content') fetchSiteContent();
+      else if (activeTab === 'orders') fetchOrders();
+      else if (activeTab === 'members') fetchMembers();
     }
-  }, [isAuthenticated, activeTab, filterCity, filterStatus, productFilter]);
+  }, [isAuthenticated, activeTab, filterCity, filterStatus, productFilter, orderFilter]);
 
   // Login Screen
   if (!isAuthenticated) {
