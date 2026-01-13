@@ -196,6 +196,97 @@ const Admin = () => {
     }
   };
 
+  const fetchSyncStatus = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/sync/status`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setSyncStatus(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch sync status:', error);
+    }
+  };
+
+  const syncFromShopify = async () => {
+    if (!window.confirm('This will sync all products from thedoggybakery.com. Continue?')) return;
+    
+    setSyncing(true);
+    try {
+      const response = await fetch(`${API_URL}/api/admin/sync/shopify`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Sync completed!\n\nFetched: ${data.total_fetched}\nAdded: ${data.added}\nUpdated: ${data.updated}`);
+        fetchProducts();
+        fetchSyncStatus();
+      } else {
+        alert('Sync failed. Check console for details.');
+      }
+    } catch (error) {
+      console.error('Sync failed:', error);
+      alert('Sync failed. Check console for details.');
+    }
+    setSyncing(false);
+  };
+
+  const handleCsvUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setImporting(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const auth = localStorage.getItem('adminAuth');
+      const response = await fetch(`${API_URL}/api/admin/products/import-csv`, {
+        method: 'POST',
+        headers: { 'Authorization': `Basic ${auth}` },
+        body: formData
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert(`CSV Import completed!\n\nImported: ${data.imported}\nUpdated: ${data.updated}\nErrors: ${data.errors?.length || 0}`);
+        fetchProducts();
+      } else {
+        alert('CSV import failed');
+      }
+    } catch (error) {
+      console.error('CSV import failed:', error);
+      alert('CSV import failed');
+    }
+    setImporting(false);
+    e.target.value = ''; // Reset file input
+  };
+
+  const exportCsv = async () => {
+    try {
+      const auth = localStorage.getItem('adminAuth');
+      const response = await fetch(`${API_URL}/api/admin/products/export-csv`, {
+        headers: { 'Authorization': `Basic ${auth}` }
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'products_export.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('Export failed:', error);
+    }
+  };
+
   const saveProduct = async (product) => {
     try {
       const isNew = !product.id || product.id.startsWith('new-');
