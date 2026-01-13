@@ -297,7 +297,7 @@ const ProductDetailModal = ({ product, onClose }) => {
                       {cartInput.date ? format(cartInput.date, 'PP') : <span className="text-gray-500">Date</span>}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className="w-auto p-0 z-[10000]" align="start">
                     <Calendar
                       mode="single"
                       selected={cartInput.date}
