@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://thedoggycompany.in/</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png</image:loc>
+      <image:title>The Doggy Bakery - Premium Dog Cakes and Treats</image:title>
+    </image:image>
+  </url>
+  
+  <!-- Product Categories -->
+  <url>
+    <loc>https://thedoggycompany.in/cakes</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://thedoggybakery.com/cdn/shop/files/TDB_cakes_6_6c84dc0e-24b7-49f0-a5f9-0027610924db.png</image:loc>
+      <image:title>Dog Birthday Cakes</image:title>
+    </image:image>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/treats</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/pan-india</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/fresh-meals</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/custom-cake</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/bowto-cakes</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Informational Pages -->
+  <url>
+    <loc>https://thedoggycompany.in/about</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/contact</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/faqs</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/membership</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/insights</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/streaties</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/franchise</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- Policy Pages -->
+  <url>
+    <loc>https://thedoggycompany.in/refund-policy</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/privacy-policy</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/terms</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/shipping</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <!-- Mira AI Concierge -->
+  <url>
+    <loc>https://thedoggycompany.in/concierge</loc>
+    <lastmod>2025-01-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+</urlset>
