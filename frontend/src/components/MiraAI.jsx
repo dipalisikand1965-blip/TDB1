@@ -51,6 +51,7 @@ const formatMessage = (text) => {
 
 const MiraAI = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [sessionId, setSessionId] = useState(() => `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -150,11 +151,16 @@ const MiraAI = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
             message: userMessage,
-            history: history
+            history: history,
+            session_id: sessionId
         })
       });
       
       const data = await res.json();
+      // Update session ID if returned
+      if (data.session_id) {
+        setSessionId(data.session_id);
+      }
       return {
         text: data.response || "I apologize, I'm having trouble connecting right now.",
         suggestions: []
