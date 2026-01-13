@@ -164,9 +164,38 @@ const Admin = () => {
         const data = await response.json();
         setChats(data.chats);
       }
+      
+      // Also fetch Chatbase chats
+      const cbResponse = await fetch(`${API_URL}/api/admin/chatbase-chats?limit=100`, { headers: getAuthHeaders() });
+      if (cbResponse.ok) {
+        const cbData = await cbResponse.json();
+        setChatbaseChats(cbData.chats || []);
+      }
     } catch (error) {
       console.error('Failed to fetch chats:', error);
     }
+  };
+
+  const syncChatbase = async () => {
+    setSyncingChatbase(true);
+    try {
+      const response = await fetch(`${API_URL}/api/admin/sync-chatbase`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Chatbase sync complete! Fetched: ${data.total_fetched}, New: ${data.new_synced}`);
+        fetchChats();
+      } else {
+        const error = await response.json();
+        alert(`Sync failed: ${error.detail}`);
+      }
+    } catch (error) {
+      console.error('Chatbase sync failed:', error);
+      alert('Failed to sync Chatbase conversations');
+    }
+    setSyncingChatbase(false);
   };
 
   const fetchCustomRequests = async () => {
