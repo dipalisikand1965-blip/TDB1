@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ShoppingCart, Star, X, CalendarIcon } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ShoppingCart, Star, X, CalendarIcon, Plus, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { useCart } from '../context/CartContext';
