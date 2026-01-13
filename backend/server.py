@@ -64,6 +64,11 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 admin_router = APIRouter(prefix="/api/admin")
 
+# Health check endpoint (required for Kubernetes deployment)
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "service": "doggy-bakery-api"}
+
 # Security
 security = HTTPBasic()
 
