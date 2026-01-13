@@ -1229,6 +1229,103 @@ const Admin = () => {
             ))}
           </div>
         )}
+
+        {/* Testimonials Tab */}
+        {activeTab === 'testimonials' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">Customer Testimonials</h3>
+              <Button className="bg-purple-600 hover:bg-purple-700">
+                <Plus className="w-4 h-4 mr-2" />Add Testimonial
+              </Button>
+            </div>
+            
+            <Card className="p-6">
+              <p className="text-gray-600 mb-4">Manage customer reviews and testimonials that appear on the website.</p>
+              
+              <div className="space-y-4">
+                {[
+                  { name: 'Arjun V', location: 'Bengaluru', pet: 'Bruno', rating: 5, text: 'Ordering from The Doggy Bakery was seamless. Every bite was savored!' },
+                  { name: 'Priya S', location: 'Mumbai', pet: 'Bhadra', rating: 5, text: "Bhadra loves The Doggy Bakery's chicken and oat Woof Dognuts!" },
+                  { name: 'Rahul Joshi', location: 'Mumbai', pet: 'Archie', rating: 5, text: "Wanted to make Archie's birthday special, so I ordered the Floral Fido Cake." },
+                  { name: 'Shreya Reddy', location: 'Bengaluru', pet: 'Leo', rating: 5, text: "For Leo's birthday, I ordered a custom Chow Chow mutton-flavored cake." },
+                ].map((testimonial, idx) => (
+                  <div key={idx} className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                      <User className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
+                        <span className="text-sm text-gray-500">• {testimonial.location}</span>
+                        <Badge variant="outline" className="text-xs">Pet: {testimonial.pet}</Badge>
+                      </div>
+                      <div className="flex mb-2">
+                        {[...Array(testimonial.rating)].map((_, i) => (
+                          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        ))}
+                      </div>
+                      <p className="text-gray-600 text-sm">{testimonial.text}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="icon"><Edit className="w-4 h-4" /></Button>
+                      <Button variant="ghost" size="icon" className="text-red-500"><Trash2 className="w-4 h-4" /></Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Insights/Blog Tab */}
+        {activeTab === 'insights' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">Insights & Blog</h3>
+              <Button className="bg-purple-600 hover:bg-purple-700">
+                <Plus className="w-4 h-4 mr-2" />New Post
+              </Button>
+            </div>
+            
+            <Card className="p-6">
+              <p className="text-gray-600 mb-6">Manage blog posts, tips, and insights for pet parents.</p>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                {[
+                  { title: 'Top 5 Birthday Cake Flavors Dogs Love', status: 'published', views: 1234, date: 'Jan 10, 2025' },
+                  { title: 'How to Plan the Perfect Puppy Party', status: 'published', views: 892, date: 'Jan 8, 2025' },
+                  { title: 'Healthy Treats: What Ingredients Matter', status: 'draft', views: 0, date: 'Jan 12, 2025' },
+                  { title: 'Meet Our Pawsome Panel Members', status: 'published', views: 567, date: 'Jan 5, 2025' },
+                ].map((post, idx) => (
+                  <Card key={idx} className="p-4 border hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start mb-3">
+                      <h4 className="font-semibold text-gray-900">{post.title}</h4>
+                      <Badge variant={post.status === 'published' ? 'default' : 'secondary'}>
+                        {post.status}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <span className="flex items-center gap-1">
+                        <Eye className="w-4 h-4" />
+                        {post.views} views
+                      </span>
+                      <span>{post.date}</span>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <Button variant="outline" size="sm">
+                        <Edit className="w-3 h-3 mr-1" />Edit
+                      </Button>
+                      <Button variant="ghost" size="sm" className="text-red-500">
+                        <Trash2 className="w-3 h-3 mr-1" />Delete
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </Card>
+          </div>
+        )}
       </div>
 
       {/* Chat Detail Modal */}
