@@ -482,12 +482,27 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     # Clean description - strip all HTML tags
     import re
     raw_desc = shopify_product.get("body_html", "")
-    # Remove all HTML tags
-    clean_desc = re.sub(r'<[^>]+>', ' ', raw_desc)
-    # Remove extra whitespace
+    
+    # Remove style tags and their content completely
+    clean_desc = re.sub(r'<style[^>]*>.*?</style>', '', raw_desc, flags=re.DOTALL | re.IGNORECASE)
+    # Remove script tags and their content
+    clean_desc = re.sub(r'<script[^>]*>.*?</script>', '', clean_desc, flags=re.DOTALL | re.IGNORECASE)
+    # Remove HTML comments
+    clean_desc = re.sub(r'<!--.*?-->', '', clean_desc, flags=re.DOTALL)
+    # Remove all remaining HTML tags
+    clean_desc = re.sub(r'<[^>]+>', ' ', clean_desc)
+    # Remove CSS-like content that might remain
+    clean_desc = re.sub(r'\{[^}]*\}', '', clean_desc)
+    # Remove extra whitespace and newlines
     clean_desc = re.sub(r'\s+', ' ', clean_desc).strip()
+    # Remove any remaining special characters at start
+    clean_desc = re.sub(r'^[\s\.\-\:]+', '', clean_desc)
     # Limit length
     clean_desc = clean_desc[:300] if len(clean_desc) > 300 else clean_desc
+    
+    # If description is empty or too short, use a default
+    if len(clean_desc) < 10:
+        clean_desc = f"Delicious {category.replace('-', ' ')} made with love for your furry friend."
     
     return {
         "id": f"shopify-{shopify_product.get('id')}",
