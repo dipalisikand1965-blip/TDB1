@@ -19,6 +19,7 @@ const ProductCard = ({ product }) => {
     if (typeof size === 'object') return size;
     return { name: size, price: product.price };
   };
+
   // Helper to get flavor name/price
   const getFlavorDetails = (flavor) => {
     if (typeof flavor === 'object') return flavor;
@@ -26,19 +27,21 @@ const ProductCard = ({ product }) => {
   };
 
   const [selectedSize, setSelectedSize] = useState(sizes[0]);
+  const [selectedFlavor, setSelectedFlavor] = useState(flavors[0]);
   const [cartInput, setCartInput] = useState({
     petName: '',
     date: null,
     time: ''
   });
+  
   const { addToCart } = useCart();
-  const currentFlavorDetails = getFlavorDetails(selectedFlavor);
-  // Total price = Size Price + Flavor Price
-  const currentPrice = currentSizeDetails.price + currentFlavorDetails.price;
 
   // Get current price based on selection
   const currentSizeDetails = getSizeDetails(selectedSize);
-  const currentPrice = currentSizeDetails.price;
+  const currentFlavorDetails = getFlavorDetails(selectedFlavor);
+  
+  // Total price = Size Price + Flavor Price
+  const currentPrice = currentSizeDetails.price + currentFlavorDetails.price;
 
   const handleAddToCart = () => {
     // Create a product variant object for the cart
@@ -146,6 +149,19 @@ const ProductCard = ({ product }) => {
                 setSelectedFlavor(flav);
               }}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              {flavors.map((flavor) => {
+                const details = getFlavorDetails(flavor);
+                return (
+                  <option key={details.name} value={details.name}>
+                    {details.name} {details.price > 0 ? `(+₹${details.price})` : ''}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+        )}
+
         {/* Personalization Inputs */}
         <div className="space-y-2 pt-2 border-t border-gray-100">
           <Input 
@@ -187,18 +203,6 @@ const ProductCard = ({ product }) => {
             </div>
           </div>
         </div>
-            >
-              {flavors.map((flavor) => {
-                const details = getFlavorDetails(flavor);
-                return (
-                  <option key={details.name} value={details.name}>
-                    {details.name} {details.price > 0 ? `(+₹${details.price})` : ''}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-        )}
 
         {/* Price & Add to Cart */}
         <div className="flex items-center justify-between pt-2">
