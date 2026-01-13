@@ -46,12 +46,12 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
-NOTIFICATION_EMAIL = "woof@thedoggybakery.com"
-WHATSAPP_NUMBER = "919663185747"
+NOTIFICATION_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.com")
+WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919663185747")
 
-# Admin credentials
-ADMIN_USERNAME = "aditya"
-ADMIN_PASSWORD = "lola4304"
+# Admin credentials from environment
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "aditya")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "lola4304")
 
 # Create the main app
 app = FastAPI()
