@@ -13,6 +13,7 @@ import CustomCakeDesigner from "./pages/CustomCakeDesigner";
 import MiraConcierge from "./pages/MiraConcierge";
 import Checkout from "./pages/Checkout";
 import About from "./pages/About";
+import Membership from "./pages/Membership";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
             <Route path="/custom-cake" element={<CustomCakeDesigner />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/about" element={<About />} />
+            <Route path="/membership" element={<Membership />} />
           </Routes>
           <Footer />
           <CartSidebar />
