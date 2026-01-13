@@ -94,6 +94,7 @@ class ChatRequest(BaseModel):
     customer_name: Optional[str] = None
     customer_email: Optional[str] = None
     customer_phone: Optional[str] = None
+    user_email: Optional[str] = None  # For membership gating
 
 class MiraChat(BaseModel):
     model_config = ConfigDict(extra="ignore")
