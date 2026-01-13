@@ -1108,6 +1108,9 @@ async def update_chat(session_id: str, updates: dict, username: str = Depends(ve
 
 @admin_router.get("/custom-requests")
 async def get_custom_requests(username: str = Depends(verify_admin)):
+    """Get custom cake requests"""
+    requests = await db.custom_cake_requests.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return {"requests": requests}
 
 
 @admin_router.post("/sync-chatbase")
