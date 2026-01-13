@@ -860,7 +860,10 @@ INSTRUCTIONS:
             system_message=system_prompt
         )
         
-        chat.with_model("openai", "gpt-5.2")
+        # Use GPT-4o with LOW temperature for consistent, rule-following behavior
+        chat.with_model("openai", "gpt-4o")
+        chat.with_params(temperature=0.3, max_tokens=1000)
+        
         user_msg_obj = UserMessage(text=full_prompt)
         response = await chat.send_message(user_msg_obj)
         
