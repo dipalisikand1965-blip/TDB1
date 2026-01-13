@@ -1167,7 +1167,7 @@ async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
                 # Extract pet name from common patterns (pet names are often mentioned)
                 pet_name_patterns = [
                     r'(?:pet(?:\'s)? name|dog(?:\'s)? name|cat(?:\'s)? name|puppy(?:\'s)? name)[\s:]+([A-Z][a-z]+)',
-                    r'(?:for|grooming for|training for|booking for)\s+([A-Z][a-z]+)',
+                    r'(?:for|training for|booking for)\s+([A-Z][a-z]+)\s+(?:on|at|in)',
                     r'([A-Z][a-z]+)\s+is\s+(?:a\s+)?(?:\d+\s+)?(?:year|month|yr|mo)',
                     r'(?:my|our)\s+(?:dog|cat|pet|puppy|pup)\s+([A-Z][a-z]+)',
                 ]
