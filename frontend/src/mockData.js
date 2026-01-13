@@ -14,7 +14,10 @@ export const birthdayCakes = [
     originalPrice: 600,
     image: 'https://thedoggybakery.com/cdn/shop/files/TDB_cakes_6_6c84dc0e-24b7-49f0-a5f9-0027610924db.png?v=1719482254&width=800',
     description: 'Simple, delicious, and loved by all pups! A classic choice for celebrations.',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Peanut Butter', 'Banana & Honey'],
     rating: 4.7,
     reviews: 198,
@@ -45,7 +48,10 @@ export const birthdayCakes = [
     originalPrice: 699,
     image: 'https://thedoggybakery.com/cdn/shop/files/showmetheboney.png?v=1703996070&width=800',
     description: 'Bone-shaped delight that dogs absolutely love! Perfect for any celebration.',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Peanut Butter', 'Banana & Honey'],
     rating: 4.8,
     reviews: 312
@@ -74,7 +80,10 @@ export const birthdayCakes = [
     originalPrice: 600,
     image: 'https://thedoggybakery.com/cdn/shop/files/BoneApetit_1.png?v=1704014921&width=800',
     description: 'Elegantly bone-shaped cake for the sophisticated pup.',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Banana & Honey'],
     rating: 4.8,
     reviews: 189
@@ -88,7 +97,10 @@ export const birthdayCakes = [
     originalPrice: 600,
     image: 'https://thedoggybakery.com/cdn/shop/files/OriginalPawsome.png?v=1741098689&width=800',
     description: 'Our original bestseller - the cake that started it all!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Peanut Butter'],
     rating: 4.9,
     reviews: 456,
@@ -118,7 +130,10 @@ export const birthdayCakes = [
     originalPrice: 600,
     image: 'https://thedoggybakery.com/cdn/shop/files/Ms.Doggo.png?v=1741098689&width=800',
     description: 'Feminine and fabulous cake for your princess pup!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Berry Mix'],
     rating: 4.8,
     reviews: 145
@@ -146,7 +161,10 @@ export const birthdayCakes = [
     originalPrice: 749,
     image: 'https://thedoggybakery.com/cdn/shop/files/HoneyPie.png?v=1703993479&width=800',
     description: 'Sweet honey-infused cake that melts hearts!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Honey & Oats'],
     rating: 4.9,
     reviews: 201
@@ -188,7 +206,10 @@ export const birthdayCakes = [
     originalPrice: 699,
     image: 'https://thedoggybakery.com/cdn/shop/files/droolin.png?v=1704034626&width=800',
     description: 'So good, they will be drooling!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Peanut Butter'],
     rating: 4.7,
     reviews: 167
@@ -202,7 +223,10 @@ export const birthdayCakes = [
     originalPrice: 600,
     image: 'https://thedoggybakery.com/cdn/shop/files/HeartNose.png?v=1703994048&width=800',
     description: 'Adorable heart-nosed design full of love!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Berry Mix'],
     rating: 4.8,
     reviews: 189
@@ -216,7 +240,10 @@ export const birthdayCakes = [
     originalPrice: 600,
     image: 'https://thedoggybakery.com/cdn/shop/files/Ms.Lily.png?v=1703994287&width=800',
     description: 'Elegant floral design for your special girl!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Banana & Honey'],
     rating: 4.9,
     reviews: 145
@@ -230,7 +257,10 @@ export const birthdayCakes = [
     originalPrice: 600,
     image: 'https://thedoggybakery.com/cdn/shop/files/SuperStar_f7e8bad5-e5bd-4783-80e6-195698551a7c.png?v=1703996868&width=800',
     description: 'Star-shaped cake for your superstar pup!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Peanut Butter'],
     rating: 4.7,
     reviews: 198
@@ -244,7 +274,10 @@ export const birthdayCakes = [
     originalPrice: 649,
     image: 'https://thedoggybakery.com/cdn/shop/files/Dotty.png?v=1703996414&width=800',
     description: 'Playful polka dot design!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Berry Mix'],
     rating: 4.6,
     reviews: 123
@@ -272,7 +305,10 @@ export const birthdayCakes = [
     originalPrice: 600,
     image: 'https://thedoggybakery.com/cdn/shop/products/25_3.png?v=1657252156&width=800',
     description: 'A cake celebrating the hooman-doggo bond!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Peanut Butter'],
     rating: 4.7,
     reviews: 134
@@ -286,7 +322,10 @@ export const birthdayCakes = [
     originalPrice: 600,
     image: 'https://thedoggybakery.com/cdn/shop/files/FetchingBall.png?v=1703993189&width=800',
     description: 'Ball-shaped cake for fetch-loving pups!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats'],
     rating: 4.6,
     reviews: 112
@@ -317,7 +356,10 @@ export const birthdayCakes = [
     originalPrice: 699,
     image: 'https://thedoggybakery.com/cdn/shop/files/CrunchyBoney.png?v=1703998411&width=800',
     description: 'Crunchy bone-shaped delight!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats'],
     rating: 4.7,
     reviews: 145
@@ -331,7 +373,10 @@ export const birthdayCakes = [
     originalPrice: 749,
     image: 'https://thedoggybakery.com/cdn/shop/files/FloralBoney.png?v=1703992528&width=800',
     description: 'Elegant floral bone-shaped cake!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Berry Mix'],
     rating: 4.8,
     reviews: 167
@@ -359,7 +404,10 @@ export const birthdayCakes = [
     originalPrice: 699,
     image: 'https://thedoggybakery.com/cdn/shop/files/FlowerPowerCircle.png?v=1741098689&width=800',
     description: 'Circular cake with beautiful floral design!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Berry Mix'],
     rating: 4.7,
     reviews: 156
@@ -373,7 +421,10 @@ export const birthdayCakes = [
     originalPrice: 649,
     image: 'https://thedoggybakery.com/cdn/shop/files/CoochiePie_1.png?v=1703985592&width=800',
     description: 'Sweet pie-style cake for your sweetheart!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats'],
     rating: 4.6,
     reviews: 112
@@ -387,7 +438,10 @@ export const birthdayCakes = [
     originalPrice: 649,
     image: 'https://thedoggybakery.com/cdn/shop/files/Moonie_1.png?v=1703988769&width=800',
     description: 'Moon-shaped cake for nighttime celebrations!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Banana & Honey'],
     rating: 4.7,
     reviews: 134
@@ -401,7 +455,10 @@ export const birthdayCakes = [
     originalPrice: 649,
     image: 'https://thedoggybakery.com/cdn/shop/files/BowWow.png?v=1703985348&width=800',
     description: 'Cute bow-tie design for dapper dogs!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats'],
     rating: 4.6,
     reviews: 98
@@ -415,7 +472,10 @@ export const birthdayCakes = [
     originalPrice: 649,
     image: 'https://thedoggybakery.com/cdn/shop/files/Badmash_1.png?v=1703984609&width=800',
     description: 'For the mischievous pup in your life!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Peanut Butter'],
     rating: 4.8,
     reviews: 145
@@ -429,7 +489,10 @@ export const birthdayCakes = [
     originalPrice: 649,
     image: 'https://thedoggybakery.com/cdn/shop/files/Mahi_1.png?v=1703988984&width=800',
     description: 'Elegant design for your princess!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Berry Mix'],
     rating: 4.7,
     reviews: 112
@@ -443,7 +506,10 @@ export const birthdayCakes = [
     originalPrice: 649,
     image: 'https://thedoggybakery.com/cdn/shop/files/Mojo.png?v=1703987873&width=800',
     description: 'Get your mojo back with this fun cake!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats'],
     rating: 4.6,
     reviews: 89
@@ -472,7 +538,10 @@ export const birthdayCakes = [
     originalPrice: 649,
     image: 'https://thedoggybakery.com/cdn/shop/files/Maya_1.png?v=1703987382&width=800',
     description: 'Beautiful design inspired by nature!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Banana & Honey'],
     rating: 4.7,
     reviews: 123
@@ -486,7 +555,10 @@ export const birthdayCakes = [
     originalPrice: 649,
     image: 'https://thedoggybakery.com/cdn/shop/files/mynx_1.png?v=1703989239&width=800',
     description: 'Perfect for Shih Tzu parents!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats'],
     rating: 4.8,
     reviews: 98
@@ -500,7 +572,10 @@ export const birthdayCakes = [
     originalPrice: 649,
     image: 'https://thedoggybakery.com/cdn/shop/files/Slices_1.png?v=1703990822&width=800',
     description: 'Pre-sliced for easy sharing!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Mixed'],
     rating: 4.6,
     reviews: 87
@@ -514,7 +589,10 @@ export const birthdayCakes = [
     originalPrice: 649,
     image: 'https://thedoggybakery.com/cdn/shop/files/Patches_2.png?v=1741098689&width=800',
     description: 'Colorful patches design!',
-    sizes: ['500g', '1kg'],
+    sizes: [
+      { name: '500g', price: 600 },
+      { name: '1kg', price: 1100 }
+    ],
     flavors: ['Chicken & Oats', 'Mixed'],
     rating: 4.7,
     reviews: 112
