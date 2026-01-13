@@ -1129,8 +1129,12 @@ async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
     """Sync conversations from Chatbase API to our database"""
     import httpx
     
-    if not CHATBASE_API_KEY or not CHATBASE_CHATBOT_ID:
-        raise HTTPException(status_code=500, detail="Chatbase API not configured")
+    api_key = os.environ.get("CHATBASE_API_KEY")
+    chatbot_id = os.environ.get("CHATBASE_CHATBOT_ID")
+    
+    if not api_key or not chatbot_id:
+        logger.error(f"Chatbase not configured - API Key: {'set' if api_key else 'missing'}, Bot ID: {'set' if chatbot_id else 'missing'}")
+        raise HTTPException(status_code=500, detail="Chatbase API not configured. Please check environment variables.")
     
     try:
         async with httpx.AsyncClient() as client:
@@ -1138,11 +1142,11 @@ async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
             response = await client.get(
                 f"https://www.chatbase.co/api/v1/get-conversations",
                 headers={
-                    "Authorization": f"Bearer {CHATBASE_API_KEY}",
+                    "Authorization": f"Bearer {api_key}",
                     "Content-Type": "application/json"
                 },
                 params={
-                    "chatbotId": CHATBASE_CHATBOT_ID,
+                    "chatbotId": chatbot_id,
                     "size": 100
                 },
                 timeout=30.0
