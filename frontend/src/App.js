@@ -1,6 +1,7 @@
 import React from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { CartProvider } from "./context/CartContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -24,6 +25,7 @@ import Contact from "./pages/Contact";
 
 function App() {
   return (
+    <HelmetProvider>
     <CartProvider>
       <BrowserRouter>
         <div className="App">
