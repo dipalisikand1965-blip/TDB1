@@ -168,9 +168,12 @@ ADMIN_PASSWORD=lola4304
 
 ### Jan 13, 2025 (Session 3)
 - ✅ Fixed Hampers category page - now shows "Gift Hampers & Party Boxes 🎁" with 13 products
-- ✅ Triggered product sync to properly categorize hamper products
+- ✅ **CRITICAL: Cleaned up 164 mock products** with wrong data - now only real Shopify data
+- ✅ Product variants and prices now match original thedoggybakery.com (e.g., Chicken Jerky: 150g/300g not 100g/200g)
+- ✅ Fixed Insights page - "Read More" now opens full articles with complete content
+- ✅ Added admin endpoint `/api/admin/cleanup-mock-products` for database cleanup
+- ✅ All 392 products correctly synced from Shopify
 - ✅ Verified Mira AI close button works (X button in chat widget header)
-- ✅ Verified product modal works correctly - no overlap bug found
 - ✅ All frontend tests passed (11/11) including mobile viewport
 
 ### Jan 13, 2025 (Session 2)
