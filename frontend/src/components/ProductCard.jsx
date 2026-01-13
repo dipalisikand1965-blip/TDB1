@@ -291,18 +291,32 @@ const ProductDetailModal = ({ product, onClose }) => {
                   onChange={(e) => setCartInput({...cartInput, age: e.target.value})}
                   className="text-sm"
                 />
-                <Popover>
+                <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal text-sm h-10">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start text-left font-normal text-sm h-10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCalendarOpen(true);
+                      }}
+                    >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {cartInput.date ? format(cartInput.date, 'PP') : <span className="text-gray-500">Date</span>}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+                  <PopoverContent 
+                    className="w-auto p-0 z-[10000]" 
+                    align="start"
+                    onInteractOutside={(e) => e.preventDefault()}
+                  >
                     <Calendar
                       mode="single"
                       selected={cartInput.date}
-                      onSelect={(date) => setCartInput({...cartInput, date})}
+                      onSelect={(date) => {
+                        setCartInput({...cartInput, date});
+                        setCalendarOpen(false);
+                      }}
                       initialFocus
                     />
                   </PopoverContent>
