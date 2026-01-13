@@ -72,11 +72,13 @@ const ProductListing = ({ category = 'all' }) => {
       case 'frozen-treats': return 'Frozen Treats';
       case 'accessories': return 'Accessories & Toys';
       case 'pan-india': return 'Pan India Delivery';
-      case 'mini-cakes': return 'Mini Cakes (Pupcakes)';
+      case 'mini-cakes': return 'Bowto Cakes';
       case 'cat': return 'Cat Treats';
-      case 'cat-treats': return 'Cat Treats';
+      case 'cat-treats': return 'Cat Treats 🐱';
       case 'pizzas-burgers': return 'Pizzas & Burgers';
-      case 'dognuts': return 'Dognuts';
+      case 'dognuts': return 'Pupcakes & Dognuts';
+      case 'nut-butters': return 'Nut Butters';
+      case 'other': return 'More Products';
       default: return 'All Products';
     }
   };
