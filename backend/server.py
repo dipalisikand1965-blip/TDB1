@@ -1237,6 +1237,7 @@ async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
                     "customer_name": conv.get("customerName") or extracted['name'],
                     "customer_phone": conv.get("customerPhone") or extracted['phone'],
                     "customer_location": extracted['location'],
+                    "pet_name": extracted.get('pet_name'),
                     "message_preview": extracted['preview'],
                     "message_count": len(messages),
                     "created_at": conv.get("createdAt"),
