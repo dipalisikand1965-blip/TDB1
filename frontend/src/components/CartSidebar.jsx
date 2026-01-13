@@ -60,10 +60,10 @@ const CartSidebar = () => {
                            {item.customDetails.decoration !== 'None' && <p><span className="font-semibold">Decoration:</span> {item.customDetails.decoration}</p>}
                            {item.customDetails.customName && <p><span className="font-semibold">Pet Name:</span> {item.customDetails.customName}</p>}
                            {item.customDetails.instructions && <p><span className="font-semibold">Note:</span> {item.customDetails.instructions}</p>}
-                        </div>
                            {item.customDetails.petName && <p><span className="font-semibold">Pet:</span> {item.customDetails.petName}</p>}
                            {item.customDetails.date && <p><span className="font-semibold">Date:</span> {new Date(item.customDetails.date).toDateString()}</p>}
                            {item.customDetails.time && <p><span className="font-semibold">Time:</span> {item.customDetails.time}</p>}
+                        </div>
                       )}
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center gap-2">
