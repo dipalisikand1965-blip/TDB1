@@ -28,7 +28,7 @@ const Navbar = () => {
     <>
       {/* Top Banner */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 text-center text-sm font-medium">
-        🎉 Same Day Delivery in Mumbai & Bangalore for orders by 6 PM! 🚚
+        🎉 Same Day Delivery in Mumbai, Bangalore & Gurugram for orders by 6 PM! 🚚
       </div>
 
       {/* Main Navbar */}
