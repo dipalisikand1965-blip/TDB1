@@ -822,27 +822,37 @@ CRITICAL RULES:
 
         # Construct Conversation History
         history_text = ""
+        answered_questions = []
         if request.history:
-            history_text = "\n\nCONVERSATION HISTORY:\n"
-            for msg in request.history[-10:]:
+            history_text = "\n\nCONVERSATION HISTORY (Review carefully - DO NOT repeat questions already answered):\n"
+            for msg in request.history[-15:]:
                 role = msg.get("role", "unknown")
                 content = msg.get("content", "")
                 history_text += f"{role.upper()}: {content}\n"
+                # Track what's been answered
+                if role == "user":
+                    answered_questions.append(content)
 
         full_prompt = f"""
-        {history_text}
-        
-        CURRENT USER INPUT: {user_query}
-        
-        SEARCH RESULTS & LOCATION CONTEXT (For this turn):
-        {search_results}
-        
-        TASK:
-        Continue the conversation flow as Mira based on the 'FLOW OF SERVICE' rules.
-        - If this is the first message (or history is empty), start at Step 1.
-        - If history exists, determine which Step (1-9) comes next based on the user's reply.
-        - Adhere strictly to the bolding and phrasing rules.
-        """
+{history_text}
+
+INFORMATION ALREADY PROVIDED BY GUEST (DO NOT ASK AGAIN):
+{chr(10).join(answered_questions) if answered_questions else 'None yet - this is a new conversation'}
+
+CURRENT USER INPUT: {user_query}
+
+SEARCH RESULTS (Use for Step 3 Options - do not reveal source):
+{search_results}
+
+INSTRUCTIONS:
+1. Review the CONVERSATION HISTORY above
+2. Identify which step (1-9) you are currently on
+3. DO NOT repeat the governing sentence if it already appeared
+4. DO NOT ask for information the guest already provided
+5. Ask ONE question at a time in **bold**
+6. Progress through the 9-step flow naturally
+7. Use British English spelling
+"""
 
         chat = LlmChat(
             api_key=api_key,
