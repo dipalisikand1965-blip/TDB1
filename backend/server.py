@@ -1144,19 +1144,77 @@ async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
             data = response.json()
             conversations = data.get("data", [])
             
+            def extract_contact_from_messages(messages):
+                """Extract contact info from chat messages using regex"""
+                import re
+                all_text = ' '.join([str(m.get('content', '')) for m in messages if isinstance(m, dict)])
+                
+                # Extract phone numbers (Indian format: +91, 91, or starting with 6-9)
+                phone_patterns = [
+                    r'(?:\+91|91)?[\s-]?([6-9]\d{9})',
+                    r'\b([6-9]\d{9})\b',
+                    r'(?:phone|mobile|contact|whatsapp|call)[\s:]*(?:\+91|91)?[\s-]?([6-9]\d{9})',
+                ]
+                phones = []
+                for pattern in phone_patterns:
+                    found = re.findall(pattern, all_text, re.IGNORECASE)
+                    phones.extend(found)
+                
+                # Extract emails
+                emails = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', all_text)
+                
+                # Extract names after common patterns
+                name_patterns = [
+                    r'(?:my name is|name is|i am|this is|i\'m|called)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)',
+                    r'(?:name|pet parent)[\s:]+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)',
+                ]
+                names = []
+                for pattern in name_patterns:
+                    found = re.findall(pattern, all_text, re.IGNORECASE)
+                    # Filter out common words that aren't names
+                    filtered = [n for n in found if n.lower() not in ['the', 'a', 'an', 'mira', 'your', 'my', 'our']]
+                    names.extend(filtered)
+                
+                # Get first user message as preview
+                user_messages = [m.get('content', '') for m in messages if isinstance(m, dict) and m.get('role') == 'user']
+                preview = user_messages[0][:150] if user_messages else ''
+                
+                # Get location mentions
+                indian_cities = ['mumbai', 'bangalore', 'delhi', 'hyderabad', 'chennai', 'kolkata', 'pune', 'gurugram', 'gurgaon', 'noida', 'ahmedabad']
+                location = None
+                for city in indian_cities:
+                    if city in all_text.lower():
+                        location = city.title()
+                        break
+                
+                return {
+                    'phone': phones[0] if phones else None,
+                    'email': emails[0] if emails else None,
+                    'name': names[0] if names else None,
+                    'preview': preview,
+                    'location': location
+                }
+            
             synced_count = 0
             for conv in conversations:
                 conv_id = conv.get("id")
+                messages = conv.get("messages", [])
+                
+                # Extract contact info from messages
+                extracted = extract_contact_from_messages(messages)
                 
                 # Check if already synced
                 existing = await db.chatbase_chats.find_one({"chatbase_id": conv_id})
                 
                 chat_data = {
                     "chatbase_id": conv_id,
-                    "messages": conv.get("messages", []),
-                    "customer_email": conv.get("customerEmail"),
-                    "customer_name": conv.get("customerName"),
-                    "customer_phone": conv.get("customerPhone"),
+                    "messages": messages,
+                    "customer_email": conv.get("customerEmail") or extracted['email'],
+                    "customer_name": conv.get("customerName") or extracted['name'],
+                    "customer_phone": conv.get("customerPhone") or extracted['phone'],
+                    "customer_location": extracted['location'],
+                    "message_preview": extracted['preview'],
+                    "message_count": len(messages),
                     "created_at": conv.get("createdAt"),
                     "source": "chatbase",
                     "synced_at": datetime.now(timezone.utc).isoformat()
