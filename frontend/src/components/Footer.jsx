@@ -92,7 +92,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start space-x-2">
                 <Mail className="w-4 h-4 mt-1 flex-shrink-0" />
-                <p>woof@thedoggybakery.com</p>
+                <p>woof@thedoggybakery.in</p>
               </li>
               <li className="flex items-start space-x-2">
                 <MapPin className="w-4 h-4 mt-1 flex-shrink-0" />

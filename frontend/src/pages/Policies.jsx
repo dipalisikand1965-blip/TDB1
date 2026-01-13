@@ -91,8 +91,8 @@ const Policies = () => {
               <h3 className="text-lg font-semibold mt-6 mb-3">Contact Us</h3>
               <p className="text-gray-700">
                 For any order-related concerns, please email us at{' '}
-                <a href="mailto:woof@thedoggybakery.com" className="text-purple-600 hover:underline">
-                  woof@thedoggybakery.com
+                <a href="mailto:woof@thedoggybakery.in" className="text-purple-600 hover:underline">
+                  woof@thedoggybakery.in
                 </a>
               </p>
             </div>
@@ -151,16 +151,16 @@ const Policies = () => {
               <p className="text-gray-700 mb-4">
                 As a registered member, you may receive promotional emails. 
                 You can opt-out anytime by emailing us at{' '}
-                <a href="mailto:woof@thedoggybakery.com" className="text-purple-600 hover:underline">
-                  woof@thedoggybakery.com
+                <a href="mailto:woof@thedoggybakery.in" className="text-purple-600 hover:underline">
+                  woof@thedoggybakery.in
                 </a>
               </p>
 
               <h3 className="text-lg font-semibold mt-6 mb-3">Privacy Inquiries</h3>
               <p className="text-gray-700">
                 For privacy-related concerns, contact us at{' '}
-                <a href="mailto:woof@thedoggybakery.com" className="text-purple-600 hover:underline">
-                  woof@thedoggybakery.com
+                <a href="mailto:woof@thedoggybakery.in" className="text-purple-600 hover:underline">
+                  woof@thedoggybakery.in
                 </a>
               </p>
             </div>
@@ -244,8 +244,8 @@ const Policies = () => {
               <h3 className="text-lg font-semibold mt-6 mb-3">Contact</h3>
               <p className="text-gray-700">
                 Questions about Terms of Service:{' '}
-                <a href="mailto:woof@thedoggybakery.com" className="text-purple-600 hover:underline">
-                  woof@thedoggybakery.com
+                <a href="mailto:woof@thedoggybakery.in" className="text-purple-600 hover:underline">
+                  woof@thedoggybakery.in
                 </a>
               </p>
             </div>
@@ -321,7 +321,7 @@ const Policies = () => {
                 </p>
                 <p className="flex items-center gap-2 text-gray-700">
                   <Mail className="w-4 h-4 text-purple-600" />
-                  <a href="mailto:woof@thedoggybakery.com" className="hover:text-purple-600">woof@thedoggybakery.com</a>
+                  <a href="mailto:woof@thedoggybakery.in" className="hover:text-purple-600">woof@thedoggybakery.in</a>
                 </p>
               </div>
             </div>
