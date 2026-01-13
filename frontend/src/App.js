@@ -16,6 +16,11 @@ import About from "./pages/About";
 import Membership from "./pages/Membership";
 import Admin from "./pages/Admin";
 import Policies from "./pages/Policies";
+import FAQs from "./pages/FAQs";
+import Insights from "./pages/Insights";
+import Streaties from "./pages/Streaties";
+import Franchise from "./pages/Franchise";
+import Contact from "./pages/Contact";
 
 function App() {
   return (
@@ -47,6 +52,12 @@ function App() {
             <Route path="/privacy-policy" element={<Policies />} />
             <Route path="/terms-of-service" element={<Policies />} />
             <Route path="/shipping-policy" element={<Policies />} />
+            {/* New Pages */}
+            <Route path="/faqs" element={<FAQs />} />
+            <Route path="/insights" element={<Insights />} />
+            <Route path="/streaties" element={<Streaties />} />
+            <Route path="/franchise" element={<Franchise />} />
+            <Route path="/contact" element={<Contact />} />
           </Routes>
           <Footer />
           <CartSidebar />
