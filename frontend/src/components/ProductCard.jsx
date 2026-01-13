@@ -31,8 +31,8 @@ const ProductCard = ({ product }) => {
   const [cartInput, setCartInput] = useState({
     petName: '',
     date: null,
-    time: ''
-    age: '',
+    time: '',
+    age: ''
   });
   
   const { addToCart } = useCart();
