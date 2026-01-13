@@ -8,15 +8,32 @@ import { toast } from '../hooks/use-toast';
 const ProductCard = ({ product }) => {
   const sizes = product.sizes || ['Standard'];
   const flavors = product.flavors || ['Classic'];
+  
+  // Helper to get size name/price
+  const getSizeDetails = (size) => {
+    if (typeof size === 'object') return size;
+    return { name: size, price: product.price };
+  };
+
   const [selectedSize, setSelectedSize] = useState(sizes[0]);
   const [selectedFlavor, setSelectedFlavor] = useState(flavors[0]);
   const { addToCart } = useCart();
 
+  // Get current price based on selection
+  const currentSizeDetails = getSizeDetails(selectedSize);
+  const currentPrice = currentSizeDetails.price;
+
   const handleAddToCart = () => {
-    addToCart(product, selectedSize, selectedFlavor);
+    // Create a product variant object for the cart
+    const cartItem = {
+      ...product,
+      price: currentPrice, // Use the variant price
+      selectedSize: currentSizeDetails.name
+    };
+    addToCart(cartItem, currentSizeDetails.name, selectedFlavor);
     toast({
       title: 'Added to cart! 🎉',
-      description: `${product.name} (${selectedSize}, ${selectedFlavor})`,
+      description: `${product.name} (${currentSizeDetails.name}, ${selectedFlavor}) - ₹${currentPrice}`,
     });
   };
 
@@ -75,19 +92,24 @@ const ProductCard = ({ product }) => {
           <div>
             <label className="text-xs font-medium text-gray-700 block mb-1">Size</label>
             <div className="flex gap-2 flex-wrap">
-              {sizes.map((size) => (
-                <button
-                  key={size}
-                  onClick={() => setSelectedSize(size)}
-                  className={`px-3 py-1 text-xs rounded-md border transition-all ${
-                    selectedSize === size
-                      ? 'border-purple-600 bg-purple-50 text-purple-600 font-medium'
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                >
-                  {size.split(' ')[0]}
-                </button>
-              ))}
+              {sizes.map((size) => {
+                const details = getSizeDetails(size);
+                const isSelected = (typeof selectedSize === 'object' ? selectedSize.name : selectedSize) === details.name;
+                
+                return (
+                  <button
+                    key={details.name}
+                    onClick={() => setSelectedSize(size)}
+                    className={`px-3 py-1 text-xs rounded-md border transition-all ${
+                      isSelected
+                        ? 'border-purple-600 bg-purple-50 text-purple-600 font-medium'
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                  >
+                    {details.name}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
@@ -113,8 +135,8 @@ const ProductCard = ({ product }) => {
         {/* Price & Add to Cart */}
         <div className="flex items-center justify-between pt-2">
           <div>
-            <p className="text-2xl font-bold text-gray-900">₹{product.price}</p>
-            {product.originalPrice > product.price && (
+            <p className="text-2xl font-bold text-gray-900">₹{currentPrice}</p>
+            {product.originalPrice > currentPrice && (
               <p className="text-sm text-gray-500 line-through">₹{product.originalPrice}</p>
             )}
           </div>
