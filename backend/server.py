@@ -37,9 +37,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+try:
+    client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=5000)
+    db = client[os.environ.get('DB_NAME', 'doggy_bakery')]
+    logger.info(f"MongoDB connection configured: {mongo_url[:30]}...")
+except Exception as e:
+    logger.error(f"MongoDB connection error: {e}")
+    raise
 
 # Resend configuration
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
