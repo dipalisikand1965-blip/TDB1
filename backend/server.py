@@ -813,13 +813,11 @@ async def chat_with_mira(request: ChatRequest):
                 whatsapp_url = generate_whatsapp_notification_url(chat_data)
                 logger.info(f"WhatsApp notification URL generated: {whatsapp_url}")
         
-        # Increment chat count for rate limiting
-        await increment_chat_count(request.user_email, session_id)
+        # Rate limiting removed - no longer incrementing chat count
         
         return {
             "response": response, 
-            "session_id": session_id,
-            "membership_info": access
+            "session_id": session_id
         }
 
     except Exception as e:
