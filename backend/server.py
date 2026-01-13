@@ -456,9 +456,13 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     # Mini/Bowto cakes
     elif ("mini" in title and "cake" in title) or "bowto" in title:
         category = "mini-cakes"
-    # Breed-specific cakes (only if "cake" is also in title)
-    elif "cake" in title and any(breed in title for breed in ["retriever", "labrador", "beagle", "pug", "shih tzu", "indie", "husky", "german shepherd", "pomeranian", "rottweiler", "mynx"]):
-        category = "breed-cakes"
+    # Breed-specific cakes (check if title IS just a breed name, or has "cake" with breed)
+    elif any(breed in title for breed in ["retriever", "labrador", "beagle", "pug", "shih tzu", "indie", "husky", "german shepherd", "pomeranian", "rottweiler", "mynx"]):
+        # If it's a feeding mat, it's an accessory
+        if "mat" in title or "bandana" in title:
+            category = "accessories"
+        else:
+            category = "breed-cakes"
     # Main cakes (check before accessories because some cakes have "mat" or "toy" in bundle name)
     elif "cake" in product_type or ("cake" in title and "pupcake" not in title):
         category = "cakes"
