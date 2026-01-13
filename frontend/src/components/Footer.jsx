@@ -70,11 +70,12 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Customer Care</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/" className="hover:text-pink-500 transition-colors">FAQs</Link></li>
-              <li><Link to="/" className="hover:text-pink-500 transition-colors">Shipping Policy</Link></li>
-              <li><Link to="/" className="hover:text-pink-500 transition-colors">Return Policy</Link></li>
-              <li><Link to="/" className="hover:text-pink-500 transition-colors">Terms & Conditions</Link></li>
-              <li><Link to="/" className="hover:text-pink-500 transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/policies" className="hover:text-pink-500 transition-colors">FAQs</Link></li>
+              <li><Link to="/policies?tab=shipping" className="hover:text-pink-500 transition-colors">Shipping Policy</Link></li>
+              <li><Link to="/policies?tab=refund" className="hover:text-pink-500 transition-colors">Refund Policy</Link></li>
+              <li><Link to="/policies?tab=terms" className="hover:text-pink-500 transition-colors">Terms & Conditions</Link></li>
+              <li><Link to="/policies?tab=privacy" className="hover:text-pink-500 transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/membership" className="hover:text-pink-500 transition-colors">Membership</Link></li>
             </ul>
           </div>
 
