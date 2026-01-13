@@ -44,6 +44,12 @@ const Checkout = () => {
     
     const message = `🐕 *New Order from The Doggy Bakery Demo*
 
+const addOns = [
+  { id: 'ao-1', name: 'Birthday Bandana', price: 299 },
+  { id: 'ao-2', name: 'Party Hat', price: 199 },
+  { id: 'ao-3', name: 'Paw Balm', price: 350 },
+  { id: 'ao-4', name: 'Treat Pack (100g)', price: 150 }
+];
 Email: ${orderData.email}
 ${orderData.petName ? `Pet: ${orderData.petName}` : ''}
 ${orderData.age ? `Pet Age: ${orderData.age}` : ''}
@@ -72,6 +78,14 @@ Subtotal: ₹${getCartTotal()}
 Delivery: ₹${deliveryFee}
 *Grand Total: ₹${total}*
 
+  const handleAddOn = (addOn) => {
+    addToCart({
+      ...addOn,
+      image: 'https://placehold.co/100x100?text=Add+On', // Placeholder
+      description: 'Quick add-on item'
+    }, 'Standard', 'Standard');
+    toast({ title: "Added!", description: `${addOn.name} added to order.` });
+  };
 Payment: Cash on Delivery
 Order placed via Birthday Demo Site 🎂`;
 
@@ -391,6 +405,25 @@ Order placed via Birthday Demo Site 🎂`;
                       src={item.image}
                       alt={item.name}
                       className="w-16 h-16 object-cover rounded-md"
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <h3 className="font-semibold text-yellow-800 mb-2">🎉 Last Minute Add-ons?</h3>
+                <div className="space-y-2">
+                  {addOns.map(addon => (
+                    <div key={addon.id} className="flex justify-between items-center bg-white p-2 rounded border border-yellow-100">
+                      <span className="text-sm font-medium">{addon.name}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500">₹{addon.price}</span>
+                        <Button size="sm" variant="outline" className="h-6 text-xs" onClick={() => handleAddOn(addon)}>Add</Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-xs text-blue-800">
+                <p><strong>Note:</strong> GST will be applicable on the final invoice. A secure payment link including taxes will be sent to your WhatsApp/Email upon order confirmation.</p>
+                <p className="mt-1">Once payment is made, we start the baking! 🧁</p>
+              </div>
                     />
                     <div className="flex-1">
                       <p className="font-medium text-sm">{item.name}</p>
