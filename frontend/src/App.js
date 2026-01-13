@@ -14,6 +14,7 @@ import MiraConcierge from "./pages/MiraConcierge";
 import Checkout from "./pages/Checkout";
 import About from "./pages/About";
 import Membership from "./pages/Membership";
+import Admin from "./pages/Admin";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/about" element={<About />} />
             <Route path="/membership" element={<Membership />} />
+            <Route path="/admin" element={<Admin />} />
           </Routes>
           <Footer />
           <CartSidebar />
