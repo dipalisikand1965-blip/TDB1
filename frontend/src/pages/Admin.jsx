@@ -85,6 +85,10 @@ const Admin = () => {
   // Members
   const [members, setMembers] = useState([]);
   const [memberStats, setMemberStats] = useState({});
+  
+  // Chatbase
+  const [chatbaseChats, setChatbaseChats] = useState([]);
+  const [syncingChatbase, setSyncingChatbase] = useState(false);
 
   // Check for stored auth
   useEffect(() => {
