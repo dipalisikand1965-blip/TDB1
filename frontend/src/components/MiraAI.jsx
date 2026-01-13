@@ -52,6 +52,7 @@ const formatMessage = (text) => {
 const MiraAI = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [sessionId, setSessionId] = useState(() => `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+  const [membershipInfo, setMembershipInfo] = useState(null);
   const [messages, setMessages] = useState([
     {
       id: 1,
