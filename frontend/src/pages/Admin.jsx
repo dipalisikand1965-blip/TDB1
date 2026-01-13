@@ -33,7 +33,9 @@ import {
   CloudDownload,
   Zap,
   Users,
-  ShoppingBag
+  ShoppingBag,
+  Star,
+  FileText
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
