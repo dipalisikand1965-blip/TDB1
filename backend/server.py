@@ -73,8 +73,82 @@ ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "lola4304")
 CHATBASE_API_KEY = os.environ.get("CHATBASE_API_KEY")
 CHATBASE_CHATBOT_ID = os.environ.get("CHATBASE_CHATBOT_ID")
 
-# Create the main app
-app = FastAPI()
+# Background task for auto-sync
+sync_task = None
+
+async def auto_sync_products():
+    """Background task that syncs products from Shopify every 24 hours"""
+    while True:
+        try:
+            # Calculate time until next midnight IST (UTC+5:30)
+            now = datetime.now(timezone.utc)
+            ist_offset = timedelta(hours=5, minutes=30)
+            now_ist = now + ist_offset
+            
+            # Next midnight IST
+            tomorrow_ist = (now_ist + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+            wait_seconds = (tomorrow_ist - now_ist).total_seconds()
+            
+            # Wait until midnight (or 60 seconds minimum for testing)
+            logger.info(f"Auto-sync scheduled for midnight IST ({wait_seconds/3600:.1f} hours from now)")
+            await asyncio.sleep(max(wait_seconds, 60))
+            
+            # Perform sync
+            logger.info("Starting automatic Shopify product sync...")
+            shopify_products = await fetch_shopify_products()
+            
+            synced = 0
+            for sp in shopify_products:
+                transformed = transform_shopify_product(sp)
+                await db.products.update_one(
+                    {"shopify_id": sp["id"]},
+                    {"$set": transformed},
+                    upsert=True
+                )
+                synced += 1
+            
+            await db.sync_logs.insert_one({
+                "type": "auto_sync",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "total_synced": synced,
+                "status": "success"
+            })
+            
+            logger.info(f"Auto-sync completed: {synced} products synced from thedoggybakery.com")
+            
+        except asyncio.CancelledError:
+            logger.info("Auto-sync task cancelled")
+            break
+        except Exception as e:
+            logger.error(f"Auto-sync failed: {e}")
+            await db.sync_logs.insert_one({
+                "type": "auto_sync",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "status": "failed",
+                "error": str(e)
+            })
+            # Wait 1 hour before retrying on failure
+            await asyncio.sleep(3600)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup and shutdown events"""
+    global sync_task
+    # Start the auto-sync background task
+    sync_task = asyncio.create_task(auto_sync_products())
+    logger.info("Auto-sync background task started")
+    yield
+    # Cancel the task on shutdown
+    if sync_task:
+        sync_task.cancel()
+        try:
+            await sync_task
+        except asyncio.CancelledError:
+            pass
+    logger.info("Auto-sync background task stopped")
+
+# Create the main app with lifespan
+app = FastAPI(lifespan=lifespan)
 
 # Create routers
 api_router = APIRouter(prefix="/api")
