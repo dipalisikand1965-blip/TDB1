@@ -121,6 +121,7 @@ const ProductDetailModal = ({ product, onClose }) => {
 
   const [selectedSize, setSelectedSize] = useState(sizes[0]);
   const [selectedFlavor, setSelectedFlavor] = useState(flavors.length > 0 ? flavors[0] : null);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [cartInput, setCartInput] = useState({
     petName: '',
     date: null,
