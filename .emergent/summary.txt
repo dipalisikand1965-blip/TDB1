@@ -1,100 +1,303 @@
 <analysis>**original_problem_statement**: The user wants to rebuild his son's website, , as a professional e-commerce site for his 30th birthday.
 
 **PRODUCT REQUIREMENTS**:
-1.  **UI/UX**: Stunning and world-class design.
-2.  **AI Chatbot Mira**: A sophisticated concierge for celebration planning with a specific persona.
-3.  **Content**: Integrate video content and a live Instagram feed.
-4.  **Products**: Populate the site with all products, variants, and prices from the live , ensuring data accuracy.
-5.  **Deployment**: Prepare for deployment to the custom domain .
-6.  **Notifications**: Send order details via WhatsApp to  and Mira chat summaries via email to .
+1.  **UI/UX**: Stunning and world-class design, mirroring a preferred older version of the application.
+2.  **AI Chatbot Mira**: Originally a custom-built concierge, now replaced by a  iframe. Chat logs must be synced and viewable in the admin panel.
+3.  **Content**: Integrate video content and a live Instagram feed. Create pages for About Us, FAQs, TDB Insights, Streaties (a charity initiative), Own A Bakery (Franchise), and Contact Us.
+4.  **Products**: Sync all products, variants, and prices from the live , ensuring all categories like Pupcakes, Dognuts, Cat Treats, and Nut Butters are present and correctly categorized.
+5.  **Deployment**: Prepare for deployment to the custom domain  on GoDaddy.
+6.  **Notifications**: Send inquiries (franchise, etc.) to . Email notifications for chat summaries via Resend.
 7.  **Admin Panel**: A comprehensive backend system for:
-    *   Full product CRUD (Create, Read, Update, Delete).
-    *   Managing site content (e.g., homepage videos).
-    *   Viewing Mira AI chat logs.
+    *   Full product CRUD.
+    *   Managing site content (videos, banners).
+    *   Viewing Mira AI chat logs (synced from Chatbase).
     *   Viewing submitted orders.
     *   Managing user memberships.
-8.  **Product Sync**:
-    *   Automatically sync products from  every midnight.
-    *   Allow bulk product import/export via CSV.
-9.  **Membership System**:
-    *   Create a membership page with different tiers.
-    *   Gate access to Mira AI based on the user's membership level.
-10. **Enhanced Checkout**:
-    *   Include mandatory fields: Pet's Name, Pet Parent's Name, Address, WhatsApp, Email, and Special Instructions.
-    *   Ensure personalization details (name, age, etc.) carry through to the cart.
-11. **Policy Pages**: Add pages for Refund, Privacy, Terms of Service, and Shipping.
-12. **SEO**: Optimize the site for discoverability, mirroring and improving upon the live site's SEO.
+    *   Managing new content pages (Testimonials, Insights/Blog, FAQs, Streaties, Franchise).
+8.  **Product Sync**: Automatically sync products from  every midnight, with an option for manual sync.
+9.  **Membership System**: Create a membership page. The user requested to remove the AI chat gating, so Mira is now unlimited for all users.
+10. **Enhanced Product Display**: Product cards on listing pages should show a From Rs. X price. Clicking a card must open a detailed modal with options for size, flavor, and personalization, with a dynamically updating price.
+11. **Policy Pages**: Add pages for Refund, Privacy, Terms of Service, and Shipping, linked in the footer.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The project is a feature-complete full-stack application using a React frontend, a FastAPI backend, and MongoDB for data persistence. All initial product data from  has been migrated to the database.
-
-**Key Implemented Features**:
-*   **Full Admin Panel**: A password-protected () interface with tabs for a main dashboard, managing Mira chats, full product CRUD, site content (videos, banners), submitted orders, and user memberships.
-*   **MongoDB Backend**: The FastAPI backend manages all data in MongoDB collections for products, users, orders, and chats.
-*   **Product Automation**: The system automatically syncs products from the live site's Shopify  endpoint nightly via a scheduled job. The admin can also trigger this sync manually or use CSV import/export.
-*   **Membership & AI Gating**: A complete user registration and login system is in place. Mira AI usage is now gated, with free users having a daily message limit, prompting them to upgrade.
-*   **Enhanced Checkout & Order System**: The checkout page includes all user-requested fields, and successfully submitted orders are stored in the database and visible in the admin panel.
-*   **Dynamic Content**: All policy pages, homepage videos, and other key text are now managed from the admin panel.
-*   **SEO**: The  has been populated with extensive meta tags and JSON-LD structured data for improved SEO.
+A full-stack React and FastAPI application with a MongoDB database. The agent has performed a significant merge operation, integrating the UI/UX and features from an older, user-preferred version of the app into the current codebase. This included updating the navbar, product card styling, and adding numerous tabs to the admin panel. The problematic custom Mira AI has been replaced with a Chatbase.co iframe, and work has begun on syncing chat logs to the admin panel. Numerous bugs related to product categorization, display, and missing content have been fixed.
 
 **Last working item**:
--   **Last item agent was working**: The agent just finished creating the legal policy pages () by crawling the content from the live site, creating the React component, adding the route, and linking it in the footer.
--   **Status**: USER VERIFICATION PENDING
--   **Agent Testing Done**: Y (Agent confirmed the build completes successfully).
--   **Which testing method agent to use?**: screenshot tool (to view  page and verify footer links are present).
+-   **Last item agent was working**: Implementing the synchronization of chat logs from the user's  bot into the application's admin panel. The agent added the API key to the backend, created a new API endpoint (), and added a Sync Chatbase button to the admin UI. An  in  was discovered and fixed just before the session ended.
+-   **Status**: IN PROGRESS
+-   **Agent Testing Done**: N
+-   **Which testing method agent to use?**: Frontend testing agent. The agent should log into the admin panel, navigate to the Mira Chats tab, click the Sync Chatbase button, and verify that chat logs are fetched from the Chatbase API and displayed correctly in the UI.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Cart Items Lost on Page Navigation (P0)**
-    -   **Description**: The shopping cart does not persist if the user navigates to another page and returns. This is because the  state is not saved to .
-    -   **Attempted fixes**: None. The agent identified the issue but did not fix it.
-    -   **Next debug checklist**:
-        1.  Edit .
-        2.  On initial load, read and initialize the cart state from .
-        3.  Use a  hook to save the cart state to  whenever it changes.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical e-commerce bug. Fixing it will prevent users from losing their carts, which is essential for conversions.
-    -   **Status**: NOT STARTED
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Frontend
-
+-   **Issue 1: Complete and Verify Chatbase Integration (P0)**
 -   **Issue 2: Email Notifications Failing (P1)**
-    -   **Description**: The feature to email Mira chat summaries to  is failing with a  from the Resend API.
-    -   **Attempted fixes**: The agent correctly identified that the sending domain needs to be verified by adding DNS records. The feature is blocked pending this user action.
+-   **Issue 3: New Admin Tabs are Static (P2)**
+
+**Issues Detail**:
+-   **Issue 1: Complete and Verify Chatbase Integration (P0)**
+    -   **Attempted fixes**: The agent created the backend endpoint , added the Sync button to the frontend, and fixed a Python .
     -   **Next debug checklist**:
-        1.  Inform the user clearly that they must add DNS records (provided by Resend) to their domain registrar for .
-        2.  Once the user confirms completion, re-test the notification functionality.
-    -   **Why fix this issue and what will be achieved with the fix?**: Fulfills a core requirement for the user to be notified of AI chat interactions.
-    -   **Status**: BLOCKED (on user for domain verification)
+        1.  Verify the backend is running without errors using ==> /var/log/supervisor/backend.err.log <==
+  File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/server.py", line 68, in serve
+    config.load()
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/config.py", line 467, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/importer.py", line 21, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1074, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1004, in source_to_code
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/backend/server.py", line 1113
+    @admin_router.post("/sync-chatbase")
+    ^
+IndentationError: expected an indented block after function definition on line 1110
+INFO:     Stopping reloader process [6657]
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [7308] using WatchFiles
+Process SpawnProcess-1:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/server.py", line 68, in serve
+    config.load()
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/config.py", line 467, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/importer.py", line 21, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1074, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1004, in source_to_code
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/backend/server.py", line 1113
+    @admin_router.post("/sync-chatbase")
+    ^
+IndentationError: expected an indented block after function definition on line 1110
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Started server process [7602]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [7602]
+INFO:     Stopping reloader process [7308]
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [7625] using WatchFiles
+INFO:     Started server process [7627]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [42] using WatchFiles
+INFO:     Started server process [73]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+
+==> /var/log/supervisor/backend.out.log <==
+INFO:     10.64.128.161:36250 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.131.74:54798 - "GET /api/products?limit=500&category=mini-cakes HTTP/1.1" 200 OK
+INFO:     10.64.128.158:52332 - "GET /api/products?limit=500&category=mini-cakes HTTP/1.1" 200 OK
+INFO:     10.64.131.72:46046 - "GET /api/products?limit=500&category=treats HTTP/1.1" 200 OK
+INFO:     10.64.131.72:46046 - "GET /api/products?limit=500&category=dognuts HTTP/1.1" 200 OK
+INFO:     10.64.131.143:56470 - "GET /api/products?limit=500&category=dognuts HTTP/1.1" 200 OK
+INFO:     10.64.128.161:59484 - "GET /api/products?limit=500&category=dognuts HTTP/1.1" 200 OK
+INFO:     10.64.128.161:59484 - "GET /api/products?limit=500&category=treats HTTP/1.1" 200 OK
+INFO:     10.64.131.72:58092 - "GET /api/products?limit=500&category=mini-cakes HTTP/1.1" 200 OK
+INFO:     10.64.128.161:34976 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.131.72:49956 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.128.161:40732 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.128.161:40732 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.131.72:39766 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.131.72:39766 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.131.143:34154 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.136.7:50372 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.128.158:42504 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.128.161:53216 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.129.136:35670 - "POST /api/orders HTTP/1.1" 200 OK
+INFO:     10.64.128.161:53682 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.128.161:53682 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.136.7:57194 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.136.13:54812 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.136.13:34258 - "POST /api/admin/login HTTP/1.1" 200 OK
+INFO:     10.64.131.22:60770 - "GET /api/admin/dashboard HTTP/1.1" 200 OK
+INFO:     10.64.136.7:40182 - "GET /api/admin/chats?limit=100 HTTP/1.1" 200 OK
+INFO:     10.64.136.13:44118 - "GET /api/admin/members HTTP/1.1" 200 OK
+INFO:     10.64.136.7:40182 - "GET /api/admin/products?limit=500 HTTP/1.1" 200 OK
+INFO:     10.64.136.13:44118 - "GET /api/admin/sync/status HTTP/1.1" 200 OK
+INFO:     10.64.136.7:40182 - "GET /api/admin/site-content HTTP/1.1" 200 OK
+INFO:     10.64.131.74:43104 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.7:55658 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.131.22:58774 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.13:59242 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.131.22:36342 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.136.7:55438 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.131.72:37640 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.131.74:48412 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.136.13:43292 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.128.158:33578 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.131.72:52516 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.128.161:45518 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.131.72:59792 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.131.72:58256 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.128.158:47162 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.128.158:60904 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.131.72:43044 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.13:59258 - "POST /api/admin/sync/shopify HTTP/1.1" 200 OK
+INFO:     10.64.131.74:43096 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.7:37996 - "GET /api/products?category=cakes&limit=1 HTTP/1.1" 200 OK
+INFO:     10.64.128.158:51620 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.131.143:44478 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.129.138:32802 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.131.72:50092 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.128.158:32808 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.131.74:52154 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.128.161:48372 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.128.161:48372 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.131.72:36056 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.128.158:50600 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.7:50344 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.136.13:39904 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.128.161:54236 - "GET /api/products?limit=500&category=treats HTTP/1.1" 200 OK
+INFO:     10.64.131.74:45322 - "GET /api/products?limit=500&category=mini-cakes HTTP/1.1" 200 OK
+INFO:     10.64.128.158:45788 - "GET /api/products?limit=500&category=mini-cakes HTTP/1.1" 200 OK
+INFO:     10.64.128.161:54236 - "GET /api/products?limit=500&category=pan-india HTTP/1.1" 200 OK
+INFO:     10.64.131.72:49144 - "GET /api/products?limit=500&category=fresh-meals HTTP/1.1" 200 OK
+INFO:     10.64.131.74:45322 - "GET /api/products?limit=500&category=dognuts HTTP/1.1" 200 OK
+INFO:     10.64.131.72:49144 - "GET /api/products?limit=500&category=cat-treats HTTP/1.1" 200 OK
+INFO:     10.64.128.161:48616 - "GET /api/products?limit=500&category=accessories HTTP/1.1" 200 OK
+INFO:     10.64.131.22:37768 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.131.22:37768 - "GET /api/products?limit=500&category=cakes HTTP/1.1" 200 OK
+INFO:     10.64.136.7:60986 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.128.158:57938 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.13:53552 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.131.143:52952 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.129.136:60632 - "GET /api/content/videos HTTP/1.1" 200 OK
+INFO:     10.64.131.143:52952 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.129.136:35076 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.129.136:45990 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.129.136:33972 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.129.136:50160 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.128.161:37518 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.13:59656 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.131.22:58922 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.131.22:57072 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.13:35358 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.13:39812 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.7:50220 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.13:36552 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.131.22:44266 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.13:44910 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.131.22:54636 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.131.22:52978 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.13:60856 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     10.64.136.7:45574 - "POST /api/mira/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53062 - "GET /api/products?limit=1 HTTP/1.1" 200 OK
+INFO:     10.64.136.13:41712 - "POST /api/admin/login HTTP/1.1" 200 OK
+INFO:     10.64.136.7:58214 - "GET /api/admin/dashboard HTTP/1.1" 200 OK.
+        2.  Use  to directly test the  endpoint to confirm it connects to the Chatbase API and returns data.
+        3.  Perform an end-to-end test from the UI: log into , navigate to Mira Chats, click Sync Chatbase, and check the browser console and UI for fetched data.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a core user requirement to replace the faulty custom AI while retaining visibility of chat logs in the admin panel.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Both
+-   **Issue 2: Email Notifications Failing (P1)**
+    -   **Description**: From the initial handoff, email notifications via Resend are failing due to an unverified domain.
+    -   **Next debug checklist**: Inform the user they must add the DNS records provided by Resend to their domain registrar for  to complete verification.
+    -   **Why fix this issue and what will be achieved with the fix?**: Fulfills a core business requirement for receiving notifications.
+    -   **Status**: BLOCKED (on user action)
     -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Backend
+-   **Issue 3: New Admin Tabs are Static (P2)**
+    -   **Description**: The agent added admin tabs for Testimonials, Insights/Blog, FAQs, Streaties, and Franchise, but the content is mocked in the frontend  file. They are not connected to the database.
+    -   **Next debug checklist**:
+        1.  Create MongoDB collections for each new content type (e.g., , ).
+        2.  Implement backend REST API endpoints (GET, POST, PUT, DELETE) in  for each content type.
+        3.  Connect the corresponding tabs in  to these APIs to enable full CRUD functionality.
+    -   **Why fix this issue and what will be achieved with the fix?**: To make the website fully manageable from the admin panel, which was the user's intent.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Both
 
 **In progress Task List**:
--   None.
+-   **Task 1: Complete Chatbase Integration**
+    -   **Where to resume**: At verifying the backend and then testing the full end-to-end flow of the Sync Chatbase feature from the admin panel.
+    -   **What will be achieved with this?**: The user will have their preferred Chatbase bot embedded in the site, and they will be able to view all chat logs within their admin panel.
+    -   **Status**: IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?**: Both
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks**:
-    -   **P0: Provide DNS Records for Deployment**: The user is ready to go live and needs the A and CNAME records to point  to the application.
-    -   **P1: Implement Discovered Site Features**: The agent crawled the live site and found features that have not been implemented yet: **MobiKwik payment offers**, a **Pawsome Panel** for loyal customers, and a **Testimonials section**. These should be added to match the existing site.
-    -   **P2: Final Product & Pricing Audit**: Perform a thorough review of all products (~550+), variants, and pricing logic against the live site to ensure 100% accuracy.
-
+    -   **P0: Provide DNS Records for Deployment**: The user has asked for the specific DNS records for GoDaddy to deploy to . The agent needs to run the deployment tool to generate these values.
+    -   **P1: Final Product & Pricing Audit**: Perform a final, thorough review of all 556+ products, variants, and pricing logic against the live site to ensure 100% accuracy before deployment.
 -   **Future Tasks**:
-    -   **Advanced Review System**: Enhance the Testimonials section by allowing users to submit reviews with photo and video uploads.
-    -   **True Headless Shopify Integration**: Migrate from the current DB sync method to using Shopify's Storefront API directly on the frontend for fetching products.
-    -   **Re-evaluate Custom Cake Designer**: Confirm with the user if the current image upload feature is sufficient or if a more interactive design tool is desired.
+    -   **Implement WhatsApp Order Notifications**: The current solution is a click-to-chat link. The original requirement was to *send* order details via a service like Twilio.
+    -   **Advanced Review System**: Allow users to submit reviews with photo and video uploads.
+    -   **True Headless Shopify Integration**: Migrate from the current DB sync method to using Shopify's Storefront API directly.
 
 **Completed work in this session**
--   **Full Admin Panel**: Created a secure  panel with a dashboard and management capabilities for products, orders, users/memberships, Mira chats, and site content.
--   **Database Migration & Automation**: Shifted all application data from static files to MongoDB and set up a nightly cron job to auto-sync products from the live site's Shopify store.
--   **Product Management System**: Implemented full CRUD for products, plus bulk import/export via CSV from the admin panel.
--   **Membership System & AI Gating**: Built a user registration/login system and implemented logic to limit Mira AI access for non-paying members.
--   **Order Management System**: Developed a complete flow for capturing detailed customer orders at checkout and displaying them in the admin panel.
--   **SEO & Policy Pages**: Implemented comprehensive SEO meta tags and created dynamic pages for all legal policies, manageable from the admin.
--   **Enhanced Checkout**: Redesigned the checkout page to be a comprehensive form capturing all necessary delivery and personalization details.
+-   **UI/UX Overhaul**: Merged the design and features from an older, user-preferred version of the app, including updating , , and .
+-   **New Content Pages**: Created new pages and routes for FAQs, Insights, Streaties, Franchise, and Contact Us, and updated the  accordingly.
+-   **Mira AI Replacement**: Replaced the buggy custom AI with the user's  iframe in . Removed all AI gating logic from the backend.
+-   **Product Sync & Display Fixes**:
+    -   Corrected product display to show From Rs. X and open a detail modal ().
+    -   Fixed  to fetch data from the backend API instead of mock data.
+    -   Greatly improved the product categorization logic in  during the Shopify sync, correctly identifying and sorting hundreds of products.
+-   **Bug Fixes**:
+    -   Resolved an issue where raw HTML was displayed in product descriptions by adding HTML-stripping logic to the backend.
+    -   Corrected the content of the  page to reflect the charity program, not a product collection.
+    -   Updated email addresses across the site to .
 
 **Earlier issues found/mentioned but not fixed**
--   The two main issues are the **Cart Persistence** and **Email Notification Failure**, which are detailed in the All Pending/In progress Issue list.
+-   The original requirement to *send* **WhatsApp order notifications** has not been implemented; a click-to-chat link exists instead.
 
 **Known issue recurrence from previous fork**
 -   None.
@@ -106,87 +309,79 @@ The project is a feature-complete full-stack application using a React frontend,
 -   **Frontend**: React, React Router, TailwindCSS, Shadcn UI.
 -   **Backend**: FastAPI, Pydantic.
 -   **Database**: MongoDB.
--   **Authentication**: HTTP Basic Auth (for admin), JWT (for users).
--   **Scheduled Jobs**:  for nightly product sync.
--   **3rd Party Integrations**: Emergent LLM Key, Resend (email), WhatsApp (click-to-chat), Shopify (read-only  endpoint).
+-   **Authentication**: JWT (for users), Basic Auth (for admin).
+-   **3rd Party Integrations**: Chatbase.co (iframe + API), Shopify (sync), Resend (blocked).
+-   **HTTP Client**:  for calling the Chatbase API.
 
 **key DB schema**
 -   **products**: uid=0(root) gid=0(root) groups=0(root), , , , , , .
--   **mira_chats**: , , , ,  (pet name, city, etc.).
--   **users**: , , , .
--   **orders**: , , , ,  (name, address, etc.).
--   **site_settings**:  ('main'), , , , etc.
+-   **mira_chats**: , , , ,  ('custom' or 'chatbase').
+-   **users**: , , .
+-   **orders**: , , , , .
 
 **changes in tech stack**
--   **Database**: Introduced MongoDB as the primary data store.
--   **Backend Scheduling**: Added  library for cron jobs.
--   **Authentication**: Implemented JWT for user sessions.
--   **Email**: Integrated the  library for transactional emails.
+-   Added  to  for making API calls to Chatbase.
 
 **All files of reference**
-*   : The entire backend logic is in this single file.
-*   : The entire frontend logic for the admin panel is in this file.
-*   : Contains the enhanced checkout form logic.
-*   : Manages the non-persistent cart state.
-*   : Stores all secrets and configuration variables.
+*   : The entire backend logic. Critical for debugging the Chatbase sync.
+*   : The entire frontend admin logic. Critical for testing the Chatbase sync button and display.
+*   : Now just contains the Chatbase iframe.
+*   : Contains the updated product card and modal logic.
+*   : The rewritten page for the charity initiative.
+*   : Contains the new Chatbase credentials.
 
 **Areas that need refactoring**:
--   ****: This monolithic file (1200+ lines) is unmaintainable. It should be broken down into separate modules for routes, models, and services (e.g., , ).
--   ****: This massive component should be split into smaller, dedicated components for each tab (e.g., , ).
--   ****: Needs to be refactored to use  for cart persistence.
+-   ****: This monolithic file is now extremely large and complex. It urgently needs to be broken down into modules for routes, models, and services.
+-   ****: This component has become massive with the addition of many new tabs. It should be split into smaller, dedicated components for each tab to improve maintainability.
 
 **key api endpoints**
--   , : User authentication.
--   : Submits a new customer order.
--   , , : Admin data retrieval.
--   : Manually triggers product sync.
--   : Endpoint for the external cron job trigger.
+-   : **(New)** Triggers synchronization of chat logs from the Chatbase API. This is the focus of the current task.
+-   : Used by the product listing pages to display categorized products.
 
 **Critical Info for New Agent**
--   **PRIORITY 1: FIX BUGS.** Before adding new features, you must fix the cart persistence issue (). It is a critical flaw for an e-commerce site.
--   **PRIORITY 2: DEPLOYMENT.** The user is ready to go live. Your next major task is to provide the DNS records for .
--   **Monolithic Codebase**: Be aware that the main backend () and frontend admin () files are extremely large. Navigate them carefully and consider that any new feature will add to the complexity.
+-   **PRIORITY 1: Fix Chatbase Integration.** The agent was in the middle of this task. The user is waiting for the ability to see Chatbase logs in the admin panel. Start by verifying the backend is stable and then test the Sync Chatbase button end-to-end. The user has provided the necessary API key.
+-   **The custom Mira AI is deprecated.** Do not attempt to fix or modify the old Mira AI logic in . The project has pivoted to using the user's  iframe.
+-   **Codebase has been significantly altered.** The agent manually merged features and UI from an older fork at the user's request. Be aware that the Navbar, Admin panel, and several product components were heavily modified in this session.
 -   **Admin Credentials**: Use  /  to access the admin panel at .
--   **Blocked Features**: Email notifications are blocked pending user action (DNS verification for Resend). Remind the user about this.
 
 **documents and test reports created in this job**
--    (Updated extensively)
--    (Outdated, from a previous session)
+-    (Updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Asks to add all policy pages (Refund, Privacy, Terms, Shipping) by crawling the live site. (DONE)
-2.  **User**: Asks for a status update (where are we). (Responded to)
-3.  **User**: Asks for the live URL of the site. (Responded to)
-4.  **User**: Confirms CSV import and auto-sync from the live site are desired. Asks for membership gating to be implemented. (DONE)
-5.  **User**: Asks for several major enhancements: Admin to see memberships & orders; checkout page to have more fields (pet name, parent name, address, etc.) and be mandatory; study live site for more features; add new videos; set auto-sync to midnight. (DONE)
-6.  **User**: Approves the plan to build the admin panel, product management, and video management. (DONE)
-7.  **User**: Clarifies the membership tiers and how Mira AI access should be gated (partial vs. full). Asks to confirm all products/variants are on the site. (DONE)
-8.  **User**: Provides the Resend API key. (DONE)
-9.  **User**: Provides admin credentials (/) and the email for notifications. Confirms Gurugram and Gurgaon are the same. (DONE)
-10. **User**: Confirms the plan to build an admin panel for viewing Mira chats and receiving notifications via both email and WhatsApp. (DONE)
+1.  **User**: Provides Chatbase iframe and asks if it's possible to integrate it and sync logs to the admin panel.
+2.  **User**: Provides the extensive rules for their Chatbase AI, complaining the custom AI is repetitive.
+3.  **User**: Confirms the custom AI is still repeating questions even after rule updates.
+4.  **User**: Re-confirms they want Chatbase logs to appear in the admin panel.
+5.  **User**: Provides the Chatbase API key and bot ID.
+6.  **User**: Reports that raw HTML code is appearing in product descriptions. (FIXED)
+7.  **User**: Reports the product modal is broken, with a bad layout. (FIXED)
+8.  **User**: Reports the Mira AI daily limit is still active and franchise inquiries should be mailed to . (FIXED)
+9.  **User**: Corrects the agent on the  page content, explaining it's a charity initiative, not a product category. (FIXED)
+10. **User**: Reports multiple product/category issues: incorrect pricing display, missing categories, and missing products. (FIXED)
 
 **Project Health Check:**
--   **Functional with Bugs**: The application is largely complete and running but has a critical user-facing bug (cart persistence) and a blocked feature (email notifications).
--   **Mocked**: Not mocked. The application is fully integrated with a MongoDB database.
+-   **Broken**: The core feature being worked on, Chatbase integration into the admin panel, is incomplete and non-functional.
+-   **Mocked**: The newly added admin tabs (FAQs, Insights, Franchise, etc.) are currently static placeholders with mocked data.
 
 **3rd Party Integrations**
--   **OpenAI/LLM**: via  (Emergent LLM Key).
--   **Resend**: For email notifications (partially integrated, blocked on domain verification).
--   **WhatsApp**: For click-to-chat order links.
--   **Shopify**: Read-only access to the public  endpoint for product syncing.
+-   **Chatbase.co**: Integrated via iframe; API sync is IN PROGRESS. Requires User API Key ().
+-   **Shopify**: Read-only access to  for syncing.
+-   **Resend**: For email notifications (BLOCKED on user domain verification).
+-   **Emergent LLM Key**: Used for the now-deprecated custom Mira AI. No longer in active use.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES, but the agent did not review or act upon the results, which is a process failure.
+-   **Testing agent used after significant changes**: NO
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: []
--   **Known regressions**: The shopping cart does not persist across page loads, which is a significant functional regression.
+-   **Known regressions**: None.
 
 **Credentials to test flow:**
--   Admin URL: 
--   Username: 
--   Password: 
+-   **Admin URL**: 
+-   **Username**: 
+-   **Password**: 
+-   **Chatbase API Key**: 
+-   **Chatbase Bot ID**: 
 
 **What agent forgot to execute**
--   The agent did not provide the user with the DNS records required for deployment.
--   The agent did not implement the extra features discovered on the live site (MobiKwik offers, Pawsome Panel, Testimonials) as requested by the user.
--   The agent called the testing agent but ignored the output and proceeded with self-testing, failing to follow the prescribed workflow.</analysis>
+-   The agent did not provide the specific DNS records (A and CNAME values) for GoDaddy deployment, despite the user asking for them.
+-   After creating new static pages (FAQs, Streaties, etc.) and corresponding admin tabs, the agent failed to implement the backend APIs and database collections required to make this content dynamically manageable.</analysis>
