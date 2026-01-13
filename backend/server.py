@@ -1187,9 +1187,9 @@ async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
                     customer_names.extend([n.strip().title() for n in found])
                 
                 # Filter out common words
-                exclude_words = ['the', 'a', 'an', 'mira', 'your', 'my', 'our', 'for', 'hi', 'hello', 'hey', 'thanks', 'thank', 'please', 'yes', 'no', 'ok', 'okay']
-                pet_names = [n for n in pet_names if n.lower() not in exclude_words and len(n) > 1]
-                customer_names = [n for n in customer_names if n.lower() not in exclude_words and len(n) > 1]
+                exclude_words = ['the', 'a', 'an', 'mira', 'your', 'my', 'our', 'for', 'hi', 'hello', 'hey', 'thanks', 'thank', 'please', 'yes', 'no', 'ok', 'okay', 'grooming', 'training', 'booking', 'looking', 'need', 'want', 'pet', 'dog', 'cat', 'puppy']
+                pet_names = [n for n in pet_names if n.lower() not in exclude_words and len(n) > 2]
+                customer_names = [n for n in customer_names if n.lower() not in exclude_words and len(n) > 2]
                 
                 # Determine display name: prefer customer name, then pet name with label
                 display_name = None
