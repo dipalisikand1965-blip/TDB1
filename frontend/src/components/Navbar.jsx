@@ -15,7 +15,7 @@ const Navbar = () => {
   const mainNavigation = [
     { name: 'Cakes', path: '/cakes' },
     { name: 'Custom Cake', path: '/custom-cake' },
-    { name: 'Pupcakes', path: '/mini-cakes' },
+    { name: 'Bowto Cakes', path: '/mini-cakes' },
     { name: 'Treats', path: '/treats' },
     { name: 'Pan India', path: '/pan-india' },
     { name: 'Fresh Meals', path: '/meals' },
@@ -23,9 +23,12 @@ const Navbar = () => {
 
   // More dropdown items
   const moreNavigation = [
-    { name: 'Breed Cakes', path: '/custom' },
+    { name: 'Breed Cakes', path: '/breed-cakes' },
+    { name: 'Pupcakes & Dognuts', path: '/pupcakes-dognuts' },
     { name: 'Desi Treats', path: '/desi' },
     { name: 'Frozen Treats', path: '/frozen' },
+    { name: 'Nut Butters', path: '/nut-butters' },
+    { name: 'Cat Treats', path: '/cat-treats' },
     { name: 'Accessories & Toys', path: '/accessories' },
     { name: 'Merchandise', path: '/merchandise' },
     { name: 'Membership', path: '/membership' },
