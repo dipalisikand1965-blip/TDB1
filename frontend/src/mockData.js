@@ -2555,7 +2555,7 @@ export const faqs = [
   {
     id: '6',
     question: 'Do you offer same-day delivery?',
-    answer: 'Yes! We offer same-day delivery in Mumbai and Bangalore for all orders placed by 6:00 PM. For other locations, standard delivery takes 2-3 business days. Mira AI can help you check delivery availability in your area!'
+    answer: 'Yes! We offer same-day delivery in Mumbai, Bangalore and Gurugram for all orders placed by 6:00 PM. For other locations, standard delivery takes 2-3 business days. Mira AI can help you check delivery availability in your area!'
   }
 ];
 
