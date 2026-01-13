@@ -172,6 +172,22 @@ const ProductDetailModal = ({ product, onClose }) => {
     onClose();
   };
 
+  // Quick add related product to cart
+  const handleQuickAdd = (relatedProduct) => {
+    const price = relatedProduct.minPrice || relatedProduct.price || 0;
+    const cartItem = {
+      ...relatedProduct,
+      price: price,
+      selectedSize: relatedProduct.sizes?.[0]?.name || 'Standard',
+      selectedFlavor: relatedProduct.flavors?.[0]?.name || 'Standard',
+    };
+    addToCart(cartItem, cartItem.selectedSize, cartItem.selectedFlavor);
+    toast({
+      title: 'Added to cart! ✨',
+      description: `${relatedProduct.name} - ₹${price}`,
+    });
+  };
+
   // Handle backdrop click
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
