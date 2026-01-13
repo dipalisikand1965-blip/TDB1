@@ -164,7 +164,7 @@ const ProductDetailModal = ({ product, onClose }) => {
       onClick={handleBackdropClick}
     >
       <div 
-        className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl relative"
+        className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -177,7 +177,7 @@ const ProductDetailModal = ({ product, onClose }) => {
 
         <div className="grid md:grid-cols-2">
           {/* Image */}
-          <div className="relative aspect-square bg-gray-100">
+          <div className="relative aspect-square bg-gray-100 md:sticky md:top-0">
             <img
               src={product.image}
               alt={product.name}
@@ -191,7 +191,7 @@ const ProductDetailModal = ({ product, onClose }) => {
           </div>
 
           {/* Details */}
-          <div className="p-6 overflow-y-auto max-h-[90vh] md:max-h-none">
+          <div className="p-6">
             {/* Rating */}
             {product.rating && (
               <div className="flex items-center gap-2 mb-2">
