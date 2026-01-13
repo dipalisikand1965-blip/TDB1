@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
+import { useCart } from '../context/CartContext';
+import { toast } from '../hooks/use-toast';
 import { 
   Crown, 
   Star, 
@@ -19,12 +21,39 @@ import {
   Shield,
   Clock,
   Users,
-  ChevronRight
+  ChevronRight,
+  ShoppingCart
 } from 'lucide-react';
 
 const Membership = () => {
   const [selectedPlan, setSelectedPlan] = useState('premium');
   const [billingCycle, setBillingCycle] = useState('yearly');
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
+
+  const handleSubscribe = (plan) => {
+    const price = billingCycle === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice;
+    const membershipItem = {
+      id: `membership-${plan.id}-${billingCycle}`,
+      name: `${plan.name} Membership (${billingCycle === 'yearly' ? 'Annual' : 'Monthly'})`,
+      price: price,
+      image: 'https://thedoggybakery.com/cdn/shop/files/TDB_cakes_6_6c84dc0e-24b7-49f0-a5f9-0027610924db.png?v=1719482254&width=400',
+      category: 'membership',
+      description: `${plan.tagline} - ${plan.features.map(f => f.text).join(', ')}`,
+      isMembership: true,
+      membershipTier: plan.id,
+      billingCycle: billingCycle,
+    };
+    
+    addToCart(membershipItem, billingCycle === 'yearly' ? 'Annual' : 'Monthly', plan.name);
+    
+    toast({
+      title: '🎉 Membership Added to Cart!',
+      description: `${plan.name} ${billingCycle === 'yearly' ? 'Annual' : 'Monthly'} Plan - ₹${price}`,
+    });
+    
+    navigate('/checkout');
+  };
 
   const plans = [
     {
