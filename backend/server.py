@@ -1953,6 +1953,35 @@ async def cron_sync_products(secret: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@api_router.post("/admin/cleanup-mock-products")
+async def cleanup_mock_products(credentials: HTTPBasicCredentials = Depends(verify_admin)):
+    """Remove mock products that don't have shopify_id, keeping only real Shopify-synced products"""
+    try:
+        # Delete products that don't have a shopify_id field or have mock-style IDs
+        result = await db.products.delete_many({
+            "$or": [
+                {"shopify_id": {"$exists": False}},
+                {"id": {"$regex": "^(bc-|cake-|treat-|cat-|frozen-|meal-|acc-)"}}
+            ]
+        })
+        
+        deleted_count = result.deleted_count
+        
+        # Count remaining products
+        remaining = await db.products.count_documents({})
+        
+        logger.info(f"Cleaned up {deleted_count} mock products. {remaining} Shopify products remaining.")
+        
+        return {
+            "message": "Mock products cleaned up",
+            "deleted": deleted_count,
+            "remaining": remaining
+        }
+    except Exception as e:
+        logger.error(f"Failed to cleanup mock products: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== USER & MEMBERSHIP ROUTES ====================
 
 @api_router.post("/auth/register")
