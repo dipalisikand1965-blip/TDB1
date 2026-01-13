@@ -128,8 +128,28 @@ const ProductDetailModal = ({ product, onClose }) => {
     time: '',
     age: ''
   });
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [loadingRelated, setLoadingRelated] = useState(true);
   
   const { addToCart } = useCart();
+  const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+  // Fetch related products
+  React.useEffect(() => {
+    const fetchRelated = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/products/${product.id}/related?limit=4`);
+        if (response.ok) {
+          const data = await response.json();
+          setRelatedProducts(data.related || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch related products:', error);
+      }
+      setLoadingRelated(false);
+    };
+    fetchRelated();
+  }, [product.id, API_URL]);
 
   // Get current price based on selection
   const currentSizeDetails = getSizeDetails(selectedSize);
