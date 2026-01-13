@@ -46,7 +46,7 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
-NOTIFICATION_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.com")
+NOTIFICATION_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.in")
 WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919663185747")
 
 # Admin credentials from environment
@@ -1127,7 +1127,7 @@ async def get_site_content(username: str = Depends(verify_admin)):
             ],
             "bannerText": "Enjoy the convenience of SAME DAY DELIVERY in Mumbai, Bangalore & Gurgaon for all orders placed by 6:00 PM",
             "whatsappNumber": "+91 96631 85747",
-            "contactEmail": "woof@thedoggybakery.com"
+            "contactEmail": "woof@thedoggybakery.in"
         }
     return content
 
