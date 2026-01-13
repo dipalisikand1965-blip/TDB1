@@ -167,14 +167,19 @@ ADMIN_PASSWORD=lola4304
 ## Changelog
 
 ### Jan 13, 2025 (Session 3)
+- ✅ **CRITICAL FIX: Product modal overlay** - Modal was displaying inline instead of as popup overlay
+  - Root cause: CSS `transform` on parent container created new stacking context, breaking `fixed` positioning
+  - Solution: Used React Portal (`createPortal`) to render modal in `document.body`
 - ✅ Fixed Hampers category page - now shows "Gift Hampers & Party Boxes 🎁" with 13 products
 - ✅ **CRITICAL: Cleaned up 164 mock products** with wrong data - now only real Shopify data
 - ✅ Product variants and prices now match original thedoggybakery.com (e.g., Chicken Jerky: 150g/300g not 100g/200g)
 - ✅ Fixed Insights page - "Read More" now opens full articles with complete content
+- ✅ Home page now fetches featured products from API (not mock data)
+- ✅ Pan India "Complete the Celebration" now shows pan-india compatible products
 - ✅ Added admin endpoint `/api/admin/cleanup-mock-products` for database cleanup
 - ✅ All 392 products correctly synced from Shopify
 - ✅ Verified Mira AI close button works (X button in chat widget header)
-- ✅ All frontend tests passed (11/11) including mobile viewport
+- ✅ All frontend tests passed (12/12) including mobile viewport
 
 ### Jan 13, 2025 (Session 2)
 - ✅ Updated Navbar to match live site design
