@@ -394,6 +394,47 @@ const ProductDetailModal = ({ product, onClose }) => {
             </div>
           </div>
         </div>
+
+        {/* Goes Well With Section */}
+        {relatedProducts.length > 0 && (
+          <div className="border-t bg-gradient-to-r from-purple-50 to-pink-50 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              <h3 className="font-bold text-gray-900">Complete the Celebration!</h3>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {relatedProducts.map((item) => (
+                <div 
+                  key={item.id} 
+                  className="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="aspect-square rounded-md overflow-hidden mb-2">
+                    <img 
+                      src={item.image} 
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <p className="text-xs font-medium text-gray-900 line-clamp-1">{item.name}</p>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-xs font-bold text-purple-600">
+                      ₹{item.minPrice || item.price || 0}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 hover:bg-purple-100"
+                      onClick={() => handleQuickAdd(item)}
+                      data-testid={`quick-add-${item.id}`}
+                    >
+                      <Plus className="w-4 h-4 text-purple-600" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
