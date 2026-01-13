@@ -1108,6 +1108,82 @@ async def update_chat(session_id: str, updates: dict, username: str = Depends(ve
 
 @admin_router.get("/custom-requests")
 async def get_custom_requests(username: str = Depends(verify_admin)):
+
+
+@admin_router.post("/sync-chatbase")
+async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
+    """Sync conversations from Chatbase API to our database"""
+    import httpx
+    
+    if not CHATBASE_API_KEY or not CHATBASE_CHATBOT_ID:
+        raise HTTPException(status_code=500, detail="Chatbase API not configured")
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            # Fetch conversations from Chatbase
+            response = await client.get(
+                f"https://www.chatbase.co/api/v1/get-conversations",
+                headers={
+                    "Authorization": f"Bearer {CHATBASE_API_KEY}",
+                    "Content-Type": "application/json"
+                },
+                params={
+                    "chatbotId": CHATBASE_CHATBOT_ID,
+                    "size": 100
+                },
+                timeout=30.0
+            )
+            
+            if response.status_code != 200:
+                logger.error(f"Chatbase API error: {response.status_code} - {response.text}")
+                raise HTTPException(status_code=500, detail=f"Chatbase API error: {response.text}")
+            
+            data = response.json()
+            conversations = data.get("data", [])
+            
+            synced_count = 0
+            for conv in conversations:
+                conv_id = conv.get("id")
+                
+                # Check if already synced
+                existing = await db.chatbase_chats.find_one({"chatbase_id": conv_id})
+                
+                chat_data = {
+                    "chatbase_id": conv_id,
+                    "messages": conv.get("messages", []),
+                    "customer_email": conv.get("customerEmail"),
+                    "customer_name": conv.get("customerName"),
+                    "customer_phone": conv.get("customerPhone"),
+                    "created_at": conv.get("createdAt"),
+                    "source": "chatbase",
+                    "synced_at": datetime.now(timezone.utc).isoformat()
+                }
+                
+                if existing:
+                    await db.chatbase_chats.update_one(
+                        {"chatbase_id": conv_id},
+                        {"$set": chat_data}
+                    )
+                else:
+                    await db.chatbase_chats.insert_one(chat_data)
+                    synced_count += 1
+            
+            return {
+                "message": "Chatbase sync completed",
+                "total_fetched": len(conversations),
+                "new_synced": synced_count
+            }
+            
+    except httpx.RequestError as e:
+        logger.error(f"Chatbase request error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to connect to Chatbase: {str(e)}")
+
+
+@admin_router.get("/chatbase-chats")
+async def get_chatbase_chats(username: str = Depends(verify_admin), limit: int = 50):
+    """Get synced Chatbase conversations"""
+    chats = await db.chatbase_chats.find({}, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    return {"chats": chats, "total": len(chats), "source": "chatbase"}
     """Get all custom cake requests"""
     requests = await db.custom_cake_requests.find({}, {"_id": 0}).sort("timestamp", -1).to_list(100)
     return {"requests": requests}
