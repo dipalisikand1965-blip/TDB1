@@ -25,6 +25,7 @@ const Navbar = () => {
   const moreNavigation = [
     { name: 'Breed Cakes', path: '/breed-cakes' },
     { name: 'Pupcakes & Dognuts', path: '/pupcakes-dognuts' },
+    { name: 'Gift Hampers', path: '/hampers' },
     { name: 'Desi Treats', path: '/desi' },
     { name: 'Frozen Treats', path: '/frozen' },
     { name: 'Nut Butters', path: '/nut-butters' },
