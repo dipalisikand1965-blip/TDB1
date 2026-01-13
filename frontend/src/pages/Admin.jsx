@@ -63,6 +63,15 @@ const Admin = () => {
   // Site Content
   const [siteContent, setSiteContent] = useState(null);
   const [editingVideo, setEditingVideo] = useState(null);
+  
+  // Sync & Import
+  const [syncStatus, setSyncStatus] = useState(null);
+  const [syncing, setSyncing] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const csvInputRef = useRef(null);
+  
+  // Membership/Users
+  const [users, setUsers] = useState([]);
 
   // Check for stored auth
   useEffect(() => {
