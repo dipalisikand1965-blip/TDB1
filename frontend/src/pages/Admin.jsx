@@ -385,7 +385,10 @@ const Admin = () => {
     if (isAuthenticated) {
       if (activeTab === 'chats') fetchChats();
       else if (activeTab === 'requests') fetchCustomRequests();
-      else if (activeTab === 'products') fetchProducts();
+      else if (activeTab === 'products') {
+        fetchProducts();
+        fetchSyncStatus();
+      }
       else if (activeTab === 'content') fetchSiteContent();
     }
   }, [isAuthenticated, activeTab, filterCity, filterStatus, productFilter]);
