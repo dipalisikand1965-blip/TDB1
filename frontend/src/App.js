@@ -30,28 +30,42 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
+            {/* Main Categories */}
             <Route path="/cakes" element={<ProductListing category="cakes" />} />
-            <Route path="/treats" element={<ProductListing category="treats" />} />
-            <Route path="/meals" element={<ProductListing category="meals" />} />
-            <Route path="/custom" element={<ProductListing category="custom" />} />
-            <Route path="/desi" element={<ProductListing category="desi" />} />
-            <Route path="/concierge" element={<MiraConcierge />} />
-            <Route path="/pan-india" element={<ProductListing category="pan-india" />} />
-            <Route path="/merchandise" element={<ProductListing category="merchandise" />} />
             <Route path="/mini-cakes" element={<ProductListing category="mini-cakes" />} />
-            <Route path="/frozen" element={<ProductListing category="frozen" />} />
+            <Route path="/treats" element={<ProductListing category="treats" />} />
+            <Route path="/meals" element={<ProductListing category="fresh-meals" />} />
+            <Route path="/pan-india" element={<ProductListing category="pan-india" />} />
+            
+            {/* More Categories */}
+            <Route path="/breed-cakes" element={<ProductListing category="breed-cakes" />} />
+            <Route path="/custom" element={<ProductListing category="breed-cakes" />} />
+            <Route path="/pupcakes-dognuts" element={<ProductListing category="dognuts" />} />
+            <Route path="/desi" element={<ProductListing category="desi-treats" />} />
+            <Route path="/frozen" element={<ProductListing category="frozen-treats" />} />
+            <Route path="/nut-butters" element={<ProductListing category="nut-butters" />} />
+            <Route path="/cat-treats" element={<ProductListing category="cat-treats" />} />
             <Route path="/accessories" element={<ProductListing category="accessories" />} />
+            <Route path="/merchandise" element={<ProductListing category="merchandise" />} />
+            
+            {/* All Products */}
             <Route path="/all" element={<ProductListing category="all" />} />
+            
+            {/* Special Pages */}
             <Route path="/custom-cake" element={<CustomCakeDesigner />} />
+            <Route path="/concierge" element={<MiraConcierge />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/about" element={<About />} />
             <Route path="/membership" element={<Membership />} />
             <Route path="/admin" element={<Admin />} />
+            
+            {/* Policy Pages */}
             <Route path="/policies" element={<Policies />} />
             <Route path="/refund-policy" element={<Policies />} />
             <Route path="/privacy-policy" element={<Policies />} />
             <Route path="/terms-of-service" element={<Policies />} />
             <Route path="/shipping-policy" element={<Policies />} />
+            
             {/* New Pages */}
             <Route path="/faqs" element={<FAQs />} />
             <Route path="/insights" element={<Insights />} />
