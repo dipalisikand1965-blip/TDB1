@@ -956,7 +956,66 @@ const Admin = () => {
         {/* Chats Tab */}
         {activeTab === 'chats' && (
           <div className="space-y-6">
+            {/* Chatbase Section */}
+            <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-purple-900">Mira AI (Chatbase)</h3>
+                  <p className="text-sm text-purple-600">{chatbaseChats.length} conversations synced</p>
+                </div>
+                <Button 
+                  onClick={syncChatbase} 
+                  disabled={syncingChatbase}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${syncingChatbase ? 'animate-spin' : ''}`} />
+                  {syncingChatbase ? 'Syncing...' : 'Sync from Chatbase'}
+                </Button>
+              </div>
+            </Card>
+
+            {/* Chatbase Conversations */}
+            {chatbaseChats.length > 0 && (
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Chatbase Conversations</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {chatbaseChats.map((chat, idx) => (
+                    <Card key={idx} className="p-4 border-l-4 border-l-purple-500">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h4 className="font-semibold text-gray-900">
+                            {chat.customer_name || chat.customer_email || 'Guest User'}
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            {chat.customer_phone || chat.customer_email || 'No contact info'}
+                          </p>
+                        </div>
+                        <Badge className="bg-purple-100 text-purple-700">Chatbase</Badge>
+                      </div>
+                      <div className="flex gap-4 text-sm text-gray-600 mb-3">
+                        <span className="flex items-center gap-1">
+                          <MessageCircle className="w-4 h-4" />
+                          {chat.messages?.length || 0} messages
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {chat.created_at ? new Date(chat.created_at).toLocaleDateString() : 'N/A'}
+                        </span>
+                      </div>
+                      {chat.messages && chat.messages.length > 0 && (
+                        <div className="bg-gray-50 rounded p-2 text-sm text-gray-600 line-clamp-2">
+                          {chat.messages[chat.messages.length - 1]?.content || 'No messages'}
+                        </div>
+                      )}
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Legacy Mira Chats Filter */}
             <Card className="p-4">
+              <h3 className="font-bold text-gray-900 mb-3">Legacy Mira Chats</h3>
               <div className="flex gap-4 flex-wrap">
                 <select
                   value={filterCity}
