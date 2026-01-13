@@ -566,6 +566,16 @@ async def chat_with_mira(request: ChatRequest):
     user_query = request.message
     session_id = request.session_id or str(uuid.uuid4())
     
+    # 0. Check membership/rate limit
+    access = await check_mira_access(request.user_email, session_id)
+    if not access["allowed"]:
+        return {
+            "response": f"You've reached your daily limit of {access['limit']} chats. Upgrade your membership for unlimited access to Mira AI Concierge!\n\nVisit /membership to see our plans:\n• **Pawsome** (₹199/mo): 10 chats/day\n• **Premium** (₹499/mo): Unlimited chats\n• **VIP** (₹999/mo): Priority + Unlimited",
+            "session_id": session_id,
+            "access_denied": True,
+            "membership_info": access
+        }
+    
     # 1. Perform Web Search (DuckDuckGo)
     search_results = ""
     try:
