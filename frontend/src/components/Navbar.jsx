@@ -20,6 +20,7 @@ const Navbar = () => {
     { name: 'Merchandise', path: '/merchandise' },
     { name: 'Mira Concierge', path: '/concierge' },
     { name: 'Custom Designer', path: '/custom-cake' },
+    { name: 'Membership', path: '/membership' },
   ];
 
   const isActive = (path) => location.pathname === path;
