@@ -70,8 +70,15 @@ const Admin = () => {
   const [importing, setImporting] = useState(false);
   const csvInputRef = useRef(null);
   
-  // Membership/Users
-  const [users, setUsers] = useState([]);
+  // Orders
+  const [orders, setOrders] = useState([]);
+  const [orderStats, setOrderStats] = useState({});
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orderFilter, setOrderFilter] = useState('');
+  
+  // Members
+  const [members, setMembers] = useState([]);
+  const [memberStats, setMemberStats] = useState({});
 
   // Check for stored auth
   useEffect(() => {
