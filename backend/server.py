@@ -1648,6 +1648,93 @@ async def get_public_products(category: Optional[str] = None):
     return {"products": products}
 
 
+@api_router.get("/products/{product_id}/related")
+async def get_related_products(product_id: str, limit: int = 4):
+    """Get products that go well with the specified product"""
+    
+    # Find the current product
+    product = await db.products.find_one(
+        {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+        {"_id": 0}
+    )
+    
+    if not product:
+        return {"related": [], "bundles": []}
+    
+    current_category = product.get("category", "")
+    current_price = product.get("price", 0)
+    
+    # Define complementary categories for upselling
+    upsell_map = {
+        "cakes": ["treats", "accessories", "bandanas", "party-supplies"],
+        "pupcakes": ["treats", "accessories", "bandanas"],
+        "dognuts": ["treats", "cakes", "accessories"],
+        "treats": ["cakes", "nut-butters", "accessories"],
+        "desi-treats": ["cakes", "treats", "accessories"],
+        "fresh-meals": ["treats", "supplements", "bowls"],
+        "pan-india": ["treats", "nut-butters", "accessories"],
+        "nut-butters": ["treats", "cakes", "fresh-meals"],
+        "cat-treats": ["cat-cakes", "accessories"],
+        "accessories": ["treats", "cakes", "bandanas"],
+    }
+    
+    # Get complementary categories
+    complementary_cats = upsell_map.get(current_category, ["treats", "accessories"])
+    
+    related_products = []
+    
+    # Fetch products from complementary categories
+    for comp_cat in complementary_cats:
+        cat_products = await db.products.find(
+            {"category": comp_cat},
+            {"_id": 0}
+        ).limit(3).to_list(3)
+        related_products.extend(cat_products)
+    
+    # Also get similar products from same category (different price range)
+    similar = await db.products.find(
+        {
+            "category": current_category,
+            "id": {"$ne": product_id},
+            "price": {"$gte": current_price * 0.5, "$lte": current_price * 1.5}
+        },
+        {"_id": 0}
+    ).limit(2).to_list(2)
+    
+    # Remove duplicates and limit
+    seen_ids = {product_id}
+    unique_related = []
+    for p in related_products + similar:
+        if p.get("id") not in seen_ids:
+            seen_ids.add(p.get("id"))
+            unique_related.append(p)
+            if len(unique_related) >= limit:
+                break
+    
+    # Create bundle suggestions
+    bundles = []
+    if current_category in ["cakes", "pupcakes"]:
+        # Celebration bundle
+        treat = await db.products.find_one({"category": "treats"}, {"_id": 0})
+        bandana = await db.products.find_one({"category": {"$in": ["accessories", "bandanas"]}}, {"_id": 0})
+        if treat and bandana:
+            bundle_price = current_price + treat.get("price", 0) + bandana.get("price", 0)
+            bundles.append({
+                "name": "🎉 Celebration Bundle",
+                "description": "Complete the pawty!",
+                "items": [product, treat, bandana],
+                "originalPrice": bundle_price,
+                "bundlePrice": int(bundle_price * 0.9),  # 10% discount
+                "savings": int(bundle_price * 0.1)
+            })
+    
+    return {
+        "related": unique_related,
+        "bundles": bundles,
+        "category": current_category
+    }
+
+
 # ==================== ORDERS API ====================
 
 @api_router.post("/orders")
