@@ -17,14 +17,35 @@ const ProductListing = ({ category = 'all' }) => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        let url = `${API_URL}/api/products?limit=500`;
-        if (category && category !== 'all') {
-          url += `&category=${category}`;
-        }
-        const response = await fetch(url);
-        if (response.ok) {
-          const data = await response.json();
-          setProducts(data.products || []);
+        // For pan-india, fetch multiple categories that can be shipped pan-india
+        if (category === 'pan-india') {
+          const categories = ['pan-india', 'treats', 'desi-treats', 'nut-butters'];
+          const allProducts = [];
+          
+          for (const cat of categories) {
+            const response = await fetch(`${API_URL}/api/products?limit=500&category=${cat}`);
+            if (response.ok) {
+              const data = await response.json();
+              allProducts.push(...(data.products || []));
+            }
+          }
+          
+          // Remove duplicates based on id
+          const uniqueProducts = allProducts.filter((product, index, self) =>
+            index === self.findIndex((p) => p.id === product.id)
+          );
+          
+          setProducts(uniqueProducts);
+        } else {
+          let url = `${API_URL}/api/products?limit=500`;
+          if (category && category !== 'all') {
+            url += `&category=${category}`;
+          }
+          const response = await fetch(url);
+          if (response.ok) {
+            const data = await response.json();
+            setProducts(data.products || []);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch products:', error);
