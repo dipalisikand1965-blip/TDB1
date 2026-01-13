@@ -55,7 +55,13 @@ const ProductListing = ({ category = 'all' }) => {
       setLoading(false);
     };
     fetchProducts();
+    setVisibleCount(PRODUCTS_PER_PAGE); // Reset visible count when category changes
   }, [category]);
+
+  // Reset visible count when filters change
+  useEffect(() => {
+    setVisibleCount(PRODUCTS_PER_PAGE);
+  }, [priceRange, sortBy]);
 
   let filteredProducts = [...products];
 
