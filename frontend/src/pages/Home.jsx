@@ -188,6 +188,29 @@ const Home = () => {
         </div>
       </section>
 
+      {/* MobiKwik Offers Banner */}
+      <section className="py-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-white text-center md:text-left">
+            <div className="flex items-center gap-3">
+              <CreditCard className="w-8 h-8 text-yellow-300" />
+              <div>
+                <p className="font-bold text-lg">Flat ₹75 Cashback</p>
+                <p className="text-sm opacity-90">On first MobiKwik UPI payment (orders above ₹499)</p>
+              </div>
+            </div>
+            <div className="hidden md:block w-px h-12 bg-white/30"></div>
+            <div className="flex items-center gap-3">
+              <Gift className="w-8 h-8 text-yellow-300" />
+              <div>
+                <p className="font-bold text-lg">₹100 Assured Cashback</p>
+                <p className="text-sm opacity-90">Scratch card on MobiKwik UPI (min. ₹899)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Mira AI Spotlight */}
       <section className="py-24 bg-gradient-to-br from-purple-50 via-pink-50 to-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-purple-200 rounded-full opacity-20 blur-3xl"></div>
