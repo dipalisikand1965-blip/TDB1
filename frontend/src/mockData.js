@@ -18,7 +18,11 @@ export const birthdayCakes = [
       { name: '500g', price: 600 },
       { name: '1kg', price: 1100 }
     ],
-    flavors: ['Chicken & Oats', 'Peanut Butter', 'Banana & Honey'],
+    flavors: [
+      { name: 'Chicken & Oats', price: 50 },
+      { name: 'Peanut Butter', price: 0 },
+      { name: 'Banana & Honey', price: 0 }
+    ],
     rating: 4.7,
     reviews: 198,
     isBestseller: true
@@ -52,7 +56,11 @@ export const birthdayCakes = [
       { name: '500g', price: 600 },
       { name: '1kg', price: 1100 }
     ],
-    flavors: ['Chicken & Oats', 'Peanut Butter', 'Banana & Honey'],
+    flavors: [
+      { name: 'Chicken & Oats', price: 50 },
+      { name: 'Peanut Butter', price: 0 },
+      { name: 'Banana & Honey', price: 0 }
+    ],
     rating: 4.8,
     reviews: 312
   },
