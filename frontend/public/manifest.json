@@ -1,0 +1,61 @@
+{
+  "name": "The Doggy Bakery - Dog Cakes & Treats",
+  "short_name": "Doggy Bakery",
+  "description": "India's #1 Dog Bakery! Premium dog birthday cakes, healthy treats & fresh meals. Same-day delivery in Mumbai, Bangalore & Gurgaon.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#722282",
+  "categories": ["food", "shopping", "lifestyle"],
+  "lang": "en-IN",
+  "dir": "ltr",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "tdb-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "tdb-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "tdb-logo.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Order Cakes",
+      "short_name": "Cakes",
+      "description": "Browse our delicious dog cakes",
+      "url": "/cakes",
+      "icons": [{ "src": "tdb-logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Order Treats",
+      "short_name": "Treats",
+      "description": "Browse healthy dog treats",
+      "url": "/treats",
+      "icons": [{ "src": "tdb-logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Chat with Mira",
+      "short_name": "Mira AI",
+      "description": "Get help from our AI concierge",
+      "url": "/concierge",
+      "icons": [{ "src": "tdb-logo.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
