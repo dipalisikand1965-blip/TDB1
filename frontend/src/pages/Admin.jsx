@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -27,7 +27,12 @@ import {
   Save,
   Image,
   DollarSign,
-  Tag
+  Tag,
+  Download,
+  Upload,
+  CloudDownload,
+  Zap,
+  Users
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
