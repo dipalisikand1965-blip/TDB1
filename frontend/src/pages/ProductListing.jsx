@@ -86,7 +86,8 @@ const ProductListing = ({ category = 'all' }) => {
       case 'treats': return 'Treats & Snacks';
       case 'desi': return 'Desi Doggy Treats 🪔';
       case 'desi-treats': return 'Desi Doggy Treats 🪔';
-      case 'merchandise': return 'Gift Hampers & Merchandise';
+      case 'merchandise': return 'Merchandise';
+      case 'hampers': return 'Gift Hampers & Party Boxes 🎁';
       case 'meals': return 'Fresh Meals & Pizzas';
       case 'fresh-meals': return 'Fresh Meals';
       case 'frozen': return 'Frozen Treats';
@@ -112,7 +113,8 @@ const ProductListing = ({ category = 'all' }) => {
       case 'treats': return 'Healthy treats for everyday joy and training';
       case 'desi': 
       case 'desi-treats': return 'Traditional Indian sweets made pet-friendly!';
-      case 'merchandise': return 'Special gift packages, toys, and branded items';
+      case 'merchandise': return 'Branded merchandise and gift items';
+      case 'hampers': return 'Complete celebration packages with cakes, treats, bandanas, and toys!';
       case 'meals':
       case 'fresh-meals': return 'Nutritious fresh meals for your furry friend';
       case 'frozen':
