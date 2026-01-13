@@ -255,7 +255,7 @@ async def increment_chat_count(user_email: Optional[str] = None, session_id: Opt
 
 # ==================== SHOPIFY SYNC FUNCTIONS ====================
 
-SHOPIFY_PRODUCTS_URL = "https://thedoggybakery.com/products.json"
+SHOPIFY_PRODUCTS_URL = os.environ.get("SHOPIFY_PRODUCTS_URL", "https://thedoggybakery.com/products.json")
 
 async def fetch_shopify_products(limit: int = 250, page: int = 1) -> List[dict]:
     """Fetch products from Shopify store"""
