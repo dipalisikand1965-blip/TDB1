@@ -315,23 +315,52 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     images = shopify_product.get("images", [])
     image_url = images[0].get("src") if images else ""
     
-    # Determine category from product_type or tags
+    # Determine category from product_type, tags, and title
     product_type = shopify_product.get("product_type", "").lower()
     tags = [t.lower() for t in shopify_product.get("tags", [])]
+    title = shopify_product.get("title", "").lower()
+    tags_str = " ".join(tags)
     
     category = "other"
-    if "cake" in product_type or "cake" in " ".join(tags):
+    
+    # Pupcakes & Dognuts - check first as they contain "cake"
+    if "pupcake" in product_type or "pupcake" in title or "dognut" in title or "dognuts" in product_type:
+        category = "dognuts"
+    elif "mini" in title and "cake" in title:
+        category = "mini-cakes"
+    # Main cakes
+    elif "cake" in product_type or ("cake" in title and "pupcake" not in title):
         category = "cakes"
-    elif "treat" in product_type or "biscuit" in product_type:
+    # Breed cakes
+    elif any(breed in title for breed in ["retriever", "labrador", "beagle", "pug", "shih tzu", "indie", "husky", "german shepherd"]):
+        category = "breed-cakes"
+    # Treats & Biscuits
+    elif "treat" in product_type or "biscuit" in product_type or "cookie" in title:
         category = "treats"
-    elif "pupcake" in product_type:
-        category = "pupcakes"
-    elif "frozen" in product_type or "fro-yo" in product_type.lower():
+    # Frozen treats
+    elif "frozen" in product_type or "fro-yo" in title or "jello" in title or "popsicle" in title:
         category = "frozen-treats"
-    elif "accessory" in product_type or "toy" in " ".join(tags):
+    # Fresh meals
+    elif "meal" in product_type or "meal" in title or "pizza" in title or "burger" in title:
+        category = "fresh-meals"
+    # Accessories & Toys
+    elif "accessory" in product_type or "toy" in product_type or "bandana" in title or "mat" in title:
         category = "accessories"
-    elif any(tag in tags for tag in ["desi", "ladoo"]):
+    # Desi treats
+    elif any(desi in title or desi in tags_str for desi in ["desi", "ladoo", "barfi", "kaju", "jalebi", "gujiya", "rakhi", "diwali", "holi"]):
         category = "desi-treats"
+    # Nut butters
+    elif "nut butter" in title or "peanut butter jar" in title:
+        category = "nut-butters"
+    # Cat treats
+    elif "cat" in product_type or "cat" in title or "feline" in title:
+        category = "cat-treats"
+    # Merchandise & Gift boxes
+    elif "gift" in title or "hamper" in title or "box" in title or "merchandise" in product_type:
+        category = "merchandise"
+    # Pan India
+    elif "pan india" in tags_str:
+        category = "pan-india"
     
     return {
         "id": f"shopify-{shopify_product.get('id')}",
