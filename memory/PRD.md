@@ -10,142 +10,121 @@ Rebuild of thedoggybakery.com into a world-class, professional e-commerce websit
 
 ## Core Requirements
 
-### 1. Product Catalog ✅ COMPLETED (Jan 12, 2025)
-- **200+ products** scraped from live thedoggybakery.com
-- Categories:
-  - Birthday Cakes (36 products)
-  - Breed-Specific Cakes (27 products)
-  - Treats & Biscuits (17 products)
-  - Dognuts (6 products)
-  - Pizzas & Burgers (6 products)
-  - Fresh Meals (4 products)
-  - Frozen Treats (10 products)
-  - Dog Accessories (15 products)
-  - Cat Treats (4 products)
-  - Gift Cards (1 product)
-  - New Merchandise Concepts (8 products) - hampers, subscription boxes, party kits, apparel
+### 1. Product Catalog ✅ COMPLETED
+- **164 products** in MongoDB database
+- 16 Categories: cakes, breed-cakes, treats, dognuts, pizzas-burgers, fresh-meals, frozen-treats, accessories, cat-treats, gift-cards, merchandise, mini-cakes, desi-treats, nut-butters, cake-mix, pan-india
 - Dynamic pricing with size/flavor variants
+- **Admin editable** via /admin panel
 
-### 2. Mira AI Concierge ✅ COMPLETED (Jan 12, 2025)
+### 2. Mira AI Concierge ✅ COMPLETED
 - Full-stack implementation with FastAPI backend + Emergent LLM integration
 - 9-step conversational flow for celebration planning
-- Services flow with **working city selection** (Bangalore, Mumbai, Gurgaon, Delhi)
-- Referrals to vets, groomers, boarding, training
-- Persona: sophisticated, warm, knowledgeable "private office" concierge
+- All conversations stored in MongoDB
+- Email + WhatsApp notifications for important chats
+- Chat history viewable in admin panel
 
-### 3. WhatsApp Integration ✅ COMPLETED (Jan 12, 2025)
+### 3. Admin Panel ✅ COMPLETED (Jan 13, 2025)
+- **Login**: aditya / lola4304
+- **Dashboard**: Stats, city breakdown, recent chats
+- **Mira Chats**: View all conversations, filter by city/status, send notifications
+- **Products**: Full CRUD - Add, Edit, Delete products with sizes/flavors/pricing
+- **Videos & Content**: Edit homepage videos, banner text, WhatsApp number
+- **Custom Requests**: View custom cake requests with images
+
+### 4. WhatsApp Integration ✅ COMPLETED
 - Click-to-chat with **+91 96631 85747**
-- Floating WhatsApp button (bottom left)
-- Footer WhatsApp button
-- Order confirmation with WhatsApp CTA
-- Pre-filled order message with full order details
+- Order confirmation with detailed WhatsApp message
+- Admin notification via WhatsApp for Mira chats
 
-### 4. Personalization & Checkout ✅ COMPLETED (Jan 12, 2025)
+### 5. SEO Optimization ✅ COMPLETED (Jan 13, 2025)
+- 31 meta tags (title, description, keywords, OG, Twitter)
+- JSON-LD structured data (Bakery schema, FAQ schema)
+- Geo tags for Mumbai, Bangalore, Gurgaon
+
+### 6. Membership Page ✅ COMPLETED (Jan 13, 2025)
+- Three tiers: Pawsome (₹199/mo), Premium (₹499/mo), VIP (₹999/mo)
+- **Note**: Membership is UI-only marketing page, no actual gating implemented
+
+### 7. Personalization & Checkout ✅ COMPLETED
 - Pet's Name, Age, Delivery Date on product cards
-- Personalization details carry through to cart and checkout
 - Add-on suggestions in checkout
-- Comprehensive WhatsApp message generation with GST note
+- Comprehensive WhatsApp message generation
 
-### 5. Custom Cake Designer ✅ COMPLETED (Jan 12, 2025)
+### 8. Custom Cake Designer ✅ COMPLETED
 - Image upload feature for cake design ideas
-- Form submission to backend
-
-### 6. SEO Optimization ✅ COMPLETED (Jan 13, 2025)
-- Comprehensive meta tags matching thedoggybakery.com
-- Keywords: dog cakes, dog birthday cake, dog treats, pet bakery, etc.
-- Open Graph tags for social sharing
-- Twitter Card meta tags
-- JSON-LD structured data:
-  - Bakery schema with rating (4.8/5, 45000 reviews)
-  - FAQ schema for common questions
-  - GeoCoordinates for Mumbai, Bangalore, Gurgaon
-- Canonical URL set to thedoggycompany.in
-- Mobile app meta tags
-
-### 7. Membership Page ✅ COMPLETED (Jan 13, 2025)
-- Three tiers: Pawsome, Premium, VIP
-- Pricing:
-  - Pawsome: ₹199/month (₹1999/year)
-  - Premium: ₹499/month (₹4999/year) - Most Popular
-  - VIP: ₹999/month (₹9999/year)
-- Features per tier:
-  - Pawsome: 5% discount, basic Mira AI, monthly treats
-  - Premium: 12% discount, full Mira AI, party planning
-  - VIP: 20% discount, VIP Mira AI priority, personal coordinator, complimentary annual cake
-- Monthly/Yearly billing toggle
-- Testimonials section
-- FAQ section
-- Navigation link added
-
-### 8. UI/UX Design ✅ COMPLETED
-- Premium, world-class design
-- Official TDB logo and favicon
-- Instagram Feed section
-- Video Section
-- Animated counters for stats
-- Modern product cards with size/flavor selection
-
-## Upcoming Tasks
-
-### P0 - Before Birthday Demo (Jan 15)
-- [ ] DNS setup instructions for thedoggycompany.in (A/CNAME records) - **PENDING**
-
-### P1 - Nice to Have
-- [ ] Full product data & pricing audit against live site
-- [ ] Add more merchandise UI sections
-
-### P2 - Post Demo (Future)
-- [ ] Full Shopify Headless Integration (when API credentials provided)
-- [ ] Mira AI with live web search for referrals
-- [ ] Advanced review system with photos/videos
-- [ ] Payment gateway integration
+- Requests viewable in admin panel
 
 ## Technical Architecture
 
 ```
 /app
 ├── backend/
-│   ├── server.py              # FastAPI with Mira AI chat + file upload
+│   ├── server.py              # FastAPI with all endpoints
+│   │   ├── /api/mira/chat     # AI chat with storage
+│   │   ├── /api/products      # Public products API
+│   │   ├── /api/content/videos # Public videos API
+│   │   ├── /api/admin/*       # Admin CRUD endpoints
+│   │   └── /api/custom-cakes  # File upload
 │   ├── requirements.txt
-│   └── uploads/               # Custom cake images
+│   └── uploads/
 └── frontend/
     ├── public/
-    │   └── index.html         # SEO meta tags, JSON-LD structured data
+    │   └── index.html         # SEO meta tags
     └── src/
         ├── components/
-        │   ├── Navbar.jsx      # With Membership link
-        │   ├── Footer.jsx      # WhatsApp integration
-        │   ├── MiraAI.jsx      # AI Concierge (backend integration)
-        │   ├── ProductCard.jsx # Variants + Personalization
-        │   └── CartSidebar.jsx
+        │   ├── VideoSection.jsx  # Fetches from backend
+        │   └── ...
         ├── pages/
-        │   ├── Home.jsx
-        │   ├── ProductListing.jsx
-        │   ├── Checkout.jsx    # WhatsApp order confirmation
-        │   ├── CustomCakeDesigner.jsx
-        │   ├── MiraConcierge.jsx
-        │   └── Membership.jsx  # NEW - 3 tier membership
-        ├── context/
-        │   └── CartContext.js
-        └── mockData.js         # 200+ products
+        │   ├── Admin.jsx        # Full admin panel
+        │   ├── Membership.jsx   # Membership tiers
+        │   └── ...
+        └── mockData.js         # Legacy (data now in MongoDB)
 ```
 
-## API Endpoints
-- `POST /api/mira/chat` - Mira AI conversation
-- `POST /api/custom-cakes/request` - Custom cake image upload
+## Database Collections (MongoDB)
+- `products` - 164 products with variants
+- `mira_chats` - All Mira AI conversations
+- `site_content` - Videos, hero slides, banner text
+- `custom_cake_requests` - Custom cake form submissions
 
-## Key Contact Information
+## API Endpoints
+### Public
+- `GET /api/products` - Get all products
+- `GET /api/content/videos` - Get homepage videos
+- `POST /api/mira/chat` - Chat with Mira AI
+- `POST /api/custom-cakes/request` - Submit custom cake request
+
+### Admin (Basic Auth: aditya/lola4304)
+- `GET/POST/PUT/DELETE /api/admin/products/*` - Product CRUD
+- `GET/PUT /api/admin/site-content` - Site content management
+- `PUT /api/admin/site-content/videos` - Update videos
+- `GET /api/admin/chats` - View Mira conversations
+- `POST /api/admin/send-notification/{session_id}` - Send notifications
+
+## Upcoming Tasks
+
+### P0 - Before Birthday Demo (Jan 15)
+- [ ] DNS setup instructions for thedoggycompany.in
+
+### P1 - Nice to Have
+- [ ] Sync products with latest from live site (some new products added)
+- [ ] Verify all prices match live site exactly
+
+### P2 - Post Demo
+- [ ] Shopify Headless Integration
+- [ ] Implement actual membership gating for Mira AI
+- [ ] Payment gateway integration
+
+## Important Notes
+- **Gurgaon = Gurugram** (same city, normalized in code)
+- **Products are now in MongoDB**, not just mockData.js
+- **Membership page is UI-only** - no payment integration yet
+- **Email notifications require domain verification** on Resend to work
+
+## Contact Information
 - **Email**: woof@thedoggybakery.com
 - **WhatsApp**: +91 96631 85747
-- **Phone**: 9739982582, 9663185747
 - **Instagram**: @the_doggy_bakery
-- **Cities**: Bengaluru, Mumbai, Gurgaon
-
-## Notes
-- **ALL PRODUCT DATA IS MOCKED** in mockData.js (no backend/Shopify database)
-- This is a demo site for birthday celebration
-- Real Shopify integration planned post-demo
-- Membership page is UI-only (no payment integration yet)
 
 ---
 Last Updated: January 13, 2025
