@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from './ui/card';
 import { Play, X } from 'lucide-react';
 import { Button } from './ui/button';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const VideoSection = () => {
   const [activeVideo, setActiveVideo] = useState(null);
-
-  const videos = [
+  const [videos, setVideos] = useState([
     {
       id: '1',
       title: 'Behind the Scenes: Baking with Love',
       thumbnail: 'https://images.unsplash.com/photo-1612940960267-4549a58fb257?w=600',
       description: 'Watch how we craft each cake with care in our kitchen',
-      // Placeholder - will use actual Instagram video URL
       videoUrl: 'https://www.instagram.com/the_doggy_bakery/'
     },
     {
@@ -36,7 +36,25 @@ const VideoSection = () => {
       description: 'The passionate team behind The Doggy Bakery',
       videoUrl: 'https://www.instagram.com/the_doggy_bakery/'
     }
-  ];
+  ]);
+
+  // Fetch videos from backend
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/content/videos`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.videos && data.videos.length > 0) {
+            setVideos(data.videos);
+          }
+        }
+      } catch (error) {
+        console.log('Using default videos');
+      }
+    };
+    fetchVideos();
+  }, []);
 
   return (
     <>
@@ -46,6 +64,7 @@ const VideoSection = () => {
             key={video.id}
             className="group cursor-pointer overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
             onClick={() => setActiveVideo(video)}
+            data-testid={`video-card-${video.id}`}
           >
             <div className="relative aspect-video overflow-hidden">
               <img
@@ -83,19 +102,30 @@ const VideoSection = () => {
             
             <div className="bg-white rounded-xl overflow-hidden">
               <div className="aspect-video bg-black flex items-center justify-center">
-                {/* Instagram embed would go here */}
-                <div className="text-center p-8">
-                  <p className="text-white mb-4">{activeVideo.title}</p>
-                  <a
-                    href={activeVideo.videoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full hover:from-purple-700 hover:to-pink-700 transition-all"
-                  >
-                    <Play className="w-4 h-4" />
-                    Watch on Instagram
-                  </a>
-                </div>
+                {/* Check if it's a YouTube URL and embed */}
+                {activeVideo.videoUrl?.includes('youtube.com') || activeVideo.videoUrl?.includes('youtu.be') ? (
+                  <iframe
+                    className="w-full h-full"
+                    src={activeVideo.videoUrl.replace('watch?v=', 'embed/')}
+                    title={activeVideo.title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div className="text-center p-8">
+                    <p className="text-white mb-4">{activeVideo.title}</p>
+                    <a
+                      href={activeVideo.videoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full hover:from-purple-700 hover:to-pink-700 transition-all"
+                    >
+                      <Play className="w-4 h-4" />
+                      Watch on Instagram
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>
