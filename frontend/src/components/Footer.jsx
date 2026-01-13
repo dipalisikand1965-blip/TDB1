@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, MessageCircle } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, MessageCircle, Youtube } from 'lucide-react';
 
 const WHATSAPP_NUMBER = '919663185747';
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I'm interested in ordering from The Doggy Bakery 🐕")}`;
@@ -8,7 +8,7 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-gray-300">
-      {/* Floating WhatsApp Button - Using anchor tag */}
+      {/* Floating WhatsApp Button */}
       <a
         href={WHATSAPP_URL}
         target="_blank"
@@ -39,14 +39,14 @@ const Footer = () => {
               Celebrating your furry friends with fresh, healthy, and delicious treats since 2020.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="hover:text-pink-500 transition-colors">
+              <a href="https://www.facebook.com/thedoggybakery" target="_blank" rel="noopener noreferrer" className="hover:text-pink-500 transition-colors">
                 <Facebook className="w-5 h-5" />
               </a>
               <a href="https://www.instagram.com/the_doggy_bakery/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-500 transition-colors">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="hover:text-pink-500 transition-colors">
-                <Twitter className="w-5 h-5" />
+              <a href="https://www.youtube.com/@TheDoggyBakery" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">
+                <Youtube className="w-5 h-5" />
               </a>
               <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="hover:text-green-500 transition-colors">
                 <MessageCircle className="w-5 h-5" />
@@ -58,23 +58,23 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/cakes" className="hover:text-pink-500 transition-colors">Dog Cakes</Link></li>
-              <li><Link to="/treats" className="hover:text-pink-500 transition-colors">Treats & Snacks</Link></li>
-              <li><Link to="/meals" className="hover:text-pink-500 transition-colors">Fresh Meals</Link></li>
-              <li><Link to="/custom-cake" className="hover:text-pink-500 transition-colors">Custom Designer</Link></li>
               <li><Link to="/about" className="hover:text-pink-500 transition-colors">About Us</Link></li>
+              <li><Link to="/faqs" className="hover:text-pink-500 transition-colors">FAQs</Link></li>
+              <li><Link to="/insights" className="hover:text-pink-500 transition-colors">TDB Insights</Link></li>
+              <li><Link to="/streaties" className="hover:text-pink-500 transition-colors">Streaties</Link></li>
+              <li><Link to="/franchise" className="hover:text-pink-500 transition-colors">Own A Bakery</Link></li>
+              <li><Link to="/contact" className="hover:text-pink-500 transition-colors">Contact Us</Link></li>
             </ul>
           </div>
 
-          {/* Customer Care */}
+          {/* Policies */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Customer Care</h3>
+            <h3 className="text-white font-semibold mb-4">Policies</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/policies" className="hover:text-pink-500 transition-colors">FAQs</Link></li>
-              <li><Link to="/policies?tab=shipping" className="hover:text-pink-500 transition-colors">Shipping Policy</Link></li>
-              <li><Link to="/policies?tab=refund" className="hover:text-pink-500 transition-colors">Refund Policy</Link></li>
-              <li><Link to="/policies?tab=terms" className="hover:text-pink-500 transition-colors">Terms & Conditions</Link></li>
-              <li><Link to="/policies?tab=privacy" className="hover:text-pink-500 transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/shipping-policy" className="hover:text-pink-500 transition-colors">Shipping Policy</Link></li>
+              <li><Link to="/refund-policy" className="hover:text-pink-500 transition-colors">Refund Policy</Link></li>
+              <li><Link to="/privacy-policy" className="hover:text-pink-500 transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms-of-service" className="hover:text-pink-500 transition-colors">Terms of Service</Link></li>
               <li><Link to="/membership" className="hover:text-pink-500 transition-colors">Membership</Link></li>
             </ul>
           </div>
@@ -113,7 +113,17 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-sm text-center">
+        {/* Payment & Delivery Info */}
+        <div className="border-t border-gray-800 mt-8 pt-8">
+          <div className="flex flex-wrap justify-center gap-6 mb-6 text-sm text-gray-400">
+            <span>💳 Secure Payments</span>
+            <span>🚚 Same Day Delivery</span>
+            <span>🐕 45,000+ Happy Pets</span>
+            <span>⭐ 4.9 Rating</span>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-800 pt-6 text-sm text-center">
           <p>&copy; 2025 The Doggy Bakery. All rights reserved. Made with ❤️ for pets and their parents.</p>
         </div>
       </div>
