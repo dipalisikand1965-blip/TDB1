@@ -302,6 +302,58 @@ const insights = [
 ];
 
 const Insights = () => {
+  const [selectedArticle, setSelectedArticle] = useState(null);
+
+  // Article Modal Component
+  const ArticleModal = ({ article, onClose }) => {
+    if (!article) return null;
+    
+    return (
+      <div 
+        className="fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center p-4"
+        onClick={onClose}
+      >
+        <div 
+          className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header Image */}
+          <div className="relative h-64 md:h-80">
+            <img 
+              src={article.image} 
+              alt={article.title}
+              className="w-full h-full object-cover"
+            />
+            <button 
+              onClick={onClose}
+              className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-600" />
+            </button>
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+              <span className="text-sm text-purple-300 font-semibold">{article.category}</span>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mt-1">{article.title}</h2>
+            </div>
+          </div>
+          
+          {/* Article Content */}
+          <div className="p-6 md:p-8 overflow-y-auto max-h-[calc(90vh-320px)]">
+            <div className="flex items-center gap-4 text-sm text-gray-500 mb-6 pb-4 border-b">
+              <span className="flex items-center gap-1"><User className="w-4 h-4" />{article.author}</span>
+              <span className="flex items-center gap-1"><Calendar className="w-4 h-4" />{article.date}</span>
+              <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{article.readTime}</span>
+            </div>
+            
+            <div 
+              className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-li:text-gray-700 prose-strong:text-purple-600"
+              dangerouslySetInnerHTML={{ __html: articleContent[article.id] || '<p>Article content coming soon...</p>' }}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -333,7 +385,11 @@ const Insights = () => {
                 <span className="flex items-center gap-1"><User className="w-4 h-4" />{insights[0].author}</span>
                 <span className="flex items-center gap-1"><Calendar className="w-4 h-4" />{insights[0].date}</span>
               </div>
-              <Button className="bg-purple-600 hover:bg-purple-700 w-fit">
+              <Button 
+                className="bg-purple-600 hover:bg-purple-700 w-fit"
+                onClick={() => setSelectedArticle(insights[0])}
+                data-testid="read-more-featured"
+              >
                 Read More <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
@@ -343,7 +399,12 @@ const Insights = () => {
         {/* All Posts Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {insights.slice(1).map((post) => (
-            <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <Card 
+              key={post.id} 
+              className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => setSelectedArticle(post)}
+              data-testid={`insight-card-${post.id}`}
+            >
               <div className="h-48 overflow-hidden">
                 <img 
                   src={post.image} 
@@ -380,6 +441,14 @@ const Insights = () => {
           </div>
         </Card>
       </div>
+
+      {/* Article Modal */}
+      {selectedArticle && (
+        <ArticleModal 
+          article={selectedArticle} 
+          onClose={() => setSelectedArticle(null)} 
+        />
+      )}
     </div>
   );
 };
