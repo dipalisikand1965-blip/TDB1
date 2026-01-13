@@ -91,16 +91,19 @@ const ProductListing = ({ category = 'all' }) => {
       case 'treats': return 'Healthy treats for everyday joy and training';
       case 'desi': 
       case 'desi-treats': return 'Traditional Indian sweets made pet-friendly!';
-      case 'merchandise': return 'Special gift packages and branded items';
+      case 'merchandise': return 'Special gift packages, toys, and branded items';
       case 'meals':
       case 'fresh-meals': return 'Nutritious fresh meals for your furry friend';
       case 'frozen':
       case 'frozen-treats': return 'Cool treats for hot days';
       case 'accessories': return 'Bandanas, toys, and celebration gear';
       case 'pan-india': return 'Treats and cakes delivered across India';
-      case 'mini-cakes': return 'Perfect sized celebration cakes for any occasion';
+      case 'mini-cakes': return 'Bowto celebration cakes for any occasion';
       case 'cat':
       case 'cat-treats': return 'Special treats for our feline friends';
+      case 'dognuts': return 'Mini baked treats for dog celebrations - pupcakes and dognuts!';
+      case 'nut-butters': return 'Delicious and healthy nut butter treats';
+      case 'other': return 'More amazing products for your pets';
       default: return 'Explore our complete range of pet treats and cakes';
     }
   };
