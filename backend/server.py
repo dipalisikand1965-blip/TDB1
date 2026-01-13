@@ -457,6 +457,7 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     elif ("mini" in title and "cake" in title) or "bowto" in title:
         category = "mini-cakes"
     # Breed-specific cakes - comprehensive list from Shopify collection
+    # But NOT mugs, mats, bandanas, or other merchandise
     elif any(breed in title for breed in [
         "retriever", "labrador", "beagle", "husky", "shih tzu", "indie", "german shepherd",
         "rottweiler", "rotweiller", "cocker spaniel", "pug", "maltese", "pomeranian", 
@@ -466,9 +467,12 @@ def transform_shopify_product(shopify_product: dict) -> dict:
         "chihuahua", "greyhound", "shnoodle", "scottish terrier", "irish setter",
         "basset hound", "mutt munch", "mynx"
     ]):
-        # If it's a feeding mat or bandana, it's an accessory
-        if "mat" in title or "bandana" in title:
-            category = "accessories"
+        # Exclude merchandise/accessories with breed names
+        if any(exc in title for exc in ["mat", "bandana", "mug", "coaster", "feeding"]):
+            if "mug" in title or "coaster" in title:
+                category = "merchandise"
+            else:
+                category = "accessories"
         else:
             category = "breed-cakes"
     # Main cakes (check before accessories because some cakes have "mat" or "toy" in bundle name)
