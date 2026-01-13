@@ -689,6 +689,226 @@ const Admin = () => {
           </div>
         )}
 
+        {/* Orders Tab */}
+        {activeTab === 'orders' && (
+          <div className="space-y-6">
+            {/* Order Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Card className="p-4 bg-yellow-50 border-yellow-200">
+                <p className="text-sm text-yellow-600">Pending</p>
+                <p className="text-3xl font-bold text-yellow-700">{orderStats.pending || 0}</p>
+              </Card>
+              <Card className="p-4 bg-blue-50 border-blue-200">
+                <p className="text-sm text-blue-600">Confirmed</p>
+                <p className="text-3xl font-bold text-blue-700">{orderStats.confirmed || 0}</p>
+              </Card>
+              <Card className="p-4 bg-green-50 border-green-200">
+                <p className="text-sm text-green-600">Delivered</p>
+                <p className="text-3xl font-bold text-green-700">{orderStats.delivered || 0}</p>
+              </Card>
+              <Card className="p-4 bg-purple-50 border-purple-200">
+                <p className="text-sm text-purple-600">Total Orders</p>
+                <p className="text-3xl font-bold text-purple-700">{orders.length}</p>
+              </Card>
+            </div>
+
+            {/* Filter */}
+            <Card className="p-4">
+              <div className="flex gap-4 flex-wrap">
+                <select
+                  value={orderFilter}
+                  onChange={(e) => setOrderFilter(e.target.value)}
+                  className="px-3 py-2 border rounded-lg text-sm"
+                >
+                  <option value="">All Orders</option>
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="preparing">Preparing</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+                <Button variant="outline" onClick={fetchOrders}>
+                  <RefreshCw className="w-4 h-4 mr-2" />Refresh
+                </Button>
+              </div>
+            </Card>
+
+            {/* Orders List */}
+            <div className="space-y-4">
+              {orders.map((order, idx) => (
+                <Card key={idx} className="p-4" data-testid={`order-${idx}`}>
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-lg">{order.orderId}</h3>
+                        <Badge variant={
+                          order.status === 'delivered' ? 'success' :
+                          order.status === 'pending' ? 'warning' :
+                          order.status === 'confirmed' ? 'default' : 'secondary'
+                        }>
+                          {order.status || 'pending'}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-500">
+                        {new Date(order.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                    <p className="text-xl font-bold text-purple-600">₹{order.total}</p>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase">Customer</p>
+                      <p className="font-medium">{order.customer?.parentName}</p>
+                      <p className="text-sm text-gray-600">{order.customer?.phone}</p>
+                      <p className="text-sm text-gray-600">{order.customer?.whatsappNumber}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase">Pet</p>
+                      <p className="font-medium">{order.pet?.name || 'N/A'}</p>
+                      <p className="text-sm text-gray-600">{order.pet?.breed} • {order.pet?.age}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase">Delivery</p>
+                      <p className="font-medium">{order.delivery?.city}</p>
+                      <p className="text-sm text-gray-600">{order.delivery?.address?.slice(0, 50)}...</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                    <p className="text-xs text-gray-500 uppercase mb-2">Items</p>
+                    {order.items?.map((item, i) => (
+                      <div key={i} className="flex justify-between text-sm">
+                        <span>{item.name} ({item.size}, {item.flavor}) x{item.quantity}</span>
+                        <span>₹{item.price * item.quantity}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {order.specialInstructions && (
+                    <div className="bg-yellow-50 rounded-lg p-3 mb-4">
+                      <p className="text-xs text-yellow-600 uppercase">Special Instructions</p>
+                      <p className="text-sm">{order.specialInstructions}</p>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2 flex-wrap">
+                    <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.orderId, 'confirmed')}>
+                      Confirm
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.orderId, 'preparing')}>
+                      Preparing
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.orderId, 'delivered')}>
+                      Delivered
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-red-600" onClick={() => updateOrderStatus(order.orderId, 'cancelled')}>
+                      Cancel
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+              {orders.length === 0 && (
+                <Card className="p-8 text-center text-gray-500">
+                  No orders yet. Orders placed via checkout will appear here.
+                </Card>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Members Tab */}
+        {activeTab === 'members' && (
+          <div className="space-y-6">
+            {/* Member Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <Card className="p-4">
+                <p className="text-sm text-gray-500">Total Members</p>
+                <p className="text-3xl font-bold">{members.length}</p>
+              </Card>
+              <Card className="p-4 bg-gray-50">
+                <p className="text-sm text-gray-500">Free</p>
+                <p className="text-3xl font-bold text-gray-600">{memberStats.free || 0}</p>
+              </Card>
+              <Card className="p-4 bg-blue-50">
+                <p className="text-sm text-blue-600">Pawsome</p>
+                <p className="text-3xl font-bold text-blue-700">{memberStats.pawsome || 0}</p>
+              </Card>
+              <Card className="p-4 bg-purple-50">
+                <p className="text-sm text-purple-600">Premium</p>
+                <p className="text-3xl font-bold text-purple-700">{memberStats.premium || 0}</p>
+              </Card>
+              <Card className="p-4 bg-amber-50">
+                <p className="text-sm text-amber-600">VIP</p>
+                <p className="text-3xl font-bold text-amber-700">{memberStats.vip || 0}</p>
+              </Card>
+            </div>
+
+            {/* Members Table */}
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Member</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tier</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Chats Today</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {members.map((member, idx) => (
+                    <tr key={idx} className="hover:bg-gray-50">
+                      <td className="px-6 py-4">
+                        <p className="font-medium">{member.name || 'No name'}</p>
+                        <p className="text-xs text-gray-500">Joined {new Date(member.created_at).toLocaleDateString()}</p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-sm">{member.email}</p>
+                        <p className="text-xs text-gray-500">{member.phone || 'No phone'}</p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge variant={
+                          member.membership_tier === 'vip' ? 'warning' :
+                          member.membership_tier === 'premium' ? 'default' :
+                          member.membership_tier === 'pawsome' ? 'secondary' : 'outline'
+                        }>
+                          {member.membership_tier || 'free'}
+                        </Badge>
+                        {member.membership_expires && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            Exp: {new Date(member.membership_expires).toLocaleDateString()}
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        {member.chat_count_today || 0}
+                      </td>
+                      <td className="px-6 py-4">
+                        <select
+                          defaultValue={member.membership_tier || 'free'}
+                          onChange={(e) => updateMemberTier(member.id, e.target.value)}
+                          className="px-2 py-1 border rounded text-sm"
+                        >
+                          <option value="free">Free</option>
+                          <option value="pawsome">Pawsome</option>
+                          <option value="premium">Premium</option>
+                          <option value="vip">VIP</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {members.length === 0 && (
+                <div className="p-8 text-center text-gray-500">
+                  No members registered yet.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Chats Tab */}
         {activeTab === 'chats' && (
           <div className="space-y-6">
