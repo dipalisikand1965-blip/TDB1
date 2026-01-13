@@ -1332,6 +1332,138 @@ const Admin = () => {
             </Card>
           </div>
         )}
+
+        {/* FAQs Tab */}
+        {activeTab === 'faqs' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">Manage FAQs</h3>
+              <Button className="bg-purple-600 hover:bg-purple-700">
+                <Plus className="w-4 h-4 mr-2" />Add FAQ
+              </Button>
+            </div>
+            
+            <Card className="p-6">
+              <p className="text-gray-600 mb-6">Manage frequently asked questions displayed on the FAQs page.</p>
+              
+              <div className="space-y-4">
+                {[
+                  { category: 'Orders & Delivery', count: 4 },
+                  { category: 'Products & Ingredients', count: 4 },
+                  { category: 'Customization', count: 3 },
+                  { category: 'Payments & Refunds', count: 3 },
+                ].map((cat, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <h4 className="font-semibold text-gray-900">{cat.category}</h4>
+                      <p className="text-sm text-gray-500">{cat.count} questions</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm">
+                        <Edit className="w-3 h-3 mr-1" />Edit Category
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Plus className="w-3 h-3 mr-1" />Add Question
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Streaties Tab */}
+        {activeTab === 'streaties' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">Manage Streaties</h3>
+              <Button className="bg-purple-600 hover:bg-purple-700">
+                <Plus className="w-4 h-4 mr-2" />Add Streaty
+              </Button>
+            </div>
+            
+            <Card className="p-6">
+              <p className="text-gray-600 mb-6">Manage street treats featured on the Streaties page.</p>
+              
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  { name: 'Chicken Jerky Strips', price: 299, status: 'active', stock: 50 },
+                  { name: 'Peanut Butter Biscuits', price: 199, status: 'active', stock: 75 },
+                  { name: 'Sweet Potato Chews', price: 249, status: 'active', stock: 30 },
+                  { name: 'Mutton Munchies', price: 349, status: 'low_stock', stock: 8 },
+                ].map((item, idx) => (
+                  <Card key={idx} className="p-4 border">
+                    <h4 className="font-semibold text-gray-900 mb-2">{item.name}</h4>
+                    <p className="text-lg font-bold text-purple-600 mb-2">₹{item.price}</p>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Badge variant={item.status === 'active' ? 'default' : 'destructive'}>
+                        {item.status === 'active' ? 'Active' : 'Low Stock'}
+                      </Badge>
+                      <span className="text-sm text-gray-500">{item.stock} in stock</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" className="flex-1">
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                      <Button variant="ghost" size="sm" className="text-red-500">
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Franchise Tab */}
+        {activeTab === 'franchise' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">Franchise Inquiries</h3>
+              <Badge variant="default" className="text-lg px-4 py-2">3 New</Badge>
+            </div>
+            
+            <Card className="p-6">
+              <p className="text-gray-600 mb-6">Manage franchise inquiries from potential partners.</p>
+              
+              <div className="space-y-4">
+                {[
+                  { name: 'Rahul Sharma', city: 'Delhi', investment: '₹10-20 Lakhs', status: 'new', date: 'Jan 12, 2025' },
+                  { name: 'Priya Patel', city: 'Ahmedabad', investment: '₹20-50 Lakhs', status: 'contacted', date: 'Jan 10, 2025' },
+                  { name: 'Amit Kumar', city: 'Pune', investment: '₹5-10 Lakhs', status: 'new', date: 'Jan 11, 2025' },
+                  { name: 'Sneha Reddy', city: 'Hyderabad', investment: '₹20-50 Lakhs', status: 'in_discussion', date: 'Jan 5, 2025' },
+                ].map((inquiry, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <h4 className="font-semibold text-gray-900">{inquiry.name}</h4>
+                        <Badge variant={
+                          inquiry.status === 'new' ? 'default' : 
+                          inquiry.status === 'contacted' ? 'secondary' : 'outline'
+                        }>
+                          {inquiry.status.replace('_', ' ')}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-500">
+                        {inquiry.city} • {inquiry.investment} • {inquiry.date}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm">
+                        <Eye className="w-3 h-3 mr-1" />View
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <MessageCircle className="w-3 h-3 mr-1" />Contact
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        )}
       </div>
 
       {/* Chat Detail Modal */}
