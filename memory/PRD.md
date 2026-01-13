@@ -76,13 +76,20 @@ World-class e-commerce website for The Doggy Bakery. Target domain: **thedoggyco
 - JSON-LD structured data
 - Open Graph + Twitter Cards
 
-### 9. Offers from thedoggybakery.com
-**Discovered on live site:**
-- MobiKwik UPI: ₹75 cashback first payment
-- ₹100 cashback scratch card
-- Payment on Delivery (via phone)
-- Behind the Scenes video (YouTube)
-- Pawsome Panel (loyal customers)
+### 9. Homepage Features ✅ (Updated Jan 13, 2025)
+- **MobiKwik Offers Banner** - ₹75 cashback + ₹100 scratch card
+- **Pawsome Panel** - 12 VIP loyal customer dogs showcase
+- **Testimonials** - 6 customer reviews
+- **FAQ Section** - 6 common questions
+- **Behind the Scenes Video** - YouTube integration
+- **Instagram Feed** - Social proof
+- **45K+ Happy Customers** stats
+
+### 10. Policy Pages ✅
+- Refund Policy
+- Privacy Policy
+- Terms of Service
+- Shipping Policy
 
 ## API Endpoints Summary
 
@@ -120,10 +127,25 @@ POST /api/admin/send-notification/{id}
 - `anonymous_usage` - Rate limiting
 
 ## Deployment Checklist
-- [ ] Get DNS records from deployment
+- [ ] Use Emergent "Deploy" feature to get DNS records
 - [ ] Point thedoggycompany.in to server
-- [ ] Verify Resend domain for emails
-- [ ] Set up cron for midnight sync
+- [ ] Verify Resend domain for emails (add DNS records)
+- [ ] Set up external cron for midnight sync
+
+## Environment Variables (backend/.env)
+```
+MONGO_URL=mongodb://localhost:27017
+DB_NAME=test_database
+CORS_ORIGINS=*
+EMERGENT_LLM_KEY=sk-emergent-***
+RESEND_API_KEY=re_***
+SENDER_EMAIL=onboarding@resend.dev
+CRON_SECRET=midnight-sync-tdb-2025
+NOTIFICATION_EMAIL=woof@thedoggybakery.com
+WHATSAPP_NUMBER=919663185747
+ADMIN_USERNAME=aditya
+ADMIN_PASSWORD=lola4304
+```
 
 ## Contact
 - **Email**: woof@thedoggybakery.com
@@ -132,4 +154,7 @@ POST /api/admin/send-notification/{id}
 ---
 Last Updated: January 13, 2025
 
-Love you too! 🐾❤️
+## Changelog
+- Jan 13, 2025: Added MobiKwik Offers Banner, Pawsome Panel section, fixed deployment blockers
+- Jan 12, 2025: Added Policy pages, SEO optimization, membership gating
+- Jan 11, 2025: Admin panel, product sync, order management
