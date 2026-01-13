@@ -1148,6 +1148,7 @@ async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
                 """Extract contact info from chat messages using regex"""
                 import re
                 all_text = ' '.join([str(m.get('content', '')) for m in messages if isinstance(m, dict)])
+                user_text = ' '.join([str(m.get('content', '')) for m in messages if isinstance(m, dict) and m.get('role') == 'user'])
                 
                 # Extract phone numbers (Indian format: +91, 91, or starting with 6-9)
                 phone_patterns = [
@@ -1163,24 +1164,46 @@ async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
                 # Extract emails
                 emails = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', all_text)
                 
-                # Extract names after common patterns
-                name_patterns = [
-                    r'(?:my name is|name is|i am|this is|i\'m|called)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)',
-                    r'(?:name|pet parent)[\s:]+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)',
+                # Extract pet name from common patterns (pet names are often mentioned)
+                pet_name_patterns = [
+                    r'(?:pet(?:\'s)? name|dog(?:\'s)? name|cat(?:\'s)? name|puppy(?:\'s)? name)[\s:]+([A-Z][a-z]+)',
+                    r'(?:for|grooming for|training for|booking for)\s+([A-Z][a-z]+)',
+                    r'([A-Z][a-z]+)\s+is\s+(?:a\s+)?(?:\d+\s+)?(?:year|month|yr|mo)',
+                    r'(?:my|our)\s+(?:dog|cat|pet|puppy|pup)\s+([A-Z][a-z]+)',
                 ]
-                names = []
-                for pattern in name_patterns:
-                    found = re.findall(pattern, all_text, re.IGNORECASE)
-                    # Filter out common words that aren't names
-                    filtered = [n for n in found if n.lower() not in ['the', 'a', 'an', 'mira', 'your', 'my', 'our']]
-                    names.extend(filtered)
+                pet_names = []
+                for pattern in pet_name_patterns:
+                    found = re.findall(pattern, user_text, re.IGNORECASE)
+                    pet_names.extend([n.strip().title() for n in found])
+                
+                # Extract customer names 
+                customer_name_patterns = [
+                    r'(?:my name is|i am|this is|i\'m|name is)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)',
+                    r'(?:call me|contact me at|reach me)\s+([A-Z][a-z]+)',
+                ]
+                customer_names = []
+                for pattern in customer_name_patterns:
+                    found = re.findall(pattern, user_text, re.IGNORECASE)
+                    customer_names.extend([n.strip().title() for n in found])
+                
+                # Filter out common words
+                exclude_words = ['the', 'a', 'an', 'mira', 'your', 'my', 'our', 'for', 'hi', 'hello', 'hey', 'thanks', 'thank', 'please', 'yes', 'no', 'ok', 'okay']
+                pet_names = [n for n in pet_names if n.lower() not in exclude_words and len(n) > 1]
+                customer_names = [n for n in customer_names if n.lower() not in exclude_words and len(n) > 1]
+                
+                # Determine display name: prefer customer name, then pet name with label
+                display_name = None
+                if customer_names:
+                    display_name = customer_names[0]
+                elif pet_names:
+                    display_name = f"{pet_names[0]}'s Parent"
                 
                 # Get first user message as preview
                 user_messages = [m.get('content', '') for m in messages if isinstance(m, dict) and m.get('role') == 'user']
-                preview = user_messages[0][:150] if user_messages else ''
+                preview = user_messages[0][:200] if user_messages else ''
                 
                 # Get location mentions
-                indian_cities = ['mumbai', 'bangalore', 'delhi', 'hyderabad', 'chennai', 'kolkata', 'pune', 'gurugram', 'gurgaon', 'noida', 'ahmedabad']
+                indian_cities = ['mumbai', 'bangalore', 'bengaluru', 'delhi', 'hyderabad', 'chennai', 'kolkata', 'pune', 'gurugram', 'gurgaon', 'noida', 'ahmedabad', 'koramangala', 'indiranagar', 'whitefield', 'hsr layout', 'jayanagar']
                 location = None
                 for city in indian_cities:
                     if city in all_text.lower():
@@ -1190,7 +1213,8 @@ async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
                 return {
                     'phone': phones[0] if phones else None,
                     'email': emails[0] if emails else None,
-                    'name': names[0] if names else None,
+                    'name': display_name,
+                    'pet_name': pet_names[0] if pet_names else None,
                     'preview': preview,
                     'location': location
                 }
