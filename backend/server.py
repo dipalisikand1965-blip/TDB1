@@ -53,6 +53,10 @@ WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919663185747")
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "aditya")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "lola4304")
 
+# Chatbase configuration
+CHATBASE_API_KEY = os.environ.get("CHATBASE_API_KEY")
+CHATBASE_CHATBOT_ID = os.environ.get("CHATBASE_CHATBOT_ID")
+
 # Create the main app
 app = FastAPI()
 
