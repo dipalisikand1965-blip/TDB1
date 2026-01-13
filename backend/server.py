@@ -441,17 +441,14 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     
     category = "other"
     
-    # ACCESSORIES & TOYS - check early (before breed detection triggers on "retriever mat")
-    if any(acc in title or acc in product_type for acc in ["toy", "squeaky", "bandana", "mat", "coaster", "bowl", "leash", "collar"]):
-        category = "accessories"
-    # Gift Cards
-    elif "gift card" in title:
+    # Gift Cards - highest priority
+    if "gift card" in title:
         category = "gift-cards"
-    # Gift Hampers & Party Boxes
+    # Gift Hampers & Party Boxes - check before accessories (hampers may include toys/mats)
     elif any(h in title or h in handle for h in ["hamper", "party box", "gift box", "celebration box", "woof box", "bash box", "festive box"]):
         category = "hampers"
     # Cat products
-    elif "cat" in product_type or "cat " in title or "feline" in title or "meow" in title or "purrfect" in title or "cattitude" in title:
+    elif "cat" in product_type or "cat " in title or "feline" in title or "meow" in title or "purrfect" in title or "cattitude" in title or "purradise" in title or "caviar cupcake" in title:
         category = "cat-treats"
     # Pupcakes & Dognuts
     elif "pupcake" in product_type or "pupcake" in title or "dognut" in title or "dognuts" in product_type:
@@ -460,9 +457,9 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     elif ("mini" in title and "cake" in title) or "bowto" in title:
         category = "mini-cakes"
     # Breed-specific cakes (only if "cake" is also in title)
-    elif "cake" in title and any(breed in title for breed in ["retriever", "labrador", "beagle", "pug", "shih tzu", "indie", "husky", "german shepherd", "pomeranian", "rottweiler"]):
+    elif "cake" in title and any(breed in title for breed in ["retriever", "labrador", "beagle", "pug", "shih tzu", "indie", "husky", "german shepherd", "pomeranian", "rottweiler", "mynx"]):
         category = "breed-cakes"
-    # Main cakes
+    # Main cakes (check before accessories because some cakes have "mat" or "toy" in bundle name)
     elif "cake" in product_type or ("cake" in title and "pupcake" not in title):
         category = "cakes"
     # Frozen treats
@@ -477,11 +474,17 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     # Nut butters
     elif "nut butter" in title or "peanut butter jar" in title:
         category = "nut-butters"
+    # ACCESSORIES & TOYS - after cakes/hampers
+    elif any(acc in title or acc in product_type for acc in ["toy", "squeaky", "bandana", "feeding mat", "coaster", "leash", "collar", "name tag"]):
+        category = "accessories"
     # Treats & Biscuits (check after specific categories)
-    elif any(t in product_type or t in title for t in ["treat", "biscuit", "cookie", "jerky", "chew", "snack", "crunch", "munch"]):
+    elif any(t in product_type or t in title for t in ["treat", "biscuit", "cookie", "jerky", "chew", "snack", "crunch", "munch", "chip"]):
         category = "treats"
+    # Health products
+    elif any(h in title for h in ["oil", "toothpaste", "detangler", "flea"]):
+        category = "accessories"
     # Merchandise
-    elif "merchandise" in product_type:
+    elif "merchandise" in product_type or "mug" in title:
         category = "merchandise"
     # Pan India (from tags)
     elif "pan india" in tags_str:
