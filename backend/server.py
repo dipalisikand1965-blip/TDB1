@@ -362,11 +362,21 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     elif "pan india" in tags_str:
         category = "pan-india"
     
+    # Clean description - strip all HTML tags
+    import re
+    raw_desc = shopify_product.get("body_html", "")
+    # Remove all HTML tags
+    clean_desc = re.sub(r'<[^>]+>', ' ', raw_desc)
+    # Remove extra whitespace
+    clean_desc = re.sub(r'\s+', ' ', clean_desc).strip()
+    # Limit length
+    clean_desc = clean_desc[:300] if len(clean_desc) > 300 else clean_desc
+    
     return {
         "id": f"shopify-{shopify_product.get('id')}",
         "shopify_id": shopify_product.get("id"),
         "name": shopify_product.get("title", "").replace("👻", "").replace("🎃", "").replace("🐾", "").replace("🕸️", "").strip(),
-        "description": shopify_product.get("body_html", "").replace("<p>", "").replace("</p>", "").replace("<br>", "\n")[:500],
+        "description": clean_desc,
         "price": base_price,
         "originalPrice": base_price,
         "image": image_url,
