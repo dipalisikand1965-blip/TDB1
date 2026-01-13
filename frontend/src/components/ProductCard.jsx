@@ -4,16 +4,16 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
-
-const ProductCard = ({ product }) => {
-  const sizes = product.sizes || ['Standard'];
-  const flavors = product.flavors || ['Classic'];
-  
 import { Input } from './ui/input';
 import { Calendar } from './ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { format } from 'date-fns';
 import { CalendarIcon, Clock } from 'lucide-react';
+
+const ProductCard = ({ product }) => {
+  const sizes = product.sizes || ['Standard'];
+  const flavors = product.flavors || ['Classic'];
+  
   // Helper to get size name/price
   const getSizeDetails = (size) => {
     if (typeof size === 'object') return size;
