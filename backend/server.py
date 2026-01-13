@@ -721,6 +721,227 @@ async def manually_send_notification(session_id: str, username: str = Depends(ve
     }
 
 
+# ==================== PRODUCT MANAGEMENT ROUTES ====================
+
+@admin_router.get("/products")
+async def get_all_products(
+    username: str = Depends(verify_admin),
+    category: Optional[str] = None,
+    limit: int = 200
+):
+    """Get all products with optional category filter"""
+    query = {}
+    if category:
+        query["category"] = category
+    
+    products = await db.products.find(query, {"_id": 0}).limit(limit).to_list(limit)
+    total = await db.products.count_documents(query)
+    
+    # Get distinct categories
+    categories = await db.products.distinct("category")
+    
+    return {"products": products, "total": total, "categories": categories}
+
+
+@admin_router.get("/products/{product_id}")
+async def get_product(product_id: str, username: str = Depends(verify_admin)):
+    """Get single product by ID"""
+    product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
+
+
+@admin_router.post("/products")
+async def create_product(product: dict, username: str = Depends(verify_admin)):
+    """Create a new product"""
+    product["id"] = str(uuid.uuid4())
+    product["created_at"] = datetime.now(timezone.utc).isoformat()
+    product["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.products.insert_one(product)
+    return {"message": "Product created", "id": product["id"]}
+
+
+@admin_router.put("/products/{product_id}")
+async def update_product(product_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update an existing product"""
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    # Remove id from updates if present
+    updates.pop("id", None)
+    updates.pop("_id", None)
+    
+    result = await db.products.update_one(
+        {"id": product_id},
+        {"$set": updates}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"message": "Product updated successfully"}
+
+
+@admin_router.delete("/products/{product_id}")
+async def delete_product(product_id: str, username: str = Depends(verify_admin)):
+    """Delete a product"""
+    result = await db.products.delete_one({"id": product_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"message": "Product deleted successfully"}
+
+
+@admin_router.post("/products/bulk-import")
+async def bulk_import_products(products: List[dict], username: str = Depends(verify_admin)):
+    """Bulk import products (for initial data migration)"""
+    for product in products:
+        if "id" not in product:
+            product["id"] = str(uuid.uuid4())
+        product["created_at"] = datetime.now(timezone.utc).isoformat()
+        product["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    if products:
+        await db.products.insert_many(products)
+    
+    return {"message": f"Imported {len(products)} products"}
+
+
+# ==================== SITE CONTENT MANAGEMENT ROUTES ====================
+
+@admin_router.get("/site-content")
+async def get_site_content(username: str = Depends(verify_admin)):
+    """Get all site content settings"""
+    content = await db.site_content.find_one({"type": "main"}, {"_id": 0})
+    if not content:
+        # Return default content structure
+        content = {
+            "type": "main",
+            "videos": [
+                {
+                    "id": "1",
+                    "title": "Behind the Scenes: Baking with Love",
+                    "thumbnail": "https://images.unsplash.com/photo-1612940960267-4549a58fb257?w=600",
+                    "description": "Watch how we craft each cake with care in our kitchen",
+                    "videoUrl": "https://www.instagram.com/the_doggy_bakery/"
+                },
+                {
+                    "id": "2",
+                    "title": "Customer Celebrations",
+                    "thumbnail": "https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=600",
+                    "description": "Real celebrations from our happy customers",
+                    "videoUrl": "https://www.instagram.com/the_doggy_bakery/"
+                },
+                {
+                    "id": "3",
+                    "title": "How to Store Your Cake",
+                    "thumbnail": "https://images.unsplash.com/photo-1646157763904-d7d184329c72?w=600",
+                    "description": "Tips for keeping treats fresh and delicious",
+                    "videoUrl": "https://www.instagram.com/the_doggy_bakery/"
+                },
+                {
+                    "id": "4",
+                    "title": "Meet Our Team",
+                    "thumbnail": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600",
+                    "description": "The passionate team behind The Doggy Bakery",
+                    "videoUrl": "https://www.instagram.com/the_doggy_bakery/"
+                }
+            ],
+            "heroSlides": [
+                {
+                    "title": "Unconditional Love",
+                    "subtitle": "Deserves Exceptional Treats",
+                    "description": "Premium, freshly baked treats crafted with love for your furry family",
+                    "image": "https://images.unsplash.com/flagged/photo-1553802922-28e2f719977d?w=1200",
+                    "cta": "Explore Cakes"
+                },
+                {
+                    "title": "Meet Mira AI",
+                    "subtitle": "Your Pet Celebration Concierge",
+                    "description": "Get personalized recommendations, party ideas, and expert guidance",
+                    "image": "https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=1200",
+                    "cta": "Chat with Mira"
+                }
+            ],
+            "bannerText": "Enjoy the convenience of SAME DAY DELIVERY in Mumbai, Bangalore & Gurgaon for all orders placed by 6:00 PM",
+            "whatsappNumber": "+91 96631 85747",
+            "contactEmail": "woof@thedoggybakery.com"
+        }
+    return content
+
+
+@admin_router.put("/site-content")
+async def update_site_content(content: dict, username: str = Depends(verify_admin)):
+    """Update site content settings"""
+    content["type"] = "main"
+    content["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.site_content.update_one(
+        {"type": "main"},
+        {"$set": content},
+        upsert=True
+    )
+    return {"message": "Site content updated successfully"}
+
+
+@admin_router.put("/site-content/videos")
+async def update_videos(videos: List[dict], username: str = Depends(verify_admin)):
+    """Update just the videos section"""
+    await db.site_content.update_one(
+        {"type": "main"},
+        {"$set": {"videos": videos, "updated_at": datetime.now(timezone.utc).isoformat()}},
+        upsert=True
+    )
+    return {"message": "Videos updated successfully"}
+
+
+@admin_router.put("/site-content/hero")
+async def update_hero_slides(heroSlides: List[dict], username: str = Depends(verify_admin)):
+    """Update hero slides"""
+    await db.site_content.update_one(
+        {"type": "main"},
+        {"$set": {"heroSlides": heroSlides, "updated_at": datetime.now(timezone.utc).isoformat()}},
+        upsert=True
+    )
+    return {"message": "Hero slides updated successfully"}
+
+
+# ==================== PUBLIC CONTENT API ====================
+
+@api_router.get("/content/videos")
+async def get_public_videos():
+    """Public endpoint for videos (no auth required)"""
+    content = await db.site_content.find_one({"type": "main"}, {"_id": 0, "videos": 1})
+    if content and "videos" in content:
+        return {"videos": content["videos"]}
+    # Default videos
+    return {"videos": [
+        {"id": "1", "title": "Behind the Scenes", "thumbnail": "https://images.unsplash.com/photo-1612940960267-4549a58fb257?w=600", "description": "Watch how we craft each cake", "videoUrl": "https://www.instagram.com/the_doggy_bakery/"},
+        {"id": "2", "title": "Customer Celebrations", "thumbnail": "https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=600", "description": "Real celebrations", "videoUrl": "https://www.instagram.com/the_doggy_bakery/"},
+        {"id": "3", "title": "How to Store Your Cake", "thumbnail": "https://images.unsplash.com/photo-1646157763904-d7d184329c72?w=600", "description": "Tips for keeping treats fresh", "videoUrl": "https://www.instagram.com/the_doggy_bakery/"},
+        {"id": "4", "title": "Meet Our Team", "thumbnail": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600", "description": "The passionate team", "videoUrl": "https://www.instagram.com/the_doggy_bakery/"}
+    ]}
+
+
+@api_router.get("/content/hero")
+async def get_public_hero():
+    """Public endpoint for hero slides"""
+    content = await db.site_content.find_one({"type": "main"}, {"_id": 0, "heroSlides": 1})
+    if content and "heroSlides" in content:
+        return {"heroSlides": content["heroSlides"]}
+    return {"heroSlides": []}
+
+
+@api_router.get("/products")
+async def get_public_products(category: Optional[str] = None):
+    """Public endpoint for products"""
+    query = {}
+    if category:
+        query["category"] = category
+    
+    products = await db.products.find(query, {"_id": 0}).to_list(500)
+    return {"products": products}
+
+
 # ==================== APP SETUP ====================
 
 app.add_middleware(
