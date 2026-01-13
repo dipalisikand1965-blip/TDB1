@@ -91,6 +91,7 @@ const Admin = () => {
   // Chatbase
   const [chatbaseChats, setChatbaseChats] = useState([]);
   const [syncingChatbase, setSyncingChatbase] = useState(false);
+  const [expandedChat, setExpandedChat] = useState(null);
 
   // Check for stored auth
   useEffect(() => {
