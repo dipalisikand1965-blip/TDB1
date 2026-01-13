@@ -66,8 +66,14 @@ admin_router = APIRouter(prefix="/api/admin")
 
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
-async def health_check():
+def health_check():
+    """Simple health check for Kubernetes liveness/readiness probes"""
     return {"status": "healthy", "service": "doggy-bakery-api"}
+
+@app.get("/")
+def root():
+    """Root endpoint"""
+    return {"message": "The Doggy Bakery API", "version": "2.0", "health": "ok"}
 
 # Security
 security = HTTPBasic()
