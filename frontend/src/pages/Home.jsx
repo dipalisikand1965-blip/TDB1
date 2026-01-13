@@ -415,6 +415,67 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Pawsome Panel - Loyal Customers */}
+      <section className="py-24 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-200 rounded-full opacity-20 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-200 rounded-full opacity-20 blur-3xl"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 bg-yellow-100 rounded-full mb-6">
+              <Crown className="w-5 h-5 text-yellow-600 mr-2" />
+              <span className="text-yellow-600 text-sm font-semibold">The Pawsome Panel</span>
+            </div>
+            <h2 className="text-5xl font-black text-gray-900 mb-4">
+              Meet Our Loyal Patrons
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Our cherished group of loyal customers who have been with The Doggy Bakery from the start, celebrating countless special moments along the way.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {[
+              { name: 'Bruno', breed: 'Golden Retriever', img: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop' },
+              { name: 'Luna', breed: 'Labrador', img: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop' },
+              { name: 'Max', breed: 'Beagle', img: 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=200&h=200&fit=crop' },
+              { name: 'Bella', breed: 'Shih Tzu', img: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=200&h=200&fit=crop' },
+              { name: 'Rocky', breed: 'German Shepherd', img: 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=200&h=200&fit=crop' },
+              { name: 'Coco', breed: 'Pomeranian', img: 'https://images.unsplash.com/photo-1591856419156-ef0f0a1a5e2c?w=200&h=200&fit=crop' },
+              { name: 'Charlie', breed: 'Indie', img: 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=200&h=200&fit=crop' },
+              { name: 'Milo', breed: 'Pug', img: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=200&h=200&fit=crop' },
+              { name: 'Daisy', breed: 'Cocker Spaniel', img: 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?w=200&h=200&fit=crop' },
+              { name: 'Oscar', breed: 'Husky', img: 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=200&h=200&fit=crop' },
+              { name: 'Rosie', breed: 'Dachshund', img: 'https://images.unsplash.com/photo-1612536057832-2ff7ead58194?w=200&h=200&fit=crop' },
+              { name: 'Leo', breed: 'Chow Chow', img: 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=200&h=200&fit=crop' },
+            ].map((pet, idx) => (
+              <div key={idx} className="group text-center">
+                <div className="relative mb-3">
+                  <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg group-hover:border-yellow-400 transition-all duration-300 group-hover:scale-110">
+                    <img src={pet.img} alt={pet.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-xs font-bold px-2 py-0.5 rounded-full text-yellow-900">
+                    VIP
+                  </div>
+                </div>
+                <h4 className="font-bold text-gray-900">{pet.name}</h4>
+                <p className="text-xs text-gray-500">{pet.breed}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-gray-600 mb-4">Want to join the Pawsome Panel?</p>
+            <Link to="/membership">
+              <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white">
+                <Crown className="w-4 h-4 mr-2" />
+                Become a Member
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section */}
       <section className="py-24 bg-gray-50">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
