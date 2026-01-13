@@ -1,0 +1,192 @@
+<analysis>**original_problem_statement**: The user wants to rebuild his son's website, , as a professional e-commerce site for his 30th birthday.
+
+**PRODUCT REQUIREMENTS**:
+1.  **UI/UX**: Stunning and world-class design.
+2.  **AI Chatbot Mira**: A sophisticated concierge for celebration planning with a specific persona.
+3.  **Content**: Integrate video content and a live Instagram feed.
+4.  **Products**: Populate the site with all products, variants, and prices from the live , ensuring data accuracy.
+5.  **Deployment**: Prepare for deployment to the custom domain .
+6.  **Notifications**: Send order details via WhatsApp to  and Mira chat summaries via email to .
+7.  **Admin Panel**: A comprehensive backend system for:
+    *   Full product CRUD (Create, Read, Update, Delete).
+    *   Managing site content (e.g., homepage videos).
+    *   Viewing Mira AI chat logs.
+    *   Viewing submitted orders.
+    *   Managing user memberships.
+8.  **Product Sync**:
+    *   Automatically sync products from  every midnight.
+    *   Allow bulk product import/export via CSV.
+9.  **Membership System**:
+    *   Create a membership page with different tiers.
+    *   Gate access to Mira AI based on the user's membership level.
+10. **Enhanced Checkout**:
+    *   Include mandatory fields: Pet's Name, Pet Parent's Name, Address, WhatsApp, Email, and Special Instructions.
+    *   Ensure personalization details (name, age, etc.) carry through to the cart.
+11. **Policy Pages**: Add pages for Refund, Privacy, Terms of Service, and Shipping.
+12. **SEO**: Optimize the site for discoverability, mirroring and improving upon the live site's SEO.
+
+**User's preferred language**: English
+
+**what currently exists?**
+The project is a feature-complete full-stack application using a React frontend, a FastAPI backend, and MongoDB for data persistence. All initial product data from  has been migrated to the database.
+
+**Key Implemented Features**:
+*   **Full Admin Panel**: A password-protected () interface with tabs for a main dashboard, managing Mira chats, full product CRUD, site content (videos, banners), submitted orders, and user memberships.
+*   **MongoDB Backend**: The FastAPI backend manages all data in MongoDB collections for products, users, orders, and chats.
+*   **Product Automation**: The system automatically syncs products from the live site's Shopify  endpoint nightly via a scheduled job. The admin can also trigger this sync manually or use CSV import/export.
+*   **Membership & AI Gating**: A complete user registration and login system is in place. Mira AI usage is now gated, with free users having a daily message limit, prompting them to upgrade.
+*   **Enhanced Checkout & Order System**: The checkout page includes all user-requested fields, and successfully submitted orders are stored in the database and visible in the admin panel.
+*   **Dynamic Content**: All policy pages, homepage videos, and other key text are now managed from the admin panel.
+*   **SEO**: The  has been populated with extensive meta tags and JSON-LD structured data for improved SEO.
+
+**Last working item**:
+-   **Last item agent was working**: The agent just finished creating the legal policy pages () by crawling the content from the live site, creating the React component, adding the route, and linking it in the footer.
+-   **Status**: USER VERIFICATION PENDING
+-   **Agent Testing Done**: Y (Agent confirmed the build completes successfully).
+-   **Which testing method agent to use?**: screenshot tool (to view  page and verify footer links are present).
+-   **User Testing Done**: N
+
+**All Pending/In progress Issue list**:
+-   **Issue 1: Cart Items Lost on Page Navigation (P0)**
+    -   **Description**: The shopping cart does not persist if the user navigates to another page and returns. This is because the  state is not saved to .
+    -   **Attempted fixes**: None. The agent identified the issue but did not fix it.
+    -   **Next debug checklist**:
+        1.  Edit .
+        2.  On initial load, read and initialize the cart state from .
+        3.  Use a  hook to save the cart state to  whenever it changes.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical e-commerce bug. Fixing it will prevent users from losing their carts, which is essential for conversions.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Frontend
+
+-   **Issue 2: Email Notifications Failing (P1)**
+    -   **Description**: The feature to email Mira chat summaries to  is failing with a  from the Resend API.
+    -   **Attempted fixes**: The agent correctly identified that the sending domain needs to be verified by adding DNS records. The feature is blocked pending this user action.
+    -   **Next debug checklist**:
+        1.  Inform the user clearly that they must add DNS records (provided by Resend) to their domain registrar for .
+        2.  Once the user confirms completion, re-test the notification functionality.
+    -   **Why fix this issue and what will be achieved with the fix?**: Fulfills a core requirement for the user to be notified of AI chat interactions.
+    -   **Status**: BLOCKED (on user for domain verification)
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Backend
+
+**In progress Task List**:
+-   None.
+
+**Upcoming and Future Tasks**
+-   **Upcoming Tasks**:
+    -   **P0: Provide DNS Records for Deployment**: The user is ready to go live and needs the A and CNAME records to point  to the application.
+    -   **P1: Implement Discovered Site Features**: The agent crawled the live site and found features that have not been implemented yet: **MobiKwik payment offers**, a **Pawsome Panel** for loyal customers, and a **Testimonials section**. These should be added to match the existing site.
+    -   **P2: Final Product & Pricing Audit**: Perform a thorough review of all products (~550+), variants, and pricing logic against the live site to ensure 100% accuracy.
+
+-   **Future Tasks**:
+    -   **Advanced Review System**: Enhance the Testimonials section by allowing users to submit reviews with photo and video uploads.
+    -   **True Headless Shopify Integration**: Migrate from the current DB sync method to using Shopify's Storefront API directly on the frontend for fetching products.
+    -   **Re-evaluate Custom Cake Designer**: Confirm with the user if the current image upload feature is sufficient or if a more interactive design tool is desired.
+
+**Completed work in this session**
+-   **Full Admin Panel**: Created a secure  panel with a dashboard and management capabilities for products, orders, users/memberships, Mira chats, and site content.
+-   **Database Migration & Automation**: Shifted all application data from static files to MongoDB and set up a nightly cron job to auto-sync products from the live site's Shopify store.
+-   **Product Management System**: Implemented full CRUD for products, plus bulk import/export via CSV from the admin panel.
+-   **Membership System & AI Gating**: Built a user registration/login system and implemented logic to limit Mira AI access for non-paying members.
+-   **Order Management System**: Developed a complete flow for capturing detailed customer orders at checkout and displaying them in the admin panel.
+-   **SEO & Policy Pages**: Implemented comprehensive SEO meta tags and created dynamic pages for all legal policies, manageable from the admin.
+-   **Enhanced Checkout**: Redesigned the checkout page to be a comprehensive form capturing all necessary delivery and personalization details.
+
+**Earlier issues found/mentioned but not fixed**
+-   The two main issues are the **Cart Persistence** and **Email Notification Failure**, which are detailed in the All Pending/In progress Issue list.
+
+**Known issue recurrence from previous fork**
+-   None.
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+-   **Frontend**: React, React Router, TailwindCSS, Shadcn UI.
+-   **Backend**: FastAPI, Pydantic.
+-   **Database**: MongoDB.
+-   **Authentication**: HTTP Basic Auth (for admin), JWT (for users).
+-   **Scheduled Jobs**:  for nightly product sync.
+-   **3rd Party Integrations**: Emergent LLM Key, Resend (email), WhatsApp (click-to-chat), Shopify (read-only  endpoint).
+
+**key DB schema**
+-   **products**: uid=0(root) gid=0(root) groups=0(root), , , , , , .
+-   **mira_chats**: , , , ,  (pet name, city, etc.).
+-   **users**: , , , .
+-   **orders**: , , , ,  (name, address, etc.).
+-   **site_settings**:  ('main'), , , , etc.
+
+**changes in tech stack**
+-   **Database**: Introduced MongoDB as the primary data store.
+-   **Backend Scheduling**: Added  library for cron jobs.
+-   **Authentication**: Implemented JWT for user sessions.
+-   **Email**: Integrated the  library for transactional emails.
+
+**All files of reference**
+*   : The entire backend logic is in this single file.
+*   : The entire frontend logic for the admin panel is in this file.
+*   : Contains the enhanced checkout form logic.
+*   : Manages the non-persistent cart state.
+*   : Stores all secrets and configuration variables.
+
+**Areas that need refactoring**:
+-   ****: This monolithic file (1200+ lines) is unmaintainable. It should be broken down into separate modules for routes, models, and services (e.g., , ).
+-   ****: This massive component should be split into smaller, dedicated components for each tab (e.g., , ).
+-   ****: Needs to be refactored to use  for cart persistence.
+
+**key api endpoints**
+-   , : User authentication.
+-   : Submits a new customer order.
+-   , , : Admin data retrieval.
+-   : Manually triggers product sync.
+-   : Endpoint for the external cron job trigger.
+
+**Critical Info for New Agent**
+-   **PRIORITY 1: FIX BUGS.** Before adding new features, you must fix the cart persistence issue (). It is a critical flaw for an e-commerce site.
+-   **PRIORITY 2: DEPLOYMENT.** The user is ready to go live. Your next major task is to provide the DNS records for .
+-   **Monolithic Codebase**: Be aware that the main backend () and frontend admin () files are extremely large. Navigate them carefully and consider that any new feature will add to the complexity.
+-   **Admin Credentials**: Use  /  to access the admin panel at .
+-   **Blocked Features**: Email notifications are blocked pending user action (DNS verification for Resend). Remind the user about this.
+
+**documents and test reports created in this job**
+-    (Updated extensively)
+-    (Outdated, from a previous session)
+
+**Last 10 User Messages and any pending HUMAN messages**
+1.  **User**: Asks to add all policy pages (Refund, Privacy, Terms, Shipping) by crawling the live site. (DONE)
+2.  **User**: Asks for a status update (where are we). (Responded to)
+3.  **User**: Asks for the live URL of the site. (Responded to)
+4.  **User**: Confirms CSV import and auto-sync from the live site are desired. Asks for membership gating to be implemented. (DONE)
+5.  **User**: Asks for several major enhancements: Admin to see memberships & orders; checkout page to have more fields (pet name, parent name, address, etc.) and be mandatory; study live site for more features; add new videos; set auto-sync to midnight. (DONE)
+6.  **User**: Approves the plan to build the admin panel, product management, and video management. (DONE)
+7.  **User**: Clarifies the membership tiers and how Mira AI access should be gated (partial vs. full). Asks to confirm all products/variants are on the site. (DONE)
+8.  **User**: Provides the Resend API key. (DONE)
+9.  **User**: Provides admin credentials (/) and the email for notifications. Confirms Gurugram and Gurgaon are the same. (DONE)
+10. **User**: Confirms the plan to build an admin panel for viewing Mira chats and receiving notifications via both email and WhatsApp. (DONE)
+
+**Project Health Check:**
+-   **Functional with Bugs**: The application is largely complete and running but has a critical user-facing bug (cart persistence) and a blocked feature (email notifications).
+-   **Mocked**: Not mocked. The application is fully integrated with a MongoDB database.
+
+**3rd Party Integrations**
+-   **OpenAI/LLM**: via  (Emergent LLM Key).
+-   **Resend**: For email notifications (partially integrated, blocked on domain verification).
+-   **WhatsApp**: For click-to-chat order links.
+-   **Shopify**: Read-only access to the public  endpoint for product syncing.
+
+**Testing status**
+-   **Testing agent used after significant changes**: YES, but the agent did not review or act upon the results, which is a process failure.
+-   **Troubleshoot agent used after agent stuck in loop**: NO
+-   **Test files created**: []
+-   **Known regressions**: The shopping cart does not persist across page loads, which is a significant functional regression.
+
+**Credentials to test flow:**
+-   Admin URL: 
+-   Username: 
+-   Password: 
+
+**What agent forgot to execute**
+-   The agent did not provide the user with the DNS records required for deployment.
+-   The agent did not implement the extra features discovered on the live site (MobiKwik offers, Pawsome Panel, Testimonials) as requested by the user.
+-   The agent called the testing agent but ignored the output and proceeded with self-testing, failing to follow the prescribed workflow.</analysis>
