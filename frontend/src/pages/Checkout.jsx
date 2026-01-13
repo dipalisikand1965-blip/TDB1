@@ -12,6 +12,13 @@ import { ArrowLeft, CreditCard, Truck, MapPin, Phone, MessageCircle, CheckCircle
 const WHATSAPP_NUMBER = '919663185747';
 const BUSINESS_EMAIL = 'woof@thedoggybakery.com';
 
+const addOns = [
+  { id: 'ao-1', name: 'Birthday Bandana', price: 299 },
+  { id: 'ao-2', name: 'Party Hat', price: 199 },
+  { id: 'ao-3', name: 'Paw Balm', price: 350 },
+  { id: 'ao-4', name: 'Treat Pack (100g)', price: 150 }
+];
+
 const Checkout = () => {
   const { cartItems, getCartTotal, clearCart, addToCart } = useCart();
   const navigate = useNavigate();
@@ -33,61 +40,45 @@ const Checkout = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Generate order summary for WhatsApp
-  const generateWhatsAppUrl = (orderData) => {
-    const orderItems = cartItems.map(item => 
-      `• ${item.name} (${item.selectedSize}, ${item.selectedFlavor}) x${item.quantity} - ₹${item.price * item.quantity}`
-    ).join('\n');
-    
-    const deliveryFee = 75;
-    const total = getCartTotal() + deliveryFee;
-    
-    const message = `🐕 *New Order from The Doggy Bakery Demo*
-
-const addOns = [
-  { id: 'ao-1', name: 'Birthday Bandana', price: 299 },
-  { id: 'ao-2', name: 'Party Hat', price: 199 },
-  { id: 'ao-3', name: 'Paw Balm', price: 350 },
-  { id: 'ao-4', name: 'Treat Pack (100g)', price: 150 }
-];
-Email: ${orderData.email}
-${orderData.petName ? `Pet: ${orderData.petName}` : ''}
-${orderData.age ? `Pet Age: ${orderData.age}` : ''}
-const addOns = [
-  { id: 'ao-1', name: 'Birthday Bandana', price: 299 },
-  { id: 'ao-2', name: 'Party Hat', price: 199 },
-  { id: 'ao-3', name: 'Paw Balm', price: 350 },
-  { id: 'ao-4', name: 'Treat Pack (100g)', price: 150 }
-];
-*Customer Details:*
-Name: ${orderData.name}
-Phone: ${orderData.phone}
-Email: ${orderData.email}
-${orderData.petName ? `Pet's Name: ${orderData.petName}` : ''}
-
-*Delivery Address:*
-${orderData.address}
-${orderData.city} - ${orderData.pincode}
-${orderData.deliveryNotes ? `Notes: ${orderData.deliveryNotes}` : ''}
-
-*Order Items:*
-${orderItems}
-
-*Order Total:*
-Subtotal: ₹${getCartTotal()}
-Delivery: ₹${deliveryFee}
-*Grand Total: ₹${total}*
-
   const handleAddOn = (addOn) => {
     addToCart({
       ...addOn,
-      image: 'https://placehold.co/100x100?text=Add+On', // Placeholder
+      image: 'https://placehold.co/100x100?text=Add+On',
       description: 'Quick add-on item'
     }, 'Standard', 'Standard');
     toast({ title: "Added!", description: `${addOn.name} added to order.` });
   };
-Payment: Cash on Delivery
-Order placed via Birthday Demo Site 🎂`;
+
+  // Generate order summary for WhatsApp
+  const generateWhatsAppUrl = (orderData) => {
+    const deliveryFee = 75;
+    const total = getCartTotal() + deliveryFee;
+    
+    const message = `🐕 *New Order Request - The Doggy Bakery*
+    
+*Status:* Pending Payment
+*GST:* Applicable on final invoice
+
+*Customer Details:*
+Name: ${orderData.name}
+Phone: ${orderData.phone}
+Email: ${orderData.email}
+
+*Order Details:*
+${cartItems.map(item => `
+• *${item.name}*
+  - Variant: ${item.selectedSize}, ${item.selectedFlavor}
+  - Qty: ${item.quantity}
+  - Price: ₹${item.price * item.quantity}
+  ${item.customDetails ? `- Details: ${item.customDetails.petName || ''} ${item.customDetails.age ? `(Age: ${item.customDetails.age})` : ''} ${item.customDetails.date ? `| Del: ${new Date(item.customDetails.date).toDateString()}` : ''}` : ''}
+`).join('')}
+
+*Summary:*
+Subtotal: ₹${getCartTotal()}
+Delivery: ₹${deliveryFee}
+*Total Est: ₹${total}*
+
+_Please send payment link to confirm order._`;
 
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
   };
@@ -95,14 +86,6 @@ Order placed via Birthday Demo Site 🎂`;
   const handleSubmit = (e) => {
     e.preventDefault();
     
-  const handleAddOn = (addOn) => {
-    addToCart({
-      ...addOn,
-      image: 'https://placehold.co/100x100?text=Add+On', // Placeholder
-      description: 'Quick add-on item'
-    }, 'Standard', 'Standard');
-    toast({ title: "Added!", description: `${addOn.name} added to order.` });
-  };
     const deliveryFee = 75;
     const total = getCartTotal() + deliveryFee;
     
@@ -405,6 +388,21 @@ Order placed via Birthday Demo Site 🎂`;
                       src={item.image}
                       alt={item.name}
                       className="w-16 h-16 object-cover rounded-md"
+                    />
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{item.name}</p>
+                      <p className="text-xs text-gray-600">
+                        {item.selectedSize} | {item.selectedFlavor}
+                      </p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {item.quantity} x ₹{item.price}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Add-ons Section */}
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
                 <h3 className="font-semibold text-yellow-800 mb-2">🎉 Last Minute Add-ons?</h3>
                 <div className="space-y-2">
@@ -420,22 +418,10 @@ Order placed via Birthday Demo Site 🎂`;
                 </div>
               </div>
 
+              {/* GST & Payment Note */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-xs text-blue-800">
                 <p><strong>Note:</strong> GST will be applicable on the final invoice. A secure payment link including taxes will be sent to your WhatsApp/Email upon order confirmation.</p>
                 <p className="mt-1">Once payment is made, we start the baking! 🧁</p>
-              </div>
-                    />
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{item.name}</p>
-                      <p className="text-xs text-gray-600">
-                        {item.selectedSize} | {item.selectedFlavor}
-                      </p>
-                      <p className="text-sm font-medium text-gray-900">
-                        {item.quantity} x ₹{item.price}
-                      </p>
-                    </div>
-                  </div>
-                ))}
               </div>
 
               <div className="border-t pt-4 space-y-3">
