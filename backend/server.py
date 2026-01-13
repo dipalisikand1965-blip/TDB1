@@ -85,6 +85,18 @@ def health_check():
     """Simple health check for Kubernetes liveness/readiness probes"""
     return {"status": "healthy", "service": "doggy-bakery-api"}
 
+@app.get("/health/db")
+async def db_health_check():
+    """Database connectivity health check"""
+    try:
+        # Ping MongoDB to check connection
+        await client.admin.command('ping')
+        count = await db.products.count_documents({})
+        return {"status": "healthy", "database": "connected", "products_count": count}
+    except Exception as e:
+        logger.error(f"Database health check failed: {e}")
+        return {"status": "unhealthy", "database": "disconnected", "error": str(e)}
+
 @app.get("/")
 def root():
     """Root endpoint"""
