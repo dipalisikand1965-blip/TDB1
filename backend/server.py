@@ -820,38 +820,75 @@ CRITICAL RULES:
 5. USE BOLD FOR QUESTIONS - Every question must be in **bold**
 """
 
-        # Construct Conversation History
+        # Construct Conversation History with explicit state tracking
         history_text = ""
-        answered_questions = []
+        collected_info = {
+            "pet_name": None,
+            "breed": None,
+            "age": None,
+            "city": None,
+            "area": None,
+            "service_type": None,
+            "date": None,
+            "time": None,
+            "address": None,
+            "contact_method": None
+        }
+        
         if request.history:
-            history_text = "\n\nCONVERSATION HISTORY (Review carefully - DO NOT repeat questions already answered):\n"
-            for msg in request.history[-15:]:
+            history_text = "\n\nCONVERSATION HISTORY:\n"
+            for msg in request.history[-20:]:
                 role = msg.get("role", "unknown")
                 content = msg.get("content", "")
                 history_text += f"{role.upper()}: {content}\n"
-                # Track what's been answered
+                
+                # Extract collected info from user messages
                 if role == "user":
-                    answered_questions.append(content)
+                    content_lower = content.lower()
+                    # Try to extract pet info
+                    if any(breed in content_lower for breed in ["shih tzu", "shihtzu", "labrador", "golden retriever", "beagle", "pug", "indie", "german shepherd"]):
+                        collected_info["breed"] = content
+                    if any(city in content_lower for city in ["bangalore", "bengaluru", "mumbai", "delhi", "gurgaon", "gurugram", "hyderabad", "chennai", "pune", "kolkata"]):
+                        collected_info["city"] = content
+                    if any(area in content_lower for area in ["koramangala", "indiranagar", "hsr", "whitefield", "jayanagar", "bandra", "andheri"]):
+                        collected_info["area"] = content
+                    if any(x in content_lower for x in ["year", "years", "month", "months"]):
+                        collected_info["age"] = content
+                    if any(x in content_lower for x in ["am", "pm", "morning", "afternoon", "evening"]):
+                        collected_info["time"] = content
+                    if any(x in content_lower for x in ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "january", "february"]):
+                        collected_info["date"] = content
+                    if any(x in content_lower for x in ["block", "floor", "flat", "apartment", "house", "road", "street"]):
+                        collected_info["address"] = content
+                    if any(x in content_lower for x in ["whatsapp", "email", "call", "phone"]):
+                        collected_info["contact_method"] = content
+
+        # Build collected info summary
+        collected_summary = "INFORMATION ALREADY COLLECTED (DO NOT ASK FOR THESE AGAIN):\n"
+        for key, value in collected_info.items():
+            if value:
+                collected_summary += f"- {key.replace('_', ' ').title()}: {value}\n"
+        if not any(collected_info.values()):
+            collected_summary += "- None yet (new conversation)\n"
 
         full_prompt = f"""
 {history_text}
 
-INFORMATION ALREADY PROVIDED BY GUEST (DO NOT ASK AGAIN):
-{chr(10).join(answered_questions) if answered_questions else 'None yet - this is a new conversation'}
+{collected_summary}
 
 CURRENT USER INPUT: {user_query}
 
-SEARCH RESULTS (Use for Step 3 Options - do not reveal source):
+SEARCH RESULTS (Use for Step 3 Options only - do not reveal source):
 {search_results}
 
-INSTRUCTIONS:
-1. Review the CONVERSATION HISTORY above
-2. Identify which step (1-9) you are currently on
-3. DO NOT repeat the governing sentence if it already appeared
-4. DO NOT ask for information the guest already provided
-5. Ask ONE question at a time in **bold**
-6. Progress through the 9-step flow naturally
-7. Use British English spelling
+CRITICAL INSTRUCTIONS:
+1. Review CONVERSATION HISTORY and COLLECTED INFO above
+2. DO NOT ask for information that is already in COLLECTED INFO
+3. Ask only ONE question at a time
+4. Move to the NEXT step in the 9-step flow
+5. If user says something like "it is still asking" or expresses frustration, apologize briefly and proceed to Summary
+6. Use **bold** for questions
+7. Progress forward - do not loop back
 """
 
         chat = LlmChat(
