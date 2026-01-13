@@ -490,9 +490,11 @@ const Admin = () => {
         <div className="flex gap-2 mb-8 border-b pb-4 flex-wrap">
           {[
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+            { id: 'orders', label: 'Orders', icon: Package },
             { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
+            { id: 'members', label: 'Members', icon: Users },
             { id: 'products', label: 'Products', icon: Package },
-            { id: 'content', label: 'Videos & Content', icon: Video },
+            { id: 'content', label: 'Videos', icon: Video },
             { id: 'requests', label: 'Custom Cakes', icon: Cake },
           ].map((tab) => (
             <Button
