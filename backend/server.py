@@ -1186,6 +1186,205 @@ async def get_public_products(category: Optional[str] = None):
     return {"products": products}
 
 
+# ==================== ORDERS API ====================
+
+@api_router.post("/orders")
+async def create_order(order: dict):
+    """Create a new order"""
+    order["id"] = str(uuid.uuid4())
+    order["created_at"] = datetime.now(timezone.utc).isoformat()
+    order["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.orders.insert_one(order)
+    
+    # Send notification
+    try:
+        # Generate summary for notification
+        items_summary = ", ".join([f"{item['name']} x{item['quantity']}" for item in order.get("items", [])])
+        notification_text = f"""🛒 *New Order Received!*
+
+Order ID: {order.get('orderId')}
+Customer: {order.get('customer', {}).get('parentName')}
+Phone: {order.get('customer', {}).get('phone')}
+Pet: {order.get('pet', {}).get('name')} ({order.get('pet', {}).get('breed')})
+
+Items: {items_summary}
+Total: ₹{order.get('total')}
+
+City: {order.get('delivery', {}).get('city')}
+Special Instructions: {order.get('specialInstructions', 'None')}"""
+        
+        logger.info(f"New order: {order.get('orderId')}")
+    except Exception as e:
+        logger.error(f"Order notification failed: {e}")
+    
+    return {"message": "Order created", "orderId": order.get("orderId"), "id": order["id"]}
+
+
+@api_router.get("/orders/{order_id}")
+async def get_order(order_id: str):
+    """Get order by ID"""
+    order = await db.orders.find_one(
+        {"$or": [{"id": order_id}, {"orderId": order_id}]},
+        {"_id": 0}
+    )
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return order
+
+
+# ==================== ADMIN ORDERS ====================
+
+@admin_router.get("/orders")
+async def get_all_orders(
+    username: str = Depends(verify_admin),
+    status: Optional[str] = None,
+    city: Optional[str] = None,
+    limit: int = 100
+):
+    """Get all orders with filtering"""
+    query = {}
+    if status:
+        query["status"] = status
+    if city:
+        query["delivery.city"] = city
+    
+    orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    total = await db.orders.count_documents(query)
+    
+    # Calculate stats
+    pending = await db.orders.count_documents({"status": "pending"})
+    confirmed = await db.orders.count_documents({"status": "confirmed"})
+    delivered = await db.orders.count_documents({"status": "delivered"})
+    
+    return {
+        "orders": orders,
+        "total": total,
+        "stats": {
+            "pending": pending,
+            "confirmed": confirmed,
+            "delivered": delivered
+        }
+    }
+
+
+@admin_router.get("/orders/{order_id}")
+async def get_order_detail(order_id: str, username: str = Depends(verify_admin)):
+    """Get order details"""
+    order = await db.orders.find_one(
+        {"$or": [{"id": order_id}, {"orderId": order_id}]},
+        {"_id": 0}
+    )
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return order
+
+
+@admin_router.put("/orders/{order_id}")
+async def update_order(order_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update order status"""
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.orders.update_one(
+        {"$or": [{"id": order_id}, {"orderId": order_id}]},
+        {"$set": updates}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return {"message": "Order updated"}
+
+
+# ==================== ADMIN MEMBERS ====================
+
+@admin_router.get("/members")
+async def get_all_members(username: str = Depends(verify_admin)):
+    """Get all registered members"""
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).sort("created_at", -1).to_list(500)
+    
+    # Stats
+    total = len(users)
+    free_count = sum(1 for u in users if u.get("membership_tier") == "free")
+    pawsome_count = sum(1 for u in users if u.get("membership_tier") == "pawsome")
+    premium_count = sum(1 for u in users if u.get("membership_tier") == "premium")
+    vip_count = sum(1 for u in users if u.get("membership_tier") == "vip")
+    
+    return {
+        "members": users,
+        "total": total,
+        "stats": {
+            "free": free_count,
+            "pawsome": pawsome_count,
+            "premium": premium_count,
+            "vip": vip_count
+        }
+    }
+
+
+@admin_router.put("/members/{user_id}")
+async def update_member(user_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update member details/tier"""
+    allowed = ["membership_tier", "membership_expires", "name", "phone"]
+    filtered = {k: v for k, v in updates.items() if k in allowed}
+    
+    result = await db.users.update_one(
+        {"$or": [{"id": user_id}, {"email": user_id}]},
+        {"$set": filtered}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Member not found")
+    return {"message": "Member updated"}
+
+
+# ==================== SCHEDULED SYNC (for cron) ====================
+
+@api_router.post("/cron/sync-products")
+async def cron_sync_products(secret: str):
+    """Endpoint for automated product sync (call from cron job)
+    
+    Set up cron with: curl -X POST "https://yoursite.com/api/cron/sync-products?secret=YOUR_SECRET"
+    """
+    CRON_SECRET = os.environ.get("CRON_SECRET", "midnight-sync-tdb-2025")
+    
+    if secret != CRON_SECRET:
+        raise HTTPException(status_code=401, detail="Invalid secret")
+    
+    try:
+        logger.info("Starting scheduled Shopify sync...")
+        shopify_products = await fetch_shopify_products()
+        
+        synced = 0
+        for sp in shopify_products:
+            transformed = transform_shopify_product(sp)
+            await db.products.update_one(
+                {"shopify_id": sp["id"]},
+                {"$set": transformed},
+                upsert=True
+            )
+            synced += 1
+        
+        await db.sync_logs.insert_one({
+            "type": "shopify_cron",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "total_synced": synced,
+            "status": "success"
+        })
+        
+        logger.info(f"Scheduled sync completed: {synced} products")
+        return {"message": "Sync completed", "synced": synced}
+        
+    except Exception as e:
+        logger.error(f"Scheduled sync failed: {e}")
+        await db.sync_logs.insert_one({
+            "type": "shopify_cron",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "status": "failed",
+            "error": str(e)
+        })
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== USER & MEMBERSHIP ROUTES ====================
 
 @api_router.post("/auth/register")
