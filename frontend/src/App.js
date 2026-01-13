@@ -49,6 +49,8 @@ function App() {
             <Route path="/cat-treats" element={<ProductListing category="cat-treats" />} />
             <Route path="/accessories" element={<ProductListing category="accessories" />} />
             <Route path="/merchandise" element={<ProductListing category="merchandise" />} />
+            <Route path="/hampers" element={<ProductListing category="hampers" />} />
+            <Route path="/gift-hampers" element={<ProductListing category="hampers" />} />
             
             {/* All Products */}
             <Route path="/all" element={<ProductListing category="all" />} />
