@@ -1691,10 +1691,11 @@ async def get_related_products(product_id: str, limit: int = 4):
         "treats": ["cakes", "nut-butters", "accessories"],
         "desi-treats": ["cakes", "treats", "accessories"],
         "fresh-meals": ["treats", "supplements", "bowls"],
-        "pan-india": ["treats", "nut-butters", "accessories"],
+        "pan-india": ["pan-india", "treats", "nut-butters", "desi-treats"],  # Pan-india products first
         "nut-butters": ["treats", "cakes", "fresh-meals"],
         "cat-treats": ["cat-cakes", "accessories"],
         "accessories": ["treats", "cakes", "bandanas"],
+        "hampers": ["cakes", "treats", "accessories"],
     }
     
     # Get complementary categories
@@ -1702,13 +1703,31 @@ async def get_related_products(product_id: str, limit: int = 4):
     
     related_products = []
     
-    # Fetch products from complementary categories
-    for comp_cat in complementary_cats:
-        cat_products = await db.products.find(
-            {"category": comp_cat},
+    # For pan-india category, prioritize pan-india shippable products
+    if current_category == "pan-india":
+        # First get other pan-india products
+        pan_india_products = await db.products.find(
+            {"category": "pan-india", "id": {"$ne": product_id}},
             {"_id": 0}
-        ).limit(3).to_list(3)
-        related_products.extend(cat_products)
+        ).limit(limit).to_list(limit)
+        related_products.extend(pan_india_products)
+        
+        # If not enough, add treats and nut-butters (typically pan-india shippable)
+        if len(related_products) < limit:
+            remaining = limit - len(related_products)
+            treats = await db.products.find(
+                {"category": {"$in": ["treats", "nut-butters", "desi-treats"]}},
+                {"_id": 0}
+            ).limit(remaining).to_list(remaining)
+            related_products.extend(treats)
+    else:
+        # Fetch products from complementary categories
+        for comp_cat in complementary_cats:
+            cat_products = await db.products.find(
+                {"category": comp_cat},
+                {"_id": 0}
+            ).limit(3).to_list(3)
+            related_products.extend(cat_products)
     
     # Also get similar products from same category (different price range)
     similar = await db.products.find(
@@ -1724,8 +1743,9 @@ async def get_related_products(product_id: str, limit: int = 4):
     seen_ids = {product_id}
     unique_related = []
     for p in related_products + similar:
-        if p.get("id") not in seen_ids:
-            seen_ids.add(p.get("id"))
+        pid = p.get("id") or p.get("shopify_id")
+        if pid and pid not in seen_ids:
+            seen_ids.add(pid)
             unique_related.append(p)
             if len(unique_related) >= limit:
                 break
