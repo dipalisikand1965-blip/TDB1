@@ -162,6 +162,21 @@ const MiraAI = () => {
       if (data.session_id) {
         setSessionId(data.session_id);
       }
+      
+      // Update membership info
+      if (data.membership_info) {
+        setMembershipInfo(data.membership_info);
+      }
+      
+      // Check if access was denied
+      if (data.access_denied) {
+        return {
+          text: data.response,
+          suggestions: ['View Membership Plans'],
+          accessDenied: true
+        };
+      }
+      
       return {
         text: data.response || "I apologize, I'm having trouble connecting right now.",
         suggestions: []
