@@ -62,6 +62,7 @@ const CartSidebar = () => {
                            {item.customDetails.instructions && <p><span className="font-semibold">Note:</span> {item.customDetails.instructions}</p>}
                            {item.customDetails.petName && <p><span className="font-semibold">Pet:</span> {item.customDetails.petName}</p>}
                            {item.customDetails.date && <p><span className="font-semibold">Date:</span> {new Date(item.customDetails.date).toDateString()}</p>}
+                           {item.customDetails.age && <p><span className="font-semibold">Age:</span> {item.customDetails.age}</p>}
                            {item.customDetails.time && <p><span className="font-semibold">Time:</span> {item.customDetails.time}</p>}
                         </div>
                       )}

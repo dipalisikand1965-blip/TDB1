@@ -32,6 +32,7 @@ const ProductCard = ({ product }) => {
     petName: '',
     date: null,
     time: ''
+    age: '',
   });
   
   const { addToCart } = useCart();
@@ -174,8 +175,16 @@ const ProductCard = ({ product }) => {
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full h-8 text-xs justify-start text-left font-normal px-2">
+          <div className="flex gap-2">
                   <CalendarIcon className="mr-2 h-3 w-3" />
+          <Input 
+            placeholder="Age" 
+            className="h-8 text-xs w-16"
+            value={cartInput.age}
+            onChange={(e) => setCartInput({...cartInput, age: e.target.value})}
+          />
                   {cartInput.date ? format(cartInput.date, 'PPP') : <span>Delivery Date</span>}
+          </div>
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">

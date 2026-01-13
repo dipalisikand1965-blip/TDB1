@@ -13,7 +13,7 @@ const WHATSAPP_NUMBER = '919663185747';
 const BUSINESS_EMAIL = 'woof@thedoggybakery.com';
 
 const Checkout = () => {
-  const { cartItems, getCartTotal, clearCart } = useCart();
+  const { cartItems, getCartTotal, clearCart, addToCart } = useCart();
   const navigate = useNavigate();
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
@@ -44,6 +44,15 @@ const Checkout = () => {
     
     const message = `🐕 *New Order from The Doggy Bakery Demo*
 
+Email: ${orderData.email}
+${orderData.petName ? `Pet: ${orderData.petName}` : ''}
+${orderData.age ? `Pet Age: ${orderData.age}` : ''}
+const addOns = [
+  { id: 'ao-1', name: 'Birthday Bandana', price: 299 },
+  { id: 'ao-2', name: 'Party Hat', price: 199 },
+  { id: 'ao-3', name: 'Paw Balm', price: 350 },
+  { id: 'ao-4', name: 'Treat Pack (100g)', price: 150 }
+];
 *Customer Details:*
 Name: ${orderData.name}
 Phone: ${orderData.phone}
@@ -72,6 +81,14 @@ Order placed via Birthday Demo Site 🎂`;
   const handleSubmit = (e) => {
     e.preventDefault();
     
+  const handleAddOn = (addOn) => {
+    addToCart({
+      ...addOn,
+      image: 'https://placehold.co/100x100?text=Add+On', // Placeholder
+      description: 'Quick add-on item'
+    }, 'Standard', 'Standard');
+    toast({ title: "Added!", description: `${addOn.name} added to order.` });
+  };
     const deliveryFee = 75;
     const total = getCartTotal() + deliveryFee;
     
