@@ -983,7 +983,11 @@ const Admin = () => {
                 <h3 className="text-lg font-bold text-gray-900 mb-4">Chatbase Conversations</h3>
                 <div className="grid md:grid-cols-2 gap-4">
                   {chatbaseChats.map((chat, idx) => (
-                    <Card key={idx} className="p-4 border-l-4 border-l-purple-500 hover:shadow-md transition-shadow">
+                    <Card 
+                      key={idx} 
+                      className="p-4 border-l-4 border-l-purple-500 hover:shadow-md transition-shadow cursor-pointer"
+                      onClick={() => setExpandedChat(expandedChat === idx ? null : idx)}
+                    >
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <h4 className="font-semibold text-gray-900">
@@ -992,13 +996,15 @@ const Admin = () => {
                           <div className="flex flex-col gap-1 mt-1">
                             {chat.customer_phone && (
                               <a href={`https://wa.me/91${chat.customer_phone}`} target="_blank" rel="noopener noreferrer" 
-                                 className="text-sm text-green-600 hover:underline flex items-center gap-1">
+                                 className="text-sm text-green-600 hover:underline flex items-center gap-1"
+                                 onClick={(e) => e.stopPropagation()}>
                                 <Phone className="w-3 h-3" /> +91 {chat.customer_phone}
                               </a>
                             )}
                             {chat.customer_email && (
                               <a href={`mailto:${chat.customer_email}`} 
-                                 className="text-sm text-blue-600 hover:underline flex items-center gap-1">
+                                 className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                                 onClick={(e) => e.stopPropagation()}>
                                 <Mail className="w-3 h-3" /> {chat.customer_email}
                               </a>
                             )}
@@ -1012,7 +1018,10 @@ const Admin = () => {
                             )}
                           </div>
                         </div>
-                        <Badge className="bg-purple-100 text-purple-700">Chatbase</Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge className="bg-purple-100 text-purple-700">Chatbase</Badge>
+                          <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform ${expandedChat === idx ? 'rotate-90' : ''}`} />
+                        </div>
                       </div>
                       <div className="flex gap-4 text-sm text-gray-600 mb-3">
                         <span className="flex items-center gap-1">
@@ -1024,11 +1033,34 @@ const Admin = () => {
                           {chat.created_at ? new Date(chat.created_at).toLocaleDateString() : 'N/A'}
                         </span>
                       </div>
-                      <div className="bg-gray-50 rounded p-2 text-sm text-gray-600 line-clamp-3">
-                        {chat.message_preview || (chat.messages && chat.messages.length > 0 
-                          ? chat.messages.find(m => m.role === 'user')?.content || 'No user messages'
-                          : 'No messages')}
-                      </div>
+                      
+                      {/* Preview or Full Conversation */}
+                      {expandedChat === idx ? (
+                        <div className="bg-gray-50 rounded p-3 max-h-96 overflow-y-auto space-y-3">
+                          <p className="text-xs text-gray-500 font-medium mb-2">Full Conversation:</p>
+                          {chat.messages && chat.messages.map((msg, msgIdx) => (
+                            <div 
+                              key={msgIdx} 
+                              className={`p-2 rounded-lg text-sm ${
+                                msg.role === 'user' 
+                                  ? 'bg-purple-100 text-purple-900 ml-4' 
+                                  : 'bg-white border text-gray-700 mr-4'
+                              }`}
+                            >
+                              <span className="text-xs font-medium text-gray-500 block mb-1">
+                                {msg.role === 'user' ? '👤 Customer' : '🤖 Mira'}
+                              </span>
+                              {msg.content}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="bg-gray-50 rounded p-2 text-sm text-gray-600 line-clamp-3">
+                          {chat.message_preview || (chat.messages && chat.messages.length > 0 
+                            ? chat.messages.find(m => m.role === 'user')?.content || 'No user messages'
+                            : 'No messages')}
+                        </div>
+                      )}
                     </Card>
                   ))}
                 </div>
