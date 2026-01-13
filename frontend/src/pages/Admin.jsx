@@ -676,15 +676,46 @@ const Admin = () => {
         {/* Products Tab */}
         {activeTab === 'products' && (
           <div className="space-y-6">
+            {/* Sync Status Card */}
+            <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50">
+              <div className="flex justify-between items-center flex-wrap gap-4">
+                <div>
+                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                    <CloudDownload className="w-5 h-5 text-purple-600" />
+                    Auto-Sync from thedoggybakery.com
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {syncStatus?.last_sync 
+                      ? `Last synced: ${new Date(syncStatus.last_sync.timestamp).toLocaleString()} | Shopify products: ${syncStatus.shopify_products}`
+                      : 'Never synced'}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={syncFromShopify}
+                    disabled={syncing}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600"
+                  >
+                    {syncing ? (
+                      <><RefreshCw className="w-4 h-4 mr-2 animate-spin" />Syncing...</>
+                    ) : (
+                      <><Zap className="w-4 h-4 mr-2" />Sync Now</>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </Card>
+
+            {/* Product Controls */}
             <Card className="p-4">
               <div className="flex justify-between items-center flex-wrap gap-4">
-                <div className="flex gap-4 flex-wrap">
+                <div className="flex gap-4 flex-wrap items-center">
                   <select
                     value={productFilter}
                     onChange={(e) => setProductFilter(e.target.value)}
                     className="px-3 py-2 border rounded-lg text-sm"
                   >
-                    <option value="">All Categories</option>
+                    <option value="">All Categories ({products.length})</option>
                     {productCategories.map((cat, idx) => (
                       <option key={idx} value={cat}>{cat}</option>
                     ))}
@@ -693,21 +724,45 @@ const Admin = () => {
                     <RefreshCw className="w-4 h-4 mr-2" />Refresh
                   </Button>
                 </div>
-                <Button 
-                  className="bg-purple-600"
-                  onClick={() => setEditingProduct({ 
-                    id: `new-${Date.now()}`, 
-                    name: '', 
-                    price: 0, 
-                    category: '', 
-                    image: '',
-                    description: '',
-                    sizes: [],
-                    flavors: []
-                  })}
-                >
-                  <Plus className="w-4 h-4 mr-2" />Add Product
-                </Button>
+                <div className="flex gap-2">
+                  {/* CSV Import/Export */}
+                  <input
+                    type="file"
+                    accept=".csv"
+                    ref={csvInputRef}
+                    onChange={handleCsvUpload}
+                    className="hidden"
+                  />
+                  <Button 
+                    variant="outline"
+                    onClick={() => csvInputRef.current?.click()}
+                    disabled={importing}
+                  >
+                    {importing ? (
+                      <><RefreshCw className="w-4 h-4 mr-2 animate-spin" />Importing...</>
+                    ) : (
+                      <><Upload className="w-4 h-4 mr-2" />Import CSV</>
+                    )}
+                  </Button>
+                  <Button variant="outline" onClick={exportCsv}>
+                    <Download className="w-4 h-4 mr-2" />Export CSV
+                  </Button>
+                  <Button 
+                    className="bg-purple-600"
+                    onClick={() => setEditingProduct({ 
+                      id: `new-${Date.now()}`, 
+                      name: '', 
+                      price: 0, 
+                      category: '', 
+                      image: '',
+                      description: '',
+                      sizes: [],
+                      flavors: []
+                    })}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />Add Product
+                  </Button>
+                </div>
               </div>
             </Card>
 
