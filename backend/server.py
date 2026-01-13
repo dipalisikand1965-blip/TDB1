@@ -127,6 +127,228 @@ class ProductUpdate(BaseModel):
     available: Optional[bool] = None
 
 
+# ==================== MEMBERSHIP SYSTEM ====================
+
+# Membership tier limits
+MEMBERSHIP_TIERS = {
+    "free": {"daily_chats": 3, "name": "Free"},
+    "pawsome": {"daily_chats": 10, "name": "Pawsome"},
+    "premium": {"daily_chats": 999, "name": "Premium"},  # Effectively unlimited
+    "vip": {"daily_chats": 999, "name": "VIP", "priority": True}
+}
+
+class MembershipUser(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    email: str
+    password_hash: str
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    membership_tier: str = "free"  # free, pawsome, premium, vip
+    membership_expires: Optional[str] = None
+    chat_count_today: int = 0
+    last_chat_date: Optional[str] = None
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class UserRegister(BaseModel):
+    email: str
+    password: str
+    name: Optional[str] = None
+    phone: Optional[str] = None
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+class MembershipUpgrade(BaseModel):
+    tier: str  # pawsome, premium, vip
+
+def hash_password(password: str) -> str:
+    """Simple password hashing"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_password(password: str, hash: str) -> bool:
+    """Verify password against hash"""
+    return hash_password(password) == hash
+
+async def check_mira_access(user_email: Optional[str] = None, session_id: Optional[str] = None) -> dict:
+    """Check if user can access Mira based on membership tier"""
+    if not user_email:
+        # Anonymous user - check by session
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        session_key = f"anon_{session_id}_{today}" if session_id else f"anon_{today}"
+        
+        anon_usage = await db.anonymous_usage.find_one({"session_key": session_key})
+        if not anon_usage:
+            anon_usage = {"session_key": session_key, "chat_count": 0}
+        
+        remaining = MEMBERSHIP_TIERS["free"]["daily_chats"] - anon_usage.get("chat_count", 0)
+        
+        return {
+            "allowed": remaining > 0,
+            "tier": "free",
+            "remaining_today": max(0, remaining),
+            "limit": MEMBERSHIP_TIERS["free"]["daily_chats"],
+            "message": f"Free users get {MEMBERSHIP_TIERS['free']['daily_chats']} chats per day. Upgrade for more!" if remaining <= 1 else None
+        }
+    
+    # Logged in user
+    user = await db.users.find_one({"email": user_email}, {"_id": 0})
+    if not user:
+        return {"allowed": False, "tier": "none", "remaining_today": 0, "message": "User not found"}
+    
+    tier = user.get("membership_tier", "free")
+    tier_config = MEMBERSHIP_TIERS.get(tier, MEMBERSHIP_TIERS["free"])
+    
+    # Check if membership expired
+    expires = user.get("membership_expires")
+    if expires and tier != "free":
+        if datetime.fromisoformat(expires) < datetime.now(timezone.utc):
+            # Expired - downgrade to free
+            await db.users.update_one({"email": user_email}, {"$set": {"membership_tier": "free"}})
+            tier = "free"
+            tier_config = MEMBERSHIP_TIERS["free"]
+    
+    # Check daily limit
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    last_chat_date = user.get("last_chat_date")
+    chat_count = user.get("chat_count_today", 0) if last_chat_date == today else 0
+    
+    remaining = tier_config["daily_chats"] - chat_count
+    
+    return {
+        "allowed": remaining > 0,
+        "tier": tier,
+        "tier_name": tier_config["name"],
+        "remaining_today": max(0, remaining),
+        "limit": tier_config["daily_chats"],
+        "priority": tier_config.get("priority", False),
+        "message": f"You have {remaining} chats remaining today." if remaining <= 2 and tier == "free" else None
+    }
+
+async def increment_chat_count(user_email: Optional[str] = None, session_id: Optional[str] = None):
+    """Increment the chat count for rate limiting"""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    if user_email:
+        user = await db.users.find_one({"email": user_email})
+        if user:
+            last_date = user.get("last_chat_date")
+            new_count = 1 if last_date != today else user.get("chat_count_today", 0) + 1
+            await db.users.update_one(
+                {"email": user_email},
+                {"$set": {"chat_count_today": new_count, "last_chat_date": today}}
+            )
+    else:
+        # Anonymous user
+        session_key = f"anon_{session_id}_{today}" if session_id else f"anon_{today}"
+        await db.anonymous_usage.update_one(
+            {"session_key": session_key},
+            {"$inc": {"chat_count": 1}},
+            upsert=True
+        )
+
+
+# ==================== SHOPIFY SYNC FUNCTIONS ====================
+
+SHOPIFY_PRODUCTS_URL = "https://thedoggybakery.com/products.json"
+
+async def fetch_shopify_products(limit: int = 250, page: int = 1) -> List[dict]:
+    """Fetch products from Shopify store"""
+    all_products = []
+    current_page = page
+    
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        while True:
+            url = f"{SHOPIFY_PRODUCTS_URL}?limit={limit}&page={current_page}"
+            response = await client.get(url)
+            
+            if response.status_code != 200:
+                break
+                
+            data = response.json()
+            products = data.get("products", [])
+            
+            if not products:
+                break
+                
+            all_products.extend(products)
+            current_page += 1
+            
+            # Safety limit
+            if current_page > 10:
+                break
+    
+    return all_products
+
+def transform_shopify_product(shopify_product: dict) -> dict:
+    """Transform Shopify product to our format"""
+    # Extract sizes and flavors from variants
+    sizes = []
+    flavors = []
+    base_price = 0
+    
+    variants = shopify_product.get("variants", [])
+    if variants:
+        base_price = float(variants[0].get("price", 0))
+        
+        # Extract unique sizes and flavors
+        size_set = set()
+        flavor_set = set()
+        
+        for variant in variants:
+            option1 = variant.get("option1")
+            option2 = variant.get("option2")
+            price = float(variant.get("price", 0))
+            
+            if option1 and option1 not in size_set:
+                size_set.add(option1)
+                sizes.append({"name": option1, "price": price})
+            
+            if option2 and option2 not in flavor_set:
+                flavor_set.add(option2)
+                # Calculate flavor price difference from base
+                price_diff = price - base_price
+                flavors.append({"name": option2, "price": max(0, price_diff)})
+    
+    # Get primary image
+    images = shopify_product.get("images", [])
+    image_url = images[0].get("src") if images else ""
+    
+    # Determine category from product_type or tags
+    product_type = shopify_product.get("product_type", "").lower()
+    tags = [t.lower() for t in shopify_product.get("tags", [])]
+    
+    category = "other"
+    if "cake" in product_type or "cake" in " ".join(tags):
+        category = "cakes"
+    elif "treat" in product_type or "biscuit" in product_type:
+        category = "treats"
+    elif "pupcake" in product_type:
+        category = "pupcakes"
+    elif "frozen" in product_type or "fro-yo" in product_type.lower():
+        category = "frozen-treats"
+    elif "accessory" in product_type or "toy" in " ".join(tags):
+        category = "accessories"
+    elif any(tag in tags for tag in ["desi", "ladoo"]):
+        category = "desi-treats"
+    
+    return {
+        "id": f"shopify-{shopify_product.get('id')}",
+        "shopify_id": shopify_product.get("id"),
+        "name": shopify_product.get("title", "").replace("👻", "").replace("🎃", "").replace("🐾", "").replace("🕸️", "").strip(),
+        "description": shopify_product.get("body_html", "").replace("<p>", "").replace("</p>", "").replace("<br>", "\n")[:500],
+        "price": base_price,
+        "originalPrice": base_price,
+        "image": image_url,
+        "category": category,
+        "sizes": sizes if sizes else [{"name": "Standard", "price": base_price}],
+        "flavors": flavors if flavors else [],
+        "shopify_handle": shopify_product.get("handle"),
+        "available": any(v.get("available", True) for v in variants),
+        "synced_at": datetime.now(timezone.utc).isoformat()
+    }
+
+
 # ==================== NOTIFICATION FUNCTIONS ====================
 
 async def send_email_notification(chat_data: dict):
