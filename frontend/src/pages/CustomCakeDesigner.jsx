@@ -60,7 +60,7 @@ const CustomCakeDesigner = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     // Use the environment variable for the backend URL
-    const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'; 
+    const API_URL = process.env.REACT_APP_BACKEND_URL; 
     
     try {
       const response = await fetch(`${API_URL}/api/custom-cakes/request`, {

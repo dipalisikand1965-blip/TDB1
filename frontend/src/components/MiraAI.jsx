@@ -72,7 +72,7 @@ const MiraAI = () => {
       {!isMinimized && (
         <div className="h-[calc(100%-72px)]">
           <iframe
-            src="https://www.chatbase.co/chatbot-iframe/zb13EoKHT4pXMmueUNG1M"
+            src={process.env.REACT_APP_CHATBASE_IFRAME_URL || "https://www.chatbase.co/chatbot-iframe/zb13EoKHT4pXMmueUNG1M"}
             width="100%"
             height="100%"
             style={{ border: 'none' }}
