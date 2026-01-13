@@ -39,9 +39,19 @@ logger = logging.getLogger(__name__)
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 try:
-    client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=5000)
+    # Connection settings optimized for both local and Atlas
+    client = AsyncIOMotorClient(
+        mongo_url,
+        serverSelectionTimeoutMS=10000,
+        connectTimeoutMS=10000,
+        socketTimeoutMS=30000,
+        maxPoolSize=10,
+        minPoolSize=1,
+        retryWrites=True,
+        w='majority'
+    )
     db = client[os.environ.get('DB_NAME', 'doggy_bakery')]
-    logger.info(f"MongoDB connection configured: {mongo_url[:30]}...")
+    logger.info(f"MongoDB connection configured")
 except Exception as e:
     logger.error(f"MongoDB connection error: {e}")
     raise
