@@ -1038,21 +1038,24 @@ const Admin = () => {
                       {expandedChat === idx ? (
                         <div className="bg-gray-50 rounded p-3 max-h-96 overflow-y-auto space-y-3">
                           <p className="text-xs text-gray-500 font-medium mb-2">Full Conversation:</p>
-                          {chat.messages && chat.messages.map((msg, msgIdx) => (
-                            <div 
-                              key={msgIdx} 
-                              className={`p-2 rounded-lg text-sm ${
-                                msg.role === 'user' 
-                                  ? 'bg-purple-100 text-purple-900 ml-4' 
-                                  : 'bg-white border text-gray-700 mr-4'
-                              }`}
-                            >
-                              <span className="text-xs font-medium text-gray-500 block mb-1">
-                                {msg.role === 'user' ? '👤 Customer' : '🤖 Mira'}
-                              </span>
-                              {msg.content}
-                            </div>
-                          ))}
+                          {chat.messages && chat.messages.map((msg, msgIdx) => {
+                            const content = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content);
+                            return (
+                              <div 
+                                key={msgIdx} 
+                                className={`p-2 rounded-lg text-sm ${
+                                  msg.role === 'user' 
+                                    ? 'bg-purple-100 text-purple-900 ml-4' 
+                                    : 'bg-white border text-gray-700 mr-4'
+                                }`}
+                              >
+                                <span className="text-xs font-medium text-gray-500 block mb-1">
+                                  {msg.role === 'user' ? '👤 Customer' : '🤖 Mira'}
+                                </span>
+                                {content}
+                              </div>
+                            );
+                          })}
                         </div>
                       ) : (
                         <div className="bg-gray-50 rounded p-2 text-sm text-gray-600 line-clamp-3">
