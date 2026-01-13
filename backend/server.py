@@ -436,12 +436,16 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     product_type = shopify_product.get("product_type", "").lower()
     tags = [t.lower() for t in shopify_product.get("tags", [])]
     title = shopify_product.get("title", "").lower()
+    handle = shopify_product.get("handle", "").lower()
     tags_str = " ".join(tags)
     
     category = "other"
     
-    # Pupcakes & Dognuts - check first as they contain "cake"
-    if "pupcake" in product_type or "pupcake" in title or "dognut" in title or "dognuts" in product_type:
+    # Gift Hampers & Party Boxes - check FIRST (before cakes)
+    if any(h in title or h in handle for h in ["hamper", "party box", "gift box", "celebration box"]):
+        category = "hampers"
+    # Pupcakes & Dognuts - check before general cakes
+    elif "pupcake" in product_type or "pupcake" in title or "dognut" in title or "dognuts" in product_type:
         category = "dognuts"
     elif "mini" in title and "cake" in title:
         category = "mini-cakes"
@@ -472,8 +476,8 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     # Cat treats
     elif "cat" in product_type or "cat" in title or "feline" in title:
         category = "cat-treats"
-    # Merchandise & Gift boxes
-    elif "gift" in title or "hamper" in title or "box" in title or "merchandise" in product_type:
+    # Merchandise
+    elif "merchandise" in product_type:
         category = "merchandise"
     # Pan India
     elif "pan india" in tags_str:
