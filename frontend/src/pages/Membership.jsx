@@ -298,7 +298,12 @@ const Membership = () => {
                   <Button
                     data-testid={`membership-cta-${plan.id}`}
                     className={`w-full bg-gradient-to-r ${plan.color} hover:opacity-90 text-white`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSubscribe(plan);
+                    }}
                   >
+                    <ShoppingCart className="w-4 h-4 mr-2" />
                     {plan.cta}
                     <ChevronRight className="w-4 h-4 ml-2" />
                   </Button>
