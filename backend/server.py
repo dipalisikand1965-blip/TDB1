@@ -1186,6 +1186,313 @@ async def get_public_products(category: Optional[str] = None):
     return {"products": products}
 
 
+# ==================== USER & MEMBERSHIP ROUTES ====================
+
+@api_router.post("/auth/register")
+async def register_user(user: UserRegister):
+    """Register a new user"""
+    # Check if email exists
+    existing = await db.users.find_one({"email": user.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    user_doc = {
+        "id": str(uuid.uuid4()),
+        "email": user.email,
+        "password_hash": hash_password(user.password),
+        "name": user.name,
+        "phone": user.phone,
+        "membership_tier": "free",
+        "membership_expires": None,
+        "chat_count_today": 0,
+        "last_chat_date": None,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.users.insert_one(user_doc)
+    return {"message": "Registration successful", "user_id": user_doc["id"]}
+
+
+@api_router.post("/auth/login")
+async def login_user(user: UserLogin):
+    """Login user"""
+    db_user = await db.users.find_one({"email": user.email}, {"_id": 0})
+    if not db_user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    if not verify_password(user.password, db_user["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Get membership access info
+    access = await check_mira_access(user.email)
+    
+    return {
+        "message": "Login successful",
+        "user": {
+            "id": db_user["id"],
+            "email": db_user["email"],
+            "name": db_user.get("name"),
+            "membership_tier": db_user.get("membership_tier", "free"),
+            "membership_expires": db_user.get("membership_expires")
+        },
+        "mira_access": access
+    }
+
+
+@api_router.get("/auth/me")
+async def get_user_info(email: str):
+    """Get user info by email"""
+    user = await db.users.find_one({"email": email}, {"_id": 0, "password_hash": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    access = await check_mira_access(email)
+    return {"user": user, "mira_access": access}
+
+
+@api_router.post("/membership/upgrade")
+async def upgrade_membership(email: str, upgrade: MembershipUpgrade):
+    """Upgrade user membership (simulated - would connect to payment)"""
+    if upgrade.tier not in ["pawsome", "premium", "vip"]:
+        raise HTTPException(status_code=400, detail="Invalid tier")
+    
+    user = await db.users.find_one({"email": email})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Set expiration to 30 days from now (for demo)
+    expires = (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
+    
+    await db.users.update_one(
+        {"email": email},
+        {"$set": {
+            "membership_tier": upgrade.tier,
+            "membership_expires": expires,
+            "chat_count_today": 0  # Reset daily count
+        }}
+    )
+    
+    return {
+        "message": f"Successfully upgraded to {upgrade.tier}!",
+        "tier": upgrade.tier,
+        "expires": expires
+    }
+
+
+@api_router.get("/mira/access")
+async def check_mira_access_endpoint(email: Optional[str] = None, session_id: Optional[str] = None):
+    """Check Mira access for current user/session"""
+    return await check_mira_access(email, session_id)
+
+
+# ==================== SHOPIFY SYNC ROUTES ====================
+
+@admin_router.post("/sync/shopify")
+async def sync_from_shopify(username: str = Depends(verify_admin)):
+    """Sync products from thedoggybakery.com Shopify store"""
+    try:
+        logger.info("Starting Shopify sync...")
+        
+        # Fetch all products from Shopify
+        shopify_products = await fetch_shopify_products()
+        logger.info(f"Fetched {len(shopify_products)} products from Shopify")
+        
+        # Transform and upsert products
+        synced = 0
+        added = 0
+        updated = 0
+        
+        for sp in shopify_products:
+            transformed = transform_shopify_product(sp)
+            
+            # Check if product exists
+            existing = await db.products.find_one({"shopify_id": sp["id"]})
+            
+            if existing:
+                # Update existing
+                await db.products.update_one(
+                    {"shopify_id": sp["id"]},
+                    {"$set": transformed}
+                )
+                updated += 1
+            else:
+                # Insert new
+                await db.products.insert_one(transformed)
+                added += 1
+            
+            synced += 1
+        
+        # Save sync log
+        await db.sync_logs.insert_one({
+            "type": "shopify",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "total_fetched": len(shopify_products),
+            "added": added,
+            "updated": updated,
+            "status": "success"
+        })
+        
+        return {
+            "message": "Shopify sync completed",
+            "total_fetched": len(shopify_products),
+            "added": added,
+            "updated": updated
+        }
+        
+    except Exception as e:
+        logger.error(f"Shopify sync failed: {e}")
+        await db.sync_logs.insert_one({
+            "type": "shopify",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "status": "failed",
+            "error": str(e)
+        })
+        raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
+
+
+@admin_router.get("/sync/status")
+async def get_sync_status(username: str = Depends(verify_admin)):
+    """Get last sync status"""
+    last_sync = await db.sync_logs.find_one(
+        {"type": "shopify"},
+        {"_id": 0},
+        sort=[("timestamp", -1)]
+    )
+    
+    product_count = await db.products.count_documents({})
+    shopify_count = await db.products.count_documents({"shopify_id": {"$exists": True}})
+    
+    return {
+        "last_sync": last_sync,
+        "total_products": product_count,
+        "shopify_products": shopify_count
+    }
+
+
+# ==================== CSV IMPORT ROUTES ====================
+
+@admin_router.post("/products/import-csv")
+async def import_products_csv(
+    file: UploadFile = File(...),
+    username: str = Depends(verify_admin)
+):
+    """Import products from CSV file
+    
+    Expected CSV columns:
+    name, category, price, originalPrice, description, image, sizes, flavors
+    
+    sizes and flavors should be JSON strings, e.g.:
+    sizes: [{"name": "500g", "price": 600}, {"name": "1kg", "price": 1100}]
+    flavors: [{"name": "Chicken", "price": 50}, {"name": "Banana", "price": 0}]
+    """
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="File must be a CSV")
+    
+    try:
+        content = await file.read()
+        decoded = content.decode('utf-8')
+        reader = csv.DictReader(io.StringIO(decoded))
+        
+        imported = 0
+        updated = 0
+        errors = []
+        
+        for row in reader:
+            try:
+                # Parse sizes and flavors if they're JSON strings
+                sizes = row.get('sizes', '[]')
+                flavors = row.get('flavors', '[]')
+                
+                import json
+                try:
+                    sizes = json.loads(sizes) if isinstance(sizes, str) and sizes.strip() else []
+                except:
+                    sizes = [{"name": "Standard", "price": float(row.get('price', 0))}]
+                
+                try:
+                    flavors = json.loads(flavors) if isinstance(flavors, str) and flavors.strip() else []
+                except:
+                    flavors = []
+                
+                product = {
+                    "name": row.get('name', '').strip(),
+                    "category": row.get('category', 'other').strip(),
+                    "price": float(row.get('price', 0)),
+                    "originalPrice": float(row.get('originalPrice', row.get('price', 0))),
+                    "description": row.get('description', ''),
+                    "image": row.get('image', ''),
+                    "sizes": sizes,
+                    "flavors": flavors,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+                
+                if not product["name"]:
+                    errors.append(f"Row skipped: empty name")
+                    continue
+                
+                # Check if product exists by name
+                existing = await db.products.find_one({"name": product["name"]})
+                
+                if existing:
+                    await db.products.update_one(
+                        {"name": product["name"]},
+                        {"$set": product}
+                    )
+                    updated += 1
+                else:
+                    product["id"] = str(uuid.uuid4())
+                    product["created_at"] = datetime.now(timezone.utc).isoformat()
+                    await db.products.insert_one(product)
+                    imported += 1
+                    
+            except Exception as e:
+                errors.append(f"Row error: {str(e)}")
+        
+        return {
+            "message": "CSV import completed",
+            "imported": imported,
+            "updated": updated,
+            "errors": errors[:10]  # Return first 10 errors
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"CSV import failed: {str(e)}")
+
+
+@admin_router.get("/products/export-csv")
+async def export_products_csv(username: str = Depends(verify_admin)):
+    """Export all products as CSV"""
+    from fastapi.responses import StreamingResponse
+    
+    products = await db.products.find({}, {"_id": 0}).to_list(1000)
+    
+    output = io.StringIO()
+    fieldnames = ['name', 'category', 'price', 'originalPrice', 'description', 'image', 'sizes', 'flavors']
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+    
+    import json
+    for p in products:
+        writer.writerow({
+            'name': p.get('name', ''),
+            'category': p.get('category', ''),
+            'price': p.get('price', 0),
+            'originalPrice': p.get('originalPrice', p.get('price', 0)),
+            'description': p.get('description', ''),
+            'image': p.get('image', ''),
+            'sizes': json.dumps(p.get('sizes', [])),
+            'flavors': json.dumps(p.get('flavors', []))
+        })
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=products_export.csv"}
+    )
+
+
 # ==================== APP SETUP ====================
 
 app.add_middleware(
