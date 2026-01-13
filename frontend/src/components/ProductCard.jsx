@@ -88,12 +88,13 @@ const ProductCard = ({ product }) => {
         </div>
       </div>
 
-      {/* Product Detail Modal */}
-      {showModal && (
+      {/* Product Detail Modal - Rendered via Portal to escape transform contexts */}
+      {showModal && createPortal(
         <ProductDetailModal 
           product={product} 
           onClose={() => setShowModal(false)} 
-        />
+        />,
+        document.body
       )}
     </>
   );
