@@ -571,6 +571,8 @@ const Admin = () => {
             { id: 'members', label: 'Members', icon: Users },
             { id: 'products', label: 'Products', icon: Package },
             { id: 'content', label: 'Videos', icon: Video },
+            { id: 'testimonials', label: 'Testimonials', icon: Star },
+            { id: 'insights', label: 'Insights/Blog', icon: FileText },
             { id: 'requests', label: 'Custom Cakes', icon: Cake },
           ].map((tab) => (
             <Button
