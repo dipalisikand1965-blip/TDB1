@@ -71,11 +71,11 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Policies</h3>
             <ul className="space-y-2 text-sm">
+              <li><Link to="/membership" className="hover:text-pink-500 transition-colors font-medium text-pink-400">✨ Membership</Link></li>
               <li><Link to="/shipping-policy" className="hover:text-pink-500 transition-colors">Shipping Policy</Link></li>
               <li><Link to="/refund-policy" className="hover:text-pink-500 transition-colors">Refund Policy</Link></li>
               <li><Link to="/privacy-policy" className="hover:text-pink-500 transition-colors">Privacy Policy</Link></li>
               <li><Link to="/terms-of-service" className="hover:text-pink-500 transition-colors">Terms of Service</Link></li>
-              <li><Link to="/membership" className="hover:text-pink-500 transition-colors">Membership</Link></li>
             </ul>
           </div>
 
