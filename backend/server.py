@@ -1722,6 +1722,38 @@ async def request_custom_cake(
     return {"message": "Request received successfully", "id": request_data["id"]}
 
 
+@api_router.post("/upload/cake-reference")
+async def upload_cake_reference(file: UploadFile = File(...)):
+    """Upload a reference image for custom cake design"""
+    # Validate file type
+    allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Please upload JPG, PNG, or WebP images.")
+    
+    # Create uploads directory if not exists
+    os.makedirs("uploads/cake-references", exist_ok=True)
+    
+    # Generate unique filename
+    file_extension = os.path.splitext(file.filename)[1] or '.jpg'
+    unique_filename = f"cake-ref-{uuid.uuid4().hex[:12]}{file_extension}"
+    file_path = f"uploads/cake-references/{unique_filename}"
+    
+    # Save file
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        return {
+            "message": "Image uploaded successfully",
+            "file_path": f"/uploads/cake-references/{unique_filename}",
+            "url": f"/uploads/cake-references/{unique_filename}",
+            "filename": unique_filename
+        }
+    except Exception as e:
+        logger.error(f"Failed to save cake reference image: {e}")
+        raise HTTPException(status_code=500, detail="Failed to save image")
+
+
 # ==================== ADMIN ROUTES ====================
 
 @admin_router.post("/login")
