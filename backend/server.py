@@ -447,14 +447,23 @@ async def lifespan(app: FastAPI):
         id="celebration_reminders",
         replace_existing=True
     )
+    
+    # Add abandoned cart checker (runs every 30 minutes)
+    scheduler.add_job(
+        check_abandoned_carts,
+        CronTrigger(minute='*/30'),  # Run every 30 minutes
+        id="abandoned_cart_check",
+        replace_existing=True
+    )
+    
     scheduler.start()
-    logger.info("Celebration reminder scheduler started (daily at 9:00 AM IST)")
+    logger.info("Schedulers started: celebration reminders (daily 9AM IST), abandoned cart check (every 30 min)")
     
     yield
     
     # Shutdown scheduler
     scheduler.shutdown(wait=False)
-    logger.info("Celebration reminder scheduler stopped")
+    logger.info("Schedulers stopped")
     
     # Cancel the sync task on shutdown
     if sync_task:
