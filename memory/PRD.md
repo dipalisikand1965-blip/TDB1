@@ -167,7 +167,32 @@ ADMIN_PASSWORD=lola4304
 
 ## Changelog
 
+### Jan 14, 2025 (Today)
+- ✅ **CRITICAL FIX: Cart persistence bug** - Cart was emptying when navigating between pages
+  - Root cause: Race condition - cart state initialized with `[]`, then useEffect would overwrite localStorage before loading
+  - Solution: Initialize cart state synchronously from localStorage using lazy initializer with `useRef` to skip initial mount
+- ✅ **Pet Soul Tab** - Added prominent "🐾 Pet Soul" button to main navbar with gradient pink/purple styling
+  - Links to `/my-pets` page where users can manage their pet profiles
+- ✅ **Admin Panel Overhaul - Shopify-like ProductManager**
+  - Replaced basic product table with comprehensive ProductManager component
+  - **Stats Cards**: Total Products, Active, No Image, Categories count
+  - **Search & Filters**: Search by name/description, category filter, status filter, sort options
+  - **View Modes**: Grid/List toggle with pagination (24 items per page)
+  - **Edit Modal**: Full product editing with variant management (sizes/flavors with prices)
+  - **Create Product**: New "Add New Product" button with complete creation form
+  - **Actions**: Refresh, Sync from Shopify, Delete product
+  - All CRUD operations working with real backend APIs
+- ✅ **Testing**: All features verified via testing agent (93% backend, 100% frontend)
+
 ### Jan 13, 2025 (Session 3)
+- ✅ **Pet Profile System (Phase 1)**
+  - Backend: Created models and REST APIs for full CRUD of pet profiles
+  - Frontend: Built multi-step form (`PetProfile.jsx`) with pet details, personas, "soul" questions, celebration calendar
+  - Multi-Pet Support: Created "My Pets" page (`MyPets.jsx`) for managing multiple pets
+- ✅ **Checkout & Pricing Overhaul**
+  - Variant Pricing: Frontend correctly displays different prices for product variants
+  - Shipping Logic: ₹150 flat fee, free over ₹3000
+  - WhatsApp Flow: Improved order confirmation with payment link messaging
 - ✅ **CRITICAL FIX: Product modal overlay** - Modal was displaying inline instead of as popup overlay
   - Root cause: CSS `transform` on parent container created new stacking context, breaking `fixed` positioning
   - Solution: Used React Portal (`createPortal`) to render modal in `document.body`
