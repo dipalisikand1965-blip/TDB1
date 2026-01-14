@@ -182,6 +182,18 @@ ADMIN_PASSWORD=lola4304
   - **Create Product**: New "Add New Product" button with complete creation form
   - **Actions**: Refresh, Sync from Shopify, Delete product
   - All CRUD operations working with real backend APIs
+- ✅ **Pet Celebration Reminders (P1)**
+  - Backend scheduler runs daily at 9:00 AM IST
+  - Checks all pets for upcoming birthdays, gotcha days, and custom celebrations
+  - Sends personalized email reminders at 7 days and 1 day before
+  - Generates WhatsApp click-to-chat links for reminders
+  - Admin endpoints: `/api/admin/celebrations/trigger-check`, `/api/admin/celebrations/reminders-log`
+- ✅ **Abandoned Cart Recovery (P1)**
+  - Cart snapshots automatically saved to backend on changes (debounced 2s)
+  - Email capture on checkout page for recovery emails
+  - Backend scheduler runs every 30 minutes to check abandoned carts
+  - 3-stage email sequence: 1hr, 24hr, 72hr (with 10% discount on final)
+  - Admin endpoints: `/api/admin/abandoned-carts`, `/api/admin/abandoned-carts/trigger-check`
 - ✅ **Testing**: All features verified via testing agent (93% backend, 100% frontend)
 
 ### Jan 13, 2025 (Session 3)
