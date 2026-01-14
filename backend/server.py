@@ -3965,7 +3965,7 @@ async def register_user(user: UserRegister):
     user_doc = {
         "id": str(uuid.uuid4()),
         "email": user.email,
-        "password_hash": hash_password(user.password),
+        "password_hash": get_password_hash_secure(user.password),
         "name": user.name,
         "phone": user.phone,
         "membership_tier": "free",
