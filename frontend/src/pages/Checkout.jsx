@@ -370,8 +370,9 @@ _GST applicable on final invoice_
     );
   }
 
-  const deliveryFee = 75;
-  const total = getCartTotal() + deliveryFee;
+  const subtotal = getCartTotal();
+  const deliveryFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+  const total = subtotal + deliveryFee;
   const hasCake = cartItems.some(item => 
     item.category?.includes('cake') || item.name?.toLowerCase().includes('cake')
   );
