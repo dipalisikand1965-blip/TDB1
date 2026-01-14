@@ -43,7 +43,10 @@ import {
   Phone,
   Mail,
   Heart,
-  Building
+  Building,
+  Sparkles,
+  Utensils,
+  Calendar
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
