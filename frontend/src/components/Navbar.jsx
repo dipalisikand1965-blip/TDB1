@@ -11,30 +11,28 @@ const Navbar = () => {
   const { getCartCount, setIsCartOpen } = useCart();
   const location = useLocation();
 
-  // Main navigation items (visible in navbar)
+  // Main navigation items (visible in navbar) - condensed for cleaner look
   const mainNavigation = [
     { name: 'Cakes', path: '/cakes' },
-    { name: 'Custom Cake', path: '/custom-cake' },
-    { name: 'Bowto Cakes', path: '/mini-cakes' },
+    { name: 'Build Your Cake', path: '/custom-cake', highlight: true },
     { name: 'Treats', path: '/treats' },
     { name: 'Pan India', path: '/pan-india' },
-    { name: 'Fresh Meals', path: '/meals' },
-    { name: '🐾 Pet Soul', path: '/my-pets', highlight: true },
   ];
 
   // More dropdown items
   const moreNavigation = [
-    { name: 'Breed Cakes', path: '/breed-cakes' },
-    { name: 'Pupcakes & Dognuts', path: '/pupcakes-dognuts' },
-    { name: 'Gift Hampers', path: '/hampers' },
-    { name: 'Desi Treats', path: '/desi' },
-    { name: 'Frozen Treats', path: '/frozen' },
-    { name: 'Nut Butters', path: '/nut-butters' },
-    { name: 'Cat Treats', path: '/cat-treats' },
-    { name: 'Accessories & Toys', path: '/accessories' },
-    { name: 'Merchandise', path: '/merchandise' },
-    { name: 'Membership', path: '/membership' },
-    { name: '🐾 My Pets', path: '/my-pets' },
+    { name: '🎂 Bowto Cakes', path: '/mini-cakes' },
+    { name: '🐕 Breed Cakes', path: '/breed-cakes' },
+    { name: '🧁 Pupcakes & Dognuts', path: '/pupcakes-dognuts' },
+    { name: '🎁 Gift Hampers', path: '/hampers' },
+    { name: '🥘 Fresh Meals', path: '/meals' },
+    { name: '🍦 Frozen Treats', path: '/frozen' },
+    { name: '🥜 Nut Butters', path: '/nut-butters' },
+    { name: '🍪 Desi Treats', path: '/desi' },
+    { name: '🐱 Cat Treats', path: '/cat-treats' },
+    { name: '🧸 Accessories & Toys', path: '/accessories' },
+    { name: '👕 Merchandise', path: '/merchandise' },
+    { name: '⭐ Membership', path: '/membership' },
   ];
 
   // All navigation for mobile
