@@ -1117,6 +1117,97 @@ def transform_shopify_product(shopify_product: dict) -> dict:
 
 # ==================== NOTIFICATION FUNCTIONS ====================
 
+
+async def send_product_match_email(pet: dict, product: dict, match_reason: str):
+    """Send email about a product match"""
+    if not RESEND_API_KEY or not pet.get("owner_email"):
+        return
+
+    try:
+        pet_name = pet.get("name", "your pet")
+        product_name = product.get("name")
+        product_image = product.get("image", "")
+        owner_name = pet.get("owner_name", "Pet Parent")
+        
+        reason_text = f"matches {pet_name}'s {match_reason}"
+        if match_reason == "breed":
+            reason_text = f"is perfect for {pet.get('breed')}s like {pet_name}"
+        elif match_reason == "flavor":
+            reason_text = f"has {pet_name}'s favorite flavors"
+            
+        html_content = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h1 style="color: #9333ea;">New Find for {pet_name}! 🐾</h1>
+            </div>
+            
+            <p>Hi {owner_name},</p>
+            <p>We spotted something new at The Doggy Bakery that {reason_text}!</p>
+            
+            <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; text-align: center; margin: 20px 0;">
+                <img src="{product_image}" alt="{product_name}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px;">
+                <h3 style="margin: 10px 0;">{product_name}</h3>
+                <p style="color: #6b7280; font-size: 14px;">{product.get("description", "")[:100]}...</p>
+                <a href="https://thedoggybakery.com/products/{product.get('shopify_handle')}" 
+                   style="display: inline-block; background: #9333ea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 25px; font-weight: bold; margin-top: 10px;">
+                   Check it out
+                </a>
+            </div>
+            
+            <p style="color: #6b7280; font-size: 12px; text-align: center;">
+                You're receiving this because of your pet's profile preferences.
+            </p>
+        </div>
+        """
+        
+        params = {
+            "from": f"The Doggy Bakery <{SENDER_EMAIL}>",
+            "to": [pet.get("owner_email")],
+            "subject": f"🐾 Perfect Match for {pet_name}: {product_name}",
+            "html": html_content
+        }
+        
+        await asyncio.to_thread(resend.Emails.send, params)
+        logger.info(f"Product match email sent to {pet.get('owner_email')} for {pet_name}")
+        
+    except Exception as e:
+        logger.error(f"Failed to send product match email: {e}")
+
+async def check_product_matches(new_products: List[dict]):
+    """Check if new products match any pets and notify owners"""
+    if not new_products:
+        return
+        
+    logger.info(f"Checking matches for {len(new_products)} new products...")
+    
+    # Get all pets with email notifications enabled
+    pets = await db.pets.find({"email_reminders": True, "owner_email": {"$exists": True}}).to_list(10000)
+    
+    for product in new_products:
+        product_name = product.get("name", "").lower()
+        product_flavors = {f["name"].lower() for f in product.get("flavors", [])}
+        
+        for pet in pets:
+            match_reason = None
+            
+            # Breed Match
+            pet_breed = pet.get("breed", "").lower()
+            if pet_breed and pet_breed in product_name:
+                match_reason = "breed"
+            
+            # Flavor Match (if no breed match)
+            if not match_reason and pet.get("preferences"):
+                fav_flavors = pet["preferences"].get("favorite_flavors", [])
+                # fav_flavors might be a list or None
+                if fav_flavors:
+                    for flavor in fav_flavors:
+                        if flavor.lower() in product_flavors or flavor.lower() in product_name:
+                            match_reason = "flavor"
+                            break
+            
+            if match_reason:
+                await send_product_match_email(pet, product, match_reason)
+
 async def send_email_notification(chat_data: dict):
     """Send email notification about new chat"""
     if not RESEND_API_KEY:
