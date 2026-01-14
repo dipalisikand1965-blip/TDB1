@@ -36,6 +36,15 @@ const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   
+  // Discount & Loyalty State
+  const [discountCode, setDiscountCode] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState(null);
+  const [isValidatingCode, setIsValidatingCode] = useState(false);
+  const [loyaltyBalance, setLoyaltyBalance] = useState(null);
+  const [pointsToRedeem, setPointsToRedeem] = useState(0);
+  const [loyaltyDiscount, setLoyaltyDiscount] = useState(0);
+  const [isLoadingLoyalty, setIsLoadingLoyalty] = useState(false);
+  
   const [formData, setFormData] = useState({
     // Pet Parent Details
     parentName: '',
