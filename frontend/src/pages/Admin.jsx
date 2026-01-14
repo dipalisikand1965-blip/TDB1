@@ -2810,7 +2810,7 @@ const Admin = () => {
       {/* Member Detail Modal */}
       {selectedMember && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-lg bg-white p-6">
+          <Card className="w-full max-w-3xl bg-white p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center text-2xl font-bold text-purple-600">
@@ -2821,7 +2821,8 @@ const Admin = () => {
                   <p className="text-gray-500">{selectedMember.email}</p>
                   <Badge className="mt-1" variant={
                     selectedMember.membership_tier === 'vip' ? 'warning' :
-                    selectedMember.membership_tier === 'premium' ? 'default' : 'secondary'
+                    selectedMember.membership_tier === 'premium' ? 'default' :
+                    selectedMember.membership_tier === 'pawsome' ? 'secondary' : 'outline'
                   }>
                     {selectedMember.membership_tier.toUpperCase()} Member
                   </Badge>
@@ -2832,8 +2833,8 @@ const Admin = () => {
               </Button>
             </div>
 
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-gray-50 p-3 rounded-lg">
                   <p className="text-xs text-gray-500 uppercase">Joined</p>
                   <p className="font-medium">{new Date(selectedMember.created_at).toLocaleDateString()}</p>
@@ -2843,8 +2844,10 @@ const Admin = () => {
                   <p className="font-medium">{selectedMember.phone || 'N/A'}</p>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-xs text-gray-500 uppercase">Chats Today</p>
-                  <p className="font-medium text-purple-600 font-bold">{selectedMember.chat_count_today || 0}</p>
+                  <p className="text-xs text-gray-500 uppercase">Total Spend</p>
+                  <p className="font-medium text-green-600 font-bold">
+                    ₹{memberDetails.orders.reduce((acc, o) => acc + (o.total || 0), 0).toLocaleString()}
+                  </p>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-lg">
                   <p className="text-xs text-gray-500 uppercase">Last Active</p>
@@ -2860,6 +2863,53 @@ const Admin = () => {
                 </div>
               )}
 
+              {/* Pets Section */}
+              <div className="border-t pt-4">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <PawPrint className="w-4 h-4 text-purple-600" /> Pets ({memberDetails.pets.length})
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {memberDetails.pets.map(pet => (
+                    <div key={pet.id} className="flex items-center gap-3 p-3 border rounded-lg bg-gray-50">
+                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden border">
+                        {pet.photo_url ? (
+                          <img src={pet.photo_url} className="w-full h-full object-cover" />
+                        ) : (
+                          <PawPrint className="w-5 h-5 text-gray-400" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">{pet.name}</p>
+                        <p className="text-xs text-gray-500">{pet.breed} • {pet.gender}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {memberDetails.pets.length === 0 && <p className="text-sm text-gray-500 italic">No pets registered.</p>}
+                </div>
+              </div>
+
+              {/* Order History Section */}
+              <div className="border-t pt-4">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <Package className="w-4 h-4 text-blue-600" /> Order History ({memberDetails.orders.length})
+                </h4>
+                <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+                  {memberDetails.orders.map(order => (
+                    <div key={order.orderId} className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedOrderDetails(order)}>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-sm">{order.orderId}</p>
+                          <Badge variant="outline" className="text-xs">{order.status}</Badge>
+                        </div>
+                        <p className="text-xs text-gray-500">{new Date(order.created_at).toLocaleDateString()} • {order.items.length} items</p>
+                      </div>
+                      <p className="font-bold text-sm">₹{order.total}</p>
+                    </div>
+                  ))}
+                  {memberDetails.orders.length === 0 && <p className="text-sm text-gray-500 italic">No orders found.</p>}
+                </div>
+              </div>
+
               <div className="border-t pt-4 mt-4">
                 <h4 className="font-semibold mb-2">Actions</h4>
                 <div className="flex gap-2">
@@ -2868,10 +2918,11 @@ const Admin = () => {
                     value={selectedMember.membership_tier}
                     onChange={(e) => updateMemberTier(selectedMember.id, e.target.value)}
                   >
-                    <option value="free">Set to Free</option>
-                    <option value="pawsome">Set to Pawsome</option>
-                    <option value="premium">Set to Premium</option>
-                    <option value="vip">Set to VIP</option>
+                    <option value="guest">Guest</option>
+                    <option value="free">Free</option>
+                    <option value="pawsome">Pawsome</option>
+                    <option value="premium">Premium</option>
+                    <option value="vip">VIP</option>
                   </select>
                   <Button variant="outline" size="sm">Reset Chat Limit</Button>
                 </div>
