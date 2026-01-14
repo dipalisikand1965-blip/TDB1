@@ -945,6 +945,271 @@ const ProductManager = ({ credentials }) => {
           </Card>
         </div>
       )}
+
+      {/* Create New Product Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center overflow-y-auto p-4">
+          <Card className="w-full max-w-4xl my-8 bg-white">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b bg-green-50">
+              <h2 className="text-xl font-bold text-green-800">
+                <Plus className="w-5 h-5 inline mr-2" />
+                Create New Product
+              </h2>
+              <button onClick={() => setShowCreateModal(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            {/* Modal Content */}
+            <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+              {/* Save Message */}
+              {saveMessage && (
+                <div className={`p-3 rounded-lg flex items-center gap-2 ${
+                  saveMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                }`}>
+                  {saveMessage.type === 'success' ? <Check className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                  {saveMessage.text}
+                </div>
+              )}
+              
+              {/* Basic Info */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label>Product Name *</Label>
+                    <Input
+                      value={createForm.name}
+                      onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                      placeholder="Enter product name"
+                      className="mt-1"
+                      data-testid="create-product-name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Category *</Label>
+                    <select
+                      className="w-full mt-1 px-3 py-2 border rounded-lg"
+                      value={createForm.category}
+                      onChange={(e) => setCreateForm({ ...createForm, category: e.target.value })}
+                      data-testid="create-product-category"
+                    >
+                      {CATEGORIES.map(cat => (
+                        <option key={cat.value} value={cat.value}>{cat.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <Label>Base Price (₹) *</Label>
+                    <Input
+                      type="number"
+                      value={createForm.price}
+                      onChange={(e) => setCreateForm({ ...createForm, price: e.target.value })}
+                      placeholder="0"
+                      className="mt-1"
+                      data-testid="create-product-price"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Status</Label>
+                    <select
+                      className="w-full mt-1 px-3 py-2 border rounded-lg"
+                      value={createForm.status}
+                      onChange={(e) => setCreateForm({ ...createForm, status: e.target.value })}
+                    >
+                      <option value="active">Active</option>
+                      <option value="draft">Draft</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label>Image URL</Label>
+                    <Input
+                      value={createForm.image}
+                      onChange={(e) => setCreateForm({ ...createForm, image: e.target.value })}
+                      placeholder="https://..."
+                      className="mt-1"
+                      data-testid="create-product-image"
+                    />
+                    {createForm.image && (
+                      <div className="mt-2 w-32 h-32 border rounded overflow-hidden">
+                        <img src={createForm.image} alt="Preview" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <Label>Tags (comma separated)</Label>
+                    <Input
+                      value={createForm.tags}
+                      onChange={(e) => setCreateForm({ ...createForm, tags: e.target.value })}
+                      placeholder="birthday, cake, dog"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Label>Description</Label>
+                <Textarea
+                  value={createForm.description}
+                  onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
+                  placeholder="Product description..."
+                  className="mt-1"
+                  rows={3}
+                  data-testid="create-product-description"
+                />
+              </div>
+              
+              {/* Sizes/Variants for New Product */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <Label className="text-base font-semibold">Sizes / Variants</Label>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => setCreateForm({
+                      ...createForm,
+                      sizes: [...(createForm.sizes || []), { name: '', price: 0 }]
+                    })}
+                  >
+                    <Plus className="w-3 h-3 mr-1" /> Add Size
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {(createForm.sizes || []).map((size, idx) => (
+                    <div key={idx} className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
+                      <div className="flex-1">
+                        <Label className="text-xs text-gray-500">Size Name</Label>
+                        <Input
+                          value={size.name}
+                          onChange={(e) => {
+                            const newSizes = [...createForm.sizes];
+                            newSizes[idx] = { ...newSizes[idx], name: e.target.value };
+                            setCreateForm({ ...createForm, sizes: newSizes });
+                          }}
+                          placeholder="e.g., 500g, Large"
+                        />
+                      </div>
+                      <div className="w-32">
+                        <Label className="text-xs text-gray-500">Price (₹)</Label>
+                        <Input
+                          type="number"
+                          value={size.price}
+                          onChange={(e) => {
+                            const newSizes = [...createForm.sizes];
+                            newSizes[idx] = { ...newSizes[idx], price: parseFloat(e.target.value) || 0 };
+                            setCreateForm({ ...createForm, sizes: newSizes });
+                          }}
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newSizes = createForm.sizes.filter((_, i) => i !== idx);
+                          setCreateForm({ ...createForm, sizes: newSizes });
+                        }}
+                        className="text-red-500 hover:text-red-700 mt-5"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  {(!createForm.sizes || createForm.sizes.length === 0) && (
+                    <p className="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
+                      No sizes added. Click "Add Size" to add variants.
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              {/* Flavors for New Product */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <Label className="text-base font-semibold">Flavors / Options</Label>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => setCreateForm({
+                      ...createForm,
+                      flavors: [...(createForm.flavors || []), { name: '', price: 0 }]
+                    })}
+                  >
+                    <Plus className="w-3 h-3 mr-1" /> Add Flavor
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {(createForm.flavors || []).map((flavor, idx) => (
+                    <div key={idx} className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
+                      <div className="flex-1">
+                        <Label className="text-xs text-gray-500">Flavor Name</Label>
+                        <Input
+                          value={flavor.name}
+                          onChange={(e) => {
+                            const newFlavors = [...createForm.flavors];
+                            newFlavors[idx] = { ...newFlavors[idx], name: e.target.value };
+                            setCreateForm({ ...createForm, flavors: newFlavors });
+                          }}
+                          placeholder="e.g., Chicken, Peanut Butter"
+                        />
+                      </div>
+                      <div className="w-32">
+                        <Label className="text-xs text-gray-500">Extra Price (₹)</Label>
+                        <Input
+                          type="number"
+                          value={flavor.price}
+                          onChange={(e) => {
+                            const newFlavors = [...createForm.flavors];
+                            newFlavors[idx] = { ...newFlavors[idx], price: parseFloat(e.target.value) || 0 };
+                            setCreateForm({ ...createForm, flavors: newFlavors });
+                          }}
+                          placeholder="0"
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newFlavors = createForm.flavors.filter((_, i) => i !== idx);
+                          setCreateForm({ ...createForm, flavors: newFlavors });
+                        }}
+                        className="text-red-500 hover:text-red-700 mt-5"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  {(!createForm.flavors || createForm.flavors.length === 0) && (
+                    <p className="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
+                      No flavors added. Click "Add Flavor" to add options.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Modal Footer */}
+            <div className="flex items-center justify-end p-4 border-t bg-gray-50 gap-3">
+              <Button variant="outline" onClick={() => setShowCreateModal(false)}>Cancel</Button>
+              <Button 
+                onClick={createProduct} 
+                disabled={saving || !createForm.name} 
+                className="bg-green-600 hover:bg-green-700"
+                data-testid="create-product-submit"
+              >
+                {saving ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Creating...</>
+                ) : (
+                  <><Plus className="w-4 h-4 mr-2" /> Create Product</>
+                )}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
