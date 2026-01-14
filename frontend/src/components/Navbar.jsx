@@ -19,6 +19,7 @@ const Navbar = () => {
     { name: 'Treats', path: '/treats' },
     { name: 'Pan India', path: '/pan-india' },
     { name: 'Fresh Meals', path: '/meals' },
+    { name: '🐾 Pet Soul', path: '/my-pets', highlight: true },
   ];
 
   // More dropdown items
