@@ -31,7 +31,6 @@ const Navbar = () => {
     { name: '🍪 Desi Treats', path: '/desi' },
     { name: '🐱 Cat Treats', path: '/cat-treats' },
     { name: '🧸 Accessories & Toys', path: '/accessories' },
-    { name: '👕 Merchandise', path: '/merchandise' },
     { name: '⭐ Membership', path: '/membership' },
   ];
 
