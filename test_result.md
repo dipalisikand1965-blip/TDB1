@@ -143,6 +143,7 @@ metadata:
 test_plan:
   current_focus:
     - "Pet Profile Creation Flow on Embed Route"
+    - "Pet Profile Email Parameter Integration"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -150,3 +151,5 @@ test_plan:
 agent_communication:
     - agent: "testing"
       message: "Pet Profile embed route testing completed successfully. The /pet-soul route works perfectly with full form functionality, proper embed mode behavior, successful backend integration, and correct success messaging. All requirements from the review request have been verified and are working correctly."
+    - agent: "testing"
+      message: "✅ EMAIL PARAMETER INTEGRATION TESTING COMPLETE - Found and fixed critical bug in email parameter integration. The frontend was using incorrect API parameter ('email' instead of 'owner_email'), causing the 'Welcome Back!' screen to never appear. After fixing this bug, all email parameter functionality works perfectly: URL parameter passing, existing pet display, 'Add Another Pet' functionality, and email pre-filling in forms. The iframe can now successfully receive user identity from parent site as required."
