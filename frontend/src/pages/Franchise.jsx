@@ -246,8 +246,8 @@ const Franchise = () => {
                     placeholder="Tell us about yourself and your interest in the franchise..."
                   />
                 </div>
-                <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 py-3">
-                  Submit Inquiry
+                <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 py-3" disabled={submitting}>
+                  {submitting ? 'Submitting...' : 'Submit Inquiry'}
                 </Button>
               </form>
             )}
