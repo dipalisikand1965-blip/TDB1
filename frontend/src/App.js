@@ -26,6 +26,7 @@ import Franchise from "./pages/Franchise";
 import Contact from "./pages/Contact";
 import PetProfile from "./pages/PetProfile";
 import MyPets from "./pages/MyPets";
+import MiraEmbed from "./pages/MiraEmbed";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Routes>
             {/* Embed routes - NO navbar/footer for Shopify integration */}
             <Route path="/pet-soul-embed" element={<PetProfile isEmbed={true} />} />
+            <Route path="/mira-embed" element={<MiraEmbed />} />
             
             {/* Main app routes - WITH navbar */}
             <Route path="/*" element={<MainLayout />} />
