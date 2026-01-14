@@ -45,11 +45,29 @@ const Franchise = () => {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In production, this would submit to an API
-    setSubmitted(true);
+    setSubmitting(true);
+    
+    try {
+      const res = await fetch(`${API_URL}/api/franchise/inquiry`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      if (res.ok) {
+        setSubmitted(true);
+      }
+    } catch (error) {
+      console.error('Failed to submit inquiry:', error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
