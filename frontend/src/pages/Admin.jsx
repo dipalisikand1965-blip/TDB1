@@ -1590,6 +1590,7 @@ const Admin = () => {
                     <div>
                       <h4 className="font-semibold text-gray-900">{chat.pet_name || 'Unknown Pet'}</h4>
                       <p className="text-sm text-gray-500">{chat.pet_breed || 'Unknown'} • {chat.pet_age || 'Age unknown'}</p>
+                      <p className="text-xs text-gray-400 mt-1">{new Date(chat.updated_at || chat.created_at).toLocaleString()}</p>
                     </div>
                     <Badge variant={chat.status === 'active' ? 'default' : 'secondary'}>{chat.status}</Badge>
                   </div>
