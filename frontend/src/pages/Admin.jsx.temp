@@ -1,0 +1,30 @@
+  const getAuthHeaders = () => {
+    const auth = localStorage.getItem('adminAuth');
+    return {
+      'Authorization': `Basic ${auth}`,
+      'Content-Type': 'application/json'
+    };
+  };
+
+  const fetchDashboard = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/dashboard`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDashboard(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch dashboard:', error);
+    }
+  };
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem('adminAuth');
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
+    }
+  }, []);
