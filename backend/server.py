@@ -2408,6 +2408,193 @@ async def update_hero_slides(heroSlides: List[dict], username: str = Depends(ver
 
 # ==================== PUBLIC CONTENT API ====================
 
+# ==================== FAQs CRUD ====================
+
+@admin_router.get("/faqs")
+async def get_all_faqs(username: str = Depends(verify_admin)):
+    """Get all FAQs for admin"""
+    faqs = await db.faqs.find({}, {"_id": 0}).sort("order", 1).to_list(500)
+    categories = list(set(f.get("category", "General") for f in faqs))
+    return {"faqs": faqs, "categories": categories, "total": len(faqs)}
+
+@admin_router.post("/faqs")
+async def create_faq(faq: dict, username: str = Depends(verify_admin)):
+    """Create a new FAQ"""
+    faq_data = {
+        "id": f"faq-{uuid.uuid4().hex[:8]}",
+        "question": faq.get("question", ""),
+        "answer": faq.get("answer", ""),
+        "category": faq.get("category", "General"),
+        "order": faq.get("order", 0),
+        "is_featured": faq.get("is_featured", False),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.faqs.insert_one(faq_data)
+    return {"message": "FAQ created", "faq": {k: v for k, v in faq_data.items() if k != "_id"}}
+
+@admin_router.put("/faqs/{faq_id}")
+async def update_faq(faq_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update a FAQ"""
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.faqs.update_one({"id": faq_id}, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="FAQ not found")
+    updated = await db.faqs.find_one({"id": faq_id}, {"_id": 0})
+    return {"message": "FAQ updated", "faq": updated}
+
+@admin_router.delete("/faqs/{faq_id}")
+async def delete_faq(faq_id: str, username: str = Depends(verify_admin)):
+    """Delete a FAQ"""
+    result = await db.faqs.delete_one({"id": faq_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="FAQ not found")
+    return {"message": "FAQ deleted"}
+
+@api_router.get("/faqs")
+async def get_public_faqs(category: Optional[str] = None):
+    """Public endpoint for FAQs"""
+    query = {}
+    if category:
+        query["category"] = category
+    faqs = await db.faqs.find(query, {"_id": 0}).sort("order", 1).to_list(100)
+    categories = await db.faqs.distinct("category")
+    return {"faqs": faqs, "categories": categories}
+
+
+# ==================== TESTIMONIALS CRUD ====================
+
+@admin_router.get("/testimonials")
+async def get_all_testimonials(username: str = Depends(verify_admin)):
+    """Get all testimonials for admin"""
+    testimonials = await db.testimonials.find({}, {"_id": 0}).sort("created_at", -1).to_list(500)
+    return {"testimonials": testimonials, "total": len(testimonials)}
+
+@admin_router.post("/testimonials")
+async def create_testimonial(testimonial: dict, username: str = Depends(verify_admin)):
+    """Create a new testimonial"""
+    data = {
+        "id": f"test-{uuid.uuid4().hex[:8]}",
+        "name": testimonial.get("name", ""),
+        "location": testimonial.get("location", ""),
+        "pet_name": testimonial.get("pet_name", ""),
+        "rating": testimonial.get("rating", 5),
+        "text": testimonial.get("text", ""),
+        "photo_url": testimonial.get("photo_url"),
+        "is_featured": testimonial.get("is_featured", False),
+        "is_approved": testimonial.get("is_approved", True),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.testimonials.insert_one(data)
+    return {"message": "Testimonial created", "testimonial": {k: v for k, v in data.items() if k != "_id"}}
+
+@admin_router.put("/testimonials/{testimonial_id}")
+async def update_testimonial(testimonial_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update a testimonial"""
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.testimonials.update_one({"id": testimonial_id}, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Testimonial not found")
+    updated = await db.testimonials.find_one({"id": testimonial_id}, {"_id": 0})
+    return {"message": "Testimonial updated", "testimonial": updated}
+
+@admin_router.delete("/testimonials/{testimonial_id}")
+async def delete_testimonial(testimonial_id: str, username: str = Depends(verify_admin)):
+    """Delete a testimonial"""
+    result = await db.testimonials.delete_one({"id": testimonial_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Testimonial not found")
+    return {"message": "Testimonial deleted"}
+
+@api_router.get("/testimonials")
+async def get_public_testimonials(featured_only: bool = False):
+    """Public endpoint for testimonials"""
+    query = {"is_approved": True}
+    if featured_only:
+        query["is_featured"] = True
+    testimonials = await db.testimonials.find(query, {"_id": 0}).sort("created_at", -1).to_list(50)
+    return {"testimonials": testimonials}
+
+
+# ==================== BLOG/INSIGHTS CRUD ====================
+
+@admin_router.get("/blog-posts")
+async def get_all_blog_posts(username: str = Depends(verify_admin)):
+    """Get all blog posts for admin"""
+    posts = await db.blog_posts.find({}, {"_id": 0}).sort("created_at", -1).to_list(500)
+    return {"posts": posts, "total": len(posts)}
+
+@admin_router.post("/blog-posts")
+async def create_blog_post(post: dict, username: str = Depends(verify_admin)):
+    """Create a new blog post"""
+    slug = post.get("title", "").lower().replace(" ", "-").replace("'", "")[:50]
+    data = {
+        "id": f"post-{uuid.uuid4().hex[:8]}",
+        "slug": slug,
+        "title": post.get("title", ""),
+        "excerpt": post.get("excerpt", ""),
+        "content": post.get("content", ""),
+        "image_url": post.get("image_url"),
+        "category": post.get("category", "Tips"),
+        "author": post.get("author", "TDB Team"),
+        "status": post.get("status", "draft"),  # draft, published
+        "is_featured": post.get("is_featured", False),
+        "views": 0,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "published_at": datetime.now(timezone.utc).isoformat() if post.get("status") == "published" else None
+    }
+    await db.blog_posts.insert_one(data)
+    return {"message": "Blog post created", "post": {k: v for k, v in data.items() if k != "_id"}}
+
+@admin_router.put("/blog-posts/{post_id}")
+async def update_blog_post(post_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update a blog post"""
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    if updates.get("status") == "published":
+        existing = await db.blog_posts.find_one({"id": post_id})
+        if existing and not existing.get("published_at"):
+            updates["published_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.blog_posts.update_one({"id": post_id}, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Blog post not found")
+    updated = await db.blog_posts.find_one({"id": post_id}, {"_id": 0})
+    return {"message": "Blog post updated", "post": updated}
+
+@admin_router.delete("/blog-posts/{post_id}")
+async def delete_blog_post(post_id: str, username: str = Depends(verify_admin)):
+    """Delete a blog post"""
+    result = await db.blog_posts.delete_one({"id": post_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Blog post not found")
+    return {"message": "Blog post deleted"}
+
+@api_router.get("/blog-posts")
+async def get_public_blog_posts(category: Optional[str] = None, featured_only: bool = False):
+    """Public endpoint for blog posts"""
+    query = {"status": "published"}
+    if category:
+        query["category"] = category
+    if featured_only:
+        query["is_featured"] = True
+    posts = await db.blog_posts.find(query, {"_id": 0}).sort("published_at", -1).to_list(50)
+    return {"posts": posts}
+
+@api_router.get("/blog-posts/{slug}")
+async def get_blog_post_by_slug(slug: str):
+    """Get a single blog post by slug"""
+    post = await db.blog_posts.find_one(
+        {"$or": [{"slug": slug}, {"id": slug}], "status": "published"}, 
+        {"_id": 0}
+    )
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    # Increment views
+    await db.blog_posts.update_one({"id": post["id"]}, {"$inc": {"views": 1}})
+    return post
+
+
 @api_router.get("/content/videos")
 async def get_public_videos():
     """Public endpoint for videos (no auth required)"""
