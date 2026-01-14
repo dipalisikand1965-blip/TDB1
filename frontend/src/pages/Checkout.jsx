@@ -759,7 +759,9 @@ _GST applicable on final invoice_
                 
                 <p className="text-xs text-center text-gray-500">
                   By placing this order, you agree to our terms and conditions.
-                  Payment link will be sent via WhatsApp.
+                </p>
+                <p className="text-xs text-center text-purple-600 font-medium mt-1">
+                  💳 Payment link will be sent on WhatsApp after confirmation
                 </p>
               </div>
             </div>
