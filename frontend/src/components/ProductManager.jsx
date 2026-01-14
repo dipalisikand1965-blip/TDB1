@@ -107,7 +107,7 @@ const ProductManager = ({ credentials }) => {
     try {
       const response = await fetch(`${API_URL}/api/admin/sync-status`, {
         headers: {
-          'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+          'Authorization': getAuthHeader()
         }
       });
       if (response.ok) {
