@@ -45,8 +45,8 @@ World-class e-commerce website for The Doggy Bakery. Target domain: **thedoggyco
 | **Members** | User membership management |
 | **Products** | **NEW: Shopify-like ProductManager** - Full CRUD, search, filters, pagination, grid/list view, variant editing (sizes/flavors/prices), image management, Shopify sync |
 | **Videos** | Homepage video management |
-| **Testimonials** | Customer reviews management |
-| **Insights/Blog** | Blog post management |
+| **Testimonials** | **FUNCTIONAL CRUD** - Add/Edit/Delete reviews with ratings, featured flag |
+| **Insights/Blog** | **FUNCTIONAL CRUD** - Create/Edit/Delete posts with status (draft/published), views tracking |
 | **FAQs** | **FUNCTIONAL CRUD** - Add/Edit/Delete FAQs with categories |
 | **Streaties** | Street treats inventory |
 | **Franchise** | Franchise inquiries (3 New badge) |
