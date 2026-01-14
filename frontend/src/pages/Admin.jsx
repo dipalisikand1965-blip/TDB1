@@ -1377,16 +1377,20 @@ const Admin = () => {
           </div>
         )}
 
-        {/* Members Tab */}
+        {/* Members/Customers Tab */}
         {activeTab === 'members' && (
           <div className="space-y-6">
             {/* Member Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
               <Card className="p-4">
-                <p className="text-sm text-gray-500">Total Members</p>
+                <p className="text-sm text-gray-500">Total Customers</p>
                 <p className="text-3xl font-bold">{members.length}</p>
               </Card>
               <Card className="p-4 bg-gray-50">
+                <p className="text-sm text-gray-500">Guest</p>
+                <p className="text-3xl font-bold text-gray-600">{memberStats.guest || 0}</p>
+              </Card>
+              <Card className="p-4 bg-white border">
                 <p className="text-sm text-gray-500">Free</p>
                 <p className="text-3xl font-bold text-gray-600">{memberStats.free || 0}</p>
               </Card>
@@ -1409,7 +1413,7 @@ const Admin = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Member</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tier</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Chats Today</th>
@@ -1424,7 +1428,7 @@ const Admin = () => {
                       onClick={() => setSelectedMember(member)}
                     >
                       <td className="px-6 py-4">
-                        <p className="font-medium">{member.name || 'No name'}</p>
+                        <p className="font-medium">{member.name || 'Guest'}</p>
                         <p className="text-xs text-gray-500">Joined {new Date(member.created_at).toLocaleDateString()}</p>
                       </td>
                       <td className="px-6 py-4">
@@ -1435,7 +1439,8 @@ const Admin = () => {
                         <Badge variant={
                           member.membership_tier === 'vip' ? 'warning' :
                           member.membership_tier === 'premium' ? 'default' :
-                          member.membership_tier === 'pawsome' ? 'secondary' : 'outline'
+                          member.membership_tier === 'pawsome' ? 'secondary' : 
+                          member.membership_tier === 'guest' ? 'outline' : 'secondary'
                         }>
                           {member.membership_tier || 'free'}
                         </Badge>
@@ -1451,9 +1456,11 @@ const Admin = () => {
                       <td className="px-6 py-4">
                         <select
                           defaultValue={member.membership_tier || 'free'}
+                          onClick={(e) => e.stopPropagation()}
                           onChange={(e) => updateMemberTier(member.id, e.target.value)}
                           className="px-2 py-1 border rounded text-sm"
                         >
+                          <option value="guest">Guest</option>
                           <option value="free">Free</option>
                           <option value="pawsome">Pawsome</option>
                           <option value="premium">Premium</option>
@@ -1466,7 +1473,7 @@ const Admin = () => {
               </table>
               {members.length === 0 && (
                 <div className="p-8 text-center text-gray-500">
-                  No members registered yet.
+                  No customers found.
                 </div>
               )}
             </div>
