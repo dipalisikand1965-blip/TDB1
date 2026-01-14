@@ -121,7 +121,7 @@ const PetProfile = ({ isEmbed = false }) => {
         if (email) {
           setSavedEmail(email);
           // Fetch existing pets
-          const petsRes = await fetch(`${API_URL}/api/pets?email=${encodeURIComponent(email)}&limit=50`);
+          const petsRes = await fetch(`${API_URL}/api/pets?owner_email=${encodeURIComponent(email)}&limit=50`);
           if (petsRes.ok) {
             const data = await petsRes.json();
             if (data.pets && data.pets.length > 0) {
