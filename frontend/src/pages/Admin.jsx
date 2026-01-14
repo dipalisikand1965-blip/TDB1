@@ -1515,41 +1515,38 @@ const Admin = () => {
         {activeTab === 'insights' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-900">Insights & Blog</h3>
-              <Button className="bg-purple-600 hover:bg-purple-700">
+              <h3 className="text-xl font-bold text-gray-900">Insights & Blog ({blogPosts.length})</h3>
+              <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => {
+                setEditingPost({ id: `new-${Date.now()}`, title: '', excerpt: '', content: '', category: 'Tips', status: 'draft', is_featured: false });
+                setShowPostModal(true);
+              }}>
                 <Plus className="w-4 h-4 mr-2" />New Post
               </Button>
             </div>
             
             <Card className="p-6">
-              <p className="text-gray-600 mb-6">Manage blog posts, tips, and insights for pet parents.</p>
-              
               <div className="grid md:grid-cols-2 gap-6">
-                {[
-                  { title: 'Top 5 Birthday Cake Flavors Dogs Love', status: 'published', views: 1234, date: 'Jan 10, 2025' },
-                  { title: 'How to Plan the Perfect Puppy Party', status: 'published', views: 892, date: 'Jan 8, 2025' },
-                  { title: 'Healthy Treats: What Ingredients Matter', status: 'draft', views: 0, date: 'Jan 12, 2025' },
-                  { title: 'Meet Our Pawsome Panel Members', status: 'published', views: 567, date: 'Jan 5, 2025' },
-                ].map((post, idx) => (
-                  <Card key={idx} className="p-4 border hover:shadow-md transition-shadow">
+                {blogPosts.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8 col-span-2">No blog posts yet. Create your first one!</p>
+                ) : blogPosts.map((post) => (
+                  <Card key={post.id} className="p-4 border hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start mb-3">
-                      <h4 className="font-semibold text-gray-900">{post.title}</h4>
-                      <Badge variant={post.status === 'published' ? 'default' : 'secondary'}>
-                        {post.status}
-                      </Badge>
+                      <h4 className="font-semibold text-gray-900 line-clamp-2">{post.title}</h4>
+                      <div className="flex gap-1">
+                        {post.is_featured && <Badge className="bg-yellow-500 text-xs">Featured</Badge>}
+                        <Badge variant={post.status === 'published' ? 'default' : 'secondary'}>{post.status}</Badge>
+                      </div>
                     </div>
+                    {post.excerpt && <p className="text-sm text-gray-600 mb-2 line-clamp-2">{post.excerpt}</p>}
                     <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <span className="flex items-center gap-1">
-                        <Eye className="w-4 h-4" />
-                        {post.views} views
-                      </span>
-                      <span>{post.date}</span>
+                      <span className="flex items-center gap-1"><Eye className="w-4 h-4" />{post.views || 0} views</span>
+                      <span>{post.category}</span>
                     </div>
                     <div className="flex gap-2 mt-4">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => { setEditingPost(post); setShowPostModal(true); }}>
                         <Edit className="w-3 h-3 mr-1" />Edit
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-red-500">
+                      <Button variant="ghost" size="sm" className="text-red-500" onClick={() => deleteBlogPost(post.id)}>
                         <Trash2 className="w-3 h-3 mr-1" />Delete
                       </Button>
                     </div>
@@ -1557,6 +1554,60 @@ const Admin = () => {
                 ))}
               </div>
             </Card>
+            
+            {/* Blog Post Modal */}
+            {showPostModal && editingPost && (
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+                <Card className="w-full max-w-2xl bg-white p-6 my-8">
+                  <h3 className="text-lg font-bold mb-4">{editingPost.id?.startsWith('new-') ? 'Create' : 'Edit'} Blog Post</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">Title *</label>
+                      <Input value={editingPost.title} onChange={(e) => setEditingPost({...editingPost, title: e.target.value})} placeholder="Post title" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium">Category</label>
+                        <select className="w-full border rounded-md p-2" value={editingPost.category || 'Tips'} onChange={(e) => setEditingPost({...editingPost, category: e.target.value})}>
+                          <option value="Tips">Tips</option>
+                          <option value="News">News</option>
+                          <option value="Recipes">Recipes</option>
+                          <option value="Stories">Stories</option>
+                          <option value="Health">Health</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Status</label>
+                        <select className="w-full border rounded-md p-2" value={editingPost.status || 'draft'} onChange={(e) => setEditingPost({...editingPost, status: e.target.value})}>
+                          <option value="draft">Draft</option>
+                          <option value="published">Published</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Excerpt (Short description)</label>
+                      <textarea className="w-full border rounded-md p-2 h-16" value={editingPost.excerpt || ''} onChange={(e) => setEditingPost({...editingPost, excerpt: e.target.value})} placeholder="Brief description for previews..." />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Content *</label>
+                      <textarea className="w-full border rounded-md p-2 h-40" value={editingPost.content || ''} onChange={(e) => setEditingPost({...editingPost, content: e.target.value})} placeholder="Full blog post content..." />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Image URL</label>
+                      <Input value={editingPost.image_url || ''} onChange={(e) => setEditingPost({...editingPost, image_url: e.target.value})} placeholder="https://..." />
+                    </div>
+                    <label className="flex items-center gap-2">
+                      <input type="checkbox" checked={editingPost.is_featured || false} onChange={(e) => setEditingPost({...editingPost, is_featured: e.target.checked})} />
+                      <span className="text-sm">Featured Post</span>
+                    </label>
+                  </div>
+                  <div className="flex justify-end gap-2 mt-6">
+                    <Button variant="outline" onClick={() => { setShowPostModal(false); setEditingPost(null); }}>Cancel</Button>
+                    <Button className="bg-purple-600" onClick={() => saveBlogPost(editingPost)} disabled={!editingPost.title || !editingPost.content}>Save</Button>
+                  </div>
+                </Card>
+              </div>
+            )}
           </div>
         )}
 
