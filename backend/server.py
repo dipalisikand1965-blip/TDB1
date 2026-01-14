@@ -786,6 +786,9 @@ class PetProfileCreate(BaseModel):
     # Notifications
     whatsapp_reminders: bool = Field(default=True)
     email_reminders: bool = Field(default=True)
+    
+    # Source tracking
+    source: Optional[str] = Field(default="direct", description="Where the pet was created: shopify_embed, direct, admin")
 
 
 class PetProfileUpdate(BaseModel):
