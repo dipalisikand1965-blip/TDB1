@@ -146,13 +146,6 @@ const Admin = () => {
   const [newDonation, setNewDonation] = useState({ ngo_name: '', city: '', amount: 0, animals_fed: 0, description: '' });
 
   // Check for stored auth
-  useEffect(() => {
-    const storedAuth = localStorage.getItem('adminAuth');
-    if (storedAuth) {
-      setIsAuthenticated(true);
-      fetchDashboard();
-    }
-  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -195,18 +188,135 @@ const Admin = () => {
   };
 
   const fetchDashboard = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/admin/dashboard`, {
-        headers: getAuthHeaders()
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setDashboard(data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch dashboard:', error);
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("adminAuth");
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
     }
+  }, []);
+    try {
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("adminAuth");
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
+    }
+  }, []);
+      const response = await fetch(`${API_URL}/api/admin/dashboard`, {
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("adminAuth");
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
+    }
+  }, []);
+        headers: getAuthHeaders()
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("adminAuth");
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
+    }
+  }, []);
+      });
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("adminAuth");
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
+    }
+  }, []);
+      if (response.ok) {
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("adminAuth");
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
+    }
+  }, []);
+        const data = await response.json();
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("adminAuth");
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
+    }
+  }, []);
+        setDashboard(data);
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("adminAuth");
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
+    }
+  }, []);
+      }
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("adminAuth");
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
+    }
+  }, []);
+    } catch (error) {
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("adminAuth");
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
+    }
+  }, []);
+      console.error('Failed to fetch dashboard:', error);
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("adminAuth");
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
+    }
+  }, []);
+    }
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("adminAuth");
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
+    }
+  }, []);
   };
+
+  // Check for stored auth
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("adminAuth");
+    if (storedAuth) {
+      setIsAuthenticated(true);
+      fetchDashboard();
+    }
+  }, []);
 
   const fetchChats = async () => {
     try {
