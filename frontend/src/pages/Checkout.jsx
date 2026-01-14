@@ -121,8 +121,9 @@ const Checkout = () => {
 
   // Generate order summary for WhatsApp
   const generateWhatsAppMessage = (orderData) => {
-    const deliveryFee = 75;
-    const total = getCartTotal() + deliveryFee;
+    const subtotal = getCartTotal();
+    const deliveryFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+    const total = subtotal + deliveryFee;
     
     return `🐕 *NEW ORDER - The Doggy Bakery*
 
@@ -161,12 +162,13 @@ ${formData.specialInstructions ? `📝 *SPECIAL INSTRUCTIONS:*\n${formData.speci
 ${formData.isGift ? `🎁 *GIFT MESSAGE:*\n${formData.giftMessage || 'No message'}\n` : ''}
 
 💰 *PAYMENT SUMMARY:*
-Subtotal: ₹${getCartTotal()}
-Delivery: ₹${deliveryFee}
+Subtotal: ₹${subtotal}
+Delivery: ${deliveryFee === 0 ? 'FREE! 🎉' : `₹${deliveryFee}`}
 *TOTAL: ₹${total}*
 
 _GST applicable on final invoice_
-_Please send payment link to confirm order._`;
+
+✅ *Please confirm this order and send me the payment link to proceed.*`;
   };
 
   const handleSubmit = async (e) => {
