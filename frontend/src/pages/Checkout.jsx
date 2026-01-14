@@ -185,8 +185,9 @@ _GST applicable on final invoice_
     
     setIsSubmitting(true);
     
-    const deliveryFee = 75;
-    const total = getCartTotal() + deliveryFee;
+    const subtotal = getCartTotal();
+    const deliveryFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+    const total = subtotal + deliveryFee;
     const orderId = `TDB-${Date.now().toString(36).toUpperCase()}`;
     
     // Save order to backend
