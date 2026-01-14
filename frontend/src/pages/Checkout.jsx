@@ -246,7 +246,9 @@ ${formData.isGift ? `🎁 *GIFT MESSAGE:*\n${formData.giftMessage || 'No message
 💰 *PAYMENT SUMMARY:*
 Subtotal: ₹${subtotal}
 Delivery: ${deliveryFee === 0 ? 'FREE! 🎉' : `₹${deliveryFee}`}
-*TOTAL: ₹${total}*
+${orderData.discountCode ? `Discount (${orderData.discountCode}): -₹${orderData.discountAmount}` : ''}
+${orderData.loyaltyPointsUsed ? `Loyalty Points (${orderData.loyaltyPointsUsed} pts): -₹${orderData.loyaltyDiscount}` : ''}
+*TOTAL: ₹${orderData.finalTotal}*
 
 _GST applicable on final invoice_
 
@@ -269,7 +271,9 @@ _GST applicable on final invoice_
     
     const subtotal = getCartTotal();
     const deliveryFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
-    const total = subtotal + deliveryFee;
+    const discountAmount = appliedDiscount?.discount_amount || 0;
+    const totalBeforeDelivery = subtotal - discountAmount - loyaltyDiscount;
+    const total = Math.max(0, totalBeforeDelivery) + deliveryFee;
     const orderId = `TDB-${Date.now().toString(36).toUpperCase()}`;
     
     // Save order to backend
