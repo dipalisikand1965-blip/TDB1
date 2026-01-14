@@ -84,7 +84,7 @@ webpackConfig.devServer = (devServerConfig) => {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "*",
     "Access-Control-Allow-Headers": "*",
-    "Content-Security-Policy": "frame-ancestors *",
+    "Content-Security-Policy": "frame-ancestors 'self' https://thedoggybakery.com https://www.thedoggybakery.com https://thedoggycompany.in;",
   };
 
   // Apply visual edits dev server setup only if enabled
