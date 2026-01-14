@@ -134,6 +134,303 @@ async def auto_sync_products():
             # Wait 1 hour before retrying on failure
             await asyncio.sleep(3600)
 
+# ==================== PET CELEBRATION REMINDERS ====================
+
+# Scheduler instance
+scheduler = AsyncIOScheduler()
+
+async def check_upcoming_celebrations():
+    """Check for upcoming pet celebrations and send reminders"""
+    try:
+        logger.info("Running celebration reminder check...")
+        today = datetime.now(timezone.utc).date()
+        
+        # Get all pets with celebration data
+        pets_cursor = db.pets.find({
+            "$or": [
+                {"birth_date": {"$exists": True, "$ne": None}},
+                {"gotcha_date": {"$exists": True, "$ne": None}},
+                {"celebrations": {"$exists": True, "$ne": []}}
+            ]
+        })
+        
+        pets = await pets_cursor.to_list(1000)
+        reminders_sent = 0
+        
+        for pet in pets:
+            pet_name = pet.get("name", "Your Pet")
+            owner_email = pet.get("owner_email")
+            owner_phone = pet.get("owner_phone")
+            owner_name = pet.get("owner_name", "Pet Parent")
+            email_reminders = pet.get("email_reminders", True)
+            whatsapp_reminders = pet.get("whatsapp_reminders", True)
+            user_id = pet.get("user_id")
+            
+            # Get user email if not in pet profile
+            if not owner_email and user_id:
+                user = await db.users.find_one({"_id": user_id})
+                if user:
+                    owner_email = user.get("email")
+                    owner_name = user.get("name", owner_name)
+            
+            celebrations_to_notify = []
+            
+            # Check birthday
+            if pet.get("birth_date"):
+                try:
+                    birth_date = datetime.strptime(pet["birth_date"], "%Y-%m-%d").date()
+                    this_year_bday = birth_date.replace(year=today.year)
+                    if this_year_bday < today:
+                        this_year_bday = birth_date.replace(year=today.year + 1)
+                    
+                    days_until = (this_year_bday - today).days
+                    if days_until in [7, 1]:  # 7 days or 1 day before
+                        celebrations_to_notify.append({
+                            "occasion": "birthday",
+                            "name": f"{pet_name}'s Birthday",
+                            "date": this_year_bday.strftime("%B %d"),
+                            "days_until": days_until
+                        })
+                except Exception as e:
+                    logger.error(f"Error parsing birth_date for pet {pet_name}: {e}")
+            
+            # Check gotcha day
+            if pet.get("gotcha_date"):
+                try:
+                    gotcha_date = datetime.strptime(pet["gotcha_date"], "%Y-%m-%d").date()
+                    this_year_gotcha = gotcha_date.replace(year=today.year)
+                    if this_year_gotcha < today:
+                        this_year_gotcha = gotcha_date.replace(year=today.year + 1)
+                    
+                    days_until = (this_year_gotcha - today).days
+                    if days_until in [7, 1]:
+                        celebrations_to_notify.append({
+                            "occasion": "gotcha_day",
+                            "name": f"{pet_name}'s Gotcha Day",
+                            "date": this_year_gotcha.strftime("%B %d"),
+                            "days_until": days_until
+                        })
+                except Exception as e:
+                    logger.error(f"Error parsing gotcha_date for pet {pet_name}: {e}")
+            
+            # Check custom celebrations
+            for celebration in pet.get("celebrations", []):
+                try:
+                    date_str = celebration.get("date", "")
+                    occasion = celebration.get("occasion", "celebration")
+                    custom_name = celebration.get("custom_name") or occasion.replace("_", " ").title()
+                    
+                    # Parse date (supports YYYY-MM-DD or MM-DD)
+                    if len(date_str) == 10:  # YYYY-MM-DD
+                        cel_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                    elif len(date_str) == 5:  # MM-DD
+                        cel_date = datetime.strptime(f"{today.year}-{date_str}", "%Y-%m-%d").date()
+                    else:
+                        continue
+                    
+                    # For recurring, adjust year
+                    if celebration.get("is_recurring", True):
+                        this_year_cel = cel_date.replace(year=today.year)
+                        if this_year_cel < today:
+                            this_year_cel = cel_date.replace(year=today.year + 1)
+                        cel_date = this_year_cel
+                    
+                    days_until = (cel_date - today).days
+                    if days_until in [7, 1]:
+                        celebrations_to_notify.append({
+                            "occasion": occasion,
+                            "name": f"{pet_name}'s {custom_name}",
+                            "date": cel_date.strftime("%B %d"),
+                            "days_until": days_until
+                        })
+                except Exception as e:
+                    logger.error(f"Error parsing celebration for pet {pet_name}: {e}")
+            
+            # Send reminders for each celebration
+            for celebration in celebrations_to_notify:
+                # Check if we already sent this reminder
+                existing_reminder = await db.celebration_reminders.find_one({
+                    "pet_id": str(pet.get("_id")),
+                    "occasion": celebration["occasion"],
+                    "date": celebration["date"],
+                    "days_until": celebration["days_until"],
+                    "year": today.year
+                })
+                
+                if existing_reminder:
+                    continue  # Already sent this reminder
+                
+                # Get pet persona for personalized message
+                soul = pet.get("soul", {})
+                persona = soul.get("persona", "beloved companion")
+                
+                # Send email reminder
+                if email_reminders and owner_email and RESEND_API_KEY:
+                    await send_celebration_email(
+                        to_email=owner_email,
+                        owner_name=owner_name,
+                        pet_name=pet_name,
+                        celebration=celebration,
+                        persona=persona,
+                        photo_url=pet.get("photo_url")
+                    )
+                    reminders_sent += 1
+                
+                # Log WhatsApp reminder (click-to-chat link)
+                if whatsapp_reminders and owner_phone:
+                    whatsapp_link = generate_whatsapp_reminder_link(
+                        pet_name=pet_name,
+                        celebration=celebration,
+                        owner_name=owner_name
+                    )
+                    logger.info(f"WhatsApp reminder link for {pet_name}: {whatsapp_link}")
+                
+                # Record that we sent this reminder
+                await db.celebration_reminders.insert_one({
+                    "pet_id": str(pet.get("_id")),
+                    "pet_name": pet_name,
+                    "owner_email": owner_email,
+                    "occasion": celebration["occasion"],
+                    "celebration_name": celebration["name"],
+                    "date": celebration["date"],
+                    "days_until": celebration["days_until"],
+                    "year": today.year,
+                    "sent_at": datetime.now(timezone.utc).isoformat(),
+                    "email_sent": email_reminders and owner_email and RESEND_API_KEY,
+                    "whatsapp_generated": whatsapp_reminders and owner_phone
+                })
+        
+        logger.info(f"Celebration reminder check complete. Sent {reminders_sent} reminders.")
+        return reminders_sent
+        
+    except Exception as e:
+        logger.error(f"Error in celebration reminder check: {e}")
+        return 0
+
+
+async def send_celebration_email(to_email: str, owner_name: str, pet_name: str, 
+                                  celebration: dict, persona: str, photo_url: str = None):
+    """Send a personalized celebration reminder email"""
+    try:
+        days_text = "tomorrow" if celebration["days_until"] == 1 else f"in {celebration['days_until']} days"
+        occasion_type = celebration["occasion"]
+        
+        # Personalized subject lines
+        subjects = {
+            "birthday": f"🎂 {pet_name}'s Birthday is {days_text}! Time to celebrate!",
+            "gotcha_day": f"💝 {pet_name}'s Gotcha Day is {days_text}! Celebrate the love!",
+            "default": f"🎉 {celebration['name']} is {days_text}!"
+        }
+        subject = subjects.get(occasion_type, subjects["default"])
+        
+        # Build email HTML
+        photo_section = ""
+        if photo_url:
+            photo_section = f'''
+            <div style="text-align: center; margin: 20px 0;">
+                <img src="{photo_url}" alt="{pet_name}" style="max-width: 200px; border-radius: 50%; border: 4px solid #9333ea;">
+            </div>
+            '''
+        
+        html_content = f'''
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%); color: white; padding: 30px; text-align: center; border-radius: 12px 12px 0 0; }}
+                .content {{ background: #fff; padding: 30px; border: 1px solid #e5e7eb; }}
+                .cta-button {{ display: inline-block; background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 30px; font-weight: bold; margin: 20px 0; }}
+                .product-grid {{ display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin: 20px 0; }}
+                .product-card {{ width: 150px; text-align: center; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; }}
+                .footer {{ background: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 12px 12px; font-size: 12px; color: #6b7280; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1 style="margin: 0;">🐾 The Doggy Bakery</h1>
+                    <p style="margin: 10px 0 0 0; opacity: 0.9;">Pet Celebration Reminder</p>
+                </div>
+                <div class="content">
+                    {photo_section}
+                    <h2 style="color: #9333ea; text-align: center;">{celebration['name']} is {days_text}!</h2>
+                    
+                    <p>Hi {owner_name},</p>
+                    
+                    <p>Get ready to celebrate! <strong>{pet_name}</strong>, your {persona}, has a special day coming up on <strong>{celebration['date']}</strong>.</p>
+                    
+                    <p>Make it extra special with delicious treats from The Doggy Bakery! 🎂</p>
+                    
+                    <div style="text-align: center;">
+                        <a href="https://thedoggycompany.in/cakes" class="cta-button">
+                            🎁 Shop Birthday Treats
+                        </a>
+                    </div>
+                    
+                    <h3 style="color: #9333ea;">Celebration Ideas for {pet_name}:</h3>
+                    <ul>
+                        <li>🎂 A custom birthday cake with {pet_name}'s name</li>
+                        <li>🦴 Gourmet treats and cookies</li>
+                        <li>🎁 A celebration hamper with toys and goodies</li>
+                        <li>📸 A fun photoshoot with their new treats!</li>
+                    </ul>
+                    
+                    <p style="background: #fdf4ff; padding: 15px; border-radius: 8px; border-left: 4px solid #9333ea;">
+                        <strong>💜 TDB Tip:</strong> Order 2-3 days in advance for freshly baked cakes!
+                    </p>
+                    
+                    <p>Wishing {pet_name} the happiest celebration! 🎉</p>
+                    
+                    <p>With love,<br><strong>The Doggy Bakery Team</strong> 🐕</p>
+                </div>
+                <div class="footer">
+                    <p>The Doggy Bakery | Baking happiness for your furry friends</p>
+                    <p>📞 +91 96631 85747 | 📧 woof@thedoggybakery.com</p>
+                    <p style="font-size: 11px; color: #9ca3af;">
+                        You're receiving this because you enabled celebration reminders for {pet_name}. 
+                        <a href="https://thedoggycompany.in/my-pets" style="color: #9333ea;">Manage preferences</a>
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        '''
+        
+        params = {
+            "from": f"The Doggy Bakery <{SENDER_EMAIL}>",
+            "to": [to_email],
+            "subject": subject,
+            "html": html_content
+        }
+        
+        email_response = resend.Emails.send(params)
+        logger.info(f"Celebration email sent to {to_email} for {pet_name}: {email_response}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Failed to send celebration email: {e}")
+        return False
+
+
+def generate_whatsapp_reminder_link(pet_name: str, celebration: dict, owner_name: str) -> str:
+    """Generate a WhatsApp click-to-chat link with celebration reminder"""
+    days_text = "tomorrow" if celebration["days_until"] == 1 else f"in {celebration['days_until']} days"
+    
+    message = f"""🎉 Hi {owner_name}!
+
+Reminder: {celebration['name']} is {days_text} ({celebration['date']})!
+
+Make it special with treats from The Doggy Bakery! 🐾
+
+🎂 Shop now: https://thedoggycompany.in/cakes
+
+Need help choosing? Chat with Mira, our Pet Concierge!"""
+    
+    encoded_message = urllib.parse.quote(message)
+    return f"https://wa.me/{WHATSAPP_NUMBER}?text={encoded_message}"
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
