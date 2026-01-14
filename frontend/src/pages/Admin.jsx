@@ -3,6 +3,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
+import ProductManager from '../components/ProductManager';
 import {
   Lock,
   User,
