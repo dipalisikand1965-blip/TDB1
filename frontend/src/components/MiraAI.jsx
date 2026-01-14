@@ -33,7 +33,7 @@ const MiraAI = () => {
       className={`fixed z-50 bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 ${
         isMinimized 
           ? 'bottom-6 right-6 w-80 h-16' 
-          : 'bottom-6 right-6 w-[400px] h-[600px] md:w-[420px] md:h-[650px]'
+          : 'bottom-6 right-6 w-[400px] max-h-[calc(100vh-100px)] h-[600px] md:w-[420px] md:h-[600px]'
       }`}
       data-testid="mira-chat-container"
     >
