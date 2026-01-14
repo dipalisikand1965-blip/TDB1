@@ -28,6 +28,7 @@ import PetProfile from "./pages/PetProfile";
 import MyPets from "./pages/MyPets";
 import MiraEmbed from "./pages/MiraEmbed";
 import MiraLandingEmbed from "./pages/MiraLandingEmbed";
+import MiraPage from "./pages/MiraPage";
 
 function App() {
   return (
