@@ -64,6 +64,10 @@ function App() {
             <Route path="/membership" element={<Membership />} />
             <Route path="/admin" element={<Admin />} />
             
+            {/* Pet Profile */}
+            <Route path="/pet-profile" element={<PetProfile />} />
+            <Route path="/my-pets" element={<PetProfile />} />
+            
             {/* Policy Pages */}
             <Route path="/policies" element={<Policies />} />
             <Route path="/refund-policy" element={<Policies />} />
