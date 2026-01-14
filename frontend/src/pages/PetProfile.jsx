@@ -260,22 +260,35 @@ const PetProfile = ({ isEmbed = false }) => {
           <PawPrint className="w-10 h-10 text-purple-600" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900">Let's meet your furry friend!</h2>
-        <p className="text-gray-600 mt-2">Tell us about your pet</p>
+        <p className="text-gray-600 mt-2">The basics - their "ID Card"</p>
       </div>
 
       <div className="space-y-4">
-        <div>
-          <Label htmlFor="name">Pet's Name *</Label>
-          <Input
-            id="name"
-            placeholder="What do you call your furry friend?"
-            value={formData.name}
-            onChange={(e) => updateFormData('name', e.target.value)}
-            className="mt-1"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="name">Pet's Name *</Label>
+            <Input
+              id="name"
+              placeholder="What do you call your furry friend?"
+              value={formData.name}
+              onChange={(e) => updateFormData('name', e.target.value)}
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <Label htmlFor="nicknames">Nicknames</Label>
+            <Input
+              id="nicknames"
+              placeholder="e.g., Floofy, Mr. Wigglebutt, Stinky"
+              value={formData.nicknames || ''}
+              onChange={(e) => updateFormData('nicknames', e.target.value)}
+              className="mt-1"
+            />
+            <p className="text-xs text-gray-500 mt-1">Because they only hear their "real" name when in trouble 😉</p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div>
             <Label htmlFor="species">Species</Label>
             <select
@@ -302,6 +315,17 @@ const PetProfile = ({ isEmbed = false }) => {
               <option value="female">Female (Good Girl)</option>
             </select>
           </div>
+          <div>
+            <Label htmlFor="weight">Weight (kg)</Label>
+            <Input
+              id="weight"
+              type="number"
+              placeholder="e.g., 12"
+              value={formData.weight || ''}
+              onChange={(e) => updateFormData('weight', e.target.value)}
+              className="mt-1"
+            />
+          </div>
         </div>
 
         <div>
@@ -325,7 +349,6 @@ const PetProfile = ({ isEmbed = false }) => {
               onChange={(e) => updateFormData('birth_date', e.target.value)}
               className="mt-1"
             />
-            <p className="text-xs text-gray-500 mt-1">When were they born?</p>
           </div>
           <div>
             <Label htmlFor="gotcha_date">Gotcha Day 🏠</Label>
@@ -336,11 +359,10 @@ const PetProfile = ({ isEmbed = false }) => {
               onChange={(e) => updateFormData('gotcha_date', e.target.value)}
               className="mt-1"
             />
-            <p className="text-xs text-gray-500 mt-1">When did they join your family?</p>
           </div>
         </div>
         <p className="text-xs text-purple-600 bg-purple-50 p-2 rounded-lg">
-          💡 Don't know their birthday? No worries! Many pet parents celebrate their Gotcha Day instead - the day their furry friend joined the family!
+          💡 Don't know their birthday? No worries! Celebrate their Gotcha Day - the day they joined your family!
         </p>
 
         <div>
@@ -352,7 +374,94 @@ const PetProfile = ({ isEmbed = false }) => {
             onChange={(e) => updateFormData('photo_url', e.target.value)}
             className="mt-1"
           />
-          <p className="text-xs text-gray-500 mt-1">Upload to Imgur or Google Photos and paste the link</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 1b: Lifestyle (The "User Manual")
+  const renderStep1b = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Utensils className="w-10 h-10 text-green-600" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900">{formData.name}'s Lifestyle</h2>
+        <p className="text-gray-600 mt-2">Their "User Manual" - helps us pick the perfect treats!</p>
+      </div>
+
+      <div className="space-y-5">
+        <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-5">
+          <Label className="flex items-center gap-2 text-red-700 font-semibold mb-2">
+            ⚠️ Allergies & Sensitivities
+          </Label>
+          <Input
+            placeholder="e.g., Grain-free, No chicken, Sensitive stomach"
+            value={formData.preferences?.allergies || ''}
+            onChange={(e) => updateFormData('preferences', { ...formData.preferences, allergies: e.target.value })}
+          />
+        </div>
+
+        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-5">
+          <Label className="flex items-center gap-2 text-blue-700 font-semibold mb-2">
+            🏃 Activity Level
+          </Label>
+          <select
+            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+            value={formData.preferences?.activity_level || ''}
+            onChange={(e) => updateFormData('preferences', { ...formData.preferences, activity_level: e.target.value })}
+          >
+            <option value="">Select activity level...</option>
+            <option value="couch_potato">🛋️ Couch Potato - Loves lazy days</option>
+            <option value="moderate">🚶 Moderate - Regular walks, some play</option>
+            <option value="active">🏃 Active - Loves outdoor adventures</option>
+            <option value="athlete">⚡ Athlete - High energy, always on the go!</option>
+          </select>
+        </div>
+
+        <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl p-5">
+          <Label className="flex items-center gap-2 text-amber-700 font-semibold mb-2">
+            🍖 Favorite Flavor Profile
+          </Label>
+          <select
+            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500"
+            value={formData.preferences?.flavor_profile || ''}
+            onChange={(e) => updateFormData('preferences', { ...formData.preferences, flavor_profile: e.target.value })}
+          >
+            <option value="">What flavors do they love?</option>
+            <option value="farmhouse">🏠 Farmhouse - Beef, Liver, Chicken</option>
+            <option value="ocean">🌊 Ocean - Salmon, Whitefish, Tuna</option>
+            <option value="garden">🌿 Garden - Peanut Butter, Sweet Potato, Pumpkin</option>
+            <option value="adventurous">🎯 Adventurous - Loves trying everything!</option>
+          </select>
+        </div>
+
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-5">
+          <Label className="flex items-center gap-2 text-purple-700 font-semibold mb-2">
+            🍪 Treat Texture Preference
+          </Label>
+          <select
+            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+            value={formData.preferences?.treat_texture || ''}
+            onChange={(e) => updateFormData('preferences', { ...formData.preferences, treat_texture: e.target.value })}
+          >
+            <option value="">How do they like their treats?</option>
+            <option value="crunchy">🥨 Crunchy - Loves the crunch!</option>
+            <option value="chewy">🍬 Chewy - Soft and chewy is best</option>
+            <option value="frozen">🧊 Frozen - Cold treats for hot days</option>
+            <option value="any">✨ Any - Not picky at all!</option>
+          </select>
+        </div>
+
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-5">
+          <Label className="flex items-center gap-2 text-green-700 font-semibold mb-2">
+            🎯 Current Goals
+          </Label>
+          <Input
+            placeholder="e.g., Weight loss, Shiny coat, Anxiety reduction, Just here for the party!"
+            value={formData.preferences?.goals || ''}
+            onChange={(e) => updateFormData('preferences', { ...formData.preferences, goals: e.target.value })}
+          />
         </div>
       </div>
     </div>
