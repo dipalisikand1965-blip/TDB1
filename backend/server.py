@@ -1690,6 +1690,176 @@ async def manually_send_notification(session_id: str, username: str = Depends(ve
     }
 
 
+# ==================== ADMIN PET PROFILE ROUTES ====================
+
+@admin_router.get("/pets")
+async def admin_get_all_pets(
+    username: str = Depends(verify_admin),
+    limit: int = 100,
+    skip: int = 0,
+    search: Optional[str] = None
+):
+    """Get all pet profiles for admin dashboard"""
+    query = {}
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"owner_name": {"$regex": search, "$options": "i"}},
+            {"owner_email": {"$regex": search, "$options": "i"}}
+        ]
+    
+    pets = await db.pets.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
+    total = await db.pets.count_documents(query)
+    
+    # Add persona info to each pet
+    for pet in pets:
+        soul = pet.get("soul", {}) or {}
+        persona = soul.get("persona", "shadow")
+        if persona in DOG_PERSONAS:
+            pet["persona_info"] = DOG_PERSONAS[persona]
+    
+    return {"pets": pets, "total": total}
+
+
+@admin_router.get("/pets/upcoming-celebrations")
+async def admin_get_upcoming_celebrations(
+    username: str = Depends(verify_admin),
+    days: int = 30
+):
+    """Get all upcoming celebrations for admin dashboard"""
+    # Use the public endpoint
+    result = await get_all_upcoming_celebrations(days)
+    return result
+
+
+@admin_router.get("/pets/{pet_id}")
+async def admin_get_pet_detail(pet_id: str, username: str = Depends(verify_admin)):
+    """Get detailed pet profile for admin"""
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    # Add persona info
+    soul = pet.get("soul", {}) or {}
+    persona = soul.get("persona", "shadow")
+    if persona in DOG_PERSONAS:
+        pet["persona_info"] = DOG_PERSONAS[persona]
+    
+    # Get upcoming celebrations
+    upcoming = await get_upcoming_celebrations(pet_id, 90)
+    pet["upcoming_celebrations"] = upcoming.get("upcoming", [])
+    
+    return pet
+
+
+@admin_router.put("/pets/{pet_id}")
+async def admin_update_pet(pet_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Admin update pet profile"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.pets.update_one({"id": pet_id}, {"$set": updates})
+    
+    updated_pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    return {"message": "Pet updated", "pet": updated_pet}
+
+
+@admin_router.delete("/pets/{pet_id}")
+async def admin_delete_pet(pet_id: str, username: str = Depends(verify_admin)):
+    """Admin delete pet profile"""
+    result = await db.pets.delete_one({"id": pet_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    return {"message": "Pet deleted"}
+
+
+@admin_router.post("/pets/{pet_id}/send-reminder")
+async def admin_send_celebration_reminder(
+    pet_id: str,
+    occasion: str,
+    channel: str = "whatsapp",  # whatsapp or email
+    username: str = Depends(verify_admin)
+):
+    """Manually send a celebration reminder"""
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    # Generate message
+    celebration = {"occasion": occasion}
+    message_data = generate_celebration_message(pet, celebration, days_until=7)
+    
+    if channel == "whatsapp" and pet.get("owner_phone"):
+        # Create WhatsApp link
+        phone = pet.get("owner_phone", "").replace("+", "").replace(" ", "")
+        whatsapp_url = f"https://wa.me/{phone}?text={urllib.parse.quote(message_data['whatsapp_message'])}"
+        
+        return {
+            "message": "WhatsApp reminder ready",
+            "channel": "whatsapp",
+            "whatsapp_url": whatsapp_url,
+            "preview": message_data
+        }
+    elif channel == "email" and pet.get("owner_email"):
+        # Send email via Resend
+        if RESEND_API_KEY:
+            try:
+                email_result = resend.Emails.send({
+                    "from": SENDER_EMAIL,
+                    "to": pet.get("owner_email"),
+                    "subject": message_data["subject"],
+                    "html": f"<div style='font-family: sans-serif; line-height: 1.6;'>{message_data['message'].replace(chr(10), '<br>')}</div>"
+                })
+                return {
+                    "message": "Email sent",
+                    "channel": "email",
+                    "email_id": email_result.get("id"),
+                    "preview": message_data
+                }
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
+        else:
+            raise HTTPException(status_code=400, detail="Email not configured")
+    else:
+        raise HTTPException(status_code=400, detail="Invalid channel or missing contact info")
+
+
+@admin_router.get("/pets/stats/summary")
+async def admin_get_pet_stats(username: str = Depends(verify_admin)):
+    """Get pet profile statistics for admin dashboard"""
+    total_pets = await db.pets.count_documents({})
+    
+    # Count by persona
+    persona_counts = {}
+    async for pet in db.pets.find({}, {"soul.persona": 1}):
+        persona = (pet.get("soul", {}) or {}).get("persona", "unknown")
+        persona_counts[persona] = persona_counts.get(persona, 0) + 1
+    
+    # Count by species
+    species_counts = {}
+    async for pet in db.pets.find({}, {"species": 1}):
+        species = pet.get("species", "dog")
+        species_counts[species] = species_counts.get(species, 0) + 1
+    
+    # Upcoming celebrations in next 7 days
+    upcoming_7_days = await get_all_upcoming_celebrations(7)
+    
+    # Upcoming celebrations in next 30 days
+    upcoming_30_days = await get_all_upcoming_celebrations(30)
+    
+    return {
+        "total_pets": total_pets,
+        "by_persona": persona_counts,
+        "by_species": species_counts,
+        "celebrations_next_7_days": len(upcoming_7_days.get("celebrations", [])),
+        "celebrations_next_30_days": len(upcoming_30_days.get("celebrations", [])),
+        "personas_available": list(DOG_PERSONAS.keys())
+    }
+
+
 # ==================== PRODUCT MANAGEMENT ROUTES ====================
 
 @admin_router.get("/products")
