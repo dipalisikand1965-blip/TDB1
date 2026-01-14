@@ -10,6 +10,7 @@ const Navbar = () => {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const moreRef = useRef(null);
   const { getCartCount, setIsCartOpen } = useCart();
+  const { user } = useAuth();
   const location = useLocation();
 
   // Main navigation items (visible in navbar) - condensed for cleaner look
