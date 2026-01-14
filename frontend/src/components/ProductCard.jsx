@@ -63,10 +63,10 @@ const ProductCard = ({ product }) => {
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-2">
-          {/* Rating */}
+        <div className="p-2 sm:p-4 space-y-1 sm:space-y-2">
+          {/* Rating - hide on mobile */}
           {product.rating && (
-            <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-2">
               <div className="flex items-center">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -84,11 +84,11 @@ const ProductCard = ({ product }) => {
           )}
 
           {/* Name */}
-          <h3 className="font-semibold text-gray-900 line-clamp-2 text-sm">{product.name}</h3>
+          <h3 className="font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm">{product.name}</h3>
 
           {/* Price - "From Rs. X" */}
-          <p className="text-base font-bold text-gray-900">
-            From Rs. {minPrice.toLocaleString('en-IN')}
+          <p className="text-sm sm:text-base font-bold text-gray-900">
+            ₹{minPrice.toLocaleString('en-IN')}
           </p>
         </div>
       </div>
