@@ -462,7 +462,7 @@ const ProductManager = ({ credentials }) => {
               </p>
             )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button variant="outline" onClick={fetchProducts} disabled={loading}>
               <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               Refresh
@@ -473,6 +473,13 @@ const ProductManager = ({ credentials }) => {
               ) : (
                 <><Download className="w-4 h-4 mr-2" /> Sync from Shopify</>
               )}
+            </Button>
+            <Button 
+              onClick={() => setShowCreateModal(true)} 
+              className="bg-green-600 hover:bg-green-700"
+              data-testid="create-product-btn"
+            >
+              <Plus className="w-4 h-4 mr-2" /> Add New Product
             </Button>
           </div>
         </div>
