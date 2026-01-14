@@ -280,6 +280,227 @@ class UserLogin(BaseModel):
 class MembershipUpgrade(BaseModel):
     tier: str  # pawsome, premium, vip
 
+
+# ==================== PET PROFILE MODELS ====================
+
+# Dog Persona Types
+DOG_PERSONAS = {
+    "royal": {
+        "name": "The Royal",
+        "emoji": "👑",
+        "description": "CEO energy, expects the finest treats",
+        "message_style": "formal_fancy"
+    },
+    "shadow": {
+        "name": "The Shadow",
+        "emoji": "🌙", 
+        "description": "Your velcro soulmate, follows you everywhere",
+        "message_style": "warm_emotional"
+    },
+    "adventurer": {
+        "name": "The Adventurer",
+        "emoji": "🏔️",
+        "description": "Explorer at heart, always sniffing new trails",
+        "message_style": "exciting_outdoorsy"
+    },
+    "couch_potato": {
+        "name": "The Couch Potato",
+        "emoji": "🛋️",
+        "description": "Netflix buddy, lazy days champion",
+        "message_style": "relaxed_cozy"
+    },
+    "social_butterfly": {
+        "name": "The Social Butterfly",
+        "emoji": "🦋",
+        "description": "Park star, loves making new friends",
+        "message_style": "fun_social"
+    },
+    "foodie": {
+        "name": "The Foodie",
+        "emoji": "🍖",
+        "description": "Lives for treats, food-motivated genius",
+        "message_style": "treat_focused"
+    },
+    "athlete": {
+        "name": "The Athlete",
+        "emoji": "⚡",
+        "description": "Energetic fetch champion, always running",
+        "message_style": "active_energetic"
+    },
+    "mischief_maker": {
+        "name": "The Mischief Maker",
+        "emoji": "😈",
+        "description": "Troublemaker with those innocent eyes",
+        "message_style": "playful_cheeky"
+    }
+}
+
+# Celebration Occasions with Product Collections
+CELEBRATION_OCCASIONS = {
+    "birthday": {
+        "name": "Birthday",
+        "emoji": "🎂",
+        "collection": "cakes",
+        "reminder_days": [7, 1]
+    },
+    "gotcha_day": {
+        "name": "Gotcha Day",
+        "emoji": "🏠",
+        "collection": "hampers",
+        "reminder_days": [7, 1]
+    },
+    "diwali": {
+        "name": "Diwali Pawty",
+        "emoji": "🪔",
+        "collection": "desi-treats",
+        "reminder_days": [14, 7]
+    },
+    "christmas": {
+        "name": "Christmas",
+        "emoji": "🎄",
+        "collection": "hampers",
+        "reminder_days": [14, 7]
+    },
+    "valentines": {
+        "name": "Valentine's Day",
+        "emoji": "❤️",
+        "collection": "treats",
+        "reminder_days": [7, 1]
+    },
+    "easter": {
+        "name": "Easter",
+        "emoji": "🐣",
+        "collection": "treats",
+        "reminder_days": [7, 1]
+    },
+    "holi": {
+        "name": "Holi",
+        "emoji": "🎨",
+        "collection": "desi-treats",
+        "reminder_days": [7, 1]
+    },
+    "halloween": {
+        "name": "Halloween",
+        "emoji": "🎃",
+        "collection": "treats",
+        "reminder_days": [7, 1]
+    },
+    "summer": {
+        "name": "Summer Celebration",
+        "emoji": "☀️",
+        "collection": "frozen-treats",
+        "reminder_days": [7]
+    },
+    "new_year": {
+        "name": "New Year",
+        "emoji": "🎆",
+        "collection": "hampers",
+        "reminder_days": [7, 1]
+    }
+}
+
+
+class PetSoul(BaseModel):
+    """The soul/personality of the pet"""
+    persona: str = Field(description="Dog persona type: royal, shadow, adventurer, etc.")
+    special_move: Optional[str] = Field(default=None, description="Their unique quirky behavior")
+    human_job: Optional[str] = Field(default=None, description="If they had a human job")
+    security_blanket: Optional[str] = Field(default=None, description="Their must-have item")
+    love_language: Optional[str] = Field(default=None, description="How they show love")
+    personality_tag: Optional[str] = Field(default=None, description="e.g., 'The Grumpy Professor'")
+
+
+class PetCelebration(BaseModel):
+    """A celebration date for the pet"""
+    occasion: str = Field(description="Occasion key from CELEBRATION_OCCASIONS")
+    date: str = Field(description="Date in YYYY-MM-DD format or MM-DD for recurring")
+    is_recurring: bool = Field(default=True, description="Repeats yearly")
+    custom_name: Optional[str] = Field(default=None, description="Custom name for occasion")
+    notes: Optional[str] = Field(default=None, description="Special notes for this celebration")
+
+
+class PetPreferences(BaseModel):
+    """Food and treat preferences"""
+    favorite_flavors: List[str] = Field(default_factory=list)
+    allergies: List[str] = Field(default_factory=list)
+    texture_preference: Optional[str] = Field(default=None, description="crunchy, chewy, soft")
+    treat_size: Optional[str] = Field(default=None, description="small, medium, large")
+
+
+class PetProfileCreate(BaseModel):
+    """Create a new pet profile"""
+    # Basic Info
+    name: str = Field(description="Pet's name")
+    breed: Optional[str] = Field(default=None)
+    species: str = Field(default="dog", description="dog, cat, etc.")
+    gender: Optional[str] = Field(default=None, description="male, female, unknown")
+    photo_url: Optional[str] = Field(default=None, description="URL to pet's photo")
+    
+    # Age Info
+    birth_date: Optional[str] = Field(default=None, description="YYYY-MM-DD")
+    gotcha_date: Optional[str] = Field(default=None, description="Adoption date YYYY-MM-DD")
+    age_years: Optional[int] = Field(default=None)
+    age_months: Optional[int] = Field(default=None)
+    
+    # Soul & Personality
+    soul: Optional[PetSoul] = Field(default=None)
+    
+    # Celebrations
+    celebrations: List[PetCelebration] = Field(default_factory=list)
+    
+    # Preferences
+    preferences: Optional[PetPreferences] = Field(default=None)
+    
+    # Owner Info
+    owner_email: Optional[str] = Field(default=None)
+    owner_phone: Optional[str] = Field(default=None)
+    owner_name: Optional[str] = Field(default=None)
+    
+    # Notifications
+    whatsapp_reminders: bool = Field(default=True)
+    email_reminders: bool = Field(default=True)
+
+
+class PetProfileUpdate(BaseModel):
+    """Update pet profile - all fields optional"""
+    name: Optional[str] = None
+    breed: Optional[str] = None
+    species: Optional[str] = None
+    gender: Optional[str] = None
+    photo_url: Optional[str] = None
+    birth_date: Optional[str] = None
+    gotcha_date: Optional[str] = None
+    age_years: Optional[int] = None
+    age_months: Optional[int] = None
+    soul: Optional[PetSoul] = None
+    celebrations: Optional[List[PetCelebration]] = None
+    preferences: Optional[PetPreferences] = None
+    owner_email: Optional[str] = None
+    owner_phone: Optional[str] = None
+    owner_name: Optional[str] = None
+    whatsapp_reminders: Optional[bool] = None
+    email_reminders: Optional[bool] = None
+
+
+class CelebrationReminder(BaseModel):
+    """A scheduled celebration reminder"""
+    pet_id: str
+    pet_name: str
+    owner_name: str
+    owner_phone: Optional[str]
+    owner_email: Optional[str]
+    occasion: str
+    occasion_name: str
+    celebration_date: str
+    reminder_date: str
+    days_until: int
+    persona: str
+    message_style: str
+    favorite_flavors: List[str]
+    recommended_collection: str
+    status: str = "pending"  # pending, sent, failed
+
+
 def hash_password(password: str) -> str:
     """Simple password hashing"""
     return hashlib.sha256(password.encode()).hexdigest()
