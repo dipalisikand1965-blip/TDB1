@@ -2603,6 +2603,21 @@ const Admin = () => {
                         placeholder="Add internal notes..."
                       />
                     </div>
+
+                  </div>
+                  <div className="flex justify-end gap-2 mt-6">
+                    <Button variant="outline" onClick={() => setShowInquiryModal(false)}>Cancel</Button>
+                    <Button className="bg-purple-600" onClick={() => updateFranchiseInquiry(selectedInquiry.id, { status: selectedInquiry.status, notes: selectedInquiry.notes })}>
+                      Save Changes
+                    </Button>
+                  </div>
+                </Card>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Pet Profile Detail Modal */}
       {selectedPetProfile && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
@@ -2924,21 +2939,6 @@ const Admin = () => {
           </Card>
         </div>
       )}
-
-                  </div>
-                  <div className="flex justify-end gap-2 mt-6">
-                    <Button variant="outline" onClick={() => setShowInquiryModal(false)}>Cancel</Button>
-                    <Button className="bg-purple-600" onClick={() => updateFranchiseInquiry(selectedInquiry.id, { status: selectedInquiry.status, notes: selectedInquiry.notes })}>
-                      Save Changes
-                    </Button>
-                  </div>
-                </Card>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
       {/* Chat Detail Modal */}
       {selectedChat && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
