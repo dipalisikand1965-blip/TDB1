@@ -2900,16 +2900,6 @@ async def get_related_products(product_id: str, limit: int = 4):
             treats = await db.products.find(
                 {"category": {"$in": ["treats", "nut-butters", "desi-treats"]}},
                 {"_id": 0}
-@api_router.get("/orders/my-orders")
-async def get_my_orders(current_user: dict = Depends(get_current_user)):
-    """Get orders for the logged-in user"""
-    # Match by email (primary) or phone (if available)
-    query = {"customer.email": current_user["email"]}
-    
-    orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
-    return {"orders": orders}
-
-
             ).limit(remaining).to_list(remaining)
             related_products.extend(treats)
     else:
