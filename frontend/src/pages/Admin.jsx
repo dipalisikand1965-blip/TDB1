@@ -60,6 +60,9 @@ const Admin = () => {
   const [chats, setChats] = useState([]);
   const [customRequests, setCustomRequests] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
+  const [selectedPetProfile, setSelectedPetProfile] = useState(null);
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [filterCity, setFilterCity] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
