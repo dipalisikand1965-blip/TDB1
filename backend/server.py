@@ -2588,7 +2588,346 @@ async def get_order(order_id: str):
     return order
 
 
-# ==================== ADMIN ORDERS ====================
+# ==================== ABANDONED CART SYSTEM ====================
+
+class CartItem(BaseModel):
+    product_id: str
+    name: str
+    price: float
+    quantity: int
+    variant: Optional[str] = None
+    image: Optional[str] = None
+
+class CartSnapshot(BaseModel):
+    session_id: str
+    user_id: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    name: Optional[str] = None
+    items: List[CartItem]
+    subtotal: float
+    
+@api_router.post("/cart/snapshot")
+async def save_cart_snapshot(cart: CartSnapshot):
+    """Save a cart snapshot for abandoned cart tracking"""
+    try:
+        cart_data = cart.model_dump()
+        cart_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+        cart_data["status"] = "active"
+        cart_data["reminders_sent"] = 0
+        
+        # Upsert based on session_id or user_id
+        filter_query = {"session_id": cart.session_id}
+        if cart.user_id:
+            filter_query = {"$or": [{"session_id": cart.session_id}, {"user_id": cart.user_id}]}
+        
+        existing = await db.abandoned_carts.find_one(filter_query)
+        
+        if existing:
+            # Update existing cart
+            await db.abandoned_carts.update_one(
+                {"_id": existing["_id"]},
+                {"$set": {
+                    "items": cart_data["items"],
+                    "subtotal": cart_data["subtotal"],
+                    "updated_at": cart_data["updated_at"],
+                    "email": cart_data.get("email") or existing.get("email"),
+                    "phone": cart_data.get("phone") or existing.get("phone"),
+                    "name": cart_data.get("name") or existing.get("name"),
+                    "status": "active"
+                }}
+            )
+            return {"message": "Cart updated", "id": str(existing["_id"])}
+        else:
+            # Create new cart
+            cart_data["created_at"] = cart_data["updated_at"]
+            cart_data["id"] = f"cart-{uuid.uuid4().hex[:12]}"
+            await db.abandoned_carts.insert_one(cart_data)
+            return {"message": "Cart saved", "id": cart_data["id"]}
+    except Exception as e:
+        logger.error(f"Error saving cart snapshot: {e}")
+        raise HTTPException(status_code=500, detail="Failed to save cart")
+
+
+@api_router.post("/cart/capture-email")
+async def capture_cart_email(session_id: str, email: str, name: Optional[str] = None):
+    """Capture email for abandoned cart recovery"""
+    try:
+        result = await db.abandoned_carts.update_one(
+            {"session_id": session_id},
+            {"$set": {
+                "email": email,
+                "name": name,
+                "email_captured_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        if result.modified_count == 0:
+            # Create new entry for email capture
+            await db.abandoned_carts.insert_one({
+                "id": f"cart-{uuid.uuid4().hex[:12]}",
+                "session_id": session_id,
+                "email": email,
+                "name": name,
+                "items": [],
+                "subtotal": 0,
+                "status": "email_captured",
+                "email_captured_at": datetime.now(timezone.utc).isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "reminders_sent": 0
+            })
+        
+        return {"message": "Email captured", "email": email}
+    except Exception as e:
+        logger.error(f"Error capturing email: {e}")
+        raise HTTPException(status_code=500, detail="Failed to capture email")
+
+
+@api_router.post("/cart/convert/{session_id}")
+async def mark_cart_converted(session_id: str, order_id: str):
+    """Mark a cart as converted (order placed)"""
+    await db.abandoned_carts.update_one(
+        {"session_id": session_id},
+        {"$set": {
+            "status": "converted",
+            "order_id": order_id,
+            "converted_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"message": "Cart marked as converted"}
+
+
+async def check_abandoned_carts():
+    """Check for abandoned carts and send recovery emails"""
+    try:
+        logger.info("Checking abandoned carts...")
+        now = datetime.now(timezone.utc)
+        
+        # Find carts that:
+        # - Have items
+        # - Have email
+        # - Status is active
+        # - Updated more than 1 hour ago
+        one_hour_ago = (now - timedelta(hours=1)).isoformat()
+        twenty_four_hours_ago = (now - timedelta(hours=24)).isoformat()
+        seventy_two_hours_ago = (now - timedelta(hours=72)).isoformat()
+        
+        # Get abandoned carts eligible for reminders
+        abandoned_carts = await db.abandoned_carts.find({
+            "status": "active",
+            "email": {"$exists": True, "$ne": None},
+            "items": {"$exists": True, "$ne": []},
+            "updated_at": {"$lt": one_hour_ago}
+        }).to_list(100)
+        
+        reminders_sent = 0
+        
+        for cart in abandoned_carts:
+            cart_id = str(cart.get("_id"))
+            email = cart.get("email")
+            name = cart.get("name", "there")
+            items = cart.get("items", [])
+            subtotal = cart.get("subtotal", 0)
+            reminders_already_sent = cart.get("reminders_sent", 0)
+            updated_at = cart.get("updated_at", "")
+            
+            # Determine which reminder to send based on timing
+            reminder_type = None
+            
+            if reminders_already_sent == 0 and updated_at < one_hour_ago:
+                reminder_type = "first"  # 1 hour reminder
+            elif reminders_already_sent == 1 and updated_at < twenty_four_hours_ago:
+                reminder_type = "second"  # 24 hour reminder
+            elif reminders_already_sent == 2 and updated_at < seventy_two_hours_ago:
+                reminder_type = "final"  # 72 hour final reminder with discount
+            
+            if reminder_type and RESEND_API_KEY:
+                success = await send_abandoned_cart_email(
+                    to_email=email,
+                    name=name,
+                    items=items,
+                    subtotal=subtotal,
+                    reminder_type=reminder_type,
+                    cart_id=cart.get("id", cart_id)
+                )
+                
+                if success:
+                    reminders_sent += 1
+                    await db.abandoned_carts.update_one(
+                        {"_id": cart["_id"]},
+                        {
+                            "$inc": {"reminders_sent": 1},
+                            "$set": {f"reminder_{reminder_type}_sent_at": now.isoformat()}
+                        }
+                    )
+                    
+                    # Log the reminder
+                    await db.abandoned_cart_reminders.insert_one({
+                        "cart_id": cart.get("id", cart_id),
+                        "email": email,
+                        "reminder_type": reminder_type,
+                        "items_count": len(items),
+                        "subtotal": subtotal,
+                        "sent_at": now.isoformat()
+                    })
+        
+        logger.info(f"Abandoned cart check complete. Sent {reminders_sent} reminders.")
+        return reminders_sent
+        
+    except Exception as e:
+        logger.error(f"Error checking abandoned carts: {e}")
+        return 0
+
+
+async def send_abandoned_cart_email(to_email: str, name: str, items: list, 
+                                     subtotal: float, reminder_type: str, cart_id: str) -> bool:
+    """Send abandoned cart recovery email"""
+    try:
+        # Subject lines based on reminder type
+        subjects = {
+            "first": "🛒 You left something behind at The Doggy Bakery!",
+            "second": "🐾 Your pup is still waiting! Complete your order",
+            "final": "🎁 Final reminder + 10% OFF your cart!"
+        }
+        
+        subject = subjects.get(reminder_type, subjects["first"])
+        
+        # Build items HTML
+        items_html = ""
+        for item in items[:5]:  # Show max 5 items
+            items_html += f'''
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        {f'<img src="{item.get("image")}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">' if item.get("image") else ''}
+                        <div>
+                            <strong>{item.get("name", "Product")}</strong>
+                            {f'<br><small style="color: #6b7280;">{item.get("variant")}</small>' if item.get("variant") else ''}
+                        </div>
+                    </div>
+                </td>
+                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: center;">
+                    {item.get("quantity", 1)}
+                </td>
+                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right;">
+                    ₹{item.get("price", 0):,.0f}
+                </td>
+            </tr>
+            '''
+        
+        # Discount code for final reminder
+        discount_section = ""
+        if reminder_type == "final":
+            discount_section = '''
+            <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 20px; border-radius: 12px; margin: 20px 0; text-align: center;">
+                <p style="margin: 0; font-size: 18px; font-weight: bold; color: #92400e;">🎉 Special Offer Just For You!</p>
+                <p style="margin: 10px 0 0 0; font-size: 24px; font-weight: bold; color: #78350f;">Use code: <span style="background: #fff; padding: 5px 15px; border-radius: 8px; border: 2px dashed #f59e0b;">COMEBACK10</span></p>
+                <p style="margin: 10px 0 0 0; color: #92400e;">Get 10% off your order - expires in 24 hours!</p>
+            </div>
+            '''
+        
+        # Urgency messages based on type
+        urgency_messages = {
+            "first": "Your carefully selected treats are waiting! Don't let them slip away.",
+            "second": "Your furry friend deserves these goodies! We're holding your cart for you.",
+            "final": "This is your last chance to grab these treats with a special discount!"
+        }
+        
+        html_content = f'''
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }}
+                .container {{ max-width: 600px; margin: 0 auto; }}
+                .header {{ background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%); color: white; padding: 30px; text-align: center; }}
+                .content {{ background: #fff; padding: 30px; }}
+                .cta-button {{ display: inline-block; background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%); color: white; padding: 15px 40px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 16px; }}
+                .footer {{ background: #f9fafb; padding: 20px; text-align: center; font-size: 12px; color: #6b7280; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1 style="margin: 0;">🐾 The Doggy Bakery</h1>
+                    <p style="margin: 10px 0 0 0; opacity: 0.9;">Don't forget your treats!</p>
+                </div>
+                <div class="content">
+                    <h2 style="color: #9333ea;">Hi {name}! 👋</h2>
+                    
+                    <p>{urgency_messages.get(reminder_type, urgency_messages["first"])}</p>
+                    
+                    {discount_section}
+                    
+                    <h3 style="color: #9333ea;">Your Cart:</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #f9fafb;">
+                                <th style="padding: 10px; text-align: left;">Product</th>
+                                <th style="padding: 10px; text-align: center;">Qty</th>
+                                <th style="padding: 10px; text-align: right;">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {items_html}
+                        </tbody>
+                        <tfoot>
+                            <tr style="font-weight: bold;">
+                                <td colspan="2" style="padding: 15px; text-align: right;">Subtotal:</td>
+                                <td style="padding: 15px; text-align: right; color: #9333ea; font-size: 18px;">₹{subtotal:,.0f}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://thedoggycompany.in/checkout" class="cta-button">
+                            Complete Your Order 🛒
+                        </a>
+                    </div>
+                    
+                    <p style="color: #6b7280; font-size: 14px;">
+                        Questions? Chat with Mira, our Pet Concierge, or contact us at woof@thedoggybakery.com
+                    </p>
+                </div>
+                <div class="footer">
+                    <p>The Doggy Bakery | Baking happiness for your furry friends</p>
+                    <p>📞 +91 96631 85747 | 📧 woof@thedoggybakery.com</p>
+                    <p style="font-size: 11px; color: #9ca3af;">
+                        <a href="https://thedoggycompany.in/unsubscribe?cart={cart_id}" style="color: #9333ea;">Unsubscribe from cart reminders</a>
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        '''
+        
+        params = {
+            "from": f"The Doggy Bakery <{SENDER_EMAIL}>",
+            "to": [to_email],
+            "subject": subject,
+            "html": html_content
+        }
+        
+        email_response = resend.Emails.send(params)
+        logger.info(f"Abandoned cart email ({reminder_type}) sent to {to_email}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Failed to send abandoned cart email: {e}")
+        return False
+
+
+# Add abandoned cart checker to scheduler
+def setup_abandoned_cart_scheduler():
+    """Set up the abandoned cart check job"""
+    scheduler.add_job(
+        check_abandoned_carts,
+        CronTrigger(minute='*/30'),  # Run every 30 minutes
+        id="abandoned_cart_check",
+        replace_existing=True
+    )
+    logger.info("Abandoned cart scheduler added (runs every 30 minutes)")
 
 @admin_router.get("/orders")
 async def get_all_orders(
