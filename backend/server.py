@@ -3956,7 +3956,13 @@ async def list_pet_profiles(
     limit: int = 50,
     skip: int = 0
 ):
-    """List pet profiles, optionally filtered by owner"""
+    """List pet profiles, filtered by owner"""
+    if not (owner_email or owner_phone):
+        raise HTTPException(
+            status_code=400, 
+            detail="To protect pet privacy, you must provide an owner_email or owner_phone to view profiles."
+        )
+    
     query = {}
     if owner_email:
         query["owner_email"] = owner_email
