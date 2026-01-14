@@ -209,9 +209,11 @@ const PetProfile = ({ isEmbed = false }) => {
 
       const payload = {
         name: formData.name,
+        nicknames: formData.nicknames || '',
         breed: formData.breed,
         species: formData.species,
         gender: formData.gender,
+        weight: formData.weight ? parseFloat(formData.weight) : null,
         photo_url: formData.photo_url,
         birth_date: formData.birth_date,
         gotcha_date: formData.gotcha_date,
