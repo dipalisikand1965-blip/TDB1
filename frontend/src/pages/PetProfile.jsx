@@ -1005,7 +1005,7 @@ const PetProfile = ({ isEmbed = false }) => {
           {step === 6 && renderSuccess()}
 
           {/* Navigation Buttons */}
-          {step < 6 && (
+          {step > 0 && step < 6 && (
             <div className="flex justify-between mt-8 pt-6 border-t">
               <Button
                 variant="outline"
