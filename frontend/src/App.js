@@ -23,6 +23,7 @@ import Streaties from "./pages/Streaties";
 import Franchise from "./pages/Franchise";
 import Contact from "./pages/Contact";
 import PetProfile from "./pages/PetProfile";
+import MyPets from "./pages/MyPets";
 
 function App() {
   return (
