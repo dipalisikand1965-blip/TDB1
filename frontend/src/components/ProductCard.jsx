@@ -86,9 +86,9 @@ const ProductCard = ({ product }) => {
           {/* Name */}
           <h3 className="font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm">{product.name}</h3>
 
-          {/* Price - "From Rs. X" */}
+          {/* Price - "From ₹X" */}
           <p className="text-sm sm:text-base font-bold text-gray-900">
-            ₹{minPrice.toLocaleString('en-IN')}
+            From ₹{minPrice.toLocaleString('en-IN')}
           </p>
         </div>
       </div>
