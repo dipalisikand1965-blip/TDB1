@@ -1615,39 +1615,97 @@ const Admin = () => {
         {activeTab === 'faqs' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-900">Manage FAQs</h3>
-              <Button className="bg-purple-600 hover:bg-purple-700">
+              <h3 className="text-xl font-bold text-gray-900">Manage FAQs ({faqs.length})</h3>
+              <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => {
+                setEditingFaq({ id: `new-${Date.now()}`, question: '', answer: '', category: 'General', order: faqs.length, is_featured: false });
+                setShowFaqModal(true);
+              }}>
                 <Plus className="w-4 h-4 mr-2" />Add FAQ
               </Button>
             </div>
             
+            {/* Category Summary */}
+            {faqCategories.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {faqCategories.map(cat => (
+                  <Badge key={cat} variant="outline">{cat} ({faqs.filter(f => f.category === cat).length})</Badge>
+                ))}
+              </div>
+            )}
+            
             <Card className="p-6">
-              <p className="text-gray-600 mb-6">Manage frequently asked questions displayed on the FAQs page.</p>
-              
               <div className="space-y-4">
-                {[
-                  { category: 'Orders & Delivery', count: 4 },
-                  { category: 'Products & Ingredients', count: 4 },
-                  { category: 'Customization', count: 3 },
-                  { category: 'Payments & Refunds', count: 3 },
-                ].map((cat, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <h4 className="font-semibold text-gray-900">{cat.category}</h4>
-                      <p className="text-sm text-gray-500">{cat.count} questions</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        <Edit className="w-3 h-3 mr-1" />Edit Category
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Plus className="w-3 h-3 mr-1" />Add Question
-                      </Button>
+                {faqs.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No FAQs yet. Add your first one!</p>
+                ) : faqs.map((faq) => (
+                  <div key={faq.id} className="p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className="text-xs">{faq.category}</Badge>
+                          {faq.is_featured && <Badge className="bg-yellow-500 text-xs">Featured</Badge>}
+                        </div>
+                        <h4 className="font-semibold text-gray-900 mb-1">{faq.question}</h4>
+                        <p className="text-sm text-gray-600 line-clamp-2">{faq.answer}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" onClick={() => { setEditingFaq(faq); setShowFaqModal(true); }}>
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-red-500" onClick={() => deleteFaq(faq.id)}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             </Card>
+            
+            {/* FAQ Modal */}
+            {showFaqModal && editingFaq && (
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                <Card className="w-full max-w-lg bg-white p-6">
+                  <h3 className="text-lg font-bold mb-4">{editingFaq.id?.startsWith('new-') ? 'Add' : 'Edit'} FAQ</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">Category</label>
+                      <Input value={editingFaq.category || 'General'} onChange={(e) => setEditingFaq({...editingFaq, category: e.target.value})} placeholder="e.g., Orders & Delivery" list="faq-categories" />
+                      <datalist id="faq-categories">
+                        {faqCategories.map(cat => <option key={cat} value={cat} />)}
+                        <option value="Orders & Delivery" />
+                        <option value="Products & Ingredients" />
+                        <option value="Customization" />
+                        <option value="Payments & Refunds" />
+                        <option value="General" />
+                      </datalist>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Question *</label>
+                      <Input value={editingFaq.question || ''} onChange={(e) => setEditingFaq({...editingFaq, question: e.target.value})} placeholder="What is the question?" />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Answer *</label>
+                      <textarea className="w-full border rounded-md p-2 h-32" value={editingFaq.answer || ''} onChange={(e) => setEditingFaq({...editingFaq, answer: e.target.value})} placeholder="The answer to the question..." />
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="flex-1">
+                        <label className="text-sm font-medium">Display Order</label>
+                        <Input type="number" value={editingFaq.order || 0} onChange={(e) => setEditingFaq({...editingFaq, order: parseInt(e.target.value) || 0})} />
+                      </div>
+                      <label className="flex items-center gap-2 mt-6">
+                        <input type="checkbox" checked={editingFaq.is_featured || false} onChange={(e) => setEditingFaq({...editingFaq, is_featured: e.target.checked})} />
+                        <span className="text-sm">Featured</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 mt-6">
+                    <Button variant="outline" onClick={() => { setShowFaqModal(false); setEditingFaq(null); }}>Cancel</Button>
+                    <Button className="bg-purple-600" onClick={() => saveFaq(editingFaq)} disabled={!editingFaq.question || !editingFaq.answer}>Save</Button>
+                  </div>
+                </Card>
+              </div>
+            )}
           </div>
         )}
 
