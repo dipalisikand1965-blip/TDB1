@@ -438,8 +438,25 @@ async def lifespan(app: FastAPI):
     # Start the auto-sync background task
     sync_task = asyncio.create_task(auto_sync_products())
     logger.info("Auto-sync background task started")
+    
+    # Start the celebration reminder scheduler
+    # Runs daily at 9:00 AM IST (3:30 AM UTC)
+    scheduler.add_job(
+        check_upcoming_celebrations,
+        CronTrigger(hour=3, minute=30),  # 9:00 AM IST = 3:30 AM UTC
+        id="celebration_reminders",
+        replace_existing=True
+    )
+    scheduler.start()
+    logger.info("Celebration reminder scheduler started (daily at 9:00 AM IST)")
+    
     yield
-    # Cancel the task on shutdown
+    
+    # Shutdown scheduler
+    scheduler.shutdown(wait=False)
+    logger.info("Celebration reminder scheduler stopped")
+    
+    # Cancel the sync task on shutdown
     if sync_task:
         sync_task.cancel()
         try:
