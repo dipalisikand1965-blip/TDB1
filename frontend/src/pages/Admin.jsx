@@ -2054,7 +2054,11 @@ const Admin = () => {
                 {petProfiles.length === 0 ? (
                   <p className="text-gray-500 text-center py-8">No pet profiles yet. Customers can create them via Pet Soul.</p>
                 ) : petProfiles.map((pet) => (
-                  <div key={pet.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                  <div 
+                    key={pet.id} 
+                    className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-purple-50 cursor-pointer transition-colors border border-transparent hover:border-purple-200"
+                    onClick={() => setSelectedPetProfile(pet)}
+                  >
                     <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden">
                       {pet.photo_url ? (
                         <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
