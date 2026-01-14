@@ -48,23 +48,22 @@ const MiraAI = () => {
             <p className="text-xs opacity-80">Super Concierge®</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-white hover:bg-white/20 h-8 w-8"
+        <div className="flex items-center gap-1">
+          <button
+            className="text-white hover:bg-white/20 h-8 w-8 rounded-full flex items-center justify-center transition-colors"
             onClick={() => setIsMinimized(!isMinimized)}
+            title={isMinimized ? "Expand" : "Minimize"}
           >
             {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-white hover:bg-white/20 h-8 w-8"
+          </button>
+          <button
+            className="text-white hover:bg-red-500 h-8 w-8 rounded-full flex items-center justify-center transition-colors"
             onClick={() => setIsOpen(false)}
+            title="Close"
+            data-testid="mira-close-btn"
           >
-            <X className="w-4 h-4" />
-          </Button>
+            <X className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
