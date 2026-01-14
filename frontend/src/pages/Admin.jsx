@@ -1326,8 +1326,11 @@ const Admin = () => {
                     <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.orderId, 'delivered')}>
                       Delivered
                     </Button>
-                    <Button size="sm" variant="outline" className="text-red-600" onClick={() => updateOrderStatus(order.orderId, 'cancelled')}>
+                    <Button size="sm" variant="outline" className="text-red-600" onClick={(e) => { e.stopPropagation(); updateOrderStatus(order.orderId, 'cancelled'); }}>
                       Cancel
+                    </Button>
+                    <Button size="sm" onClick={() => setSelectedOrderDetails(order)}>
+                      View Details
                     </Button>
                   </div>
                 </Card>
