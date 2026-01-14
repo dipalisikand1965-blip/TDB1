@@ -762,9 +762,11 @@ class PetProfileCreate(BaseModel):
     """Create a new pet profile"""
     # Basic Info
     name: str = Field(description="Pet's name")
+    nicknames: Optional[str] = Field(default=None, description="Pet's nicknames")
     breed: Optional[str] = Field(default=None)
     species: str = Field(default="dog", description="dog, cat, etc.")
     gender: Optional[str] = Field(default=None, description="male, female, unknown")
+    weight: Optional[float] = Field(default=None, description="Weight in kg")
     photo_url: Optional[str] = Field(default=None, description="URL to pet's photo")
     
     # Age Info
