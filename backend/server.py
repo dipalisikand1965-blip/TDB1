@@ -2178,6 +2178,41 @@ async def admin_get_pet_stats(username: str = Depends(verify_admin)):
     }
 
 
+@admin_router.post("/celebrations/trigger-check")
+async def admin_trigger_celebration_check(username: str = Depends(verify_admin)):
+    """Manually trigger the celebration reminder check"""
+    try:
+        reminders_sent = await check_upcoming_celebrations()
+        return {
+            "message": "Celebration check completed",
+            "reminders_sent": reminders_sent,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Check failed: {str(e)}")
+
+
+@admin_router.get("/celebrations/reminders-log")
+async def admin_get_reminders_log(
+    username: str = Depends(verify_admin),
+    limit: int = 50,
+    skip: int = 0
+):
+    """Get log of sent celebration reminders"""
+    reminders = await db.celebration_reminders.find(
+        {}, {"_id": 0}
+    ).sort("sent_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    total = await db.celebration_reminders.count_documents({})
+    
+    return {
+        "reminders": reminders,
+        "total": total,
+        "limit": limit,
+        "skip": skip
+    }
+
+
 # ==================== PRODUCT MANAGEMENT ROUTES ====================
 
 @admin_router.get("/products")
