@@ -2063,6 +2063,12 @@ const Admin = () => {
                       <div className="flex items-center gap-2 flex-wrap">
                         <h4 className="font-semibold text-gray-900">{pet.name}</h4>
                         {pet.soul?.persona && <Badge variant="outline" className="text-xs">{pet.soul.persona}</Badge>}
+                        {pet.source === 'shopify_embed' && (
+                          <Badge className="bg-green-100 text-green-700 text-xs">Shopify</Badge>
+                        )}
+                        {pet.source === 'direct' && (
+                          <Badge className="bg-blue-100 text-blue-700 text-xs">Direct</Badge>
+                        )}
                       </div>
                       <p className="text-sm text-gray-500">{pet.breed} • {pet.gender}</p>
                       <p className="text-xs text-gray-400">Owner: {pet.owner_name || pet.owner_email || 'Unknown'}</p>
