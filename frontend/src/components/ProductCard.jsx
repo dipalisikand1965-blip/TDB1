@@ -41,9 +41,10 @@ const ProductCard = ({ product }) => {
         {/* Image */}
         <div className="relative overflow-hidden aspect-square">
           <img
-            src={product.image}
+            src={productImage}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => { e.target.src = PLACEHOLDER_IMAGE; }}
           />
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
