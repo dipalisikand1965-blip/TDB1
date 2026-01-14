@@ -996,6 +996,7 @@ const PetProfile = ({ isEmbed = false }) => {
         )}
 
         <Card className="p-6 md:p-8 shadow-xl">
+          {step === 0 && renderMyPets()}
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
