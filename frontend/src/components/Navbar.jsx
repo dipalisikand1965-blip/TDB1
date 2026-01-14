@@ -206,13 +206,23 @@ const Navbar = () => {
                 </Link>
               ))}
               
+              {/* Pet Soul Button in Mobile */}
+              <Link
+                to="/my-pets"
+                onClick={() => setIsMenuOpen(false)}
+                className="block w-full mt-4 px-4 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg text-base font-medium text-center"
+                data-testid="pet-soul-mobile-btn"
+              >
+                🐾 Pet Soul - Create Pet Profile
+              </Link>
+              
               {/* Mira AI Button in Mobile */}
               <button
                 onClick={() => {
                   setIsMenuOpen(false);
                   openMiraAI();
                 }}
-                className="w-full mt-4 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-base font-medium flex items-center justify-center gap-2"
+                className="w-full mt-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-base font-medium flex items-center justify-center gap-2"
               >
                 <Sparkles className="w-5 h-5" />
                 Chat with Mira AI
