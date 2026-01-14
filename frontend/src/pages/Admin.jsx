@@ -670,6 +670,9 @@ const Admin = () => {
       else if (activeTab === 'content') fetchSiteContent();
       else if (activeTab === 'orders') fetchOrders();
       else if (activeTab === 'members') fetchMembers();
+      else if (activeTab === 'faqs') fetchFaqs();
+      else if (activeTab === 'testimonials') fetchTestimonials();
+      else if (activeTab === 'insights') fetchBlogPosts();
     }
   }, [isAuthenticated, activeTab, filterCity, filterStatus, productFilter, orderFilter]);
 
