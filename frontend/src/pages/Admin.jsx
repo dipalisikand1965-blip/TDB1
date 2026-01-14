@@ -93,6 +93,22 @@ const Admin = () => {
   const [chatbaseChats, setChatbaseChats] = useState([]);
   const [syncingChatbase, setSyncingChatbase] = useState(false);
   const [expandedChat, setExpandedChat] = useState(null);
+  
+  // FAQs
+  const [faqs, setFaqs] = useState([]);
+  const [faqCategories, setFaqCategories] = useState([]);
+  const [editingFaq, setEditingFaq] = useState(null);
+  const [showFaqModal, setShowFaqModal] = useState(false);
+  
+  // Testimonials
+  const [testimonials, setTestimonials] = useState([]);
+  const [editingTestimonial, setEditingTestimonial] = useState(null);
+  const [showTestimonialModal, setShowTestimonialModal] = useState(false);
+  
+  // Blog Posts
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [editingPost, setEditingPost] = useState(null);
+  const [showPostModal, setShowPostModal] = useState(false);
 
   // Check for stored auth
   useEffect(() => {
