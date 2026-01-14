@@ -3981,19 +3981,30 @@ async def register_user(user: UserRegister):
 
 @api_router.post("/auth/login")
 async def login_user(user: UserLogin):
-    """Login user"""
+    """Login user and return JWT"""
     db_user = await db.users.find_one({"email": user.email}, {"_id": 0})
     if not db_user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
-    if not verify_password(user.password, db_user["password_hash"]):
+    # Use the secure verification (handles both legacy SHA256 and new Bcrypt)
+    if not verify_password_secure(user.password, db_user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Update hash to bcrypt if it was legacy
+    if not db_user["password_hash"].startswith("$2b$"):
+        new_hash = get_password_hash_secure(user.password)
+        await db.users.update_one({"email": user.email}, {"$set": {"password_hash": new_hash}})
     
     # Get membership access info
     access = await check_mira_access(user.email)
     
+    # Create JWT
+    access_token = create_access_token(data={"sub": user.email, "role": "user"})
+    
     return {
         "message": "Login successful",
+        "access_token": access_token,
+        "token_type": "bearer",
         "user": {
             "id": db_user["id"],
             "email": db_user["email"],
