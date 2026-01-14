@@ -1,13 +1,15 @@
-import React from "react";
-import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { CartProvider } from "./context/CartContext";
+import { Toaster } from "./components/ui/toaster";
+
+// Components
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import CartSidebar from "./components/CartSidebar";
 import MiraAI from "./components/MiraAI";
-import { Toaster } from "./components/ui/toaster";
+
+// Pages
 import Home from "./pages/Home";
 import ProductListing from "./pages/ProductListing";
 import CustomCakeDesigner from "./pages/CustomCakeDesigner";
@@ -26,37 +28,32 @@ import PetProfile from "./pages/PetProfile";
 import MyPets from "./pages/MyPets";
 import PetSoulEmbed from "./pages/PetSoulEmbed";
 
-// Layout component for embed pages (no navbar/footer)
-const EmbedLayout = ({ children }) => (
-  <div className="embed-layout">{children}</div>
-);
-
 function App() {
   return (
     <HelmetProvider>
-    <CartProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Embed routes - NO navbar */}
-          <Route path="/pet-soul-embed" element={<EmbedLayout><PetSoulEmbed /></EmbedLayout>} />
-          
-          {/* Main app routes - WITH navbar */}
-          <Route path="/*" element={<MainLayout />} />
-        </Routes>
-        <MiraAI />
-      </BrowserRouter>
-    </CartProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Embed routes - NO navbar/footer for Shopify integration */}
+            <Route path="/pet-soul-embed" element={<PetSoulEmbed />} />
+            
+            {/* Main app routes - WITH navbar */}
+            <Route path="/*" element={<MainLayout />} />
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
     </HelmetProvider>
   );
 }
 
-// Main layout with navbar
+// Main layout with navbar, footer, cart, etc.
 function MainLayout() {
   return (
     <div className="App">
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        
         {/* Main Categories */}
         <Route path="/cakes" element={<ProductListing category="cakes" />} />
         <Route path="/mini-cakes" element={<ProductListing category="mini-cakes" />} />
@@ -92,29 +89,26 @@ function MainLayout() {
         <Route path="/pet-profile" element={<PetProfile />} />
         <Route path="/my-pets" element={<MyPets />} />
         <Route path="/pets" element={<MyPets />} />
-            
-            {/* Policy Pages */}
-            <Route path="/policies" element={<Policies />} />
-            <Route path="/refund-policy" element={<Policies />} />
-            <Route path="/privacy-policy" element={<Policies />} />
-            <Route path="/terms-of-service" element={<Policies />} />
-            <Route path="/shipping-policy" element={<Policies />} />
-            
-            {/* New Pages */}
-            <Route path="/faqs" element={<FAQs />} />
-            <Route path="/insights" element={<Insights />} />
-            <Route path="/streaties" element={<Streaties />} />
-            <Route path="/franchise" element={<Franchise />} />
-            <Route path="/contact" element={<Contact />} />
-          </Routes>
-          <Footer />
-          <CartSidebar />
-          <MiraAI />
-          <Toaster />
-        </div>
-      </BrowserRouter>
-    </CartProvider>
-    </HelmetProvider>
+        
+        {/* Policy Pages */}
+        <Route path="/policies" element={<Policies />} />
+        <Route path="/refund-policy" element={<Policies />} />
+        <Route path="/privacy-policy" element={<Policies />} />
+        <Route path="/terms-of-service" element={<Policies />} />
+        <Route path="/shipping-policy" element={<Policies />} />
+        
+        {/* Content Pages */}
+        <Route path="/faqs" element={<FAQs />} />
+        <Route path="/insights" element={<Insights />} />
+        <Route path="/streaties" element={<Streaties />} />
+        <Route path="/franchise" element={<Franchise />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+      <Footer />
+      <CartSidebar />
+      <MiraAI />
+      <Toaster />
+    </div>
   );
 }
 
