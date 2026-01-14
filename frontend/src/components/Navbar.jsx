@@ -89,8 +89,11 @@ const Navbar = () => {
                   className={`px-3 py-2 rounded-full text-sm font-medium transition-all ${
                     isActive(item.path)
                       ? 'bg-purple-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      : item.highlight 
+                        ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600'
+                        : 'text-gray-700 hover:bg-gray-100'
                   }`}
+                  data-testid={item.highlight ? 'pet-soul-nav-btn' : undefined}
                 >
                   {item.name}
                 </Link>
