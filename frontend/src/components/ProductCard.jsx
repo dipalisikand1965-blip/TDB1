@@ -13,6 +13,10 @@ import { format } from 'date-fns';
 const ProductCard = ({ product }) => {
   const [showModal, setShowModal] = useState(false);
   
+  // Fallback placeholder image for products without images
+  const PLACEHOLDER_IMAGE = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
+  const productImage = product.image && product.image.trim() !== '' ? product.image : PLACEHOLDER_IMAGE;
+  
   // Calculate minimum price for "From Rs. X" display
   const getMinPrice = () => {
     if (product.minPrice) return product.minPrice;
