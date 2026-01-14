@@ -3361,6 +3361,352 @@ async def update_member(user_id: str, updates: dict, username: str = Depends(ver
     return {"message": "Member updated"}
 
 
+# ==================== LOYALTY POINTS SYSTEM ====================
+
+# Points configuration
+POINTS_PER_RUPEE = 1  # 1 point per ₹10 spent = 0.1 points per rupee
+POINTS_REDEMPTION_VALUE = 0.5  # 1 point = ₹0.50 discount
+MEMBERSHIP_POINT_MULTIPLIERS = {
+    "free": 1.0,
+    "pawsome": 1.5,
+    "premium": 2.0,
+    "vip": 3.0
+}
+
+@api_router.get("/loyalty/balance")
+async def get_loyalty_balance(user_id: str):
+    """Get user's loyalty points balance"""
+    user = await db.users.find_one(
+        {"$or": [{"id": user_id}, {"email": user_id}]},
+        {"_id": 0, "loyalty_points": 1, "total_points_earned": 1, "total_points_redeemed": 1, "membership_tier": 1}
+    )
+    
+    if not user:
+        return {"points": 0, "total_earned": 0, "total_redeemed": 0, "tier": "free", "multiplier": 1.0}
+    
+    tier = user.get("membership_tier", "free")
+    return {
+        "points": user.get("loyalty_points", 0),
+        "total_earned": user.get("total_points_earned", 0),
+        "total_redeemed": user.get("total_points_redeemed", 0),
+        "tier": tier,
+        "multiplier": MEMBERSHIP_POINT_MULTIPLIERS.get(tier, 1.0),
+        "redemption_value": POINTS_REDEMPTION_VALUE
+    }
+
+
+@api_router.post("/loyalty/earn")
+async def earn_loyalty_points(user_id: str, order_total: float, order_id: str):
+    """Award loyalty points for a purchase"""
+    user = await db.users.find_one({"$or": [{"id": user_id}, {"email": user_id}]})
+    
+    if not user:
+        return {"points_earned": 0, "message": "User not found"}
+    
+    tier = user.get("membership_tier", "free")
+    multiplier = MEMBERSHIP_POINT_MULTIPLIERS.get(tier, 1.0)
+    
+    # Calculate points: (order_total / 10) * multiplier
+    base_points = int(order_total / 10)
+    points_earned = int(base_points * multiplier)
+    
+    # Update user's points
+    await db.users.update_one(
+        {"$or": [{"id": user_id}, {"email": user_id}]},
+        {
+            "$inc": {
+                "loyalty_points": points_earned,
+                "total_points_earned": points_earned
+            }
+        }
+    )
+    
+    # Log the transaction
+    await db.loyalty_transactions.insert_one({
+        "id": f"lpt-{uuid.uuid4().hex[:12]}",
+        "user_id": user_id,
+        "order_id": order_id,
+        "type": "earn",
+        "points": points_earned,
+        "order_total": order_total,
+        "multiplier": multiplier,
+        "tier": tier,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {
+        "points_earned": points_earned,
+        "base_points": base_points,
+        "multiplier": multiplier,
+        "new_balance": user.get("loyalty_points", 0) + points_earned
+    }
+
+
+@api_router.post("/loyalty/redeem")
+async def redeem_loyalty_points(user_id: str, points_to_redeem: int):
+    """Redeem loyalty points for discount"""
+    user = await db.users.find_one({"$or": [{"id": user_id}, {"email": user_id}]})
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    current_points = user.get("loyalty_points", 0)
+    
+    if points_to_redeem > current_points:
+        raise HTTPException(status_code=400, detail=f"Insufficient points. You have {current_points} points.")
+    
+    if points_to_redeem < 100:
+        raise HTTPException(status_code=400, detail="Minimum 100 points required for redemption")
+    
+    # Calculate discount value
+    discount_value = points_to_redeem * POINTS_REDEMPTION_VALUE
+    
+    # Deduct points
+    await db.users.update_one(
+        {"$or": [{"id": user_id}, {"email": user_id}]},
+        {
+            "$inc": {
+                "loyalty_points": -points_to_redeem,
+                "total_points_redeemed": points_to_redeem
+            }
+        }
+    )
+    
+    # Log the transaction
+    await db.loyalty_transactions.insert_one({
+        "id": f"lpt-{uuid.uuid4().hex[:12]}",
+        "user_id": user_id,
+        "type": "redeem",
+        "points": -points_to_redeem,
+        "discount_value": discount_value,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {
+        "points_redeemed": points_to_redeem,
+        "discount_value": discount_value,
+        "new_balance": current_points - points_to_redeem
+    }
+
+
+@admin_router.get("/loyalty/stats")
+async def get_loyalty_stats(username: str = Depends(verify_admin)):
+    """Get loyalty program statistics"""
+    # Get all users with points
+    users_with_points = await db.users.find(
+        {"loyalty_points": {"$gt": 0}},
+        {"_id": 0, "name": 1, "email": 1, "loyalty_points": 1, "total_points_earned": 1, "membership_tier": 1}
+    ).sort("loyalty_points", -1).to_list(100)
+    
+    # Calculate totals
+    total_points_in_circulation = sum(u.get("loyalty_points", 0) for u in users_with_points)
+    total_points_ever_earned = await db.users.aggregate([
+        {"$group": {"_id": None, "total": {"$sum": "$total_points_earned"}}}
+    ]).to_list(1)
+    total_earned = total_points_ever_earned[0]["total"] if total_points_ever_earned else 0
+    
+    # Recent transactions
+    recent_transactions = await db.loyalty_transactions.find(
+        {}, {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    
+    return {
+        "total_points_in_circulation": total_points_in_circulation,
+        "total_points_ever_earned": total_earned,
+        "potential_liability": total_points_in_circulation * POINTS_REDEMPTION_VALUE,
+        "users_with_points": len(users_with_points),
+        "top_users": users_with_points[:20],
+        "recent_transactions": recent_transactions,
+        "config": {
+            "points_per_10_rupees": 1,
+            "redemption_value": POINTS_REDEMPTION_VALUE,
+            "multipliers": MEMBERSHIP_POINT_MULTIPLIERS
+        }
+    }
+
+
+@admin_router.post("/loyalty/adjust")
+async def adjust_user_points(user_id: str, points: int, reason: str, username: str = Depends(verify_admin)):
+    """Manually adjust a user's loyalty points (admin only)"""
+    user = await db.users.find_one({"$or": [{"id": user_id}, {"email": user_id}]})
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    await db.users.update_one(
+        {"$or": [{"id": user_id}, {"email": user_id}]},
+        {"$inc": {"loyalty_points": points}}
+    )
+    
+    await db.loyalty_transactions.insert_one({
+        "id": f"lpt-{uuid.uuid4().hex[:12]}",
+        "user_id": user_id,
+        "type": "adjustment",
+        "points": points,
+        "reason": reason,
+        "adjusted_by": username,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {"message": f"Adjusted {points} points for user", "new_balance": user.get("loyalty_points", 0) + points}
+
+
+# ==================== DISCOUNT CODES SYSTEM ====================
+
+@admin_router.get("/discount-codes")
+async def get_all_discount_codes(username: str = Depends(verify_admin)):
+    """Get all discount codes"""
+    codes = await db.discount_codes.find({}, {"_id": 0}).sort("created_at", -1).to_list(500)
+    
+    active_count = sum(1 for c in codes if c.get("is_active", True))
+    total_uses = sum(c.get("times_used", 0) for c in codes)
+    
+    return {
+        "codes": codes,
+        "total": len(codes),
+        "active": active_count,
+        "total_uses": total_uses
+    }
+
+
+@admin_router.post("/discount-codes")
+async def create_discount_code(code_data: dict, username: str = Depends(verify_admin)):
+    """Create a new discount code"""
+    code = code_data.get("code", "").upper().strip()
+    
+    if not code:
+        raise HTTPException(status_code=400, detail="Code is required")
+    
+    # Check if code already exists
+    existing = await db.discount_codes.find_one({"code": code})
+    if existing:
+        raise HTTPException(status_code=400, detail="Code already exists")
+    
+    discount_code = {
+        "id": f"disc-{uuid.uuid4().hex[:8]}",
+        "code": code,
+        "type": code_data.get("type", "percentage"),  # percentage or fixed
+        "value": float(code_data.get("value", 10)),  # 10% or ₹10
+        "min_order": float(code_data.get("min_order", 0)),
+        "max_discount": float(code_data.get("max_discount", 0)) if code_data.get("max_discount") else None,
+        "usage_limit": int(code_data.get("usage_limit", 0)) if code_data.get("usage_limit") else None,
+        "times_used": 0,
+        "is_active": code_data.get("is_active", True),
+        "valid_from": code_data.get("valid_from") or datetime.now(timezone.utc).isoformat(),
+        "valid_until": code_data.get("valid_until"),
+        "description": code_data.get("description", ""),
+        "created_by": username,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.discount_codes.insert_one(discount_code)
+    return {"message": "Discount code created", "code": {k: v for k, v in discount_code.items() if k != "_id"}}
+
+
+@admin_router.put("/discount-codes/{code_id}")
+async def update_discount_code(code_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update a discount code"""
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    updates["updated_by"] = username
+    
+    result = await db.discount_codes.update_one(
+        {"$or": [{"id": code_id}, {"code": code_id.upper()}]},
+        {"$set": updates}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Discount code not found")
+    
+    return {"message": "Discount code updated"}
+
+
+@admin_router.delete("/discount-codes/{code_id}")
+async def delete_discount_code(code_id: str, username: str = Depends(verify_admin)):
+    """Delete a discount code"""
+    result = await db.discount_codes.delete_one(
+        {"$or": [{"id": code_id}, {"code": code_id.upper()}]}
+    )
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Discount code not found")
+    
+    return {"message": "Discount code deleted"}
+
+
+@api_router.post("/discount-codes/validate")
+async def validate_discount_code(code: str, order_total: float):
+    """Validate and calculate discount for a code"""
+    code = code.upper().strip()
+    
+    discount_code = await db.discount_codes.find_one({"code": code}, {"_id": 0})
+    
+    if not discount_code:
+        raise HTTPException(status_code=404, detail="Invalid discount code")
+    
+    if not discount_code.get("is_active", True):
+        raise HTTPException(status_code=400, detail="This code is no longer active")
+    
+    # Check validity dates
+    now = datetime.now(timezone.utc).isoformat()
+    if discount_code.get("valid_from") and now < discount_code["valid_from"]:
+        raise HTTPException(status_code=400, detail="This code is not yet valid")
+    if discount_code.get("valid_until") and now > discount_code["valid_until"]:
+        raise HTTPException(status_code=400, detail="This code has expired")
+    
+    # Check usage limit
+    if discount_code.get("usage_limit") and discount_code.get("times_used", 0) >= discount_code["usage_limit"]:
+        raise HTTPException(status_code=400, detail="This code has reached its usage limit")
+    
+    # Check minimum order
+    if order_total < discount_code.get("min_order", 0):
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Minimum order of ₹{discount_code['min_order']} required for this code"
+        )
+    
+    # Calculate discount
+    if discount_code["type"] == "percentage":
+        discount = order_total * (discount_code["value"] / 100)
+        if discount_code.get("max_discount") and discount > discount_code["max_discount"]:
+            discount = discount_code["max_discount"]
+    else:  # fixed
+        discount = discount_code["value"]
+    
+    # Don't exceed order total
+    if discount > order_total:
+        discount = order_total
+    
+    return {
+        "valid": True,
+        "code": code,
+        "type": discount_code["type"],
+        "value": discount_code["value"],
+        "discount_amount": round(discount, 2),
+        "final_total": round(order_total - discount, 2),
+        "description": discount_code.get("description", "")
+    }
+
+
+@api_router.post("/discount-codes/apply")
+async def apply_discount_code(code: str, order_id: str):
+    """Record that a discount code was used"""
+    code = code.upper().strip()
+    
+    result = await db.discount_codes.update_one(
+        {"code": code},
+        {"$inc": {"times_used": 1}}
+    )
+    
+    # Log usage
+    await db.discount_code_usage.insert_one({
+        "code": code,
+        "order_id": order_id,
+        "used_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {"message": "Discount code applied"}
+
+
 # ==================== SCHEDULED SYNC (for cron) ====================
 
 @api_router.post("/cron/sync-products")
