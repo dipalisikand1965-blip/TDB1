@@ -105,7 +105,9 @@ const Checkout = () => {
     setIsValidatingCode(true);
     try {
       const subtotal = getCartTotal();
-      const res = await fetch(`${API_URL}/api/discount-codes/validate?code=${encodeURIComponent(discountCode)}&order_total=${subtotal}`);
+      const res = await fetch(`${API_URL}/api/discount-codes/validate?code=${encodeURIComponent(discountCode)}&order_total=${subtotal}`, {
+        method: 'POST'
+      });
       const data = await res.json();
       
       if (res.ok && data.valid) {
