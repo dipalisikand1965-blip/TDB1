@@ -857,6 +857,24 @@ _GST applicable on final invoice_
                         <span>₹{deliveryFee}</span>
                       )}
                     </div>
+                    {appliedDiscount && (
+                      <div className="flex justify-between text-sm text-green-600">
+                        <span className="flex items-center gap-1">
+                          <Tag className="w-3 h-3" />
+                          {appliedDiscount.code}
+                        </span>
+                        <span>-₹{appliedDiscount.discount_amount}</span>
+                      </div>
+                    )}
+                    {loyaltyDiscount > 0 && (
+                      <div className="flex justify-between text-sm text-green-600">
+                        <span className="flex items-center gap-1">
+                          <Star className="w-3 h-3" />
+                          {pointsToRedeem} points
+                        </span>
+                        <span>-₹{loyaltyDiscount}</span>
+                      </div>
+                    )}
                     {subtotal < FREE_SHIPPING_THRESHOLD && (
                       <p className="text-xs text-purple-600 bg-purple-50 p-2 rounded">
                         Add ₹{FREE_SHIPPING_THRESHOLD - subtotal} more for FREE delivery!
@@ -864,10 +882,137 @@ _GST applicable on final invoice_
                     )}
                     <div className="flex justify-between font-bold text-lg pt-2 border-t">
                       <span>Total</span>
-                      <span className="text-purple-600">₹{total}</span>
+                      <span className="text-purple-600">₹{Math.max(0, subtotal - (appliedDiscount?.discount_amount || 0) - loyaltyDiscount) + deliveryFee}</span>
                     </div>
                     <p className="text-xs text-gray-500">*GST applicable on final invoice</p>
                   </div>
+                </Card>
+
+                {/* Discount Code */}
+                <Card className="p-6" data-testid="discount-code-section">
+                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <Tag className="w-5 h-5 text-purple-600" />
+                    Discount Code
+                  </h3>
+                  {appliedDiscount ? (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-semibold text-green-700">{appliedDiscount.code}</p>
+                          <p className="text-xs text-green-600">{appliedDiscount.description || `${appliedDiscount.type === 'percentage' ? appliedDiscount.value + '%' : '₹' + appliedDiscount.value} off`}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-green-700 font-bold">-₹{appliedDiscount.discount_amount}</span>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-6 w-6 text-gray-400 hover:text-red-500"
+                            onClick={removeDiscount}
+                            data-testid="remove-discount-btn"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Enter code"
+                        value={discountCode}
+                        onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                        className="flex-1"
+                        data-testid="discount-code-input"
+                      />
+                      <Button 
+                        type="button"
+                        variant="outline" 
+                        onClick={handleApplyDiscount}
+                        disabled={isValidatingCode || !discountCode.trim()}
+                        data-testid="apply-discount-btn"
+                      >
+                        {isValidatingCode ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Apply'}
+                      </Button>
+                    </div>
+                  )}
+                  <p className="text-xs text-gray-500 mt-2">Try: COMEBACK10 for 10% off</p>
+                </Card>
+
+                {/* Loyalty Points */}
+                <Card className="p-6" data-testid="loyalty-points-section">
+                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-500" />
+                    Pawsome Points
+                  </h3>
+                  {isLoadingLoyalty ? (
+                    <div className="flex items-center justify-center py-4">
+                      <Loader2 className="w-5 h-5 animate-spin text-purple-600" />
+                    </div>
+                  ) : loyaltyBalance && loyaltyBalance.points > 0 ? (
+                    <div className="space-y-3">
+                      <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-lg p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-gray-600">Available Points</span>
+                          <span className="font-bold text-yellow-700">{loyaltyBalance.points.toLocaleString()}</span>
+                        </div>
+                        <p className="text-xs text-gray-500">Worth up to ₹{(loyaltyBalance.points * 0.5).toFixed(0)} in savings</p>
+                      </div>
+                      
+                      {pointsToRedeem > 0 ? (
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-semibold text-green-700">Redeeming {pointsToRedeem} points</p>
+                              <p className="text-xs text-green-600">Saving ₹{loyaltyDiscount}</p>
+                            </div>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-6 w-6 text-gray-400 hover:text-red-500"
+                              onClick={clearLoyaltyRedemption}
+                              data-testid="clear-loyalty-btn"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <div className="flex gap-2">
+                            <Input
+                              type="number"
+                              placeholder="Points to redeem"
+                              min={100}
+                              max={loyaltyBalance.points}
+                              value={pointsToRedeem || ''}
+                              onChange={(e) => handleRedeemPoints(parseInt(e.target.value) || 0)}
+                              className="flex-1"
+                              data-testid="loyalty-points-input"
+                            />
+                            <Button 
+                              type="button"
+                              variant="outline" 
+                              onClick={() => handleRedeemPoints(loyaltyBalance.points)}
+                              data-testid="use-all-points-btn"
+                            >
+                              Use All
+                            </Button>
+                          </div>
+                          <p className="text-xs text-gray-500">Min 100 points. 1 point = ₹0.50</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : formData.email ? (
+                    <div className="text-center py-4">
+                      <p className="text-sm text-gray-500">No points yet</p>
+                      <p className="text-xs text-gray-400 mt-1">Earn 1 point for every ₹10 spent!</p>
+                    </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-sm text-gray-500">Enter your email to check points</p>
+                      <p className="text-xs text-gray-400 mt-1">Already a customer? You might have points!</p>
+                    </div>
+                  )}
                 </Card>
 
                 {/* Quick Add-ons */}
