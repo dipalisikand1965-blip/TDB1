@@ -47,14 +47,14 @@ const ProductCard = ({ product }) => {
             onError={(e) => { e.target.src = PLACEHOLDER_IMAGE; }}
           />
           {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {product.isNew && <Badge className="bg-purple-600">New</Badge>}
-            {product.isBestseller && <Badge className="bg-pink-600">Bestseller</Badge>}
-            {product.onSale && <Badge className="bg-orange-500">Sale</Badge>}
+          <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-2">
+            {product.isNew && <Badge className="bg-purple-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">New</Badge>}
+            {product.isBestseller && <Badge className="bg-pink-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Bestseller</Badge>}
+            {product.onSale && <Badge className="bg-orange-500 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Sale</Badge>}
           </div>
-          {/* Options count */}
+          {/* Options count - hide on mobile */}
           {optionsCount > 1 && (
-            <div className="absolute bottom-3 left-3">
+            <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 hidden sm:block">
               <Badge variant="secondary" className="bg-white/90 text-gray-700 text-xs">
                 {optionsCount} options
               </Badge>
