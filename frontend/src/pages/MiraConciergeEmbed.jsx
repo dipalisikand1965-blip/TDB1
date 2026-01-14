@@ -9,7 +9,7 @@ import {
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-const MiraConcierge = () => {
+const MiraConciergeEmbed = () => {
   // Chat state
   const [messages, setMessages] = useState([
     {
