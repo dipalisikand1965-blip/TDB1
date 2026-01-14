@@ -26,7 +26,7 @@ import Franchise from "./pages/Franchise";
 import Contact from "./pages/Contact";
 import PetProfile from "./pages/PetProfile";
 import MyPets from "./pages/MyPets";
-import PetSoulEmbed from "./pages/PetSoulEmbed";
+import PetProfile from "./pages/PetProfile";
 
 function App() {
   return (
@@ -35,7 +35,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             {/* Embed routes - NO navbar/footer for Shopify integration */}
-            <Route path="/pet-soul-embed" element={<PetSoulEmbed />} />
+            <Route path="/pet-soul-embed" element={<PetProfile isEmbed={true} />} />
             
             {/* Main app routes - WITH navbar */}
             <Route path="/*" element={<MainLayout />} />
