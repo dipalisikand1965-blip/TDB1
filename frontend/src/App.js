@@ -29,6 +29,7 @@ import MyPets from "./pages/MyPets";
 import MiraEmbed from "./pages/MiraEmbed";
 import MiraLandingEmbed from "./pages/MiraLandingEmbed";
 import MiraPage from "./pages/MiraPage";
+import MiraConciergeEmbed from "./pages/MiraConciergeEmbed";
 
 function App() {
   return (
