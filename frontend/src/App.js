@@ -38,6 +38,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             {/* Embed routes - NO navbar/footer for Shopify integration */}
+            <Route path="/pet-soul" element={<PetProfile isEmbed={true} />} />
             <Route path="/pet-soul-embed" element={<PetProfile isEmbed={true} />} />
             <Route path="/mira-embed" element={<MiraEmbed />} />
             <Route path="/mira-landing-embed" element={<MiraLandingEmbed />} />
