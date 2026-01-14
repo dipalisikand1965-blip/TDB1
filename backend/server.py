@@ -2345,6 +2345,403 @@ async def check_mira_access_endpoint(email: Optional[str] = None, session_id: Op
     return await check_mira_access(email, session_id)
 
 
+# ==================== PET PROFILE ROUTES ====================
+
+@api_router.get("/pets/personas")
+async def get_pet_personas():
+    """Get all available dog persona types"""
+    return {"personas": DOG_PERSONAS}
+
+
+@api_router.get("/pets/occasions")
+async def get_celebration_occasions():
+    """Get all available celebration occasions"""
+    return {"occasions": CELEBRATION_OCCASIONS}
+
+
+@api_router.post("/pets")
+async def create_pet_profile(pet: PetProfileCreate):
+    """Create a new pet profile"""
+    pet_id = f"pet-{uuid.uuid4().hex[:12]}"
+    now = datetime.now(timezone.utc).isoformat()
+    
+    pet_data = {
+        "id": pet_id,
+        **pet.model_dump(),
+        "achievements": [],
+        "order_history": [],
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    # Auto-add birthday and gotcha day to celebrations if dates provided
+    celebrations = list(pet.celebrations) if pet.celebrations else []
+    
+    if pet.birth_date and not any(c.occasion == "birthday" for c in celebrations):
+        celebrations.append(PetCelebration(
+            occasion="birthday",
+            date=pet.birth_date,
+            is_recurring=True
+        ))
+    
+    if pet.gotcha_date and not any(c.occasion == "gotcha_day" for c in celebrations):
+        celebrations.append(PetCelebration(
+            occasion="gotcha_day",
+            date=pet.gotcha_date,
+            is_recurring=True
+        ))
+    
+    pet_data["celebrations"] = [c.model_dump() for c in celebrations]
+    
+    await db.pets.insert_one(pet_data)
+    
+    # Remove MongoDB _id before returning
+    pet_data.pop("_id", None)
+    
+    logger.info(f"Created pet profile: {pet_id} - {pet.name}")
+    return {"message": "Pet profile created", "pet": pet_data}
+
+
+@api_router.get("/pets")
+async def list_pet_profiles(
+    owner_email: Optional[str] = None,
+    owner_phone: Optional[str] = None,
+    limit: int = 50,
+    skip: int = 0
+):
+    """List pet profiles, optionally filtered by owner"""
+    query = {}
+    if owner_email:
+        query["owner_email"] = owner_email
+    if owner_phone:
+        query["owner_phone"] = owner_phone
+    
+    pets = await db.pets.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
+    total = await db.pets.count_documents(query)
+    
+    return {"pets": pets, "total": total}
+
+
+@api_router.get("/pets/{pet_id}")
+async def get_pet_profile(pet_id: str):
+    """Get a specific pet profile"""
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    return pet
+
+
+@api_router.put("/pets/{pet_id}")
+async def update_pet_profile(pet_id: str, updates: PetProfileUpdate):
+    """Update a pet profile"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    update_data = {k: v for k, v in updates.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    # Handle nested objects properly
+    if "soul" in update_data and update_data["soul"]:
+        update_data["soul"] = updates.soul.model_dump()
+    if "preferences" in update_data and update_data["preferences"]:
+        update_data["preferences"] = updates.preferences.model_dump()
+    if "celebrations" in update_data and update_data["celebrations"]:
+        update_data["celebrations"] = [c.model_dump() for c in updates.celebrations]
+    
+    await db.pets.update_one({"id": pet_id}, {"$set": update_data})
+    
+    updated_pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    return {"message": "Pet profile updated", "pet": updated_pet}
+
+
+@api_router.delete("/pets/{pet_id}")
+async def delete_pet_profile(pet_id: str):
+    """Delete a pet profile"""
+    result = await db.pets.delete_one({"id": pet_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    return {"message": "Pet profile deleted"}
+
+
+@api_router.post("/pets/{pet_id}/celebrations")
+async def add_pet_celebration(pet_id: str, celebration: PetCelebration):
+    """Add a celebration date to a pet's profile"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    celebrations = pet.get("celebrations", [])
+    celebrations.append(celebration.model_dump())
+    
+    await db.pets.update_one(
+        {"id": pet_id},
+        {
+            "$set": {
+                "celebrations": celebrations,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    return {"message": "Celebration added", "celebrations": celebrations}
+
+
+@api_router.delete("/pets/{pet_id}/celebrations/{occasion}")
+async def remove_pet_celebration(pet_id: str, occasion: str):
+    """Remove a celebration from a pet's profile"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    celebrations = [c for c in pet.get("celebrations", []) if c.get("occasion") != occasion]
+    
+    await db.pets.update_one(
+        {"id": pet_id},
+        {
+            "$set": {
+                "celebrations": celebrations,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    return {"message": "Celebration removed", "celebrations": celebrations}
+
+
+@api_router.get("/pets/{pet_id}/upcoming-celebrations")
+async def get_upcoming_celebrations(pet_id: str, days: int = 30):
+    """Get upcoming celebrations for a pet within the next N days"""
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    today = datetime.now(timezone.utc).date()
+    upcoming = []
+    
+    for celeb in pet.get("celebrations", []):
+        try:
+            date_str = celeb.get("date", "")
+            occasion = celeb.get("occasion", "")
+            occasion_info = CELEBRATION_OCCASIONS.get(occasion, {})
+            
+            # Parse date (handle both YYYY-MM-DD and MM-DD formats)
+            if len(date_str) == 10:  # YYYY-MM-DD
+                celeb_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                # For recurring, use current year
+                if celeb.get("is_recurring", True):
+                    celeb_date = celeb_date.replace(year=today.year)
+                    # If date has passed this year, use next year
+                    if celeb_date < today:
+                        celeb_date = celeb_date.replace(year=today.year + 1)
+            elif len(date_str) == 5:  # MM-DD
+                celeb_date = datetime.strptime(f"{today.year}-{date_str}", "%Y-%m-%d").date()
+                if celeb_date < today:
+                    celeb_date = celeb_date.replace(year=today.year + 1)
+            else:
+                continue
+            
+            days_until = (celeb_date - today).days
+            
+            if 0 <= days_until <= days:
+                upcoming.append({
+                    "occasion": occasion,
+                    "occasion_name": occasion_info.get("name", celeb.get("custom_name", occasion)),
+                    "emoji": occasion_info.get("emoji", "🎉"),
+                    "date": celeb_date.isoformat(),
+                    "days_until": days_until,
+                    "recommended_collection": occasion_info.get("collection", "cakes"),
+                    "custom_name": celeb.get("custom_name"),
+                    "notes": celeb.get("notes")
+                })
+        except Exception as e:
+            logger.error(f"Error parsing celebration date: {e}")
+            continue
+    
+    # Sort by days until
+    upcoming.sort(key=lambda x: x["days_until"])
+    
+    return {"pet_id": pet_id, "pet_name": pet.get("name"), "upcoming": upcoming}
+
+
+@api_router.get("/celebrations/upcoming")
+async def get_all_upcoming_celebrations(days: int = 30):
+    """Get all upcoming celebrations across all pets (for admin/reminders)"""
+    today = datetime.now(timezone.utc).date()
+    all_upcoming = []
+    
+    async for pet in db.pets.find({}, {"_id": 0}):
+        soul = pet.get("soul", {}) or {}
+        persona = soul.get("persona", "shadow")
+        persona_info = DOG_PERSONAS.get(persona, DOG_PERSONAS["shadow"])
+        preferences = pet.get("preferences", {}) or {}
+        
+        for celeb in pet.get("celebrations", []):
+            try:
+                date_str = celeb.get("date", "")
+                occasion = celeb.get("occasion", "")
+                occasion_info = CELEBRATION_OCCASIONS.get(occasion, {})
+                
+                # Parse date
+                if len(date_str) == 10:
+                    celeb_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                    if celeb.get("is_recurring", True):
+                        celeb_date = celeb_date.replace(year=today.year)
+                        if celeb_date < today:
+                            celeb_date = celeb_date.replace(year=today.year + 1)
+                elif len(date_str) == 5:
+                    celeb_date = datetime.strptime(f"{today.year}-{date_str}", "%Y-%m-%d").date()
+                    if celeb_date < today:
+                        celeb_date = celeb_date.replace(year=today.year + 1)
+                else:
+                    continue
+                
+                days_until = (celeb_date - today).days
+                
+                if 0 <= days_until <= days:
+                    all_upcoming.append({
+                        "pet_id": pet.get("id"),
+                        "pet_name": pet.get("name"),
+                        "pet_photo": pet.get("photo_url"),
+                        "owner_name": pet.get("owner_name"),
+                        "owner_email": pet.get("owner_email"),
+                        "owner_phone": pet.get("owner_phone"),
+                        "occasion": occasion,
+                        "occasion_name": occasion_info.get("name", celeb.get("custom_name", occasion)),
+                        "emoji": occasion_info.get("emoji", "🎉"),
+                        "date": celeb_date.isoformat(),
+                        "days_until": days_until,
+                        "persona": persona,
+                        "persona_name": persona_info.get("name"),
+                        "persona_emoji": persona_info.get("emoji"),
+                        "message_style": persona_info.get("message_style"),
+                        "favorite_flavors": preferences.get("favorite_flavors", []),
+                        "recommended_collection": occasion_info.get("collection", "cakes"),
+                        "whatsapp_reminders": pet.get("whatsapp_reminders", True),
+                        "email_reminders": pet.get("email_reminders", True)
+                    })
+            except Exception as e:
+                logger.error(f"Error processing celebration: {e}")
+                continue
+    
+    # Sort by days until
+    all_upcoming.sort(key=lambda x: x["days_until"])
+    
+    return {"celebrations": all_upcoming, "total": len(all_upcoming)}
+
+
+@api_router.post("/pets/{pet_id}/achievements")
+async def add_pet_achievement(pet_id: str, achievement: dict):
+    """Add an achievement badge to a pet"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    achievements = pet.get("achievements", [])
+    achievement["earned_at"] = datetime.now(timezone.utc).isoformat()
+    achievements.append(achievement)
+    
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$set": {"achievements": achievements}}
+    )
+    
+    return {"message": "Achievement added", "achievements": achievements}
+
+
+def generate_celebration_message(pet: dict, celebration: dict, days_until: int) -> dict:
+    """Generate personalized celebration message based on pet's soul"""
+    soul = pet.get("soul", {}) or {}
+    persona = soul.get("persona", "shadow")
+    persona_info = DOG_PERSONAS.get(persona, DOG_PERSONAS["shadow"])
+    preferences = pet.get("preferences", {}) or {}
+    occasion_info = CELEBRATION_OCCASIONS.get(celebration.get("occasion", ""), {})
+    
+    pet_name = pet.get("name", "your furry friend")
+    owner_name = pet.get("owner_name", "Pet Parent")
+    special_move = soul.get("special_move", "")
+    favorite_flavor = preferences.get("favorite_flavors", [""])[0] if preferences.get("favorite_flavors") else ""
+    occasion_name = occasion_info.get("name", celebration.get("custom_name", "special day"))
+    collection = occasion_info.get("collection", "cakes")
+    
+    # Message templates based on persona
+    if persona in ["royal", "social_butterfly", "athlete"]:
+        # Main Character / Royal style
+        if days_until == 7:
+            subject = f"🚨 Important Royal Decree for {pet_name}!"
+            message = f"""Hi {owner_name}! Our calendar just started flashing gold—we realized {pet_name}'s {occasion_name} is exactly one week away! 👑
+
+As the resident '{persona_info['name']},' we know {pet_name} expects nothing less than a celebration that matches that big personality.
+
+{f"We remember {pet_name}'s special move: '{special_move}' - let's celebrate that!" if special_move else ""}
+
+Want us to prepare something special for the {'birthday King' if pet.get('gender') == 'male' else 'birthday Queen'}?
+
+Check out our {collection} collection: [Link]"""
+        else:  # Day before
+            subject = f"🎉 Tomorrow is THE day for {pet_name}!"
+            message = f"""Hi {owner_name}! The royal countdown is almost complete!
+
+{pet_name}'s {occasion_name} is TOMORROW! 🎂
+
+Time to prepare the camera 📸 and get ready for the celebration! 
+{f"Don't forget their favorite: {favorite_flavor}!" if favorite_flavor else ""}
+
+Haven't ordered yet? There's still time for same-day treats!"""
+    else:
+        # Shadow / Soulmate style
+        if days_until == 7:
+            subject = f"A special milestone for your best friend... 🐾"
+            message = f"""Hi {owner_name}, just a quiet reminder from The Doggy Bakery.
+
+We noticed {pet_name}'s {occasion_name} is coming up in seven days! We know {pet_name} isn't just a pet—they are your '{persona_info['name']}' and your soulmate.
+
+{f"To celebrate that one-of-a-kind bond (and maybe that special move: '{special_move}')," if special_move else "To celebrate that one-of-a-kind bond,"} would you like us to bake something special?
+
+{f"We can customize treats with their favorite flavor: {favorite_flavor}." if favorite_flavor else ""}
+
+Check out our 'Quiet Celebration' kits: [Link]
+
+Sending a head-pat to {pet_name}! 💕"""
+        else:  # Day before
+            subject = f"Tomorrow is {pet_name}'s special day 💕"
+            message = f"""Hi {owner_name},
+
+Just a gentle reminder that {pet_name}'s {occasion_name} is tomorrow!
+
+Time to snuggle up and celebrate your wonderful bond. 🐾
+{f"Maybe treat them to some {favorite_flavor}?" if favorite_flavor else ""}
+
+Prepare your camera for those precious moments! 📸"""
+    
+    return {
+        "subject": subject,
+        "message": message,
+        "whatsapp_message": message.replace("[Link]", "https://thedoggycompany.in/" + collection),
+        "collection": collection,
+        "persona": persona,
+        "message_style": persona_info.get("message_style")
+    }
+
+
+@api_router.get("/pets/{pet_id}/preview-message")
+async def preview_celebration_message(pet_id: str, occasion: str, days_until: int = 7):
+    """Preview what the celebration message would look like"""
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    celebration = {"occasion": occasion}
+    message = generate_celebration_message(pet, celebration, days_until)
+    
+    return {
+        "pet_name": pet.get("name"),
+        "occasion": occasion,
+        "days_until": days_until,
+        **message
+    }
+
+
 # ==================== SHOPIFY SYNC ROUTES ====================
 
 @admin_router.post("/sync/shopify")
