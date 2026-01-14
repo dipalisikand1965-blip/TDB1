@@ -636,14 +636,14 @@ _GST applicable on final invoice_
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 flex items-start gap-2">
                     <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-yellow-800">
-                      <strong>Pet's name is mandatory!</strong> We write it on the cake to make it extra special 🎂
+                      <strong>Pet&apos;s name is mandatory!</strong> We write it on the cake to make it extra special 🎂
                     </p>
                   </div>
                 )}
                 
                 <div className="grid md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="petName">Pet's Name {hasCake ? '*' : ''}</Label>
+                    <Label htmlFor="petName">Pet&apos;s Name {hasCake ? '*' : ''}</Label>
                     <Input
                       id="petName"
                       name="petName"
