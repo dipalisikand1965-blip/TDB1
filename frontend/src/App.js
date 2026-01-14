@@ -22,6 +22,7 @@ import Insights from "./pages/Insights";
 import Streaties from "./pages/Streaties";
 import Franchise from "./pages/Franchise";
 import Contact from "./pages/Contact";
+import PetProfile from "./pages/PetProfile";
 
 function App() {
   return (
