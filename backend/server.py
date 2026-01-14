@@ -4488,6 +4488,183 @@ async def export_products_csv(username: str = Depends(verify_admin)):
     )
 
 
+# ==================== FRANCHISE INQUIRIES ====================
+
+@api_router.post("/franchise/inquiry")
+async def submit_franchise_inquiry(inquiry: dict):
+    """Submit a franchise inquiry from the public form"""
+    inquiry_doc = {
+        "id": f"fran-{uuid.uuid4().hex[:8]}",
+        "name": inquiry.get("name", "").strip(),
+        "email": inquiry.get("email", "").strip(),
+        "phone": inquiry.get("phone", "").strip(),
+        "city": inquiry.get("city", "").strip(),
+        "investment": inquiry.get("investment", ""),
+        "message": inquiry.get("message", ""),
+        "status": "new",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "notes": ""
+    }
+    
+    await db.franchise_inquiries.insert_one(inquiry_doc)
+    
+    # Send notification email
+    try:
+        await send_email(
+            to=os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.com"),
+            subject=f"New Franchise Inquiry from {inquiry_doc['name']} - {inquiry_doc['city']}",
+            html=f"""
+            <h2>New Franchise Inquiry!</h2>
+            <p><strong>Name:</strong> {inquiry_doc['name']}</p>
+            <p><strong>Email:</strong> {inquiry_doc['email']}</p>
+            <p><strong>Phone:</strong> {inquiry_doc['phone']}</p>
+            <p><strong>City:</strong> {inquiry_doc['city']}</p>
+            <p><strong>Investment:</strong> {inquiry_doc['investment']}</p>
+            <p><strong>Message:</strong> {inquiry_doc['message']}</p>
+            """
+        )
+    except Exception as e:
+        logger.error(f"Failed to send franchise notification: {e}")
+    
+    return {"message": "Inquiry submitted successfully", "id": inquiry_doc["id"]}
+
+
+@admin_router.get("/franchise")
+async def get_franchise_inquiries(username: str = Depends(verify_admin)):
+    """Get all franchise inquiries"""
+    inquiries = await db.franchise_inquiries.find({}, {"_id": 0}).sort("created_at", -1).to_list(500)
+    
+    stats = {
+        "total": len(inquiries),
+        "new": len([i for i in inquiries if i.get("status") == "new"]),
+        "contacted": len([i for i in inquiries if i.get("status") == "contacted"]),
+        "in_discussion": len([i for i in inquiries if i.get("status") == "in_discussion"]),
+        "converted": len([i for i in inquiries if i.get("status") == "converted"]),
+        "rejected": len([i for i in inquiries if i.get("status") == "rejected"])
+    }
+    
+    return {"inquiries": inquiries, "stats": stats}
+
+
+@admin_router.put("/franchise/{inquiry_id}")
+async def update_franchise_inquiry(inquiry_id: str, update: dict, username: str = Depends(verify_admin)):
+    """Update a franchise inquiry status or notes"""
+    update_doc = {
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    if "status" in update:
+        update_doc["status"] = update["status"]
+    if "notes" in update:
+        update_doc["notes"] = update["notes"]
+    
+    result = await db.franchise_inquiries.update_one(
+        {"id": inquiry_id},
+        {"$set": update_doc}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Inquiry not found")
+    
+    return {"message": "Inquiry updated"}
+
+
+@admin_router.delete("/franchise/{inquiry_id}")
+async def delete_franchise_inquiry(inquiry_id: str, username: str = Depends(verify_admin)):
+    """Delete a franchise inquiry"""
+    result = await db.franchise_inquiries.delete_one({"id": inquiry_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Inquiry not found")
+    
+    return {"message": "Inquiry deleted"}
+
+
+# ==================== STREATIES PROGRAM ====================
+
+@admin_router.get("/streaties")
+async def get_streaties_stats(username: str = Depends(verify_admin)):
+    """Get Streaties program stats"""
+    stats = await db.streaties_stats.find_one({"type": "main"}, {"_id": 0})
+    
+    if not stats:
+        # Return default stats
+        stats = {
+            "type": "main",
+            "strays_fed_monthly": 10000,
+            "ngo_partners": 50,
+            "cities_covered": 20,
+            "total_donated": 500000,
+            "donation_percentage": 10,
+            "recent_donations": []
+        }
+    
+    donations = await db.streaties_donations.find({}, {"_id": 0}).sort("date", -1).limit(20).to_list(20)
+    stats["recent_donations"] = donations
+    
+    return stats
+
+
+@admin_router.put("/streaties/stats")
+async def update_streaties_stats(stats: dict, username: str = Depends(verify_admin)):
+    """Update Streaties program stats"""
+    update_doc = {
+        "type": "main",
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    for key in ["strays_fed_monthly", "ngo_partners", "cities_covered", "total_donated", "donation_percentage"]:
+        if key in stats:
+            update_doc[key] = stats[key]
+    
+    await db.streaties_stats.update_one(
+        {"type": "main"},
+        {"$set": update_doc},
+        upsert=True
+    )
+    
+    return {"message": "Stats updated"}
+
+
+@admin_router.post("/streaties/donation")
+async def add_streaties_donation(donation: dict, username: str = Depends(verify_admin)):
+    """Log a Streaties donation"""
+    donation_doc = {
+        "id": f"don-{uuid.uuid4().hex[:8]}",
+        "ngo_name": donation.get("ngo_name", ""),
+        "city": donation.get("city", ""),
+        "amount": donation.get("amount", 0),
+        "animals_fed": donation.get("animals_fed", 0),
+        "description": donation.get("description", ""),
+        "date": donation.get("date", datetime.now(timezone.utc).isoformat()),
+        "proof_url": donation.get("proof_url", ""),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.streaties_donations.insert_one(donation_doc)
+    
+    # Update total donated
+    await db.streaties_stats.update_one(
+        {"type": "main"},
+        {"$inc": {"total_donated": donation_doc["amount"]}},
+        upsert=True
+    )
+    
+    return {"message": "Donation logged", "id": donation_doc["id"]}
+
+
+@admin_router.delete("/streaties/donation/{donation_id}")
+async def delete_streaties_donation(donation_id: str, username: str = Depends(verify_admin)):
+    """Delete a donation record"""
+    result = await db.streaties_donations.delete_one({"id": donation_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Donation not found")
+    
+    return {"message": "Donation deleted"}
+
+
 # ==================== APP SETUP ====================
 
 app.add_middleware(
