@@ -1,0 +1,865 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
+import { Badge } from './ui/badge';
+import {
+  Search, Plus, Edit, Trash2, Save, X, Image, 
+  ChevronLeft, ChevronRight, Filter, Download, Upload,
+  RefreshCw, Eye, EyeOff, Copy, MoreVertical,
+  Package, DollarSign, Tag, Layers, Grid, List,
+  ArrowUpDown, Check, AlertCircle, Loader2
+} from 'lucide-react';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+// Categories list
+const CATEGORIES = [
+  { value: 'cakes', label: 'Dog Cakes' },
+  { value: 'breed-cakes', label: 'Breed Cakes' },
+  { value: 'treats', label: 'Treats' },
+  { value: 'dognuts', label: 'Pupcakes & Dognuts' },
+  { value: 'hampers', label: 'Gift Hampers' },
+  { value: 'frozen-treats', label: 'Frozen Treats' },
+  { value: 'fresh-meals', label: 'Fresh Meals' },
+  { value: 'desi-treats', label: 'Desi Treats' },
+  { value: 'nut-butters', label: 'Nut Butters' },
+  { value: 'cat-treats', label: 'Cat Treats' },
+  { value: 'accessories', label: 'Accessories' },
+  { value: 'merchandise', label: 'Merchandise' },
+  { value: 'mini-cakes', label: 'Mini Cakes' },
+  { value: 'pan-india', label: 'Pan India' },
+  { value: 'other', label: 'Other' }
+];
+
+const ProductManager = ({ credentials }) => {
+  // State
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [sortBy, setSortBy] = useState('name');
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [viewMode, setViewMode] = useState('grid'); // grid or list
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(24);
+  
+  // Edit modal
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [editForm, setEditForm] = useState({});
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState(null);
+  
+  // Sync status
+  const [syncing, setSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState(null);
+
+  // Fetch products
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/admin/products?limit=1000`, {
+        headers: {
+          'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(data.products || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [credentials]);
+
+  // Fetch sync status
+  const fetchSyncStatus = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/sync-status`, {
+        headers: {
+          'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setSyncStatus(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch sync status:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchSyncStatus();
+  }, [fetchProducts]);
+
+  // Filter and sort products
+  useEffect(() => {
+    let result = [...products];
+    
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(p => 
+        p.name?.toLowerCase().includes(query) ||
+        p.description?.toLowerCase().includes(query) ||
+        p.category?.toLowerCase().includes(query)
+      );
+    }
+    
+    // Category filter
+    if (categoryFilter) {
+      result = result.filter(p => p.category === categoryFilter);
+    }
+    
+    // Status filter
+    if (statusFilter === 'active') {
+      result = result.filter(p => p.status !== 'draft');
+    } else if (statusFilter === 'draft') {
+      result = result.filter(p => p.status === 'draft');
+    } else if (statusFilter === 'no-image') {
+      result = result.filter(p => !p.image || p.image === '');
+    }
+    
+    // Sort
+    result.sort((a, b) => {
+      let aVal = a[sortBy] || '';
+      let bVal = b[sortBy] || '';
+      
+      if (sortBy === 'price') {
+        aVal = parseFloat(aVal) || 0;
+        bVal = parseFloat(bVal) || 0;
+      } else {
+        aVal = String(aVal).toLowerCase();
+        bVal = String(bVal).toLowerCase();
+      }
+      
+      if (sortOrder === 'asc') {
+        return aVal > bVal ? 1 : -1;
+      } else {
+        return aVal < bVal ? 1 : -1;
+      }
+    });
+    
+    setFilteredProducts(result);
+    setCurrentPage(1);
+  }, [products, searchQuery, categoryFilter, statusFilter, sortBy, sortOrder]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Sync from Shopify
+  const handleSync = async () => {
+    if (!window.confirm('This will sync all products from Shopify. Local-only changes may be overwritten. Continue?')) return;
+    
+    setSyncing(true);
+    try {
+      const response = await fetch(`${API_URL}/api/cron/sync-products?secret=midnight-sync-tdb-2025`, {
+        method: 'POST'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Synced ${data.synced} products from Shopify!`);
+        fetchProducts();
+        fetchSyncStatus();
+      }
+    } catch (error) {
+      console.error('Sync failed:', error);
+      alert('Sync failed. Please try again.');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  // Open edit modal
+  const openEditModal = (product) => {
+    setEditingProduct(product);
+    setEditForm({
+      name: product.name || '',
+      description: product.description || '',
+      category: product.category || 'other',
+      price: product.price || 0,
+      image: product.image || '',
+      sizes: product.sizes || [],
+      flavors: product.flavors || [],
+      status: product.status || 'active',
+      tags: product.tags?.join(', ') || '',
+      minPrice: product.minPrice || null,
+      // Local edit flag
+      locally_edited: true
+    });
+    setSaveMessage(null);
+  };
+
+  // Close edit modal
+  const closeEditModal = () => {
+    setEditingProduct(null);
+    setEditForm({});
+    setSaveMessage(null);
+  };
+
+  // Save product
+  const saveProduct = async () => {
+    setSaving(true);
+    setSaveMessage(null);
+    
+    try {
+      const payload = {
+        ...editForm,
+        tags: editForm.tags ? editForm.tags.split(',').map(t => t.trim()) : [],
+        price: parseFloat(editForm.price) || 0,
+        minPrice: editForm.minPrice ? parseFloat(editForm.minPrice) : null,
+        updated_at: new Date().toISOString(),
+        locally_edited: true
+      };
+      
+      const response = await fetch(`${API_URL}/api/admin/products/${editingProduct.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      if (response.ok) {
+        setSaveMessage({ type: 'success', text: 'Product saved successfully!' });
+        fetchProducts();
+        setTimeout(() => closeEditModal(), 1500);
+      } else {
+        const error = await response.json();
+        setSaveMessage({ type: 'error', text: error.detail || 'Failed to save' });
+      }
+    } catch (error) {
+      console.error('Save failed:', error);
+      setSaveMessage({ type: 'error', text: 'Failed to save product' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Delete product
+  const deleteProduct = async (productId) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/admin/products/${productId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+        }
+      });
+      
+      if (response.ok) {
+        setProducts(products.filter(p => p.id !== productId));
+      }
+    } catch (error) {
+      console.error('Delete failed:', error);
+    }
+  };
+
+  // Add/Update variant (size)
+  const updateSize = (index, field, value) => {
+    const newSizes = [...(editForm.sizes || [])];
+    if (typeof newSizes[index] === 'string') {
+      // Convert old format to new format
+      newSizes[index] = { name: newSizes[index], price: 0 };
+    }
+    newSizes[index] = { ...newSizes[index], [field]: field === 'price' ? parseFloat(value) || 0 : value };
+    setEditForm({ ...editForm, sizes: newSizes });
+  };
+
+  const addSize = () => {
+    setEditForm({
+      ...editForm,
+      sizes: [...(editForm.sizes || []), { name: '', price: 0 }]
+    });
+  };
+
+  const removeSize = (index) => {
+    const newSizes = editForm.sizes.filter((_, i) => i !== index);
+    setEditForm({ ...editForm, sizes: newSizes });
+  };
+
+  // Add/Update flavor
+  const updateFlavor = (index, field, value) => {
+    const newFlavors = [...(editForm.flavors || [])];
+    if (typeof newFlavors[index] === 'string') {
+      newFlavors[index] = { name: newFlavors[index], price: 0 };
+    }
+    newFlavors[index] = { ...newFlavors[index], [field]: field === 'price' ? parseFloat(value) || 0 : value };
+    setEditForm({ ...editForm, flavors: newFlavors });
+  };
+
+  const addFlavor = () => {
+    setEditForm({
+      ...editForm,
+      flavors: [...(editForm.flavors || []), { name: '', price: 0 }]
+    });
+  };
+
+  const removeFlavor = (index) => {
+    const newFlavors = editForm.flavors.filter((_, i) => i !== index);
+    setEditForm({ ...editForm, flavors: newFlavors });
+  };
+
+  // Category counts
+  const categoryCounts = products.reduce((acc, p) => {
+    acc[p.category] = (acc[p.category] || 0) + 1;
+    return acc;
+  }, {});
+
+  return (
+    <div className="space-y-6">
+      {/* Header Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+              <Package className="w-5 h-5 text-purple-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Total Products</p>
+              <p className="text-2xl font-bold">{products.length}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <Eye className="w-5 h-5 text-green-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Active</p>
+              <p className="text-2xl font-bold">{products.filter(p => p.status !== 'draft').length}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+              <AlertCircle className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">No Image</p>
+              <p className="text-2xl font-bold">{products.filter(p => !p.image).length}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <Layers className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Categories</p>
+              <p className="text-2xl font-bold">{Object.keys(categoryCounts).length}</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Sync Status & Actions */}
+      <Card className="p-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h3 className="font-semibold text-gray-900">Shopify Sync</h3>
+            {syncStatus?.last_sync && (
+              <p className="text-sm text-gray-500">
+                Last synced: {new Date(syncStatus.last_sync.timestamp).toLocaleString()} 
+                {syncStatus.last_sync.products_synced && ` (${syncStatus.last_sync.products_synced} products)`}
+              </p>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={fetchProducts} disabled={loading}>
+              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+            <Button onClick={handleSync} disabled={syncing} className="bg-purple-600 hover:bg-purple-700">
+              {syncing ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Syncing...</>
+              ) : (
+                <><Download className="w-4 h-4 mr-2" /> Sync from Shopify</>
+              )}
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Filters & Search */}
+      <Card className="p-4">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Search */}
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder="Search products by name, description..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          {/* Category Filter */}
+          <select
+            className="px-3 py-2 border rounded-lg bg-white min-w-[180px]"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
+            <option value="">All Categories ({products.length})</option>
+            {CATEGORIES.map(cat => (
+              <option key={cat.value} value={cat.value}>
+                {cat.label} ({categoryCounts[cat.value] || 0})
+              </option>
+            ))}
+          </select>
+          
+          {/* Status Filter */}
+          <select
+            className="px-3 py-2 border rounded-lg bg-white min-w-[140px]"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="draft">Draft</option>
+            <option value="no-image">No Image</option>
+          </select>
+          
+          {/* Sort */}
+          <select
+            className="px-3 py-2 border rounded-lg bg-white min-w-[140px]"
+            value={`${sortBy}-${sortOrder}`}
+            onChange={(e) => {
+              const [field, order] = e.target.value.split('-');
+              setSortBy(field);
+              setSortOrder(order);
+            }}
+          >
+            <option value="name-asc">Name A-Z</option>
+            <option value="name-desc">Name Z-A</option>
+            <option value="price-asc">Price Low-High</option>
+            <option value="price-desc">Price High-Low</option>
+            <option value="category-asc">Category A-Z</option>
+          </select>
+          
+          {/* View Mode */}
+          <div className="flex border rounded-lg overflow-hidden">
+            <button
+              className={`px-3 py-2 ${viewMode === 'grid' ? 'bg-purple-600 text-white' : 'bg-white text-gray-600'}`}
+              onClick={() => setViewMode('grid')}
+            >
+              <Grid className="w-4 h-4" />
+            </button>
+            <button
+              className={`px-3 py-2 ${viewMode === 'list' ? 'bg-purple-600 text-white' : 'bg-white text-gray-600'}`}
+              onClick={() => setViewMode('list')}
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        
+        {/* Results count */}
+        <p className="text-sm text-gray-500 mt-3">
+          Showing {paginatedProducts.length} of {filteredProducts.length} products
+          {searchQuery && ` matching "${searchQuery}"`}
+        </p>
+      </Card>
+
+      {/* Products Grid/List */}
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+        </div>
+      ) : viewMode === 'grid' ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          {paginatedProducts.map((product) => (
+            <Card
+              key={product.id}
+              className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
+              onClick={() => openEditModal(product)}
+            >
+              <div className="aspect-square bg-gray-100 relative">
+                {product.image ? (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => { e.target.src = 'https://via.placeholder.com/200?text=No+Image'; }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-400">
+                    <Image className="w-8 h-8" />
+                  </div>
+                )}
+                {product.locally_edited && (
+                  <Badge className="absolute top-2 left-2 bg-blue-600 text-xs">Edited</Badge>
+                )}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <Button size="sm" variant="secondary">
+                    <Edit className="w-4 h-4 mr-1" /> Edit
+                  </Button>
+                </div>
+              </div>
+              <div className="p-3">
+                <h4 className="font-medium text-sm line-clamp-2">{product.name}</h4>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-purple-600 font-bold">₹{product.price || product.minPrice || 0}</span>
+                  <Badge variant="outline" className="text-xs">{product.category}</Badge>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card className="overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="text-left p-3 font-medium text-gray-600">Image</th>
+                <th className="text-left p-3 font-medium text-gray-600">Name</th>
+                <th className="text-left p-3 font-medium text-gray-600">Category</th>
+                <th className="text-left p-3 font-medium text-gray-600">Price</th>
+                <th className="text-left p-3 font-medium text-gray-600">Variants</th>
+                <th className="text-left p-3 font-medium text-gray-600">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedProducts.map((product) => (
+                <tr key={product.id} className="border-b hover:bg-gray-50">
+                  <td className="p-3">
+                    <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden">
+                      {product.image ? (
+                        <img src={product.image} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <Image className="w-4 h-4" />
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-3">
+                    <p className="font-medium">{product.name}</p>
+                    {product.locally_edited && <Badge className="bg-blue-100 text-blue-700 text-xs">Edited</Badge>}
+                  </td>
+                  <td className="p-3">
+                    <Badge variant="outline">{product.category}</Badge>
+                  </td>
+                  <td className="p-3 font-medium">₹{product.price || product.minPrice || 0}</td>
+                  <td className="p-3 text-sm text-gray-500">
+                    {product.sizes?.length || 0} sizes, {product.flavors?.length || 0} flavors
+                  </td>
+                  <td className="p-3">
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" onClick={() => openEditModal(product)}>
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                      <Button size="sm" variant="outline" className="text-red-600" onClick={() => deleteProduct(product.id)}>
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          
+          <div className="flex items-center gap-1">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+              
+              return (
+                <button
+                  key={pageNum}
+                  className={`w-8 h-8 rounded ${
+                    currentPage === pageNum 
+                      ? 'bg-purple-600 text-white' 
+                      : 'bg-gray-100 hover:bg-gray-200'
+                  }`}
+                  onClick={() => setCurrentPage(pageNum)}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+          
+          <span className="text-sm text-gray-500 ml-4">
+            Page {currentPage} of {totalPages}
+          </span>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingProduct && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center overflow-y-auto p-4">
+          <Card className="w-full max-w-4xl my-8 bg-white">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="text-xl font-bold">Edit Product</h2>
+              <button onClick={closeEditModal} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            {/* Modal Content */}
+            <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+              {/* Save Message */}
+              {saveMessage && (
+                <div className={`p-3 rounded-lg flex items-center gap-2 ${
+                  saveMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                }`}>
+                  {saveMessage.type === 'success' ? <Check className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                  {saveMessage.text}
+                </div>
+              )}
+              
+              {/* Basic Info */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label>Product Name *</Label>
+                    <Input
+                      value={editForm.name}
+                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Category</Label>
+                    <select
+                      className="w-full mt-1 px-3 py-2 border rounded-lg"
+                      value={editForm.category}
+                      onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                    >
+                      {CATEGORIES.map(cat => (
+                        <option key={cat.value} value={cat.value}>{cat.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <Label>Base Price (₹)</Label>
+                    <Input
+                      type="number"
+                      value={editForm.price}
+                      onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Status</Label>
+                    <select
+                      className="w-full mt-1 px-3 py-2 border rounded-lg"
+                      value={editForm.status}
+                      onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                    >
+                      <option value="active">Active</option>
+                      <option value="draft">Draft</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label>Image URL</Label>
+                    <Input
+                      value={editForm.image}
+                      onChange={(e) => setEditForm({ ...editForm, image: e.target.value })}
+                      placeholder="https://..."
+                      className="mt-1"
+                    />
+                    {editForm.image && (
+                      <div className="mt-2 w-32 h-32 border rounded overflow-hidden">
+                        <img src={editForm.image} alt="Preview" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <Label>Tags (comma separated)</Label>
+                    <Input
+                      value={editForm.tags}
+                      onChange={(e) => setEditForm({ ...editForm, tags: e.target.value })}
+                      placeholder="birthday, cake, dog"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Label>Description</Label>
+                <Textarea
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  className="mt-1"
+                  rows={3}
+                />
+              </div>
+              
+              {/* Sizes/Variants */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <Label className="text-base font-semibold">Sizes / Variants</Label>
+                  <Button size="sm" variant="outline" onClick={addSize}>
+                    <Plus className="w-3 h-3 mr-1" /> Add Size
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {(editForm.sizes || []).map((size, idx) => {
+                    const sizeObj = typeof size === 'string' ? { name: size, price: 0 } : size;
+                    return (
+                      <div key={idx} className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
+                        <div className="flex-1">
+                          <Label className="text-xs text-gray-500">Size Name</Label>
+                          <Input
+                            value={sizeObj.name}
+                            onChange={(e) => updateSize(idx, 'name', e.target.value)}
+                            placeholder="e.g., 500g, Large"
+                          />
+                        </div>
+                        <div className="w-32">
+                          <Label className="text-xs text-gray-500">Price (₹)</Label>
+                          <Input
+                            type="number"
+                            value={sizeObj.price}
+                            onChange={(e) => updateSize(idx, 'price', e.target.value)}
+                          />
+                        </div>
+                        <button
+                          onClick={() => removeSize(idx)}
+                          className="text-red-500 hover:text-red-700 mt-5"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                  {(!editForm.sizes || editForm.sizes.length === 0) && (
+                    <p className="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
+                      No sizes added. Click "Add Size" to add variants.
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              {/* Flavors */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <Label className="text-base font-semibold">Flavors / Options</Label>
+                  <Button size="sm" variant="outline" onClick={addFlavor}>
+                    <Plus className="w-3 h-3 mr-1" /> Add Flavor
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {(editForm.flavors || []).map((flavor, idx) => {
+                    const flavorObj = typeof flavor === 'string' ? { name: flavor, price: 0 } : flavor;
+                    return (
+                      <div key={idx} className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
+                        <div className="flex-1">
+                          <Label className="text-xs text-gray-500">Flavor Name</Label>
+                          <Input
+                            value={flavorObj.name}
+                            onChange={(e) => updateFlavor(idx, 'name', e.target.value)}
+                            placeholder="e.g., Chicken, Peanut Butter"
+                          />
+                        </div>
+                        <div className="w-32">
+                          <Label className="text-xs text-gray-500">Extra Price (₹)</Label>
+                          <Input
+                            type="number"
+                            value={flavorObj.price}
+                            onChange={(e) => updateFlavor(idx, 'price', e.target.value)}
+                            placeholder="0"
+                          />
+                        </div>
+                        <button
+                          onClick={() => removeFlavor(idx)}
+                          className="text-red-500 hover:text-red-700 mt-5"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                  {(!editForm.flavors || editForm.flavors.length === 0) && (
+                    <p className="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
+                      No flavors added. Click "Add Flavor" to add options.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Modal Footer */}
+            <div className="flex items-center justify-between p-4 border-t bg-gray-50">
+              <Button variant="outline" onClick={() => deleteProduct(editingProduct.id)} className="text-red-600">
+                <Trash2 className="w-4 h-4 mr-2" /> Delete Product
+              </Button>
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={closeEditModal}>Cancel</Button>
+                <Button onClick={saveProduct} disabled={saving} className="bg-purple-600 hover:bg-purple-700">
+                  {saving ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
+                  ) : (
+                    <><Save className="w-4 h-4 mr-2" /> Save Changes</>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ProductManager;
