@@ -28,13 +28,16 @@ const PERSONA_ICONS = {
 
 const PetProfile = ({ isEmbed = false }) => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // Start at 0 for loading/check
   const [personas, setPersonas] = useState({});
   const [occasions, setOccasions] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createdPet, setCreatedPet] = useState(null);
   const [customDate, setCustomDate] = useState({ name: '', date: '' });
   const [showCustomForm, setShowCustomForm] = useState(false);
+  const [existingPets, setExistingPets] = useState([]);
+  const [savedEmail, setSavedEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   
   // Form state
   const [formData, setFormData] = useState({
