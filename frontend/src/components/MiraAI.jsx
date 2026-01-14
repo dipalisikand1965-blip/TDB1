@@ -38,7 +38,7 @@ const MiraAI = () => {
       data-testid="mira-chat-container"
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 flex items-center justify-between">
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
             <Sparkles className="w-5 h-5" />
@@ -48,18 +48,19 @@ const MiraAI = () => {
             <p className="text-xs opacity-80">Super Concierge®</p>
           </div>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <button
-            className="text-white hover:bg-white/20 h-8 w-8 rounded-full flex items-center justify-center transition-colors"
+            className="text-white hover:bg-white/20 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
             onClick={() => setIsMinimized(!isMinimized)}
             title={isMinimized ? "Expand" : "Minimize"}
+            data-testid="mira-minimize-btn"
           >
             {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
           </button>
           <button
-            className="text-white hover:bg-red-500 h-8 w-8 rounded-full flex items-center justify-center transition-colors"
+            className="text-white bg-white/10 hover:bg-red-500 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
             onClick={() => setIsOpen(false)}
-            title="Close"
+            title="Close Mira"
             data-testid="mira-close-btn"
           >
             <X className="w-5 h-5" />
