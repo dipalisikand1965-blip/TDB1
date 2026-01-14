@@ -471,6 +471,119 @@ const Admin = () => {
     }
   };
 
+  // Fetch Pet Profiles
+  const fetchPetProfiles = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/pets`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setPetProfiles(data.pets || []);
+        setPetStats(data.stats || {});
+      }
+    } catch (error) {
+      console.error('Failed to fetch pet profiles:', error);
+    }
+  };
+
+  // Fetch Loyalty Stats
+  const fetchLoyaltyStats = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/loyalty/stats`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setLoyaltyStats(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch loyalty stats:', error);
+    }
+  };
+
+  // Fetch Discount Codes
+  const fetchDiscountCodes = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/discount-codes`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDiscountCodes(data.codes || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch discount codes:', error);
+    }
+  };
+
+  // Save Discount Code
+  const saveDiscountCode = async (data) => {
+    try {
+      const isEdit = data.id && !data.id.startsWith('new-');
+      const url = isEdit ? `${API_URL}/api/admin/discount-codes/${data.id}` : `${API_URL}/api/admin/discount-codes`;
+      const response = await fetch(url, {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+      });
+      if (response.ok) {
+        fetchDiscountCodes();
+        setShowDiscountModal(false);
+        setEditingDiscount(null);
+      }
+    } catch (error) {
+      console.error('Failed to save discount code:', error);
+    }
+  };
+
+  // Delete Discount Code
+  const deleteDiscountCode = async (id) => {
+    if (!window.confirm('Delete this discount code?')) return;
+    try {
+      await fetch(`${API_URL}/api/admin/discount-codes/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      fetchDiscountCodes();
+    } catch (error) {
+      console.error('Failed to delete discount code:', error);
+    }
+  };
+
+  // Fetch Abandoned Carts
+  const fetchAbandonedCarts = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/abandoned-carts`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAbandonedCarts(data.carts || []);
+        setAbandonedStats(data.stats || {});
+      }
+    } catch (error) {
+      console.error('Failed to fetch abandoned carts:', error);
+    }
+  };
+
+  // Trigger Abandoned Cart Check
+  const triggerAbandonedCartCheck = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/abandoned-carts/trigger-check`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Sent ${data.reminders_sent} reminder emails`);
+        fetchAbandonedCarts();
+      }
+    } catch (error) {
+      console.error('Failed to trigger cart check:', error);
+    }
+  };
+
   const updateOrderStatus = async (orderId, status) => {
     try {
       const response = await fetch(`${API_URL}/api/admin/orders/${orderId}`, {
