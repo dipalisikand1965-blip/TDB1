@@ -102,14 +102,24 @@ async def auto_sync_products():
             shopify_products = await fetch_shopify_products()
             
             synced = 0
+            new_products_found = []
+            
             for sp in shopify_products:
                 transformed = transform_shopify_product(sp)
-                await db.products.update_one(
+                result = await db.products.update_one(
                     {"shopify_id": sp["id"]},
                     {"$set": transformed},
                     upsert=True
                 )
+                
+                if result.upserted_id:
+                    new_products_found.append(transformed)
+                    
                 synced += 1
+            
+            # Check for matches with new products
+            if new_products_found:
+                asyncio.create_task(check_product_matches(new_products_found))
             
             await db.sync_logs.insert_one({
                 "type": "auto_sync",
