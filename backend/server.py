@@ -3359,6 +3359,7 @@ async def get_all_orders(
     username: str = Depends(verify_admin),
     status: Optional[str] = None,
     city: Optional[str] = None,
+    email: Optional[str] = None,
     limit: int = 100
 ):
     """Get all orders with filtering"""
@@ -3367,6 +3368,8 @@ async def get_all_orders(
         query["status"] = status
     if city:
         query["delivery.city"] = city
+    if email:
+        query["customer.email"] = email
     
     orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
     total = await db.orders.count_documents(query)
