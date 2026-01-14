@@ -1905,6 +1905,327 @@ const Admin = () => {
           </div>
         )}
 
+        {/* Pet Profiles Tab */}
+        {activeTab === 'pets' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">🐾 Pet Profiles ({petProfiles.length})</h3>
+              <Button variant="outline" onClick={fetchPetProfiles}>
+                <RefreshCw className="w-4 h-4 mr-2" />Refresh
+              </Button>
+            </div>
+            
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50">
+                <p className="text-sm text-gray-500">Total Pets</p>
+                <p className="text-2xl font-bold text-purple-600">{petStats.total || petProfiles.length}</p>
+              </Card>
+              <Card className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50">
+                <p className="text-sm text-gray-500">Upcoming Birthdays</p>
+                <p className="text-2xl font-bold text-blue-600">{petStats.upcoming_birthdays || 0}</p>
+              </Card>
+              <Card className="p-4 bg-gradient-to-r from-green-50 to-emerald-50">
+                <p className="text-sm text-gray-500">With Personas</p>
+                <p className="text-2xl font-bold text-green-600">{petStats.with_personas || 0}</p>
+              </Card>
+              <Card className="p-4 bg-gradient-to-r from-orange-50 to-amber-50">
+                <p className="text-sm text-gray-500">Celebrations Set</p>
+                <p className="text-2xl font-bold text-orange-600">{petStats.with_celebrations || 0}</p>
+              </Card>
+            </div>
+            
+            <Card className="p-6">
+              <div className="space-y-4">
+                {petProfiles.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No pet profiles yet. Customers can create them via Pet Soul.</p>
+                ) : petProfiles.map((pet) => (
+                  <div key={pet.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                    <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden">
+                      {pet.photo_url ? (
+                        <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <PawPrint className="w-8 h-8 text-purple-600" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="font-semibold text-gray-900">{pet.name}</h4>
+                        {pet.soul?.persona && <Badge variant="outline" className="text-xs">{pet.soul.persona}</Badge>}
+                      </div>
+                      <p className="text-sm text-gray-500">{pet.breed} • {pet.gender}</p>
+                      <p className="text-xs text-gray-400">Owner: {pet.owner_name || pet.owner_email || 'Unknown'}</p>
+                    </div>
+                    <div className="text-right text-sm">
+                      {pet.birth_date && <p className="text-gray-600">🎂 {new Date(pet.birth_date).toLocaleDateString()}</p>}
+                      {pet.gotcha_date && <p className="text-gray-500">💝 Gotcha: {new Date(pet.gotcha_date).toLocaleDateString()}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Loyalty Points Tab */}
+        {activeTab === 'loyalty' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">⭐ Loyalty Points Program</h3>
+              <Button variant="outline" onClick={fetchLoyaltyStats}>
+                <RefreshCw className="w-4 h-4 mr-2" />Refresh
+              </Button>
+            </div>
+            
+            {loyaltyStats && (
+              <>
+                {/* Stats Cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Card className="p-4 bg-gradient-to-r from-yellow-50 to-amber-50">
+                    <p className="text-sm text-gray-500">Points in Circulation</p>
+                    <p className="text-2xl font-bold text-yellow-600">{loyaltyStats.total_points_in_circulation?.toLocaleString() || 0}</p>
+                  </Card>
+                  <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50">
+                    <p className="text-sm text-gray-500">Total Ever Earned</p>
+                    <p className="text-2xl font-bold text-purple-600">{loyaltyStats.total_points_ever_earned?.toLocaleString() || 0}</p>
+                  </Card>
+                  <Card className="p-4 bg-gradient-to-r from-red-50 to-orange-50">
+                    <p className="text-sm text-gray-500">Potential Liability</p>
+                    <p className="text-2xl font-bold text-red-600">₹{loyaltyStats.potential_liability?.toLocaleString() || 0}</p>
+                  </Card>
+                  <Card className="p-4 bg-gradient-to-r from-green-50 to-emerald-50">
+                    <p className="text-sm text-gray-500">Users with Points</p>
+                    <p className="text-2xl font-bold text-green-600">{loyaltyStats.users_with_points || 0}</p>
+                  </Card>
+                </div>
+
+                {/* Config */}
+                <Card className="p-4">
+                  <h4 className="font-semibold mb-3">Points Configuration</h4>
+                  <div className="grid md:grid-cols-3 gap-4 text-sm">
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-gray-500">Earn Rate</p>
+                      <p className="font-medium">1 point per ₹10 spent</p>
+                    </div>
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-gray-500">Redemption Value</p>
+                      <p className="font-medium">1 point = ₹0.50</p>
+                    </div>
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-gray-500">Membership Multipliers</p>
+                      <p className="font-medium">Free: 1x | Pawsome: 1.5x | Premium: 2x | VIP: 3x</p>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Top Users */}
+                <Card className="p-6">
+                  <h4 className="font-semibold mb-4">Top Point Holders</h4>
+                  <div className="space-y-3">
+                    {(loyaltyStats.top_users || []).slice(0, 10).map((user, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-sm font-bold text-purple-600">
+                            {idx + 1}
+                          </div>
+                          <div>
+                            <p className="font-medium">{user.name || user.email}</p>
+                            <p className="text-xs text-gray-500">{user.membership_tier || 'free'} member</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-purple-600">{user.loyalty_points?.toLocaleString()} pts</p>
+                          <p className="text-xs text-gray-500">Earned: {user.total_points_earned?.toLocaleString()}</p>
+                        </div>
+                      </div>
+                    ))}
+                    {(!loyaltyStats.top_users || loyaltyStats.top_users.length === 0) && (
+                      <p className="text-gray-500 text-center py-4">No users with points yet</p>
+                    )}
+                  </div>
+                </Card>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Discount Codes Tab */}
+        {activeTab === 'discounts' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">🎟️ Discount Codes ({discountCodes.length})</h3>
+              <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => {
+                setEditingDiscount({ 
+                  id: `new-${Date.now()}`, 
+                  code: '', 
+                  type: 'percentage', 
+                  value: 10, 
+                  min_order: 0,
+                  is_active: true 
+                });
+                setShowDiscountModal(true);
+              }}>
+                <Plus className="w-4 h-4 mr-2" />Add Code
+              </Button>
+            </div>
+            
+            <Card className="p-6">
+              <div className="space-y-4">
+                {discountCodes.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No discount codes yet. Create your first one!</p>
+                ) : discountCodes.map((code) => (
+                  <div key={code.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <code className="text-lg font-bold text-purple-600 bg-purple-100 px-3 py-1 rounded">{code.code}</code>
+                        <Badge variant={code.is_active ? 'default' : 'secondary'}>
+                          {code.is_active ? 'Active' : 'Inactive'}
+                        </Badge>
+                        <Badge variant="outline">
+                          {code.type === 'percentage' ? `${code.value}% off` : `₹${code.value} off`}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">{code.description}</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Used {code.times_used || 0} times
+                        {code.usage_limit && ` / ${code.usage_limit} limit`}
+                        {code.min_order > 0 && ` • Min order: ₹${code.min_order}`}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="icon" onClick={() => { setEditingDiscount(code); setShowDiscountModal(true); }}>
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="text-red-500" onClick={() => deleteDiscountCode(code.id)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+            
+            {/* Discount Code Modal */}
+            {showDiscountModal && editingDiscount && (
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                <Card className="w-full max-w-lg bg-white p-6">
+                  <h3 className="text-lg font-bold mb-4">{editingDiscount.id?.startsWith('new-') ? 'Create' : 'Edit'} Discount Code</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">Code *</label>
+                      <Input value={editingDiscount.code || ''} onChange={(e) => setEditingDiscount({...editingDiscount, code: e.target.value.toUpperCase()})} placeholder="e.g., SAVE20" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium">Type</label>
+                        <select className="w-full border rounded-md p-2" value={editingDiscount.type || 'percentage'} onChange={(e) => setEditingDiscount({...editingDiscount, type: e.target.value})}>
+                          <option value="percentage">Percentage (%)</option>
+                          <option value="fixed">Fixed Amount (₹)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Value</label>
+                        <Input type="number" value={editingDiscount.value || ''} onChange={(e) => setEditingDiscount({...editingDiscount, value: parseFloat(e.target.value) || 0})} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium">Min Order (₹)</label>
+                        <Input type="number" value={editingDiscount.min_order || ''} onChange={(e) => setEditingDiscount({...editingDiscount, min_order: parseFloat(e.target.value) || 0})} />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Max Discount (₹)</label>
+                        <Input type="number" value={editingDiscount.max_discount || ''} onChange={(e) => setEditingDiscount({...editingDiscount, max_discount: parseFloat(e.target.value) || 0})} placeholder="Optional" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Usage Limit</label>
+                      <Input type="number" value={editingDiscount.usage_limit || ''} onChange={(e) => setEditingDiscount({...editingDiscount, usage_limit: parseInt(e.target.value) || null})} placeholder="Leave empty for unlimited" />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Description</label>
+                      <Input value={editingDiscount.description || ''} onChange={(e) => setEditingDiscount({...editingDiscount, description: e.target.value})} placeholder="e.g., 20% off for new customers" />
+                    </div>
+                    <label className="flex items-center gap-2">
+                      <input type="checkbox" checked={editingDiscount.is_active !== false} onChange={(e) => setEditingDiscount({...editingDiscount, is_active: e.target.checked})} />
+                      <span className="text-sm">Active</span>
+                    </label>
+                  </div>
+                  <div className="flex justify-end gap-2 mt-6">
+                    <Button variant="outline" onClick={() => { setShowDiscountModal(false); setEditingDiscount(null); }}>Cancel</Button>
+                    <Button className="bg-purple-600" onClick={() => saveDiscountCode(editingDiscount)} disabled={!editingDiscount.code}>Save</Button>
+                  </div>
+                </Card>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Abandoned Carts Tab */}
+        {activeTab === 'abandoned' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">🛒 Abandoned Carts ({abandonedCarts.length})</h3>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={fetchAbandonedCarts}>
+                  <RefreshCw className="w-4 h-4 mr-2" />Refresh
+                </Button>
+                <Button className="bg-purple-600 hover:bg-purple-700" onClick={triggerAbandonedCartCheck}>
+                  <Mail className="w-4 h-4 mr-2" />Send Reminders
+                </Button>
+              </div>
+            </div>
+            
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <Card className="p-4 bg-gradient-to-r from-orange-50 to-amber-50">
+                <p className="text-sm text-gray-500">Active Carts</p>
+                <p className="text-2xl font-bold text-orange-600">{abandonedStats.active || 0}</p>
+              </Card>
+              <Card className="p-4 bg-gradient-to-r from-green-50 to-emerald-50">
+                <p className="text-sm text-gray-500">Recovered</p>
+                <p className="text-2xl font-bold text-green-600">{abandonedStats.converted || 0}</p>
+              </Card>
+              <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50">
+                <p className="text-sm text-gray-500">Potential Revenue</p>
+                <p className="text-2xl font-bold text-purple-600">₹{abandonedStats.potential_revenue?.toLocaleString() || 0}</p>
+              </Card>
+            </div>
+            
+            <Card className="p-6">
+              <div className="space-y-4">
+                {abandonedCarts.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No abandoned carts yet</p>
+                ) : abandonedCarts.map((cart) => (
+                  <div key={cart.id} className="p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <p className="font-medium">{cart.email || 'Unknown email'}</p>
+                        <p className="text-sm text-gray-500">{cart.name || 'Guest'}</p>
+                      </div>
+                      <div className="text-right">
+                        <Badge variant={cart.status === 'converted' ? 'success' : cart.status === 'active' ? 'warning' : 'secondary'}>
+                          {cart.status}
+                        </Badge>
+                        <p className="text-lg font-bold text-purple-600 mt-1">₹{cart.subtotal?.toLocaleString()}</p>
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      <p>{cart.items?.length || 0} items • Updated: {new Date(cart.updated_at).toLocaleString()}</p>
+                      <p className="text-xs text-gray-400">Reminders sent: {cart.reminders_sent || 0}</p>
+                    </div>
+                    {cart.items && cart.items.length > 0 && (
+                      <div className="mt-2 text-xs text-gray-500">
+                        Items: {cart.items.map(i => i.name).join(', ')}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        )}
+
         {/* Streaties Tab */}
         {activeTab === 'streaties' && (
           <div className="space-y-6">
