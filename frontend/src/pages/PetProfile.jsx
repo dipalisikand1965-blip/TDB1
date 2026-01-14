@@ -105,8 +105,19 @@ const PetProfile = ({ isEmbed = false }) => {
           setOccasions(data.occasions || {});
         }
 
-        // Check for saved email (returning user)
-        const email = localStorage.getItem('tdb_pet_parent_email');
+        // Check for email in URL params (iframe integration) or localStorage
+        const params = new URLSearchParams(window.location.search);
+        let email = params.get('email');
+        
+        // If email in URL, save it and pre-fill form
+        if (email) {
+          localStorage.setItem('tdb_pet_parent_email', email);
+          setFormData(prev => ({ ...prev, owner_email: email }));
+        } else {
+          // Fallback to localStorage
+          email = localStorage.getItem('tdb_pet_parent_email');
+        }
+
         if (email) {
           setSavedEmail(email);
           // Fetch existing pets
