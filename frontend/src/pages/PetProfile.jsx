@@ -235,6 +235,10 @@ const PetProfile = ({ isEmbed = false }) => {
       if (response.ok) {
         const data = await response.json();
         setCreatedPet(data.pet);
+        // Save email for returning user recognition
+        if (formData.owner_email) {
+          localStorage.setItem('tdb_pet_parent_email', formData.owner_email);
+        }
         setStep(6); // Success step
       } else {
         const error = await response.json();
