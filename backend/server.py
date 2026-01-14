@@ -1050,9 +1050,18 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     # Merchandise
     elif "merchandise" in product_type or "mug" in title:
         category = "merchandise"
-    # Pan India (from tags)
-    elif "pan india" in tags_str:
+    # Pan India (from tags OR specific product types that are pan-india shippable)
+    elif "pan india" in tags_str or "pan-india" in tags_str:
         category = "pan-india"
+    
+    # Determine if product is pan-india shippable (for filtering purposes)
+    is_pan_india_shippable = (
+        "pan india" in tags_str or 
+        "pan-india" in tags_str or
+        category in ["treats", "nut-butters", "desi-treats", "gift-cards"] or
+        "cookie" in title or "biscuit" in title or "treat" in title or 
+        "butter" in title or "chew" in title
+    )
     
     # Clean description - strip all HTML tags
     import re
@@ -1088,6 +1097,7 @@ def transform_shopify_product(shopify_product: dict) -> dict:
         "originalPrice": base_price,
         "image": image_url,
         "category": category,
+        "is_pan_india_shippable": is_pan_india_shippable,
         "sizes": sizes if sizes else [{"name": "Standard", "price": base_price}],
         "flavors": flavors if flavors else [],
         "shopify_handle": shopify_product.get("handle"),
