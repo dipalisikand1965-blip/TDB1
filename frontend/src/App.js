@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { CartProvider } from "./context/CartContext";
+import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 
 // Components
@@ -26,6 +27,9 @@ import Franchise from "./pages/Franchise";
 import Contact from "./pages/Contact";
 import PetProfile from "./pages/PetProfile";
 import MyPets from "./pages/MyPets";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import MemberDashboard from "./pages/MemberDashboard";
 import MiraEmbed from "./pages/MiraEmbed";
 import MiraLandingEmbed from "./pages/MiraLandingEmbed";
 import MiraPage from "./pages/MiraPage";
@@ -34,21 +38,23 @@ import MiraConciergeEmbed from "./pages/MiraConciergeEmbed";
 function App() {
   return (
     <HelmetProvider>
-      <CartProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Embed routes - NO navbar/footer for Shopify integration */}
-            <Route path="/pet-soul" element={<PetProfile isEmbed={true} />} />
-            <Route path="/pet-soul-embed" element={<PetProfile isEmbed={true} />} />
-            <Route path="/mira-embed" element={<MiraEmbed />} />
-            <Route path="/mira-landing-embed" element={<MiraLandingEmbed />} />
-            <Route path="/concierge-embed" element={<MiraConciergeEmbed />} />
-            
-            {/* Main app routes - WITH navbar */}
-            <Route path="/*" element={<MainLayout />} />
-          </Routes>
-        </BrowserRouter>
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Embed routes - NO navbar/footer for Shopify integration */}
+              <Route path="/pet-soul" element={<PetProfile isEmbed={true} />} />
+              <Route path="/pet-soul-embed" element={<PetProfile isEmbed={true} />} />
+              <Route path="/mira-embed" element={<MiraEmbed />} />
+              <Route path="/mira-landing-embed" element={<MiraLandingEmbed />} />
+              <Route path="/concierge-embed" element={<MiraConciergeEmbed />} />
+              
+              {/* Main app routes - WITH navbar */}
+              <Route path="/*" element={<MainLayout />} />
+            </Routes>
+          </BrowserRouter>
+        </CartProvider>
+      </AuthProvider>
     </HelmetProvider>
   );
 }
@@ -60,6 +66,11 @@ function MainLayout() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        
+        {/* Auth Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<MemberDashboard />} />
         
         {/* Main Categories */}
         <Route path="/cakes" element={<ProductListing category="cakes" />} />
