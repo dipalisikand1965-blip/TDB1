@@ -2442,47 +2442,147 @@ const Admin = () => {
         {activeTab === 'franchise' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-900">Franchise Inquiries</h3>
-              <Badge variant="default" className="text-lg px-4 py-2">3 New</Badge>
+              <h3 className="text-xl font-bold text-gray-900">🏪 Franchise Inquiries</h3>
+              <Button variant="outline" onClick={fetchFranchiseInquiries}>
+                <RefreshCw className="w-4 h-4 mr-2" />Refresh
+              </Button>
+            </div>
+            
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <Card className="p-4 bg-gradient-to-r from-purple-50 to-violet-50">
+                <p className="text-sm text-gray-500">Total</p>
+                <p className="text-2xl font-bold text-purple-600">{franchiseStats.total || 0}</p>
+              </Card>
+              <Card className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50">
+                <p className="text-sm text-gray-500">New</p>
+                <p className="text-2xl font-bold text-blue-600">{franchiseStats.new || 0}</p>
+              </Card>
+              <Card className="p-4 bg-gradient-to-r from-yellow-50 to-amber-50">
+                <p className="text-sm text-gray-500">Contacted</p>
+                <p className="text-2xl font-bold text-yellow-600">{franchiseStats.contacted || 0}</p>
+              </Card>
+              <Card className="p-4 bg-gradient-to-r from-orange-50 to-amber-50">
+                <p className="text-sm text-gray-500">In Discussion</p>
+                <p className="text-2xl font-bold text-orange-600">{franchiseStats.in_discussion || 0}</p>
+              </Card>
+              <Card className="p-4 bg-gradient-to-r from-green-50 to-emerald-50">
+                <p className="text-sm text-gray-500">Converted</p>
+                <p className="text-2xl font-bold text-green-600">{franchiseStats.converted || 0}</p>
+              </Card>
             </div>
             
             <Card className="p-6">
-              <p className="text-gray-600 mb-6">Manage franchise inquiries from potential partners.</p>
-              
               <div className="space-y-4">
-                {[
-                  { name: 'Rahul Sharma', city: 'Delhi', investment: '₹10-20 Lakhs', status: 'new', date: 'Jan 12, 2025' },
-                  { name: 'Priya Patel', city: 'Ahmedabad', investment: '₹20-50 Lakhs', status: 'contacted', date: 'Jan 10, 2025' },
-                  { name: 'Amit Kumar', city: 'Pune', investment: '₹5-10 Lakhs', status: 'new', date: 'Jan 11, 2025' },
-                  { name: 'Sneha Reddy', city: 'Hyderabad', investment: '₹20-50 Lakhs', status: 'in_discussion', date: 'Jan 5, 2025' },
-                ].map((inquiry, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                {franchiseInquiries.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No franchise inquiries yet</p>
+                ) : franchiseInquiries.map((inquiry) => (
+                  <div key={inquiry.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
                         <h4 className="font-semibold text-gray-900">{inquiry.name}</h4>
                         <Badge variant={
                           inquiry.status === 'new' ? 'default' : 
-                          inquiry.status === 'contacted' ? 'secondary' : 'outline'
+                          inquiry.status === 'contacted' ? 'secondary' : 
+                          inquiry.status === 'in_discussion' ? 'outline' :
+                          inquiry.status === 'converted' ? 'success' : 'destructive'
                         }>
-                          {inquiry.status.replace('_', ' ')}
+                          {inquiry.status?.replace('_', ' ')}
                         </Badge>
                       </div>
                       <p className="text-sm text-gray-500">
-                        {inquiry.city} • {inquiry.investment} • {inquiry.date}
+                        {inquiry.city} • {inquiry.investment || 'Not specified'} • {new Date(inquiry.created_at).toLocaleDateString()}
                       </p>
+                      <p className="text-xs text-gray-400 mt-1">{inquiry.email} • {inquiry.phone}</p>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => { setSelectedInquiry(inquiry); setShowInquiryModal(true); }}>
                         <Eye className="w-3 h-3 mr-1" />View
                       </Button>
-                      <Button variant="outline" size="sm">
-                        <MessageCircle className="w-3 h-3 mr-1" />Contact
+                      <Button variant="ghost" size="sm" className="text-red-500" onClick={() => deleteFranchiseInquiry(inquiry.id)}>
+                        <Trash2 className="w-3 h-3" />
                       </Button>
                     </div>
                   </div>
                 ))}
               </div>
             </Card>
+
+            {/* Inquiry Detail Modal */}
+            {showInquiryModal && selectedInquiry && (
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                <Card className="w-full max-w-lg bg-white p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-bold">Franchise Inquiry</h3>
+                    <Button variant="ghost" size="icon" onClick={() => setShowInquiryModal(false)}><X className="w-4 h-4" /></Button>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-500">Name</p>
+                        <p className="font-medium">{selectedInquiry.name}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">City</p>
+                        <p className="font-medium">{selectedInquiry.city}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Email</p>
+                        <p className="font-medium">{selectedInquiry.email}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Phone</p>
+                        <p className="font-medium">{selectedInquiry.phone}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Investment</p>
+                        <p className="font-medium">{selectedInquiry.investment || 'Not specified'}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Date</p>
+                        <p className="font-medium">{new Date(selectedInquiry.created_at).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                    {selectedInquiry.message && (
+                      <div>
+                        <p className="text-sm text-gray-500">Message</p>
+                        <p className="font-medium bg-gray-50 p-3 rounded-lg">{selectedInquiry.message}</p>
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-sm text-gray-500 mb-2">Status</p>
+                      <select 
+                        className="w-full border rounded-md p-2" 
+                        value={selectedInquiry.status}
+                        onChange={(e) => setSelectedInquiry({...selectedInquiry, status: e.target.value})}
+                      >
+                        <option value="new">New</option>
+                        <option value="contacted">Contacted</option>
+                        <option value="in_discussion">In Discussion</option>
+                        <option value="converted">Converted</option>
+                        <option value="rejected">Rejected</option>
+                      </select>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 mb-2">Notes</p>
+                      <textarea 
+                        className="w-full border rounded-md p-2" 
+                        rows={3}
+                        value={selectedInquiry.notes || ''}
+                        onChange={(e) => setSelectedInquiry({...selectedInquiry, notes: e.target.value})}
+                        placeholder="Add internal notes..."
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 mt-6">
+                    <Button variant="outline" onClick={() => setShowInquiryModal(false)}>Cancel</Button>
+                    <Button className="bg-purple-600" onClick={() => updateFranchiseInquiry(selectedInquiry.id, { status: selectedInquiry.status, notes: selectedInquiry.notes })}>
+                      Save Changes
+                    </Button>
+                  </div>
+                </Card>
+              </div>
+            )}
           </div>
         )}
       </div>
