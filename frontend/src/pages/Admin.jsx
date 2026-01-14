@@ -950,11 +950,19 @@ const Admin = () => {
 
             {/* Orders List */}
             <div className="space-y-4">
-              {orders.map((order, idx) => (
-                <Card key={idx} className="p-4" data-testid={`order-${idx}`}>
+              {orders.map((order, idx) => {
+                // Check if order contains custom cake items
+                const hasCustomCake = order.items?.some(item => item.isCustomCake || item.id?.startsWith('custom-cake'));
+                
+                return (
+                <Card 
+                  key={idx} 
+                  className={`p-4 ${hasCustomCake ? 'ring-2 ring-orange-400 bg-orange-50/30' : ''}`}
+                  data-testid={`order-${idx}`}
+                >
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-bold text-lg">{order.orderId}</h3>
                         <Badge variant={
                           order.status === 'delivered' ? 'success' :
@@ -963,6 +971,11 @@ const Admin = () => {
                         }>
                           {order.status || 'pending'}
                         </Badge>
+                        {hasCustomCake && (
+                          <Badge className="bg-orange-500 text-white">
+                            🎂 Custom Cake Order
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-sm text-gray-500">
                         {new Date(order.created_at).toLocaleString()}
@@ -993,9 +1006,57 @@ const Admin = () => {
                   <div className="bg-gray-50 rounded-lg p-3 mb-4">
                     <p className="text-xs text-gray-500 uppercase mb-2">Items</p>
                     {order.items?.map((item, i) => (
-                      <div key={i} className="flex justify-between text-sm">
-                        <span>{item.name} ({item.size}, {item.flavor}) x{item.quantity}</span>
-                        <span>₹{item.price * item.quantity}</span>
+                      <div key={i} className="mb-3 last:mb-0">
+                        <div className="flex justify-between text-sm">
+                          <span className="font-medium">
+                            {item.isCustomCake || item.id?.startsWith('custom-cake') ? '🎂 ' : ''}
+                            {item.name} 
+                            {item.selectedSize && ` (${item.selectedSize}`}
+                            {item.selectedFlavor && `, ${item.selectedFlavor})`}
+                            {!item.selectedSize && !item.selectedFlavor && item.size && ` (${item.size}, ${item.flavor})`}
+                            {' '}x{item.quantity}
+                          </span>
+                          <span className="font-medium">₹{item.price * item.quantity}</span>
+                        </div>
+                        
+                        {/* Custom Cake Details */}
+                        {(item.isCustomCake || item.customDetails) && item.customDetails && (
+                          <div className="mt-2 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                            <p className="text-xs text-orange-600 uppercase font-semibold mb-2">🎂 Custom Cake Details</p>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                              <div>
+                                <span className="text-gray-500">Shape:</span>
+                                <p className="font-medium">{item.customDetails.shapeIcon || ''} {item.customDetails.shape}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-500">Flavor:</span>
+                                <p className="font-medium">{item.customDetails.flavorIcon || ''} {item.customDetails.flavor}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-500">Weight:</span>
+                                <p className="font-medium">{item.customDetails.weight || '500g'}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-500">Text on Cake:</span>
+                                <p className="font-medium text-purple-700">&quot;{item.customDetails.customText || 'None'}&quot;</p>
+                              </div>
+                            </div>
+                            
+                            {/* Reference Image */}
+                            {item.customDetails.referenceImage && (
+                              <div className="mt-3 pt-3 border-t border-orange-200">
+                                <p className="text-xs text-orange-600 uppercase font-semibold mb-2">📸 Reference Image (Make it look like this)</p>
+                                <img 
+                                  src={item.customDetails.referenceImage} 
+                                  alt="Customer reference" 
+                                  className="w-32 h-32 object-cover rounded-lg border-2 border-orange-300 cursor-pointer hover:scale-105 transition-transform"
+                                  onClick={() => window.open(item.customDetails.referenceImage, '_blank')}
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Click to view full size</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
