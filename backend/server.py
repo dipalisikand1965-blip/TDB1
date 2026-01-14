@@ -749,9 +749,13 @@ class PetCelebration(BaseModel):
 class PetPreferences(BaseModel):
     """Food and treat preferences"""
     favorite_flavors: List[str] = Field(default_factory=list)
-    allergies: List[str] = Field(default_factory=list)
+    allergies: Any = Field(default_factory=list)  # Can be string or list
     texture_preference: Optional[str] = Field(default=None, description="crunchy, chewy, soft")
     treat_size: Optional[str] = Field(default=None, description="small, medium, large")
+    activity_level: Optional[str] = Field(default=None, description="couch_potato, moderate, active, athlete")
+    flavor_profile: Optional[str] = Field(default=None, description="farmhouse, ocean, garden, adventurous")
+    treat_texture: Optional[str] = Field(default=None, description="crunchy, chewy, frozen, any")
+    goals: Optional[str] = Field(default=None, description="Health/lifestyle goals")
 
 
 class PetProfileCreate(BaseModel):
