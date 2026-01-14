@@ -83,6 +83,7 @@ function MainLayout() {
         {/* Special Pages */}
         <Route path="/custom-cake" element={<CustomCakeDesigner />} />
         <Route path="/concierge" element={<MiraConcierge />} />
+        <Route path="/mira" element={<MiraPage />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/about" element={<About />} />
         <Route path="/membership" element={<Membership />} />
