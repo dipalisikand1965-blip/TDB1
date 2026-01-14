@@ -265,7 +265,20 @@ _GST applicable on final invoice_
       description: 'Please confirm your order on WhatsApp to complete.',
     });
     
+    // Mark cart as converted and clear
+    if (orderDetails?.orderId) {
+      markCartConverted(orderDetails.orderId);
+    }
     clearCart();
+  };
+
+  // Capture email for abandoned cart recovery when user enters it
+  const handleEmailChange = (e) => {
+    const email = e.target.value;
+    setFormData(prev => ({ ...prev, email }));
+    if (email && email.includes('@')) {
+      captureEmail(email, formData.parentName);
+    }
   };
 
   // Order confirmation screen
