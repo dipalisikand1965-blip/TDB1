@@ -1,0 +1,445 @@
+import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { useCart } from '../context/CartContext';
+import { 
+  Heart, 
+  Circle, 
+  Square, 
+  Upload, 
+  ShoppingCart, 
+  Sparkles,
+  Check,
+  X,
+  ImageIcon,
+  Cake
+} from 'lucide-react';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// Shape options with pricing (500g)
+const SHAPES = [
+  { id: 'bone', name: 'Bone', price: 799, icon: '🦴', description: 'Classic dog bone shape' },
+  { id: 'heart', name: 'Heart', price: 899, icon: '💜', description: 'Show your love' },
+  { id: 'round', name: 'Round', price: 699, icon: '⭕', description: 'Traditional round cake' },
+  { id: 'square', name: 'Square', price: 749, icon: '⬜', description: 'Modern square shape' },
+];
+
+// Flavor options
+const FLAVORS = [
+  { id: 'banana', name: 'Banana', price: 0, description: 'Sweet & healthy banana base' },
+  { id: 'chicken', name: 'Chicken', price: 50, description: 'Savory chicken flavor (+₹50)' },
+];
+
+const CakeDesigner = () => {
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
+  const fileInputRef = useRef(null);
+  
+  // State
+  const [selectedShape, setSelectedShape] = useState(null);
+  const [selectedFlavor, setSelectedFlavor] = useState(null);
+  const [customText, setCustomText] = useState('');
+  const [referenceImage, setReferenceImage] = useState(null);
+  const [referenceImagePreview, setReferenceImagePreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
+
+  // Calculate total price
+  const calculatePrice = () => {
+    let total = 0;
+    if (selectedShape) {
+      total += SHAPES.find(s => s.id === selectedShape)?.price || 0;
+    }
+    if (selectedFlavor) {
+      total += FLAVORS.find(f => f.id === selectedFlavor)?.price || 0;
+    }
+    return total;
+  };
+
+  // Handle image upload
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setReferenceImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to server
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await fetch(`${API_URL}/api/upload/cake-reference`, {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setReferenceImage(data.url || data.path);
+      }
+    } catch (error) {
+      console.error('Upload failed:', error);
+      // Still keep the preview even if upload fails
+      setReferenceImage(referenceImagePreview);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Remove uploaded image
+  const removeImage = () => {
+    setReferenceImage(null);
+    setReferenceImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Check if form is complete
+  const isComplete = selectedShape && selectedFlavor;
+
+  // Add to cart
+  const handleAddToCart = () => {
+    if (!isComplete) return;
+
+    const shape = SHAPES.find(s => s.id === selectedShape);
+    const flavor = FLAVORS.find(f => f.id === selectedFlavor);
+    
+    const customCake = {
+      id: `custom-cake-${Date.now()}`,
+      name: `Custom ${shape.name} Cake`,
+      price: calculatePrice(),
+      image: referenceImagePreview || '/placeholder-cake.png',
+      category: 'custom-cakes',
+      isCustomCake: true,
+      customDetails: {
+        shape: shape.name,
+        shapeIcon: shape.icon,
+        flavor: flavor.name,
+        customText: customText || 'No text',
+        referenceImage: referenceImage || referenceImagePreview,
+        weight: '500g'
+      }
+    };
+
+    addToCart(customCake, '500g', flavor.name, 1);
+    setAddedToCart(true);
+    
+    setTimeout(() => {
+      navigate('/checkout');
+    }, 1500);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-pink-50 to-white py-8 md:py-12">
+      <div className="max-w-5xl mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <Sparkles className="w-4 h-4" />
+            Design Your Dream Cake
+          </div>
+          <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-3">
+            🎂 Build Your Cake
+          </h1>
+          <p className="text-gray-600 max-w-xl mx-auto">
+            Create a personalized cake for your furry friend! Choose shape, flavor, add custom text, 
+            and upload a reference image.
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column - Options */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Step 1: Shape Selection */}
+            <Card className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                <h2 className="text-xl font-bold text-gray-900">Choose Shape</h2>
+                <span className="text-sm text-gray-500">(500g cake)</span>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {SHAPES.map((shape) => (
+                  <button
+                    key={shape.id}
+                    onClick={() => setSelectedShape(shape.id)}
+                    className={`relative p-4 rounded-xl border-2 transition-all ${
+                      selectedShape === shape.id
+                        ? 'border-purple-600 bg-purple-50 shadow-lg scale-105'
+                        : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'
+                    }`}
+                    data-testid={`shape-${shape.id}`}
+                  >
+                    {selectedShape === shape.id && (
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
+                        <Check className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+                    <div className="text-4xl mb-2">{shape.icon}</div>
+                    <h3 className="font-semibold text-gray-900">{shape.name}</h3>
+                    <p className="text-purple-600 font-bold">₹{shape.price}</p>
+                    <p className="text-xs text-gray-500 mt-1">{shape.description}</p>
+                  </button>
+                ))}
+              </div>
+            </Card>
+
+            {/* Step 2: Flavor Selection */}
+            <Card className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                <h2 className="text-xl font-bold text-gray-900">Choose Flavor</h2>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                {FLAVORS.map((flavor) => (
+                  <button
+                    key={flavor.id}
+                    onClick={() => setSelectedFlavor(flavor.id)}
+                    className={`relative p-4 rounded-xl border-2 transition-all text-left ${
+                      selectedFlavor === flavor.id
+                        ? 'border-purple-600 bg-purple-50 shadow-lg'
+                        : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'
+                    }`}
+                    data-testid={`flavor-${flavor.id}`}
+                  >
+                    {selectedFlavor === flavor.id && (
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
+                        <Check className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+                    <div className="text-2xl mb-2">{flavor.id === 'banana' ? '🍌' : '🍗'}</div>
+                    <h3 className="font-semibold text-gray-900">{flavor.name}</h3>
+                    <p className="text-purple-600 font-bold">
+                      {flavor.price === 0 ? 'Included' : `+₹${flavor.price}`}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">{flavor.description}</p>
+                  </button>
+                ))}
+              </div>
+            </Card>
+
+            {/* Step 3: Custom Text */}
+            <Card className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                <h2 className="text-xl font-bold text-gray-900">Add Custom Text</h2>
+                <span className="text-sm text-gray-500">(Optional)</span>
+              </div>
+              
+              <Input
+                placeholder="e.g., Happy Birthday Bruno! 🎉"
+                value={customText}
+                onChange={(e) => setCustomText(e.target.value)}
+                maxLength={50}
+                className="text-lg"
+                data-testid="custom-text-input"
+              />
+              <p className="text-xs text-gray-500 mt-2">{customText.length}/50 characters</p>
+            </Card>
+
+            {/* Step 4: Reference Image */}
+            <Card className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">4</div>
+                <h2 className="text-xl font-bold text-gray-900">Upload Reference Image</h2>
+                <span className="text-sm text-gray-500">(Optional)</span>
+              </div>
+              
+              <p className="text-gray-600 mb-4">
+                Have a design in mind? Upload a photo and we'll try to recreate it! 📸
+              </p>
+
+              {referenceImagePreview ? (
+                <div className="relative inline-block">
+                  <img 
+                    src={referenceImagePreview} 
+                    alt="Reference" 
+                    className="w-48 h-48 object-cover rounded-xl border-2 border-purple-200"
+                  />
+                  <button
+                    onClick={removeImage}
+                    className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                  {uploading && (
+                    <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center">
+                      <div className="animate-spin w-8 h-8 border-4 border-white border-t-transparent rounded-full"></div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full h-40 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-purple-400 hover:bg-purple-50 transition-colors"
+                  data-testid="upload-reference-btn"
+                >
+                  <Upload className="w-8 h-8 text-gray-400" />
+                  <span className="text-gray-600 font-medium">Click to upload image</span>
+                  <span className="text-xs text-gray-400">PNG, JPG up to 5MB</span>
+                </button>
+              )}
+              
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+            </Card>
+          </div>
+
+          {/* Right Column - Summary */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-24">
+              <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200">
+                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <Cake className="w-5 h-5 text-purple-600" />
+                  Your Custom Cake
+                </h2>
+
+                {/* Preview */}
+                <div className="bg-white rounded-xl p-4 mb-4">
+                  {referenceImagePreview ? (
+                    <img 
+                      src={referenceImagePreview} 
+                      alt="Your cake design" 
+                      className="w-full h-40 object-cover rounded-lg mb-3"
+                    />
+                  ) : (
+                    <div className="w-full h-40 bg-gray-100 rounded-lg flex items-center justify-center mb-3">
+                      <div className="text-center text-gray-400">
+                        <ImageIcon className="w-12 h-12 mx-auto mb-2" />
+                        <p className="text-sm">No reference image</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selectedShape && (
+                    <div className="text-center">
+                      <span className="text-4xl">{SHAPES.find(s => s.id === selectedShape)?.icon}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Summary Details */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between items-center py-2 border-b border-purple-200">
+                    <span className="text-gray-600">Shape</span>
+                    <span className="font-medium">
+                      {selectedShape ? (
+                        <>
+                          {SHAPES.find(s => s.id === selectedShape)?.icon} {SHAPES.find(s => s.id === selectedShape)?.name}
+                        </>
+                      ) : (
+                        <span className="text-gray-400">Not selected</span>
+                      )}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center py-2 border-b border-purple-200">
+                    <span className="text-gray-600">Flavor</span>
+                    <span className="font-medium">
+                      {selectedFlavor ? (
+                        FLAVORS.find(f => f.id === selectedFlavor)?.name
+                      ) : (
+                        <span className="text-gray-400">Not selected</span>
+                      )}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center py-2 border-b border-purple-200">
+                    <span className="text-gray-600">Weight</span>
+                    <span className="font-medium">500g</span>
+                  </div>
+                  
+                  {customText && (
+                    <div className="flex justify-between items-center py-2 border-b border-purple-200">
+                      <span className="text-gray-600">Text</span>
+                      <span className="font-medium text-sm truncate max-w-[150px]">"{customText}"</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-between items-center py-2 border-b border-purple-200">
+                    <span className="text-gray-600">Reference</span>
+                    <span className="font-medium">
+                      {referenceImagePreview ? (
+                        <span className="text-green-600 flex items-center gap-1">
+                          <Check className="w-4 h-4" /> Uploaded
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">None</span>
+                      )}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Price */}
+                <div className="bg-white rounded-xl p-4 mb-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Base ({selectedShape ? SHAPES.find(s => s.id === selectedShape)?.name : 'Shape'})</span>
+                    <span>₹{selectedShape ? SHAPES.find(s => s.id === selectedShape)?.price : 0}</span>
+                  </div>
+                  {selectedFlavor && FLAVORS.find(f => f.id === selectedFlavor)?.price > 0 && (
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="text-gray-600">Chicken Flavor</span>
+                      <span>+₹50</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-200">
+                    <span className="font-bold text-lg">Total</span>
+                    <span className="font-bold text-2xl text-purple-600">₹{calculatePrice()}</span>
+                  </div>
+                </div>
+
+                {/* Add to Cart Button */}
+                <Button
+                  onClick={handleAddToCart}
+                  disabled={!isComplete || addedToCart}
+                  className={`w-full py-6 text-lg font-bold transition-all ${
+                    addedToCart
+                      ? 'bg-green-600 hover:bg-green-600'
+                      : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
+                  }`}
+                  data-testid="add-custom-cake-btn"
+                >
+                  {addedToCart ? (
+                    <>
+                      <Check className="w-5 h-5 mr-2" />
+                      Added! Going to checkout...
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-5 h-5 mr-2" />
+                      Add to Cart - ₹{calculatePrice()}
+                    </>
+                  )}
+                </Button>
+
+                {!isComplete && (
+                  <p className="text-center text-sm text-gray-500 mt-3">
+                    Please select shape and flavor to continue
+                  </p>
+                )}
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CakeDesigner;
