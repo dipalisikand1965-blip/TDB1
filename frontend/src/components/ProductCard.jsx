@@ -223,9 +223,10 @@ const ProductDetailModal = ({ product, onClose }) => {
           {/* Image */}
           <div className="relative aspect-square bg-gray-100 md:sticky md:top-0">
             <img
-              src={product.image}
+              src={product.image && product.image.trim() !== '' ? product.image : 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579'}
               alt={product.name}
               className="w-full h-full object-cover"
+              onError={(e) => { e.target.src = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579'; }}
             />
             {/* Badges */}
             <div className="absolute top-3 left-3 flex flex-col gap-2">
