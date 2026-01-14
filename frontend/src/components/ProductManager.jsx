@@ -252,7 +252,7 @@ const ProductManager = ({ credentials }) => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+          'Authorization': getAuthHeader()
         },
         body: JSON.stringify(payload)
       });
@@ -268,6 +268,62 @@ const ProductManager = ({ credentials }) => {
     } catch (error) {
       console.error('Save failed:', error);
       setSaveMessage({ type: 'error', text: 'Failed to save product' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Create new product
+  const createProduct = async () => {
+    setSaving(true);
+    setSaveMessage(null);
+    
+    try {
+      const payload = {
+        ...createForm,
+        id: `local-${Date.now()}`,
+        tags: createForm.tags ? createForm.tags.split(',').map(t => t.trim()) : [],
+        price: parseFloat(createForm.price) || 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        locally_edited: true,
+        available: true
+      };
+      
+      const response = await fetch(`${API_URL}/api/admin/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': getAuthHeader()
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      if (response.ok) {
+        setSaveMessage({ type: 'success', text: 'Product created successfully!' });
+        fetchProducts();
+        setTimeout(() => {
+          setShowCreateModal(false);
+          setCreateForm({
+            name: '',
+            description: '',
+            category: 'cakes',
+            price: 0,
+            image: '',
+            sizes: [],
+            flavors: [],
+            status: 'active',
+            tags: ''
+          });
+          setSaveMessage(null);
+        }, 1500);
+      } else {
+        const error = await response.json();
+        setSaveMessage({ type: 'error', text: error.detail || 'Failed to create product' });
+      }
+    } catch (error) {
+      console.error('Create failed:', error);
+      setSaveMessage({ type: 'error', text: 'Failed to create product' });
     } finally {
       setSaving(false);
     }
