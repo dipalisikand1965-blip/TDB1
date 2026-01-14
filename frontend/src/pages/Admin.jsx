@@ -1083,7 +1083,8 @@ const Admin = () => {
                     </Button>
                   </div>
                 </Card>
-              ))}
+              );
+              })}
               {orders.length === 0 && (
                 <Card className="p-8 text-center text-gray-500">
                   No orders yet. Orders placed via checkout will appear here.
