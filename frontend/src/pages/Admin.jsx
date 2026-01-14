@@ -2598,6 +2598,328 @@ const Admin = () => {
                         placeholder="Add internal notes..."
                       />
                     </div>
+      {/* Pet Profile Detail Modal */}
+      {selectedPetProfile && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <Card className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white">
+            <div className="p-6 border-b bg-gradient-to-r from-purple-50 to-pink-50 flex justify-between items-start">
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center overflow-hidden border-4 border-white shadow-sm">
+                  {selectedPetProfile.photo_url ? (
+                    <img src={selectedPetProfile.photo_url} alt={selectedPetProfile.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <PawPrint className="w-10 h-10 text-purple-300" />
+                  )}
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">{selectedPetProfile.name}</h2>
+                  <p className="text-gray-600">{selectedPetProfile.breed} • {selectedPetProfile.species} • {selectedPetProfile.gender}</p>
+                  <div className="flex gap-2 mt-2">
+                    {selectedPetProfile.soul?.persona && <Badge className="bg-purple-600">{selectedPetProfile.soul.persona}</Badge>}
+                    <Badge variant="outline">Age: {selectedPetProfile.age_years || '?'}y {selectedPetProfile.age_months || '?'}m</Badge>
+                  </div>
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setSelectedPetProfile(null)}>
+                <X className="w-6 h-6" />
+              </Button>
+            </div>
+            
+            <div className="p-6 space-y-8">
+              {/* Soul Section */}
+              <section>
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-purple-600" /> Soul & Personality
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4 bg-purple-50 p-4 rounded-xl">
+                  <div>
+                    <p className="text-xs text-purple-600 font-semibold uppercase">Special Move</p>
+                    <p className="font-medium">{selectedPetProfile.soul?.special_move || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-purple-600 font-semibold uppercase">Human Job</p>
+                    <p className="font-medium">{selectedPetProfile.soul?.human_job || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-purple-600 font-semibold uppercase">Security Blanket</p>
+                    <p className="font-medium">{selectedPetProfile.soul?.security_blanket || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-purple-600 font-semibold uppercase">Love Language</p>
+                    <p className="font-medium">{selectedPetProfile.soul?.love_language || 'Not set'}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-xs text-purple-600 font-semibold uppercase">Personality Tag</p>
+                    <p className="font-medium text-lg">"{selectedPetProfile.soul?.personality_tag || 'Good Dog'}"</p>
+                  </div>
+                </div>
+              </section>
+
+              {/* Preferences Section */}
+              <section>
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <Utensils className="w-5 h-5 text-orange-600" /> Preferences
+                </h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-sm text-gray-500">Favorite Flavors</p>
+                      <div className="flex flex-wrap gap-2 mt-1">
+                        {selectedPetProfile.preferences?.favorite_flavors?.map(f => (
+                          <Badge key={f} variant="secondary" className="bg-orange-100 text-orange-800">{f}</Badge>
+                        )) || <span className="text-gray-400 italic">None selected</span>}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Allergies</p>
+                      <div className="flex flex-wrap gap-2 mt-1">
+                        {Array.isArray(selectedPetProfile.preferences?.allergies) 
+                          ? selectedPetProfile.preferences.allergies.map(a => <Badge key={a} variant="destructive" className="bg-red-100 text-red-800 border-red-200">{a}</Badge>)
+                          : <span className="text-gray-700">{selectedPetProfile.preferences?.allergies || 'None'}</span>}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <p className="text-xs text-gray-500">Texture</p>
+                        <p className="font-medium capitalize">{selectedPetProfile.preferences?.texture_preference || 'Any'}</p>
+                      </div>
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <p className="text-xs text-gray-500">Treat Size</p>
+                        <p className="font-medium capitalize">{selectedPetProfile.preferences?.treat_size || 'Any'}</p>
+                      </div>
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <p className="text-xs text-gray-500">Activity</p>
+                        <p className="font-medium capitalize">{selectedPetProfile.preferences?.activity_level || 'Unknown'}</p>
+                      </div>
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <p className="text-xs text-gray-500">Flavor Profile</p>
+                        <p className="font-medium capitalize">{selectedPetProfile.preferences?.flavor_profile || 'Unknown'}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Celebrations Section */}
+              <section>
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-green-600" /> Celebrations
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {selectedPetProfile.celebrations?.map((cel, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-3 border rounded-lg hover:bg-green-50 transition-colors">
+                      <div>
+                        <p className="font-medium capitalize">{cel.custom_name || cel.occasion?.replace('_', ' ')}</p>
+                        <p className="text-sm text-gray-500">{cel.date}</p>
+                      </div>
+                      {cel.is_recurring && <Badge variant="outline" className="text-xs">Yearly</Badge>}
+                    </div>
+                  )) || <p className="text-gray-500 italic">No celebrations added</p>}
+                </div>
+              </section>
+
+              {/* Owner Section */}
+              <section className="border-t pt-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <User className="w-5 h-5 text-blue-600" /> Parent Details
+                </h3>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Name</p>
+                    <p className="font-medium">{selectedPetProfile.owner_name || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Email</p>
+                    <p className="font-medium">{selectedPetProfile.owner_email || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Phone</p>
+                    <p className="font-medium">{selectedPetProfile.owner_phone || 'N/A'}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4 mt-4">
+                  <Badge variant={selectedPetProfile.whatsapp_reminders ? 'success' : 'secondary'}>
+                    WhatsApp: {selectedPetProfile.whatsapp_reminders ? 'On' : 'Off'}
+                  </Badge>
+                  <Badge variant={selectedPetProfile.email_reminders ? 'success' : 'secondary'}>
+                    Email: {selectedPetProfile.email_reminders ? 'On' : 'Off'}
+                  </Badge>
+                </div>
+              </section>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Member Detail Modal */}
+      {selectedMember && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-lg bg-white p-6">
+            <div className="flex justify-between items-start mb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center text-2xl font-bold text-purple-600">
+                  {selectedMember.name?.charAt(0) || selectedMember.email.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">{selectedMember.name || 'Member'}</h2>
+                  <p className="text-gray-500">{selectedMember.email}</p>
+                  <Badge className="mt-1" variant={
+                    selectedMember.membership_tier === 'vip' ? 'warning' :
+                    selectedMember.membership_tier === 'premium' ? 'default' : 'secondary'
+                  }>
+                    {selectedMember.membership_tier.toUpperCase()} Member
+                  </Badge>
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setSelectedMember(null)}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-500 uppercase">Joined</p>
+                  <p className="font-medium">{new Date(selectedMember.created_at).toLocaleDateString()}</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-500 uppercase">Phone</p>
+                  <p className="font-medium">{selectedMember.phone || 'N/A'}</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-500 uppercase">Chats Today</p>
+                  <p className="font-medium text-purple-600 font-bold">{selectedMember.chat_count_today || 0}</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-500 uppercase">Last Active</p>
+                  <p className="font-medium">{selectedMember.last_chat_date || 'N/A'}</p>
+                </div>
+              </div>
+
+              {selectedMember.membership_expires && (
+                <div className="bg-yellow-50 border border-yellow-100 p-3 rounded-lg">
+                  <p className="text-sm text-yellow-800">
+                    Membership expires on <strong>{new Date(selectedMember.membership_expires).toLocaleDateString()}</strong>
+                  </p>
+                </div>
+              )}
+
+              <div className="border-t pt-4 mt-4">
+                <h4 className="font-semibold mb-2">Actions</h4>
+                <div className="flex gap-2">
+                  <select 
+                    className="border rounded px-3 py-2 text-sm"
+                    value={selectedMember.membership_tier}
+                    onChange={(e) => updateMemberTier(selectedMember.id, e.target.value)}
+                  >
+                    <option value="free">Set to Free</option>
+                    <option value="pawsome">Set to Pawsome</option>
+                    <option value="premium">Set to Premium</option>
+                    <option value="vip">Set to VIP</option>
+                  </select>
+                  <Button variant="outline" size="sm">Reset Chat Limit</Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Order Detail Modal */}
+      {selectedOrderDetails && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
+            <div className="p-4 border-b flex justify-between items-center bg-gray-50">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Order #{selectedOrderDetails.orderId}</h3>
+                <p className="text-sm text-gray-500">{new Date(selectedOrderDetails.created_at).toLocaleString()}</p>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setSelectedOrderDetails(null)}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              {/* Status Bar */}
+              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                <div>
+                  <p className="text-sm text-gray-500">Current Status</p>
+                  <Badge className="text-lg" variant={
+                    selectedOrderDetails.status === 'delivered' ? 'success' : 'default'
+                  }>{selectedOrderDetails.status?.toUpperCase()}</Badge>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-500">Total Amount</p>
+                  <p className="text-2xl font-bold text-purple-600">₹{selectedOrderDetails.total}</p>
+                </div>
+              </div>
+
+              {/* Customer & Delivery */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-semibold border-b pb-2 mb-2">Customer</h4>
+                  <p className="font-medium">{selectedOrderDetails.customer?.parentName}</p>
+                  <p className="text-sm text-gray-600">{selectedOrderDetails.customer?.email}</p>
+                  <p className="text-sm text-gray-600">{selectedOrderDetails.customer?.phone}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold border-b pb-2 mb-2">Delivery</h4>
+                  <p className="font-medium">{selectedOrderDetails.delivery?.name}</p>
+                  <p className="text-sm text-gray-600">{selectedOrderDetails.delivery?.address}</p>
+                  <p className="text-sm text-gray-600">{selectedOrderDetails.delivery?.city}, {selectedOrderDetails.delivery?.pincode}</p>
+                </div>
+              </div>
+
+              {/* Items */}
+              <div>
+                <h4 className="font-semibold border-b pb-2 mb-2">Order Items</h4>
+                <div className="space-y-3">
+                  {selectedOrderDetails.items?.map((item, idx) => (
+                    <div key={idx} className="flex gap-4 p-3 bg-gray-50 rounded-lg">
+                      {item.customDetails?.referenceImage && (
+                        <img src={item.customDetails.referenceImage} className="w-16 h-16 object-cover rounded" />
+                      )}
+                      <div className="flex-1">
+                        <div className="flex justify-between">
+                          <p className="font-medium">{item.name}</p>
+                          <p className="font-bold">₹{item.price * item.quantity}</p>
+                        </div>
+                        <p className="text-sm text-gray-500">
+                          Qty: {item.quantity} 
+                          {item.selectedSize && ` • ${item.selectedSize}`}
+                          {item.selectedFlavor && ` • ${item.selectedFlavor}`}
+                        </p>
+                        {item.customDetails && (
+                          <div className="mt-2 text-xs bg-white p-2 rounded border">
+                            <p><strong>Custom Text:</strong> {item.customDetails.customText}</p>
+                            <p><strong>Shape:</strong> {item.customDetails.shape} | <strong>Flavor:</strong> {item.customDetails.flavor}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Special Instructions */}
+              {selectedOrderDetails.specialInstructions && (
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+                  <h4 className="font-semibold text-yellow-800 text-sm mb-1">Special Instructions</h4>
+                  <p className="text-sm text-yellow-900">{selectedOrderDetails.specialInstructions}</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="p-4 border-t bg-gray-50 flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setSelectedOrderDetails(null)}>Close</Button>
+              <Button onClick={() => window.print()}>Print Order</Button>
+            </div>
+          </Card>
+        </div>
+      )}
+
                   </div>
                   <div className="flex justify-end gap-2 mt-6">
                     <Button variant="outline" onClick={() => setShowInquiryModal(false)}>Cancel</Button>
