@@ -116,6 +116,24 @@ frontend:
         - working: true
           agent: "testing"
           comment: "✅ COMPREHENSIVE TEST PASSED - Pet profile creation flow works perfectly on embed route (/pet-soul). Successfully tested: 1) Form loads correctly in embed mode, 2) All 6 steps of the form work (Basic Info, Lifestyle, Personality, Soul Questions, Celebrations, Contact), 3) Form submission creates pet profile successfully, 4) Success message 'Welcome to the family, Buddy!' appears correctly, 5) Pet profile card displays with correct data, 6) Embed-specific external shop button works, 7) Backend API integration functional. The unauthenticated submission works and UI handles embed state correctly."
+        - working: true
+          agent: "testing"
+          comment: "✅ EMAIL PARAMETER INTEGRATION FULLY TESTED AND FIXED - Successfully tested email parameter functionality: 1) Created pet via API for 'param_test@example.com', 2) Fixed critical bug in frontend where API call used 'email' parameter instead of 'owner_email', 3) Verified 'Welcome Back!' screen appears correctly with email parameter, 4) Pet 'Buddy' (Golden Retriever, Foodie persona) displays correctly with all details, 5) 'Add Another Pet' button works and navigates to form, 6) Email field is correctly pre-filled in step 5 when adding another pet, 7) Email is saved to localStorage for future visits, 8) All iframe integration functionality confirmed working. The email parameter integration now works perfectly for parent site identity passing."
+
+  - task: "Pet Profile Email Parameter Integration"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/PetProfile.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL BUG FOUND - Email parameter integration not working. Frontend was using 'email' parameter in API call but backend expects 'owner_email'. This caused the 'Welcome Back!' screen to never appear even when pets exist for the email."
+        - working: true
+          agent: "testing"
+          comment: "✅ BUG FIXED AND FULLY TESTED - Fixed API parameter mismatch (line 124 in PetProfile.jsx). Now correctly uses 'owner_email' parameter. Comprehensive testing confirms: 1) URL parameter ?email=param_test@example.com correctly loads existing pets, 2) 'Welcome Back!' screen displays with pet list, 3) Pet details (name, breed, persona, birthday) show correctly, 4) 'Add Another Pet' functionality works, 5) Email pre-fills in new pet form, 6) localStorage integration works, 7) All iframe identity passing functionality confirmed working."
 
 metadata:
   created_by: "testing_agent"
