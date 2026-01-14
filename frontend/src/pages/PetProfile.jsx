@@ -87,7 +87,9 @@ const PetProfile = ({ isEmbed = false }) => {
   // Fetch personas and occasions
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
+        // Fetch personas and occasions
         const [personasRes, occasionsRes] = await Promise.all([
           fetch(`${API_URL}/api/pets/personas`),
           fetch(`${API_URL}/api/pets/occasions`)
@@ -102,8 +104,32 @@ const PetProfile = ({ isEmbed = false }) => {
           const data = await occasionsRes.json();
           setOccasions(data.occasions || {});
         }
+
+        // Check for saved email (returning user)
+        const email = localStorage.getItem('tdb_pet_parent_email');
+        if (email) {
+          setSavedEmail(email);
+          // Fetch existing pets
+          const petsRes = await fetch(`${API_URL}/api/pets?email=${encodeURIComponent(email)}&limit=50`);
+          if (petsRes.ok) {
+            const data = await petsRes.json();
+            if (data.pets && data.pets.length > 0) {
+              setExistingPets(data.pets);
+              setStep(0); // Show pet list
+            } else {
+              setStep(1); // No pets, show onboarding
+            }
+          } else {
+            setStep(1);
+          }
+        } else {
+          setStep(1); // New user, show onboarding
+        }
       } catch (error) {
         console.error('Failed to fetch data:', error);
+        setStep(1);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
