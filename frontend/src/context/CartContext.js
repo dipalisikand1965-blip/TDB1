@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 
 const CartContext = createContext();
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Helper function to safely get cart from localStorage
 const getStoredCart = () => {
@@ -19,6 +20,16 @@ const getStoredCart = () => {
   return [];
 };
 
+// Get or create session ID for cart tracking
+const getSessionId = () => {
+  let sessionId = localStorage.getItem('cartSessionId');
+  if (!sessionId) {
+    sessionId = `sess-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('cartSessionId', sessionId);
+  }
+  return sessionId;
+};
+
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
@@ -31,18 +42,93 @@ export const CartProvider = ({ children }) => {
   // Initialize state synchronously from localStorage using lazy initializer
   const [cartItems, setCartItems] = useState(() => getStoredCart());
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [userEmail, setUserEmail] = useState(() => localStorage.getItem('cartUserEmail') || '');
   
   // Track if initial mount is complete to prevent overwriting localStorage on first render
   const isInitialMount = useRef(true);
+  const snapshotTimeout = useRef(null);
 
-  // Save cart to localStorage whenever it changes (skip initial mount)
+  // Save cart snapshot for abandoned cart tracking
+  const saveCartSnapshot = useCallback(async (items) => {
+    if (items.length === 0) return;
+    
+    try {
+      const sessionId = getSessionId();
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      const snapshot = {
+        session_id: sessionId,
+        user_id: user.id || null,
+        email: userEmail || user.email || null,
+        phone: user.phone || null,
+        name: user.name || null,
+        items: items.map(item => ({
+          product_id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          variant: item.selectedSize || item.selectedFlavor || null,
+          image: item.image || null
+        })),
+        subtotal: items.reduce((total, item) => total + (item.price * item.quantity), 0)
+      };
+      
+      await fetch(`${API_URL}/api/cart/snapshot`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(snapshot)
+      });
+    } catch (error) {
+      console.error('Error saving cart snapshot:', error);
+    }
+  }, [userEmail]);
+
+  // Debounced snapshot saving
+  const debouncedSaveSnapshot = useCallback((items) => {
+    if (snapshotTimeout.current) {
+      clearTimeout(snapshotTimeout.current);
+    }
+    snapshotTimeout.current = setTimeout(() => {
+      saveCartSnapshot(items);
+    }, 2000); // Wait 2 seconds after last change
+  }, [saveCartSnapshot]);
+
+  // Save cart to localStorage and trigger snapshot whenever it changes (skip initial mount)
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
     localStorage.setItem('doggyBakeryCart', JSON.stringify(cartItems));
-  }, [cartItems]);
+    debouncedSaveSnapshot(cartItems);
+  }, [cartItems, debouncedSaveSnapshot]);
+
+  // Capture email for abandoned cart recovery
+  const captureEmail = useCallback(async (email, name = null) => {
+    setUserEmail(email);
+    localStorage.setItem('cartUserEmail', email);
+    
+    try {
+      const sessionId = getSessionId();
+      await fetch(`${API_URL}/api/cart/capture-email?session_id=${sessionId}&email=${encodeURIComponent(email)}${name ? `&name=${encodeURIComponent(name)}` : ''}`, {
+        method: 'POST'
+      });
+    } catch (error) {
+      console.error('Error capturing email:', error);
+    }
+  }, []);
+
+  // Mark cart as converted when order is placed
+  const markCartConverted = useCallback(async (orderId) => {
+    try {
+      const sessionId = getSessionId();
+      await fetch(`${API_URL}/api/cart/convert/${sessionId}?order_id=${orderId}`, {
+        method: 'POST'
+      });
+    } catch (error) {
+      console.error('Error marking cart converted:', error);
+    }
+  }, []);
 
   const addToCart = (product, selectedSize, selectedFlavor, quantity = 1) => {
     const itemId = `${product.id}-${selectedSize}-${selectedFlavor}`;
@@ -102,7 +188,10 @@ export const CartProvider = ({ children }) => {
       getCartTotal,
       getCartCount,
       isCartOpen,
-      setIsCartOpen
+      setIsCartOpen,
+      captureEmail,
+      markCartConverted,
+      userEmail
     }}>
       {children}
     </CartContext.Provider>
