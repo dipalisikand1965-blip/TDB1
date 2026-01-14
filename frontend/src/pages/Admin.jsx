@@ -66,6 +66,33 @@ const Admin = () => {
   const [selectedPetProfile, setSelectedPetProfile] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
+  const [memberDetails, setMemberDetails] = useState({ orders: [], pets: [] });
+
+  useEffect(() => {
+    if (selectedMember) {
+      const fetchDetails = async () => {
+        try {
+          const [ordersRes, petsRes] = await Promise.all([
+            fetch(`${API_URL}/api/admin/orders?email=${selectedMember.email}`, { headers: getAuthHeaders() }),
+            fetch(`${API_URL}/api/admin/pets?search=${selectedMember.email}`, { headers: getAuthHeaders() })
+          ]);
+          
+          const ordersData = await ordersRes.json();
+          const petsData = await petsRes.json();
+          
+          setMemberDetails({
+            orders: ordersData.orders || [],
+            pets: petsData.pets || []
+          });
+        } catch (e) {
+          console.error("Failed to fetch member details", e);
+        }
+      };
+      fetchDetails();
+    } else {
+      setMemberDetails({ orders: [], pets: [] });
+    }
+  }, [selectedMember]);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [filterCity, setFilterCity] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
