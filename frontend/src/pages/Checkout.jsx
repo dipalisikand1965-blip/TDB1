@@ -416,6 +416,16 @@ _GST applicable on final invoice_
               Thank you, {orderDetails.customer.parentName}! Your pawsome treats are being prepared.
             </p>
 
+            {/* Savings Banner */}
+            {(orderDetails.discountAmount > 0 || orderDetails.loyaltyDiscount > 0) && (
+              <div className="bg-green-100 border border-green-300 rounded-xl p-4 mb-6">
+                <p className="text-green-800 font-semibold flex items-center justify-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  You saved ₹{(orderDetails.discountAmount || 0) + (orderDetails.loyaltyDiscount || 0)} on this order!
+                </p>
+              </div>
+            )}
+
             {/* WhatsApp Confirmation CTA */}
             <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 mb-6">
               <div className="flex items-center justify-center gap-2 mb-4">
@@ -462,6 +472,18 @@ _GST applicable on final invoice_
                     <span className="font-medium">₹{item.price * item.quantity}</span>
                   </div>
                 ))}
+                {orderDetails.discountCode && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Discount ({orderDetails.discountCode})</span>
+                    <span>-₹{orderDetails.discountAmount}</span>
+                  </div>
+                )}
+                {orderDetails.loyaltyPointsUsed > 0 && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Loyalty Points ({orderDetails.loyaltyPointsUsed} pts)</span>
+                    <span>-₹{orderDetails.loyaltyDiscount}</span>
+                  </div>
+                )}
                 <div className="border-t pt-3 flex justify-between font-bold text-purple-600">
                   <span>Total</span>
                   <span>₹{orderDetails.total}</span>
