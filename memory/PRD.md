@@ -167,7 +167,30 @@ ADMIN_PASSWORD=lola4304
 
 ## Changelog
 
-### Jan 14, 2025 (Today)
+### Jan 14, 2025 (Session 2)
+- ✅ **Discount Code at Checkout (P1)**
+  - Added discount code input field in checkout sidebar
+  - Validates codes via `POST /api/discount-codes/validate`
+  - Shows applied discount in Order Summary with code name and amount
+  - X button to remove applied discount
+  - Available codes: COMEBACK10 (10% off, min ₹500), WELCOME15 (15% off, min ₹799), BIRTHDAY20 (20% off, min ₹999)
+  - Case-insensitive input (comeback10 → COMEBACK10)
+- ✅ **Loyalty Points at Checkout (P1)**
+  - Fetches user's Pawsome Points when email is entered
+  - Displays available points with "Worth up to ₹X in savings" message
+  - Input field to enter points to redeem
+  - "Use All" button to redeem all available points
+  - Shows redeemed points in Order Summary
+  - 1 point = ₹0.50, minimum 100 points to redeem
+- ✅ **Combined Discounts**
+  - Order total correctly calculates with both discount code AND loyalty points
+  - WhatsApp order message includes discount/loyalty details
+  - Order confirmation screen shows savings breakdown
+- ✅ **Email Configuration Updated**
+  - Changed sender email from `onboarding@resend.dev` to `woof@thedoggycompany.in`
+- ✅ **Testing**: 100% pass rate (12/12 backend tests, all frontend tests passed)
+
+### Jan 14, 2025 (Session 1)
 - ✅ **CRITICAL FIX: Cart persistence bug** - Cart was emptying when navigating between pages
   - Root cause: Race condition - cart state initialized with `[]`, then useEffect would overwrite localStorage before loading
   - Solution: Initialize cart state synchronously from localStorage using lazy initializer with `useRef` to skip initial mount
