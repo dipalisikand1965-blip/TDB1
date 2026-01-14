@@ -290,14 +290,13 @@ _GST applicable on final invoice_
             </p>
 
             {/* WhatsApp Confirmation CTA */}
-            <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 mb-8">
+            <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 mb-6">
               <div className="flex items-center justify-center gap-2 mb-4">
                 <MessageCircle className="w-6 h-6 text-green-600" />
-                <h3 className="text-lg font-semibold text-green-800">Confirm on WhatsApp</h3>
+                <h3 className="text-lg font-semibold text-green-800">Step 1: Confirm on WhatsApp</h3>
               </div>
               <p className="text-sm text-green-700 mb-4">
-                Click below to send your order details and receive payment link.
-                Our team responds within minutes!
+                Click below to send your order details to our team.
               </p>
               <a
                 href={whatsappUrl}
@@ -307,8 +306,23 @@ _GST applicable on final invoice_
                 data-testid="whatsapp-confirm-btn"
               >
                 <MessageCircle className="w-5 h-5" />
-                Confirm on WhatsApp
+                Send Order on WhatsApp
               </a>
+            </div>
+
+            {/* Payment Info */}
+            <div className="bg-purple-50 border-2 border-purple-200 rounded-xl p-6 mb-8">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <CreditCard className="w-6 h-6 text-purple-600" />
+                <h3 className="text-lg font-semibold text-purple-800">Step 2: Complete Payment</h3>
+              </div>
+              <p className="text-purple-700 text-sm">
+                Once you confirm your order on WhatsApp, our team will send you a 
+                <span className="font-bold"> secure payment link</span> within 5 minutes.
+              </p>
+              <p className="text-purple-600 text-xs mt-2">
+                We accept UPI, Cards, Net Banking & Wallets
+              </p>
             </div>
 
             {/* Order Summary */}
