@@ -802,6 +802,10 @@ const Admin = () => {
       else if (activeTab === 'faqs') fetchFaqs();
       else if (activeTab === 'testimonials') fetchTestimonials();
       else if (activeTab === 'insights') fetchBlogPosts();
+      else if (activeTab === 'pets') fetchPetProfiles();
+      else if (activeTab === 'loyalty') fetchLoyaltyStats();
+      else if (activeTab === 'discounts') fetchDiscountCodes();
+      else if (activeTab === 'abandoned') fetchAbandonedCarts();
     }
   }, [isAuthenticated, activeTab, filterCity, filterStatus, productFilter, orderFilter]);
 
