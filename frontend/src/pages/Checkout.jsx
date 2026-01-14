@@ -696,12 +696,21 @@ _GST applicable on final invoice_
                   <div className="border-t mt-4 pt-4 space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Subtotal</span>
-                      <span>₹{getCartTotal()}</span>
+                      <span>₹{subtotal}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Delivery</span>
-                      <span>₹{deliveryFee}</span>
+                      {deliveryFee === 0 ? (
+                        <span className="text-green-600 font-medium">FREE! 🎉</span>
+                      ) : (
+                        <span>₹{deliveryFee}</span>
+                      )}
                     </div>
+                    {subtotal < FREE_SHIPPING_THRESHOLD && (
+                      <p className="text-xs text-purple-600 bg-purple-50 p-2 rounded">
+                        Add ₹{FREE_SHIPPING_THRESHOLD - subtotal} more for FREE delivery!
+                      </p>
+                    )}
                     <div className="flex justify-between font-bold text-lg pt-2 border-t">
                       <span>Total</span>
                       <span className="text-purple-600">₹{total}</span>
