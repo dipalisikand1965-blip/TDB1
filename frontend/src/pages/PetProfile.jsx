@@ -980,7 +980,7 @@ const PetProfile = ({ isEmbed = false }) => {
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50 py-12">
       <div className="max-w-2xl mx-auto px-4">
         {/* Progress Bar */}
-        {step < 6 && (
+        {step > 0 && step < 6 && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-600">Step {step} of 5</span>
