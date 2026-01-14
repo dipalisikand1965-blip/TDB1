@@ -4130,6 +4130,13 @@ async def create_pet_profile(pet: PetProfileCreate):
 
 
 @api_router.get("/pets")
+@api_router.get("/pets/my-pets")
+async def get_my_pets(current_user: dict = Depends(get_current_user)):
+    """Get pets for the logged-in user"""
+    pets = await db.pets.find({"owner_email": current_user["email"]}, {"_id": 0}).to_list(50)
+    return {"pets": pets}
+
+
 async def list_pet_profiles(
     owner_email: Optional[str] = None,
     owner_phone: Optional[str] = None,
