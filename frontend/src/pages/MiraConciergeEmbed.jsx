@@ -298,4 +298,4 @@ const MiraConciergeEmbed = () => {
   );
 };
 
-export default MiraConcierge;
+export default MiraConciergeEmbed;
