@@ -307,6 +307,154 @@ const Admin = () => {
     }
   };
 
+  // Fetch FAQs
+  const fetchFaqs = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/faqs`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setFaqs(data.faqs || []);
+        setFaqCategories(data.categories || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch FAQs:', error);
+    }
+  };
+
+  // Save FAQ
+  const saveFaq = async (faqData) => {
+    try {
+      const isEdit = faqData.id && !faqData.id.startsWith('new-');
+      const url = isEdit ? `${API_URL}/api/admin/faqs/${faqData.id}` : `${API_URL}/api/admin/faqs`;
+      const response = await fetch(url, {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(faqData)
+      });
+      if (response.ok) {
+        fetchFaqs();
+        setShowFaqModal(false);
+        setEditingFaq(null);
+      }
+    } catch (error) {
+      console.error('Failed to save FAQ:', error);
+    }
+  };
+
+  // Delete FAQ
+  const deleteFaq = async (faqId) => {
+    if (!window.confirm('Delete this FAQ?')) return;
+    try {
+      await fetch(`${API_URL}/api/admin/faqs/${faqId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      fetchFaqs();
+    } catch (error) {
+      console.error('Failed to delete FAQ:', error);
+    }
+  };
+
+  // Fetch Testimonials
+  const fetchTestimonials = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/testimonials`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setTestimonials(data.testimonials || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch testimonials:', error);
+    }
+  };
+
+  // Save Testimonial
+  const saveTestimonial = async (data) => {
+    try {
+      const isEdit = data.id && !data.id.startsWith('new-');
+      const url = isEdit ? `${API_URL}/api/admin/testimonials/${data.id}` : `${API_URL}/api/admin/testimonials`;
+      const response = await fetch(url, {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+      });
+      if (response.ok) {
+        fetchTestimonials();
+        setShowTestimonialModal(false);
+        setEditingTestimonial(null);
+      }
+    } catch (error) {
+      console.error('Failed to save testimonial:', error);
+    }
+  };
+
+  // Delete Testimonial
+  const deleteTestimonial = async (id) => {
+    if (!window.confirm('Delete this testimonial?')) return;
+    try {
+      await fetch(`${API_URL}/api/admin/testimonials/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      fetchTestimonials();
+    } catch (error) {
+      console.error('Failed to delete testimonial:', error);
+    }
+  };
+
+  // Fetch Blog Posts
+  const fetchBlogPosts = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/blog-posts`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setBlogPosts(data.posts || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch blog posts:', error);
+    }
+  };
+
+  // Save Blog Post
+  const saveBlogPost = async (data) => {
+    try {
+      const isEdit = data.id && !data.id.startsWith('new-');
+      const url = isEdit ? `${API_URL}/api/admin/blog-posts/${data.id}` : `${API_URL}/api/admin/blog-posts`;
+      const response = await fetch(url, {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+      });
+      if (response.ok) {
+        fetchBlogPosts();
+        setShowPostModal(false);
+        setEditingPost(null);
+      }
+    } catch (error) {
+      console.error('Failed to save blog post:', error);
+    }
+  };
+
+  // Delete Blog Post
+  const deleteBlogPost = async (id) => {
+    if (!window.confirm('Delete this blog post?')) return;
+    try {
+      await fetch(`${API_URL}/api/admin/blog-posts/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      fetchBlogPosts();
+    } catch (error) {
+      console.error('Failed to delete blog post:', error);
+    }
+  };
+
   const updateOrderStatus = async (orderId, status) => {
     try {
       const response = await fetch(`${API_URL}/api/admin/orders/${orderId}`, {
