@@ -33,6 +33,7 @@ const Navbar = () => {
     { name: 'Accessories & Toys', path: '/accessories' },
     { name: 'Merchandise', path: '/merchandise' },
     { name: 'Membership', path: '/membership' },
+    { name: '🐾 Pet Profile', path: '/pet-profile' },
   ];
 
   // All navigation for mobile
