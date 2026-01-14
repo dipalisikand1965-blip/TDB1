@@ -70,6 +70,7 @@ function App() {
             <Route path="/pet-profile" element={<PetProfile />} />
             <Route path="/my-pets" element={<MyPets />} />
             <Route path="/pets" element={<MyPets />} />
+            <Route path="/pet-soul-embed" element={<PetSoulEmbed />} />
             
             {/* Policy Pages */}
             <Route path="/policies" element={<Policies />} />
