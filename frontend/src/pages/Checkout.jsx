@@ -311,7 +311,10 @@ _GST applicable on final invoice_
         specialInstructions: formData.specialInstructions,
         isGift: formData.isGift,
         giftMessage: formData.giftMessage,
-        couponCode: formData.couponCode,
+        couponCode: appliedDiscount?.code || '',
+        discountAmount: discountAmount,
+        loyaltyPointsUsed: pointsToRedeem,
+        loyaltyDiscount: loyaltyDiscount,
         subtotal: getCartTotal(),
         deliveryFee,
         total,
@@ -324,13 +327,34 @@ _GST applicable on final invoice_
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderPayload)
       });
+
+      // Record discount code usage if applied
+      if (appliedDiscount?.code) {
+        await fetch(`${API_URL}/api/discount-codes/apply?code=${encodeURIComponent(appliedDiscount.code)}&order_id=${orderId}`, {
+          method: 'POST'
+        });
+      }
+
+      // Redeem loyalty points if used
+      if (pointsToRedeem > 0 && formData.email) {
+        await fetch(`${API_URL}/api/loyalty/redeem?user_id=${encodeURIComponent(formData.email)}&points_to_redeem=${pointsToRedeem}`, {
+          method: 'POST'
+        });
+      }
     } catch (error) {
       console.error('Failed to save order:', error);
       // Continue anyway - WhatsApp will have the order
     }
     
-    // Generate WhatsApp URL
-    const waMessage = generateWhatsAppMessage({ orderId });
+    // Generate WhatsApp URL with discount info
+    const waMessage = generateWhatsAppMessage({ 
+      orderId,
+      discountCode: appliedDiscount?.code,
+      discountAmount: discountAmount,
+      loyaltyPointsUsed: pointsToRedeem,
+      loyaltyDiscount: loyaltyDiscount,
+      finalTotal: total
+    });
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMessage)}`;
     setWhatsappUrl(waUrl);
     
@@ -339,7 +363,11 @@ _GST applicable on final invoice_
       items: [...cartItems],
       customer: { ...formData },
       total,
-      orderId
+      orderId,
+      discountCode: appliedDiscount?.code,
+      discountAmount,
+      loyaltyPointsUsed: pointsToRedeem,
+      loyaltyDiscount
     });
     
     // Show order placed
