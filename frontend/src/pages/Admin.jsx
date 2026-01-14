@@ -578,6 +578,100 @@ const Admin = () => {
     }
   };
 
+  // Fetch Franchise Inquiries
+  const fetchFranchiseInquiries = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/franchise`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setFranchiseInquiries(data.inquiries || []);
+        setFranchiseStats(data.stats || {});
+      }
+    } catch (error) {
+      console.error('Failed to fetch franchise inquiries:', error);
+    }
+  };
+
+  const updateFranchiseInquiry = async (inquiryId, update) => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/franchise/${inquiryId}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(update)
+      });
+      if (response.ok) {
+        fetchFranchiseInquiries();
+        setShowInquiryModal(false);
+      }
+    } catch (error) {
+      console.error('Failed to update inquiry:', error);
+    }
+  };
+
+  const deleteFranchiseInquiry = async (inquiryId) => {
+    if (!window.confirm('Delete this inquiry?')) return;
+    try {
+      const response = await fetch(`${API_URL}/api/admin/franchise/${inquiryId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        fetchFranchiseInquiries();
+      }
+    } catch (error) {
+      console.error('Failed to delete inquiry:', error);
+    }
+  };
+
+  // Fetch Streaties Stats
+  const fetchStreatiesStats = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/streaties`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setStreatiesStats(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch streaties stats:', error);
+    }
+  };
+
+  const updateStreatiesStats = async (stats) => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/streaties/stats`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(stats)
+      });
+      if (response.ok) {
+        fetchStreatiesStats();
+      }
+    } catch (error) {
+      console.error('Failed to update streaties stats:', error);
+    }
+  };
+
+  const addStreatiesDonation = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/streaties/donation`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(newDonation)
+      });
+      if (response.ok) {
+        fetchStreatiesStats();
+        setShowDonationModal(false);
+        setNewDonation({ ngo_name: '', city: '', amount: 0, animals_fed: 0, description: '' });
+      }
+    } catch (error) {
+      console.error('Failed to add donation:', error);
+    }
+  };
+
   // Trigger Abandoned Cart Check
   const triggerAbandonedCartCheck = async () => {
     try {
