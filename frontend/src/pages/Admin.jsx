@@ -911,6 +911,8 @@ const Admin = () => {
       else if (activeTab === 'loyalty') fetchLoyaltyStats();
       else if (activeTab === 'discounts') fetchDiscountCodes();
       else if (activeTab === 'abandoned') fetchAbandonedCarts();
+      else if (activeTab === 'franchise') fetchFranchiseInquiries();
+      else if (activeTab === 'streaties') fetchStreatiesStats();
     }
   }, [isAuthenticated, activeTab, filterCity, filterStatus, productFilter, orderFilter]);
 
