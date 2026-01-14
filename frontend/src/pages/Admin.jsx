@@ -126,6 +126,17 @@ const Admin = () => {
   const [abandonedCarts, setAbandonedCarts] = useState([]);
   const [abandonedStats, setAbandonedStats] = useState({});
 
+  // Franchise Inquiries
+  const [franchiseInquiries, setFranchiseInquiries] = useState([]);
+  const [franchiseStats, setFranchiseStats] = useState({});
+  const [selectedInquiry, setSelectedInquiry] = useState(null);
+  const [showInquiryModal, setShowInquiryModal] = useState(false);
+
+  // Streaties Program
+  const [streatiesStats, setStreatiesStats] = useState(null);
+  const [showDonationModal, setShowDonationModal] = useState(false);
+  const [newDonation, setNewDonation] = useState({ ngo_name: '', city: '', amount: 0, animals_fed: 0, description: '' });
+
   // Check for stored auth
   useEffect(() => {
     const storedAuth = localStorage.getItem('adminAuth');
