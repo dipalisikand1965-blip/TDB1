@@ -4027,14 +4027,14 @@ async def login_user(user: UserLogin):
 
 
 @api_router.get("/auth/me")
-async def get_user_info(email: str):
-    """Get user info by email"""
-    user = await db.users.find_one({"email": email}, {"_id": 0, "password_hash": 0})
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    access = await check_mira_access(email)
-    return {"user": user, "mira_access": access}
+async def get_user_info(current_user: dict = Depends(get_current_user)):
+    """Get current user info"""
+    # Hide password hash
+    if "password_hash" in current_user:
+        del current_user["password_hash"]
+        
+    access = await check_mira_access(current_user["email"])
+    return {"user": current_user, "mira_access": access}
 
 
 @api_router.post("/membership/upgrade")
