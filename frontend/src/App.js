@@ -26,51 +26,72 @@ import PetProfile from "./pages/PetProfile";
 import MyPets from "./pages/MyPets";
 import PetSoulEmbed from "./pages/PetSoulEmbed";
 
+// Layout component for embed pages (no navbar/footer)
+const EmbedLayout = ({ children }) => (
+  <div className="embed-layout">{children}</div>
+);
+
 function App() {
   return (
     <HelmetProvider>
     <CartProvider>
       <BrowserRouter>
-        <div className="App">
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            {/* Main Categories */}
-            <Route path="/cakes" element={<ProductListing category="cakes" />} />
-            <Route path="/mini-cakes" element={<ProductListing category="mini-cakes" />} />
-            <Route path="/treats" element={<ProductListing category="treats" />} />
-            <Route path="/meals" element={<ProductListing category="fresh-meals" />} />
-            <Route path="/pan-india" element={<ProductListing category="pan-india" />} />
-            
-            {/* More Categories */}
-            <Route path="/breed-cakes" element={<ProductListing category="breed-cakes" />} />
-            <Route path="/custom" element={<ProductListing category="breed-cakes" />} />
-            <Route path="/pupcakes-dognuts" element={<ProductListing category="dognuts" />} />
-            <Route path="/desi" element={<ProductListing category="desi-treats" />} />
-            <Route path="/frozen" element={<ProductListing category="frozen-treats" />} />
-            <Route path="/nut-butters" element={<ProductListing category="nut-butters" />} />
-            <Route path="/cat-treats" element={<ProductListing category="cat-treats" />} />
-            <Route path="/accessories" element={<ProductListing category="accessories" />} />
-            <Route path="/merchandise" element={<ProductListing category="merchandise" />} />
-            <Route path="/hampers" element={<ProductListing category="hampers" />} />
-            <Route path="/gift-hampers" element={<ProductListing category="hampers" />} />
-            
-            {/* All Products */}
-            <Route path="/all" element={<ProductListing category="all" />} />
-            
-            {/* Special Pages */}
-            <Route path="/custom-cake" element={<CustomCakeDesigner />} />
-            <Route path="/concierge" element={<MiraConcierge />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/membership" element={<Membership />} />
-            <Route path="/admin" element={<Admin />} />
-            
-            {/* Pet Profile */}
-            <Route path="/pet-profile" element={<PetProfile />} />
-            <Route path="/my-pets" element={<MyPets />} />
-            <Route path="/pets" element={<MyPets />} />
-            <Route path="/pet-soul-embed" element={<PetSoulEmbed />} />
+        <Routes>
+          {/* Embed routes - NO navbar */}
+          <Route path="/pet-soul-embed" element={<EmbedLayout><PetSoulEmbed /></EmbedLayout>} />
+          
+          {/* Main app routes - WITH navbar */}
+          <Route path="/*" element={<MainLayout />} />
+        </Routes>
+        <MiraAI />
+      </BrowserRouter>
+    </CartProvider>
+    </HelmetProvider>
+  );
+}
+
+// Main layout with navbar
+function MainLayout() {
+  return (
+    <div className="App">
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        {/* Main Categories */}
+        <Route path="/cakes" element={<ProductListing category="cakes" />} />
+        <Route path="/mini-cakes" element={<ProductListing category="mini-cakes" />} />
+        <Route path="/treats" element={<ProductListing category="treats" />} />
+        <Route path="/meals" element={<ProductListing category="fresh-meals" />} />
+        <Route path="/pan-india" element={<ProductListing category="pan-india" />} />
+        
+        {/* More Categories */}
+        <Route path="/breed-cakes" element={<ProductListing category="breed-cakes" />} />
+        <Route path="/custom" element={<ProductListing category="breed-cakes" />} />
+        <Route path="/pupcakes-dognuts" element={<ProductListing category="dognuts" />} />
+        <Route path="/desi" element={<ProductListing category="desi-treats" />} />
+        <Route path="/frozen" element={<ProductListing category="frozen-treats" />} />
+        <Route path="/nut-butters" element={<ProductListing category="nut-butters" />} />
+        <Route path="/cat-treats" element={<ProductListing category="cat-treats" />} />
+        <Route path="/accessories" element={<ProductListing category="accessories" />} />
+        <Route path="/merchandise" element={<ProductListing category="merchandise" />} />
+        <Route path="/hampers" element={<ProductListing category="hampers" />} />
+        <Route path="/gift-hampers" element={<ProductListing category="hampers" />} />
+        
+        {/* All Products */}
+        <Route path="/all" element={<ProductListing category="all" />} />
+        
+        {/* Special Pages */}
+        <Route path="/custom-cake" element={<CustomCakeDesigner />} />
+        <Route path="/concierge" element={<MiraConcierge />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/membership" element={<Membership />} />
+        <Route path="/admin" element={<Admin />} />
+        
+        {/* Pet Profile */}
+        <Route path="/pet-profile" element={<PetProfile />} />
+        <Route path="/my-pets" element={<MyPets />} />
+        <Route path="/pets" element={<MyPets />} />
             
             {/* Policy Pages */}
             <Route path="/policies" element={<Policies />} />
