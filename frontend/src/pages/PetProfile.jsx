@@ -998,6 +998,7 @@ const PetProfile = ({ isEmbed = false }) => {
   const canProceed = () => {
     switch (step) {
       case 1: return formData.name.trim() !== '';
+      case 1.5: return true; // Lifestyle step - all optional
       case 2: return formData.soul.persona !== '';
       case 3: return true;
       case 4: return true;
@@ -1092,13 +1093,13 @@ const PetProfile = ({ isEmbed = false }) => {
         {step > 0 && step < 6 && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-600">Step {step} of 5</span>
-              <span className="text-sm text-gray-600">{Math.round((step / 5) * 100)}%</span>
+              <span className="text-sm text-gray-600">Step {step === 1.5 ? '2' : step > 1.5 ? Math.floor(step) + 1 : step} of 6</span>
+              <span className="text-sm text-gray-600">{Math.round(((step === 1.5 ? 2 : step > 1.5 ? step + 1 : step) / 6) * 100)}%</span>
             </div>
             <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
               <div 
                 className="h-full bg-gradient-to-r from-purple-600 to-pink-600 transition-all duration-300"
-                style={{ width: `${(step / 5) * 100}%` }}
+                style={{ width: `${((step === 1.5 ? 2 : step > 1.5 ? step + 1 : step) / 6) * 100}%` }}
               />
             </div>
           </div>
@@ -1107,6 +1108,7 @@ const PetProfile = ({ isEmbed = false }) => {
         <Card className="p-6 md:p-8 shadow-xl">
           {step === 0 && renderMyPets()}
           {step === 1 && renderStep1()}
+          {step === 1.5 && renderStep1b()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
           {step === 4 && renderStep4()}
@@ -1118,7 +1120,11 @@ const PetProfile = ({ isEmbed = false }) => {
             <div className="flex justify-between mt-8 pt-6 border-t">
               <Button
                 variant="outline"
-                onClick={() => setStep(s => s - 1)}
+                onClick={() => {
+                  if (step === 1.5) setStep(1);
+                  else if (step === 2) setStep(1.5);
+                  else setStep(s => s - 1);
+                }}
                 disabled={step === 1}
                 className={step === 1 ? 'invisible' : ''}
               >
@@ -1128,7 +1134,11 @@ const PetProfile = ({ isEmbed = false }) => {
 
               {step < 5 ? (
                 <Button
-                  onClick={() => setStep(s => s + 1)}
+                  onClick={() => {
+                    if (step === 1) setStep(1.5);
+                    else if (step === 1.5) setStep(2);
+                    else setStep(s => s + 1);
+                  }}
                   disabled={!canProceed()}
                   className="bg-purple-600 hover:bg-purple-700"
                 >
