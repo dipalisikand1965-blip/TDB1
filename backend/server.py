@@ -4526,10 +4526,11 @@ async def submit_franchise_inquiry(inquiry: dict):
     
     # Send notification email
     try:
-        await send_email(
-            to=os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.com"),
-            subject=f"New Franchise Inquiry from {inquiry_doc['name']} - {inquiry_doc['city']}",
-            html=f"""
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.com")],
+            "subject": f"New Franchise Inquiry from {inquiry_doc['name']} - {inquiry_doc['city']}",
+            "html": f"""
             <h2>New Franchise Inquiry!</h2>
             <p><strong>Name:</strong> {inquiry_doc['name']}</p>
             <p><strong>Email:</strong> {inquiry_doc['email']}</p>
@@ -4538,6 +4539,9 @@ async def submit_franchise_inquiry(inquiry: dict):
             <p><strong>Investment:</strong> {inquiry_doc['investment']}</p>
             <p><strong>Message:</strong> {inquiry_doc['message']}</p>
             """
+        }
+        if RESEND_API_KEY:
+            await asyncio.to_thread(resend.Emails.send, params)
         )
     except Exception as e:
         logger.error(f"Failed to send franchise notification: {e}")
