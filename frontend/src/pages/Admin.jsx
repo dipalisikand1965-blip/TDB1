@@ -1052,7 +1052,7 @@ const Admin = () => {
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { id: 'orders', label: 'Orders', icon: Package },
             { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
-            { id: 'members', label: 'Members', icon: Users },
+            { id: 'members', label: 'Customers', icon: Users },
             { id: 'pets', label: '🐾 Pet Profiles', icon: PawPrint },
             { id: 'loyalty', label: '⭐ Loyalty', icon: Star },
             { id: 'discounts', label: '🎟️ Discounts', icon: Tag },
