@@ -47,7 +47,7 @@ World-class e-commerce website for The Doggy Bakery. Target domain: **thedoggyco
 | **Videos** | Homepage video management |
 | **Testimonials** | Customer reviews management |
 | **Insights/Blog** | Blog post management |
-| **FAQs** | FAQ categories and questions |
+| **FAQs** | **FUNCTIONAL CRUD** - Add/Edit/Delete FAQs with categories |
 | **Streaties** | Street treats inventory |
 | **Franchise** | Franchise inquiries (3 New badge) |
 | **Custom Cakes** | Custom cake requests |
