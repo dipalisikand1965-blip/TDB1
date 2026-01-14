@@ -109,6 +109,22 @@ const Admin = () => {
   const [blogPosts, setBlogPosts] = useState([]);
   const [editingPost, setEditingPost] = useState(null);
   const [showPostModal, setShowPostModal] = useState(false);
+  
+  // Pet Profiles
+  const [petProfiles, setPetProfiles] = useState([]);
+  const [petStats, setPetStats] = useState({});
+  
+  // Loyalty Points
+  const [loyaltyStats, setLoyaltyStats] = useState(null);
+  
+  // Discount Codes
+  const [discountCodes, setDiscountCodes] = useState([]);
+  const [editingDiscount, setEditingDiscount] = useState(null);
+  const [showDiscountModal, setShowDiscountModal] = useState(false);
+  
+  // Abandoned Carts
+  const [abandonedCarts, setAbandonedCarts] = useState([]);
+  const [abandonedStats, setAbandonedStats] = useState({});
 
   // Check for stored auth
   useEffect(() => {
