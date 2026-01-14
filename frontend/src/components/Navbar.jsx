@@ -79,7 +79,7 @@ const Navbar = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-1">
+            <div className="hidden md:flex items-center space-x-1">
               {mainNavigation.map((item) => (
                 <Link
                   key={item.name}
@@ -128,8 +128,10 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
+            </div>
 
-              {/* Pet Soul Button */}
+            {/* Pet Soul & Mira - Always visible on tablet+ */}
+            <div className="hidden sm:flex items-center gap-2">
               <Link
                 to="/my-pets"
                 className="px-3 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 transition-all shadow-sm"
@@ -138,10 +140,9 @@ const Navbar = () => {
                 🐾 Pet Soul
               </Link>
 
-              {/* Mira AI Button */}
               <button
                 onClick={openMiraAI}
-                className="ml-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-sm font-medium hover:from-purple-700 hover:to-pink-700 transition-all flex items-center gap-1.5 shadow-md hover:shadow-lg"
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-sm font-medium hover:from-purple-700 hover:to-pink-700 transition-all flex items-center gap-1.5 shadow-md hover:shadow-lg"
                 data-testid="navbar-mira-ai-btn"
               >
                 <Sparkles className="w-4 h-4" />
