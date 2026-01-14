@@ -67,7 +67,8 @@ function App() {
             
             {/* Pet Profile */}
             <Route path="/pet-profile" element={<PetProfile />} />
-            <Route path="/my-pets" element={<PetProfile />} />
+            <Route path="/my-pets" element={<MyPets />} />
+            <Route path="/pets" element={<MyPets />} />
             
             {/* Policy Pages */}
             <Route path="/policies" element={<Policies />} />
