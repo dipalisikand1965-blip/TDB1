@@ -88,12 +88,12 @@ const Navbar = () => {
                     isActive(item.path)
                       ? 'bg-purple-600 text-white'
                       : item.highlight 
-                        ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600'
+                        ? 'bg-gradient-to-r from-orange-400 to-pink-500 text-white hover:from-orange-500 hover:to-pink-600 shadow-sm'
                         : 'text-gray-700 hover:bg-gray-100'
                   }`}
-                  data-testid={item.highlight ? 'pet-soul-nav-btn' : undefined}
+                  data-testid={item.highlight ? 'build-cake-nav-btn' : undefined}
                 >
-                  {item.name}
+                  {item.highlight && '🎂 '}{item.name}
                 </Link>
               ))}
 
@@ -129,14 +129,23 @@ const Navbar = () => {
                 )}
               </div>
 
+              {/* Pet Soul Button */}
+              <Link
+                to="/my-pets"
+                className="px-3 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 transition-all shadow-sm"
+                data-testid="pet-soul-nav-btn"
+              >
+                🐾 Pet Soul
+              </Link>
+
               {/* Mira AI Button */}
               <button
                 onClick={openMiraAI}
-                className="ml-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-sm font-medium hover:from-purple-700 hover:to-pink-700 transition-all flex items-center gap-1.5 shadow-md hover:shadow-lg"
+                className="ml-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-sm font-medium hover:from-purple-700 hover:to-pink-700 transition-all flex items-center gap-1.5 shadow-md hover:shadow-lg"
                 data-testid="navbar-mira-ai-btn"
               >
                 <Sparkles className="w-4 h-4" />
-                Mira AI
+                Mira
               </button>
             </div>
 
