@@ -33,6 +33,8 @@ const PetProfile = () => {
   const [occasions, setOccasions] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createdPet, setCreatedPet] = useState(null);
+  const [customDate, setCustomDate] = useState({ name: '', date: '' });
+  const [showCustomForm, setShowCustomForm] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState({
