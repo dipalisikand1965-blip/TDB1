@@ -2613,6 +2613,7 @@ const Admin = () => {
               <div>
                 <h3 className="font-semibold text-gray-900">{selectedChat.pet_name || 'Chat Details'}</h3>
                 <p className="text-sm text-gray-500">{selectedChat.city} • {selectedChat.service_type}</p>
+                <p className="text-xs text-gray-400">{new Date(selectedChat.updated_at || selectedChat.created_at).toLocaleString()}</p>
               </div>
               <Button variant="ghost" size="icon" onClick={() => setSelectedChat(null)}><X className="w-5 h-5" /></Button>
             </div>
