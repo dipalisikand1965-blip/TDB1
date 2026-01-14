@@ -452,7 +452,37 @@ const PetProfile = () => {
   );
 
   // Step 4: Celebrations
-  const renderStep4 = () => (
+  const renderStep4 = () => {
+    const [customDate, setCustomDate] = useState({ name: '', date: '' });
+    const [showCustomForm, setShowCustomForm] = useState(false);
+    
+    const addCustomCelebration = () => {
+      if (customDate.name && customDate.date) {
+        const newCelebration = {
+          occasion: `custom_${Date.now()}`,
+          date: customDate.date,
+          is_recurring: true,
+          custom_name: customDate.name
+        };
+        setFormData(prev => ({
+          ...prev,
+          celebrations: [...prev.celebrations, newCelebration],
+          selectedOccasions: [...prev.selectedOccasions, newCelebration.occasion]
+        }));
+        setCustomDate({ name: '', date: '' });
+        setShowCustomForm(false);
+      }
+    };
+
+    const removeCustomCelebration = (occasionKey) => {
+      setFormData(prev => ({
+        ...prev,
+        celebrations: prev.celebrations.filter(c => c.occasion !== occasionKey),
+        selectedOccasions: prev.selectedOccasions.filter(o => o !== occasionKey)
+      }));
+    };
+    
+    return (
     <div className="space-y-6">
       <div className="text-center mb-8">
         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -500,6 +530,86 @@ const PetProfile = () => {
         })}
       </div>
 
+      {/* Custom Celebrations Added */}
+      {formData.celebrations.filter(c => c.custom_name).length > 0 && (
+        <div className="mt-4">
+          <h4 className="font-semibold text-gray-700 mb-2">Your Custom Dates:</h4>
+          <div className="space-y-2">
+            {formData.celebrations.filter(c => c.custom_name).map((celeb) => (
+              <div key={celeb.occasion} className="flex items-center justify-between bg-purple-50 rounded-lg p-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🎉</span>
+                  <div>
+                    <p className="font-medium text-purple-800">{celeb.custom_name}</p>
+                    <p className="text-xs text-purple-600">{celeb.date}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => removeCustomCelebration(celeb.occasion)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Add Custom Celebration */}
+      <div className="mt-6 border-t pt-6">
+        {!showCustomForm ? (
+          <button
+            onClick={() => setShowCustomForm(true)}
+            className="w-full p-4 border-2 border-dashed border-purple-300 rounded-xl text-purple-600 hover:bg-purple-50 transition-all flex items-center justify-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            Add Custom Celebration Date
+          </button>
+        ) : (
+          <div className="bg-purple-50 rounded-xl p-4 space-y-3">
+            <h4 className="font-semibold text-purple-800">Add Custom Date</h4>
+            <div>
+              <Label className="text-sm text-purple-700">What are you celebrating?</Label>
+              <Input
+                placeholder="e.g., First Walk Anniversary, Gotcha Day, Adoption Day"
+                value={customDate.name}
+                onChange={(e) => setCustomDate(prev => ({ ...prev, name: e.target.value }))}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-sm text-purple-700">Date</Label>
+              <Input
+                type="date"
+                value={customDate.date}
+                onChange={(e) => setCustomDate(prev => ({ ...prev, date: e.target.value }))}
+                className="mt-1"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={addCustomCelebration}
+                disabled={!customDate.name || !customDate.date}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowCustomForm(false);
+                  setCustomDate({ name: '', date: '' });
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="bg-purple-50 rounded-xl p-4 mt-6">
         <p className="text-sm text-purple-700">
           <strong>✨ You'll receive:</strong> Personalized reminders 7 days before and 1 day before each celebration, 
@@ -507,7 +617,8 @@ const PetProfile = () => {
         </p>
       </div>
     </div>
-  );
+    );
+  };
 
   // Step 5: Preferences & Contact
   const renderStep5 = () => (
