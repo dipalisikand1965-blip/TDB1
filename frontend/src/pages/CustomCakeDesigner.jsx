@@ -264,7 +264,7 @@ const CustomCakeDesigner = () => {
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
                 <h2 className="text-xl font-bold text-gray-900">Add Custom Text</h2>
-                <span className="text-sm text-gray-500">(Optional)</span>
+                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">FREE</span>
               </div>
               
               <Input
@@ -275,7 +275,7 @@ const CustomCakeDesigner = () => {
                 className="text-lg py-6"
                 data-testid="custom-text-input"
               />
-              <p className="text-xs text-gray-500 mt-2">{customText.length}/50 characters • Text will be written on the cake</p>
+              <p className="text-xs text-gray-500 mt-2">{customText.length}/50 characters • Included with your cake at no extra cost</p>
             </Card>
 
             {/* Step 4: Reference Image */}
