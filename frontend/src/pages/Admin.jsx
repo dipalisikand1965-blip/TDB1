@@ -1025,6 +1025,8 @@ const Admin = () => {
             { id: 'insights', label: 'Blog', icon: FileText },
             { id: 'faqs', label: 'FAQs', icon: HelpCircle },
             { id: 'requests', label: 'Custom Cakes', icon: Cake },
+            { id: 'streaties', label: '🧡 Streaties', icon: Heart },
+            { id: 'franchise', label: '🏪 Franchise', icon: Building },
           ].map((tab) => (
             <Button
               key={tab.id}
