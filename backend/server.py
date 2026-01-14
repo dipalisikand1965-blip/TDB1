@@ -3508,25 +3508,59 @@ async def delete_abandoned_cart(cart_id: str, username: str = Depends(verify_adm
 # ==================== ADMIN MEMBERS ====================
 
 @admin_router.get("/members")
-async def get_all_members(username: str = Depends(verify_admin)):
-    """Get all registered members"""
-    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).sort("created_at", -1).to_list(500)
+async def get_all_customers(username: str = Depends(verify_admin)):
+    """Get all customers (Registered Members + Guest Buyers)"""
+    # 1. Get registered users
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).sort("created_at", -1).to_list(1000)
+    user_emails = {u["email"] for u in users if "email" in u}
+    
+    # 2. Get distinct guest emails from orders
+    # Note: Mongo distinct doesn't work well with async motor in one line sometimes, using aggregation
+    pipeline = [
+        {"$group": {"_id": "$customer.email", "doc": {"$first": "$$ROOT"}}}
+    ]
+    guest_orders = await db.orders.aggregate(pipeline).to_list(1000)
+    
+    guests = []
+    for g in guest_orders:
+        email = g.get("_id")
+        if email and email not in user_emails:
+            # Create a guest customer object derived from order
+            order_doc = g.get("doc", {})
+            customer_info = order_doc.get("customer", {})
+            
+            guests.append({
+                "id": f"guest-{email}",
+                "email": email,
+                "name": customer_info.get("parentName") or customer_info.get("name") or "Guest",
+                "phone": customer_info.get("phone"),
+                "membership_tier": "guest",
+                "created_at": order_doc.get("created_at"),
+                "is_guest": True
+            })
+            user_emails.add(email) # Prevent dupes if multiples
+            
+    # Combine and sort
+    all_customers = users + guests
+    all_customers.sort(key=lambda x: x.get("created_at", ""), reverse=True)
     
     # Stats
-    total = len(users)
-    free_count = sum(1 for u in users if u.get("membership_tier") == "free")
-    pawsome_count = sum(1 for u in users if u.get("membership_tier") == "pawsome")
-    premium_count = sum(1 for u in users if u.get("membership_tier") == "premium")
-    vip_count = sum(1 for u in users if u.get("membership_tier") == "vip")
+    total = len(all_customers)
+    free_count = sum(1 for u in all_customers if u.get("membership_tier") == "free")
+    pawsome_count = sum(1 for u in all_customers if u.get("membership_tier") == "pawsome")
+    premium_count = sum(1 for u in all_customers if u.get("membership_tier") == "premium")
+    vip_count = sum(1 for u in all_customers if u.get("membership_tier") == "vip")
+    guest_count = len(guests)
     
     return {
-        "members": users,
+        "members": all_customers,
         "total": total,
         "stats": {
             "free": free_count,
             "pawsome": pawsome_count,
             "premium": premium_count,
-            "vip": vip_count
+            "vip": vip_count,
+            "guest": guest_count
         }
     }
 
