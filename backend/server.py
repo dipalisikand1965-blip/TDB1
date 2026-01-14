@@ -496,6 +496,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 # Create routers
+@app.get("/api/health")
+def api_health_check():
+    """Health check alias for /api prefix"""
+    return health_check()
+
 api_router = APIRouter(prefix="/api")
 admin_router = APIRouter(prefix="/api/admin")
 
