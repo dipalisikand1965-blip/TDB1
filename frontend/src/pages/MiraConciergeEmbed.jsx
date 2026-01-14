@@ -45,7 +45,7 @@ const MiraConciergeEmbed = () => {
         body: JSON.stringify({
           message: userMessage,
           session_id: sessionId,
-          source: 'concierge_page'
+          source: 'shopify_concierge_embed'
         })
       });
 
