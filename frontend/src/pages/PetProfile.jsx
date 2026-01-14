@@ -458,36 +458,33 @@ const PetProfile = () => {
   );
 
   // Step 4: Celebrations
-  const renderStep4 = () => {
-    const [customDate, setCustomDate] = useState({ name: '', date: '' });
-    const [showCustomForm, setShowCustomForm] = useState(false);
-    
-    const addCustomCelebration = () => {
-      if (customDate.name && customDate.date) {
-        const newCelebration = {
-          occasion: `custom_${Date.now()}`,
-          date: customDate.date,
-          is_recurring: true,
-          custom_name: customDate.name
-        };
-        setFormData(prev => ({
-          ...prev,
-          celebrations: [...prev.celebrations, newCelebration],
-          selectedOccasions: [...prev.selectedOccasions, newCelebration.occasion]
-        }));
-        setCustomDate({ name: '', date: '' });
-        setShowCustomForm(false);
-      }
-    };
-
-    const removeCustomCelebration = (occasionKey) => {
+  const addCustomCelebration = () => {
+    if (customDate.name && customDate.date) {
+      const newCelebration = {
+        occasion: `custom_${Date.now()}`,
+        date: customDate.date,
+        is_recurring: true,
+        custom_name: customDate.name
+      };
       setFormData(prev => ({
         ...prev,
-        celebrations: prev.celebrations.filter(c => c.occasion !== occasionKey),
-        selectedOccasions: prev.selectedOccasions.filter(o => o !== occasionKey)
+        celebrations: [...prev.celebrations, newCelebration],
+        selectedOccasions: [...prev.selectedOccasions, newCelebration.occasion]
       }));
-    };
-    
+      setCustomDate({ name: '', date: '' });
+      setShowCustomForm(false);
+    }
+  };
+
+  const removeCustomCelebration = (occasionKey) => {
+    setFormData(prev => ({
+      ...prev,
+      celebrations: prev.celebrations.filter(c => c.occasion !== occasionKey),
+      selectedOccasions: prev.selectedOccasions.filter(o => o !== occasionKey)
+    }));
+  };
+
+  const renderStep4 = () => {
     return (
     <div className="space-y-6">
       <div className="text-center mb-8">
