@@ -776,13 +776,14 @@ const Admin = () => {
             { id: 'orders', label: 'Orders', icon: Package },
             { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
             { id: 'members', label: 'Members', icon: Users },
+            { id: 'pets', label: '🐾 Pet Profiles', icon: PawPrint },
+            { id: 'loyalty', label: '⭐ Loyalty', icon: Star },
+            { id: 'discounts', label: '🎟️ Discounts', icon: Tag },
+            { id: 'abandoned', label: '🛒 Abandoned', icon: ShoppingBag },
             { id: 'products', label: 'Products', icon: Package },
-            { id: 'content', label: 'Videos', icon: Video },
             { id: 'testimonials', label: 'Testimonials', icon: Star },
-            { id: 'insights', label: 'Insights/Blog', icon: FileText },
+            { id: 'insights', label: 'Blog', icon: FileText },
             { id: 'faqs', label: 'FAQs', icon: HelpCircle },
-            { id: 'streaties', label: 'Streaties', icon: Cookie },
-            { id: 'franchise', label: 'Franchise', icon: Store },
             { id: 'requests', label: 'Custom Cakes', icon: Cake },
           ].map((tab) => (
             <Button
