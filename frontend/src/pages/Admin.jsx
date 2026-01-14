@@ -1412,47 +1412,102 @@ const Admin = () => {
         {activeTab === 'testimonials' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-900">Customer Testimonials</h3>
-              <Button className="bg-purple-600 hover:bg-purple-700">
+              <h3 className="text-xl font-bold text-gray-900">Customer Testimonials ({testimonials.length})</h3>
+              <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => {
+                setEditingTestimonial({ id: `new-${Date.now()}`, name: '', location: '', pet_name: '', rating: 5, text: '', is_featured: false, is_approved: true });
+                setShowTestimonialModal(true);
+              }}>
                 <Plus className="w-4 h-4 mr-2" />Add Testimonial
               </Button>
             </div>
             
             <Card className="p-6">
-              <p className="text-gray-600 mb-4">Manage customer reviews and testimonials that appear on the website.</p>
-              
               <div className="space-y-4">
-                {[
-                  { name: 'Arjun V', location: 'Bengaluru', pet: 'Bruno', rating: 5, text: 'Ordering from The Doggy Bakery was seamless. Every bite was savored!' },
-                  { name: 'Priya S', location: 'Mumbai', pet: 'Bhadra', rating: 5, text: "Bhadra loves The Doggy Bakery's chicken and oat Woof Dognuts!" },
-                  { name: 'Rahul Joshi', location: 'Mumbai', pet: 'Archie', rating: 5, text: "Wanted to make Archie's birthday special, so I ordered the Floral Fido Cake." },
-                  { name: 'Shreya Reddy', location: 'Bengaluru', pet: 'Leo', rating: 5, text: "For Leo's birthday, I ordered a custom Chow Chow mutton-flavored cake." },
-                ].map((testimonial, idx) => (
-                  <div key={idx} className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                {testimonials.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No testimonials yet. Add your first one!</p>
+                ) : testimonials.map((testimonial) => (
+                  <div key={testimonial.id} className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
                     <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                       <User className="w-6 h-6 text-purple-600" />
                     </div>
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
                         <span className="text-sm text-gray-500">• {testimonial.location}</span>
-                        <Badge variant="outline" className="text-xs">Pet: {testimonial.pet}</Badge>
+                        {testimonial.pet_name && <Badge variant="outline" className="text-xs">Pet: {testimonial.pet_name}</Badge>}
+                        {testimonial.is_featured && <Badge className="bg-yellow-500 text-xs">Featured</Badge>}
+                        {!testimonial.is_approved && <Badge variant="destructive" className="text-xs">Pending</Badge>}
                       </div>
                       <div className="flex mb-2">
-                        {[...Array(testimonial.rating)].map((_, i) => (
+                        {[...Array(testimonial.rating || 5)].map((_, i) => (
                           <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                         ))}
                       </div>
                       <p className="text-gray-600 text-sm">{testimonial.text}</p>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="icon"><Edit className="w-4 h-4" /></Button>
-                      <Button variant="ghost" size="icon" className="text-red-500"><Trash2 className="w-4 h-4" /></Button>
+                      <Button variant="ghost" size="icon" onClick={() => { setEditingTestimonial(testimonial); setShowTestimonialModal(true); }}>
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="text-red-500" onClick={() => deleteTestimonial(testimonial.id)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
                 ))}
               </div>
             </Card>
+            
+            {/* Testimonial Modal */}
+            {showTestimonialModal && editingTestimonial && (
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                <Card className="w-full max-w-lg bg-white p-6">
+                  <h3 className="text-lg font-bold mb-4">{editingTestimonial.id?.startsWith('new-') ? 'Add' : 'Edit'} Testimonial</h3>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium">Customer Name *</label>
+                        <Input value={editingTestimonial.name} onChange={(e) => setEditingTestimonial({...editingTestimonial, name: e.target.value})} />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Location</label>
+                        <Input value={editingTestimonial.location || ''} onChange={(e) => setEditingTestimonial({...editingTestimonial, location: e.target.value})} placeholder="e.g., Mumbai" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium">Pet Name</label>
+                        <Input value={editingTestimonial.pet_name || ''} onChange={(e) => setEditingTestimonial({...editingTestimonial, pet_name: e.target.value})} />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Rating</label>
+                        <select className="w-full border rounded-md p-2" value={editingTestimonial.rating || 5} onChange={(e) => setEditingTestimonial({...editingTestimonial, rating: parseInt(e.target.value)})}>
+                          {[5,4,3,2,1].map(r => <option key={r} value={r}>{r} Stars</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Review Text *</label>
+                      <textarea className="w-full border rounded-md p-2 h-24" value={editingTestimonial.text || ''} onChange={(e) => setEditingTestimonial({...editingTestimonial, text: e.target.value})} />
+                    </div>
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2">
+                        <input type="checkbox" checked={editingTestimonial.is_featured || false} onChange={(e) => setEditingTestimonial({...editingTestimonial, is_featured: e.target.checked})} />
+                        <span className="text-sm">Featured</span>
+                      </label>
+                      <label className="flex items-center gap-2">
+                        <input type="checkbox" checked={editingTestimonial.is_approved !== false} onChange={(e) => setEditingTestimonial({...editingTestimonial, is_approved: e.target.checked})} />
+                        <span className="text-sm">Approved</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 mt-6">
+                    <Button variant="outline" onClick={() => { setShowTestimonialModal(false); setEditingTestimonial(null); }}>Cancel</Button>
+                    <Button className="bg-purple-600" onClick={() => saveTestimonial(editingTestimonial)} disabled={!editingTestimonial.name || !editingTestimonial.text}>Save</Button>
+                  </div>
+                </Card>
+              </div>
+            )}
           </div>
         )}
 
