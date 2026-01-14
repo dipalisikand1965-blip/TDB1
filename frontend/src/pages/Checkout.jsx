@@ -449,9 +449,11 @@ _GST applicable on final invoice_
                       name="email"
                       type="email"
                       value={formData.email}
-                      onChange={handleInputChange}
+                      onChange={handleEmailChange}
+                      onBlur={(e) => captureEmail(e.target.value, formData.parentName)}
                       placeholder="your@email.com"
                       className={formErrors.email ? 'border-red-500' : ''}
+                      data-testid="checkout-email"
                     />
                     {formErrors.email && <p className="text-red-500 text-xs mt-1">{formErrors.email}</p>}
                   </div>
