@@ -27,6 +27,7 @@ import Contact from "./pages/Contact";
 import PetProfile from "./pages/PetProfile";
 import MyPets from "./pages/MyPets";
 import MiraEmbed from "./pages/MiraEmbed";
+import MiraLandingEmbed from "./pages/MiraLandingEmbed";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
             {/* Embed routes - NO navbar/footer for Shopify integration */}
             <Route path="/pet-soul-embed" element={<PetProfile isEmbed={true} />} />
             <Route path="/mira-embed" element={<MiraEmbed />} />
+            <Route path="/mira-landing-embed" element={<MiraLandingEmbed />} />
             
             {/* Main app routes - WITH navbar */}
             <Route path="/*" element={<MainLayout />} />
