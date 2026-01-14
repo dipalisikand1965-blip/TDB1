@@ -2662,10 +2662,19 @@ async def get_public_hero():
 
 
 @api_router.get("/products")
-async def get_public_products(category: Optional[str] = None):
+async def get_public_products(category: Optional[str] = None, pan_india: Optional[bool] = None):
     """Public endpoint for products"""
     query = {}
-    if category:
+    
+    # Special handling for pan-india category
+    if category == "pan-india" or pan_india:
+        # Return products that are pan-india shippable
+        query["$or"] = [
+            {"category": "pan-india"},
+            {"is_pan_india_shippable": True},
+            {"category": {"$in": ["treats", "nut-butters", "desi-treats", "gift-cards"]}}
+        ]
+    elif category:
         query["category"] = category
     
     products = await db.products.find(query, {"_id": 0}).to_list(500)
