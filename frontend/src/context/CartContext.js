@@ -1,6 +1,23 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 
 const CartContext = createContext();
+
+// Helper function to safely get cart from localStorage
+const getStoredCart = () => {
+  try {
+    const savedCart = localStorage.getItem('doggyBakeryCart');
+    if (savedCart) {
+      const parsed = JSON.parse(savedCart);
+      // Validate it's an array
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+    }
+  } catch (error) {
+    console.error('Error loading cart from localStorage:', error);
+  }
+  return [];
+};
 
 export const useCart = () => {
   const context = useContext(CartContext);
@@ -11,19 +28,19 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  // Initialize state synchronously from localStorage using lazy initializer
+  const [cartItems, setCartItems] = useState(() => getStoredCart());
   const [isCartOpen, setIsCartOpen] = useState(false);
+  
+  // Track if initial mount is complete to prevent overwriting localStorage on first render
+  const isInitialMount = useRef(true);
 
-  // Load cart from localStorage on mount
+  // Save cart to localStorage whenever it changes (skip initial mount)
   useEffect(() => {
-    const savedCart = localStorage.getItem('doggyBakeryCart');
-    if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
     }
-  }, []);
-
-  // Save cart to localStorage whenever it changes
-  useEffect(() => {
     localStorage.setItem('doggyBakeryCart', JSON.stringify(cartItems));
   }, [cartItems]);
 
