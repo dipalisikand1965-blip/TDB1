@@ -2998,6 +2998,89 @@ async def update_order(order_id: str, updates: dict, username: str = Depends(ver
     return {"message": "Order updated"}
 
 
+# ==================== ADMIN ABANDONED CARTS ====================
+
+@admin_router.get("/abandoned-carts")
+async def get_abandoned_carts(
+    username: str = Depends(verify_admin),
+    status: Optional[str] = None,
+    limit: int = 100,
+    skip: int = 0
+):
+    """Get all abandoned carts with stats"""
+    query = {}
+    if status:
+        query["status"] = status
+    
+    carts = await db.abandoned_carts.find(
+        query, {"_id": 0}
+    ).sort("updated_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    total = await db.abandoned_carts.count_documents(query)
+    active = await db.abandoned_carts.count_documents({"status": "active"})
+    converted = await db.abandoned_carts.count_documents({"status": "converted"})
+    
+    # Calculate total potential revenue
+    total_value = 0
+    for cart in carts:
+        if cart.get("status") == "active":
+            total_value += cart.get("subtotal", 0)
+    
+    return {
+        "carts": carts,
+        "total": total,
+        "stats": {
+            "active": active,
+            "converted": converted,
+            "potential_revenue": total_value
+        }
+    }
+
+
+@admin_router.get("/abandoned-carts/reminders")
+async def get_cart_reminders_log(
+    username: str = Depends(verify_admin),
+    limit: int = 50,
+    skip: int = 0
+):
+    """Get log of sent abandoned cart reminders"""
+    reminders = await db.abandoned_cart_reminders.find(
+        {}, {"_id": 0}
+    ).sort("sent_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    total = await db.abandoned_cart_reminders.count_documents({})
+    
+    return {
+        "reminders": reminders,
+        "total": total
+    }
+
+
+@admin_router.post("/abandoned-carts/trigger-check")
+async def admin_trigger_cart_check(username: str = Depends(verify_admin)):
+    """Manually trigger abandoned cart check"""
+    try:
+        reminders_sent = await check_abandoned_carts()
+        return {
+            "message": "Abandoned cart check completed",
+            "reminders_sent": reminders_sent,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Check failed: {str(e)}")
+
+
+@admin_router.delete("/abandoned-carts/{cart_id}")
+async def delete_abandoned_cart(cart_id: str, username: str = Depends(verify_admin)):
+    """Delete an abandoned cart record"""
+    result = await db.abandoned_carts.delete_one(
+        {"$or": [{"id": cart_id}, {"session_id": cart_id}]}
+    )
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Cart not found")
+    return {"message": "Cart deleted"}
+
+
 # ==================== ADMIN MEMBERS ====================
 
 @admin_router.get("/members")
