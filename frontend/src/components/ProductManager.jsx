@@ -35,6 +35,16 @@ const CATEGORIES = [
 ];
 
 const ProductManager = ({ credentials }) => {
+  // Get credentials from props or localStorage
+  const getAuthHeader = () => {
+    if (credentials?.username && credentials?.password) {
+      return 'Basic ' + btoa(`${credentials.username}:${credentials.password}`);
+    }
+    // Fallback to localStorage
+    const storedAuth = localStorage.getItem('adminAuth');
+    return storedAuth ? `Basic ${storedAuth}` : '';
+  };
+
   // State
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -54,6 +64,20 @@ const ProductManager = ({ credentials }) => {
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState(null);
   
+  // Create new product modal
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    name: '',
+    description: '',
+    category: 'cakes',
+    price: 0,
+    image: '',
+    sizes: [],
+    flavors: [],
+    status: 'active',
+    tags: ''
+  });
+  
   // Sync status
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState(null);
@@ -64,7 +88,7 @@ const ProductManager = ({ credentials }) => {
     try {
       const response = await fetch(`${API_URL}/api/admin/products?limit=1000`, {
         headers: {
-          'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+          'Authorization': getAuthHeader()
         }
       });
       if (response.ok) {
@@ -76,7 +100,7 @@ const ProductManager = ({ credentials }) => {
     } finally {
       setLoading(false);
     }
-  }, [credentials]);
+  }, []);
 
   // Fetch sync status
   const fetchSyncStatus = async () => {
