@@ -337,7 +337,7 @@ const ProductManager = ({ credentials }) => {
       const response = await fetch(`${API_URL}/api/admin/products/${productId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+          'Authorization': getAuthHeader()
         }
       });
       
