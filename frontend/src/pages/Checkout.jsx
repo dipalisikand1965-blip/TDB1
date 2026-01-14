@@ -11,7 +11,7 @@ import { toast } from '../hooks/use-toast';
 import { 
   ArrowLeft, CreditCard, Truck, MapPin, Phone, MessageCircle, 
   CheckCircle, User, Mail, PawPrint, Calendar, Gift, Sparkles,
-  Crown, AlertCircle
+  Crown, AlertCircle, Tag, Star, Loader2, X
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
