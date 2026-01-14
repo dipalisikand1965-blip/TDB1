@@ -823,14 +823,31 @@ const PetProfile = ({ isEmbed = false }) => {
       )}
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-        <Button onClick={() => navigate('/cakes')} className="bg-purple-600 hover:bg-purple-700">
-          <Gift className="w-4 h-4 mr-2" />
-          Shop Celebration Cakes
-        </Button>
-        <Button variant="outline" onClick={() => window.location.reload()}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Another Pet
-        </Button>
+        {isEmbed ? (
+          <>
+            <a href="https://thedoggybakery.com/collections/cakes" target="_blank" rel="noopener noreferrer">
+              <Button className="bg-purple-600 hover:bg-purple-700 w-full">
+                <Gift className="w-4 h-4 mr-2" />
+                Shop Celebration Cakes
+              </Button>
+            </a>
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Another Pet
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button onClick={() => navigate('/cakes')} className="bg-purple-600 hover:bg-purple-700">
+              <Gift className="w-4 h-4 mr-2" />
+              Shop Celebration Cakes
+            </Button>
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Another Pet
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );
