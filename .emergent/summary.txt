@@ -4,208 +4,196 @@
 - **UI/UX**: Stunning and world-class design.
 - **AI Chatbot Mira**: An integrated chatbot with admin-viewable logs.
 - **Content**: Pages for About Us, FAQs, TDB Insights, Streaties, Franchise, and Contact Us.
-- **Products**: Sync all products from , ensuring all categories are present and product variants (sizes, prices) are accurate.
+- **Products**: Sync all products from , ensuring all categories are present and product variants are accurate.
 - **Deployment**: Deploy to a custom domain and ensure stability.
 - **Admin Panel**: A comprehensive, Shopify-like backend for full product CRUD, content management, and viewing pet profiles.
 - **Membership System**: A functional membership page.
-- **New Features**: Implement a Pet Profile system (the life operating system for pets) with soul questions, personas, a celebration calendar, and automated birthday/gotcha-day reminders via email/WhatsApp. Also, implement an Abandoned Cart Recovery system and a Loyalty Program.
-- **Checkout**: Implement custom shipping logic (free shipping over ₹3000) and an improved WhatsApp order confirmation flow.
+- **New Features**: Implement a Pet Profile system with soul questions and automated birthday/gotcha-day reminders. Also, implement an Abandoned Cart Recovery system and a Loyalty Program.
+- **Build Your Cake Designer**: An interactive tool for customizing cakes with shape, flavor, text, and reference image upload.
+- **Checkout**: Implement custom shipping logic and an improved order confirmation flow.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack React/FastAPI/MongoDB application. The previous session focused heavily on fixing critical bugs and implementing a major new feature. Key accomplishments include:
-- Fixing a persistent product modal overlay bug using React Portals.
-- Cleaning the database of 164 mock products to ensure data integrity.
-- Implementing correct shipping fee logic (₹150 flat fee, free over ₹3000) and improving the checkout flow.
-- Adding pagination (Load More) to product listing pages.
-- Significantly refining product categorization logic in the backend, though minor discrepancies with the source site remain.
-- Implementing Phase 1 of the Pet Profile system, including backend models/APIs and a frontend multi-step form for capturing pet details, personas, soul questions, and a celebration calendar. A My Pets dashboard was also created to support multiple pets per user.
+A full-stack React/FastAPI/MongoDB application. The current session was highly productive, achieving the following:
+- **Critical Bug Fixes**: The show-stopping cart persistence bug has been resolved. The cart state now persists across page navigations.
+- **Admin Panel Overhaul**: The  tab in the admin panel has been completely rebuilt into a Shopify-like manager with search, filters, grid/list views, and a full CRUD modal for products and their variants.
+- **New Core Features (Backend)**: Backend logic and schedulers () have been implemented for two major P1 tasks:
+    - **Pet Celebration Reminders**: A daily job checks for upcoming pet birthdays/gotcha-days and logs reminders.
+    - **Abandoned Cart Recovery**: A scheduler tracks carts, marks them as abandoned after a delay, and is set up to trigger a 3-email recovery sequence.
+- **Admin Content Management**: The previously static , , and  tabs in the admin panel are now fully functional with backend CRUD APIs and frontend interfaces.
+- **Build Your Cake Designer**: A complete, interactive cake-building feature has been implemented at . It allows users to select shape, flavor, add custom text, see a live price calculation, and add the configured product to the cart.
+- **UI/UX Refinements**: The main navigation bar has been reorganized for clarity, and the Pet Soul and Mira AI features are now prominent buttons. The Pan-India products page was fixed, and the Mira AI chat close button was improved.
+- **Loyalty & Discounts (Backend)**: The backend has been set up to support a loyalty points system and discount codes, including the creation of a default COMEBACK10 code.
 
 **Last working item**:
--   **Last item agent was working**: The user requested a complete overhaul of the admin panel to be a comprehensive, Shopify-like system for product management. The agent acknowledged this and created a new placeholder component  with the intention of rebuilding the admin product section.
+-   **Last item agent was working**: The agent was in the process of building the UI for the new admin tabs to manage the recently added backend features. This includes tabs for , , , and . The agent had added the tabs, state variables, and data-fetching logic to  but had not yet built the UI components to render the data for these new sections.
 -   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: Frontend testing agent. Once the new admin is built, the agent must test full product CRUD functionality, including creating, searching, updating products and their variants (pricing, images, stock), and deleting products.
+-   **Which testing method agent to use?**: Frontend testing agent. The agent should verify that all new admin tabs (, , , ) load and display data correctly from their respective APIs. It should also test any CRUD functionality added to these tabs.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Overhaul Admin Panel for Product Management (P0)**
--   **Issue 2: Cart State Not Persisting Across Navigation (P1)**
--   **Issue 3: Implement Auto-trigger Reminders for Pet Celebrations (P1)**
+-   **Issue 1: Complete Admin Tabs UI (P0)**
+-   **Issue 2: Implement Loyalty & Discount logic on Frontend (P1)**
+-   **Issue 3: Email Notifications Failing (Blocked) (P2)**
 -   **Issue 4: Product Categorization Discrepancy (P2)**
--   **Issue 5: Email Notifications Failing (Blocked) (P2)**
--   **Issue 6: Static Admin Content Tabs (P2)**
+-   **Issue 5: Static Admin Content Tabs (Streaties & Franchise) (P2)**
 
 **Issues Detail**:
--   **Issue 1: Overhaul Admin Panel for Product Management (P0)**
-    -   **Description**: The current admin panel at  is not functional for the user's needs. It lacks search, cannot display all products, and has no capabilities to edit product variants, pricing, or images.
+-   **Issue 1: Complete Admin Tabs UI (P0)**
+    -   **Description**: The backend and data fetching for the new admin tabs (Pets, Loyalty, Discounts, Abandoned Carts) are in place. The UI for displaying and managing this data within  needs to be created.
     -   **Next debug checklist**:
-        1.  Integrate the new  component into .
-        2.  Build the UI for a comprehensive product table with search, filters, and pagination/infinite scroll.
-        3.  Develop a product edit form/modal that allows full CRUD for product details, including adding/editing/deleting variants (size, flavor) and managing media (image uploads).
-        4.  Implement backend APIs in  to support these new CRUD operations.
-        5.  Ensure the admin allows for local edits that can be published to the live site.
-    -   **Why fix this issue?**: This is a core user requirement to manage the e-commerce store independently without relying on multiple systems.
+        1.  In , locate the  render blocks.
+        2.  For , create a component to display pet profiles (similar to the existing Members tab).
+        3.  For , display users and their loyalty points.
+        4.  For , create a CRUD interface to manage discount codes.
+        5.  For , display a list of abandoned carts with their status and potential revenue.
+    -   **Why fix this issue?**: To give the admin full visibility and control over the new systems that have been implemented.
     -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Both
-
--   **Issue 2: Cart State Not Persisting Across Navigation (P1)**
-    -   **Description**: The agent observed during testing that the shopping cart empties when a user navigates to the checkout page, which is a critical, show-stopping bug.
-    -   **Attempted fixes**: None. The agent noted the issue but did not investigate.
-    -   **Next debug checklist**:
-        1.  Review the application's state management for the shopping cart (e.g., ).
-        2.  Ensure the cart state is persisted in  or  on any modification.
-        3.  Verify that the cart state is correctly rehydrated when the application loads or the user navigates between pages.
-    -   **Why fix this issue?**: Users cannot complete purchases if their cart is not persistent, rendering the e-commerce functionality useless.
-    -   **Status**: NOT STARTED
     -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Frontend
 
--   **Issue 3: Implement Auto-trigger Reminders for Pet Celebrations (P1)**
-    -   **Description**: The backend and frontend for capturing pet profile data and celebration dates are complete. The next step is to build the automated system that sends reminders.
+-   **Issue 2: Implement Loyalty & Discount logic on Frontend (P1)**
+    -   **Description**: The backend APIs for creating and validating discount codes and for tracking loyalty points exist, but the frontend checkout process does not yet utilize them.
     -   **Next debug checklist**:
-        1.  In , create a new scheduled task using  to run daily.
-        2.  The task must query the  collection for any upcoming celebration dates (e.g., birthday - 7 days, birthday - 1 day).
-        3.  For each matching pet, use their soul profile to generate a personalized email/WhatsApp message.
-        4.  Integrate with Resend (once unblocked) or a WhatsApp API to send the notification.
-    -   **Why fix this issue?**: This is the core value proposition of the life operating system for pets, designed to drive engagement and repeat sales.
+        1.  In , add an input field to apply a discount code.
+        2.  Create an API call to a new endpoint () to validate the code and get the discounted price.
+        3.  Update the order summary to reflect the discount.
+        4.  On the user's profile or checkout page, display their available loyalty points and provide an option to redeem them for a discount.
+    -   **Why fix this issue?**: This is a core e-commerce feature that drives sales and customer retention.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Both
+
+-   **Issue 3: Email Notifications Failing (Blocked) (P2)**
+    -   **Description**: Email notifications via Resend are failing due to an unverified domain. The new celebration and abandoned cart reminders will not work until this is resolved.
+    -   **Status**: BLOCKED on the user to add the required DNS records to their domain registrar. The agent has provided clear instructions.
+    -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Backend
 
 -   **Issue 4: Product Categorization Discrepancy (P2)**
-    -   **Description**: While greatly improved, the product category counts (e.g., Cakes, Breed Cakes, Pupcakes) on the site still do not perfectly match the collections on the original , as noted by the user.
-    -   **Next debug checklist**:
-        1.  In , review the categorization logic within the  function.
-        2.  Specifically, analyze why some products are being misclassified (e.g., Coffee Mugs were being marked as breed-cakes).
-        3.  Adjust the order of conditional checks to prioritize more specific categories (e.g., 'hamper' or 'breed-cake') before more general ones ('cake' or 'accessories').
-    -   **Why fix this issue?**: To ensure the storefront is organized exactly as the user expects, improving user experience and trust.
+    -   **Description**: While the sync is complete, minor differences may still exist between Shopify's collections and our site's categories due to different logic. This is a recurring low-priority tuning task.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Backend
 
--   **Issue 5: Email Notifications Failing (Blocked) (P2)**
-    -   **Description**: Email notifications via Resend are failing due to an unverified domain.
-    -   **Status**: BLOCKED on the user to add the required DNS records to their domain registrar.
-    -   **Is recurring issue?**: Y
-    -   **Should Test frontend/backend/both after fix?**: Backend
-
--   **Issue 6: Static Admin Content Tabs (P2)**
-    -   **Description**: The admin tabs for managing content like Testimonials, Insights/Blog, FAQs, etc., are still static mockups without backend functionality.
+-   **Issue 5: Static Admin Content Tabs (Streaties & Franchise) (P2)**
+    -   **Description**: The admin tabs for  and  are still static mockups.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Both
 
 **In progress Task List**:
--   **Task 1: Build Shopify-like Admin for Products (P0)**
-    -   **Where to resume**: Start by replacing the old product list in  with the new  and build out its functionality.
-    -   **What will be achieved with this?**: A fully independent and comprehensive product management system within the admin panel.
+-   **Task 1: Build UI for New Admin Tabs (P0)**
+    -   **Where to resume**: In , add the JSX components inside the  conditional rendering blocks for 'pets', 'loyalty', 'discounts', and 'abandoned_carts'.
+    -   **What will be achieved with this?**: A complete admin dashboard providing full visibility into all key business metrics and systems.
     -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Should Test frontend/backend/both after fix?**: Frontend
 
 **Upcoming and Future Tasks**
--   **Upcoming Tasks (from ROADMAP.md)**:
-    -   **Abandoned Cart Recovery (P1)**: Track abandoned carts and send email/WhatsApp reminders.
-    -   **Loyalty Points (Pawsome) System (P1)**: Implement a points and rewards system for purchases.
-    -   **Pet Wall of Fame (P2)**: Create a gallery for customers to upload pet photos.
--   **Future Tasks (from ROADMAP.md)**:
-    -   **Build Your Cake Designer**: An interactive tool for customizing cakes.
+-   **Upcoming Tasks**:
+    -   **Loyalty Points Frontend (P1)**: Allow users to see and redeem their Pawsome points at checkout.
+    -   **Discount Code Frontend (P1)**: Enable the COMEBACK10 code and others at checkout.
+    -   **Pet Wall of Fame (P2)**: Create a gallery for customers to upload pet photos with admin approval.
+-   **Future Tasks**:
     -   **Pet Photo Merchandise**: Allow users to print pet photos on merchandise.
+    -   **Automated WhatsApp Notifications**: Replace the  link with a proper WhatsApp API integration (e.g., Twilio).
 
 **Completed work in this session**
--   **Critical Bug Fixes**:
-    -   **Product Modal Overlay**: Fixed a major UX bug where modals displayed inline by correctly using a React Portal in .
-    -   **Product Data Integrity**: Deleted 164 stale, mock products from the database.
--   **Checkout & Pricing Overhaul**:
-    -   **Variant Pricing**: Fixed the frontend to correctly display different prices for product variants (e.g., 150g vs. 300g).
-    -   **Shipping Logic**: Implemented the correct shipping fee logic (₹150 fee, free over ₹3000) in .
-    -   **WhatsApp Flow**: Improved the order confirmation screen and WhatsApp message to clarify that a payment link will be sent.
--   **Pet Profile System (Phase 1)**:
-    -   **Backend**: Created models and REST APIs in  to handle full CRUD for pet profiles.
-    -   **Frontend**: Built a beautiful multi-step form () to create profiles, including pet details, personas, soul questions, and a celebration calendar with custom dates.
-    -   **Multi-Pet Support**: Created a My Pets page () to allow users to manage multiple pets.
--   **UI/UX Enhancements**:
-    -   **Pagination**: Added a Load More button to product listing pages.
-    -   **Image Fallback**: Implemented a placeholder for products with missing images.
-    -   **Navigation**: Added Gift Hampers and My Pets links to the main navigation bar.
-    -   **Content Pages**: Fixed the Read More functionality on the Insights page.
+-   **Critical Bug Fix**:
+    -   Fixed cart state not persisting across navigation in .
+-   **Admin Panel Overhaul**:
+    -   Integrated  into , creating a powerful Shopify-like product management interface.
+    -   Implemented functional CRUD UIs for , , and  content tabs in .
+-   **New Features**:
+    -   **Pet Celebration Reminders**: Implemented backend scheduler in  to check for upcoming pet celebrations daily.
+    -   **Abandoned Cart Recovery**: Implemented backend scheduler and APIs in  to track and manage abandoned carts.
+    -   **Build Your Cake Designer**: Created a new page  with an interactive UI for building and pricing custom cakes, which can be added to the cart.
+    -   **Loyalty & Discounts**: Added backend models, APIs, and admin management for a loyalty points system and discount codes in .
+-   **UI/UX & Other Fixes**:
+    -   Moved Pet Soul link to a prominent button in .
+    -   Refined the Navbar layout for better organization and visual appeal.
+    -   Fixed Pan India products page by adjusting backend categorization logic in .
+    -   Fixed the close button on the  component.
 
 **Earlier issues found/mentioned but not fixed**
--   The original requirement to **send WhatsApp order notifications** automatically (e.g., via Twilio) has not been implemented; the current checkout flow directs users to a WhatsApp chat link.
+-   The original requirement to **send WhatsApp order notifications** automatically (e.g., via Twilio) has not been implemented; the current checkout flow still directs users to a WhatsApp chat link.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **React Portals**: A key concept used to solve the / bug caused by a parent element's  style, ensuring the product modal renders correctly in the DOM root.
--   **Multi-step Frontend Forms**: A complex, stateful UI pattern was implemented in  to guide users through capturing detailed information.
--   **Backend Data Transformation**: The product sync logic in  is critical and complex, involving fetching, cleaning, categorizing (based on keywords in title/tags), and upserting data into MongoDB.
--   **State Persistence**: An identified weakness in the current app is the lack of cart state persistence across page loads, which needs to be fixed using  or .
+-   ****: Used in  to run two background jobs: one for daily pet celebration checks and another for abandoned cart detection.
+-   **Synchronous State Initialization**: The cart persistence bug was fixed by initializing the  hook directly from  () to prevent a race condition with .
+-   **Complex Frontend State Management**:  manages a multi-option state (shape, flavor, text, image) to dynamically calculate price and generate a product summary.
+-   **Monolithic Backend Expansion**: All new features (reminders, abandoned carts, loyalty, discounts, content CRUD, file uploads) were added directly to the single  file, increasing its complexity.
 
 **key DB schema**
--   **pets**: , , , , , , , , ,  (string),  (string),  (dict),  (array of objects ), , . **(NEW)**
+-   **reminders**: , , , , ,  (e.g., 'pending', 'sent'), . **(NEW)**
+-   **abandoned_carts**: , , , ,  ('active', 'recovered'), , . **(NEW)**
+-   **loyalty_points**: , , ,  (array of ). **(NEW)**
+-   **discount_codes**: , ,  ('percentage', 'fixed'), , , . **(NEW)**
+-   **site_content**: A generic collection was extended with types for , , and .
 
 **All files of reference**
--   : Contains all business logic, including the new Pet Profile APIs and continuously refined product categorization rules.
--   : The component that needs to be completely rebuilt.
--   : The new, complex form for creating pet profiles.
--   : The new dashboard for viewing a user's pets.
--   : The placeholder for the new admin product system.
--   : Contains the updated shipping fee and order confirmation logic.
--   : Contains the critical Portal fix for the modal bug.
+-   : The monolithic backend file containing all new business logic for schedulers, loyalty, discounts, and content management.
+-   : The huge admin component, now with functional product and content management, and placeholders for new tabs.
+-   : The new interactive cake builder.
+-   : Contains the cleaner, reorganized navigation layout.
+-   : Contains the critical fix for cart persistence.
 
 **Areas that need refactoring**:
--   ****: Urgently needs to be broken down into modules (e.g., routes, models, services) to improve maintainability.
--   ****: Needs a complete overhaul as per the user's request to become a Shopify-like system. The current 1800+ line file is unmanageable.
--   ****: This new component is already very large. The logic for each of the 5 steps should be extracted into its own sub-component to improve readability and maintainability.
+-   ****: This file is now critically oversized and unmanageable. It MUST be broken down into a proper structure with directories for routes, models, services, and schedulers. This is the highest priority refactoring task.
+-   ****: At over 2500 lines, this component is also extremely difficult to maintain. Each tab's content should be extracted into its own child component (e.g., , ).
 
 **key api endpoints**
--   : Create a new pet profile.
--   : Get all pets for the logged-in user.
--   : Update a specific pet's profile.
--   : Delete a pet profile.
--   : Get all pet profiles (for admin).
--   : Deletes all mock products from the database.
+-   : Manually trigger the celebration reminder job.
+-   : Get all abandoned carts.
+-   : Save the current state of a user's cart.
+-   : Create a new discount code.
+-   : Get all discount codes.
+-   : Manually add loyalty points to a user.
+-    for , , .
+-   : Upload a reference image for a custom cake.
 
 **Critical Info for New Agent**
--   **IMMEDIATE PRIORITY: Admin Panel Overhaul.** The user's most recent and urgent request is to build a comprehensive, Shopify-like admin for product management. This is your P0 task. Start by implementing the  component.
--   **CRITICAL BUG: Fix Cart Persistence.** The observation that the cart empties on navigation is a show-stopping bug for an e-commerce site. This must be fixed with high priority, potentially in parallel with the admin work.
--   **Pet Profiles are Central to the Vision.** The life operating system for pets is a core concept for the user. Phase 1 (data capture) is complete. The next major step is implementing the automated birthday/celebration reminders.
--   **Deployment is a recurring theme.** The user has previously faced issues with changes not appearing on the live site. Always remind the user to perform a hard refresh () after deployment to clear any browser or CDN cache.
+-   **PRIORITY**: Your immediate task is to finish the UI for the new admin tabs (, , , ) in . The backend is ready.
+-   **NEXT UP**: After the admin tabs, the next logical step is to integrate the discount and loyalty systems into the  page so customers can use them.
+-   **REFACTORING NEEDED**: The  and  files have grown to an unsustainable size. Plan to break them down into smaller, manageable modules as soon as the current feature set is complete.
+-   **EMAILS BLOCKED**: The Resend integration is still blocked pending user action (DNS verification). Automated emails for celebrations and abandoned carts will not work in production until this is resolved.
 
 **documents and test reports created in this job**
 -   
--   
+-    (heavily updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
--   **10. User**: Confirms to start with the Pet Profile system and provides detailed vision for it, including soul questions, personas, automated messages, and admin view. (Status: ADDRESSED, Pet Profile Phase 1 built)
--   **9. User**: Asks to start with the planned list for the day. (Status: ADDRESSED)
--   **8. User**: Prefers to deploy current fixes before starting new tasks. (Status: ADDRESSED)
--   **7. User**: Reports that some product images, like for Christmas Cookies, are missing. (Status: ADDRESSED, placeholder image implemented)
--   **6. User**: Starts the new session asking to fix product variant pricing, improve the checkout experience (shipping fee & WhatsApp flow), and enforce shipping rules. (Status: ADDRESSED)
--   **5. User**: Asks to pause for the day. (Status: ADDRESSED)
--   **4. User**: Reports that products are missing on the  page on the live site and asks to verify variants/prices against a specific Shopify collection. (Status: ADDRESSED, data verified)
--   **3. User**: Approves the plan to deploy and asks to proceed. (Status: ADDRESSED)
--   **2. User**: Agrees to proceed with deployment despite remaining minor discrepancies in product categorization. (Status: ADDRESSED)
--   **1. User**: Provides links to specific Shopify collections for Cakes and Breed Cakes to highlight categorization issues. (Status: ADDRESSED, categorization logic improved)
+-   **10. User**: Asks to build Loyalty Points system, Discount Code system, and ensure all features have clear admin tabs. (Status: IN PROGRESS)
+-   **9. User**: Confirms that all 392 products are synced. (Status: ADDRESSED)
+-   **8. User**: Asks to verify if all cakes from the original site are synced. (Status: ADDRESSED, confirmed all products are synced).
+-   **7. User**: Reports that Pan India cakes are showing correctly on the live site after deployment. (Status: ADDRESSED)
+-   **6. User**: Reports that the X to close the Mira AI chat is missing and Pan India cakes have disappeared. (Status: ADDRESSED, fixed both issues).
+-   **5. User**: Asks where the Mira AI and Pet Soul buttons are. (Status: ADDRESSED, fixed responsive visibility in the navbar).
+-   **4. User**: Points out that the header layout looks weird and asks for custom cake orders to be highlighted in the admin panel. (Status: ADDRESSED, navbar cleaned up and admin orders updated).
+-   **3. User**: Confirms that the Build Your Cake feature should have shape selection, two flavors (one with an upcharge), and a reference image upload, and that the flow should add the configured cake to the cart like a normal product. (Status: ADDRESSED, feature built).
+-   **2. User**: Asks if the Build Your Cake designer can include shapes and an image upload feature. (Status: ADDRESSED).
+-   **1. User**: Approves the plan to continue building features (Cake Designer) while the deployment runs. (Status: ADDRESSED).
 
 **Project Health Check:**
--   **Broken**: The shopping cart is critically broken as it does not persist across page navigation. The admin panel is non-functional for product management.
--   **Mocked**: The admin tabs for managing site content (FAQs, Insights/Blog, Franchise, etc.) are still static UI elements with no backend functionality.
+-   **Broken**: No features are critically broken.
+-   **Mocked**: The frontend for applying discount codes and redeeming loyalty points at checkout is missing. The  and  admin tabs are still static UI elements.
 
 **3rd Party Integrations**
 -   **Chatbase.co**: Integrated via iframe for the customer-facing chat widget.
--   **Shopify**: Read-only sync from  endpoint to populate the product catalog. The sync now runs automatically and can be triggered manually.
--   **Resend**: For email notifications. Currently **BLOCKED** as it requires user action (DNS verification).
+-   **Shopify**: Read-only sync from  endpoint.
+-   **Resend**: For email notifications. Currently **BLOCKED** pending DNS verification by the user.
+-   ****: For running background tasks (celebration reminders, abandoned cart checks). **(NEW)**
 
 **Testing status**
--   **Testing agent used after significant changes**: YES, the testing agent was used to verify fixes for the modal overlay and Pan India page.
+-   **Testing agent used after significant changes**: YES, used to validate the Admin Product Manager.
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: []
--   **Known regressions**: Product categorization has been a recurring adjustment, requiring multiple refinements to align with user expectations.
+-   **Known regressions**: None in this session.
 
 **What agent forgot to execute**
--   The agent identified a critical bug where the **shopping cart state does not persist** across page navigations but did not fix it.
--   The agent acknowledged the need to overhaul the admin panel and created a new file () but did not proceed with the actual implementation.</analysis>
+-   The agent was in the middle of a large task. It correctly implemented the backend and data fetching for the new admin tabs but did not complete the final step of building the UI to display the data for , , , and  in the admin panel.</analysis>
