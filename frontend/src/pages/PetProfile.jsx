@@ -26,7 +26,7 @@ const PERSONA_ICONS = {
   mischief_maker: Smile
 };
 
-const PetProfile = () => {
+const PetProfile = ({ isEmbed = false }) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [personas, setPersonas] = useState({});
