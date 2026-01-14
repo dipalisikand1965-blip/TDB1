@@ -193,7 +193,8 @@ const PetProfile = ({ isEmbed = false }) => {
         owner_email: formData.owner_email,
         owner_phone: formData.owner_phone,
         whatsapp_reminders: formData.whatsapp_reminders,
-        email_reminders: formData.email_reminders
+        email_reminders: formData.email_reminders,
+        source: isEmbed ? 'shopify_embed' : 'direct'
       };
 
       const response = await fetch(`${API_URL}/api/pets`, {
