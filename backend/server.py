@@ -4542,7 +4542,6 @@ async def submit_franchise_inquiry(inquiry: dict):
         }
         if RESEND_API_KEY:
             await asyncio.to_thread(resend.Emails.send, params)
-        )
     except Exception as e:
         logger.error(f"Failed to send franchise notification: {e}")
     
