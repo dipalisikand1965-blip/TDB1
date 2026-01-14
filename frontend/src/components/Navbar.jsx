@@ -159,9 +159,11 @@ const Navbar = () => {
               <Button variant="ghost" size="icon" className="hidden md:flex h-9 w-9">
                 <Heart className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="hidden md:flex h-9 w-9">
-                <User className="w-5 h-5" />
-              </Button>
+              <Link to={user ? "/dashboard" : "/login"}>
+                <Button variant="ghost" size="icon" className="hidden md:flex h-9 w-9">
+                  <User className="w-5 h-5" />
+                </Button>
+              </Link>
               <Button
                 variant="ghost"
                 size="icon"
