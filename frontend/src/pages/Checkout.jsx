@@ -17,6 +17,8 @@ import {
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 const WHATSAPP_NUMBER = process.env.REACT_APP_WHATSAPP_NUMBER || '919663185747';
 const BUSINESS_EMAIL = process.env.REACT_APP_BUSINESS_EMAIL || 'woof@thedoggybakery.in';
+const FREE_SHIPPING_THRESHOLD = 3000;
+const SHIPPING_FEE = 150;
 
 const addOns = [
   { id: 'ao-1', name: 'Birthday Bandana', price: 299, image: 'https://thedoggybakery.com/cdn/shop/products/WhatsAppImage2022-05-13at3.24.11PM.jpg?v=1655357921&width=100' },
