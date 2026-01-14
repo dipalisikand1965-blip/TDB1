@@ -1383,7 +1383,11 @@ const Admin = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {members.map((member, idx) => (
-                    <tr key={idx} className="hover:bg-gray-50">
+                    <tr 
+                      key={idx} 
+                      className="hover:bg-purple-50 cursor-pointer transition-colors"
+                      onClick={() => setSelectedMember(member)}
+                    >
                       <td className="px-6 py-4">
                         <p className="font-medium">{member.name || 'No name'}</p>
                         <p className="text-xs text-gray-500">Joined {new Date(member.created_at).toLocaleDateString()}</p>
