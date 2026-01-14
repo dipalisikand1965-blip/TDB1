@@ -28,7 +28,7 @@ const addOns = [
 ];
 
 const Checkout = () => {
-  const { cartItems, getCartTotal, clearCart, addToCart } = useCart();
+  const { cartItems, getCartTotal, clearCart, addToCart, markCartConverted, captureEmail } = useCart();
   const navigate = useNavigate();
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
