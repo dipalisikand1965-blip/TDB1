@@ -74,6 +74,79 @@ const Checkout = () => {
     couponCode: ''
   });
 
+  // Fetch loyalty balance when email is entered
+  useEffect(() => {
+    const fetchLoyaltyBalance = async () => {
+      if (formData.email && formData.email.includes('@')) {
+        setIsLoadingLoyalty(true);
+        try {
+          const res = await fetch(`${API_URL}/api/loyalty/balance?user_id=${encodeURIComponent(formData.email)}`);
+          if (res.ok) {
+            const data = await res.json();
+            setLoyaltyBalance(data);
+          }
+        } catch (err) {
+          console.error('Failed to fetch loyalty balance:', err);
+        } finally {
+          setIsLoadingLoyalty(false);
+        }
+      }
+    };
+    fetchLoyaltyBalance();
+  }, [formData.email]);
+
+  // Validate discount code
+  const handleApplyDiscount = async () => {
+    if (!discountCode.trim()) {
+      toast({ title: 'Enter a code', description: 'Please enter a discount code', variant: 'destructive' });
+      return;
+    }
+    
+    setIsValidatingCode(true);
+    try {
+      const subtotal = getCartTotal();
+      const res = await fetch(`${API_URL}/api/discount-codes/validate?code=${encodeURIComponent(discountCode)}&order_total=${subtotal}`);
+      const data = await res.json();
+      
+      if (res.ok && data.valid) {
+        setAppliedDiscount(data);
+        toast({ 
+          title: 'Code Applied! 🎉', 
+          description: `You saved ₹${data.discount_amount}` 
+        });
+      } else {
+        toast({ 
+          title: 'Invalid Code', 
+          description: data.detail || 'This code cannot be applied', 
+          variant: 'destructive' 
+        });
+        setAppliedDiscount(null);
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: 'Failed to validate code', variant: 'destructive' });
+    } finally {
+      setIsValidatingCode(false);
+    }
+  };
+
+  const removeDiscount = () => {
+    setAppliedDiscount(null);
+    setDiscountCode('');
+  };
+
+  // Handle loyalty points redemption
+  const handleRedeemPoints = (points) => {
+    const maxRedeemable = Math.min(loyaltyBalance?.points || 0, Math.floor(getCartTotal() / 0.5)); // Max based on cart value
+    const validPoints = Math.max(0, Math.min(points, maxRedeemable));
+    setPointsToRedeem(validPoints);
+    setLoyaltyDiscount(validPoints * 0.5); // 1 point = ₹0.50
+  };
+
+  const clearLoyaltyRedemption = () => {
+    setPointsToRedeem(0);
+    setLoyaltyDiscount(0);
+  };
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({ 
