@@ -897,6 +897,85 @@ const PetProfile = ({ isEmbed = false }) => {
     }
   };
 
+  // Render existing pets view (step 0) for returning users
+  const renderMyPets = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Heart className="w-8 h-8 text-purple-600" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900">Welcome Back! 🐾</h2>
+        <p className="text-gray-600 mt-1">Here are your furry family members</p>
+      </div>
+
+      <div className="space-y-3">
+        {existingPets.map((pet) => {
+          const PersonaIcon = PERSONA_ICONS[pet.soul?.persona] || PawPrint;
+          return (
+            <div key={pet.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+              <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
+                {pet.photo_url ? (
+                  <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
+                ) : (
+                  <PawPrint className="w-7 h-7 text-purple-600" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-gray-900">{pet.name}</h3>
+                  {pet.soul?.persona && (
+                    <Badge variant="outline" className="text-xs">
+                      {personas[pet.soul.persona]?.emoji} {personas[pet.soul.persona]?.name}
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-sm text-gray-500 truncate">{pet.breed || pet.species}</p>
+              </div>
+              <div className="text-right text-xs text-gray-400">
+                {pet.birth_date && <p>🎂 {new Date(pet.birth_date).toLocaleDateString()}</p>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <Button 
+        onClick={() => setStep(1)} 
+        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+      >
+        <Plus className="w-4 h-4 mr-2" />
+        Add Another Pet
+      </Button>
+
+      <p className="text-center text-xs text-gray-400">
+        Logged in as {savedEmail}
+        <button 
+          onClick={() => {
+            localStorage.removeItem('tdb_pet_parent_email');
+            setExistingPets([]);
+            setSavedEmail('');
+            setStep(1);
+          }}
+          className="ml-2 text-purple-600 hover:underline"
+        >
+          Switch account
+        </button>
+      </p>
+    </div>
+  );
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <PawPrint className="w-12 h-12 text-purple-600 animate-bounce mx-auto" />
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50 py-12">
       <div className="max-w-2xl mx-auto px-4">
