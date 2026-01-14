@@ -2337,43 +2337,104 @@ const Admin = () => {
         {activeTab === 'streaties' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-900">Manage Streaties</h3>
-              <Button className="bg-purple-600 hover:bg-purple-700">
-                <Plus className="w-4 h-4 mr-2" />Add Streaty
-              </Button>
+              <h3 className="text-xl font-bold text-gray-900">🧡 Streaties Program</h3>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={fetchStreatiesStats}>
+                  <RefreshCw className="w-4 h-4 mr-2" />Refresh
+                </Button>
+                <Button className="bg-orange-600 hover:bg-orange-700" onClick={() => setShowDonationModal(true)}>
+                  <Plus className="w-4 h-4 mr-2" />Log Donation
+                </Button>
+              </div>
             </div>
             
-            <Card className="p-6">
-              <p className="text-gray-600 mb-6">Manage street treats featured on the Streaties page.</p>
-              
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                  { name: 'Chicken Jerky Strips', price: 299, status: 'active', stock: 50 },
-                  { name: 'Peanut Butter Biscuits', price: 199, status: 'active', stock: 75 },
-                  { name: 'Sweet Potato Chews', price: 249, status: 'active', stock: 30 },
-                  { name: 'Mutton Munchies', price: 349, status: 'low_stock', stock: 8 },
-                ].map((item, idx) => (
-                  <Card key={idx} className="p-4 border">
-                    <h4 className="font-semibold text-gray-900 mb-2">{item.name}</h4>
-                    <p className="text-lg font-bold text-purple-600 mb-2">₹{item.price}</p>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Badge variant={item.status === 'active' ? 'default' : 'destructive'}>
-                        {item.status === 'active' ? 'Active' : 'Low Stock'}
-                      </Badge>
-                      <span className="text-sm text-gray-500">{item.stock} in stock</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="flex-1">
-                        <Edit className="w-3 h-3" />
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-red-500">
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    </div>
+            {streatiesStats && (
+              <>
+                {/* Stats Cards */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  <Card className="p-4 bg-gradient-to-r from-orange-50 to-amber-50">
+                    <p className="text-sm text-gray-500">Strays Fed Monthly</p>
+                    <p className="text-2xl font-bold text-orange-600">{streatiesStats.strays_fed_monthly?.toLocaleString()}</p>
                   </Card>
-                ))}
+                  <Card className="p-4 bg-gradient-to-r from-pink-50 to-rose-50">
+                    <p className="text-sm text-gray-500">NGO Partners</p>
+                    <p className="text-2xl font-bold text-pink-600">{streatiesStats.ngo_partners}</p>
+                  </Card>
+                  <Card className="p-4 bg-gradient-to-r from-purple-50 to-violet-50">
+                    <p className="text-sm text-gray-500">Cities Covered</p>
+                    <p className="text-2xl font-bold text-purple-600">{streatiesStats.cities_covered}</p>
+                  </Card>
+                  <Card className="p-4 bg-gradient-to-r from-green-50 to-emerald-50">
+                    <p className="text-sm text-gray-500">Total Donated</p>
+                    <p className="text-2xl font-bold text-green-600">₹{streatiesStats.total_donated?.toLocaleString()}</p>
+                  </Card>
+                  <Card className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50">
+                    <p className="text-sm text-gray-500">Donation %</p>
+                    <p className="text-2xl font-bold text-blue-600">{streatiesStats.donation_percentage}%</p>
+                  </Card>
+                </div>
+
+                {/* Recent Donations */}
+                <Card className="p-6">
+                  <h4 className="font-semibold mb-4">Recent Donations</h4>
+                  {streatiesStats.recent_donations?.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">No donations logged yet</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {streatiesStats.recent_donations?.map((donation, idx) => (
+                        <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div>
+                            <p className="font-medium">{donation.ngo_name}</p>
+                            <p className="text-sm text-gray-500">{donation.city} • {donation.animals_fed} animals fed</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-green-600">₹{donation.amount?.toLocaleString()}</p>
+                            <p className="text-xs text-gray-400">{new Date(donation.date).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </Card>
+              </>
+            )}
+
+            {/* Donation Modal */}
+            {showDonationModal && (
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                <Card className="w-full max-w-lg bg-white p-6">
+                  <h3 className="text-lg font-bold mb-4">Log New Donation</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">NGO/Organization Name</label>
+                      <Input value={newDonation.ngo_name} onChange={(e) => setNewDonation({...newDonation, ngo_name: e.target.value})} placeholder="e.g., CUPA, Blue Cross" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium">City</label>
+                        <Input value={newDonation.city} onChange={(e) => setNewDonation({...newDonation, city: e.target.value})} placeholder="e.g., Bangalore" />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Amount (₹)</label>
+                        <Input type="number" value={newDonation.amount} onChange={(e) => setNewDonation({...newDonation, amount: parseInt(e.target.value) || 0})} />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Animals Fed</label>
+                      <Input type="number" value={newDonation.animals_fed} onChange={(e) => setNewDonation({...newDonation, animals_fed: parseInt(e.target.value) || 0})} />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Description</label>
+                      <Input value={newDonation.description} onChange={(e) => setNewDonation({...newDonation, description: e.target.value})} placeholder="Monthly feeding drive..." />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 mt-6">
+                    <Button variant="outline" onClick={() => setShowDonationModal(false)}>Cancel</Button>
+                    <Button className="bg-orange-600" onClick={addStreatiesDonation} disabled={!newDonation.ngo_name}>Save Donation</Button>
+                  </div>
+                </Card>
               </div>
-            </Card>
+            )}
           </div>
         )}
 
