@@ -40,6 +40,7 @@ function App() {
             <Route path="/pet-soul-embed" element={<PetProfile isEmbed={true} />} />
             <Route path="/mira-embed" element={<MiraEmbed />} />
             <Route path="/mira-landing-embed" element={<MiraLandingEmbed />} />
+            <Route path="/concierge-embed" element={<MiraConciergeEmbed />} />
             
             {/* Main app routes - WITH navbar */}
             <Route path="/*" element={<MainLayout />} />
