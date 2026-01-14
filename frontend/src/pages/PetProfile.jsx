@@ -289,6 +289,7 @@ const PetProfile = () => {
               onChange={(e) => updateFormData('birth_date', e.target.value)}
               className="mt-1"
             />
+            <p className="text-xs text-gray-500 mt-1">When were they born?</p>
           </div>
           <div>
             <Label htmlFor="gotcha_date">Gotcha Day 🏠</Label>
@@ -299,9 +300,12 @@ const PetProfile = () => {
               onChange={(e) => updateFormData('gotcha_date', e.target.value)}
               className="mt-1"
             />
-            <p className="text-xs text-gray-500 mt-1">Adoption anniversary</p>
+            <p className="text-xs text-gray-500 mt-1">When did they join your family?</p>
           </div>
         </div>
+        <p className="text-xs text-purple-600 bg-purple-50 p-2 rounded-lg">
+          💡 Don't know their birthday? No worries! Many pet parents celebrate their Gotcha Day instead - the day their furry friend joined the family!
+        </p>
 
         <div>
           <Label htmlFor="photo_url">Photo URL (optional)</Label>
