@@ -1678,6 +1678,16 @@ const Admin = () => {
                 <Button 
                   className="bg-purple-600"
                   onClick={() => {
+        {/* Collections Tab */}
+        {activeTab === 'collections' && (
+          <CollectionManager getAuthHeader={getAuthHeaders} />
+        )}
+
+        {/* Reviews Tab */}
+        {activeTab === 'reviews' && (
+          <ReviewsManager getAuthHeader={getAuthHeaders} />
+        )}
+
                     const newVideo = { id: `v-${Date.now()}`, title: '', thumbnail: '', description: '', videoUrl: '' };
                     setSiteContent(prev => ({
                       ...prev,
