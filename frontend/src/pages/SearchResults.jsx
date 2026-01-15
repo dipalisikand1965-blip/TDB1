@@ -82,12 +82,16 @@ const SearchResults = () => {
       const response = await fetch(`${API_URL}/api/search?${params.toString()}`);
       if (response.ok) {
         const data = await response.json();
+        console.log('Search API response:', data);
+        const hits = data.hits || data.products || [];
         if (offset === 0) {
-          setResults(data.hits || []);
+          setResults(hits);
         } else {
-          setResults(prev => [...prev, ...(data.hits || [])]);
+          setResults(prev => [...prev, ...hits]);
         }
-        setTotalHits(data.estimatedTotalHits || 0);
+        setTotalHits(data.estimatedTotalHits || data.total || hits.length || 0);
+      } else {
+        console.error('Search response not ok:', response.status);
       }
     } catch (error) {
       console.error('Search error:', error);
