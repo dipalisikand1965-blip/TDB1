@@ -265,6 +265,8 @@ const ProductManager = ({ credentials }) => {
         tags: editForm.tags ? editForm.tags.split(',').map(t => t.trim()) : [],
         price: parseFloat(editForm.price) || 0,
         minPrice: editForm.minPrice ? parseFloat(editForm.minPrice) : null,
+        autoship_enabled: editForm.autoship_enabled,
+        collection_ids: editForm.collection_ids,
         updated_at: new Date().toISOString(),
         locally_edited: true
       };
