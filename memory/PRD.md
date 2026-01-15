@@ -104,9 +104,12 @@ POST /api/orders                - Create order
 POST /api/mira/chat             - Chat with Mira
 GET  /api/mira/access           - Check access limits
 POST /api/auth/register         - User registration
-POST /api/auth/login            - User login
+POST /api/auth/login            - User login (returns JWT access_token)
+GET  /api/auth/me               - Get current user info (requires Bearer token)
 POST /api/membership/upgrade    - Upgrade tier
 POST /api/cron/sync-products    - Scheduled sync
+GET  /api/orders/my-orders      - User's order history (requires Bearer token)
+GET  /api/pets/my-pets          - User's pet profiles (requires Bearer token)
 ```
 
 ### Admin (Basic Auth)
