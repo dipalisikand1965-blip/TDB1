@@ -1613,18 +1613,6 @@ const Admin = () => {
                   <option value="Bangalore">Bangalore</option>
                   <option value="Gurgaon">Gurgaon</option>
                   <option value="Delhi">Delhi</option>
-        {/* Collections Tab */}
-        {activeTab === 'collections' && (
-        {/* Reviews Tab */}
-        {activeTab === 'reviews' && (
-          <ReviewsManager getAuthHeader={getAuthHeaders} />
-        )}
-
-
-          <CollectionManager getAuthHeader={getAuthHeaders} />
-        )}
-
-
                 </select>
                 <select
                   value={filterStatus}
