@@ -246,6 +246,122 @@ const ReportsManager = ({ authHeaders }) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
   };
 
+  // Export to CSV
+  const exportToCSV = () => {
+    const timestamp = new Date().toISOString().split('T')[0];
+    let csvContent = '';
+    let filename = '';
+
+    switch (activeTab) {
+      case 'executive':
+        filename = `executive_summary_${timestamp}.csv`;
+        csvContent = 'Metric,Value\n';
+        csvContent += `Total Revenue,${executiveSummary?.total_revenue || 0}\n`;
+        csvContent += `Total Orders,${executiveSummary?.total_orders || 0}\n`;
+        csvContent += `Active Autoship,${executiveSummary?.active_autoship || 0}\n`;
+        csvContent += `Repeat Purchase Rate,${executiveSummary?.repeat_purchase_rate || 0}%\n`;
+        csvContent += `Average Order Value,${executiveSummary?.average_order_value || 0}\n`;
+        break;
+
+      case 'revenue':
+        filename = `revenue_report_${timestamp}.csv`;
+        csvContent = 'City,Revenue,Orders,Avg Order Value\n';
+        (revenueByCity?.by_city || []).forEach(city => {
+          csvContent += `${city.city},${city.revenue},${city.orders},${city.avg_order_value}\n`;
+        });
+        csvContent += '\nDate,Revenue,Orders,Autoship Orders\n';
+        (dailySales?.daily_sales || []).forEach(day => {
+          csvContent += `${day.date},${day.revenue},${day.orders},${day.autoship_orders}\n`;
+        });
+        break;
+
+      case 'products':
+        filename = `product_performance_${timestamp}.csv`;
+        csvContent = 'Product,Quantity Sold,Revenue,Orders,Autoship Count\n';
+        (productPerformance?.top_products || []).forEach(p => {
+          csvContent += `"${p.product}",${p.quantity_sold},${p.revenue},${p.orders},${p.autoship_count}\n`;
+        });
+        break;
+
+      case 'autoship':
+        filename = `autoship_report_${timestamp}.csv`;
+        csvContent = 'Metric,Value\n';
+        csvContent += `Active Subscribers,${autoshipPerformance?.subscribers?.active || 0}\n`;
+        csvContent += `Paused Subscribers,${autoshipPerformance?.subscribers?.paused || 0}\n`;
+        csvContent += `Cancelled Subscribers,${autoshipPerformance?.subscribers?.cancelled || 0}\n`;
+        csvContent += `Revenue 30 Days,${autoshipPerformance?.revenue_30d || 0}\n`;
+        csvContent += `Retention Rate,${autoshipPerformance?.retention_rate || 0}%\n`;
+        csvContent += `Churn Rate,${autoshipPerformance?.churn_rate || 0}%\n`;
+        break;
+
+      case 'customers':
+        filename = `customer_report_${timestamp}.csv`;
+        csvContent = 'Metric,Value\n';
+        csvContent += `New Customers,${customerIntelligence?.new_customers || 0}\n`;
+        csvContent += `Returning Customers,${customerIntelligence?.returning_customers || 0}\n`;
+        csvContent += `Inactive (60+ days),${customerIntelligence?.inactive_customers_60d || 0}\n`;
+        csvContent += '\nHigh Value Customers\n';
+        csvContent += 'Name,Email,Total Spent,Order Count\n';
+        (customerIntelligence?.high_value_customers || []).forEach(c => {
+          csvContent += `"${c.name}",${c.email},${c.total_spent},${c.order_count}\n`;
+        });
+        break;
+
+      case 'petsoul':
+        filename = `pet_intelligence_${timestamp}.csv`;
+        csvContent = 'Popular Breeds\n';
+        csvContent += 'Breed,Count\n';
+        (petIntelligence?.popular_breeds || []).forEach(b => {
+          csvContent += `${b.breed},${b.count}\n`;
+        });
+        csvContent += '\nUpcoming Birthdays (7 days)\n';
+        csvContent += 'Pet Name,Birthday,Owner\n';
+        (petIntelligence?.upcoming_birthdays_7d || []).forEach(p => {
+          csvContent += `${p.name},${p.birthday},${p.owner_name || ''}\n`;
+        });
+        break;
+
+      case 'operations':
+        filename = `operations_report_${timestamp}.csv`;
+        csvContent = 'Status,Count\n';
+        Object.entries(operations?.orders_by_status || {}).forEach(([status, count]) => {
+          csvContent += `${status},${count}\n`;
+        });
+        break;
+
+      case 'reviews':
+        filename = `reviews_report_${timestamp}.csv`;
+        csvContent = 'Metric,Value\n';
+        csvContent += `Total Reviews,${reviewsReport?.total_reviews || 0}\n`;
+        csvContent += `Pending Approval,${reviewsReport?.pending_approval || 0}\n`;
+        csvContent += `Average Rating,${reviewsReport?.average_rating || 0}\n`;
+        break;
+
+      case 'financial':
+        filename = `financial_report_${timestamp}.csv`;
+        csvContent = 'Metric,Value\n';
+        csvContent += `Total Discounts,${financialReport?.total_discounts || 0}\n`;
+        csvContent += `Shipping Revenue,${financialReport?.shipping_revenue || 0}\n`;
+        csvContent += `Cancelled Orders Value,${financialReport?.cancelled_orders_value || 0}\n`;
+        csvContent += `Discount Impact %,${financialReport?.discount_impact_percent || 0}%\n`;
+        break;
+
+      default:
+        filename = `report_${timestamp}.csv`;
+        csvContent = 'No data available for export';
+    }
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(link.href);
+
+    toast({ title: '📥 CSV Exported', description: `Downloaded ${filename}` });
+  };
+
   return (
     <div className="space-y-6">
       {/* Global Filters */}
