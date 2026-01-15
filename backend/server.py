@@ -495,6 +495,13 @@ async def lifespan(app: FastAPI):
     
     yield
     
+    # Shutdown search service
+    from search_service import search_service
+    try:
+        await search_service.disconnect()
+    except Exception as e:
+        logger.error(f"Search service shutdown error: {e}")
+    
     # Shutdown scheduler
     scheduler.shutdown(wait=False)
     logger.info("Schedulers stopped")
