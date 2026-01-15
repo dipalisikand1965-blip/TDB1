@@ -178,6 +178,39 @@ MEILISEARCH_MASTER_KEY=tdb-search-key-2025
 
 ## Changelog
 
+### Jan 15, 2025 (Session 3 - Part 3) - Generic Status Engine
+- ✅ **PILLAR-AGNOSTIC STATUS ENGINE** (`/app/backend/status_engine.py`)
+  - Supports ALL pillars: Celebrate, Dine, Stay, Travel, Care
+  - Each pillar has its own status flow and notification templates
+  - Statuses are fully configurable per pillar (value, label, emoji, color, notify_customer)
+  - Notification templates per status with WhatsApp + Email support
+  - Status change history logging for audit trail
+  
+- ✅ **STATUS FLOWS BY PILLAR**:
+  - **Celebrate**: Pending → Confirmed → Baking 🍰 → Personalised ✨ → Packed 💜 → Out for Delivery 🚗 → Delivered 🎉
+  - **Dine**: Pending → Confirmed → Reminder 🔔 → Checked In 🍽️ → Completed ⭐
+  - **Stay**: Pending → Confirmed → Reminder → Checked In 🏨 → Staying → Checked Out 👋
+  - **Travel**: Pending → Confirmed → Documents Ready 📄 → Reminder → In Transit ✈️ → Arrived 🎉
+  - **Care**: Pending → Confirmed → Reminder → Checked In → In Session ✂️ → Ready for Pickup 🐕 → Completed ⭐
+
+- ✅ **API ENDPOINTS**:
+  - `GET /api/status-engine/flows` - Get all status flows
+  - `GET /api/status-engine/flows/{pillar}` - Get flow for specific pillar
+  - `POST /api/status-engine/flows` - Create/update status flow
+  - `POST /api/status-engine/flows/init-defaults` - Initialize defaults in DB
+  - `GET /api/status-engine/statuses/{pillar}` - Public endpoint for frontend
+  - `POST /api/status-engine/update/{pillar}/{record_id}` - Update status with notifications
+  - `GET /api/status-engine/logs/{pillar}/{record_id}` - Status change history
+
+- ✅ **FRONTEND INTEGRATION**:
+  - FulfilmentManager now fetches statuses dynamically from Status Engine
+  - Status Update Modal shows: order info, pet name, status buttons, internal notes, notification toggle
+  - Checkbox to enable/disable customer notifications
+  - WhatsApp opens automatically when status is updated
+  - Email confirmation toast when email is sent
+
+- ✅ **TESTED**: Status update from pending → confirmed with WhatsApp link + email sent
+
 ### Jan 15, 2025 (Session 3 - Part 2) - Visual Analytics & Draft Orders
 - ✅ **VISUAL ANALYTICS CHARTS (recharts)**
   - **Revenue Trend**: Area chart showing daily revenue over time with gradient fill
