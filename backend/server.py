@@ -4171,6 +4171,120 @@ async def get_user_info(current_user: dict = Depends(get_current_user)):
     return {"user": current_user, "mira_access": access}
 
 
+# ==================== GOOGLE OAUTH ROUTES ====================
+
+@api_router.post("/auth/google/session")
+async def process_google_session(request: dict):
+    """
+    Process Google OAuth session_id from Emergent Auth
+    Exchange session_id for user data and create/update user in DB
+    """
+    session_id = request.get("session_id")
+    if not session_id:
+        raise HTTPException(status_code=400, detail="session_id is required")
+    
+    try:
+        # Call Emergent Auth API to get user data
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
+                headers={"X-Session-ID": session_id}
+            )
+            
+            if response.status_code != 200:
+                raise HTTPException(status_code=401, detail="Invalid session_id")
+            
+            auth_data = response.json()
+    except httpx.RequestError as e:
+        logger.error(f"Emergent Auth API error: {e}")
+        raise HTTPException(status_code=500, detail="Authentication service unavailable")
+    
+    email = auth_data.get("email")
+    name = auth_data.get("name")
+    picture = auth_data.get("picture")
+    session_token = auth_data.get("session_token")
+    
+    if not email or not session_token:
+        raise HTTPException(status_code=400, detail="Invalid auth response")
+    
+    # Check if user exists, create or update
+    existing_user = await db.users.find_one({"email": email}, {"_id": 0})
+    
+    if existing_user:
+        # Update existing user's Google data
+        await db.users.update_one(
+            {"email": email},
+            {"$set": {
+                "name": name or existing_user.get("name"),
+                "picture": picture,
+                "auth_provider": "google",
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        user_id = existing_user.get("id")
+    else:
+        # Create new user
+        user_id = f"user_{uuid.uuid4().hex[:12]}"
+        user_doc = {
+            "id": user_id,
+            "email": email,
+            "name": name,
+            "picture": picture,
+            "auth_provider": "google",
+            "membership_tier": "free",
+            "membership_expires": None,
+            "chat_count_today": 0,
+            "last_chat_date": None,
+            "loyalty_points": 0,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.users.insert_one(user_doc)
+    
+    # Store session token with expiry (7 days)
+    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+    await db.user_sessions.update_one(
+        {"user_id": user_id},
+        {"$set": {
+            "user_id": user_id,
+            "session_token": session_token,
+            "expires_at": expires_at,
+            "created_at": datetime.now(timezone.utc)
+        }},
+        upsert=True
+    )
+    
+    # Get updated user data
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    
+    # Also create a JWT for compatibility with existing auth system
+    access_token = create_access_token(data={"sub": email, "role": "user"})
+    
+    return {
+        "message": "Google login successful",
+        "access_token": access_token,
+        "session_token": session_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.get("id"),
+            "email": user.get("email"),
+            "name": user.get("name"),
+            "picture": user.get("picture"),
+            "membership_tier": user.get("membership_tier", "free"),
+            "membership_expires": user.get("membership_expires"),
+            "loyalty_points": user.get("loyalty_points", 0)
+        }
+    }
+
+
+@api_router.post("/auth/logout")
+async def logout_user(request: dict):
+    """Logout user by invalidating session"""
+    session_token = request.get("session_token")
+    if session_token:
+        await db.user_sessions.delete_one({"session_token": session_token})
+    return {"message": "Logged out successfully"}
+
+
 @api_router.post("/membership/upgrade")
 async def upgrade_membership(email: str, upgrade: MembershipUpgrade):
     """Upgrade user membership (simulated - would connect to payment)"""
