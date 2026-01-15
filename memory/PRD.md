@@ -112,6 +112,9 @@ POST /api/membership/upgrade    - Upgrade tier
 POST /api/cron/sync-products    - Scheduled sync
 GET  /api/orders/my-orders      - User's order history (requires Bearer token)
 GET  /api/pets/my-pets          - User's pet profiles (requires Bearer token)
+GET  /api/search?q=query        - Smart search with filters (Meilisearch)
+GET  /api/search/typeahead?q=query - Fast typeahead autocomplete
+GET  /api/search/stats          - Search index statistics
 ```
 
 ### Admin (Basic Auth)
