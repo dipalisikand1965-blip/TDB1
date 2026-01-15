@@ -352,36 +352,104 @@ const ReportsManager = ({ authHeaders }) => {
 
         {/* Revenue */}
         <TabsContent value="revenue">
+          {/* Daily Sales Chart - Full Width */}
+          <Card className="p-6 mb-6">
+            <h3 className="font-semibold mb-4 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-purple-600" />
+              Revenue Trend ({cityFilter || 'All Cities'})
+            </h3>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={dailySales?.daily_sales?.slice(0, 14).reverse() || []}>
+                  <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor={CHART_COLORS.primary} stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(value) => value.slice(5)} // Show MM-DD only
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(value) => `₹${(value/1000).toFixed(0)}k`}
+                  />
+                  <Tooltip 
+                    formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']}
+                    labelStyle={{ fontWeight: 'bold' }}
+                    contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="revenue" 
+                    stroke={CHART_COLORS.primary} 
+                    fillOpacity={1} 
+                    fill="url(#colorRevenue)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+
           <div className="grid lg:grid-cols-2 gap-6">
-            {/* Revenue by City */}
+            {/* Revenue by City - Bar Chart */}
             <Card className="p-6">
               <h3 className="font-semibold mb-4 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-purple-600" />
                 Revenue by City
               </h3>
-              <div className="space-y-3">
+              <div className="h-[250px] mb-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={revenueByCity?.by_city || []} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis 
+                      type="number"
+                      tick={{ fontSize: 12 }}
+                      tickFormatter={(value) => `₹${(value/1000).toFixed(0)}k`}
+                    />
+                    <YAxis 
+                      type="category" 
+                      dataKey="city" 
+                      tick={{ fontSize: 12 }}
+                      width={80}
+                    />
+                    <Tooltip 
+                      formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']}
+                      contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
+                    />
+                    <Bar dataKey="revenue" radius={[0, 4, 4, 0]}>
+                      {(revenueByCity?.by_city || []).map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={CHART_COLORS.cities[index % CHART_COLORS.cities.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="space-y-2">
                 {revenueByCity?.by_city?.map((city, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium">{city.city}</p>
-                      <p className="text-sm text-gray-500">{city.orders} orders</p>
+                  <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded" style={{ backgroundColor: CHART_COLORS.cities[idx % CHART_COLORS.cities.length] }}></div>
+                      <span className="font-medium">{city.city}</span>
+                      <span className="text-gray-500">({city.orders} orders)</span>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-lg">{formatCurrency(city.revenue)}</p>
-                      <p className="text-sm text-gray-500">AOV: {formatCurrency(city.avg_order_value)}</p>
-                    </div>
+                    <span className="font-bold">{formatCurrency(city.revenue)}</span>
                   </div>
                 ))}
               </div>
             </Card>
 
-            {/* Daily Sales */}
+            {/* Daily Sales Table */}
             <Card className="p-6">
               <h3 className="font-semibold mb-4 flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-blue-600" />
                 Daily Sales ({cityFilter || 'All Cities'})
               </h3>
-              <div className="max-h-[400px] overflow-y-auto space-y-2">
+              <div className="max-h-[350px] overflow-y-auto space-y-2">
                 {dailySales?.daily_sales?.slice(0, 14).map((day, idx) => (
                   <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div>
@@ -414,6 +482,54 @@ const ReportsManager = ({ authHeaders }) => {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
+            {/* Autoship Status Pie Chart */}
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4">Subscriber Distribution</h3>
+              <div className="h-[250px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: 'Active', value: autoshipPerformance?.subscribers?.active || 0, color: CHART_COLORS.success },
+                        { name: 'Paused', value: autoshipPerformance?.subscribers?.paused || 0, color: CHART_COLORS.warning },
+                        { name: 'Cancelled', value: autoshipPerformance?.subscribers?.cancelled || 0, color: CHART_COLORS.danger }
+                      ].filter(d => d.value > 0)}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={90}
+                      paddingAngle={2}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {[
+                        { name: 'Active', value: autoshipPerformance?.subscribers?.active || 0, color: CHART_COLORS.success },
+                        { name: 'Paused', value: autoshipPerformance?.subscribers?.paused || 0, color: CHART_COLORS.warning },
+                        { name: 'Cancelled', value: autoshipPerformance?.subscribers?.cancelled || 0, color: CHART_COLORS.danger }
+                      ].filter(d => d.value > 0).map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => [value, 'Subscribers']} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex justify-center gap-4 mt-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span>Active</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                  <span>Paused</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                  <span>Cancelled</span>
+                </div>
+              </div>
+            </Card>
+
             <Card className="p-6">
               <h3 className="font-semibold mb-4">Autoship Revenue (30 days)</h3>
               <p className="text-4xl font-bold text-purple-600">{formatCurrency(autoshipPerformance?.revenue_30d || 0)}</p>
