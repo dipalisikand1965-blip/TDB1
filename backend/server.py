@@ -3200,6 +3200,57 @@ async def get_related_products(product_id: str, limit: int = 4):
 
 # ==================== SEARCH API ====================
 
+async def mongodb_fallback_search_legacy(
+    q: str,
+    limit: int = 20,
+    offset: int = 0,
+    category: Optional[str] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    sort: Optional[str] = None
+):
+    """Fallback search using MongoDB when Meilisearch is unavailable"""
+    search_regex = {"$regex": q, "$options": "i"}
+    query = {
+        "$or": [
+            {"name": search_regex},
+            {"description": search_regex},
+            {"tags": search_regex},
+            {"category": search_regex},
+        ]
+    }
+    
+    if category:
+        query["category"] = category
+    if min_price is not None:
+        query["price"] = {"$gte": min_price}
+    if max_price is not None:
+        if "price" in query:
+            query["price"]["$lte"] = max_price
+        else:
+            query["price"] = {"$lte": max_price}
+    
+    sort_field = [("name", 1)]
+    if sort == "price_asc":
+        sort_field = [("price", 1)]
+    elif sort == "price_desc":
+        sort_field = [("price", -1)]
+    elif sort == "name_desc":
+        sort_field = [("name", -1)]
+    
+    total = await db.products.count_documents(query)
+    products = await db.products.find(query, {"_id": 0}).sort(sort_field).skip(offset).limit(limit).to_list(limit)
+    
+    return {
+        "hits": products,
+        "query": q,
+        "estimatedTotalHits": total,
+        "limit": limit,
+        "offset": offset,
+        "fallback": True
+    }
+
+
 @api_router.get("/search")
 async def search_products(
     q: str = Query(..., min_length=1, description="Search query"),
@@ -3217,6 +3268,10 @@ async def search_products(
     """
     Smart search endpoint with typo tolerance, filters, and faceted results
     """
+    # Fallback to MongoDB if Meilisearch is not available
+    if not search_service._initialized:
+        return await mongodb_fallback_search_legacy(q, limit, offset, category, min_price, max_price, sort)
+    
     # Build filters
     filters = {}
     if category:
@@ -3265,6 +3320,21 @@ async def search_typeahead(
     Fast typeahead search for autocomplete in the search bar
     Returns products and collections matching the query
     """
+    # Fallback to MongoDB if Meilisearch is not available
+    if not search_service._initialized:
+        search_regex = {"$regex": q, "$options": "i"}
+        products = await db.products.find(
+            {"$or": [{"name": search_regex}, {"tags": search_regex}, {"category": search_regex}]},
+            {"_id": 0, "id": 1, "name": 1, "image": 1, "price": 1, "category": 1}
+        ).limit(limit).to_list(limit)
+        
+        collections = await db.collections.find(
+            {"$or": [{"name": search_regex}, {"description": search_regex}]},
+            {"_id": 0, "id": 1, "name": 1, "slug": 1, "image": 1}
+        ).limit(4).to_list(4)
+        
+        return {"products": products, "collections": collections, "query": q, "fallback": True}
+    
     results = await search_service.typeahead(query=q, limit=limit)
     return results
 
