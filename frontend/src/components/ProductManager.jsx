@@ -236,6 +236,8 @@ const ProductManager = ({ credentials }) => {
       image: product.image || '',
       sizes: product.sizes || [],
       flavors: product.flavors || [],
+      options: product.options || [],
+      variants: product.variants || [],
       status: product.status || 'active',
       tags: product.tags?.join(', ') || '',
       minPrice: product.minPrice || null,
