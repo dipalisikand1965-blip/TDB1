@@ -594,6 +594,35 @@ class ProductUpdate(BaseModel):
     category: Optional[str] = None
     available: Optional[bool] = None
 
+    tags: Optional[List[str]] = None
+    collection_ids: Optional[List[str]] = None
+    autoship_enabled: Optional[bool] = None
+
+class Collection(BaseModel):
+    id: str = Field(default_factory=lambda: f"col-{uuid.uuid4().hex[:8]}")
+    name: str
+    description: Optional[str] = None
+    image: Optional[str] = None
+    handle: str
+    product_ids: List[str] = []
+    show_in_menu: bool = False
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class CollectionCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    image: Optional[str] = None
+    product_ids: Optional[List[str]] = []
+    show_in_menu: Optional[bool] = False
+
+class CollectionUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    image: Optional[str] = None
+    product_ids: Optional[List[str]] = None
+    show_in_menu: Optional[bool] = None
+
 
 # ==================== MEMBERSHIP SYSTEM ====================
 
