@@ -14,6 +14,7 @@ import { format } from 'date-fns';
 
 const ProductCard = ({ product }) => {
   const [showModal, setShowModal] = useState(false);
+  const { user, token } = useAuth();
   
   // Fallback placeholder image
   const PLACEHOLDER_IMAGE = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
