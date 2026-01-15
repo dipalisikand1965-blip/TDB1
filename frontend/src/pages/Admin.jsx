@@ -4,6 +4,7 @@ import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import ProductManager from '../components/ProductManager';
+import CollectionManager from '../components/CollectionManager';
 import {
   Lock,
   User,
