@@ -386,8 +386,6 @@ const SearchResults = () => {
           </div>
         )}
       </div>
-
-      <Footer />
     </div>
   );
 };
