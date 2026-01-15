@@ -18,6 +18,7 @@ const MemberDashboard = () => {
   const { user, logout, token, loading: authLoading } = useAuth();
   const [orders, setOrders] = useState([]);
   const [pets, setPets] = useState([]);
+  const [autoships, setAutoships] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   
