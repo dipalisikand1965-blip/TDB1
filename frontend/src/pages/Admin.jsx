@@ -52,7 +52,9 @@ import {
   Sparkles,
   Utensils,
   Layers,
-  Calendar
+  Calendar,
+  Truck,
+  BarChart3
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -1056,6 +1058,8 @@ const Admin = () => {
         <div className="flex gap-2 mb-8 border-b pb-4 flex-wrap">
           {[
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+            { id: 'fulfilment', label: '📦 Fulfilment', icon: Truck },
+            { id: 'reports', label: '📊 Reports', icon: BarChart3 },
             { id: 'orders', label: 'Orders', icon: Package },
             { id: "reviews", label: "Reviews", icon: MessageCircle },
             { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
