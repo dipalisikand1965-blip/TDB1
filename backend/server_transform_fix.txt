@@ -1,0 +1,176 @@
+def transform_shopify_product(shopify_product: dict) -> dict:
+    """Transform Shopify product to our format"""
+    # Extract options (Base, Flavor, Weight, etc.)
+    options = []
+    for opt in shopify_product.get("options", []):
+        options.append({
+            "name": opt.get("name"),
+            "position": opt.get("position"),
+            "values": opt.get("values", [])
+        })
+
+    # Extract variants
+    variants_data = []
+    min_price = float('inf')
+    
+    # Backward compatibility lists (best guess)
+    sizes = []
+    flavors = []
+    
+    raw_variants = shopify_product.get("variants", [])
+    if raw_variants:
+        for v in raw_variants:
+            price = float(v.get("price", 0))
+            if price < min_price:
+                min_price = price
+                
+            variants_data.append({
+                "id": v.get("id"),
+                "title": v.get("title"),
+                "price": price,
+                "option1": v.get("option1"),
+                "option2": v.get("option2"),
+                "option3": v.get("option3"),
+                "sku": v.get("sku"),
+                "available": v.get("available", True)
+            })
+            
+            # Legacy mapping: Try to map Weight to Sizes and Flavor to Flavors
+            # Usually Option 1 is Base, Option 2 is Flavor, Option 3 is Weight
+            # But sometimes Option 1 is Title (Default)
+            
+            # Map 'Weight' or 'Size' option to sizes list
+            weight_opt_idx = next((i for i, o in enumerate(options) if o['name'] in ['Weight', 'Size']), -1)
+            if weight_opt_idx != -1:
+                val = v.get(f"option{weight_opt_idx+1}")
+                if val and not any(s['name'] == val for s in sizes):
+                    sizes.append({"name": val, "price": price}) # Price is full price now
+            
+            # Map 'Flavour' or 'Flavor' option to flavors list
+            flavor_opt_idx = next((i for i, o in enumerate(options) if o['name'] in ['Flavour', 'Flavor']), -1)
+            if flavor_opt_idx != -1:
+                val = v.get(f"option{flavor_opt_idx+1}")
+                if val and not any(f['name'] == val for f in flavors):
+                    flavors.append({"name": val, "price": 0}) # Flavors usually affect price via variant, not additive
+    
+    if min_price == float('inf'):
+        min_price = 0
+    
+    # Get primary image
+    images = shopify_product.get("images", [])
+    image_url = images[0].get("src") if images else ""
+    
+    # Determine category from product_type, tags, and title
+    product_type = shopify_product.get("product_type", "").lower()
+    tags = [t.lower() for t in shopify_product.get("tags", [])]
+    title = shopify_product.get("title", "").lower()
+    handle = shopify_product.get("handle", "").lower()
+    tags_str = " ".join(tags)
+    
+    category = "other"
+    
+    # Gift Cards - highest priority
+    if "gift card" in title:
+        category = "gift-cards"
+    # Gift Hampers & Party Boxes
+    elif any(h in title or h in handle for h in ["hamper", "party box", "gift box", "celebration box", "woof box", "bash box", "festive box"]):
+        category = "hampers"
+    # Cat products
+    elif "cat" in product_type or "cat " in title or "feline" in title or "meow" in title or "purrfect" in title or "cattitude" in title or "purradise" in title or "caviar cupcake" in title:
+        category = "cat-treats"
+    # Pupcakes & Dognuts
+    elif "pupcake" in product_type or "pupcake" in title or "dognut" in title or "dognuts" in product_type:
+        category = "dognuts"
+    # Mini/Bowto cakes
+    elif ("mini" in title and "cake" in title) or "bowto" in title:
+        category = "mini-cakes"
+    # Breed-specific cakes
+    elif any(breed in title for breed in [
+        "retriever", "labrador", "beagle", "husky", "shih tzu", "indie", "german shepherd",
+        "rottweiler", "rotweiller", "cocker spaniel", "pug", "maltese", "pomeranian", 
+        "dobermann", "lhasa apso", "dachshund", "poodle", "jack russel", "great dane",
+        "bulldog", "french bulldog", "english bulldog", "st bernard", "boxer", 
+        "yorkshire terrier", "american bully", "cavalier", "chow chow", "dalmation",
+        "chihuahua", "greyhound", "shnoodle", "scottish terrier", "irish setter",
+        "basset hound", "mutt munch", "mynx"
+    ]):
+        if any(exc in title for exc in ["mat", "bandana", "mug", "coaster", "feeding"]):
+            if "mug" in title or "coaster" in title:
+                category = "merchandise"
+            else:
+                category = "accessories"
+        else:
+            category = "breed-cakes"
+    # Main cakes
+    elif "cake" in product_type or ("cake" in title and "pupcake" not in title):
+        category = "cakes"
+    # Frozen treats
+    elif "frozen" in product_type or "fro-yo" in title or "jello" in title or "popsicle" in title or "froyo" in title:
+        category = "frozen-treats"
+    # Fresh meals
+    elif "meal" in product_type or "meal" in title or "pizza" in title or "burger" in title:
+        category = "fresh-meals"
+    # Desi treats
+    elif any(desi in title or desi in tags_str for desi in ["desi", "ladoo", "ladoos", "barfi", "kaju", "jalebi", "gujiya", "rakhi", "diwali", "holi"]):
+        category = "desi-treats"
+    # Nut butters
+    elif "nut butter" in title or "peanut butter jar" in title:
+        category = "nut-butters"
+    # ACCESSORIES & TOYS
+    elif any(acc in title or acc in product_type for acc in ["toy", "squeaky", "bandana", "feeding mat", "coaster", "leash", "collar", "name tag"]):
+        category = "accessories"
+    # Treats & Biscuits
+    elif any(t in product_type or t in title for t in ["treat", "biscuit", "cookie", "jerky", "chew", "snack", "crunch", "munch", "chip"]):
+        category = "treats"
+    # Health products
+    elif any(h in title for h in ["oil", "toothpaste", "detangler", "flea"]):
+        category = "accessories"
+    # Merchandise
+    elif "merchandise" in product_type or "mug" in title:
+        category = "merchandise"
+    # Pan India
+    elif "pan india" in tags_str or "pan-india" in tags_str:
+        category = "pan-india"
+    
+    is_pan_india_shippable = (
+        "pan india" in tags_str or 
+        "pan-india" in tags_str or
+        category in ["treats", "nut-butters", "desi-treats", "gift-cards"] or
+        "cookie" in title or "biscuit" in title or "treat" in title or 
+        "butter" in title or "chew" in title
+    )
+    
+    # Clean description
+    import re
+    raw_desc = shopify_product.get("body_html", "")
+    clean_desc = re.sub(r'<style[^>]*>.*?</style>', '', raw_desc, flags=re.DOTALL | re.IGNORECASE)
+    clean_desc = re.sub(r'<script[^>]*>.*?</script>', '', clean_desc, flags=re.DOTALL | re.IGNORECASE)
+    clean_desc = re.sub(r'<!--.*?-->', '', clean_desc, flags=re.DOTALL)
+    clean_desc = re.sub(r'<[^>]+>', ' ', clean_desc)
+    clean_desc = re.sub(r'\{[^}]*\}', '', clean_desc)
+    clean_desc = re.sub(r'\s+', ' ', clean_desc).strip()
+    clean_desc = re.sub(r'^[\s\.\-\:]+', '', clean_desc)
+    clean_desc = clean_desc[:300] if len(clean_desc) > 300 else clean_desc
+    
+    if len(clean_desc) < 10:
+        clean_desc = f"Delicious {category.replace('-', ' ')} made with love for your furry friend."
+    
+    return {
+        "id": f"shopify-{shopify_product.get('id')}",
+        "shopify_id": shopify_product.get("id"),
+        "name": shopify_product.get("title", "").strip(),
+        "description": clean_desc,
+        "price": min_price,
+        "originalPrice": min_price,
+        "image": image_url,
+        "category": category,
+        "is_pan_india_shippable": is_pan_india_shippable,
+        "sizes": sizes if sizes else [{"name": "Standard", "price": min_price}],
+        "flavors": flavors if flavors else [],
+        "options": options,
+        "variants": variants_data,
+        "tags": shopify_product.get("tags", "").split(", "),
+        "shopify_handle": shopify_product.get("handle"),
+        "available": any(v.get("available", True) for v in variants_data),
+        "synced_at": datetime.now(timezone.utc).isoformat()
+    }
