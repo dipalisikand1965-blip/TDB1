@@ -107,7 +107,8 @@ async def add_note(
     
     result = await db.concierge_notes.insert_one(note)
     note["id"] = str(result.inserted_id)
-    del note["_id"] if "_id" in note else None
+    if "_id" in note:
+        del note["_id"]
     
     # Also update the entity with a flag for quick filtering
     collection = db.pets if entity_type == "pet" else db.users
