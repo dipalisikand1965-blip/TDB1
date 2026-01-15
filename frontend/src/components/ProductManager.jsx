@@ -828,6 +828,39 @@ const ProductManager = ({ credentials }) => {
                       <option value="draft">Draft</option>
                     </select>
                   </div>
+                  <div className="flex items-center justify-between border p-3 rounded-lg mt-4">
+                    <div>
+                      <Label>Autoship Enabled</Label>
+                      <p className="text-xs text-gray-500">Allow subscription</p>
+                    </div>
+                    <Switch 
+                      checked={editForm.autoship_enabled} 
+                      onCheckedChange={(c) => setEditForm({...editForm, autoship_enabled: c})} 
+                    />
+                  </div>
+
+                  <div className="mt-4">
+                    <Label className="mb-2 block">Collections</Label>
+                    <div className="border rounded-lg p-2 h-40 overflow-y-auto space-y-1">
+                      {collections.map(col => (
+                        <div 
+                          key={col.id}
+                          className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                          onClick={() => {
+                            const ids = editForm.collection_ids?.includes(col.id)
+                              ? editForm.collection_ids.filter(id => id !== col.id)
+                              : [...(editForm.collection_ids || []), col.id];
+                            setEditForm({ ...editForm, collection_ids: ids });
+                          }}
+                        >
+                          <div className={`w-4 h-4 border rounded flex items-center justify-center ${editForm.collection_ids?.includes(col.id) ? 'bg-purple-600 border-purple-600' : 'border-gray-300'}`}>
+                            {editForm.collection_ids?.includes(col.id) && <Check className="w-3 h-3 text-white" />}
+                          </div>
+                          <span className="text-sm">{col.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="space-y-4">
