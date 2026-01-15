@@ -235,15 +235,21 @@ const ProductDetailModal = ({ product, onClose }) => {
   const currentPrice = (currentSizeDetails.price || 0) + (currentFlavorDetails.price || 0);
 
   const handleAddToCart = () => {
+    // Build variant string from selected options
+    const variantDescription = Object.entries(selectedOptions)
+      .map(([key, value]) => value)
+      .filter(Boolean)
+      .join(' / ');
+    
     const cartItem = {
       ...product,
       price: currentPrice,
-      selectedSize: currentSizeDetails.name,
-      selectedFlavor: currentFlavorDetails.name || 'Standard',
+      selectedVariant: matchingVariant?.title || variantDescription,
+      selectedOptions: selectedOptions,
       purchaseType: cartInput.purchaseType,
       customDetails: { ...cartInput }
     };
-    addToCart(cartItem, currentSizeDetails.name, currentFlavorDetails.name || 'Standard');
+    addToCart(cartItem, variantDescription, 'Selected');
     
     // Add Party Box
     if (cartInput.addPartyBox) {
