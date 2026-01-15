@@ -49,13 +49,15 @@ const MemberDashboard = () => {
       try {
         const config = { headers: { Authorization: `Bearer ${token}` } };
         
-        const [ordersRes, petsRes] = await Promise.all([
+        const [ordersRes, petsRes, autoshipRes] = await Promise.all([
           axios.get(`${API_URL}/api/orders/my-orders`, config).catch(() => ({ data: { orders: [] } })),
-          axios.get(`${API_URL}/api/pets/my-pets`, config).catch(() => ({ data: { pets: [] } }))
+          axios.get(`${API_URL}/api/pets/my-pets`, config).catch(() => ({ data: { pets: [] } })),
+          axios.get(`${API_URL}/api/autoship/my-subscriptions`, config).catch(() => ({ data: { subscriptions: [] } }))
         ]);
 
         setOrders(ordersRes.data.orders || []);
         setPets(petsRes.data.pets || []);
+        setAutoships(autoshipRes.data.subscriptions || []);
       } catch (error) {
         console.error('Failed to fetch data:', error);
         toast({ title: 'Error', description: 'Failed to load dashboard data', variant: 'destructive' });
