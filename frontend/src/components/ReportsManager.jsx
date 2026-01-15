@@ -246,12 +246,12 @@ const ReportsManager = ({ authHeaders }) => {
             </SelectContent>
           </Select>
 
-          <Select value={cityFilter} onValueChange={setCityFilter}>
+          <Select value={cityFilter || "all"} onValueChange={(v) => setCityFilter(v === "all" ? "" : v)}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="All Cities" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Cities</SelectItem>
+              <SelectItem value="all">All Cities</SelectItem>
               <SelectItem value="Bangalore">Bangalore</SelectItem>
               <SelectItem value="Mumbai">Mumbai</SelectItem>
               <SelectItem value="Gurugram">Gurugram</SelectItem>
