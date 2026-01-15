@@ -170,7 +170,7 @@ ADMIN_PASSWORD=lola4304
 
 ## Changelog
 
-### Jan 15, 2025 (Session 1) - Auth & Product Parity
+### Jan 15, 2025 (Session 1) - Auth & Product Parity + Google Login
 - ✅ **CRITICAL BUG FIX: Customer Authentication Persistence**
   - **Root Cause**: `AuthContext.jsx` was calling `/api/auth/me` with email as query param instead of Bearer token in Authorization header
   - **Fix**: Updated `fetchUser()` to properly send JWT token in headers: `Authorization: Bearer ${token}`
@@ -180,6 +180,13 @@ ADMIN_PASSWORD=lola4304
   - **Root Cause**: `reviews` state declarations were incorrectly nested inside `fetchRelated` callback, causing `ReferenceError: reviews is not defined`
   - **Fix**: Moved `useState` hooks for reviews to component level (Line 136-140 in ProductCard.jsx)
   - Product modal now opens correctly with size/flavor selection, personalization fields, and reviews section
+- ✅ **Google Login Integration (Emergent OAuth)**
+  - Added "Continue with Google" button on Login page
+  - Added "Sign up with Google" button on Register page
+  - Backend endpoint `POST /api/auth/google/session` exchanges Emergent Auth session_id for user data
+  - Automatically creates new user or updates existing user on Google login
+  - User sessions stored in `user_sessions` collection with 7-day expiry
+  - `AuthCallback.jsx` component handles OAuth redirect and session processing
 - ✅ **Backend Orphan Code Cleanup**
   - Removed duplicate/orphaned code in `server.py` that was causing IndentationError on server startup
 - ✅ **MemberDashboard Route Protection**
