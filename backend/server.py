@@ -3269,7 +3269,7 @@ async def search_products(
     Smart search endpoint with typo tolerance, filters, and faceted results
     """
     # Fallback to MongoDB if Meilisearch is not available
-    if not search_service._initialized:
+    if not search_service or not search_service._initialized:
         return await mongodb_fallback_search_legacy(q, limit, offset, category, min_price, max_price, sort)
     
     # Build filters
