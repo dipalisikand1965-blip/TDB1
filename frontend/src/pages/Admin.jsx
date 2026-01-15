@@ -1060,6 +1060,7 @@ const Admin = () => {
             { id: 'discounts', label: '🎟️ Discounts', icon: Tag },
             { id: 'abandoned', label: '🛒 Abandoned', icon: ShoppingBag },
             { id: 'products', label: 'Products', icon: Package },
+            { id: 'collections', label: 'Collections', icon: Layers },
             { id: 'testimonials', label: 'Testimonials', icon: Star },
             { id: 'insights', label: 'Blog', icon: FileText },
             { id: 'faqs', label: 'FAQs', icon: HelpCircle },
