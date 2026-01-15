@@ -82,6 +82,19 @@ const MemberDashboard = () => {
     toast({ title: 'Settings Saved', description: 'Your preferences have been updated.' });
   };
 
+  // Show loading while auth is being checked
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not authenticated after loading, the useEffect will redirect
   if (!user) return null;
 
   return (
