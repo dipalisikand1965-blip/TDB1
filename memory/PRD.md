@@ -178,6 +178,56 @@ MEILISEARCH_MASTER_KEY=tdb-search-key-2025
 
 ## Changelog
 
+### Jan 15, 2025 (Session 3) - Admin Fulfilment & Reports Dashboards
+- ✅ **MEILISEARCH PERSISTENCE FIX (P0)**
+  - Downloaded Meilisearch v1.32.2 binary to `/usr/local/bin/meilisearch`
+  - Created supervisor configuration at `/etc/supervisor/conf.d/meilisearch.conf`
+  - Meilisearch now starts automatically and restarts if crashed
+  - Search feature is now stable and persistent
+
+- ✅ **ADMIN FULFILMENT DASHBOARD**
+  - Integrated `FulfilmentManager.jsx` into Admin panel as "📦 Fulfilment" tab
+  - **Sub-tabs**: Orders, Today & Tomorrow (Batch View), Draft Orders
+  - **Filters**: Date range (Today/Tomorrow/This Week/This Month), City, Status, Order Type
+  - **Order Table**: Order ID, Customer, Pet, Products, City, Delivery, Type, Status, Actions
+  - **Batch View**: Kitchen sheet with Total Orders, Autoship Orders, Custom Cakes, Total Items, Top Products
+  - **Status Flow**: Pending → Confirmed → Baking → Personalised → Packed → Out for Delivery → Delivered
+
+- ✅ **ADMIN REPORTS & ANALYTICS DASHBOARD**
+  - Integrated `ReportsManager.jsx` into Admin panel as "📊 Reports" tab
+  - **9 Report Sections**:
+    1. **Executive Summary**: Total Revenue, Total Orders, Active Autoship, Repeat Rate, AOV
+    2. **Revenue**: Revenue by City, Daily Sales with charts
+    3. **Autoship**: Active/Paused/Cancelled subscribers, Revenue 30d, Retention Rate, Churn Rate
+    4. **Products**: Top Products by Revenue table with quantity sold, orders, autoship count
+    5. **Customers**: New/Returning/Inactive counts, High Value Customers list
+    6. **Pet Soul**: Popular Breeds, Upcoming Birthdays (7/14/30 days)
+    7. **Operations**: Orders by Status, Upcoming Autoship Shipments
+    8. **Reviews**: Total Reviews, Pending Approval, Average Rating, Low-rated products
+    9. **Financial**: Total Discounts, Shipping Revenue, Cancelled Orders, Discount Impact %
+  - **Global Filters**: Period (Today/Week/Month/Quarter/YTD), City, Days (7/30/60/90)
+  - **Export**: CSV export button
+
+- ✅ **BACKEND API ENDPOINTS** (in `admin_routes.py`):
+  - `GET /api/admin/fulfilment` - Get orders for fulfilment view with filters
+  - `GET /api/admin/fulfilment/batch-view` - Batch fulfilment view for kitchen/delivery
+  - `PUT /api/admin/fulfilment/{order_id}/status` - Update order status with notifications
+  - `GET/POST /api/admin/draft-orders` - Draft order management
+  - `POST /api/admin/draft-orders/{id}/send-link` - Send checkout link via WhatsApp/Email
+  - `GET /api/admin/reports/executive-summary` - Executive metrics
+  - `GET /api/admin/reports/revenue-by-city` - Revenue breakdown by city
+  - `GET /api/admin/reports/daily-sales` - Daily sales with city filter
+  - `GET /api/admin/reports/product-performance` - Top products report
+  - `GET /api/admin/reports/autoship-performance` - Autoship subscription metrics
+  - `GET /api/admin/reports/customer-intelligence` - Customer analysis
+  - `GET /api/admin/reports/pet-intelligence` - Pet breeds and birthdays
+  - `GET /api/admin/reports/operations` - Operations report
+  - `GET /api/admin/reports/reviews` - Reviews analysis
+  - `GET /api/admin/reports/financial` - Financial health report
+
+- ✅ **BUG FIX**: Fixed SelectItem empty value error in FulfilmentManager and ReportsManager
+- ✅ **Testing**: 26/26 backend tests passed, 100% frontend tests passed (iteration_9.json)
+
 ### Jan 15, 2025 (Session 2) - Smart Search Feature + Fixes
 - ✅ **SMART SEARCH IMPLEMENTATION (Meilisearch)**
   - **Technology**: Meilisearch v1.11.0 local binary running on port 7700
