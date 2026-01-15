@@ -93,6 +93,7 @@ const ProductListing = ({ category = 'all' }) => {
   }
 
   const getCategoryTitle = () => {
+    if (searchQuery) return `Search Results for "${searchQuery}"`;
     switch (category) {
       case 'cakes': return 'Dog Cakes';
       case 'custom': return 'Breed-Specific Cakes';
