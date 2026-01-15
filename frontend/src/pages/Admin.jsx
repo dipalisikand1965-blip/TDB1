@@ -3145,35 +3145,116 @@ const Admin = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Sizes (JSON format: [{'{'}name: "500g", price: 600{'}'}, ...])
+                  Product Options (e.g., Base, Flavour, Weight)
                 </label>
-                <textarea 
-                  value={JSON.stringify(editingProduct.sizes || [], null, 2)}
-                  onChange={(e) => {
-                    try {
-                      setEditingProduct({ ...editingProduct, sizes: JSON.parse(e.target.value) });
-                    } catch {}
+                <div className="space-y-3 mb-3">
+                  {(editingProduct.options || []).map((option, idx) => (
+                    <div key={idx} className="border rounded-lg p-3 bg-gray-50">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Input
+                          value={option.name || ''}
+                          onChange={(e) => {
+                            const newOptions = [...(editingProduct.options || [])];
+                            newOptions[idx] = { ...newOptions[idx], name: e.target.value };
+                            setEditingProduct({ ...editingProduct, options: newOptions });
+                          }}
+                          placeholder="Option name (e.g., Base, Flavour, Weight)"
+                          className="flex-1"
+                        />
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            const newOptions = (editingProduct.options || []).filter((_, i) => i !== idx);
+                            setEditingProduct({ ...editingProduct, options: newOptions });
+                          }}
+                        >
+                          <X className="w-4 h-4 text-red-500" />
+                        </Button>
+                      </div>
+                      <Input
+                        value={(option.values || []).join(', ')}
+                        onChange={(e) => {
+                          const newOptions = [...(editingProduct.options || [])];
+                          newOptions[idx] = { 
+                            ...newOptions[idx], 
+                            values: e.target.value.split(',').map(v => v.trim()).filter(Boolean)
+                          };
+                          setEditingProduct({ ...editingProduct, options: newOptions });
+                        }}
+                        placeholder="Values (comma-separated): Oats, Ragi"
+                        className="text-sm"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newOptions = [...(editingProduct.options || []), { name: '', values: [], position: (editingProduct.options || []).length + 1 }];
+                    setEditingProduct({ ...editingProduct, options: newOptions });
                   }}
-                  className="w-full border rounded-lg p-3 text-sm font-mono"
-                  rows={4}
-                />
+                >
+                  + Add Option (Base/Flavour/Weight)
+                </Button>
+                <p className="text-xs text-gray-500 mt-2">
+                  Common options: Base (Oats, Ragi), Flavour (Chicken, Banana, etc.), Weight (500g, 1kg)
+                </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Flavors (JSON format: [{'{'}name: "Chicken", price: 50{'}'}, ...])
+                  Variants (auto-generated from options, or edit JSON)
                 </label>
                 <textarea 
-                  value={JSON.stringify(editingProduct.flavors || [], null, 2)}
+                  value={JSON.stringify(editingProduct.variants || [], null, 2)}
                   onChange={(e) => {
                     try {
-                      setEditingProduct({ ...editingProduct, flavors: JSON.parse(e.target.value) });
+                      setEditingProduct({ ...editingProduct, variants: JSON.parse(e.target.value) });
                     } catch {}
                   }}
                   className="w-full border rounded-lg p-3 text-sm font-mono"
-                  rows={4}
+                  rows={6}
+                  placeholder='[{"title": "Oats / Chicken / 500g", "price": 650, "option1": "Oats", "option2": "Chicken", "option3": "500g"}]'
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Each variant should have: title, price, option1, option2, option3 (matching your options above)
+                </p>
               </div>
+
+              {/* Legacy fields - hidden but kept for backward compatibility */}
+              <details className="text-sm">
+                <summary className="text-gray-500 cursor-pointer">Legacy Size/Flavor fields (deprecated)</summary>
+                <div className="mt-2 space-y-3 opacity-60">
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Sizes (JSON)</label>
+                    <textarea 
+                      value={JSON.stringify(editingProduct.sizes || [], null, 2)}
+                      onChange={(e) => {
+                        try {
+                          setEditingProduct({ ...editingProduct, sizes: JSON.parse(e.target.value) });
+                        } catch {}
+                      }}
+                      className="w-full border rounded-lg p-2 text-xs font-mono"
+                      rows={2}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Flavors (JSON)</label>
+                    <textarea 
+                      value={JSON.stringify(editingProduct.flavors || [], null, 2)}
+                      onChange={(e) => {
+                        try {
+                          setEditingProduct({ ...editingProduct, flavors: JSON.parse(e.target.value) });
+                        } catch {}
+                      }}
+                      className="w-full border rounded-lg p-2 text-xs font-mono"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+              </details>
             </div>
             <div className="p-4 border-t bg-gray-50 flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setEditingProduct(null)}>Cancel</Button>
