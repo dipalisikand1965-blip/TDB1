@@ -62,7 +62,7 @@ const ProductListing = ({ category = 'all' }) => {
     };
     fetchProducts();
     setVisibleCount(PRODUCTS_PER_PAGE); // Reset visible count when category changes
-  }, [category]);
+  }, [category, searchQuery]);
 
   // Reset visible count when filters change
   useEffect(() => {
