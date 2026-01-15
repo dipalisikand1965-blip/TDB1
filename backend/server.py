@@ -5885,6 +5885,16 @@ set_reports_db(db)
 # Set database for auth routes
 set_auth_db(db)
 
+# Set database for product routes
+set_product_db(db)
+set_product_search(search_service)
+
+# Set database for order routes
+set_order_db(db)
+
+# Set database for user routes
+set_user_db(db)
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
@@ -5895,6 +5905,9 @@ app.include_router(birthday_router)
 app.include_router(concierge_router)
 app.include_router(reports_email_router)
 app.include_router(auth_router)
+app.include_router(product_router)
+app.include_router(order_router)
+app.include_router(user_router)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
