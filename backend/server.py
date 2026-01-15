@@ -6012,6 +6012,12 @@ set_feedback_db(db)
 # Set database for birthday engine
 set_birthday_db(db)
 
+# Set database for concierge engine
+set_concierge_db(db)
+
+# Set database for email reports engine
+set_reports_db(db)
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
@@ -6019,6 +6025,8 @@ app.include_router(fulfilment_router)
 app.include_router(status_router)
 app.include_router(feedback_router)
 app.include_router(birthday_router)
+app.include_router(concierge_router)
+app.include_router(reports_email_router)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
