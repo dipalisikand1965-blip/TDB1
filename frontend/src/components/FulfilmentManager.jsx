@@ -230,12 +230,12 @@ const FulfilmentManager = ({ authHeaders }) => {
                 </SelectContent>
               </Select>
 
-              <Select value={cityFilter} onValueChange={setCityFilter}>
+              <Select value={cityFilter || "all"} onValueChange={(v) => setCityFilter(v === "all" ? "" : v)}>
                 <SelectTrigger className="w-[150px]">
                   <SelectValue placeholder="All Cities" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Cities</SelectItem>
+                  <SelectItem value="all">All Cities</SelectItem>
                   <SelectItem value="Bangalore">Bangalore</SelectItem>
                   <SelectItem value="Mumbai">Mumbai</SelectItem>
                   <SelectItem value="Gurugram">Gurugram</SelectItem>
@@ -243,24 +243,24 @@ const FulfilmentManager = ({ authHeaders }) => {
                 </SelectContent>
               </Select>
 
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select value={statusFilter || "all"} onValueChange={(v) => setStatusFilter(v === "all" ? "" : v)}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="All Statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Statuses</SelectItem>
+                  <SelectItem value="all">All Statuses</SelectItem>
                   {FULFILMENT_STATUSES.map(s => (
                     <SelectItem key={s.value} value={s.value}>{s.emoji} {s.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
 
-              <Select value={orderTypeFilter} onValueChange={setOrderTypeFilter}>
+              <Select value={orderTypeFilter || "all"} onValueChange={(v) => setOrderTypeFilter(v === "all" ? "" : v)}>
                 <SelectTrigger className="w-[150px]">
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="onetime">One-time</SelectItem>
                   <SelectItem value="autoship">Autoship</SelectItem>
                   <SelectItem value="custom">Custom Cakes</SelectItem>
