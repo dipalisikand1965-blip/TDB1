@@ -178,25 +178,41 @@ MEILISEARCH_MASTER_KEY=tdb-search-key-2025
 
 ## Changelog
 
-### Jan 15, 2025 (Session 3 - Part 8) - Backend Refactoring Phase 1
-- ✅ **CREATED `auth_routes.py`** (~416 lines)
-  - Extracted: `/api/auth/register`, `/api/auth/login`, `/api/auth/me`, `/api/auth/google/session`, `/api/auth/logout`
-  - Contains: JWT token creation, password hashing (bcrypt), Mira access control, membership tiers
-  - Exported functions: `get_current_user`, `get_current_user_optional`, `verify_admin`, `check_mira_access`, etc.
+### Jan 15, 2025 (Session 4 - Part 9) - Backend Refactoring Phase 2 Complete + Search Fix
+- ✅ **FIXED MEILISEARCH** 
+  - Reinstalled Meilisearch binary (was missing in new fork)
+  - Confirmed supervisor persistence working
+  - Search now indexes 392 products, 22 collections
 
-- ✅ **CREATED `ARCHITECTURE.md`**
-  - Documents full backend structure
-  - Lists all modular routers and their responsibilities
-  - Outlines future refactoring phases
+- ✅ **CREATED `product_routes.py`** (~370 lines)
+  - Products: `/api/products`, `/api/products/{id}/related`
+  - Search: `/api/search`, `/api/search/typeahead`, `/api/search/stats`, `/api/search/reindex`
+  - Collections: `/api/collections`, `/api/collections/{id}`
+  - Reviews: `/api/products/{id}/reviews`, `/api/reviews`
 
-- ✅ **SERVER.PY REDUCTION**
-  - Before: ~6041 lines
-  - After: ~5874 lines
-  - Removed duplicate auth routes (now handled by auth_routes.py)
+- ✅ **CREATED `order_routes.py`** (~160 lines)
+  - Orders: `/api/orders`, `/api/orders/my-orders`, `/api/orders/{id}`
+  - Cart: `/api/cart/snapshot`, `/api/cart/capture-email`, `/api/cart/convert/{id}`
+  - Helper: `calculate_autoship_discount()`
 
-- ✅ **EXISTING MODULES** (previously created):
+- ✅ **CREATED `user_routes.py`** (~280 lines)
+  - Pets: CRUD for `/api/pets/*`
+  - Celebrations: Add/remove celebrations
+  - Achievements: Add achievements
+  - Constants: `DOG_PERSONAS`, `CELEBRATION_OCCASIONS`
+
+- ✅ **UPDATED `ARCHITECTURE.md`**
+  - Full documentation of all modular routes
+  - Phase 2 complete status
+  - Next steps outlined
+
+- ✅ **MODULAR ARCHITECTURE NOW HAS**:
   | Module | Lines | Purpose |
   |--------|-------|---------|
+  | `auth_routes.py` | ~416 | Authentication |
+  | `product_routes.py` | ~370 | Products, search, collections |
+  | `order_routes.py` | ~160 | Orders, cart |
+  | `user_routes.py` | ~280 | Pets, celebrations |
   | `admin_routes.py` | ~1000 | Admin reports & fulfilment |
   | `status_engine.py` | ~600 | Order status flows |
   | `feedback_engine.py` | ~450 | Post-delivery feedback |
@@ -204,7 +220,12 @@ MEILISEARCH_MASTER_KEY=tdb-search-key-2025
   | `concierge_engine.py` | ~350 | Internal notes |
   | `email_reports_engine.py` | ~400 | Daily reports |
   | `search_service.py` | ~200 | Meilisearch |
-  | `auth_routes.py` | ~416 | Authentication |
+
+### Jan 15, 2025 (Session 3 - Part 8) - Backend Refactoring Phase 1
+- ✅ **CREATED `auth_routes.py`** (~416 lines)
+  - Extracted: `/api/auth/register`, `/api/auth/login`, `/api/auth/me`, `/api/auth/google/session`, `/api/auth/logout`
+  - Contains: JWT token creation, password hashing (bcrypt), Mira access control, membership tiers
+  - Exported functions: `get_current_user`, `get_current_user_optional`, `verify_admin`, `check_mira_access`, etc.
 
 ### Jan 15, 2025 (Session 3 - Part 7) - Kitchen Sheet & CSV Export
 - ✅ **KITCHEN SHEET PRINT**
