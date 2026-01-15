@@ -123,6 +123,7 @@ function MainLayout() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/about" element={<About />} />
         <Route path="/membership" element={<Membership />} />
+        <Route path="/autoship" element={<Autoship />} />
         <Route path="/admin" element={<Admin />} />
         
         {/* Pet Profile */}
