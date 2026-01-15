@@ -127,6 +127,7 @@ GET/PUT /api/admin/orders/*
 GET/PUT /api/admin/members/*
 GET  /api/admin/chats
 POST /api/admin/send-notification/{id}
+POST /api/search/reindex        - Reindex all products in Meilisearch
 ```
 
 ---
