@@ -34,6 +34,9 @@ from fastapi.encoders import jsonable_encoder
 from duckduckgo_search import DDGS
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
+# Import search service
+from search_service import search_service
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
