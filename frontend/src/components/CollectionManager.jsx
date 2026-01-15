@@ -93,11 +93,12 @@ const CollectionManager = ({ getAuthHeader }) => {
         
       const method = editingCollection ? 'PUT' : 'POST';
       
+      const headers = getAuthHeader();
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': getAuthHeader()
+          ...headers,
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(formData)
       });
@@ -118,7 +119,7 @@ const CollectionManager = ({ getAuthHeader }) => {
     try {
       await fetch(`${API_URL}/api/admin/collections/${id}`, {
         method: 'DELETE',
-        headers: { 'Authorization': getAuthHeader() }
+        headers: getAuthHeader()
       });
       fetchData();
     } catch (error) {
