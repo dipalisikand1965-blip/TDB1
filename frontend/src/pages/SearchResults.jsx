@@ -363,7 +363,7 @@ const SearchResults = () => {
             <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-700 mb-2">No results found</h3>
             <p className="text-gray-500 mb-6">
-              We couldn't find any products matching "{currentQuery}"
+              We couldn&apos;t find any products matching &ldquo;{currentQuery}&rdquo;
             </p>
             <div className="flex flex-wrap justify-center gap-2">
               <Button variant="outline" onClick={() => navigate('/cakes')}>
