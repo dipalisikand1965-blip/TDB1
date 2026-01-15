@@ -133,11 +133,10 @@ const ProductDetailModal = ({ product, onClose }) => {
     petName: '',
     date: null,
     time: '',
-    age: ''
-  });
-    purchaseType: 'onetime'
-    addPartyBox: false,
-  const [relatedProducts, setRelatedProducts] = useState([]);
+    age: '',
+    purchaseType: 'onetime',
+    addPartyBox: false
+  });  const [relatedProducts, setRelatedProducts] = useState([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
   
   const { addToCart } = useCart();
