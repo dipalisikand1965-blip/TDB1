@@ -534,6 +534,9 @@ from admin_routes import fulfilment_router, set_database as set_admin_db
 # Import status engine
 from status_engine import status_router, set_database as set_status_db
 
+# Import feedback engine
+from feedback_engine import feedback_router, set_database as set_feedback_db, process_pending_feedback
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
