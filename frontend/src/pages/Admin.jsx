@@ -1615,6 +1615,12 @@ const Admin = () => {
                   <option value="Delhi">Delhi</option>
         {/* Collections Tab */}
         {activeTab === 'collections' && (
+        {/* Reviews Tab */}
+        {activeTab === 'reviews' && (
+          <ReviewsManager getAuthHeader={getAuthHeaders} />
+        )}
+
+
           <CollectionManager getAuthHeader={getAuthHeaders} />
         )}
 
