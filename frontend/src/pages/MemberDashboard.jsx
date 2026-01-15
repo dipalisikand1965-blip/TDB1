@@ -14,10 +14,11 @@ import axios from 'axios';
 import { toast } from '../hooks/use-toast';
 
 const MemberDashboard = () => {
-  const { user, logout, token } = useAuth();
+  const { user, logout, token, loading: authLoading } = useAuth();
   const [orders, setOrders] = useState([]);
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   
   // Settings State
   const [settings, setSettings] = useState({
@@ -29,16 +30,26 @@ const MemberDashboard = () => {
 
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
+  // Redirect to login if not authenticated (after auth check completes)
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login');
+    }
+  }, [authLoading, user, navigate]);
+
   useEffect(() => {
     const fetchData = async () => {
-      if (!token) return;
+      if (!token || !user) {
+        setLoading(false);
+        return;
+      }
       
       try {
         const config = { headers: { Authorization: `Bearer ${token}` } };
         
         const [ordersRes, petsRes] = await Promise.all([
-          axios.get(`${API_URL}/api/orders/my-orders`, config),
-          axios.get(`${API_URL}/api/pets/my-pets`, config)
+          axios.get(`${API_URL}/api/orders/my-orders`, config).catch(() => ({ data: { orders: [] } })),
+          axios.get(`${API_URL}/api/pets/my-pets`, config).catch(() => ({ data: { pets: [] } }))
         ]);
 
         setOrders(ordersRes.data.orders || []);
@@ -51,8 +62,10 @@ const MemberDashboard = () => {
       }
     };
 
-    fetchData();
-  }, [token, API_URL]);
+    if (user) {
+      fetchData();
+    }
+  }, [token, user, API_URL]);
 
   // Extract unique addresses from orders
   const savedAddresses = orders
