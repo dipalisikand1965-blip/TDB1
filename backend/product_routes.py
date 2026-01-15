@@ -333,8 +333,20 @@ async def search_typeahead(
     limit: int = Query(8, ge=1, le=20),
 ):
     """Fast typeahead search for autocomplete"""
-    if not search_service:
-        raise HTTPException(status_code=503, detail="Search service not available")
+    # Use MongoDB fallback if Meilisearch is not available
+    if not search_service or not search_service._initialized:
+        search_regex = {"$regex": q, "$options": "i"}
+        products = await db.products.find(
+            {"$or": [{"name": search_regex}, {"tags": search_regex}, {"category": search_regex}]},
+            {"_id": 0, "id": 1, "name": 1, "image": 1, "price": 1, "category": 1}
+        ).limit(limit).to_list(limit)
+        
+        collections = await db.collections.find(
+            {"$or": [{"name": search_regex}, {"description": search_regex}]},
+            {"_id": 0, "id": 1, "name": 1, "slug": 1, "image": 1}
+        ).limit(4).to_list(4)
+        
+        return {"products": products, "collections": collections, "query": q, "fallback": True}
 
     results = await search_service.typeahead(query=q, limit=limit)
     return results
