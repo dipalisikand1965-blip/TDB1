@@ -178,6 +178,51 @@ MEILISEARCH_MASTER_KEY=tdb-search-key-2025
 
 ## Changelog
 
+### Jan 15, 2025 (Session 3 - Part 6) - Concierge Notes & Daily Email Reports
+- ✅ **CONCIERGE NOTES ENGINE** (`/app/backend/concierge_engine.py`)
+  - Internal notes for customers AND pets - visible across ALL pillars
+  - Categories: General, Dietary, Allergy/Medical, Delivery Preference, VIP, Alert, Celebration, Feedback
+  - Priorities: Low, Normal, High, Urgent
+  - Pinnable notes for important info
+  - Can mark notes as resolved
+  - Auto-alerts on orders (shows high-priority notes for customer/pet)
+
+- ✅ **CONCIERGE API ENDPOINTS**:
+  - `GET /api/concierge/categories` - Get all categories and priorities
+  - `GET/POST /api/concierge/pet/{pet_id}` - Get/add notes for a pet
+  - `GET/POST /api/concierge/customer/{customer_id}` - Get/add notes for customer
+  - `PUT /api/concierge/note/{note_id}` - Update note
+  - `DELETE /api/concierge/note/{note_id}` - Delete note
+  - `POST /api/concierge/note/{note_id}/resolve` - Mark as resolved
+  - `POST /api/concierge/note/{note_id}/pin` - Toggle pin
+  - `GET /api/concierge/order/{order_id}/alerts` - Get alerts for order
+  - `GET /api/concierge/search` - Search notes
+  - `GET /api/concierge/stats` - Statistics
+
+- ✅ **DAILY EMAIL REPORTS ENGINE** (`/app/backend/email_reports_engine.py`)
+  - Report types: Daily Summary, Operations, Customer Insights, Birthday Alerts
+  - Works across ALL pillars (can filter by pillar)
+  - Scheduled to run at 8 AM IST daily
+  - Subscription-based: admins can subscribe to specific report types
+  - Beautiful HTML emails with:
+    - Revenue metrics + comparison vs previous day
+    - Top products
+    - Revenue by city
+    - Operations summary (pending, today's delivery, overdue)
+    - Upcoming birthdays
+
+- ✅ **EMAIL REPORTS API ENDPOINTS**:
+  - `GET /api/email-reports/types` - Available report types
+  - `GET /api/email-reports/preview/daily` - Preview daily report
+  - `GET /api/email-reports/preview/operations` - Preview ops report
+  - `POST /api/email-reports/send` - Send report immediately
+  - `GET/POST /api/email-reports/subscriptions` - Manage subscriptions
+  - `POST /api/email-reports/process` - Trigger all daily reports
+
+- ✅ **TESTED**: 
+  - Added high-priority allergy note for Mojo (chicken allergy)
+  - Sent daily report email with summary + operations + birthday alerts
+
 ### Jan 15, 2025 (Session 3 - Part 5) - Pet Birthday & Celebration Engine
 - ✅ **PET BIRTHDAY ENGINE** (`/app/backend/birthday_engine.py`)
   - Detects ALL celebration types: Birthday, Gotcha Day, Custom celebrations
