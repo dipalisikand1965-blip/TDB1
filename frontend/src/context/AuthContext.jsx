@@ -54,14 +54,55 @@ export const AuthProvider = ({ children }) => {
     return login(userData.email, userData.password);
   };
 
-  const logout = () => {
+  /**
+   * Login with Google OAuth
+   * REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+   */
+  const loginWithGoogle = async (sessionId) => {
+    const response = await axios.post(`${API_URL}/api/auth/google/session`, { session_id: sessionId });
+    const { access_token, user } = response.data;
+    localStorage.setItem('tdb_auth_token', access_token);
+    setToken(access_token);
+    setUser(user);
+    return user;
+  };
+
+  /**
+   * Initiate Google Login
+   * REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+   */
+  const initiateGoogleLogin = () => {
+    const redirectUrl = window.location.origin + '/dashboard';
+    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+  };
+
+  const logout = async () => {
+    // Try to invalidate session on server
+    try {
+      const sessionToken = localStorage.getItem('tdb_session_token');
+      if (sessionToken) {
+        await axios.post(`${API_URL}/api/auth/logout`, { session_token: sessionToken });
+        localStorage.removeItem('tdb_session_token');
+      }
+    } catch (e) {
+      console.error('Logout error:', e);
+    }
     localStorage.removeItem('tdb_auth_token');
     setToken(null);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      token, 
+      login, 
+      register, 
+      logout, 
+      loading,
+      loginWithGoogle,
+      initiateGoogleLogin 
+    }}>
       {children}
     </AuthContext.Provider>
   );
