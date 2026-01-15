@@ -6,6 +6,7 @@ import { Badge } from '../components/ui/badge';
 import ProductManager from '../components/ProductManager';
 import CollectionManager from '../components/CollectionManager';
 import ReviewsManager from '../components/ReviewsManager';
+import AutoshipManager from '../components/AutoshipManager';
 import {
   Lock,
   User,
