@@ -1,7 +1,17 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 const CartContext = createContext();
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// Autoship discount tiers
+const AUTOSHIP_DISCOUNTS = {
+  first: { percent: 25, maxAmount: 300 },  // 25% off, max ₹300
+  subsequent: { percent: 10, maxAmount: null }  // 10% off subsequent orders
+};
+
+// Shipping threshold
+const FREE_SHIPPING_THRESHOLD = 3000;
+const SHIPPING_COST = 150;
 
 // Helper function to safely get cart from localStorage
 const getStoredCart = () => {
