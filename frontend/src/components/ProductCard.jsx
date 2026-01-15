@@ -140,6 +140,48 @@ const ProductDetailModal = ({ product, onClose }) => {
         if (response.ok) {
           const data = await response.json();
           setRelatedProducts(data.related || []);
+  const [reviews, setReviews] = useState([]);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [newReview, setNewReview] = useState({ rating: 5, title: '', content: '', author_name: '' });
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+        try {
+            const res = await fetch(`${API_URL}/api/products/${product.id}/reviews`);
+            if (res.ok) {
+                const data = await res.json();
+                setReviews(data.reviews || []);
+            }
+        } catch (e) { console.error(e); }
+    };
+    fetchReviews();
+  }, [product.id, API_URL]);
+
+  const submitReview = async () => {
+      if (!newReview.content || !newReview.author_name) {
+          toast({ title: "Error", description: "Please fill all fields", variant: "destructive" });
+          return;
+      }
+      setSubmittingReview(true);
+      try {
+          const res = await fetch(`${API_URL}/api/reviews`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...newReview, product_id: product.id })
+          });
+          if (res.ok) {
+              toast({ title: "Review Submitted", description: "It will appear after approval." });
+              setShowReviewForm(false);
+              setNewReview({ rating: 5, title: '', content: '', author_name: '' });
+          }
+      } catch (e) {
+          toast({ title: "Error", description: "Failed to submit", variant: "destructive" });
+      } finally {
+          setSubmittingReview(false);
+      }
+  };
+
         }
       } catch (error) {
         console.error('Failed to fetch related products:', error);
