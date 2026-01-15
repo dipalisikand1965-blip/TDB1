@@ -3121,8 +3121,6 @@ async def search_products(
     """
     Smart search endpoint with typo tolerance, filters, and faceted results
     """
-    from search_service import search_service
-    
     # Build filters
     filters = {}
     if category:
@@ -3171,8 +3169,6 @@ async def search_typeahead(
     Fast typeahead search for autocomplete in the search bar
     Returns products and collections matching the query
     """
-    from search_service import search_service
-    
     results = await search_service.typeahead(query=q, limit=limit)
     return results
 
@@ -3180,7 +3176,6 @@ async def search_typeahead(
 @api_router.get("/search/stats")
 async def get_search_stats():
     """Get search index statistics"""
-    from search_service import search_service
     return await search_service.get_stats()
 
 
@@ -3193,8 +3188,6 @@ async def reindex_search(credentials: HTTPBasicCredentials = Depends(security)):
     
     if credentials.username != username or credentials.password != password:
         raise HTTPException(status_code=401, detail="Invalid admin credentials")
-    
-    from search_service import search_service
     
     # Fetch all products
     products = await db.products.find({}, {"_id": 0}).to_list(10000)
