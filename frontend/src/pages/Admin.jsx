@@ -7,6 +7,8 @@ import ProductManager from '../components/ProductManager';
 import CollectionManager from '../components/CollectionManager';
 import ReviewsManager from '../components/ReviewsManager';
 import AutoshipManager from '../components/AutoshipManager';
+import FulfilmentManager from '../components/FulfilmentManager';
+import ReportsManager from '../components/ReportsManager';
 import {
   Lock,
   User,
