@@ -117,7 +117,6 @@ const ProductDetailModal = ({ product, onClose }) => {
   const [selectedFlavor, setSelectedFlavor] = useState(flavors.length > 0 ? flavors[0] : null);
   const [calendarOpen, setCalendarOpen] = useState(false);
   
-  // FIXED STATE
   const [cartInput, setCartInput] = useState({
     petName: '',
     date: null,
