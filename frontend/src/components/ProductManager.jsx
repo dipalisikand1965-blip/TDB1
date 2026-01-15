@@ -76,6 +76,8 @@ const ProductManager = ({ credentials }) => {
     image: '',
     sizes: [],
     flavors: [],
+    options: [],
+    variants: [],
     status: 'active',
     tags: ''
   });
