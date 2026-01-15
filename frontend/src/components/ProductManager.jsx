@@ -125,7 +125,7 @@ const ProductManager = ({ credentials }) => {
   // Fetch sync status
   const fetchSyncStatus = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/admin/sync-status`, {
+      const response = await fetch(`${API_URL}/api/admin/sync/status`, {
         headers: {
           'Authorization': getAuthHeader()
         }
