@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="17" time="3.312" timestamp="2026-01-15T04:20:48.677523+00:00" hostname="agent-env-bfd4b451-fb79-43f8-a142-5453f87c4a4a"><testcase classname="tests.test_auth_flow.TestHealthCheck" name="test_api_health" time="0.078" /><testcase classname="tests.test_auth_flow.TestHealthCheck" name="test_db_health" time="0.048"><failure message="requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)">/root/.venv/lib/python3.11/site-packages/requests/models.py:976: in json
+    return complexjson.loads(self.text, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/json/decoder.py:355: in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+E   json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+tests/test_auth_flow.py:39: in test_db_health
+    data = response.json()
+           ^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/models.py:980: in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+E   requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)</failure></testcase><testcase classname="tests.test_auth_flow.TestCustomerRegistration" name="test_register_new_user" time="0.279" /><testcase classname="tests.test_auth_flow.TestCustomerRegistration" name="test_register_duplicate_email" time="0.318" /><testcase classname="tests.test_auth_flow.TestCustomerLogin" name="test_login_success" time="0.312" /><testcase classname="tests.test_auth_flow.TestCustomerLogin" name="test_login_invalid_email" time="0.069" /><testcase classname="tests.test_auth_flow.TestCustomerLogin" name="test_login_wrong_password" time="0.313" /><testcase classname="tests.test_auth_flow.TestAuthPersistence" name="test_auth_me_with_valid_token" time="0.349" /><testcase classname="tests.test_auth_flow.TestAuthPersistence" name="test_auth_me_without_token" time="0.034" /><testcase classname="tests.test_auth_flow.TestAuthPersistence" name="test_auth_me_with_invalid_token" time="0.039" /><testcase classname="tests.test_auth_flow.TestExistingTestUser" name="test_login_existing_user" time="0.278" /><testcase classname="tests.test_auth_flow.TestProductEndpoints" name="test_get_products" time="0.167" /><testcase classname="tests.test_auth_flow.TestProductEndpoints" name="test_get_products_by_category" time="0.081" /><testcase classname="tests.test_auth_flow.TestProtectedRoutes" name="test_my_orders_without_auth" time="0.031" /><testcase classname="tests.test_auth_flow.TestProtectedRoutes" name="test_my_orders_with_auth" time="0.349" /><testcase classname="tests.test_auth_flow.TestProtectedRoutes" name="test_my_pets_without_auth" time="0.031" /><testcase classname="tests.test_auth_flow.TestProtectedRoutes" name="test_my_pets_with_auth" time="0.426" /></testsuite></testsuites>
