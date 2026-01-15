@@ -176,7 +176,7 @@ const SearchResults = () => {
           {currentQuery && (
             <div className="mt-4 flex items-center gap-2 text-gray-600">
               <span>Showing results for</span>
-              <span className="font-semibold text-gray-900">"{currentQuery}"</span>
+              <span className="font-semibold text-gray-900">&ldquo;{currentQuery}&rdquo;</span>
               <span className="text-gray-400">({totalHits} results)</span>
             </div>
           )}
