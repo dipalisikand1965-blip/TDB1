@@ -3,11 +3,15 @@ import ProductCard from '../components/ProductCard';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { SlidersHorizontal, Loader2, ChevronDown } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 const PRODUCTS_PER_PAGE = 20;
 
 const ProductListing = ({ category = 'all' }) => {
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search');
+  
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('featured');
