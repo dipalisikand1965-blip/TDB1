@@ -48,6 +48,7 @@ const ProductManager = ({ credentials }) => {
 
   // State
   const [products, setProducts] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
