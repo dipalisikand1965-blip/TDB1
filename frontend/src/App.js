@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -34,6 +34,7 @@ import MiraEmbed from "./pages/MiraEmbed";
 import MiraLandingEmbed from "./pages/MiraLandingEmbed";
 import MiraPage from "./pages/MiraPage";
 import MiraConciergeEmbed from "./pages/MiraConciergeEmbed";
+import AuthCallback from "./pages/AuthCallback";
 
 function App() {
   return (
@@ -41,21 +42,40 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <BrowserRouter>
-            <Routes>
-              {/* Embed routes - NO navbar/footer for Shopify integration */}
-              <Route path="/pet-soul" element={<PetProfile isEmbed={true} />} />
-              <Route path="/pet-soul-embed" element={<PetProfile isEmbed={true} />} />
-              <Route path="/mira-embed" element={<MiraEmbed />} />
-              <Route path="/mira-landing-embed" element={<MiraLandingEmbed />} />
-              <Route path="/concierge-embed" element={<MiraConciergeEmbed />} />
-              
-              {/* Main app routes - WITH navbar */}
-              <Route path="/*" element={<MainLayout />} />
-            </Routes>
+            <AppRouter />
           </BrowserRouter>
         </CartProvider>
       </AuthProvider>
     </HelmetProvider>
+  );
+}
+
+/**
+ * AppRouter - Handles session_id detection for Google OAuth
+ * CRITICAL: Check URL fragment synchronously during render, NOT in useEffect
+ * This prevents race conditions with protected routes
+ */
+function AppRouter() {
+  const location = useLocation();
+  
+  // Check URL fragment (not query params) for session_id - SYNCHRONOUS CHECK
+  // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+  if (location.hash?.includes('session_id=')) {
+    return <AuthCallback />;
+  }
+  
+  return (
+    <Routes>
+      {/* Embed routes - NO navbar/footer for Shopify integration */}
+      <Route path="/pet-soul" element={<PetProfile isEmbed={true} />} />
+      <Route path="/pet-soul-embed" element={<PetProfile isEmbed={true} />} />
+      <Route path="/mira-embed" element={<MiraEmbed />} />
+      <Route path="/mira-landing-embed" element={<MiraLandingEmbed />} />
+      <Route path="/concierge-embed" element={<MiraConciergeEmbed />} />
+      
+      {/* Main app routes - WITH navbar */}
+      <Route path="/*" element={<MainLayout />} />
+    </Routes>
   );
 }
 
