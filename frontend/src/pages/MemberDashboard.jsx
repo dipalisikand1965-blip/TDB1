@@ -9,7 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { Switch } from '../components/ui/switch';
 import { 
   ShoppingBag, PawPrint, Star, User, LogOut, Package, 
-  MapPin, Settings, Lock, Bell, Shield, Phone, Mail 
+  MapPin, Settings, Lock, Bell, Shield, Phone, Mail,
+  RefreshCw, Calendar, Pause, Play, X
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../hooks/use-toast';
