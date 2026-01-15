@@ -1,65 +1,95 @@
 # Backend Architecture - The Doggy Company
 
+## Current Status: Phase 2 Complete
+
+The backend has been modularized with the following route modules:
+
 ## Directory Structure
 
 ```
 /app/backend/
-├── server.py              # Main FastAPI app entry point + remaining routes
-├── auth_routes.py         # ✅ Authentication (login, register, Google OAuth)
-├── admin_routes.py        # ✅ Admin reports & fulfilment APIs
-├── status_engine.py       # ✅ Order status flow (pillar-agnostic)
-├── feedback_engine.py     # ✅ Post-completion feedback (pillar-agnostic)
-├── birthday_engine.py     # ✅ Pet birthday promotions (pillar-agnostic)
-├── concierge_engine.py    # ✅ Internal notes system (pillar-agnostic)
-├── email_reports_engine.py # ✅ Daily email reports (pillar-agnostic)
-├── search_service.py      # ✅ Meilisearch integration
-└── requirements.txt       # Python dependencies
+├── server.py                  # Main FastAPI app entry + legacy routes (being deprecated)
+├── auth_routes.py             # ✅ Authentication (login, register, Google OAuth)
+├── product_routes.py          # ✅ Products, search, collections, reviews (public)
+├── order_routes.py            # ✅ Orders, cart, autoship basics
+├── user_routes.py             # ✅ Pet profiles, celebrations, personas
+├── admin_routes.py            # ✅ Admin reports & fulfilment APIs
+├── status_engine.py           # ✅ Order status flow (pillar-agnostic)
+├── feedback_engine.py         # ✅ Post-completion feedback (pillar-agnostic)
+├── birthday_engine.py         # ✅ Pet birthday promotions (pillar-agnostic)
+├── concierge_engine.py        # ✅ Internal notes system (pillar-agnostic)
+├── email_reports_engine.py    # ✅ Daily email reports (pillar-agnostic)
+├── search_service.py          # ✅ Meilisearch integration
+└── requirements.txt           # Python dependencies
 ```
 
 ## Modular Routers
 
-| Module | Prefix | Description | Lines |
-|--------|--------|-------------|-------|
-| `auth_routes.py` | `/api/auth` | User auth, JWT, Google OAuth | ~416 |
-| `admin_routes.py` | `/api/admin` | Reports, fulfilment, analytics | ~1000+ |
-| `status_engine.py` | `/api/status-engine` | Order status flows per pillar | ~600 |
-| `feedback_engine.py` | `/api/feedback-engine` | Post-delivery feedback | ~450 |
-| `birthday_engine.py` | `/api/birthday-engine` | Pet celebrations & promos | ~500 |
-| `concierge_engine.py` | `/api/concierge` | Internal notes | ~350 |
-| `email_reports_engine.py` | `/api/email-reports` | Daily reports & subscriptions | ~400 |
-| `search_service.py` | `/api/search` | Product/collection search | ~200 |
+| Module | Prefix | Description | Status |
+|--------|--------|-------------|--------|
+| `auth_routes.py` | `/api/auth` | User auth, JWT, Google OAuth | ✅ Active |
+| `product_routes.py` | `/api` | Products, search, collections, reviews | ✅ Active |
+| `order_routes.py` | `/api` | Orders, cart, autoship | ✅ Active |
+| `user_routes.py` | `/api` | Pets, celebrations | ✅ Active |
+| `admin_routes.py` | `/api/admin/fulfilment`, `/api/admin/reports` | Admin dashboards | ✅ Active |
+| `status_engine.py` | `/api/status-engine` | Order status flows | ✅ Active |
+| `feedback_engine.py` | `/api/feedback-engine` | Post-delivery feedback | ✅ Active |
+| `birthday_engine.py` | `/api/birthday-engine` | Pet celebrations & promos | ✅ Active |
+| `concierge_engine.py` | `/api/concierge` | Internal notes | ✅ Active |
+| `email_reports_engine.py` | `/api/email-reports` | Daily reports | ✅ Active |
 
-## Routes Still in server.py (To Refactor Later)
+## Routes in Modular Files
 
-### Product Routes (`/api/products/*`)
-- GET /api/products - List products
-- GET /api/products/{id} - Get product
-- GET /api/products/{id}/related - Related products
-- GET /api/products/{id}/reviews - Product reviews
-- POST /api/reviews - Submit review
+### product_routes.py
+- `GET /api/products` - List products
+- `GET /api/products/{product_id}/related` - Related products
+- `GET /api/products/{product_id}/reviews` - Product reviews
+- `GET /api/search` - Smart search
+- `GET /api/search/typeahead` - Autocomplete
+- `GET /api/search/stats` - Search statistics
+- `POST /api/search/reindex` - Reindex products (admin)
+- `GET /api/collections` - List collections
+- `GET /api/collections/{collection_id}` - Get collection with products
+- `POST /api/reviews` - Submit review
 
-### Order Routes (`/api/orders/*`, `/api/cart/*`, `/api/checkout/*`)
-- POST /api/cart - Add to cart
-- GET /api/orders - List orders
-- POST /api/orders - Create order
-- GET /api/orders/{id} - Get order
+### order_routes.py
+- `GET /api/orders/my-orders` - User's orders
+- `POST /api/orders` - Create order
+- `GET /api/orders/{order_id}` - Get order
+- `POST /api/cart/snapshot` - Save cart
+- `POST /api/cart/capture-email` - Capture email for abandoned cart
+- `POST /api/cart/convert/{session_id}` - Mark cart converted
 
-### User Routes (`/api/user/*`, `/api/pets/*`)
-- GET /api/user/dashboard - User dashboard
-- GET /api/pets - List pets
-- POST /api/pets - Add pet
-- PUT /api/pets/{id} - Update pet
+### user_routes.py
+- `GET /api/pets/personas` - Dog persona types
+- `GET /api/pets/occasions` - Celebration occasions
+- `POST /api/pets` - Create pet profile
+- `GET /api/pets/{pet_id}` - Get pet
+- `PUT /api/pets/{pet_id}` - Update pet
+- `DELETE /api/pets/{pet_id}` - Delete pet
+- `POST /api/pets/{pet_id}/celebrations` - Add celebration
+- `DELETE /api/pets/{pet_id}/celebrations/{occasion}` - Remove celebration
+- `GET /api/pets/{pet_id}/upcoming-celebrations` - Upcoming celebrations
+- `POST /api/pets/{pet_id}/achievements` - Add achievement
 
-### Admin Routes (`/api/admin/*`)
-- GET /api/admin/orders - Admin orders
-- GET /api/admin/members - Admin members
-- etc.
+### auth_routes.py
+- `POST /api/auth/register` - Register user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/me` - Get current user
+- `POST /api/auth/google/session` - Google OAuth
+- `POST /api/auth/logout` - Logout
 
-### Shopify Sync
-- POST /api/cron/sync-products - Sync from Shopify
+## Routes Still in server.py (Legacy - To Be Migrated)
 
-### Mira Chat
-- POST /api/chat/mira - Chat with Mira
+The following routes remain in server.py but have duplicates in modular files:
+- Admin CRUD routes for products, orders, customers
+- Mira chat endpoint
+- Shopify sync endpoints
+- Content management (FAQ, testimonials, blog)
+- Loyalty points system
+- Discount codes
+- Franchise inquiries
+- Streaties charity stats
 
 ## Pillar-Agnostic Engines
 
@@ -71,21 +101,46 @@ All 5 engines are designed to work across ALL pillars:
 4. **Concierge Engine** - Notes visible across all pillars
 5. **Email Reports** - Can filter by pillar
 
-## Future Refactoring Phases
+## Integration Pattern
 
-### Phase 1 (Current) ✅
-- Extract auth_routes.py
-- Document architecture
+Each module follows this pattern:
+```python
+# Create router
+router = APIRouter(prefix="/api/...", tags=["..."])
 
-### Phase 2 (Next)
-- Extract product_routes.py
-- Extract order_routes.py
-- Extract user_routes.py
+# Database reference
+db = None
 
-### Phase 3
-- Extract notification_routes.py (email, WhatsApp)
-- Extract mira_routes.py (chat)
+def set_database(database):
+    global db
+    db = database
 
-### Phase 4
-- Extract shopify_sync.py
-- Create shared utilities module
+# Routes...
+```
+
+In server.py:
+```python
+from module import router, set_database
+
+# At startup
+set_database(db)
+
+# Include router
+app.include_router(router)
+```
+
+## Next Steps (Phase 3)
+
+1. **Remove Legacy Routes** - Safely remove duplicate routes from server.py
+2. **Admin Routes Consolidation** - Move remaining admin routes to admin_routes.py
+3. **Mira Chat Extraction** - Create mira_routes.py for chat functionality
+4. **Notification Service** - Create notification_service.py for email/WhatsApp
+5. **Shopify Sync Module** - Create shopify_sync.py for sync functionality
+
+## Testing
+
+After each module extraction:
+1. Run curl tests on all extracted endpoints
+2. Verify admin functionality still works
+3. Check frontend integration
+4. Run testing_agent_v3_fork for regression testing
