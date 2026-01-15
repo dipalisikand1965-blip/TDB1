@@ -2864,20 +2864,44 @@ async def get_public_hero():
 
 
 @api_router.get("/products")
-async def get_public_products(category: Optional[str] = None, pan_india: Optional[bool] = None):
+async def get_public_products(
+    category: Optional[str] = None, 
+    pan_india: Optional[bool] = None,
+    search: Optional[str] = None
+):
     """Public endpoint for products"""
     query = {}
     
+    # Search logic
+    if search:
+        search_regex = {"$regex": search, "$options": "i"}
+        query["$or"] = [
+            {"name": search_regex},
+            {"tags": search_regex},
+            {"category": search_regex},
+            {"description": search_regex},
+            {"sizes.name": search_regex},
+            {"flavors.name": search_regex}
+        ]
+    
     # Special handling for pan-india category
     if category == "pan-india" or pan_india:
-        # Return products that are pan-india shippable
-        query["$or"] = [
-            {"category": "pan-india"},
-            {"is_pan_india_shippable": True},
-            {"category": {"$in": ["treats", "nut-butters", "desi-treats", "gift-cards"]}}
-        ]
+        pan_india_query = {
+            "$or": [
+                {"category": "pan-india"},
+                {"is_pan_india_shippable": True},
+                {"category": {"$in": ["treats", "nut-butters", "desi-treats", "gift-cards"]}}
+            ]
+        }
+        if query:
+            query = {"$and": [query, pan_india_query]}
+        else:
+            query = pan_india_query
     elif category:
-        query["category"] = category
+        if query:
+            query = {"$and": [query, {"category": category}]}
+        else:
+            query["category"] = category
     
     products = await db.products.find(query, {"_id": 0}).to_list(500)
     return {"products": products}
