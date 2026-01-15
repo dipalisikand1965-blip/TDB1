@@ -118,11 +118,89 @@ const CartSidebar = () => {
               </div>
 
               {/* Cart Summary */}
-              <div className="border-t pt-4 space-y-4">
-                <div className="flex justify-between items-center text-lg">
-                  <span className="font-semibold">Subtotal:</span>
-                  <span className="font-bold text-2xl text-purple-600">₹{getCartTotal()}</span>
+              <div className="border-t pt-4 space-y-3">
+                {/* Autoship Summary */}
+                {autoshipSummary.autoshipCount > 0 && (
+                  <div className="bg-purple-50 rounded-lg p-3 space-y-2">
+                    <div className="flex items-center gap-2 text-purple-700 font-semibold">
+                      <RefreshCw className="w-4 h-4" />
+                      {autoshipSummary.autoshipCount} Autoship Item{autoshipSummary.autoshipCount > 1 ? 's' : ''}
+                    </div>
+                    {Object.entries(autoshipSummary.autoshipByFrequency).map(([freq, items]) => (
+                      <div key={freq} className="text-sm text-purple-600 pl-6">
+                        • {items.reduce((c, i) => c + i.quantity, 0)} item{items.length > 1 ? 's' : ''} every {freq} weeks
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Price Breakdown */}
+                <div className="space-y-2 text-sm">
+                  {/* Subtotal */}
+                  <div className="flex justify-between text-gray-600">
+                    <span>Subtotal</span>
+                    <span>₹{autoshipSummary.subtotal.toLocaleString()}</span>
+                  </div>
+                  
+                  {/* Autoship Discount */}
+                  {autoshipSummary.autoshipDiscount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span className="flex items-center gap-1">
+                        <Gift className="w-4 h-4" />
+                        Autoship Discount (25%)
+                      </span>
+                      <span>-₹{autoshipSummary.autoshipDiscount.toLocaleString()}</span>
+                    </div>
+                  )}
+                  
+                  {/* Shipping */}
+                  <div className="flex justify-between text-gray-600">
+                    <span className="flex items-center gap-1">
+                      <Truck className="w-4 h-4" />
+                      Shipping
+                    </span>
+                    {autoshipSummary.qualifiesForFreeShipping ? (
+                      <span className="text-green-600 font-medium">FREE</span>
+                    ) : (
+                      <span>₹{autoshipSummary.shippingCost}</span>
+                    )}
+                  </div>
+                  
+                  {/* Free Shipping Progress */}
+                  {!autoshipSummary.qualifiesForFreeShipping && (
+                    <div className="bg-amber-50 rounded-lg p-2 text-amber-700 text-xs flex items-start gap-2">
+                      <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span>
+                        Add ₹{autoshipSummary.amountToFreeShipping.toLocaleString()} more for FREE shipping!
+                      </span>
+                    </div>
+                  )}
                 </div>
+                
+                {/* Total */}
+                <div className="flex justify-between items-center text-lg pt-2 border-t">
+                  <span className="font-semibold">Total:</span>
+                  <div className="text-right">
+                    {autoshipSummary.autoshipDiscount > 0 && (
+                      <span className="text-sm text-gray-400 line-through mr-2">
+                        ₹{(autoshipSummary.subtotal + autoshipSummary.shippingCost).toLocaleString()}
+                      </span>
+                    )}
+                    <span className="font-bold text-2xl text-purple-600">
+                      ₹{autoshipSummary.finalTotal.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Savings Badge */}
+                {autoshipSummary.autoshipDiscount > 0 && (
+                  <div className="text-center">
+                    <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                      🎉 You&apos;re saving ₹{autoshipSummary.autoshipDiscount.toLocaleString()} with Autoship!
+                    </Badge>
+                  </div>
+                )}
+                
                 <Button
                   onClick={handleCheckout}
                   className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 h-12 text-lg"
