@@ -36,6 +36,7 @@ import MiraPage from "./pages/MiraPage";
 import MiraConciergeEmbed from "./pages/MiraConciergeEmbed";
 import AuthCallback from "./pages/AuthCallback";
 import Autoship from "./pages/Autoship";
+import SearchResults from "./pages/SearchResults";
 
 function App() {
   return (
