@@ -124,6 +124,7 @@ const ProductListing = ({ category = 'all' }) => {
       case 'pizzas-burgers': return 'Pizzas & Burgers';
       case 'dognuts': return 'Pupcakes & Dognuts';
       case 'nut-butters': return 'Nut Butters';
+      case 'autoship': return 'Autoship Products 🔄';
       case 'other': return 'More Products';
       default: return 'All Products';
     }
