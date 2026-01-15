@@ -1092,6 +1092,16 @@ const Admin = () => {
           ))}
         </div>
 
+        {/* Fulfilment Tab */}
+        {activeTab === 'fulfilment' && (
+          <FulfilmentManager authHeaders={getAuthHeaders()} />
+        )}
+
+        {/* Reports Tab */}
+        {activeTab === 'reports' && (
+          <ReportsManager authHeaders={getAuthHeaders()} />
+        )}
+
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && dashboard && (
           <div className="space-y-8">
