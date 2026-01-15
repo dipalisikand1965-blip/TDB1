@@ -379,6 +379,39 @@ const ProductDetailModal = ({ product, onClose }) => {
                 <option value="4pm-7pm">4 PM - 7 PM</option>
                 <option value="7pm-9pm">7 PM - 9 PM</option>
               </select>
+            {/* Autoship Option */}
+            {product.autoship_enabled && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <div className="flex flex-col gap-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="purchaseType" 
+                      checked={cartInput.purchaseType === 'onetime'}
+                      onChange={() => setCartInput({...cartInput, purchaseType: 'onetime'})}
+                      className="w-4 h-4 text-purple-600"
+                    />
+                    <span className="text-sm font-medium">One-time purchase</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="purchaseType" 
+                      checked={cartInput.purchaseType === 'autoship'}
+                      onChange={() => setCartInput({...cartInput, purchaseType: 'autoship'})}
+                      className="w-4 h-4 text-purple-600"
+                    />
+                    <span className="text-sm font-medium">Autoship & Save (Every 4 weeks)</span>
+                  </label>
+                  {cartInput.purchaseType === 'autoship' && (
+                    <p className="text-xs text-blue-700 ml-6">
+                      Get 40% off on your 4th & 5th orders! Cancel anytime.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             </div>
 
             {/* Shipping Info */}
