@@ -44,7 +44,9 @@ const ProductListing = ({ category = 'all' }) => {
           setProducts(uniqueProducts);
         } else {
           let url = `${API_URL}/api/products?limit=500`;
-          if (category && category !== 'all') {
+          if (searchQuery) {
+            url += `&search=${encodeURIComponent(searchQuery)}`;
+          } else if (category && category !== 'all') {
             url += `&category=${category}`;
           }
           const response = await fetch(url);
