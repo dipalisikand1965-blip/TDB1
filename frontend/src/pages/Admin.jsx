@@ -1666,6 +1666,16 @@ const Admin = () => {
           <ProductManager credentials={{ username, password }} />
         )}
 
+        {/* Collections Tab */}
+        {activeTab === 'collections' && (
+          <CollectionManager getAuthHeader={getAuthHeaders} />
+        )}
+
+        {/* Reviews Tab */}
+        {activeTab === 'reviews' && (
+          <ReviewsManager getAuthHeader={getAuthHeaders} />
+        )}
+
         {/* Content Tab - Videos */}
         {activeTab === 'content' && (
           <div className="space-y-6">
