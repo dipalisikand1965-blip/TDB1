@@ -673,6 +673,14 @@ const ProductManager = ({ credentials }) => {
                   <td className="p-3">
                     <Badge variant="outline">{product.category}</Badge>
                   </td>
+                  <td className="p-3">
+                    <div className="flex flex-wrap gap-1">
+                      {product.collection_ids?.map(cid => {
+                        const col = collections.find(c => c.id === cid);
+                        return col ? <Badge key={cid} variant="secondary" className="text-xs">{col.name}</Badge> : null;
+                      })}
+                    </div>
+                  </td>
                   <td className="p-3 font-medium">₹{product.price || product.minPrice || 0}</td>
                   <td className="p-3 text-sm text-gray-500">
                     {product.sizes?.length || 0} sizes, {product.flavors?.length || 0} flavors
