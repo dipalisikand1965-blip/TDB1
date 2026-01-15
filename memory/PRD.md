@@ -167,6 +167,29 @@ ADMIN_PASSWORD=lola4304
 
 ## Changelog
 
+### Jan 15, 2025 (Session 1) - Auth & Product Parity
+- ✅ **CRITICAL BUG FIX: Customer Authentication Persistence**
+  - **Root Cause**: `AuthContext.jsx` was calling `/api/auth/me` with email as query param instead of Bearer token in Authorization header
+  - **Fix**: Updated `fetchUser()` to properly send JWT token in headers: `Authorization: Bearer ${token}`
+  - **Fix**: Added `{"_id": 0}` projection in `get_current_user()` backend function to avoid MongoDB ObjectId serialization issues
+  - Users now stay logged in after page refresh/navigation
+- ✅ **CRITICAL BUG FIX: Product Detail Modal Crash**
+  - **Root Cause**: `reviews` state declarations were incorrectly nested inside `fetchRelated` callback, causing `ReferenceError: reviews is not defined`
+  - **Fix**: Moved `useState` hooks for reviews to component level (Line 136-140 in ProductCard.jsx)
+  - Product modal now opens correctly with size/flavor selection, personalization fields, and reviews section
+- ✅ **Backend Orphan Code Cleanup**
+  - Removed duplicate/orphaned code in `server.py` that was causing IndentationError on server startup
+- ✅ **MemberDashboard Route Protection**
+  - Added proper redirect to `/login` when unauthenticated user visits `/dashboard`
+  - Added loading spinner while auth state is being checked
+- ✅ **Product Parity Verification**
+  - 392 products correctly synced from Shopify
+  - 103 cakes, 59 accessories, 40 breed-cakes, and more across 15 categories
+  - Variants (Base/Flavor/Size) with correct pricing verified
+- ✅ **Comprehensive Testing**: 94% backend (16/17), 100% frontend tests passed
+  - All auth flows tested: register, login, /auth/me, protected routes
+  - Product listing, modal, add to cart tested
+
 ### Jan 14, 2025 (Session 2)
 - ✅ **Discount Code at Checkout (P1)**
   - Added discount code input field in checkout sidebar
