@@ -821,7 +821,7 @@ const PetProfile = ({ isEmbed = false }) => {
           <Label className="font-semibold">Allergies / Avoid</Label>
           <p className="text-sm text-gray-500 mb-2">Select any ingredients to avoid</p>
           <div className="flex flex-wrap gap-2">
-            {['Wheat', 'Dairy', 'Eggs', 'Chicken', 'Beef', 'Soy', 'None'].map(allergy => (
+            {['Wheat', 'Dairy', 'Eggs', 'Chicken', 'Soy', 'None'].map(allergy => (
               <button
                 key={allergy}
                 onClick={() => {
