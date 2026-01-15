@@ -626,12 +626,14 @@ class Review(BaseModel):
     id: str = Field(default_factory=lambda: f"rev-{uuid.uuid4().hex[:8]}")
     product_id: str
     user_id: Optional[str] = None
+    user_email: Optional[str] = None
     author_name: str
     rating: int
     title: Optional[str] = None
     content: str
     image_url: Optional[str] = None
     status: str = "pending"  # pending, approved, rejected
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class AutoshipSubscription(BaseModel):
     id: str = Field(default_factory=lambda: f"auto-{uuid.uuid4().hex[:8]}")
