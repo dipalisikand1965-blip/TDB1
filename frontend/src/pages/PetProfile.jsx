@@ -442,7 +442,7 @@ const PetProfile = ({ isEmbed = false }) => {
             onChange={(e) => updateFormData('preferences', { ...formData.preferences, flavor_profile: e.target.value })}
           >
             <option value="">What flavors do they love?</option>
-            <option value="farmhouse">🏠 Farmhouse - Beef, Liver, Chicken</option>
+            <option value="farmhouse">🏠 Farmhouse - Liver, Chicken, Mutton</option>
             <option value="ocean">🌊 Ocean - Salmon, Whitefish, Tuna</option>
             <option value="garden">🌿 Garden - Peanut Butter, Sweet Potato, Pumpkin</option>
             <option value="adventurous">🎯 Adventurous - Loves trying everything!</option>
