@@ -440,11 +440,6 @@ const ProductDetailModal = ({ product, onClose }) => {
                 </div>
               </div>
             )}
-                </div>
-              </div>
-            )}
-
-            </div>
 
             {/* Shipping Info */}
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 text-xs">
