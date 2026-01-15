@@ -30,6 +30,27 @@ const CHART_COLORS = {
   cities: ['#9333ea', '#ec4899', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444']
 };
 
+// MetricCard component - defined outside ReportsManager to avoid re-creation on each render
+const MetricCard = ({ title, value, icon: Icon, change, color = 'purple' }) => (
+  <Card className="p-6">
+    <div className="flex items-start justify-between">
+      <div>
+        <p className="text-sm text-gray-500">{title}</p>
+        <p className="text-3xl font-bold mt-1">{value}</p>
+        {change !== undefined && (
+          <div className={`flex items-center mt-2 text-sm ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {change >= 0 ? <ArrowUp className="w-4 h-4 mr-1" /> : <ArrowDown className="w-4 h-4 mr-1" />}
+            {Math.abs(change)}%
+          </div>
+        )}
+      </div>
+      <div className={`p-3 rounded-xl bg-${color}-100`}>
+        <Icon className={`w-6 h-6 text-${color}-600`} />
+      </div>
+    </div>
+  </Card>
+);
+
 const ReportsManager = ({ authHeaders }) => {
   const [activeTab, setActiveTab] = useState('executive');
   const [loading, setLoading] = useState(false);
