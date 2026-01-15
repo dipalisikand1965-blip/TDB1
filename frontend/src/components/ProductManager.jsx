@@ -646,6 +646,7 @@ const ProductManager = ({ credentials }) => {
                 <th className="text-left p-3 font-medium text-gray-600">Image</th>
                 <th className="text-left p-3 font-medium text-gray-600">Name</th>
                 <th className="text-left p-3 font-medium text-gray-600">Category</th>
+                <th className="text-left p-3 font-medium text-gray-600">Collections</th>
                 <th className="text-left p-3 font-medium text-gray-600">Price</th>
                 <th className="text-left p-3 font-medium text-gray-600">Variants</th>
                 <th className="text-left p-3 font-medium text-gray-600">Actions</th>
