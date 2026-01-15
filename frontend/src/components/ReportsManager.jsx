@@ -562,8 +562,43 @@ const ReportsManager = ({ authHeaders }) => {
 
         {/* Products */}
         <TabsContent value="products">
+          {/* Top Products Bar Chart */}
+          <Card className="p-6 mb-6">
+            <h3 className="font-semibold mb-4 flex items-center gap-2">
+              <Package className="w-5 h-5 text-purple-600" />
+              Top Products by Revenue
+            </h3>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={productPerformance?.top_products?.slice(0, 10) || []} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis 
+                    type="number"
+                    tick={{ fontSize: 11 }}
+                    tickFormatter={(value) => `₹${(value/1000).toFixed(0)}k`}
+                  />
+                  <YAxis 
+                    type="category" 
+                    dataKey="product" 
+                    tick={{ fontSize: 11 }}
+                    width={150}
+                    tickFormatter={(value) => value.length > 20 ? value.slice(0, 20) + '...' : value}
+                  />
+                  <Tooltip 
+                    formatter={(value, name) => [
+                      name === 'revenue' ? `₹${value.toLocaleString()}` : value,
+                      name === 'revenue' ? 'Revenue' : name
+                    ]}
+                    contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
+                  />
+                  <Bar dataKey="revenue" fill={CHART_COLORS.primary} radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+
           <Card className="p-6">
-            <h3 className="font-semibold mb-4">Top Products by Revenue ({cityFilter || 'All Cities'})</h3>
+            <h3 className="font-semibold mb-4">Product Performance Details ({cityFilter || 'All Cities'})</h3>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="border-b">
@@ -613,6 +648,40 @@ const ReportsManager = ({ authHeaders }) => {
               <p className="text-4xl font-bold text-orange-700">{customerIntelligence?.inactive_customers_60d || 0}</p>
             </Card>
           </div>
+
+          {/* Customer Distribution Pie Chart */}
+          <Card className="p-6 mb-6">
+            <h3 className="font-semibold mb-4">Customer Distribution</h3>
+            <div className="h-[250px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={[
+                      { name: 'New', value: customerIntelligence?.new_customers || 0, color: CHART_COLORS.info },
+                      { name: 'Returning', value: customerIntelligence?.returning_customers || 0, color: CHART_COLORS.success },
+                      { name: 'Inactive', value: customerIntelligence?.inactive_customers_60d || 0, color: CHART_COLORS.warning }
+                    ].filter(d => d.value > 0)}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={2}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {[
+                      { name: 'New', value: customerIntelligence?.new_customers || 0, color: CHART_COLORS.info },
+                      { name: 'Returning', value: customerIntelligence?.returning_customers || 0, color: CHART_COLORS.success },
+                      { name: 'Inactive', value: customerIntelligence?.inactive_customers_60d || 0, color: CHART_COLORS.warning }
+                    ].filter(d => d.value > 0).map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => [value, 'Customers']} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
 
           <Card className="p-6">
             <h3 className="font-semibold mb-4">High Value Customers</h3>
