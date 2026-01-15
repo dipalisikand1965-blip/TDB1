@@ -580,7 +580,13 @@ const FulfilmentManager = ({ authHeaders, pillar = 'celebrate' }) => {
       </Tabs>
 
       {/* Status Update Modal */}
-      <Dialog open={showStatusModal} onOpenChange={setShowStatusModal}>
+      <Dialog open={showStatusModal} onOpenChange={(open) => {
+        setShowStatusModal(open);
+        if (!open) {
+          setStatusNotes('');
+          setSendNotification(true);
+        }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Update Order Status</DialogTitle>
@@ -590,6 +596,9 @@ const FulfilmentManager = ({ authHeaders, pillar = 'celebrate' }) => {
               <div className="p-3 bg-gray-50 rounded-lg">
                 <p className="font-medium">{selectedOrder.orderId}</p>
                 <p className="text-sm text-gray-600">{selectedOrder.customer?.parentName} - {selectedOrder.customer?.phone}</p>
+                {selectedOrder.pet?.name && (
+                  <p className="text-sm text-purple-600">🐾 {selectedOrder.pet.name}</p>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -599,7 +608,7 @@ const FulfilmentManager = ({ authHeaders, pillar = 'celebrate' }) => {
                     <Button
                       key={status.value}
                       variant={selectedOrder.status === status.value ? 'default' : 'outline'}
-                      className={`justify-start text-left ${status.value === selectedOrder.status ? '' : status.color}`}
+                      className={`justify-start text-left ${status.value === selectedOrder.status ? '' : (typeof status.color === 'string' && status.color.includes('bg-') ? status.color : getStatusColor(status.color))}`}
                       onClick={() => updateOrderStatus(selectedOrder.orderId || selectedOrder.id, status.value)}
                     >
                       {status.emoji} {status.label}
@@ -608,9 +617,40 @@ const FulfilmentManager = ({ authHeaders, pillar = 'celebrate' }) => {
                 </div>
               </div>
 
-              <p className="text-xs text-gray-500">
-                Updating status will automatically send a WhatsApp notification to the customer.
-              </p>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Internal Notes (optional)</label>
+                <Textarea 
+                  placeholder="Add notes about this status change..."
+                  value={statusNotes}
+                  onChange={(e) => setStatusNotes(e.target.value)}
+                  className="h-20"
+                />
+              </div>
+
+              <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                <Checkbox 
+                  id="send-notification"
+                  checked={sendNotification}
+                  onCheckedChange={setSendNotification}
+                />
+                <div className="flex-1">
+                  <label htmlFor="send-notification" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                    <Bell className="w-4 h-4 text-purple-600" />
+                    Send notification to customer
+                  </label>
+                  <p className="text-xs text-gray-500">WhatsApp message + Email will be sent automatically</p>
+                </div>
+              </div>
+
+              <div className="border-t pt-3">
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  onClick={() => updateOrderStatus(selectedOrder.orderId || selectedOrder.id, 'cancelled')}
+                >
+                  ❌ Cancel Order
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>
