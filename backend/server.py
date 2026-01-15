@@ -3099,6 +3099,118 @@ async def get_related_products(product_id: str, limit: int = 4):
     }
 
 
+# ==================== SEARCH API ====================
+
+@api_router.get("/search")
+async def search_products(
+    q: str = Query(..., min_length=1, description="Search query"),
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    category: Optional[str] = None,
+    collection_id: Optional[str] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    tags: Optional[str] = None,
+    pan_india: Optional[bool] = None,
+    autoship: Optional[bool] = None,
+    sort: Optional[str] = Query(None, description="Sort by: price_asc, price_desc, name_asc, name_desc"),
+):
+    """
+    Smart search endpoint with typo tolerance, filters, and faceted results
+    """
+    from search_service import search_service
+    
+    # Build filters
+    filters = {}
+    if category:
+        filters["category"] = category
+    if collection_id:
+        filters["collection_id"] = collection_id
+    if min_price is not None:
+        filters["min_price"] = min_price
+    if max_price is not None:
+        filters["max_price"] = max_price
+    if tags:
+        filters["tags"] = tags.split(",")
+    if pan_india:
+        filters["is_pan_india"] = True
+    if autoship:
+        filters["autoship_enabled"] = True
+    
+    # Build sort
+    sort_options = None
+    if sort:
+        sort_map = {
+            "price_asc": ["price:asc"],
+            "price_desc": ["price:desc"],
+            "name_asc": ["name:asc"],
+            "name_desc": ["name:desc"],
+        }
+        sort_options = sort_map.get(sort)
+    
+    results = await search_service.search(
+        query=q,
+        limit=limit,
+        offset=offset,
+        filters=filters if filters else None,
+        sort=sort_options,
+    )
+    
+    return results
+
+
+@api_router.get("/search/typeahead")
+async def search_typeahead(
+    q: str = Query(..., min_length=2, description="Search query for typeahead"),
+    limit: int = Query(8, ge=1, le=20),
+):
+    """
+    Fast typeahead search for autocomplete in the search bar
+    Returns products and collections matching the query
+    """
+    from search_service import search_service
+    
+    results = await search_service.typeahead(query=q, limit=limit)
+    return results
+
+
+@api_router.get("/search/stats")
+async def get_search_stats():
+    """Get search index statistics"""
+    from search_service import search_service
+    return await search_service.get_stats()
+
+
+@api_router.post("/search/reindex")
+async def reindex_search(credentials: HTTPBasicCredentials = Depends(admin_security)):
+    """Reindex all products in the search engine (admin only)"""
+    # Verify admin credentials
+    username = os.environ.get("ADMIN_USERNAME", "admin")
+    password = os.environ.get("ADMIN_PASSWORD", "woof2025")
+    
+    if credentials.username != username or credentials.password != password:
+        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+    
+    from search_service import search_service
+    
+    # Fetch all products
+    products = await db.products.find({}, {"_id": 0}).to_list(10000)
+    
+    if products:
+        await search_service.index_products_batch(products)
+    
+    # Index collections too
+    collections = await db.collections.find({}, {"_id": 0}).to_list(1000)
+    if collections:
+        await search_service.index_collections_batch(collections)
+    
+    return {
+        "success": True,
+        "products_indexed": len(products),
+        "collections_indexed": len(collections)
+    }
+
+
 # ==================== ORDERS API ====================
 
 @api_router.get("/orders/my-orders")
