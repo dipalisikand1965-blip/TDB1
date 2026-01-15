@@ -77,6 +77,28 @@ const Navbar = () => {
         🎉 Same Day Delivery in Mumbai, Bangalore & Gurugram! 🚚
       </div>
 
+      {/* Search Overlay */}
+      {isSearchOpen && (
+        <div className="absolute top-16 left-0 w-full bg-white border-b border-gray-200 p-4 z-40 animate-in slide-in-from-top-2">
+          <div className="max-w-3xl mx-auto flex gap-2">
+            <Input
+              autoFocus
+              placeholder="Search for cakes, treats, or ingredients..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch(e)}
+              className="flex-1"
+            />
+            <Button onClick={handleSearch} className="bg-purple-600 hover:bg-purple-700">
+              Search
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)}>
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Main Navbar */}
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
