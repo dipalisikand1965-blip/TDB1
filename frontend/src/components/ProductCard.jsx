@@ -244,6 +244,8 @@ const ProductDetailModal = ({ product, onClose }) => {
       selectedVariant: matchingVariant?.title || variantDescription,
       selectedOptions: selectedOptions,
       purchaseType: cartInput.purchaseType,
+      autoshipFrequency: cartInput.purchaseType === 'autoship' ? cartInput.autoshipFrequency : null,
+      isAutoship: cartInput.purchaseType === 'autoship',
       customDetails: { ...cartInput }
     };
     addToCart(cartItem, variantDescription, 'Selected');
@@ -259,9 +261,13 @@ const ProductDetailModal = ({ product, onClose }) => {
       }, 'Standard', 'Standard');
     }
     
+    const autoshipMsg = cartInput.purchaseType === 'autoship' 
+      ? ` (Autoship every ${cartInput.autoshipFrequency} weeks)` 
+      : '';
+    
     toast({
       title: 'Added to cart! 🎉',
-      description: `${product.name} - ₹${currentPrice}`,
+      description: `${product.name} - ₹${currentPrice}${autoshipMsg}`,
     });
     onClose();
   };
