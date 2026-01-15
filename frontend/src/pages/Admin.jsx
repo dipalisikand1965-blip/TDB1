@@ -1611,6 +1611,12 @@ const Admin = () => {
                   <option value="Bangalore">Bangalore</option>
                   <option value="Gurgaon">Gurgaon</option>
                   <option value="Delhi">Delhi</option>
+        {/* Collections Tab */}
+        {activeTab === 'collections' && (
+          <CollectionManager getAuthHeader={getAuthHeaders} />
+        )}
+
+
                 </select>
                 <select
                   value={filterStatus}
