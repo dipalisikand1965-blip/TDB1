@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
+import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, RefreshCw, Truck, Gift, Info } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet';
 import { useNavigate } from 'react-router-dom';
+import { Badge } from './ui/badge';
 
 const CartSidebar = () => {
-  const { cartItems, updateQuantity, removeFromCart, getCartTotal, isCartOpen, setIsCartOpen } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, getCartTotal, isCartOpen, setIsCartOpen, autoshipSummary } = useCart();
   const navigate = useNavigate();
 
   const handleCheckout = () => {
