@@ -342,17 +342,8 @@ class SearchService:
         try:
             index = self.client.index(PRODUCTS_INDEX)
             
-            # Build search parameters
-            opt_params = {
-                "limit": limit,
-                "offset": offset,
-                "showRankingScore": True,
-                "attributesToHighlight": ["name", "description"],
-                "highlightPreTag": "<mark>",
-                "highlightPostTag": "</mark>",
-            }
-            
             # Build filter string
+            filter_str = None
             filter_parts = []
             if filters:
                 if filters.get("category"):
@@ -378,14 +369,20 @@ class SearchService:
                         filter_parts.append(f'tags = "{tags}"')
             
             if filter_parts:
-                opt_params["filter"] = " AND ".join(filter_parts)
+                filter_str = " AND ".join(filter_parts)
             
-            # Add sorting
-            if sort:
-                opt_params["sort"] = sort
-            
-            # Perform search
-            results = await index.search(query, opt_params=opt_params)
+            # Perform search with keyword arguments
+            results = await index.search(
+                query,
+                limit=limit,
+                offset=offset,
+                filter=filter_str,
+                sort=sort,
+                show_ranking_score=True,
+                attributes_to_highlight=["name", "description"],
+                highlight_pre_tag="<mark>",
+                highlight_post_tag="</mark>",
+            )
             
             return {
                 "hits": results.hits,
