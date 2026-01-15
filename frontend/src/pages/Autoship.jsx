@@ -251,7 +251,7 @@ const Autoship = () => {
           <p className="text-gray-600 mb-8">
             Join thousands of happy pet parents who've made treat time effortless.
           </p>
-          <Link to="/treats">
+          <Link to="/autoship-products">
             <Button size="lg" className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700">
               Start Your Autoship Today
             </Button>
