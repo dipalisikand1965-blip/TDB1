@@ -1062,6 +1062,7 @@ const Admin = () => {
             { id: 'loyalty', label: '⭐ Loyalty', icon: Star },
             { id: 'discounts', label: '🎟️ Discounts', icon: Tag },
             { id: 'abandoned', label: '🛒 Abandoned', icon: ShoppingBag },
+            { id: 'autoship', label: '🔄 Autoship', icon: RefreshCw },
             { id: 'products', label: 'Products', icon: Package },
             { id: 'collections', label: 'Collections', icon: Layers },
             { id: 'reviews', label: 'Reviews', icon: Star },
