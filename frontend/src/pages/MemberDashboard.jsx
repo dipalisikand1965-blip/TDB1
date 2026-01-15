@@ -254,6 +254,10 @@ const MemberDashboard = () => {
               <RefreshCw className="w-4 h-4 mr-1" />
               Autoship
             </TabsTrigger>
+            <TabsTrigger value="reviews" className="rounded-lg flex-1 md:flex-none">
+              <MessageSquare className="w-4 h-4 mr-1" />
+              Reviews
+            </TabsTrigger>
             <TabsTrigger value="pets" className="rounded-lg flex-1 md:flex-none">Pets</TabsTrigger>
             <TabsTrigger value="addresses" className="rounded-lg flex-1 md:flex-none">Addresses</TabsTrigger>
             <TabsTrigger value="settings" className="rounded-lg flex-1 md:flex-none">Settings</TabsTrigger>
