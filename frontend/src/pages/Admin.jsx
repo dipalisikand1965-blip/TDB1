@@ -1050,6 +1050,7 @@ const Admin = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tabs */}
+            { id: 'reviews', label: 'Reviews', icon: MessageCircle },
         <div className="flex gap-2 mb-8 border-b pb-4 flex-wrap">
           {[
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
