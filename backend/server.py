@@ -659,10 +659,11 @@ class AutoshipCreate(BaseModel):
 
 class ReviewCreate(BaseModel):
     product_id: str
-    author_name: str
     rating: int
+    comment: str
+    reviewer_name: Optional[str] = None
+    reviewer_email: Optional[str] = None
     title: Optional[str] = None
-    content: str
     image_url: Optional[str] = None
 
 class Collection(BaseModel):
