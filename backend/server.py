@@ -1010,6 +1010,25 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
     return user
 
+
+async def get_current_user_optional(authorization: Optional[str] = Header(None)):
+    """Get current user if authenticated, return None otherwise"""
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    
+    token = authorization.split(" ")[1]
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            return None
+    except jwt.PyJWTError:
+        return None
+        
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    return user
+
+
 def hash_password(password: str) -> str:
     """Simple password hashing"""
     return hashlib.sha256(password.encode()).hexdigest()
