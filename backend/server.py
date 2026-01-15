@@ -492,8 +492,16 @@ async def lifespan(app: FastAPI):
         replace_existing=True
     )
     
+    # Add feedback processor (runs every 15 minutes to send due feedback requests)
+    scheduler.add_job(
+        process_pending_feedback,
+        CronTrigger(minute='*/15'),  # Run every 15 minutes
+        id="feedback_processor",
+        replace_existing=True
+    )
+    
     scheduler.start()
-    logger.info("Schedulers started: celebration reminders (daily 9AM IST), abandoned cart check (every 30 min)")
+    logger.info("Schedulers started: celebration reminders (daily 9AM IST), abandoned cart check (every 30 min), feedback processor (every 15 min)")
     
     yield
     
