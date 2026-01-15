@@ -397,6 +397,16 @@ const ProductDetailModal = ({ product, onClose }) => {
                     <input 
                       type="radio" 
                       name="purchaseType" 
+                      checked={cartInput.purchaseType === 'onetime'}
+                      onChange={() => setCartInput({...cartInput, purchaseType: 'onetime'})}
+                      className="w-4 h-4 text-purple-600"
+                    />
+                    <span className="text-sm font-medium">One-time purchase</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="purchaseType" 
                       checked={cartInput.purchaseType === 'autoship'}
                       onChange={() => setCartInput({...cartInput, purchaseType: 'autoship'})}
                       className="w-4 h-4 text-purple-600"
@@ -431,11 +441,6 @@ const ProductDetailModal = ({ product, onClose }) => {
                 </div>
               </div>
             )}
-
-                    <p className="text-xs text-blue-700 ml-6">
-                      Get 40% off on your 4th & 5th orders! Cancel anytime.
-                    </p>
-                  )}
                 </div>
               </div>
             )}
