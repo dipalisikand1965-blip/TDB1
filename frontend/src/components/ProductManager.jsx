@@ -1086,6 +1086,14 @@ const ProductManager = ({ credentials }) => {
                     <Label>Status</Label>
                     <select
                       className="w-full mt-1 px-3 py-2 border rounded-lg"
+                      value={createForm.status}
+                      onChange={(e) => setCreateForm({ ...createForm, status: e.target.value })}
+                    >
+                      <option value="active">Active</option>
+                      <option value="draft">Draft</option>
+                    </select>
+                  </div>
+
                   <div className="flex items-center justify-between border p-3 rounded-lg mt-4">
                     <div>
                       <Label>Autoship Enabled</Label>
@@ -1118,13 +1126,6 @@ const ProductManager = ({ credentials }) => {
                         </div>
                       ))}
                     </div>
-                  </div>
-                      value={createForm.status}
-                      onChange={(e) => setCreateForm({ ...createForm, status: e.target.value })}
-                    >
-                      <option value="active">Active</option>
-                      <option value="draft">Draft</option>
-                    </select>
                   </div>
                 </div>
                 
