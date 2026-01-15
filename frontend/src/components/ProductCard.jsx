@@ -181,6 +181,15 @@ const ProductDetailModal = ({ product, onClose }) => {
     });
     onClose();
   };
+    if (cartInput.addPartyBox) {
+      addToCart({
+        id: 'party-box-addon',
+        name: 'Party Box (Add On)',
+        price: 499,
+        image: 'https://thedoggybakery.com/cdn/shop/files/BOBA_MILK_TEA_7.jpg?v=1759129448&width=100',
+        category: 'hampers'
+      }, 'Standard', 'Standard');
+    }
 
   // Quick add related product to cart
   const handleQuickAdd = (relatedProduct) => {
