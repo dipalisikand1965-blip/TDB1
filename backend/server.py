@@ -5069,11 +5069,6 @@ async def delete_collection(collection_id: str, username: str = Depends(verify_a
         
     return {"message": "Collection deleted"}
 
-        removed_ids = list(old_ids - new_ids)
-        added_ids = list(new_ids - old_ids)
-        
-        if removed_ids:
-            await db.products.update_many(
 # ==================== REVIEWS ====================
 
 @api_router.post("/reviews")
