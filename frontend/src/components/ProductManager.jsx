@@ -338,7 +338,9 @@ const ProductManager = ({ credentials }) => {
             sizes: [],
             flavors: [],
             status: 'active',
-            tags: ''
+            tags: '',
+            collection_ids: [],
+            autoship_enabled: false
           });
           setSaveMessage(null);
         }, 1500);
