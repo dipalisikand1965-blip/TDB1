@@ -531,6 +531,9 @@ admin_router = APIRouter(prefix="/api/admin")
 # Import admin routes
 from admin_routes import fulfilment_router, set_database as set_admin_db
 
+# Import status engine
+from status_engine import status_router, set_database as set_status_db
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
