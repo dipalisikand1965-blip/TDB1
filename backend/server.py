@@ -4798,6 +4798,100 @@ async def submit_franchise_inquiry(inquiry: dict):
             <p><strong>Message:</strong> {inquiry_doc['message']}</p>
             """
         }
+# ==================== COLLECTION ROUTES ====================
+
+@admin_router.get("/collections")
+async def get_collections(username: str = Depends(verify_admin)):
+    """Get all collections"""
+    collections = await db.collections.find({}, {"_id": 0}).sort("name", 1).to_list(1000)
+    
+    # Enrich with product count
+    for col in collections:
+        col["product_count"] = len(col.get("product_ids", []))
+        
+    return {"collections": collections}
+
+@admin_router.post("/collections")
+async def create_collection(collection: CollectionCreate, username: str = Depends(verify_admin)):
+    """Create a new collection"""
+    # Generate handle from name
+    handle = collection.name.lower().replace(" ", "-").replace("&", "and").replace(r"[^a-z0-9-]", "")
+    
+    # Check handle uniqueness
+    existing = await db.collections.find_one({"handle": handle})
+    if existing:
+        handle = f"{handle}-{uuid.uuid4().hex[:4]}"
+        
+    new_col = Collection(
+        name=collection.name,
+        description=collection.description,
+        image=collection.image,
+        handle=handle,
+        product_ids=collection.product_ids or [],
+        show_in_menu=collection.show_in_menu or False
+    )
+    
+    await db.collections.insert_one(new_col.model_dump())
+    
+    # Update products with this collection_id
+    if new_col.product_ids:
+        await db.products.update_many(
+            {"id": {"$in": new_col.product_ids}},
+            {"$addToSet": {"collection_ids": new_col.id}}
+        )
+        
+    return {"message": "Collection created", "collection": new_col.model_dump()}
+
+@admin_router.put("/collections/{collection_id}")
+async def update_collection(collection_id: str, update: CollectionUpdate, username: str = Depends(verify_admin)):
+    """Update a collection"""
+    col = await db.collections.find_one({"id": collection_id})
+    if not col:
+        raise HTTPException(status_code=404, detail="Collection not found")
+        
+    update_data = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.collections.update_one({"id": collection_id}, {"$set": update_data})
+    
+    # Sync products if product_ids changed
+    if update.product_ids is not None:
+        # Remove collection_id from old products (that are NOT in new list)
+        old_ids = set(col.get("product_ids", []))
+        new_ids = set(update.product_ids)
+        
+        removed_ids = list(old_ids - new_ids)
+        added_ids = list(new_ids - old_ids)
+        
+        if removed_ids:
+            await db.products.update_many(
+                {"id": {"$in": removed_ids}},
+                {"$pull": {"collection_ids": collection_id}}
+            )
+            
+        if added_ids:
+            await db.products.update_many(
+                {"id": {"$in": added_ids}},
+                {"$addToSet": {"collection_ids": collection_id}}
+            )
+            
+    return {"message": "Collection updated"}
+
+@admin_router.delete("/collections/{collection_id}")
+async def delete_collection(collection_id: str, username: str = Depends(verify_admin)):
+    """Delete a collection"""
+    result = await db.collections.delete_one({"id": collection_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Collection not found")
+        
+    # Remove collection_id from products
+    await db.products.update_many(
+        {"collection_ids": collection_id},
+        {"$pull": {"collection_ids": collection_id}}
+    )
+        
+    return {"message": "Collection deleted"}
+
         if RESEND_API_KEY:
             await asyncio.to_thread(resend.Emails.send, params)
     except Exception as e:
