@@ -5,28 +5,51 @@ Handles public product listing, details, search, collections, and reviews
 
 import os
 import logging
+import uuid
 from datetime import datetime, timezone
 from typing import Optional, List
 from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorDatabase
+import secrets
 
 logger = logging.getLogger(__name__)
 
 # Create router
 product_router = APIRouter(prefix="/api", tags=["Products"])
 
-# Database reference
+# Database and services references
 db: AsyncIOMotorDatabase = None
-search_service = None  # Will be injected
+search_service = None
+
+# Admin credentials
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "woof2025")
+security = HTTPBasic()
+
 
 def set_database(database: AsyncIOMotorDatabase):
     global db
     db = database
 
+
 def set_search_service(service):
     global search_service
     search_service = service
+
+
+def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
+    """Verify admin credentials"""
+    correct_username = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
+    correct_password = secrets.compare_digest(credentials.password, ADMIN_PASSWORD)
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
 
 
 # ==================== MODELS ====================
@@ -37,19 +60,21 @@ class ReviewCreate(BaseModel):
     comment: str
     reviewer_name: Optional[str] = None
     reviewer_email: Optional[str] = None
+    title: Optional[str] = None
+    image_url: Optional[str] = None
 
 
-# ==================== PRODUCT ROUTES ====================
+# ==================== PUBLIC PRODUCT ROUTES ====================
 
 @product_router.get("/products")
 async def get_public_products(
-    category: Optional[str] = None, 
+    category: Optional[str] = None,
     pan_india: Optional[bool] = None,
     search: Optional[str] = None
 ):
     """Public endpoint for products"""
     query = {}
-    
+
     # Search logic
     if search:
         search_regex = {"$regex": search, "$options": "i"}
@@ -61,7 +86,7 @@ async def get_public_products(
             {"sizes.name": search_regex},
             {"flavors.name": search_regex}
         ]
-    
+
     # Special handling for pan-india category
     if category == "pan-india" or pan_india:
         pan_india_query = {
@@ -80,7 +105,7 @@ async def get_public_products(
             query = {"$and": [query, {"category": category}]}
         else:
             query["category"] = category
-    
+
     products = await db.products.find(query, {"_id": 0}).to_list(500)
     return {"products": products}
 
@@ -88,19 +113,19 @@ async def get_public_products(
 @product_router.get("/products/{product_id}/related")
 async def get_related_products(product_id: str, limit: int = 4):
     """Get products that go well with the specified product"""
-    
+
     # Find the current product
     product = await db.products.find_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"_id": 0}
     )
-    
+
     if not product:
         return {"related": [], "bundles": []}
-    
+
     current_category = product.get("category", "")
     current_price = product.get("price", 0)
-    
+
     # Define complementary categories for upselling
     upsell_map = {
         "cakes": ["treats", "accessories", "bandanas", "party-supplies"],
@@ -115,12 +140,12 @@ async def get_related_products(product_id: str, limit: int = 4):
         "accessories": ["treats", "cakes", "bandanas"],
         "hampers": ["cakes", "treats", "accessories"],
     }
-    
+
     # Get complementary categories
     complementary_cats = upsell_map.get(current_category, ["treats", "accessories"])
-    
+
     related_products = []
-    
+
     # For pan-india category, prioritize pan-india shippable products
     if current_category == "pan-india":
         pan_india_products = await db.products.find(
@@ -128,7 +153,7 @@ async def get_related_products(product_id: str, limit: int = 4):
             {"_id": 0}
         ).limit(limit).to_list(limit)
         related_products.extend(pan_india_products)
-        
+
         if len(related_products) < limit:
             remaining = limit - len(related_products)
             treats = await db.products.find(
@@ -143,7 +168,7 @@ async def get_related_products(product_id: str, limit: int = 4):
                 {"_id": 0}
             ).limit(3).to_list(3)
             related_products.extend(cat_products)
-    
+
     # Also get similar products from same category
     similar = await db.products.find(
         {
@@ -153,7 +178,7 @@ async def get_related_products(product_id: str, limit: int = 4):
         },
         {"_id": 0}
     ).limit(2).to_list(2)
-    
+
     # Remove duplicates and limit
     seen_ids = {product_id}
     unique_related = []
@@ -164,7 +189,7 @@ async def get_related_products(product_id: str, limit: int = 4):
             unique_related.append(p)
             if len(unique_related) >= limit:
                 break
-    
+
     # Create bundle suggestions
     bundles = []
     if current_category in ["cakes", "pupcakes"]:
@@ -180,7 +205,7 @@ async def get_related_products(product_id: str, limit: int = 4):
                 "bundlePrice": int(bundle_price * 0.9),
                 "savings": int(bundle_price * 0.1)
             })
-    
+
     return {
         "related": unique_related,
         "bundles": bundles,
@@ -207,7 +232,7 @@ async def search_products(
     """Smart search endpoint with typo tolerance, filters, and faceted results"""
     if not search_service:
         raise HTTPException(status_code=503, detail="Search service not available")
-    
+
     filters = {}
     if category:
         filters["category"] = category
@@ -223,7 +248,7 @@ async def search_products(
         filters["is_pan_india"] = True
     if autoship:
         filters["autoship_enabled"] = True
-    
+
     sort_options = None
     if sort:
         sort_map = {
@@ -233,7 +258,7 @@ async def search_products(
             "name_desc": ["name:desc"],
         }
         sort_options = sort_map.get(sort)
-    
+
     results = await search_service.search(
         query=q,
         limit=limit,
@@ -241,7 +266,7 @@ async def search_products(
         filters=filters if filters else None,
         sort=sort_options,
     )
-    
+
     return results
 
 
@@ -253,7 +278,7 @@ async def search_typeahead(
     """Fast typeahead search for autocomplete"""
     if not search_service:
         raise HTTPException(status_code=503, detail="Search service not available")
-    
+
     results = await search_service.typeahead(query=q, limit=limit)
     return results
 
@@ -266,11 +291,32 @@ async def get_search_stats():
     return await search_service.get_stats()
 
 
+@product_router.post("/search/reindex")
+async def reindex_search(credentials: HTTPBasicCredentials = Depends(security)):
+    """Reindex all products in the search engine (admin only)"""
+    verify_admin(credentials)
+
+    products = await db.products.find({}, {"_id": 0}).to_list(10000)
+
+    if products:
+        await search_service.index_products_batch(products)
+
+    collections = await db.collections.find({}, {"_id": 0}).to_list(1000)
+    if collections:
+        await search_service.index_collections_batch(collections)
+
+    return {
+        "success": True,
+        "products_indexed": len(products),
+        "collections_indexed": len(collections)
+    }
+
+
 # ==================== COLLECTION ROUTES ====================
 
 @product_router.get("/collections")
-async def get_collections():
-    """Get all collections"""
+async def get_public_collections():
+    """Get all collections (public)"""
     collections = await db.collections.find({}, {"_id": 0}).to_list(100)
     return {"collections": collections}
 
@@ -282,33 +328,33 @@ async def get_collection(collection_id: str):
         {"$or": [{"id": collection_id}, {"handle": collection_id}]},
         {"_id": 0}
     )
-    
+
     if not collection:
         raise HTTPException(status_code=404, detail="Collection not found")
-    
+
     # Get products in this collection
     product_ids = collection.get("product_ids", [])
     products = await db.products.find(
         {"id": {"$in": product_ids}},
         {"_id": 0}
     ).to_list(100)
-    
+
     return {
         "collection": collection,
         "products": products
     }
 
 
-# ==================== REVIEW ROUTES ====================
+# ==================== REVIEW ROUTES (PUBLIC) ====================
 
 @product_router.get("/products/{product_id}/reviews")
 async def get_product_reviews(product_id: str):
-    """Get reviews for a product"""
+    """Get approved reviews for a product"""
     reviews = await db.reviews.find(
         {"product_id": product_id, "status": "approved"},
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
-    
+
     # Calculate stats
     if reviews:
         total = len(reviews)
@@ -322,7 +368,7 @@ async def get_product_reviews(product_id: str):
         total = 0
         avg_rating = 0
         rating_dist = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
-    
+
     return {
         "reviews": reviews,
         "stats": {
@@ -334,31 +380,28 @@ async def get_product_reviews(product_id: str):
 
 
 @product_router.post("/reviews")
-async def submit_review(review: ReviewCreate, authorization: Optional[str] = None):
-    """Submit a product review"""
-    import uuid
-    
-    # Get user email from token if provided
-    reviewer_email = review.reviewer_email
-    if authorization:
-        try:
-            from auth_routes import get_current_user_optional
-            # Would need to inject this properly
-            pass
-        except:
-            pass
-    
+async def submit_review(review: ReviewCreate):
+    """Submit a product review (public endpoint)"""
+    # Get product info
+    product = await db.products.find_one({"id": review.product_id}, {"_id": 0, "name": 1, "image": 1})
+
     review_doc = {
         "id": f"review_{uuid.uuid4().hex[:12]}",
         "product_id": review.product_id,
         "rating": review.rating,
-        "comment": review.comment,
-        "reviewer_name": review.reviewer_name or "Anonymous",
-        "reviewer_email": reviewer_email,
-        "status": "pending",  # Needs admin approval
+        "content": review.comment,
+        "title": review.title,
+        "author_name": review.reviewer_name or "Anonymous",
+        "user_email": review.reviewer_email,
+        "image_url": review.image_url,
+        "status": "pending",
         "created_at": datetime.now(timezone.utc).isoformat()
     }
-    
+
+    if product:
+        review_doc["product_name"] = product.get("name")
+        review_doc["product_image"] = product.get("image")
+
     await db.reviews.insert_one(review_doc)
-    
+
     return {"message": "Review submitted for approval", "review_id": review_doc["id"]}
