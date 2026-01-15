@@ -84,6 +84,22 @@ const ProductManager = ({ credentials }) => {
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState(null);
 
+  // Fetch collections
+  const fetchCollections = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/collections`, {
+        headers: { 'Authorization': getAuthHeader() }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCollections(data.collections || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch collections:', error);
+    }
+  };
+
+
   // Fetch products
   const fetchProducts = useCallback(async () => {
     setLoading(true);
