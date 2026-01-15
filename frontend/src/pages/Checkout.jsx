@@ -11,7 +11,7 @@ import { toast } from '../hooks/use-toast';
 import { 
   ArrowLeft, CreditCard, Truck, MapPin, Phone, MessageCircle, 
   CheckCircle, User, Mail, PawPrint, Calendar, Gift, Sparkles,
-  Crown, AlertCircle, Tag, Star, Loader2, X
+  Crown, AlertCircle, Tag, Star, Loader2, X, Store
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -19,6 +19,12 @@ const WHATSAPP_NUMBER = process.env.REACT_APP_WHATSAPP_NUMBER || '919663185747';
 const BUSINESS_EMAIL = process.env.REACT_APP_BUSINESS_EMAIL || 'woof@thedoggybakery.in';
 const FREE_SHIPPING_THRESHOLD = 3000;
 const SHIPPING_FEE = 150;
+
+const STORE_LOCATIONS = [
+  { id: 'bangalore', city: 'Bangalore', address: 'Indiranagar, Bangalore, 560038' },
+  { id: 'mumbai', city: 'Mumbai', address: 'Bandra West, Mumbai, 400050' },
+  { id: 'gurugram', city: 'Gurugram', address: 'DLF Phase 4, Gurugram, 122002' }
+];
 
 const addOns = [
   { id: 'ao-1', name: 'Birthday Bandana', price: 299, image: 'https://thedoggybakery.com/cdn/shop/products/WhatsAppImage2022-05-13at3.24.11PM.jpg?v=1655357921&width=100' },
@@ -36,6 +42,10 @@ const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   
+  // Delivery Method State
+  const [deliveryMethod, setDeliveryMethod] = useState('delivery'); // 'delivery' or 'pickup'
+  const [pickupLocation, setPickupLocation] = useState('');
+
   // Discount & Loyalty State
   const [discountCode, setDiscountCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(null);
@@ -73,6 +83,23 @@ const Checkout = () => {
     // Offers
     couponCode: ''
   });
+
+  // Auto-populate from Cart Items (PDP Data)
+  useEffect(() => {
+    // Find the first item with custom details (usually the cake)
+    const customizedItem = cartItems.find(item => item.customDetails && (item.customDetails.petName || item.customDetails.date));
+    
+    if (customizedItem) {
+      const details = customizedItem.customDetails;
+      setFormData(prev => ({
+        ...prev,
+        petName: details.petName || prev.petName,
+        petAge: details.age || prev.petAge,
+        deliveryDate: details.date ? new Date(details.date).toISOString().split('T')[0] : prev.deliveryDate,
+        deliveryTime: details.time || prev.deliveryTime
+      }));
+    }
+  }, [cartItems]);
 
   // Fetch loyalty balance when email is entered
   useEffect(() => {
@@ -168,9 +195,15 @@ const Checkout = () => {
     if (!formData.parentName.trim()) errors.parentName = 'Parent name is required';
     if (!formData.phone.trim()) errors.phone = 'Phone number is required';
     if (!formData.whatsappNumber.trim()) errors.whatsappNumber = 'WhatsApp number is required';
-    if (!formData.address.trim()) errors.address = 'Address is required';
-    if (!formData.city.trim()) errors.city = 'City is required';
-    if (!formData.pincode.trim()) errors.pincode = 'Pincode is required';
+    
+    // Address only required for Delivery
+    if (deliveryMethod === 'delivery') {
+      if (!formData.address.trim()) errors.address = 'Address is required';
+      if (!formData.city.trim()) errors.city = 'City is required';
+      if (!formData.pincode.trim()) errors.pincode = 'Pincode is required';
+    } else {
+      if (!pickupLocation) errors.pickupLocation = 'Please select a store location';
+    }
     
     // Pet name is MANDATORY for cakes (goes on the cake!)
     const hasCake = cartItems.some(item => 
@@ -206,11 +239,19 @@ const Checkout = () => {
   // Generate order summary for WhatsApp
   const generateWhatsAppMessage = (orderData) => {
     const subtotal = getCartTotal();
-    const deliveryFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+    const deliveryFee = deliveryMethod === 'pickup' ? 0 : (subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE);
     const total = subtotal + deliveryFee;
     
-    return `🐕 *NEW ORDER - The Doggy Bakery*
+    let locationDetails = '';
+    if (deliveryMethod === 'pickup') {
+      const store = STORE_LOCATIONS.find(s => s.id === pickupLocation);
+      locationDetails = `🛍️ *PICKUP:* ${store?.city} (${store?.address})`;
+    } else {
+      locationDetails = `📍 *DELIVERY ADDRESS:*\n${formData.address}\n${formData.landmark ? `Landmark: ${formData.landmark}\n` : ''}${formData.city} - ${formData.pincode}`;
+    }
 
+    return `🐕 *NEW ORDER - The Doggy Bakery*
+    
 📋 *Order ID:* ${orderData.orderId}
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
 
@@ -225,10 +266,7 @@ const Checkout = () => {
 • Breed: ${formData.petBreed || 'Not specified'}
 • Age: ${formData.petAge || 'Not specified'}
 
-📍 *DELIVERY ADDRESS:*
-${formData.address}
-${formData.landmark ? `Landmark: ${formData.landmark}` : ''}
-${formData.city} - ${formData.pincode}
+${locationDetails}
 
 📦 *ORDER ITEMS:*
 ${cartItems.map(item => `
@@ -236,9 +274,10 @@ ${cartItems.map(item => `
   Size: ${item.selectedSize} | Flavor: ${item.selectedFlavor}
   Qty: ${item.quantity} | Price: ₹${item.price * item.quantity}
   ${item.customDetails?.petName ? `Pet: ${item.customDetails.petName}` : ''}
-  ${item.customDetails?.date ? `Del Date: ${new Date(item.customDetails.date).toDateString()}` : ''}`).join('')}
+  ${item.customDetails?.date ? `Date: ${new Date(item.customDetails.date).toDateString()}` : ''}`).join('')}
 
-🚚 *DELIVERY:*
+🚚 *PREFERENCE:*
+• Method: ${deliveryMethod === 'pickup' ? 'PICKUP' : 'DELIVERY'}
 • Date: ${formData.deliveryDate ? new Date(formData.deliveryDate).toDateString() : 'ASAP'}
 • Time: ${formData.deliveryTime === 'morning' ? '9AM-12PM' : formData.deliveryTime === 'afternoon' ? '12PM-4PM' : '4PM-8PM'}
 
@@ -272,7 +311,7 @@ _GST applicable on final invoice_
     setIsSubmitting(true);
     
     const subtotal = getCartTotal();
-    const deliveryFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+    const deliveryFee = deliveryMethod === 'pickup' ? 0 : (subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE);
     const discountAmount = appliedDiscount?.discount_amount || 0;
     const totalBeforeDelivery = subtotal - discountAmount - loyaltyDiscount;
     const total = Math.max(0, totalBeforeDelivery) + deliveryFee;
@@ -294,6 +333,8 @@ _GST applicable on final invoice_
           age: formData.petAge
         },
         delivery: {
+          method: deliveryMethod, // 'delivery' or 'pickup'
+          pickupLocation: deliveryMethod === 'pickup' ? pickupLocation : null,
           address: formData.address,
           landmark: formData.landmark,
           city: formData.city,
@@ -369,7 +410,10 @@ _GST applicable on final invoice_
       discountCode: appliedDiscount?.code,
       discountAmount,
       loyaltyPointsUsed: pointsToRedeem,
-      loyaltyDiscount
+      loyaltyDiscount,
+      deliveryMethod,
+      pickupLocation,
+      deliveryFee
     });
     
     // Show order placed
@@ -468,6 +512,9 @@ _GST applicable on final invoice_
             <div className="bg-gray-50 rounded-xl p-6 text-left mb-8">
               <h3 className="font-semibold text-gray-900 mb-4">Order Summary</h3>
               <div className="space-y-3">
+                <div className="text-sm font-medium text-purple-700 mb-2">
+                  Method: {orderDetails.deliveryMethod === 'pickup' ? 'Store Pickup' : 'Delivery'}
+                </div>
                 {orderDetails.items.map((item, idx) => (
                   <div key={idx} className="flex justify-between text-sm">
                     <span className="text-gray-600">{item.name} x{item.quantity}</span>
@@ -522,7 +569,7 @@ _GST applicable on final invoice_
   }
 
   const subtotal = getCartTotal();
-  const deliveryFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+  const deliveryFee = deliveryMethod === 'pickup' ? 0 : (subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE);
   const total = subtotal + deliveryFee;
   const hasCake = cartItems.some(item => 
     item.category?.includes('cake') || item.name?.toLowerCase().includes('cake')
@@ -678,79 +725,151 @@ _GST applicable on final invoice_
                 </div>
               </Card>
 
-              {/* Delivery Address */}
+              {/* Delivery / Pickup Selection */}
               <Card className="p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-purple-600" />
-                  Delivery Address
+                  {deliveryMethod === 'delivery' ? (
+                    <Truck className="w-5 h-5 text-purple-600" />
+                  ) : (
+                    <Store className="w-5 h-5 text-purple-600" />
+                  )}
+                  Delivery Method
                 </h2>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="address">Street Address *</Label>
-                    <Textarea
-                      id="address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      placeholder="House/Flat No., Building Name, Street"
-                      className={formErrors.address ? 'border-red-500' : ''}
-                      data-testid="checkout-address"
-                    />
-                    {formErrors.address && <p className="text-red-500 text-xs mt-1">{formErrors.address}</p>}
-                  </div>
-                  <div>
-                    <Label htmlFor="landmark">Landmark</Label>
-                    <Input
-                      id="landmark"
-                      name="landmark"
-                      value={formData.landmark}
-                      onChange={handleInputChange}
-                      placeholder="Near any famous place"
-                    />
-                  </div>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="city">City *</Label>
-                      <select
-                        id="city"
-                        name="city"
-                        value={formData.city}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 border rounded-lg"
-                        data-testid="checkout-city"
-                      >
-                        <option value="Bangalore">Bangalore</option>
-                        <option value="Mumbai">Mumbai</option>
-                        <option value="Gurgaon">Gurgaon / Gurugram</option>
-                        <option value="Delhi">Delhi NCR</option>
-                      </select>
-                    </div>
-                    <div>
-                      <Label htmlFor="pincode">Pincode *</Label>
-                      <Input
-                        id="pincode"
-                        name="pincode"
-                        value={formData.pincode}
-                        onChange={handleInputChange}
-                        placeholder="6-digit pincode"
-                        className={formErrors.pincode ? 'border-red-500' : ''}
-                        data-testid="checkout-pincode"
-                      />
-                      {formErrors.pincode && <p className="text-red-500 text-xs mt-1">{formErrors.pincode}</p>}
-                    </div>
-                  </div>
+
+                <div className="flex gap-4 mb-6">
+                  <button
+                    type="button"
+                    onClick={() => setDeliveryMethod('delivery')}
+                    className={`flex-1 p-4 border rounded-xl flex flex-col items-center gap-2 transition-all ${
+                      deliveryMethod === 'delivery'
+                        ? 'border-purple-600 bg-purple-50 text-purple-700'
+                        : 'border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Truck className="w-6 h-6" />
+                    <span className="font-semibold">Home Delivery</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeliveryMethod('pickup')}
+                    className={`flex-1 p-4 border rounded-xl flex flex-col items-center gap-2 transition-all ${
+                      deliveryMethod === 'pickup'
+                        ? 'border-purple-600 bg-purple-50 text-purple-700'
+                        : 'border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Store className="w-6 h-6" />
+                    <span className="font-semibold">Store Pickup</span>
+                  </button>
                 </div>
+
+                {deliveryMethod === 'delivery' ? (
+                  /* Delivery Address Form */
+                  <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div>
+                      <Label htmlFor="address">Street Address *</Label>
+                      <Textarea
+                        id="address"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                        placeholder="House/Flat No., Building Name, Street"
+                        className={formErrors.address ? 'border-red-500' : ''}
+                        data-testid="checkout-address"
+                      />
+                      {formErrors.address && <p className="text-red-500 text-xs mt-1">{formErrors.address}</p>}
+                    </div>
+                    <div>
+                      <Label htmlFor="landmark">Landmark</Label>
+                      <Input
+                        id="landmark"
+                        name="landmark"
+                        value={formData.landmark}
+                        onChange={handleInputChange}
+                        placeholder="Near any famous place"
+                      />
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="city">City *</Label>
+                        <select
+                          id="city"
+                          name="city"
+                          value={formData.city}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border rounded-lg"
+                          data-testid="checkout-city"
+                        >
+                          <option value="Bangalore">Bangalore</option>
+                          <option value="Mumbai">Mumbai</option>
+                          <option value="Gurgaon">Gurgaon / Gurugram</option>
+                          <option value="Delhi">Delhi NCR</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label htmlFor="pincode">Pincode *</Label>
+                        <Input
+                          id="pincode"
+                          name="pincode"
+                          value={formData.pincode}
+                          onChange={handleInputChange}
+                          placeholder="6-digit pincode"
+                          className={formErrors.pincode ? 'border-red-500' : ''}
+                          data-testid="checkout-pincode"
+                        />
+                        {formErrors.pincode && <p className="text-red-500 text-xs mt-1">{formErrors.pincode}</p>}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* Pickup Location Selection */
+                  <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <Label>Select Pickup Store *</Label>
+                    <div className="grid gap-3">
+                      {STORE_LOCATIONS.map((loc) => (
+                        <div 
+                          key={loc.id}
+                          className={`p-4 border rounded-xl cursor-pointer flex items-center gap-3 transition-all ${
+                            pickupLocation === loc.id 
+                              ? 'border-purple-600 bg-purple-50' 
+                              : 'border-gray-200 hover:border-purple-300'
+                          }`}
+                          onClick={() => {
+                            setPickupLocation(loc.id);
+                            setFormData(prev => ({ ...prev, city: loc.city }));
+                          }}
+                        >
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                            pickupLocation === loc.id ? 'border-purple-600' : 'border-gray-300'
+                          }`}>
+                            {pickupLocation === loc.id && <div className="w-2.5 h-2.5 rounded-full bg-purple-600" />}
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">{loc.city}</p>
+                            <p className="text-sm text-gray-500">{loc.address}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {formErrors.pickupLocation && <p className="text-red-500 text-xs">{formErrors.pickupLocation}</p>}
+                    
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm flex gap-2">
+                      <Sparkles className="w-5 h-5 text-green-600" />
+                      <p className="text-green-800">Store pickup is always <strong>FREE</strong>! No shipping charges.</p>
+                    </div>
+                  </div>
+                )}
               </Card>
 
-              {/* Delivery Preferences */}
+              {/* Delivery Preferences (Date/Time) */}
               <Card className="p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Truck className="w-5 h-5 text-purple-600" />
-                  Delivery Preferences
+                  <Calendar className="w-5 h-5 text-purple-600" />
+                  {deliveryMethod === 'pickup' ? 'Pickup' : 'Delivery'} Preferences
                 </h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="deliveryDate">Preferred Delivery Date</Label>
+                    <Label htmlFor="deliveryDate">Preferred Date</Label>
                     <Input
                       id="deliveryDate"
                       name="deliveryDate"
@@ -791,7 +910,7 @@ _GST applicable on final invoice_
                       name="specialInstructions"
                       value={formData.specialInstructions}
                       onChange={handleInputChange}
-                      placeholder="Any allergies, specific decorations, delivery instructions, etc."
+                      placeholder="Any allergies, specific decorations, instructions, etc."
                       rows={3}
                       data-testid="checkout-instructions"
                     />
@@ -852,7 +971,9 @@ _GST applicable on final invoice_
                       <span>₹{subtotal}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Delivery</span>
+                      <span className="text-gray-600">
+                        {deliveryMethod === 'pickup' ? 'Store Pickup' : 'Delivery'}
+                      </span>
                       {deliveryFee === 0 ? (
                         <span className="text-green-600 font-medium">FREE! 🎉</span>
                       ) : (
@@ -877,7 +998,7 @@ _GST applicable on final invoice_
                         <span>-₹{loyaltyDiscount}</span>
                       </div>
                     )}
-                    {subtotal < FREE_SHIPPING_THRESHOLD && (
+                    {deliveryMethod === 'delivery' && subtotal < FREE_SHIPPING_THRESHOLD && (
                       <p className="text-xs text-purple-600 bg-purple-50 p-2 rounded">
                         Add ₹{FREE_SHIPPING_THRESHOLD - subtotal} more for FREE delivery!
                       </p>
