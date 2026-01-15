@@ -42,6 +42,15 @@ const ProductListing = ({ category = 'all' }) => {
           );
           
           setProducts(uniqueProducts);
+        } else if (category === 'autoship') {
+          // For autoship, fetch all products and filter by autoship_enabled
+          const response = await fetch(`${API_URL}/api/products?limit=500&autoship_enabled=true`);
+          if (response.ok) {
+            const data = await response.json();
+            // Filter client-side in case API doesn't support the filter
+            const autoshipProducts = (data.products || []).filter(p => p.autoship_enabled === true);
+            setProducts(autoshipProducts);
+          }
         } else {
           let url = `${API_URL}/api/products?limit=500`;
           if (searchQuery) {
