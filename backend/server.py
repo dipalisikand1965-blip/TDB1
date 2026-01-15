@@ -577,6 +577,33 @@ from auth_routes import (
     MEMBERSHIP_TIERS
 )
 
+# Import product routes (refactored)
+from product_routes import (
+    product_router,
+    set_database as set_product_db,
+    set_search_service as set_product_search
+)
+
+# Import order routes (refactored)
+from order_routes import (
+    order_router,
+    set_database as set_order_db,
+    calculate_autoship_discount
+)
+
+# Import user routes (refactored)
+from user_routes import (
+    user_router,
+    set_database as set_user_db,
+    DOG_PERSONAS,
+    CELEBRATION_OCCASIONS,
+    PetProfileCreate,
+    PetProfileUpdate,
+    PetCelebration,
+    PetSoulProfile,
+    PetPreferences
+)
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
