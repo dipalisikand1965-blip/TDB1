@@ -4614,6 +4614,50 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
             
             synced += 1
         
+        
+        # Auto-create collections from categories
+        categories = set()
+        for sp in shopify_products:
+            transformed = transform_shopify_product(sp)
+            categories.add(transformed['category'])
+            
+        for cat in categories:
+            if not cat or cat == 'other':
+                continue
+                
+            handle = cat.lower().replace(" ", "-")
+            collection = await db.collections.find_one({"handle": handle})
+            
+            if not collection:
+                col_id = f"col-{uuid.uuid4().hex[:8]}"
+                collection = {
+                    "id": col_id,
+                    "name": cat.replace("-", " ").title(),
+                    "handle": handle,
+                    "description": f"Auto-generated collection for {cat}",
+                    "product_ids": [],
+                    "show_in_menu": True,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+                await db.collections.insert_one(collection)
+            
+            # Update products with this category to have this collection_id
+            await db.products.update_many(
+                {"category": cat},
+                {"$addToSet": {"collection_ids": collection["id"]}}
+            )
+            
+            # Update collection product_ids
+            # Find all products with this category
+            cat_products = await db.products.find({"category": cat}, {"id": 1}).to_list(1000)
+            p_ids = [p["id"] for p in cat_products]
+            
+            await db.collections.update_one(
+                {"id": collection["id"]},
+                {"$set": {"product_ids": p_ids}}
+            )
+
         # Save sync log
         await db.sync_logs.insert_one({
             "type": "shopify",
