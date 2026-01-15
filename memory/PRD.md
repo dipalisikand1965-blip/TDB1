@@ -178,6 +178,37 @@ MEILISEARCH_MASTER_KEY=tdb-search-key-2025
 
 ## Changelog
 
+### Jan 15, 2025 (Session 3 - Part 4) - Post-Completion Feedback Loop Engine
+- ✅ **PILLAR-AGNOSTIC FEEDBACK ENGINE** (`/app/backend/feedback_engine.py`)
+  - Automatically schedules feedback when order/booking reaches completion status
+  - Works for ALL pillars with configurable triggers and delays
+  - Personalized WhatsApp + Email with review links and upsell messages
+  - Scheduled job runs every 15 minutes to send due feedback requests
+
+- ✅ **FEEDBACK TRIGGERS BY PILLAR**:
+  | Pillar | Trigger Status | Delay | Upsell |
+  |--------|---------------|-------|--------|
+  | Celebrate | `delivered` | 3 hours | Autoship |
+  | Dine | `completed` | 2 hours | Pet-friendly stays |
+  | Stay | `checked_out` | 4 hours | Birthday cakes |
+  | Travel | `arrived` | 2 hours | Pet-friendly stays |
+  | Care | `completed` | 1 hour | Grooming subscription |
+
+- ✅ **API ENDPOINTS**:
+  - `GET /api/feedback-engine/configs` - Get all feedback configs
+  - `GET /api/feedback-engine/configs/{pillar}` - Get pillar config
+  - `POST /api/feedback-engine/configs` - Create/update config
+  - `GET /api/feedback-engine/requests` - List feedback requests
+  - `POST /api/feedback-engine/requests/{record_id}/schedule` - Manual schedule
+  - `POST /api/feedback-engine/requests/{feedback_id}/send` - Send immediately
+  - `POST /api/feedback-engine/requests/{feedback_id}/cancel` - Cancel request
+  - `POST /api/feedback-engine/process-pending` - Process all due requests
+  - `GET /api/feedback-engine/stats` - Feedback statistics
+
+- ✅ **AUTO-INTEGRATION**: When status is updated to completion status via Status Engine, feedback is automatically scheduled
+
+- ✅ **TESTED**: Order updated to "delivered" → Feedback scheduled for 3h later → Manual send worked (WhatsApp + Email)
+
 ### Jan 15, 2025 (Session 3 - Part 3) - Generic Status Engine
 - ✅ **PILLAR-AGNOSTIC STATUS ENGINE** (`/app/backend/status_engine.py`)
   - Supports ALL pillars: Celebrate, Dine, Stay, Travel, Care
