@@ -188,6 +188,61 @@ export const CartProvider = ({ children }) => {
     return cartItems.reduce((count, item) => count + item.quantity, 0);
   };
 
+  // Calculate autoship items and discounts
+  const autoshipSummary = useMemo(() => {
+    const autoshipItems = cartItems.filter(item => item.isAutoship);
+    const regularItems = cartItems.filter(item => !item.isAutoship);
+    
+    const autoshipSubtotal = autoshipItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const regularSubtotal = regularItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    // Calculate autoship discount (25% off first order, max ₹300)
+    let autoshipDiscount = 0;
+    if (autoshipSubtotal > 0) {
+      const discountAmount = autoshipSubtotal * (AUTOSHIP_DISCOUNTS.first.percent / 100);
+      autoshipDiscount = Math.min(discountAmount, AUTOSHIP_DISCOUNTS.first.maxAmount);
+    }
+    
+    // Calculate totals
+    const subtotal = autoshipSubtotal + regularSubtotal;
+    const totalAfterDiscount = subtotal - autoshipDiscount;
+    
+    // Determine if shipping is free (based on autoship total or overall total)
+    const qualifiesForFreeShipping = totalAfterDiscount >= FREE_SHIPPING_THRESHOLD;
+    const shippingCost = qualifiesForFreeShipping ? 0 : SHIPPING_COST;
+    
+    // Final total
+    const finalTotal = totalAfterDiscount + shippingCost;
+    
+    // Group autoship by frequency
+    const autoshipByFrequency = {};
+    autoshipItems.forEach(item => {
+      const freq = item.autoshipFrequency || '4';
+      if (!autoshipByFrequency[freq]) {
+        autoshipByFrequency[freq] = [];
+      }
+      autoshipByFrequency[freq].push(item);
+    });
+    
+    return {
+      autoshipItems,
+      regularItems,
+      autoshipCount: autoshipItems.reduce((c, i) => c + i.quantity, 0),
+      regularCount: regularItems.reduce((c, i) => c + i.quantity, 0),
+      autoshipSubtotal,
+      regularSubtotal,
+      autoshipDiscount,
+      subtotal,
+      totalAfterDiscount,
+      qualifiesForFreeShipping,
+      shippingCost,
+      finalTotal,
+      autoshipByFrequency,
+      freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
+      amountToFreeShipping: Math.max(0, FREE_SHIPPING_THRESHOLD - totalAfterDiscount)
+    };
+  }, [cartItems]);
+
   return (
     <CartContext.Provider value={{
       cartItems,
@@ -201,7 +256,8 @@ export const CartProvider = ({ children }) => {
       setIsCartOpen,
       captureEmail,
       markCartConverted,
-      userEmail
+      userEmail,
+      autoshipSummary
     }}>
       {children}
     </CartContext.Provider>
