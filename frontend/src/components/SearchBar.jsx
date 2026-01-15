@@ -230,7 +230,7 @@ const SearchBar = ({ onClose, isOverlay = false }) => {
               data-testid="view-all-results-btn"
             >
               <Search className="w-4 h-4" />
-              View all results for "{query}"
+              View all results for &ldquo;{query}&rdquo;
             </button>
           </div>
         </div>
@@ -243,7 +243,7 @@ const SearchBar = ({ onClose, isOverlay = false }) => {
           className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 p-6 text-center z-50"
         >
           <div className="text-gray-500">
-            No results found for "{query}"
+            No results found for &ldquo;{query}&rdquo;
           </div>
           <div className="text-sm text-gray-400 mt-1">
             Try different keywords or check spelling
