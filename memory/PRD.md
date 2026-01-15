@@ -178,7 +178,7 @@ MEILISEARCH_MASTER_KEY=tdb-search-key-2025
 
 ## Changelog
 
-### Jan 15, 2025 (Session 2) - Smart Search Feature
+### Jan 15, 2025 (Session 2) - Smart Search Feature + Fixes
 - ✅ **SMART SEARCH IMPLEMENTATION (Meilisearch)**
   - **Technology**: Meilisearch v1.11.0 local binary running on port 7700
   - **Backend Service**: `search_service.py` with async Meilisearch SDK
@@ -206,6 +206,21 @@ MEILISEARCH_MASTER_KEY=tdb-search-key-2025
   - Grid/List view toggle
   - Load More pagination
   - Empty state with browse suggestions
+- ✅ **AUTOSHIP PRODUCTS PAGE FIX**:
+  - Added `/autoship-products` route showing only products with `autoship_enabled=true`
+  - Fixed "Browse Autoship Products" buttons on Autoship info page to link correctly
+  - Shows 53 products eligible for Autoship subscription
+- ✅ **MY ACCOUNT REVIEWS TAB**:
+  - Added new "Reviews" tab to Member Dashboard
+  - Users can view their submitted reviews with product images
+  - Edit and Delete buttons for managing reviews
+  - Shows "Pending Approval" status for unmoderated reviews
+  - Empty state guides users to shop first
+  - "Products You Can Review" section shows items from past orders
+- ✅ **Reviews API Endpoints**:
+  - `GET /api/reviews/my-reviews` - Get logged-in user's reviews
+  - `PUT /api/reviews/{id}` - Update own review (re-submits for approval)
+  - `DELETE /api/reviews/{id}` - Delete own review
 - ✅ **Testing**: 18/18 backend tests passed, all frontend tests passed
 
 ### Jan 15, 2025 (Session 1) - Auth & Product Parity + Google Login + Autoship
