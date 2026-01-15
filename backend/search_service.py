@@ -112,17 +112,18 @@ class SearchService:
             ])
             
             # Configure typo tolerance for better fuzzy matching
-            await products_index.update_typo_tolerance({
-                "enabled": True,
-                "minWordSizeForTypos": {
-                    "oneTypo": 4,   # Allow 1 typo for words with 4+ chars
-                    "twoTypos": 8  # Allow 2 typos for words with 8+ chars
-                },
-                "disableOnAttributes": ["id", "shopify_handle"],
-            })
+            typo_settings = TypoTolerance(
+                enabled=True,
+                min_word_size_for_typos=MinWordSizeForTypos(
+                    one_typo=4,   # Allow 1 typo for words with 4+ chars
+                    two_typos=8   # Allow 2 typos for words with 8+ chars
+                ),
+                disable_on_attributes=["id", "shopify_handle"],
+            )
+            await products_index.update_typo_tolerance(typo_settings)
             
             # Configure synonyms for pet-related terms
-            await products_index.update_synonyms({
+            synonyms_dict = {
                 "dog": ["doggy", "pup", "puppy", "doggo", "pupper"],
                 "cat": ["kitty", "kitten", "feline"],
                 "cake": ["cakes", "birthday cake"],
@@ -136,7 +137,8 @@ class SearchService:
                 "labrador": ["lab"],
                 "german shepherd": ["gsd", "alsatian"],
                 "golden retriever": ["goldie"],
-            })
+            }
+            await products_index.update_synonyms(synonyms_dict)
             
             # Configure ranking rules
             await products_index.update_ranking_rules([
