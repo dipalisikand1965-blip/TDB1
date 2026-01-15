@@ -410,20 +410,16 @@ class SearchService:
             products_index = self.client.index(PRODUCTS_INDEX)
             products_result = await products_index.search(
                 query,
-                opt_params={
-                    "limit": limit,
-                    "attributesToRetrieve": ["id", "name", "image", "price", "category"],
-                }
+                limit=limit,
+                attributes_to_retrieve=["id", "name", "image", "price", "category"],
             )
             
             # Search collections
             collections_index = self.client.index(COLLECTIONS_INDEX)
             collections_result = await collections_index.search(
                 query,
-                opt_params={
-                    "limit": 4,
-                    "attributesToRetrieve": ["id", "name", "slug", "image"],
-                }
+                limit=4,
+                attributes_to_retrieve=["id", "name", "slug", "image"],
             )
             
             return {
