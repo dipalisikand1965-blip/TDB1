@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, Query
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -453,6 +453,22 @@ Need help choosing? Chat with Mira, our Pet Concierge!"""
 async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
     global sync_task
+    
+    # Initialize search service
+    from search_service import search_service
+    try:
+        await search_service.connect()
+        # Index all existing products on startup
+        products = await db.products.find({}, {"_id": 0}).to_list(10000)
+        if products:
+            await search_service.index_products_batch(products)
+        # Index collections
+        collections = await db.collections.find({}, {"_id": 0}).to_list(1000)
+        if collections:
+            await search_service.index_collections_batch(collections)
+    except Exception as e:
+        logger.error(f"Search service initialization failed: {e}")
+    
     # Start the auto-sync background task
     sync_task = asyncio.create_task(auto_sync_products())
     logger.info("Auto-sync background task started")
