@@ -1086,6 +1086,39 @@ const ProductManager = ({ credentials }) => {
                     <Label>Status</Label>
                     <select
                       className="w-full mt-1 px-3 py-2 border rounded-lg"
+                  <div className="flex items-center justify-between border p-3 rounded-lg mt-4">
+                    <div>
+                      <Label>Autoship Enabled</Label>
+                      <p className="text-xs text-gray-500">Allow subscription</p>
+                    </div>
+                    <Switch 
+                      checked={createForm.autoship_enabled} 
+                      onCheckedChange={(c) => setCreateForm({...createForm, autoship_enabled: c})} 
+                    />
+                  </div>
+
+                  <div className="mt-4">
+                    <Label className="mb-2 block">Collections</Label>
+                    <div className="border rounded-lg p-2 h-40 overflow-y-auto space-y-1">
+                      {collections.map(col => (
+                        <div 
+                          key={col.id}
+                          className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                          onClick={() => {
+                            const ids = createForm.collection_ids?.includes(col.id)
+                              ? createForm.collection_ids.filter(id => id !== col.id)
+                              : [...(createForm.collection_ids || []), col.id];
+                            setCreateForm({ ...createForm, collection_ids: ids });
+                          }}
+                        >
+                          <div className={`w-4 h-4 border rounded flex items-center justify-center ${createForm.collection_ids?.includes(col.id) ? 'bg-purple-600 border-purple-600' : 'border-gray-300'}`}>
+                            {createForm.collection_ids?.includes(col.id) && <Check className="w-3 h-3 text-white" />}
+                          </div>
+                          <span className="text-sm">{col.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                       value={createForm.status}
                       onChange={(e) => setCreateForm({ ...createForm, status: e.target.value })}
                     >
