@@ -4978,6 +4978,71 @@ async def update_collection(collection_id: str, update: CollectionUpdate, userna
         
         if removed_ids:
             await db.products.update_many(
+# ==================== REVIEWS ====================
+
+@api_router.post("/reviews")
+async def create_review(review: ReviewCreate):
+    """Submit a new review"""
+    review_doc = Review(**review.model_dump()).model_dump()
+    await db.reviews.insert_one(review_doc)
+    return {"message": "Review submitted for approval", "review": review_doc}
+
+@api_router.get("/products/{product_id}/reviews")
+async def get_product_reviews(product_id: str):
+    """Get approved reviews for a product"""
+    reviews = await db.reviews.find(
+        {"product_id": product_id, "status": "approved"}, 
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return {"reviews": reviews}
+
+@admin_router.get("/reviews")
+async def get_admin_reviews(status: Optional[str] = None, username: str = Depends(verify_admin)):
+    """Get all reviews for admin"""
+    query = {}
+    if status:
+        query["status"] = status
+        
+    reviews = await db.reviews.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    
+    # Enrich with product names
+    for r in reviews:
+        product = await db.products.find_one({"id": r["product_id"]}, {"name": 1})
+        if product:
+            r["product_name"] = product["name"]
+            
+    return {"reviews": reviews}
+
+@admin_router.put("/reviews/{review_id}")
+async def update_review_status(review_id: str, update: dict, username: str = Depends(verify_admin)):
+    """Approve or reject a review"""
+    status = update.get("status")
+    if status not in ["approved", "rejected", "pending"]:
+        raise HTTPException(status_code=400, detail="Invalid status")
+        
+    await db.reviews.update_one({"id": review_id}, {"$set": {"status": status}})
+    
+    # If approved, update product rating stats
+    if status == "approved":
+        review = await db.reviews.find_one({"id": review_id})
+        if review:
+            # Recalculate average
+            pipeline = [
+                {"$match": {"product_id": review["product_id"], "status": "approved"}},
+                {"$group": {"_id": "$product_id", "avg_rating": {"$avg": "$rating"}, "count": {"$sum": 1}}}
+            ]
+            stats = await db.reviews.aggregate(pipeline).to_list(1)
+            if stats:
+                await db.products.update_one(
+                    {"id": review["product_id"]},
+                    {"$set": {
+                        "rating": stats[0]["avg_rating"],
+                        "reviews": stats[0]["count"]
+                    }}
+                )
+    
+    return {"message": "Review updated"}
+
                 {"id": {"$in": removed_ids}},
                 {"$pull": {"collection_ids": collection_id}}
             )
