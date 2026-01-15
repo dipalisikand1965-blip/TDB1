@@ -3321,7 +3321,7 @@ async def search_typeahead(
     Returns products and collections matching the query
     """
     # Fallback to MongoDB if Meilisearch is not available
-    if not search_service._initialized:
+    if not search_service or not search_service._initialized:
         search_regex = {"$regex": q, "$options": "i"}
         products = await db.products.find(
             {"$or": [{"name": search_regex}, {"tags": search_regex}, {"category": search_regex}]},
