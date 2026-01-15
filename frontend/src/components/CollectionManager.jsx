@@ -33,14 +33,15 @@ const CollectionManager = ({ getAuthHeader }) => {
   const fetchData = async () => {
     setLoading(true);
     try {
+      const headers = getAuthHeader();
       const [colRes, prodRes] = await Promise.all([
-        fetch(`${API_URL}/api/admin/collections`, { headers: { 'Authorization': getAuthHeader() } }),
-        fetch(`${API_URL}/api/admin/products?limit=1000`, { headers: { 'Authorization': getAuthHeader() } })
+        fetch(`${API_URL}/api/admin/collections`, { headers }),
+        fetch(`${API_URL}/api/admin/products?limit=1000`, { headers })
       ]);
       
       if (colRes.ok) {
         const data = await colRes.json();
-        setCollections(data.collections);
+        setCollections(data.collections || []);
       }
       
       if (prodRes.ok) {
