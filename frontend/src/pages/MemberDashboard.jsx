@@ -116,6 +116,91 @@ const MemberDashboard = () => {
     toast({ title: 'Settings Saved', description: 'Your preferences have been updated.' });
   };
 
+  // Review functions
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (!selectedProduct) return;
+    
+    setReviewLoading(true);
+    try {
+      const reviewData = {
+        product_id: selectedProduct.id,
+        rating: reviewForm.rating,
+        comment: reviewForm.comment,
+        reviewer_name: reviewForm.name || user.name,
+        reviewer_email: user.email
+      };
+      
+      if (editingReview) {
+        // Update existing review
+        await axios.put(`${API_URL}/api/reviews/${editingReview.id}`, reviewData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast({ title: 'Success', description: 'Review updated successfully!' });
+      } else {
+        // Create new review
+        await axios.post(`${API_URL}/api/reviews`, reviewData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast({ title: 'Success', description: 'Thank you for your review!' });
+      }
+      
+      // Refresh reviews
+      const reviewsRes = await axios.get(`${API_URL}/api/reviews/my-reviews`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setReviews(reviewsRes.data.reviews || []);
+      
+      // Update reviewable products
+      const productIds = new Set((reviewsRes.data.reviews || []).map(r => r.product_id));
+      setReviewableProducts(prev => prev.filter(p => !productIds.has(p.id)));
+      
+      // Reset form
+      setShowReviewForm(false);
+      setSelectedProduct(null);
+      setEditingReview(null);
+      setReviewForm({ rating: 5, comment: '', name: '' });
+    } catch (error) {
+      console.error('Failed to submit review:', error);
+      toast({ title: 'Error', description: 'Failed to submit review. Please try again.', variant: 'destructive' });
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
+  const handleEditReview = (review) => {
+    setEditingReview(review);
+    setSelectedProduct({ id: review.product_id, name: review.product_name, image: review.product_image });
+    setReviewForm({
+      rating: review.rating,
+      comment: review.comment,
+      name: review.reviewer_name
+    });
+    setShowReviewForm(true);
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!window.confirm('Are you sure you want to delete this review?')) return;
+    
+    try {
+      await axios.delete(`${API_URL}/api/reviews/${reviewId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setReviews(prev => prev.filter(r => r.id !== reviewId));
+      toast({ title: 'Success', description: 'Review deleted successfully.' });
+    } catch (error) {
+      console.error('Failed to delete review:', error);
+      toast({ title: 'Error', description: 'Failed to delete review.', variant: 'destructive' });
+    }
+  };
+
+  const startNewReview = (product) => {
+    setSelectedProduct(product);
+    setEditingReview(null);
+    setReviewForm({ rating: 5, comment: '', name: user.name || '' });
+    setShowReviewForm(true);
+  };
+
   // Show loading while auth is being checked
   if (authLoading) {
     return (
