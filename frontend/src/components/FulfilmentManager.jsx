@@ -470,10 +470,18 @@ const FulfilmentManager = ({ authHeaders, pillar = 'celebrate' }) => {
               )}
 
               <div className="mt-6 flex gap-2">
-                <Button variant="outline" className="flex-1 gap-2">
+                <Button 
+                  variant="outline" 
+                  className="flex-1 gap-2"
+                  onClick={() => printKitchenSheet()}
+                >
                   <Printer className="w-4 h-4" /> Kitchen Sheet
                 </Button>
-                <Button variant="outline" className="flex-1 gap-2">
+                <Button 
+                  variant="outline" 
+                  className="flex-1 gap-2"
+                  onClick={() => printDeliverySheet()}
+                >
                   <Truck className="w-4 h-4" /> Delivery Sheet
                 </Button>
               </div>
