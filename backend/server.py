@@ -4866,6 +4866,13 @@ async def submit_franchise_inquiry(inquiry: dict):
             <p><strong>Message:</strong> {inquiry_doc['message']}</p>
             """
         }
+        if RESEND_API_KEY:
+            await asyncio.to_thread(resend.Emails.send, params)
+    except Exception as e:
+        logger.error(f"Failed to send franchise notification: {e}")
+    
+    return {"message": "Inquiry submitted successfully", "id": inquiry_doc["id"]}
+
 # ==================== COLLECTION ROUTES ====================
 
 @admin_router.get("/collections")
