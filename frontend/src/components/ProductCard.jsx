@@ -216,18 +216,40 @@ const ProductDetailModal = ({ product, onClose }) => {
       }
       setSubmittingReview(true);
       try {
+          const headers = { 'Content-Type': 'application/json' };
+          if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+          }
+          
           const res = await fetch(`${API_URL}/api/reviews`, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ ...newReview, product_id: product.id })
+              headers,
+              body: JSON.stringify({ 
+                product_id: product.id,
+                rating: newReview.rating,
+                comment: newReview.content,
+                reviewer_name: newReview.author_name,
+                reviewer_email: user?.email || null,
+                title: newReview.title || null
+              })
           });
           if (res.ok) {
-              toast({ title: "Review Submitted", description: "It will appear after approval." });
+              toast({ title: "Review Submitted", description: "Thank you! It will appear after approval." });
               setShowReviewForm(false);
               setNewReview({ rating: 5, title: '', content: '', author_name: '' });
+              // Refresh reviews
+              const reviewRes = await fetch(`${API_URL}/api/products/${product.id}/reviews`);
+              if (reviewRes.ok) {
+                const data = await reviewRes.json();
+                setReviews(data.reviews || []);
+              }
+          } else {
+              const errData = await res.json().catch(() => ({}));
+              toast({ title: "Error", description: errData.detail || "Failed to submit review", variant: "destructive" });
           }
       } catch (e) {
-          toast({ title: "Error", description: "Failed to submit", variant: "destructive" });
+          console.error('Review submission error:', e);
+          toast({ title: "Error", description: "Failed to submit review. Please try again.", variant: "destructive" });
       } finally {
           setSubmittingReview(false);
       }
