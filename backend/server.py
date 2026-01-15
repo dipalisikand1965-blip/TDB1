@@ -1059,33 +1059,61 @@ async def fetch_shopify_products(limit: int = 250, page: int = 1) -> List[dict]:
 
 def transform_shopify_product(shopify_product: dict) -> dict:
     """Transform Shopify product to our format"""
-    # Extract sizes and flavors from variants
+    # Extract options (Base, Flavor, Weight, etc.)
+    options = []
+    for opt in shopify_product.get("options", []):
+        options.append({
+            "name": opt.get("name"),
+            "position": opt.get("position"),
+            "values": opt.get("values", [])
+        })
+
+    # Extract variants
+    variants_data = []
+    min_price = float('inf')
+    
+    # Backward compatibility lists (best guess)
     sizes = []
     flavors = []
-    base_price = 0
     
-    variants = shopify_product.get("variants", [])
-    if variants:
-        base_price = float(variants[0].get("price", 0))
-        
-        # Extract unique sizes and flavors
-        size_set = set()
-        flavor_set = set()
-        
-        for variant in variants:
-            option1 = variant.get("option1")
-            option2 = variant.get("option2")
-            price = float(variant.get("price", 0))
+    raw_variants = shopify_product.get("variants", [])
+    if raw_variants:
+        for v in raw_variants:
+            price = float(v.get("price", 0))
+            if price < min_price:
+                min_price = price
+                
+            variants_data.append({
+                "id": v.get("id"),
+                "title": v.get("title"),
+                "price": price,
+                "option1": v.get("option1"),
+                "option2": v.get("option2"),
+                "option3": v.get("option3"),
+                "sku": v.get("sku"),
+                "available": v.get("available", True)
+            })
             
-            if option1 and option1 not in size_set:
-                size_set.add(option1)
-                sizes.append({"name": option1, "price": price})
+            # Legacy mapping: Try to map Weight to Sizes and Flavor to Flavors
+            # Usually Option 1 is Base, Option 2 is Flavor, Option 3 is Weight
+            # But sometimes Option 1 is Title (Default)
             
-            if option2 and option2 not in flavor_set:
-                flavor_set.add(option2)
-                # Calculate flavor price difference from base
-                price_diff = price - base_price
-                flavors.append({"name": option2, "price": max(0, price_diff)})
+            # Map 'Weight' or 'Size' option to sizes list
+            weight_opt_idx = next((i for i, o in enumerate(options) if o['name'] in ['Weight', 'Size']), -1)
+            if weight_opt_idx != -1:
+                val = v.get(f"option{weight_opt_idx+1}")
+                if val and not any(s['name'] == val for s in sizes):
+                    sizes.append({"name": val, "price": price}) # Price is full price now
+            
+            # Map 'Flavour' or 'Flavor' option to flavors list
+            flavor_opt_idx = next((i for i, o in enumerate(options) if o['name'] in ['Flavour', 'Flavor']), -1)
+            if flavor_opt_idx != -1:
+                val = v.get(f"option{flavor_opt_idx+1}")
+                if val and not any(f['name'] == val for f in flavors):
+                    flavors.append({"name": val, "price": 0}) # Flavors usually affect price via variant, not additive
+    
+    if min_price == float('inf'):
+        min_price = 0
     
     # Get primary image
     images = shopify_product.get("images", [])
@@ -1103,7 +1131,7 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     # Gift Cards - highest priority
     if "gift card" in title:
         category = "gift-cards"
-    # Gift Hampers & Party Boxes - check before accessories (hampers may include toys/mats)
+    # Gift Hampers & Party Boxes
     elif any(h in title or h in handle for h in ["hamper", "party box", "gift box", "celebration box", "woof box", "bash box", "festive box"]):
         category = "hampers"
     # Cat products
@@ -1115,8 +1143,7 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     # Mini/Bowto cakes
     elif ("mini" in title and "cake" in title) or "bowto" in title:
         category = "mini-cakes"
-    # Breed-specific cakes - comprehensive list from Shopify collection
-    # But NOT mugs, mats, bandanas, or other merchandise
+    # Breed-specific cakes
     elif any(breed in title for breed in [
         "retriever", "labrador", "beagle", "husky", "shih tzu", "indie", "german shepherd",
         "rottweiler", "rotweiller", "cocker spaniel", "pug", "maltese", "pomeranian", 
@@ -1126,7 +1153,6 @@ def transform_shopify_product(shopify_product: dict) -> dict:
         "chihuahua", "greyhound", "shnoodle", "scottish terrier", "irish setter",
         "basset hound", "mutt munch", "mynx"
     ]):
-        # Exclude merchandise/accessories with breed names
         if any(exc in title for exc in ["mat", "bandana", "mug", "coaster", "feeding"]):
             if "mug" in title or "coaster" in title:
                 category = "merchandise"
@@ -1134,13 +1160,13 @@ def transform_shopify_product(shopify_product: dict) -> dict:
                 category = "accessories"
         else:
             category = "breed-cakes"
-    # Main cakes (check before accessories because some cakes have "mat" or "toy" in bundle name)
+    # Main cakes
     elif "cake" in product_type or ("cake" in title and "pupcake" not in title):
         category = "cakes"
     # Frozen treats
     elif "frozen" in product_type or "fro-yo" in title or "jello" in title or "popsicle" in title or "froyo" in title:
         category = "frozen-treats"
-    # Fresh meals & pizzas
+    # Fresh meals
     elif "meal" in product_type or "meal" in title or "pizza" in title or "burger" in title:
         category = "fresh-meals"
     # Desi treats
@@ -1149,10 +1175,10 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     # Nut butters
     elif "nut butter" in title or "peanut butter jar" in title:
         category = "nut-butters"
-    # ACCESSORIES & TOYS - after cakes/hampers
+    # ACCESSORIES & TOYS
     elif any(acc in title or acc in product_type for acc in ["toy", "squeaky", "bandana", "feeding mat", "coaster", "leash", "collar", "name tag"]):
         category = "accessories"
-    # Treats & Biscuits (check after specific categories)
+    # Treats & Biscuits
     elif any(t in product_type or t in title for t in ["treat", "biscuit", "cookie", "jerky", "chew", "snack", "crunch", "munch", "chip"]):
         category = "treats"
     # Health products
@@ -1161,11 +1187,10 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     # Merchandise
     elif "merchandise" in product_type or "mug" in title:
         category = "merchandise"
-    # Pan India (from tags OR specific product types that are pan-india shippable)
+    # Pan India
     elif "pan india" in tags_str or "pan-india" in tags_str:
         category = "pan-india"
     
-    # Determine if product is pan-india shippable (for filtering purposes)
     is_pan_india_shippable = (
         "pan india" in tags_str or 
         "pan-india" in tags_str or
@@ -1174,52 +1199,40 @@ def transform_shopify_product(shopify_product: dict) -> dict:
         "butter" in title or "chew" in title
     )
     
-    # Clean description - strip all HTML tags
+    # Clean description
     import re
     raw_desc = shopify_product.get("body_html", "")
-    
-    # Remove style tags and their content completely
     clean_desc = re.sub(r'<style[^>]*>.*?</style>', '', raw_desc, flags=re.DOTALL | re.IGNORECASE)
-    # Remove script tags and their content
     clean_desc = re.sub(r'<script[^>]*>.*?</script>', '', clean_desc, flags=re.DOTALL | re.IGNORECASE)
-    # Remove HTML comments
     clean_desc = re.sub(r'<!--.*?-->', '', clean_desc, flags=re.DOTALL)
-    # Remove all remaining HTML tags
     clean_desc = re.sub(r'<[^>]+>', ' ', clean_desc)
-    # Remove CSS-like content that might remain
     clean_desc = re.sub(r'\{[^}]*\}', '', clean_desc)
-    # Remove extra whitespace and newlines
     clean_desc = re.sub(r'\s+', ' ', clean_desc).strip()
-    # Remove any remaining special characters at start
     clean_desc = re.sub(r'^[\s\.\-\:]+', '', clean_desc)
-    # Limit length
     clean_desc = clean_desc[:300] if len(clean_desc) > 300 else clean_desc
     
-    # If description is empty or too short, use a default
     if len(clean_desc) < 10:
         clean_desc = f"Delicious {category.replace('-', ' ')} made with love for your furry friend."
     
     return {
         "id": f"shopify-{shopify_product.get('id')}",
         "shopify_id": shopify_product.get("id"),
-        "name": shopify_product.get("title", "").replace("👻", "").replace("🎃", "").replace("🐾", "").replace("🕸️", "").strip(),
+        "name": shopify_product.get("title", "").strip(),
         "description": clean_desc,
-        "price": base_price,
-        "originalPrice": base_price,
+        "price": min_price,
+        "originalPrice": min_price,
         "image": image_url,
         "category": category,
         "is_pan_india_shippable": is_pan_india_shippable,
-        "sizes": sizes if sizes else [{"name": "Standard", "price": base_price}],
+        "sizes": sizes if sizes else [{"name": "Standard", "price": min_price}],
         "flavors": flavors if flavors else [],
+        "options": options,
+        "variants": variants_data,
+        "tags": shopify_product.get("tags", "").split(", "),
         "shopify_handle": shopify_product.get("handle"),
-        "available": any(v.get("available", True) for v in variants),
+        "available": any(v.get("available", True) for v in variants_data),
         "synced_at": datetime.now(timezone.utc).isoformat()
     }
-
-
-# ==================== NOTIFICATION FUNCTIONS ====================
-
-
 async def send_product_match_email(pet: dict, product: dict, match_reason: str):
     """Send email about a product match"""
     if not RESEND_API_KEY or not pet.get("owner_email"):
