@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { ShoppingCart, Star, X, CalendarIcon, Plus, Sparkles } from 'lucide-react';
+import { ShoppingCart, Star, X, CalendarIcon, Plus, Sparkles, MessageSquare } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { useCart } from '../context/CartContext';
