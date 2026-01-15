@@ -139,6 +139,7 @@ const ProductManager = ({ credentials }) => {
 
   useEffect(() => {
     fetchProducts();
+    fetchCollections();
     fetchSyncStatus();
   }, [fetchProducts]);
 
