@@ -1,0 +1,116 @@
+import React from 'react';
+import { Card } from '../ui/card';
+import { Badge } from '../ui/badge';
+
+const MembersTab = ({ 
+  members, 
+  memberStats, 
+  setSelectedMember,
+  updateMemberTier 
+}) => {
+  return (
+    <div className="space-y-6" data-testid="members-tab">
+      {/* Member Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <Card className="p-4">
+          <p className="text-sm text-gray-500">Total Customers</p>
+          <p className="text-3xl font-bold">{members.length}</p>
+        </Card>
+        <Card className="p-4 bg-gray-50">
+          <p className="text-sm text-gray-500">Guest</p>
+          <p className="text-3xl font-bold text-gray-600">{memberStats.guest || 0}</p>
+        </Card>
+        <Card className="p-4 bg-white border">
+          <p className="text-sm text-gray-500">Free</p>
+          <p className="text-3xl font-bold text-gray-600">{memberStats.free || 0}</p>
+        </Card>
+        <Card className="p-4 bg-blue-50">
+          <p className="text-sm text-blue-600">Pawsome</p>
+          <p className="text-3xl font-bold text-blue-700">{memberStats.pawsome || 0}</p>
+        </Card>
+        <Card className="p-4 bg-purple-50">
+          <p className="text-sm text-purple-600">Premium</p>
+          <p className="text-3xl font-bold text-purple-700">{memberStats.premium || 0}</p>
+        </Card>
+        <Card className="p-4 bg-amber-50">
+          <p className="text-sm text-amber-600">VIP</p>
+          <p className="text-3xl font-bold text-amber-700">{memberStats.vip || 0}</p>
+        </Card>
+      </div>
+
+      {/* Members Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tier</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Chats Today</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {members.map((member, idx) => (
+              <tr 
+                key={idx} 
+                className="hover:bg-purple-50 cursor-pointer transition-colors"
+                onClick={() => setSelectedMember(member)}
+                data-testid={`member-row-${idx}`}
+              >
+                <td className="px-6 py-4">
+                  <p className="font-medium">{member.name || 'Guest'}</p>
+                  <p className="text-xs text-gray-500">Joined {new Date(member.created_at).toLocaleDateString()}</p>
+                </td>
+                <td className="px-6 py-4">
+                  <p className="text-sm">{member.email}</p>
+                  <p className="text-xs text-gray-500">{member.phone || 'No phone'}</p>
+                </td>
+                <td className="px-6 py-4">
+                  <Badge variant={
+                    member.membership_tier === 'vip' ? 'warning' :
+                    member.membership_tier === 'premium' ? 'default' :
+                    member.membership_tier === 'pawsome' ? 'secondary' : 
+                    member.membership_tier === 'guest' ? 'outline' : 'secondary'
+                  }>
+                    {member.membership_tier || 'free'}
+                  </Badge>
+                  {member.membership_expires && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Exp: {new Date(member.membership_expires).toLocaleDateString()}
+                    </p>
+                  )}
+                </td>
+                <td className="px-6 py-4 text-sm">
+                  {member.chat_count_today || 0}
+                </td>
+                <td className="px-6 py-4">
+                  <select
+                    defaultValue={member.membership_tier || 'free'}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) => updateMemberTier(member.id, e.target.value)}
+                    className="px-2 py-1 border rounded text-sm"
+                    data-testid={`tier-select-${idx}`}
+                  >
+                    <option value="guest">Guest</option>
+                    <option value="free">Free</option>
+                    <option value="pawsome">Pawsome</option>
+                    <option value="premium">Premium</option>
+                    <option value="vip">VIP</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {members.length === 0 && (
+          <div className="p-8 text-center text-gray-500">
+            No customers found.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default MembersTab;
