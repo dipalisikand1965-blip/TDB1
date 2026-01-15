@@ -200,6 +200,225 @@ const FulfilmentManager = ({ authHeaders, pillar = 'celebrate' }) => {
     }
   };
 
+  // Print Kitchen Sheet
+  const printKitchenSheet = () => {
+    if (!batchView) return;
+    
+    const printWindow = window.open('', '_blank');
+    const date = batchView.date === 'today' ? 'Today' : 'Tomorrow';
+    const dateStr = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    
+    const ordersHtml = Object.entries(batchView.by_time_slot || {}).map(([slot, slotOrders]) => `
+      <div class="time-slot">
+        <h3>🕐 ${slot} (${slotOrders.length} orders)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Pet</th>
+              <th>Products</th>
+              <th>Special Instructions</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${slotOrders.map(order => `
+              <tr>
+                <td><strong>${order.orderId || order.id}</strong><br/><small>${order.customer?.parentName || ''}</small></td>
+                <td>🐾 ${order.pet?.name || 'N/A'}<br/><small>${order.pet?.breed || ''}</small></td>
+                <td>${(order.items || []).map(i => `${i.quantity}x ${i.title || i.name}`).join('<br/>')}</td>
+                <td class="instructions">${order.specialInstructions || order.notes || '-'}</td>
+                <td><span class="status status-${order.status}">${order.status}</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `).join('');
+
+    const topProductsHtml = (batchView.summary?.top_products || []).map(p => `
+      <tr><td>${p.name}</td><td><strong>${p.quantity}x</strong></td></tr>
+    `).join('');
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Kitchen Sheet - ${date}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: Arial, sans-serif; padding: 20px; font-size: 12px; }
+          .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #9333ea; padding-bottom: 15px; }
+          .header h1 { color: #9333ea; font-size: 24px; margin-bottom: 5px; }
+          .header p { color: #666; }
+          .summary { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+          .summary-card { background: #f3f4f6; padding: 15px; border-radius: 8px; flex: 1; min-width: 120px; text-align: center; }
+          .summary-card h4 { font-size: 24px; color: #9333ea; }
+          .summary-card p { color: #666; font-size: 11px; }
+          .top-products { margin-bottom: 20px; }
+          .top-products h3 { margin-bottom: 10px; }
+          .top-products table { width: 100%; border-collapse: collapse; }
+          .top-products td { padding: 5px 10px; border-bottom: 1px solid #e5e7eb; }
+          .time-slot { margin-bottom: 25px; page-break-inside: avoid; }
+          .time-slot h3 { background: #9333ea; color: white; padding: 8px 15px; border-radius: 5px 5px 0 0; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { padding: 8px; text-align: left; border: 1px solid #ddd; vertical-align: top; }
+          th { background: #f3f4f6; font-weight: bold; }
+          .instructions { font-style: italic; color: #666; max-width: 150px; }
+          .status { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; }
+          .status-pending { background: #fef3c7; color: #d97706; }
+          .status-confirmed { background: #dbeafe; color: #2563eb; }
+          .status-baking { background: #ffedd5; color: #ea580c; }
+          .status-packed { background: #f3e8ff; color: #9333ea; }
+          @media print { body { padding: 10px; } .time-slot { page-break-inside: avoid; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>🍰 Kitchen Sheet</h1>
+          <p>${date} - ${dateStr}</p>
+        </div>
+        
+        <div class="summary">
+          <div class="summary-card">
+            <h4>${batchView.summary?.total_orders || 0}</h4>
+            <p>Total Orders</p>
+          </div>
+          <div class="summary-card">
+            <h4>${batchView.summary?.autoship_orders || 0}</h4>
+            <p>Autoship</p>
+          </div>
+          <div class="summary-card">
+            <h4>${batchView.summary?.custom_orders || 0}</h4>
+            <p>Custom Cakes</p>
+          </div>
+          <div class="summary-card">
+            <h4>${batchView.summary?.total_items || 0}</h4>
+            <p>Total Items</p>
+          </div>
+        </div>
+
+        <div class="top-products">
+          <h3>📋 Products to Prepare</h3>
+          <table>
+            ${topProductsHtml}
+          </table>
+        </div>
+
+        ${ordersHtml}
+        
+        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 10px;">
+          <p>The Doggy Company - Kitchen Sheet - Printed ${new Date().toLocaleString('en-IN')}</p>
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
+  // Print Delivery Sheet
+  const printDeliverySheet = () => {
+    if (!batchView) return;
+    
+    const printWindow = window.open('', '_blank');
+    const date = batchView.date === 'today' ? 'Today' : 'Tomorrow';
+    const dateStr = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    
+    // Group orders by city
+    const ordersByCity = {};
+    Object.values(batchView.by_time_slot || {}).flat().forEach(order => {
+      const city = order.customer?.city || order.city || 'Unknown';
+      if (!ordersByCity[city]) ordersByCity[city] = [];
+      ordersByCity[city].push(order);
+    });
+
+    const citiesHtml = Object.entries(ordersByCity).map(([city, cityOrders]) => `
+      <div class="city-section">
+        <h3>📍 ${city} (${cityOrders.length} deliveries)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Order</th>
+              <th>Customer</th>
+              <th>Address</th>
+              <th>Phone</th>
+              <th>Items</th>
+              <th>✓</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${cityOrders.sort((a, b) => (a.delivery_slot || '').localeCompare(b.delivery_slot || '')).map(order => `
+              <tr>
+                <td>${order.delivery_slot || 'N/A'}</td>
+                <td><strong>${order.orderId || order.id}</strong></td>
+                <td>${order.customer?.parentName || ''}<br/>🐾 ${order.pet?.name || ''}</td>
+                <td class="address">${order.customer?.address || order.address || '-'}</td>
+                <td>${order.customer?.phone || ''}</td>
+                <td>${(order.items || []).length} items</td>
+                <td class="checkbox">☐</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `).join('');
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Delivery Sheet - ${date}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: Arial, sans-serif; padding: 20px; font-size: 11px; }
+          .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #9333ea; padding-bottom: 15px; }
+          .header h1 { color: #9333ea; font-size: 24px; margin-bottom: 5px; }
+          .header p { color: #666; }
+          .summary { display: flex; gap: 15px; margin-bottom: 20px; justify-content: center; }
+          .summary-card { background: #f3f4f6; padding: 10px 20px; border-radius: 8px; text-align: center; }
+          .summary-card h4 { font-size: 20px; color: #9333ea; }
+          .summary-card p { color: #666; font-size: 10px; }
+          .city-section { margin-bottom: 25px; page-break-inside: avoid; }
+          .city-section h3 { background: #4f46e5; color: white; padding: 8px 15px; border-radius: 5px 5px 0 0; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { padding: 6px; text-align: left; border: 1px solid #ddd; vertical-align: top; }
+          th { background: #f3f4f6; font-weight: bold; font-size: 10px; }
+          .address { max-width: 200px; font-size: 10px; }
+          .checkbox { text-align: center; font-size: 16px; }
+          @media print { body { padding: 10px; } .city-section { page-break-inside: avoid; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>🚗 Delivery Sheet</h1>
+          <p>${date} - ${dateStr}</p>
+        </div>
+        
+        <div class="summary">
+          <div class="summary-card">
+            <h4>${batchView.summary?.total_orders || 0}</h4>
+            <p>Total Deliveries</p>
+          </div>
+          <div class="summary-card">
+            <h4>${Object.keys(ordersByCity).length}</h4>
+            <p>Cities</p>
+          </div>
+        </div>
+
+        ${citiesHtml}
+        
+        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 10px;">
+          <p>The Doggy Company - Delivery Sheet - Printed ${new Date().toLocaleString('en-IN')}</p>
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   // Create draft order
   const createDraftOrder = async () => {
     try {
