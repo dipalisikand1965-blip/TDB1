@@ -5134,34 +5134,6 @@ async def update_review_status(review_id: str, update: dict, username: str = Dep
     
     return {"message": "Review updated"}
 
-                {"id": {"$in": removed_ids}},
-                {"$pull": {"collection_ids": collection_id}}
-            )
-            
-        if added_ids:
-            await db.products.update_many(
-                {"id": {"$in": added_ids}},
-                {"$addToSet": {"collection_ids": collection_id}}
-            )
-            
-    return {"message": "Collection updated"}
-
-@admin_router.delete("/collections/{collection_id}")
-async def delete_collection(collection_id: str, username: str = Depends(verify_admin)):
-    """Delete a collection"""
-    result = await db.collections.delete_one({"id": collection_id})
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Collection not found")
-        
-    # Remove collection_id from products
-    await db.products.update_many(
-        {"collection_ids": collection_id},
-        {"$pull": {"collection_ids": collection_id}}
-    )
-        
-    return {"message": "Collection deleted"}
-
-
 
 @admin_router.get("/franchise")
 async def get_franchise_inquiries(username: str = Depends(verify_admin)):
