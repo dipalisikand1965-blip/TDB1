@@ -5,6 +5,7 @@ import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import ProductManager from '../components/ProductManager';
 import CollectionManager from '../components/CollectionManager';
+import ReviewsManager from '../components/ReviewsManager';
 import {
   Lock,
   User,
