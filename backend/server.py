@@ -4618,6 +4618,65 @@ async def get_all_upcoming_celebrations(days: int = 30):
     return {"celebrations": all_upcoming, "total": len(all_upcoming)}
 
 
+@api_router.get("/celebrations/my-upcoming")
+async def get_my_upcoming_celebrations(days: int = 30, current_user: dict = Depends(get_current_user)):
+    """Get upcoming celebrations ONLY for the logged-in user's pets"""
+    today = datetime.now(timezone.utc).date()
+    all_upcoming = []
+    
+    # Only fetch pets belonging to the current user
+    async for pet in db.pets.find({"owner_email": current_user["email"]}, {"_id": 0}):
+        soul = pet.get("soul", {}) or {}
+        persona = soul.get("persona", "shadow")
+        persona_info = DOG_PERSONAS.get(persona, DOG_PERSONAS["shadow"])
+        preferences = pet.get("preferences", {}) or {}
+        
+        for celeb in pet.get("celebrations", []):
+            try:
+                date_str = celeb.get("date", "")
+                occasion = celeb.get("occasion", "")
+                occasion_info = CELEBRATION_OCCASIONS.get(occasion, {})
+                
+                # Parse date
+                if len(date_str) == 10:
+                    celeb_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                    if celeb.get("is_recurring", True):
+                        celeb_date = celeb_date.replace(year=today.year)
+                        if celeb_date < today:
+                            celeb_date = celeb_date.replace(year=today.year + 1)
+                elif len(date_str) == 5:
+                    celeb_date = datetime.strptime(f"{today.year}-{date_str}", "%Y-%m-%d").date()
+                    if celeb_date < today:
+                        celeb_date = celeb_date.replace(year=today.year + 1)
+                else:
+                    continue
+                
+                days_until = (celeb_date - today).days
+                
+                if 0 <= days_until <= days:
+                    all_upcoming.append({
+                        "pet_id": pet.get("id"),
+                        "pet_name": pet.get("name"),
+                        "pet_photo": pet.get("photo_url"),
+                        "occasion": occasion,
+                        "occasion_name": occasion_info.get("name", celeb.get("custom_name", occasion)),
+                        "emoji": occasion_info.get("emoji", "🎉"),
+                        "date": celeb_date.isoformat(),
+                        "days_until": days_until,
+                        "persona": persona,
+                        "persona_name": persona_info.get("name"),
+                        "persona_emoji": persona_info.get("emoji")
+                    })
+            except Exception as e:
+                logger.error(f"Error processing celebration: {e}")
+                continue
+    
+    # Sort by days until
+    all_upcoming.sort(key=lambda x: x["days_until"])
+    
+    return {"celebrations": all_upcoming, "total": len(all_upcoming)}
+
+
 @api_router.post("/pets/{pet_id}/achievements")
 async def add_pet_achievement(pet_id: str, achievement: dict):
     """Add an achievement badge to a pet"""
