@@ -60,15 +60,35 @@ const MemberDashboard = () => {
       try {
         const config = { headers: { Authorization: `Bearer ${token}` } };
         
-        const [ordersRes, petsRes, autoshipRes] = await Promise.all([
+        const [ordersRes, petsRes, autoshipRes, reviewsRes] = await Promise.all([
           axios.get(`${API_URL}/api/orders/my-orders`, config).catch(() => ({ data: { orders: [] } })),
           axios.get(`${API_URL}/api/pets/my-pets`, config).catch(() => ({ data: { pets: [] } })),
-          axios.get(`${API_URL}/api/autoship/my-subscriptions`, config).catch(() => ({ data: { subscriptions: [] } }))
+          axios.get(`${API_URL}/api/autoship/my-subscriptions`, config).catch(() => ({ data: { subscriptions: [] } })),
+          axios.get(`${API_URL}/api/reviews/my-reviews`, config).catch(() => ({ data: { reviews: [] } }))
         ]);
 
-        setOrders(ordersRes.data.orders || []);
+        const userOrders = ordersRes.data.orders || [];
+        setOrders(userOrders);
         setPets(petsRes.data.pets || []);
         setAutoships(autoshipRes.data.subscriptions || []);
+        setReviews(reviewsRes.data.reviews || []);
+        
+        // Extract products from orders that user can review
+        const productIds = new Set((reviewsRes.data.reviews || []).map(r => r.product_id));
+        const reviewableProds = [];
+        for (const order of userOrders) {
+          for (const item of (order.items || [])) {
+            if (!productIds.has(item.id) && !reviewableProds.find(p => p.id === item.id)) {
+              reviewableProds.push({
+                id: item.id,
+                name: item.name,
+                image: item.image,
+                orderId: order.id
+              });
+            }
+          }
+        }
+        setReviewableProducts(reviewableProds);
       } catch (error) {
         console.error('Failed to fetch data:', error);
         toast({ title: 'Error', description: 'Failed to load dashboard data', variant: 'destructive' });
