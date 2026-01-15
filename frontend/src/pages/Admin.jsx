@@ -1063,6 +1063,7 @@ const Admin = () => {
             { id: 'abandoned', label: '🛒 Abandoned', icon: ShoppingBag },
             { id: 'products', label: 'Products', icon: Package },
             { id: 'collections', label: 'Collections', icon: Layers },
+            { id: 'reviews', label: 'Reviews', icon: Star },
             { id: 'testimonials', label: 'Testimonials', icon: Star },
             { id: 'insights', label: 'Blog', icon: FileText },
             { id: 'faqs', label: 'FAQs', icon: HelpCircle },
