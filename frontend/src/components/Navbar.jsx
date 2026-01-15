@@ -1,17 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Search, User, Heart, ChevronDown, Sparkles } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const moreRef = useRef(null);
+  const searchRef = useRef(null);
   const { getCartCount, setIsCartOpen } = useCart();
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?search=${encodeURIComponent(searchQuery)}`);
+      setIsSearchOpen(false);
+      setSearchQuery('');
+    }
+  };
 
   // Main navigation items (visible in navbar) - condensed for cleaner look
   const mainNavigation = [
