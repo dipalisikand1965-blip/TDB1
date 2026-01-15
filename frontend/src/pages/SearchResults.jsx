@@ -98,17 +98,20 @@ const SearchResults = () => {
     }
   }, [searchParams, offset, category, minPrice, maxPrice, panIndia, autoship, sort]);
 
-  // Initial search
+  // Initial search - track query changes
+  const currentSearchQuery = searchParams.get('q');
   useEffect(() => {
     setOffset(0);
     performSearch();
-  }, [searchParams.get('q'), category, minPrice, maxPrice, panIndia, autoship, sort]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentSearchQuery, category, minPrice, maxPrice, panIndia, autoship, sort]);
 
   // Load more
   useEffect(() => {
     if (offset > 0) {
       performSearch();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offset]);
 
   // Handle new search
