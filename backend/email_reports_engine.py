@@ -375,6 +375,11 @@ async def send_daily_report_email(
     if "birthday_alerts" in report_types:
         bday_data = await generate_birthday_report()
         
+        # Build celebration table rows
+        bday_rows = ""
+        for c in bday_data["celebrations"][:5]:
+            bday_rows += f'<tr style="border-bottom: 1px solid #f9a8d4;"><td style="padding: 8px 0;">{c["emoji"]} {c["pet_name"]}</td><td>{c["celebration_label"]}</td><td style="text-align: right;">{c["display_date"]} ({c["days_until"]}d)</td></tr>'
+        
         bday_html = f"""
         <div style="background: #fce7f3; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
             <h2 style="color: #db2777; margin-top: 0;">🎂 Birthday Alerts</h2>
@@ -382,7 +387,7 @@ async def send_daily_report_email(
             <p><strong>{bday_data['promotions_pending']}</strong> promotions waiting to be sent</p>
             
             <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                {''.join(f\'<tr style="border-bottom: 1px solid #f9a8d4;"><td style="padding: 8px 0;">{c["emoji"]} {c["pet_name"]}</td><td>{c["celebration_label"]}</td><td style="text-align: right;">{c["display_date"]} ({c["days_until"]}d)</td></tr>\' for c in bday_data["celebrations"][:5])}
+                {bday_rows}
             </table>
         </div>
         """
