@@ -1,0 +1,669 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { toast } from '../hooks/use-toast';
+import {
+  TrendingUp, DollarSign, Users, ShoppingBag, RefreshCw, Download,
+  MapPin, Calendar, Package, Star, PawPrint, Truck, Search, BarChart3,
+  ArrowUp, ArrowDown, Loader2, Building, Heart, Clock
+} from 'lucide-react';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+const ReportsManager = ({ authHeaders }) => {
+  const [activeTab, setActiveTab] = useState('executive');
+  const [loading, setLoading] = useState(false);
+  
+  // Filters
+  const [period, setPeriod] = useState('this_month');
+  const [cityFilter, setCityFilter] = useState('');
+  const [days, setDays] = useState(30);
+  
+  // Report data
+  const [executiveSummary, setExecutiveSummary] = useState(null);
+  const [revenueByCity, setRevenueByCity] = useState(null);
+  const [dailySales, setDailySales] = useState(null);
+  const [productPerformance, setProductPerformance] = useState(null);
+  const [autoshipPerformance, setAutoshipPerformance] = useState(null);
+  const [customerIntelligence, setCustomerIntelligence] = useState(null);
+  const [petIntelligence, setPetIntelligence] = useState(null);
+  const [operations, setOperations] = useState(null);
+  const [reviewsReport, setReviewsReport] = useState(null);
+  const [financialReport, setFinancialReport] = useState(null);
+
+  // Fetch executive summary
+  const fetchExecutiveSummary = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/executive-summary?period=${period}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setExecutiveSummary(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch executive summary:', error);
+    }
+  }, [authHeaders, period]);
+
+  // Fetch revenue by city
+  const fetchRevenueByCity = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/revenue-by-city`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setRevenueByCity(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch revenue by city:', error);
+    }
+  }, [authHeaders]);
+
+  // Fetch daily sales
+  const fetchDailySales = useCallback(async () => {
+    try {
+      const params = new URLSearchParams();
+      params.set('days', days);
+      if (cityFilter) params.set('city', cityFilter);
+      
+      const res = await fetch(`${API_URL}/api/admin/reports/daily-sales?${params}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setDailySales(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch daily sales:', error);
+    }
+  }, [authHeaders, days, cityFilter]);
+
+  // Fetch product performance
+  const fetchProductPerformance = useCallback(async () => {
+    try {
+      const params = new URLSearchParams();
+      params.set('days', days);
+      if (cityFilter) params.set('city', cityFilter);
+      
+      const res = await fetch(`${API_URL}/api/admin/reports/product-performance?${params}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setProductPerformance(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch product performance:', error);
+    }
+  }, [authHeaders, days, cityFilter]);
+
+  // Fetch autoship performance
+  const fetchAutoshipPerformance = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/autoship-performance`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setAutoshipPerformance(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch autoship performance:', error);
+    }
+  }, [authHeaders]);
+
+  // Fetch customer intelligence
+  const fetchCustomerIntelligence = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/customer-intelligence?days=${days}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setCustomerIntelligence(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch customer intelligence:', error);
+    }
+  }, [authHeaders, days]);
+
+  // Fetch pet intelligence
+  const fetchPetIntelligence = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pet-intelligence`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setPetIntelligence(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch pet intelligence:', error);
+    }
+  }, [authHeaders]);
+
+  // Fetch operations
+  const fetchOperations = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/operations`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setOperations(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch operations:', error);
+    }
+  }, [authHeaders]);
+
+  // Fetch reviews report
+  const fetchReviewsReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/reviews`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setReviewsReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch reviews report:', error);
+    }
+  }, [authHeaders]);
+
+  // Fetch financial report
+  const fetchFinancialReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/financial?days=${days}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setFinancialReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch financial report:', error);
+    }
+  }, [authHeaders, days]);
+
+  // Fetch all reports
+  const fetchAllReports = useCallback(async () => {
+    setLoading(true);
+    await Promise.all([
+      fetchExecutiveSummary(),
+      fetchRevenueByCity(),
+      fetchDailySales(),
+      fetchProductPerformance(),
+      fetchAutoshipPerformance(),
+      fetchCustomerIntelligence(),
+      fetchPetIntelligence(),
+      fetchOperations(),
+      fetchReviewsReport(),
+      fetchFinancialReport(),
+    ]);
+    setLoading(false);
+  }, [fetchExecutiveSummary, fetchRevenueByCity, fetchDailySales, fetchProductPerformance, fetchAutoshipPerformance, fetchCustomerIntelligence, fetchPetIntelligence, fetchOperations, fetchReviewsReport, fetchFinancialReport]);
+
+  useEffect(() => {
+    fetchAllReports();
+  }, []);
+
+  // Re-fetch when filters change
+  useEffect(() => {
+    fetchDailySales();
+    fetchProductPerformance();
+  }, [cityFilter, days, fetchDailySales, fetchProductPerformance]);
+
+  useEffect(() => {
+    fetchExecutiveSummary();
+  }, [period, fetchExecutiveSummary]);
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
+  };
+
+  const MetricCard = ({ title, value, icon: Icon, change, color = 'purple' }) => (
+    <Card className="p-6">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm text-gray-500">{title}</p>
+          <p className="text-3xl font-bold mt-1">{value}</p>
+          {change !== undefined && (
+            <div className={`flex items-center mt-2 text-sm ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {change >= 0 ? <ArrowUp className="w-4 h-4 mr-1" /> : <ArrowDown className="w-4 h-4 mr-1" />}
+              {Math.abs(change)}%
+            </div>
+          )}
+        </div>
+        <div className={`p-3 rounded-xl bg-${color}-100`}>
+          <Icon className={`w-6 h-6 text-${color}-600`} />
+        </div>
+      </div>
+    </Card>
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Global Filters */}
+      <Card className="p-4">
+        <div className="flex flex-wrap gap-3 items-center">
+          <Select value={period} onValueChange={setPeriod}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Period" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="this_week">This Week</SelectItem>
+              <SelectItem value="this_month">This Month</SelectItem>
+              <SelectItem value="this_quarter">This Quarter</SelectItem>
+              <SelectItem value="ytd">Year to Date</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={cityFilter} onValueChange={setCityFilter}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="All Cities" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">All Cities</SelectItem>
+              <SelectItem value="Bangalore">Bangalore</SelectItem>
+              <SelectItem value="Mumbai">Mumbai</SelectItem>
+              <SelectItem value="Gurugram">Gurugram</SelectItem>
+              <SelectItem value="Delhi">Delhi</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={String(days)} onValueChange={v => setDays(parseInt(v))}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Days" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="7">Last 7 days</SelectItem>
+              <SelectItem value="30">Last 30 days</SelectItem>
+              <SelectItem value="60">Last 60 days</SelectItem>
+              <SelectItem value="90">Last 90 days</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Button onClick={fetchAllReports} variant="outline" className="gap-2" disabled={loading}>
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            Refresh
+          </Button>
+
+          <Button variant="outline" className="gap-2 ml-auto">
+            <Download className="w-4 h-4" /> Export CSV
+          </Button>
+        </div>
+      </Card>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="bg-white border flex-wrap h-auto p-1">
+          <TabsTrigger value="executive" className="gap-1"><BarChart3 className="w-4 h-4" /> Executive</TabsTrigger>
+          <TabsTrigger value="revenue" className="gap-1"><DollarSign className="w-4 h-4" /> Revenue</TabsTrigger>
+          <TabsTrigger value="autoship" className="gap-1"><RefreshCw className="w-4 h-4" /> Autoship</TabsTrigger>
+          <TabsTrigger value="products" className="gap-1"><Package className="w-4 h-4" /> Products</TabsTrigger>
+          <TabsTrigger value="customers" className="gap-1"><Users className="w-4 h-4" /> Customers</TabsTrigger>
+          <TabsTrigger value="pets" className="gap-1"><PawPrint className="w-4 h-4" /> Pet Soul</TabsTrigger>
+          <TabsTrigger value="operations" className="gap-1"><Truck className="w-4 h-4" /> Operations</TabsTrigger>
+          <TabsTrigger value="reviews" className="gap-1"><Star className="w-4 h-4" /> Reviews</TabsTrigger>
+          <TabsTrigger value="financial" className="gap-1"><TrendingUp className="w-4 h-4" /> Financial</TabsTrigger>
+        </TabsList>
+
+        {/* Executive Summary */}
+        <TabsContent value="executive">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <MetricCard
+              title="Total Revenue"
+              value={formatCurrency(executiveSummary?.metrics?.total_revenue || 0)}
+              icon={DollarSign}
+              color="green"
+            />
+            <MetricCard
+              title="Total Orders"
+              value={executiveSummary?.metrics?.total_orders || 0}
+              icon={ShoppingBag}
+              color="blue"
+            />
+            <MetricCard
+              title="Active Autoship"
+              value={executiveSummary?.metrics?.active_autoship_subscribers || 0}
+              icon={RefreshCw}
+              color="purple"
+            />
+            <MetricCard
+              title="Repeat Rate"
+              value={`${executiveSummary?.metrics?.repeat_purchase_rate || 0}%`}
+              icon={Heart}
+              color="pink"
+            />
+          </div>
+
+          <Card className="p-6">
+            <h3 className="font-semibold mb-4">Average Order Value</h3>
+            <p className="text-4xl font-bold text-purple-600">
+              {formatCurrency(executiveSummary?.metrics?.average_order_value || 0)}
+            </p>
+            <p className="text-sm text-gray-500 mt-2">Period: {period.replace('_', ' ')}</p>
+          </Card>
+        </TabsContent>
+
+        {/* Revenue */}
+        <TabsContent value="revenue">
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* Revenue by City */}
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-purple-600" />
+                Revenue by City
+              </h3>
+              <div className="space-y-3">
+                {revenueByCity?.by_city?.map((city, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="font-medium">{city.city}</p>
+                      <p className="text-sm text-gray-500">{city.orders} orders</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-lg">{formatCurrency(city.revenue)}</p>
+                      <p className="text-sm text-gray-500">AOV: {formatCurrency(city.avg_order_value)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Daily Sales */}
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-blue-600" />
+                Daily Sales ({cityFilter || 'All Cities'})
+              </h3>
+              <div className="max-h-[400px] overflow-y-auto space-y-2">
+                {dailySales?.daily_sales?.slice(0, 14).map((day, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="font-medium">{day.date}</p>
+                      <p className="text-sm text-gray-500">{day.orders} orders ({day.autoship_orders} autoship)</p>
+                    </div>
+                    <p className="font-bold text-lg">{formatCurrency(day.revenue)}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Autoship */}
+        <TabsContent value="autoship">
+          <div className="grid md:grid-cols-3 gap-4 mb-6">
+            <Card className="p-6 bg-green-50">
+              <p className="text-sm text-green-600">Active Subscribers</p>
+              <p className="text-4xl font-bold text-green-700">{autoshipPerformance?.subscribers?.active || 0}</p>
+            </Card>
+            <Card className="p-6 bg-yellow-50">
+              <p className="text-sm text-yellow-600">Paused Subscribers</p>
+              <p className="text-4xl font-bold text-yellow-700">{autoshipPerformance?.subscribers?.paused || 0}</p>
+            </Card>
+            <Card className="p-6 bg-red-50">
+              <p className="text-sm text-red-600">Cancelled</p>
+              <p className="text-4xl font-bold text-red-700">{autoshipPerformance?.subscribers?.cancelled || 0}</p>
+            </Card>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4">Autoship Revenue (30 days)</h3>
+              <p className="text-4xl font-bold text-purple-600">{formatCurrency(autoshipPerformance?.revenue_30d || 0)}</p>
+              
+              <div className="mt-6 grid grid-cols-2 gap-4">
+                <div className="p-3 bg-green-50 rounded-lg text-center">
+                  <p className="text-sm text-gray-600">Retention Rate</p>
+                  <p className="text-2xl font-bold text-green-600">{autoshipPerformance?.retention_rate || 0}%</p>
+                </div>
+                <div className="p-3 bg-red-50 rounded-lg text-center">
+                  <p className="text-sm text-gray-600">Churn Rate</p>
+                  <p className="text-2xl font-bold text-red-600">{autoshipPerformance?.churn_rate || 0}%</p>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4">Subscribers by Frequency</h3>
+              <div className="space-y-3">
+                {autoshipPerformance?.by_frequency?.map((freq, idx) => (
+                  <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span className="font-medium">{freq.frequency}</span>
+                    <Badge variant="outline">{freq.subscribers} subscribers</Badge>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Products */}
+        <TabsContent value="products">
+          <Card className="p-6">
+            <h3 className="font-semibold mb-4">Top Products by Revenue ({cityFilter || 'All Cities'})</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">#</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Product</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">Qty Sold</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">Revenue</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">Orders</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">Autoship</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {productPerformance?.top_products?.map((product, idx) => (
+                    <tr key={idx} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm font-medium">{idx + 1}</td>
+                      <td className="px-4 py-3 text-sm">{product.product}</td>
+                      <td className="px-4 py-3 text-sm text-right">{product.quantity_sold}</td>
+                      <td className="px-4 py-3 text-sm text-right font-medium">{formatCurrency(product.revenue)}</td>
+                      <td className="px-4 py-3 text-sm text-right">{product.orders}</td>
+                      <td className="px-4 py-3 text-sm text-right">
+                        {product.autoship_count > 0 && (
+                          <Badge className="bg-purple-100 text-purple-700">{product.autoship_count}</Badge>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Customers */}
+        <TabsContent value="customers">
+          <div className="grid md:grid-cols-3 gap-4 mb-6">
+            <Card className="p-6 bg-blue-50">
+              <p className="text-sm text-blue-600">New Customers</p>
+              <p className="text-4xl font-bold text-blue-700">{customerIntelligence?.new_customers || 0}</p>
+            </Card>
+            <Card className="p-6 bg-green-50">
+              <p className="text-sm text-green-600">Returning Customers</p>
+              <p className="text-4xl font-bold text-green-700">{customerIntelligence?.returning_customers || 0}</p>
+            </Card>
+            <Card className="p-6 bg-orange-50">
+              <p className="text-sm text-orange-600">Inactive (60+ days)</p>
+              <p className="text-4xl font-bold text-orange-700">{customerIntelligence?.inactive_customers_60d || 0}</p>
+            </Card>
+          </div>
+
+          <Card className="p-6">
+            <h3 className="font-semibold mb-4">High Value Customers</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">#</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Customer</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">Total Spent</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">Orders</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {customerIntelligence?.high_value_customers?.map((customer, idx) => (
+                    <tr key={idx} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm font-medium">{idx + 1}</td>
+                      <td className="px-4 py-3">
+                        <p className="text-sm font-medium">{customer.name || 'Unknown'}</p>
+                        <p className="text-xs text-gray-500">{customer.email}</p>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-right font-bold">{formatCurrency(customer.total_spent)}</td>
+                      <td className="px-4 py-3 text-sm text-right">{customer.orders}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Pet Soul */}
+        <TabsContent value="pets">
+          <div className="grid lg:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <PawPrint className="w-5 h-5 text-pink-600" />
+                Popular Breeds
+              </h3>
+              <div className="space-y-3">
+                {petIntelligence?.popular_breeds?.map((breed, idx) => (
+                  <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span className="font-medium">{breed.breed}</span>
+                    <Badge variant="outline">{breed.count} pets</Badge>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-orange-500" />
+                Upcoming Birthdays
+              </h3>
+              
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="p-3 bg-red-50 rounded-lg text-center">
+                  <p className="text-2xl font-bold text-red-600">{petIntelligence?.upcoming_birthdays?.next_7_days || 0}</p>
+                  <p className="text-xs text-gray-500">Next 7 days</p>
+                </div>
+                <div className="p-3 bg-orange-50 rounded-lg text-center">
+                  <p className="text-2xl font-bold text-orange-600">{petIntelligence?.upcoming_birthdays?.next_14_days || 0}</p>
+                  <p className="text-xs text-gray-500">Next 14 days</p>
+                </div>
+                <div className="p-3 bg-yellow-50 rounded-lg text-center">
+                  <p className="text-2xl font-bold text-yellow-600">{petIntelligence?.upcoming_birthdays?.next_30_days || 0}</p>
+                  <p className="text-xs text-gray-500">Next 30 days</p>
+                </div>
+              </div>
+
+              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                {petIntelligence?.upcoming_birthdays?.details_7d?.map((pet, idx) => (
+                  <div key={idx} className="flex justify-between items-center p-2 bg-red-50 rounded border border-red-100">
+                    <div>
+                      <p className="font-medium text-sm">{pet.name}</p>
+                      <p className="text-xs text-gray-500">{pet.email}</p>
+                    </div>
+                    <Badge className="bg-red-100 text-red-700">
+                      {pet.days_until === 0 ? 'Today!' : `${pet.days_until} days`}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Operations */}
+        <TabsContent value="operations">
+          <div className="grid lg:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4">Orders by Status</h3>
+              <div className="space-y-3">
+                {operations?.orders_by_status?.map((status, idx) => (
+                  <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span className="font-medium capitalize">{status.status?.replace(/_/g, ' ')}</span>
+                    <Badge variant="outline">{status.count}</Badge>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4">Upcoming Autoship Shipments</h3>
+              <div className="p-6 bg-purple-50 rounded-lg text-center">
+                <p className="text-4xl font-bold text-purple-600">{operations?.upcoming_autoship_shipments_7d || 0}</p>
+                <p className="text-sm text-gray-600 mt-2">Shipments in next 7 days</p>
+              </div>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Reviews */}
+        <TabsContent value="reviews">
+          <div className="grid md:grid-cols-4 gap-4 mb-6">
+            <Card className="p-6">
+              <p className="text-sm text-gray-500">Total Reviews</p>
+              <p className="text-3xl font-bold">{reviewsReport?.total_reviews || 0}</p>
+            </Card>
+            <Card className="p-6 bg-yellow-50">
+              <p className="text-sm text-yellow-600">Pending Approval</p>
+              <p className="text-3xl font-bold text-yellow-700">{reviewsReport?.pending_approval || 0}</p>
+            </Card>
+            <Card className="p-6 bg-green-50">
+              <p className="text-sm text-green-600">Approved</p>
+              <p className="text-3xl font-bold text-green-700">{reviewsReport?.approved || 0}</p>
+            </Card>
+            <Card className="p-6">
+              <p className="text-sm text-gray-500">Average Rating</p>
+              <p className="text-3xl font-bold flex items-center gap-1">
+                {reviewsReport?.average_rating || 0} <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+              </p>
+            </Card>
+          </div>
+
+          {reviewsReport?.low_rated_products?.length > 0 && (
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4 text-red-600">Products Needing Attention (Low Ratings)</h3>
+              <div className="space-y-2">
+                {reviewsReport.low_rated_products.map((product, idx) => (
+                  <div key={idx} className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                    <span className="font-medium">{product.product}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-500">{product.reviews} reviews</span>
+                      <Badge className="bg-red-100 text-red-700">{product.avg_rating} ⭐</Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* Financial */}
+        <TabsContent value="financial">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <Card className="p-6">
+              <p className="text-sm text-gray-500">Total Revenue</p>
+              <p className="text-3xl font-bold text-green-600">{formatCurrency(financialReport?.total_revenue || 0)}</p>
+            </Card>
+            <Card className="p-6">
+              <p className="text-sm text-gray-500">Total Discounts Given</p>
+              <p className="text-3xl font-bold text-red-600">{formatCurrency(financialReport?.total_discounts_given || 0)}</p>
+            </Card>
+            <Card className="p-6">
+              <p className="text-sm text-gray-500">Shipping Revenue</p>
+              <p className="text-3xl font-bold">{formatCurrency(financialReport?.total_shipping_revenue || 0)}</p>
+            </Card>
+            <Card className="p-6">
+              <p className="text-sm text-gray-500">Cancelled Orders</p>
+              <p className="text-3xl font-bold text-orange-600">{financialReport?.cancelled_orders || 0}</p>
+            </Card>
+          </div>
+
+          <Card className="p-6">
+            <h3 className="font-semibold mb-4">Discount Impact</h3>
+            <p className="text-sm text-gray-600">
+              Discounts represent <span className="font-bold text-red-600">{financialReport?.discount_impact_percent || 0}%</span> of total revenue
+            </p>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
+
+export default ReportsManager;
