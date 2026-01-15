@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -26,31 +27,54 @@ const PERSONA_ICONS = {
 
 const MyPets = () => {
   const navigate = useNavigate();
+  const { user, token, loading: authLoading } = useAuth();
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [personas, setPersonas] = useState({});
   const [upcomingCelebrations, setUpcomingCelebrations] = useState([]);
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login');
+    }
+  }, [authLoading, user, navigate]);
+
   useEffect(() => {
     const fetchData = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      
       try {
-        // Fetch personas
+        // Auth headers for protected endpoints
+        const authHeaders = {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        };
+
+        // Fetch personas (public endpoint)
         const personasRes = await fetch(`${API_URL}/api/pets/personas`);
         if (personasRes.ok) {
           const data = await personasRes.json();
           setPersonas(data.personas || {});
         }
 
-        // Fetch all pets (in real app, would filter by user)
-        const petsRes = await fetch(`${API_URL}/api/pets?limit=100`);
+        // Fetch ONLY the logged-in user's pets (protected endpoint)
+        const petsRes = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: authHeaders
+        });
         if (petsRes.ok) {
           const data = await petsRes.json();
           setPets(data.pets || []);
         }
 
-        // Fetch upcoming celebrations
-        const celebRes = await fetch(`${API_URL}/api/celebrations/upcoming?days=30`);
+        // Fetch upcoming celebrations for user's pets
+        const celebRes = await fetch(`${API_URL}/api/celebrations/upcoming?days=30`, {
+          headers: authHeaders
+        });
         if (celebRes.ok) {
           const data = await celebRes.json();
           setUpcomingCelebrations(data.celebrations || []);
@@ -61,8 +85,11 @@ const MyPets = () => {
         setLoading(false);
       }
     };
-    fetchData();
-  }, []);
+    
+    if (user) {
+      fetchData();
+    }
+  }, [token, user]);
 
   const filteredPets = pets.filter(pet => 
     pet.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -73,7 +100,12 @@ const MyPets = () => {
     if (!window.confirm('Are you sure you want to remove this pet profile?')) return;
     
     try {
-      const res = await fetch(`${API_URL}/api/pets/${petId}`, { method: 'DELETE' });
+      const res = await fetch(`${API_URL}/api/pets/${petId}`, { 
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (res.ok) {
         setPets(pets.filter(p => p.id !== petId));
       }
