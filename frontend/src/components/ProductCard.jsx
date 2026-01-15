@@ -135,6 +135,7 @@ const ProductDetailModal = ({ product, onClose }) => {
     time: '',
     age: ''
   });
+    purchaseType: 'onetime'
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
   
