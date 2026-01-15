@@ -438,33 +438,80 @@ const ProductDetailModal = ({ product, onClose }) => {
 
             {/* Autoship Option */}
             {product.autoship_enabled && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                <div className="flex flex-col gap-2">
-                  <label className="flex items-center gap-2 cursor-pointer">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 mb-4">
+                <h4 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                  <span className="text-lg">🔄</span> How would you like to purchase?
+                </h4>
+                
+                <div className="space-y-3">
+                  {/* One-time purchase */}
+                  <label className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${cartInput.purchaseType === 'onetime' ? 'border-purple-500 bg-white' : 'border-gray-200 hover:border-gray-300'}`}>
                     <input 
                       type="radio" 
                       name="purchaseType" 
                       checked={cartInput.purchaseType === 'onetime'}
-                      onChange={() => setCartInput({...cartInput, purchaseType: 'onetime'})}
+                      onChange={() => setCartInput({...cartInput, purchaseType: 'onetime', autoshipFrequency: ''})}
                       className="w-4 h-4 text-purple-600"
                     />
-                    <span className="text-sm font-medium">One-time purchase</span>
+                    <div>
+                      <span className="text-sm font-semibold text-gray-900">One-time purchase</span>
+                      <p className="text-xs text-gray-500">Buy once, no commitment</p>
+                    </div>
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
+                  
+                  {/* Autoship option */}
+                  <label className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${cartInput.purchaseType === 'autoship' ? 'border-purple-500 bg-white' : 'border-gray-200 hover:border-gray-300'}`}>
                     <input 
                       type="radio" 
                       name="purchaseType" 
                       checked={cartInput.purchaseType === 'autoship'}
-                      onChange={() => setCartInput({...cartInput, purchaseType: 'autoship'})}
-                      className="w-4 h-4 text-purple-600"
+                      onChange={() => setCartInput({...cartInput, purchaseType: 'autoship', autoshipFrequency: '4'})}
+                      className="w-4 h-4 text-purple-600 mt-1"
                     />
-                    <span className="text-sm font-medium">Autoship & Save (Every 4 weeks)</span>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-gray-900">Autoship & Save</span>
+                        <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Recommended</span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-0.5">Auto-deliver on your schedule</p>
+                      
+                      {cartInput.purchaseType === 'autoship' && (
+                        <div className="mt-3 space-y-3">
+                          {/* Frequency selector */}
+                          <div>
+                            <label className="text-xs font-medium text-gray-700 mb-1 block">Delivery Frequency</label>
+                            <select 
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                              value={cartInput.autoshipFrequency || '4'}
+                              onChange={(e) => setCartInput({...cartInput, autoshipFrequency: e.target.value})}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <option value="2">Every 2 weeks</option>
+                              <option value="4">Every 4 weeks</option>
+                              <option value="6">Every 6 weeks</option>
+                            </select>
+                          </div>
+                          
+                          {/* Benefits info */}
+                          <div className="bg-blue-50 rounded-lg p-3 text-xs">
+                            <p className="font-semibold text-blue-900 mb-2">🎁 Your Autoship Savings:</p>
+                            <ul className="space-y-1 text-blue-800">
+                              <li>• <strong>25% off</strong> your first Autoship order (max ₹300)</li>
+                              <li>• <strong>40% off</strong> on 4th & 5th deliveries</li>
+                              <li>• <strong>50% off</strong> on 6th & 7th deliveries</li>
+                            </ul>
+                            <p className="mt-2 text-blue-700 italic">
+                              Every dog deserves at least 7 celebrations a year — one for each dog year! 🐕
+                            </p>
+                          </div>
+                          
+                          <p className="text-xs text-gray-500">
+                            ✓ Skip, pause, or cancel anytime • ✓ Free to join
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </label>
-                  {cartInput.purchaseType === 'autoship' && (
-                    <p className="text-xs text-blue-700 ml-6">
-                      Get 40% off on your 4th & 5th orders! Cancel anytime.
-                    </p>
-                  )}
                 </div>
               </div>
             )}
