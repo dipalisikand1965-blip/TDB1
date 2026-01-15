@@ -4,6 +4,7 @@ import { ShoppingCart, Star, X, CalendarIcon, Plus, Sparkles, MessageSquare } fr
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
