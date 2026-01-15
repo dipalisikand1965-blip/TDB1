@@ -6,6 +6,7 @@ import { Badge } from './ui/badge';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
 import { Calendar } from './ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { format } from 'date-fns';
