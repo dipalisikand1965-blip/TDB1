@@ -132,6 +132,7 @@ const ProductDetailModal = ({ product, onClose }) => {
     time: '',
     age: '',
     purchaseType: 'onetime',
+    autoshipFrequency: '',
     addPartyBox: false
   });
   
