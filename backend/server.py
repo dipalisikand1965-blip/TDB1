@@ -608,6 +608,29 @@ class Review(BaseModel):
     content: str
     image_url: Optional[str] = None
     status: str = "pending"  # pending, approved, rejected
+
+class AutoshipSubscription(BaseModel):
+    id: str = Field(default_factory=lambda: f"auto-{uuid.uuid4().hex[:8]}")
+    user_email: str
+    user_id: Optional[str] = None
+    product_id: str
+    product_name: str
+    product_image: Optional[str] = None
+    variant: Optional[str] = None
+    price: float
+    frequency: int  # weeks (2, 4, or 6)
+    status: str = "active"  # active, paused, cancelled
+    order_count: int = 0  # Track number of completed autoship orders
+    next_shipment_date: Optional[str] = None
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: Optional[str] = None
+    delivery_address: Optional[dict] = None
+    
+class AutoshipCreate(BaseModel):
+    product_id: str
+    variant: Optional[str] = None
+    frequency: int = 4
+    delivery_address: Optional[dict] = None
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class ReviewCreate(BaseModel):
