@@ -10,8 +10,25 @@ import {
   MapPin, Calendar, Package, Star, PawPrint, Truck, Search, BarChart3,
   ArrowUp, ArrowDown, Loader2, Building, Heart, Clock
 } from 'lucide-react';
+import {
+  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart
+} from 'recharts';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+// Chart colors
+const CHART_COLORS = {
+  primary: '#9333ea',
+  secondary: '#ec4899',
+  success: '#22c55e',
+  warning: '#f59e0b',
+  danger: '#ef4444',
+  info: '#3b82f6',
+  purple: '#a855f7',
+  pink: '#f472b6',
+  cities: ['#9333ea', '#ec4899', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444']
+};
 
 const ReportsManager = ({ authHeaders }) => {
   const [activeTab, setActiveTab] = useState('executive');
