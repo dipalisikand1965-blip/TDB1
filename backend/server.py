@@ -4967,12 +4967,6 @@ async def delete_collection(collection_id: str, username: str = Depends(verify_a
         
     return {"message": "Collection deleted"}
 
-        if RESEND_API_KEY:
-            await asyncio.to_thread(resend.Emails.send, params)
-    except Exception as e:
-        logger.error(f"Failed to send franchise notification: {e}")
-    
-    return {"message": "Inquiry submitted successfully", "id": inquiry_doc["id"]}
 
 
 @admin_router.get("/franchise")
