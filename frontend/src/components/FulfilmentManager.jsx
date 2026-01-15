@@ -152,25 +152,48 @@ const FulfilmentManager = ({ authHeaders, pillar = 'celebrate' }) => {
     fetchBatchView();
   }, [fetchOrders, fetchDraftOrders, fetchBatchView]);
 
-  // Update order status
-  const updateOrderStatus = async (orderId, newStatus, sendNotification = true) => {
+  // Update order status using Status Engine
+  const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/fulfilment/${orderId}/status`, {
-        method: 'PUT',
+      // Use the new Status Engine endpoint
+      const res = await fetch(`${API_URL}/api/status-engine/update/${pillar}/${orderId}`, {
+        method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus, send_notification: sendNotification })
+        body: JSON.stringify({ 
+          new_status: newStatus, 
+          send_notification: sendNotification,
+          notes: statusNotes || null
+        })
       });
       
       if (res.ok) {
         const data = await res.json();
-        toast({ title: 'Status Updated', description: `Order status changed to ${newStatus}` });
+        const statusConfig = FULFILMENT_STATUSES.find(s => s.value === newStatus);
         
-        if (data.notification?.whatsapp_link) {
+        toast({ 
+          title: `${statusConfig?.emoji || '✅'} Status Updated`, 
+          description: `Order status changed to ${statusConfig?.label || newStatus}` 
+        });
+        
+        // Open WhatsApp if notification was sent and link is available
+        if (data.notification?.whatsapp_link && sendNotification) {
           window.open(data.notification.whatsapp_link, '_blank');
+        }
+        
+        // Show email confirmation if sent
+        if (data.notification?.email_sent) {
+          toast({ 
+            title: '📧 Email Sent', 
+            description: 'Customer has been notified via email' 
+          });
         }
         
         fetchOrders();
         setShowStatusModal(false);
+        setStatusNotes('');
+      } else {
+        const errorData = await res.json();
+        toast({ title: 'Error', description: errorData.detail || 'Failed to update status', variant: 'destructive' });
       }
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to update status', variant: 'destructive' });
