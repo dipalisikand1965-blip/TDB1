@@ -133,6 +133,13 @@ const ProductDetailModal = ({ product, onClose }) => {
   const { addToCart } = useCart();
   const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
+  // Reviews state - declared at component level
+  const [reviews, setReviews] = useState([]);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [newReview, setNewReview] = useState({ rating: 5, title: '', content: '', author_name: '' });
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  // Fetch related products
   React.useEffect(() => {
     const fetchRelated = async () => {
       try {
@@ -140,11 +147,16 @@ const ProductDetailModal = ({ product, onClose }) => {
         if (response.ok) {
           const data = await response.json();
           setRelatedProducts(data.related || []);
-  const [reviews, setReviews] = useState([]);
-  const [showReviewForm, setShowReviewForm] = useState(false);
-  const [newReview, setNewReview] = useState({ rating: 5, title: '', content: '', author_name: '' });
-  const [submittingReview, setSubmittingReview] = useState(false);
+        }
+      } catch (error) {
+        console.error('Failed to fetch related products:', error);
+      }
+      setLoadingRelated(false);
+    };
+    fetchRelated();
+  }, [product.id, API_URL]);
 
+  // Fetch reviews
   useEffect(() => {
     const fetchReviews = async () => {
         try {
@@ -181,15 +193,6 @@ const ProductDetailModal = ({ product, onClose }) => {
           setSubmittingReview(false);
       }
   };
-
-        }
-      } catch (error) {
-        console.error('Failed to fetch related products:', error);
-      }
-      setLoadingRelated(false);
-    };
-    fetchRelated();
-  }, [product.id, API_URL]);
 
   const currentSizeDetails = getSizeDetails(selectedSize);
   const currentFlavorDetails = selectedFlavor ? getFlavorDetails(selectedFlavor) : { name: '', price: 0 };
