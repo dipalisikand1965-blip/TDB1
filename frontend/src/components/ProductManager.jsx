@@ -901,98 +901,204 @@ const ProductManager = ({ credentials }) => {
                 />
               </div>
               
-              {/* Sizes/Variants */}
+              {/* Product Options (Base, Flavour, Weight, etc.) */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <Label className="text-base font-semibold">Sizes / Variants</Label>
-                  <Button size="sm" variant="outline" onClick={addSize}>
-                    <Plus className="w-3 h-3 mr-1" /> Add Size
+                  <div>
+                    <Label className="text-base font-semibold">Product Options</Label>
+                    <p className="text-xs text-gray-500">Add options like Base, Flavour, Weight</p>
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => {
+                    const newOptions = [...(editForm.options || []), { name: '', values: [], position: (editForm.options || []).length + 1 }];
+                    setEditForm({ ...editForm, options: newOptions });
+                  }}>
+                    <Plus className="w-3 h-3 mr-1" /> Add Option
                   </Button>
                 </div>
-                <div className="space-y-2">
-                  {(editForm.sizes || []).map((size, idx) => {
-                    const sizeObj = typeof size === 'string' ? { name: size, price: 0 } : size;
-                    return (
-                      <div key={idx} className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
+                <div className="space-y-3">
+                  {(editForm.options || []).map((option, idx) => (
+                    <div key={idx} className="bg-purple-50 border border-purple-200 p-3 rounded-lg">
+                      <div className="flex items-center gap-3 mb-2">
                         <div className="flex-1">
-                          <Label className="text-xs text-gray-500">Size Name</Label>
+                          <Label className="text-xs text-gray-500">Option Name</Label>
+                          <Input
+                            value={option.name || ''}
+                            onChange={(e) => {
+                              const newOptions = [...(editForm.options || [])];
+                              newOptions[idx] = { ...newOptions[idx], name: e.target.value };
+                              setEditForm({ ...editForm, options: newOptions });
+                            }}
+                            placeholder="e.g., Base, Flavour, Weight"
+                          />
+                        </div>
+                        <button
+                          onClick={() => {
+                            const newOptions = (editForm.options || []).filter((_, i) => i !== idx);
+                            setEditForm({ ...editForm, options: newOptions });
+                          }}
+                          className="text-red-500 hover:text-red-700 mt-5"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div>
+                        <Label className="text-xs text-gray-500">Values (comma-separated)</Label>
+                        <Input
+                          value={(option.values || []).join(', ')}
+                          onChange={(e) => {
+                            const newOptions = [...(editForm.options || [])];
+                            newOptions[idx] = {
+                              ...newOptions[idx],
+                              values: e.target.value.split(',').map(v => v.trim()).filter(Boolean)
+                            };
+                            setEditForm({ ...editForm, options: newOptions });
+                          }}
+                          placeholder="e.g., Oats, Ragi"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  {(!editForm.options || editForm.options.length === 0) && (
+                    <div className="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
+                      <p>No options added.</p>
+                      <p className="text-xs mt-1">Common options: Base (Oats, Ragi), Flavour (Chicken, Banana), Weight (500g, 1kg)</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Variants */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <Label className="text-base font-semibold">Variants & Pricing</Label>
+                    <p className="text-xs text-gray-500">Each combination of options with its price</p>
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => {
+                    const newVariants = [...(editForm.variants || []), { title: '', price: editForm.price || 0, option1: '', option2: '', option3: '' }];
+                    setEditForm({ ...editForm, variants: newVariants });
+                  }}>
+                    <Plus className="w-3 h-3 mr-1" /> Add Variant
+                  </Button>
+                </div>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {(editForm.variants || []).slice(0, 20).map((variant, idx) => (
+                    <div key={idx} className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg text-sm">
+                      <div className="flex-1">
+                        <Input
+                          value={variant.title || ''}
+                          onChange={(e) => {
+                            const newVariants = [...(editForm.variants || [])];
+                            newVariants[idx] = { ...newVariants[idx], title: e.target.value };
+                            setEditForm({ ...editForm, variants: newVariants });
+                          }}
+                          placeholder="e.g., Oats / Chicken / 500g"
+                          className="text-sm"
+                        />
+                      </div>
+                      <div className="w-24">
+                        <Input
+                          type="number"
+                          value={variant.price || 0}
+                          onChange={(e) => {
+                            const newVariants = [...(editForm.variants || [])];
+                            newVariants[idx] = { ...newVariants[idx], price: Number(e.target.value) };
+                            setEditForm({ ...editForm, variants: newVariants });
+                          }}
+                          className="text-sm"
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newVariants = (editForm.variants || []).filter((_, i) => i !== idx);
+                          setEditForm({ ...editForm, variants: newVariants });
+                        }}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  {(editForm.variants || []).length > 20 && (
+                    <p className="text-xs text-gray-500 text-center">Showing first 20 of {editForm.variants.length} variants</p>
+                  )}
+                  {(!editForm.variants || editForm.variants.length === 0) && (
+                    <p className="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
+                      No variants. Add variants for each option combination.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Legacy Sizes/Flavors (collapsed) */}
+              <details className="text-sm border rounded-lg p-2">
+                <summary className="text-gray-500 cursor-pointer font-medium">Legacy Size/Flavor fields (deprecated)</summary>
+                <div className="mt-3 space-y-4">
+                  {/* Sizes/Variants */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="text-sm">Sizes</Label>
+                      <Button size="sm" variant="ghost" onClick={addSize}>
+                        <Plus className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    {(editForm.sizes || []).map((size, idx) => {
+                      const sizeObj = typeof size === 'string' ? { name: size, price: 0 } : size;
+                      return (
+                        <div key={idx} className="flex items-center gap-2 mb-1">
                           <Input
                             value={sizeObj.name}
                             onChange={(e) => updateSize(idx, 'name', e.target.value)}
-                            placeholder="e.g., 500g, Large"
+                            placeholder="Size"
+                            className="text-xs"
                           />
-                        </div>
-                        <div className="w-32">
-                          <Label className="text-xs text-gray-500">Price (₹)</Label>
                           <Input
                             type="number"
                             value={sizeObj.price}
                             onChange={(e) => updateSize(idx, 'price', e.target.value)}
+                            className="w-20 text-xs"
                           />
+                          <button onClick={() => removeSize(idx)} className="text-red-500">
+                            <X className="w-3 h-3" />
+                          </button>
                         </div>
-                        <button
-                          onClick={() => removeSize(idx)}
-                          className="text-red-500 hover:text-red-700 mt-5"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    );
-                  })}
-                  {(!editForm.sizes || editForm.sizes.length === 0) && (
-                    <p className="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
-                      No sizes added. Click &quot;Add Size&quot; to add variants.
-                    </p>
-                  )}
-                </div>
-              </div>
-              
-              {/* Flavors */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <Label className="text-base font-semibold">Flavors / Options</Label>
-                  <Button size="sm" variant="outline" onClick={addFlavor}>
-                    <Plus className="w-3 h-3 mr-1" /> Add Flavor
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  {(editForm.flavors || []).map((flavor, idx) => {
-                    const flavorObj = typeof flavor === 'string' ? { name: flavor, price: 0 } : flavor;
-                    return (
-                      <div key={idx} className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
-                        <div className="flex-1">
-                          <Label className="text-xs text-gray-500">Flavor Name</Label>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Flavors */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="text-sm">Flavors</Label>
+                      <Button size="sm" variant="ghost" onClick={addFlavor}>
+                        <Plus className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    {(editForm.flavors || []).map((flavor, idx) => {
+                      const flavorObj = typeof flavor === 'string' ? { name: flavor, price: 0 } : flavor;
+                      return (
+                        <div key={idx} className="flex items-center gap-2 mb-1">
                           <Input
                             value={flavorObj.name}
                             onChange={(e) => updateFlavor(idx, 'name', e.target.value)}
-                            placeholder="e.g., Chicken, Peanut Butter"
+                            placeholder="Flavor"
+                            className="text-xs"
                           />
-                        </div>
-                        <div className="w-32">
-                          <Label className="text-xs text-gray-500">Extra Price (₹)</Label>
                           <Input
                             type="number"
                             value={flavorObj.price}
                             onChange={(e) => updateFlavor(idx, 'price', e.target.value)}
-                            placeholder="0"
+                            className="w-20 text-xs"
                           />
+                          <button onClick={() => removeFlavor(idx)} className="text-red-500">
+                            <X className="w-3 h-3" />
+                          </button>
                         </div>
-                        <button
-                          onClick={() => removeFlavor(idx)}
-                          className="text-red-500 hover:text-red-700 mt-5"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    );
-                  })}
-                  {(!editForm.flavors || editForm.flavors.length === 0) && (
-                    <p className="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
-                      No flavors added. Click &quot;Add Flavor&quot; to add options.
-                    </p>
-                  )}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              </details>
             </div>
             
             {/* Modal Footer */}
