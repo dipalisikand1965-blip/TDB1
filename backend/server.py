@@ -548,6 +548,12 @@ from feedback_engine import feedback_router, set_database as set_feedback_db, pr
 # Import birthday engine
 from birthday_engine import birthday_router, set_database as set_birthday_db
 
+# Import concierge engine
+from concierge_engine import concierge_router, set_database as set_concierge_db
+
+# Import email reports engine
+from email_reports_engine import reports_email_router, set_database as set_reports_db, process_daily_reports
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
