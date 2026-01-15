@@ -3342,6 +3342,8 @@ async def search_typeahead(
 @api_router.get("/search/stats")
 async def get_search_stats():
     """Get search index statistics"""
+    if not search_service:
+        return {"initialized": False, "error": "Search service not configured"}
     return await search_service.get_stats()
 
 
