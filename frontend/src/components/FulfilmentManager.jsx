@@ -7,28 +7,46 @@ import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Checkbox } from './ui/checkbox';
 import { toast } from '../hooks/use-toast';
 import {
   Package, Truck, Clock, MapPin, RefreshCw, Search, Filter,
   ChefHat, Gift, Send, Eye, Edit, Printer, Phone, Mail,
-  Calendar, CheckCircle, Loader2, AlertCircle, Users, FileText
+  Calendar, CheckCircle, Loader2, AlertCircle, Users, FileText, Bell
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Fulfilment status configuration
-const FULFILMENT_STATUSES = [
-  { value: 'pending', label: 'Pending', color: 'bg-gray-100 text-gray-700', emoji: '⏳' },
-  { value: 'confirmed', label: 'Confirmed', color: 'bg-blue-100 text-blue-700', emoji: '✅' },
-  { value: 'baking', label: 'Baking', color: 'bg-orange-100 text-orange-700', emoji: '🍰' },
-  { value: 'personalised', label: 'Personalised', color: 'bg-pink-100 text-pink-700', emoji: '✨' },
-  { value: 'packed', label: 'Packed with Love', color: 'bg-purple-100 text-purple-700', emoji: '💜' },
-  { value: 'out_for_delivery', label: 'Out for Delivery', color: 'bg-indigo-100 text-indigo-700', emoji: '🚗' },
-  { value: 'delivered', label: 'Delivered & Celebrated', color: 'bg-green-100 text-green-700', emoji: '🎉' },
-  { value: 'cancelled', label: 'Cancelled', color: 'bg-red-100 text-red-700', emoji: '❌' },
+// Default statuses (will be overridden by API)
+const DEFAULT_STATUSES = [
+  { value: 'pending', label: 'Pending', color: 'gray', emoji: '⏳', notify_customer: false },
+  { value: 'confirmed', label: 'Confirmed', color: 'blue', emoji: '✅', notify_customer: true },
+  { value: 'baking', label: 'Baking', color: 'orange', emoji: '🍰', notify_customer: true },
+  { value: 'personalised', label: 'Personalised', color: 'pink', emoji: '✨', notify_customer: true },
+  { value: 'packed', label: 'Packed with Love', color: 'purple', emoji: '💜', notify_customer: true },
+  { value: 'out_for_delivery', label: 'Out for Delivery', color: 'indigo', emoji: '🚗', notify_customer: true },
+  { value: 'delivered', label: 'Delivered & Celebrated', color: 'green', emoji: '🎉', notify_customer: true },
+  { value: 'cancelled', label: 'Cancelled', color: 'red', emoji: '❌', notify_customer: true },
 ];
 
-const FulfilmentManager = ({ authHeaders }) => {
+// Color mapping for status badges
+const getStatusColor = (color) => {
+  const colorMap = {
+    gray: 'bg-gray-100 text-gray-700',
+    blue: 'bg-blue-100 text-blue-700',
+    orange: 'bg-orange-100 text-orange-700',
+    pink: 'bg-pink-100 text-pink-700',
+    purple: 'bg-purple-100 text-purple-700',
+    indigo: 'bg-indigo-100 text-indigo-700',
+    green: 'bg-green-100 text-green-700',
+    red: 'bg-red-100 text-red-700',
+    yellow: 'bg-yellow-100 text-yellow-700',
+    teal: 'bg-teal-100 text-teal-700',
+  };
+  return colorMap[color] || 'bg-gray-100 text-gray-700';
+};
+
+const FulfilmentManager = ({ authHeaders, pillar = 'celebrate' }) => {
   const [activeTab, setActiveTab] = useState('orders');
   const [orders, setOrders] = useState([]);
   const [draftOrders, setDraftOrders] = useState([]);
@@ -37,7 +55,31 @@ const FulfilmentManager = ({ authHeaders }) => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showDraftModal, setShowDraftModal] = useState(false);
+  const [sendNotification, setSendNotification] = useState(true);
+  const [statusNotes, setStatusNotes] = useState('');
   
+  // Dynamic statuses from Status Engine
+  const [FULFILMENT_STATUSES, setFulfilmentStatuses] = useState(DEFAULT_STATUSES);
+  
+  // Fetch statuses from Status Engine
+  const fetchStatuses = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/status-engine/statuses/${pillar}`);
+      if (res.ok) {
+        const data = await res.json();
+        setFulfilmentStatuses(data.statuses.map(s => ({
+          ...s,
+          color: getStatusColor(s.color)
+        })));
+      }
+    } catch (error) {
+      console.error('Failed to fetch statuses:', error);
+    }
+  }, [pillar]);
+  
+  useEffect(() => {
+    fetchStatuses();
+  }, [fetchStatuses]);
   // Filters
   const [dateRange, setDateRange] = useState('today');
   const [cityFilter, setCityFilter] = useState('');
