@@ -458,7 +458,6 @@ async def lifespan(app: FastAPI):
     global sync_task
     
     # Initialize search service
-    from search_service import search_service
     try:
         await search_service.connect()
         # Index all existing products on startup
@@ -499,7 +498,6 @@ async def lifespan(app: FastAPI):
     yield
     
     # Shutdown search service
-    from search_service import search_service
     try:
         await search_service.disconnect()
     except Exception as e:
