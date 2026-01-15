@@ -3226,7 +3226,7 @@ async def create_autoship_subscription(
     }
     
     await db.autoship_subscriptions.insert_one(subscription)
-    del subscription["_id"] if "_id" in subscription else None
+    subscription.pop("_id", None)
     
     return {"message": "Autoship subscription created", "subscription": subscription}
 
