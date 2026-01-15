@@ -43,7 +43,14 @@ const CartSidebar = () => {
               {/* Cart Items */}
               <div className="flex-1 overflow-y-auto py-6 space-y-4">
                 {cartItems.map((item) => (
-                  <div key={item.itemId} className="flex gap-4 p-4 bg-gray-50 rounded-lg">
+                  <div key={item.itemId} className="flex gap-4 p-4 bg-gray-50 rounded-lg relative">
+                    {/* Autoship Badge */}
+                    {item.isAutoship && (
+                      <Badge className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs flex items-center gap-1">
+                        <RefreshCw className="w-3 h-3" />
+                        Autoship
+                      </Badge>
+                    )}
                     <img
                       src={item.image}
                       alt={item.name}
@@ -54,6 +61,12 @@ const CartSidebar = () => {
                       <p className="text-sm text-gray-600 mt-1">
                         {item.selectedSize} | {item.selectedFlavor}
                       </p>
+                      {item.isAutoship && (
+                        <p className="text-xs text-purple-600 mt-1 flex items-center gap-1">
+                          <RefreshCw className="w-3 h-3" />
+                          Every {item.autoshipFrequency || 4} weeks
+                        </p>
+                      )}
                       {item.customDetails && (
                         <div className="mt-2 text-xs text-gray-500 space-y-1 bg-white p-2 rounded border border-gray-100">
                            <p><span className="font-semibold">Shape:</span> {item.customDetails.shape}</p>
