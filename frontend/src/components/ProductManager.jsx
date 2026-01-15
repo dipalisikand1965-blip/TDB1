@@ -239,6 +239,8 @@ const ProductManager = ({ credentials }) => {
       status: product.status || 'active',
       tags: product.tags?.join(', ') || '',
       minPrice: product.minPrice || null,
+      autoship_enabled: product.autoship_enabled || false,
+      collection_ids: product.collection_ids || [],
       // Local edit flag
       locally_edited: true
     });
