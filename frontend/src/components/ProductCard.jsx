@@ -341,54 +341,39 @@ const ProductDetailModal = ({ product, onClose }) => {
               <p className="text-sm text-gray-600 mb-4 line-clamp-2">{product.description}</p>
             )}
 
-            {sizes.length > 0 && (
-              <div className="mb-4">
-                <label className="text-sm font-semibold text-gray-700 block mb-2">Select Size</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {sizes.map((size, idx) => {
-                    const details = getSizeDetails(size);
-                    const isSelected = (typeof selectedSize === 'object' ? selectedSize.name : selectedSize) === details.name;
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedSize(size)}
-                        className={`px-3 py-2 text-sm rounded-lg border-2 transition-all text-left ${
-                          isSelected
-                            ? 'border-purple-600 bg-purple-50 text-purple-700'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <div className="font-medium text-xs">{details.name}</div>
-                        <div className="text-purple-600 font-bold">₹{details.price}</div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {flavors.length > 1 && (
-              <div className="mb-4">
-                <label className="text-sm font-semibold text-gray-700 block mb-2">Select Flavor</label>
-                <div className="flex flex-wrap gap-2">
-                  {flavors.map((flavor, idx) => {
-                    const details = getFlavorDetails(flavor);
-                    const isSelected = selectedFlavor && (typeof selectedFlavor === 'object' ? selectedFlavor.name : selectedFlavor) === details.name;
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedFlavor(flavor)}
-                        className={`px-3 py-1.5 text-xs rounded-full border-2 transition-all ${
-                          isSelected
-                            ? 'border-purple-600 bg-purple-50 text-purple-700'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        {details.name} {details.price > 0 && <span>(+₹{details.price})</span>}
-                      </button>
-                    );
-                  })}
-                </div>
+            {/* Dynamic Options Selector */}
+            {productOptions.length > 0 && (
+              <div className="space-y-4 mb-4">
+                {productOptions.map((option, optionIndex) => {
+                  const values = getOptionValues(option.name, optionIndex);
+                  if (values.length <= 1) return null;
+                  
+                  return (
+                    <div key={option.name}>
+                      <label className="text-sm font-semibold text-gray-700 block mb-2">
+                        Select {option.name}
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {values.map((value) => {
+                          const isSelected = selectedOptions[option.name] === value;
+                          return (
+                            <button
+                              key={value}
+                              onClick={() => handleOptionChange(option.name, value)}
+                              className={`px-3 py-1.5 text-xs rounded-full border-2 transition-all ${
+                                isSelected
+                                  ? 'border-purple-600 bg-purple-50 text-purple-700'
+                                  : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                            >
+                              {value}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
 
