@@ -7,10 +7,11 @@ import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Switch } from '../components/ui/switch';
+import { Textarea } from '../components/ui/textarea';
 import { 
   ShoppingBag, PawPrint, Star, User, LogOut, Package, 
   MapPin, Settings, Lock, Bell, Shield, Phone, Mail,
-  RefreshCw, Calendar, Pause, Play, X
+  RefreshCw, Calendar, Pause, Play, X, MessageSquare, Edit2, Trash2, Loader2
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../hooks/use-toast';
@@ -20,8 +21,17 @@ const MemberDashboard = () => {
   const [orders, setOrders] = useState([]);
   const [pets, setPets] = useState([]);
   const [autoships, setAutoships] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [reviewableProducts, setReviewableProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [reviewLoading, setReviewLoading] = useState(false);
   const navigate = useNavigate();
+  
+  // Review form state
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '', name: '' });
+  const [editingReview, setEditingReview] = useState(null);
   
   // Settings State
   const [settings, setSettings] = useState({
