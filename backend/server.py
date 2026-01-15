@@ -500,8 +500,16 @@ async def lifespan(app: FastAPI):
         replace_existing=True
     )
     
+    # Add daily email reports (runs at 8 AM IST / 2:30 AM UTC)
+    scheduler.add_job(
+        process_daily_reports,
+        CronTrigger(hour=2, minute=30),  # 8 AM IST
+        id="daily_reports",
+        replace_existing=True
+    )
+    
     scheduler.start()
-    logger.info("Schedulers started: celebration reminders (daily 9AM IST), abandoned cart check (every 30 min), feedback processor (every 15 min)")
+    logger.info("Schedulers started: celebration reminders (9AM IST), abandoned cart (30 min), feedback (15 min), daily reports (8AM IST)")
     
     yield
     
