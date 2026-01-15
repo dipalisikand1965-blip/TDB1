@@ -305,8 +305,10 @@ const ProductManager = ({ credentials }) => {
       const payload = {
         ...createForm,
         id: `local-${Date.now()}`,
-        tags: createForm.tags ? createForm.tags.split(',').map(t => t.trim()) : [],
         price: parseFloat(createForm.price) || 0,
+        tags: createForm.tags ? createForm.tags.split(',').map(t => t.trim()) : [],
+        collection_ids: createForm.collection_ids || [],
+        autoship_enabled: createForm.autoship_enabled || false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         locally_edited: true,
