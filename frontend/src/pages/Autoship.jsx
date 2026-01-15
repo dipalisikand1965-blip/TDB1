@@ -69,10 +69,10 @@ const Autoship = () => {
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Autoship makes repeat deliveries simple and rewarding — so you never run out of your dog's favourite treats, cakes and essentials.
           </p>
-          <Link to="/treats">
+          <Link to="/autoship-products">
             <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
               <Sparkles className="w-5 h-5 mr-2" />
-              Start Shopping
+              Browse Autoship Products
             </Button>
           </Link>
         </div>
