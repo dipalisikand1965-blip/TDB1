@@ -167,7 +167,12 @@ const Navbar = () => {
 
             {/* Right Actions */}
             <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon" className="hidden md:flex h-9 w-9">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="hidden md:flex h-9 w-9"
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+              >
                 <Search className="w-5 h-5" />
               </Button>
               <Button variant="ghost" size="icon" className="hidden md:flex h-9 w-9">
