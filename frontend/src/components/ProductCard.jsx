@@ -97,25 +97,33 @@ const ProductCard = ({ product }) => {
 };
 
 const ProductDetailModal = ({ product, onClose }) => {
-  const sizes = product.sizes && product.sizes.length > 0 
-    ? product.sizes 
-    : [{ name: 'Standard', price: product.price || 0 }];
-  const flavors = product.flavors && product.flavors.length > 0 
-    ? product.flavors 
-    : [];
-
-  const getSizeDetails = (size) => {
-    if (typeof size === 'object') return size;
-    return { name: size, price: product.price || 0 };
+  // Extract options from product (e.g., Base, Flavour, Weight)
+  const productOptions = product.options || [];
+  const variants = product.variants || [];
+  
+  // Build option values dynamically from variants
+  const getOptionValues = (optionName, optionIndex) => {
+    const values = new Set();
+    variants.forEach(v => {
+      const val = v[`option${optionIndex + 1}`];
+      if (val) values.add(val);
+    });
+    return Array.from(values);
   };
 
-  const getFlavorDetails = (flavor) => {
-    if (typeof flavor === 'object') return flavor;
-    return { name: flavor, price: 0 };
+  // Initialize selected options based on first available values
+  const initializeSelectedOptions = () => {
+    const initial = {};
+    productOptions.forEach((opt, idx) => {
+      const values = getOptionValues(opt.name, idx);
+      if (values.length > 0) {
+        initial[opt.name] = values[0];
+      }
+    });
+    return initial;
   };
 
-  const [selectedSize, setSelectedSize] = useState(sizes[0]);
-  const [selectedFlavor, setSelectedFlavor] = useState(flavors.length > 0 ? flavors[0] : null);
+  const [selectedOptions, setSelectedOptions] = useState(initializeSelectedOptions);
   const [calendarOpen, setCalendarOpen] = useState(false);
   
   const [cartInput, setCartInput] = useState({
@@ -138,6 +146,34 @@ const ProductDetailModal = ({ product, onClose }) => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [newReview, setNewReview] = useState({ rating: 5, title: '', content: '', author_name: '' });
   const [submittingReview, setSubmittingReview] = useState(false);
+
+  // Find matching variant based on selected options
+  const findMatchingVariant = () => {
+    if (!variants.length || !productOptions.length) {
+      return { price: product.price || 0, title: 'Standard' };
+    }
+    
+    const match = variants.find(v => {
+      return productOptions.every((opt, idx) => {
+        const variantValue = v[`option${idx + 1}`];
+        const selectedValue = selectedOptions[opt.name];
+        return variantValue === selectedValue;
+      });
+    });
+    
+    return match || variants[0] || { price: product.price || 0, title: 'Standard' };
+  };
+
+  const matchingVariant = findMatchingVariant();
+  const currentPrice = matchingVariant?.price || product.price || 0;
+
+  // Update a specific option
+  const handleOptionChange = (optionName, value) => {
+    setSelectedOptions(prev => ({
+      ...prev,
+      [optionName]: value
+    }));
+  };
 
   // Fetch related products
   React.useEffect(() => {
