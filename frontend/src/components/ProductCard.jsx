@@ -13,11 +13,10 @@ import { format } from 'date-fns';
 const ProductCard = ({ product }) => {
   const [showModal, setShowModal] = useState(false);
   
-  // Fallback placeholder image for products without images
+  // Fallback placeholder image
   const PLACEHOLDER_IMAGE = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
   const productImage = product.image && product.image.trim() !== '' ? product.image : PLACEHOLDER_IMAGE;
   
-  // Calculate minimum price for "From Rs. X" display
   const getMinPrice = () => {
     if (product.minPrice) return product.minPrice;
     if (product.sizes && product.sizes.length > 0) {
@@ -32,13 +31,11 @@ const ProductCard = ({ product }) => {
 
   return (
     <>
-      {/* Product Card - Shows "From Rs. X" */}
       <div 
         className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer"
         onClick={() => setShowModal(true)}
         data-testid={`product-card-${product.id}`}
       >
-        {/* Image */}
         <div className="relative overflow-hidden aspect-square">
           <img
             src={productImage}
@@ -46,13 +43,11 @@ const ProductCard = ({ product }) => {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             onError={(e) => { e.target.src = PLACEHOLDER_IMAGE; }}
           />
-          {/* Badges */}
           <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-2">
             {product.isNew && <Badge className="bg-purple-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">New</Badge>}
             {product.isBestseller && <Badge className="bg-pink-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Bestseller</Badge>}
             {product.onSale && <Badge className="bg-orange-500 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Sale</Badge>}
           </div>
-          {/* Options count - hide on mobile */}
           {optionsCount > 1 && (
             <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 hidden sm:block">
               <Badge variant="secondary" className="bg-white/90 text-gray-700 text-xs">
@@ -62,9 +57,7 @@ const ProductCard = ({ product }) => {
           )}
         </div>
 
-        {/* Content */}
         <div className="p-2 sm:p-4 space-y-1 sm:space-y-2">
-          {/* Rating - hide on mobile */}
           {product.rating && (
             <div className="hidden sm:flex items-center gap-2">
               <div className="flex items-center">
@@ -83,17 +76,14 @@ const ProductCard = ({ product }) => {
             </div>
           )}
 
-          {/* Name */}
           <h3 className="font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm">{product.name}</h3>
 
-          {/* Price - "From ₹X" */}
           <p className="text-sm sm:text-base font-bold text-gray-900">
             From ₹{minPrice.toLocaleString('en-IN')}
           </p>
         </div>
       </div>
 
-      {/* Product Detail Modal - Rendered via Portal to escape transform contexts */}
       {showModal && createPortal(
         <ProductDetailModal 
           product={product} 
@@ -105,7 +95,6 @@ const ProductCard = ({ product }) => {
   );
 };
 
-// Product Detail Modal Component
 const ProductDetailModal = ({ product, onClose }) => {
   const sizes = product.sizes && product.sizes.length > 0 
     ? product.sizes 
@@ -114,13 +103,11 @@ const ProductDetailModal = ({ product, onClose }) => {
     ? product.flavors 
     : [];
 
-  // Helper to get size details
   const getSizeDetails = (size) => {
     if (typeof size === 'object') return size;
     return { name: size, price: product.price || 0 };
   };
 
-  // Helper to get flavor details
   const getFlavorDetails = (flavor) => {
     if (typeof flavor === 'object') return flavor;
     return { name: flavor, price: 0 };
@@ -129,6 +116,8 @@ const ProductDetailModal = ({ product, onClose }) => {
   const [selectedSize, setSelectedSize] = useState(sizes[0]);
   const [selectedFlavor, setSelectedFlavor] = useState(flavors.length > 0 ? flavors[0] : null);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  
+  // FIXED STATE
   const [cartInput, setCartInput] = useState({
     petName: '',
     date: null,
@@ -137,13 +126,13 @@ const ProductDetailModal = ({ product, onClose }) => {
     purchaseType: 'onetime',
     addPartyBox: false
   });
+  
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
   
   const { addToCart } = useCart();
   const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-  // Fetch related products
   React.useEffect(() => {
     const fetchRelated = async () => {
       try {
@@ -160,7 +149,6 @@ const ProductDetailModal = ({ product, onClose }) => {
     fetchRelated();
   }, [product.id, API_URL]);
 
-  // Get current price based on selection
   const currentSizeDetails = getSizeDetails(selectedSize);
   const currentFlavorDetails = selectedFlavor ? getFlavorDetails(selectedFlavor) : { name: '', price: 0 };
   const currentPrice = (currentSizeDetails.price || 0) + (currentFlavorDetails.price || 0);
@@ -175,12 +163,8 @@ const ProductDetailModal = ({ product, onClose }) => {
       customDetails: { ...cartInput }
     };
     addToCart(cartItem, currentSizeDetails.name, currentFlavorDetails.name || 'Standard');
-    toast({
-      title: 'Added to cart! 🎉',
-      description: `${product.name} - ₹${currentPrice}`,
-    });
-    onClose();
-  };
+    
+    // Add Party Box
     if (cartInput.addPartyBox) {
       addToCart({
         id: 'party-box-addon',
@@ -190,8 +174,14 @@ const ProductDetailModal = ({ product, onClose }) => {
         category: 'hampers'
       }, 'Standard', 'Standard');
     }
+    
+    toast({
+      title: 'Added to cart! 🎉',
+      description: `${product.name} - ₹${currentPrice}`,
+    });
+    onClose();
+  };
 
-  // Quick add related product to cart
   const handleQuickAdd = (relatedProduct) => {
     const price = relatedProduct.minPrice || relatedProduct.price || 0;
     const cartItem = {
@@ -207,7 +197,6 @@ const ProductDetailModal = ({ product, onClose }) => {
     });
   };
 
-  // Handle backdrop click
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();
@@ -223,7 +212,6 @@ const ProductDetailModal = ({ product, onClose }) => {
         className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
         <button 
           className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
           onClick={onClose}
@@ -232,7 +220,6 @@ const ProductDetailModal = ({ product, onClose }) => {
         </button>
 
         <div className="grid md:grid-cols-2">
-          {/* Image */}
           <div className="relative aspect-square bg-gray-100 md:sticky md:top-0">
             <img
               src={product.image && product.image.trim() !== '' ? product.image : 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579'}
@@ -240,16 +227,13 @@ const ProductDetailModal = ({ product, onClose }) => {
               className="w-full h-full object-cover"
               onError={(e) => { e.target.src = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579'; }}
             />
-            {/* Badges */}
             <div className="absolute top-3 left-3 flex flex-col gap-2">
               {product.isNew && <Badge className="bg-purple-600">New</Badge>}
               {product.isBestseller && <Badge className="bg-pink-600">Bestseller</Badge>}
             </div>
           </div>
 
-          {/* Details */}
           <div className="p-6">
-            {/* Rating */}
             {product.rating && (
               <div className="flex items-center gap-2 mb-2">
                 <div className="flex items-center">
@@ -268,15 +252,12 @@ const ProductDetailModal = ({ product, onClose }) => {
               </div>
             )}
 
-            {/* Name */}
             <h2 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h2>
             
-            {/* Description */}
             {product.description && (
               <p className="text-sm text-gray-600 mb-4 line-clamp-2">{product.description}</p>
             )}
 
-            {/* Size Selection */}
             {sizes.length > 0 && (
               <div className="mb-4">
                 <label className="text-sm font-semibold text-gray-700 block mb-2">Select Size</label>
@@ -284,7 +265,6 @@ const ProductDetailModal = ({ product, onClose }) => {
                   {sizes.map((size, idx) => {
                     const details = getSizeDetails(size);
                     const isSelected = (typeof selectedSize === 'object' ? selectedSize.name : selectedSize) === details.name;
-                    
                     return (
                       <button
                         key={idx}
@@ -304,7 +284,6 @@ const ProductDetailModal = ({ product, onClose }) => {
               </div>
             )}
 
-            {/* Flavor Selection */}
             {flavors.length > 1 && (
               <div className="mb-4">
                 <label className="text-sm font-semibold text-gray-700 block mb-2">Select Flavor</label>
@@ -312,7 +291,6 @@ const ProductDetailModal = ({ product, onClose }) => {
                   {flavors.map((flavor, idx) => {
                     const details = getFlavorDetails(flavor);
                     const isSelected = selectedFlavor && (typeof selectedFlavor === 'object' ? selectedFlavor.name : selectedFlavor) === details.name;
-                    
                     return (
                       <button
                         key={idx}
@@ -331,7 +309,6 @@ const ProductDetailModal = ({ product, onClose }) => {
               </div>
             )}
 
-            {/* Personalization */}
             <div className="space-y-3 mb-4 pt-3 border-t">
               <label className="text-sm font-semibold text-gray-700 block">Personalization</label>
               <Input 
@@ -389,6 +366,8 @@ const ProductDetailModal = ({ product, onClose }) => {
                 <option value="4pm-7pm">4 PM - 7 PM</option>
                 <option value="7pm-9pm">7 PM - 9 PM</option>
               </select>
+            </div>
+
             {/* Autoship Option */}
             {product.autoship_enabled && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
@@ -442,14 +421,12 @@ const ProductDetailModal = ({ product, onClose }) => {
               </div>
             )}
 
-            {/* Shipping Info */}
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 text-xs">
               <p className="text-yellow-800">
                 <strong>Shipping:</strong> ₹150 flat for orders below ₹3000. FREE delivery above ₹3000!
               </p>
             </div>
 
-            {/* Price & Add to Cart */}
             <div className="flex items-center justify-between pt-3 border-t">
               <div>
                 <p className="text-xs text-gray-500">Total Price</p>
@@ -466,7 +443,6 @@ const ProductDetailModal = ({ product, onClose }) => {
           </div>
         </div>
 
-        {/* Goes Well With Section */}
         {relatedProducts.length > 0 && (
           <div className="border-t bg-gradient-to-r from-purple-50 to-pink-50 p-4">
             <div className="flex items-center gap-2 mb-3">
