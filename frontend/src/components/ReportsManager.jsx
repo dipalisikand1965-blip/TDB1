@@ -294,7 +294,7 @@ const ReportsManager = ({ authHeaders }) => {
             Refresh
           </Button>
 
-          <Button variant="outline" className="gap-2 ml-auto">
+          <Button variant="outline" className="gap-2 ml-auto" onClick={exportToCSV}>
             <Download className="w-4 h-4" /> Export CSV
           </Button>
         </div>
