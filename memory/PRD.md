@@ -178,6 +178,33 @@ MEILISEARCH_MASTER_KEY=tdb-search-key-2025
 
 ## Changelog
 
+### Jan 15, 2025 (Session 3 - Part 7) - Kitchen Sheet & CSV Export
+- ✅ **KITCHEN SHEET PRINT**
+  - Printable kitchen sheet with batch summary
+  - Groups orders by time slot
+  - Shows: Order ID, Pet, Products, Special Instructions, Status
+  - Includes "Products to Prepare" summary list
+  - Professional print layout with The Doggy Company branding
+
+- ✅ **DELIVERY SHEET PRINT**
+  - Printable delivery sheet grouped by city
+  - Shows: Time slot, Order, Customer, Address, Phone, Items, Checkbox
+  - Optimized for delivery drivers
+
+- ✅ **CSV EXPORT**
+  - Export button in Reports dashboard
+  - Exports data based on active tab:
+    - Executive Summary → metrics
+    - Revenue → by city + daily sales
+    - Products → product performance table
+    - Autoship → subscriber metrics
+    - Customers → customer metrics + high value list
+    - Pet Soul → popular breeds + birthdays
+    - Operations → orders by status
+    - Reviews → review metrics
+    - Financial → financial metrics
+  - Auto-downloads with timestamp filename
+
 ### Jan 15, 2025 (Session 3 - Part 6) - Concierge Notes & Daily Email Reports
 - ✅ **CONCIERGE NOTES ENGINE** (`/app/backend/concierge_engine.py`)
   - Internal notes for customers AND pets - visible across ALL pillars
