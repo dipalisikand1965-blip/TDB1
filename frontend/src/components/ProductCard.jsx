@@ -170,6 +170,7 @@ const ProductDetailModal = ({ product, onClose }) => {
       price: currentPrice,
       selectedSize: currentSizeDetails.name,
       selectedFlavor: currentFlavorDetails.name || 'Standard',
+      purchaseType: cartInput.purchaseType,
       customDetails: { ...cartInput }
     };
     addToCart(cartItem, currentSizeDetails.name, currentFlavorDetails.name || 'Standard');
