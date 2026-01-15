@@ -172,7 +172,7 @@ ADMIN_PASSWORD=lola4304
 
 ## Changelog
 
-### Jan 15, 2025 (Session 1) - Auth & Product Parity + Google Login
+### Jan 15, 2025 (Session 1) - Auth & Product Parity + Google Login + Autoship
 - ✅ **CRITICAL BUG FIX: Customer Authentication Persistence**
   - **Root Cause**: `AuthContext.jsx` was calling `/api/auth/me` with email as query param instead of Bearer token in Authorization header
   - **Fix**: Updated `fetchUser()` to properly send JWT token in headers: `Authorization: Bearer ${token}`
@@ -189,18 +189,27 @@ ADMIN_PASSWORD=lola4304
   - Automatically creates new user or updates existing user on Google login
   - User sessions stored in `user_sessions` collection with 7-day expiry
   - `AuthCallback.jsx` component handles OAuth redirect and session processing
-- ✅ **Backend Orphan Code Cleanup**
-  - Removed duplicate/orphaned code in `server.py` that was causing IndentationError on server startup
-- ✅ **MemberDashboard Route Protection**
-  - Added proper redirect to `/login` when unauthenticated user visits `/dashboard`
-  - Added loading spinner while auth state is being checked
-- ✅ **Product Parity Verification**
-  - 392 products correctly synced from Shopify
-  - 103 cakes, 59 accessories, 40 breed-cakes, and more across 15 categories
-  - Variants (Base/Flavor/Size) with correct pricing verified
-- ✅ **Comprehensive Testing**: 94% backend (16/17), 100% frontend tests passed
-  - All auth flows tested: register, login, /auth/me, protected routes
-  - Product listing, modal, add to cart tested
+- ✅ **Product Variant Parity Fixed**
+  - Dynamic option extraction from `product.options` (Base, Flavour, Weight)
+  - Fixed "Rag" → "Ragi" and "Oat" → "Oats" data issues
+  - Admin product editor now has Options & Variants editor
+- ✅ **Collections System Fixed**
+  - Created 22 collections (Cakes, Breed Cakes, Treats, etc.)
+  - Linked 263 products to collections
+  - Fixed CollectionManager auth header issue
+  - Collections tab now works in admin
+- ✅ **My Pets Data Isolation Fixed**
+  - Users only see their own pets
+  - Added `/api/celebrations/my-upcoming` endpoint
+- ✅ **AUTOSHIP FEATURE IMPLEMENTED**
+  - **Product Page**: Autoship option with frequency selector (2/4/6 weeks)
+  - **Savings Display**: 25% off 1st order, 40% off 4th-5th, 50% off 6th-7th
+  - **Autoship Info Page** (`/autoship`): Full FAQ and benefits page
+  - **My Account Tab**: Autoship section to manage subscriptions
+  - **Admin Dashboard**: Full autoship management with stats, search, status control
+  - **Backend APIs**: Create, pause, resume, cancel, skip, update subscriptions
+  - **Discount Logic**: Automatic discount calculation based on order count
+  - 53 products enabled for Autoship (treats, biscuits, jerky, nut-butters, desi-treats)
 
 ### Jan 14, 2025 (Session 2)
 - ✅ **Discount Code at Checkout (P1)**
