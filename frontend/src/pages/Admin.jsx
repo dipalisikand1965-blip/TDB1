@@ -1669,6 +1669,11 @@ const Admin = () => {
           <ProductManager credentials={{ username, password }} />
         )}
 
+        {/* Autoship Tab */}
+        {activeTab === 'autoship' && (
+          <AutoshipManager getAuthHeader={getAuthHeaders} />
+        )}
+
         {/* Collections Tab */}
         {activeTab === 'collections' && (
           <CollectionManager getAuthHeader={getAuthHeaders} />
