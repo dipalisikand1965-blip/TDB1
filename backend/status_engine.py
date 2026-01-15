@@ -555,11 +555,31 @@ async def update_status(
             pet_data=pet
         )
     
+    # Check if this is a completion status and schedule feedback
+    feedback_result = {"scheduled": False}
+    try:
+        from feedback_engine import schedule_feedback, get_feedback_config
+        feedback_config = await get_feedback_config(pillar)
+        if feedback_config and feedback_config.get("completion_status") == new_status:
+            customer = record.get("customer", {})
+            pet = record.get("pet")
+            feedback_result = await schedule_feedback(
+                pillar=pillar,
+                record_id=record_id,
+                customer=customer,
+                order_data=record,
+                pet_data=pet
+            )
+            logger.info(f"Feedback scheduled for {pillar}/{record_id}: {feedback_result}")
+    except Exception as e:
+        logger.error(f"Failed to schedule feedback: {e}")
+    
     return {
         "message": f"Status updated to {new_status}",
         "old_status": old_status,
         "new_status": new_status,
-        "notification": notification_result
+        "notification": notification_result,
+        "feedback": feedback_result
     }
 
 
