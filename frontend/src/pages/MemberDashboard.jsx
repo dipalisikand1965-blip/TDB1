@@ -135,6 +135,10 @@ const MemberDashboard = () => {
           <TabsList className="bg-white p-1 rounded-xl border shadow-sm w-full md:w-auto flex overflow-x-auto">
             <TabsTrigger value="overview" className="rounded-lg flex-1 md:flex-none">Overview</TabsTrigger>
             <TabsTrigger value="orders" className="rounded-lg flex-1 md:flex-none">Orders</TabsTrigger>
+            <TabsTrigger value="autoship" className="rounded-lg flex-1 md:flex-none">
+              <RefreshCw className="w-4 h-4 mr-1" />
+              Autoship
+            </TabsTrigger>
             <TabsTrigger value="pets" className="rounded-lg flex-1 md:flex-none">Pets</TabsTrigger>
             <TabsTrigger value="addresses" className="rounded-lg flex-1 md:flex-none">Addresses</TabsTrigger>
             <TabsTrigger value="settings" className="rounded-lg flex-1 md:flex-none">Settings</TabsTrigger>
