@@ -106,6 +106,8 @@ GET  /api/mira/access           - Check access limits
 POST /api/auth/register         - User registration
 POST /api/auth/login            - User login (returns JWT access_token)
 GET  /api/auth/me               - Get current user info (requires Bearer token)
+POST /api/auth/google/session   - Google OAuth session exchange
+POST /api/auth/logout           - Logout and invalidate session
 POST /api/membership/upgrade    - Upgrade tier
 POST /api/cron/sync-products    - Scheduled sync
 GET  /api/orders/my-orders      - User's order history (requires Bearer token)
