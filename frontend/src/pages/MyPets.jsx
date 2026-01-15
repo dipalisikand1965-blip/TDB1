@@ -71,8 +71,8 @@ const MyPets = () => {
           setPets(data.pets || []);
         }
 
-        // Fetch upcoming celebrations for user's pets
-        const celebRes = await fetch(`${API_URL}/api/celebrations/upcoming?days=30`, {
+        // Fetch upcoming celebrations for user's pets only
+        const celebRes = await fetch(`${API_URL}/api/celebrations/my-upcoming?days=30`, {
           headers: authHeaders
         });
         if (celebRes.ok) {
