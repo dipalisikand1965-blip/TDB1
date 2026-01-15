@@ -562,6 +562,21 @@ from concierge_engine import concierge_router, set_database as set_concierge_db
 # Import email reports engine
 from email_reports_engine import reports_email_router, set_database as set_reports_db, process_daily_reports
 
+# Import auth routes (refactored)
+from auth_routes import (
+    auth_router, 
+    set_database as set_auth_db,
+    get_current_user,
+    get_current_user_optional,
+    verify_admin as verify_admin_auth,
+    check_mira_access,
+    increment_chat_count,
+    create_access_token,
+    get_password_hash_secure,
+    verify_password_secure,
+    MEMBERSHIP_TIERS
+)
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
