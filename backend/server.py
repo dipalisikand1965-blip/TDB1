@@ -3182,7 +3182,7 @@ async def get_search_stats():
 
 
 @api_router.post("/search/reindex")
-async def reindex_search(credentials: HTTPBasicCredentials = Depends(admin_security)):
+async def reindex_search(credentials: HTTPBasicCredentials = Depends(security)):
     """Reindex all products in the search engine (admin only)"""
     # Verify admin credentials
     username = os.environ.get("ADMIN_USERNAME", "admin")
