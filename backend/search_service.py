@@ -8,6 +8,11 @@ import logging
 from typing import List, Optional, Dict, Any
 from meilisearch_python_sdk import AsyncClient
 from meilisearch_python_sdk.errors import MeilisearchApiError
+from meilisearch_python_sdk.models.settings import (
+    TypoTolerance, 
+    MinWordSizeForTypos,
+    Synonyms,
+)
 
 logger = logging.getLogger(__name__)
 
