@@ -405,6 +405,26 @@ const ProductDetailModal = ({ product, onClose }) => {
                     <span className="text-sm font-medium">Autoship & Save (Every 4 weeks)</span>
                   </label>
                   {cartInput.purchaseType === 'autoship' && (
+            {/* Party Box Upsell */}
+            {product.category === 'cakes' && (
+              <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-lg p-3 mb-4">
+                <div className="flex items-start gap-3">
+                  <input 
+                    type="checkbox" 
+                    className="mt-1 w-4 h-4 text-purple-600 rounded border-gray-300 cursor-pointer"
+                    checked={cartInput.addPartyBox}
+                    onChange={(e) => setCartInput({...cartInput, addPartyBox: e.target.checked})}
+                  />
+                  <div className="flex-1">
+                    <h4 className="text-sm font-bold text-gray-900">Add a Party Box? 🎁</h4>
+                    <p className="text-xs text-gray-600">Includes Birthday Bandana, Party Hat & Treats!</p>
+                    <p className="text-sm font-bold text-purple-600 mt-1">+₹499</p>
+                  </div>
+                  <img src="https://thedoggybakery.com/cdn/shop/files/BOBA_MILK_TEA_7.jpg?v=1759129448&width=100" alt="Party Box" className="w-16 h-16 object-cover rounded-md" />
+                </div>
+              </div>
+            )}
+
                     <p className="text-xs text-blue-700 ml-6">
                       Get 40% off on your 4th & 5th orders! Cancel anytime.
                     </p>
