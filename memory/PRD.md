@@ -178,6 +178,35 @@ MEILISEARCH_MASTER_KEY=tdb-search-key-2025
 
 ## Changelog
 
+### Jan 15, 2025 (Session 3 - Part 5) - Pet Birthday & Celebration Engine
+- ✅ **PET BIRTHDAY ENGINE** (`/app/backend/birthday_engine.py`)
+  - Detects ALL celebration types: Birthday, Gotcha Day, Custom celebrations
+  - Pulls from pet profile dates: `birth_date`, `gotcha_date`, `celebrations[]`
+  - Groups by timeframe: Today, This Week, Next Week, This Month
+  - Auto-generates unique discount codes with expiry
+  - Sends personalized WhatsApp + Email with:
+    - Pet name and celebration type
+    - Discount code and expiry
+    - Product suggestions based on pet type
+    - Upsell for Autoship
+
+- ✅ **CELEBRATION TYPES SUPPORTED**:
+  | Type | Emoji | Source Field |
+  |------|-------|--------------|
+  | Birthday | 🎂 | `birth_date` |
+  | Gotcha Day | 🏠 | `gotcha_date` |
+  | Custom | 🎉 | `celebrations[]` array |
+
+- ✅ **API ENDPOINTS**:
+  - `GET /api/birthday-engine/upcoming` - Get upcoming celebrations (filter by days, city, type)
+  - `GET /api/birthday-engine/stats` - Birthday statistics
+  - `POST /api/birthday-engine/send-promotion/{pet_id}` - Send individual promotion
+  - `POST /api/birthday-engine/send-bulk` - Send promotions to all upcoming
+  - `GET /api/birthday-engine/promotions` - List sent promotions
+  - `GET /api/birthday-engine/products/{pet_type}/{celebration}` - Product suggestions
+
+- ✅ **TESTED**: Sent promotion for Mojo's celebration → Discount code CELE-1UBXL4 (20% off), WhatsApp + Email sent
+
 ### Jan 15, 2025 (Session 3 - Part 4) - Post-Completion Feedback Loop Engine
 - ✅ **PILLAR-AGNOSTIC FEEDBACK ENGINE** (`/app/backend/feedback_engine.py`)
   - Automatically schedules feedback when order/booking reaches completion status
