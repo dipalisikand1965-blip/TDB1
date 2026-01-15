@@ -371,7 +371,7 @@ const ProductDetailModal = ({ product, onClose }) => {
                 value={cartInput.time}
                 onChange={(e) => setCartInput({...cartInput, time: e.target.value})}
               >
-                <option value="">Select Delivery Time</option>
+                <option value="">Select Pick Up | Delivery Time</option>
                 <option value="10am-1pm">10 AM - 1 PM</option>
                 <option value="1pm-4pm">1 PM - 4 PM</option>
                 <option value="4pm-7pm">4 PM - 7 PM</option>
