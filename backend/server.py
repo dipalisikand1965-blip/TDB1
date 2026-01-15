@@ -6041,6 +6041,9 @@ set_concierge_db(db)
 # Set database for email reports engine
 set_reports_db(db)
 
+# Set database for auth routes
+set_auth_db(db)
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
@@ -6050,6 +6053,7 @@ app.include_router(feedback_router)
 app.include_router(birthday_router)
 app.include_router(concierge_router)
 app.include_router(reports_email_router)
+app.include_router(auth_router)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
