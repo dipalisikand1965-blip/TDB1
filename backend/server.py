@@ -598,6 +598,26 @@ class ProductUpdate(BaseModel):
     collection_ids: Optional[List[str]] = None
     autoship_enabled: Optional[bool] = None
 
+class Review(BaseModel):
+    id: str = Field(default_factory=lambda: f"rev-{uuid.uuid4().hex[:8]}")
+    product_id: str
+    user_id: Optional[str] = None
+    author_name: str
+    rating: int
+    title: Optional[str] = None
+    content: str
+    image_url: Optional[str] = None
+    status: str = "pending"  # pending, approved, rejected
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class ReviewCreate(BaseModel):
+    product_id: str
+    author_name: str
+    rating: int
+    title: Optional[str] = None
+    content: str
+    image_url: Optional[str] = None
+
 class Collection(BaseModel):
     id: str = Field(default_factory=lambda: f"col-{uuid.uuid4().hex[:8]}")
     name: str
