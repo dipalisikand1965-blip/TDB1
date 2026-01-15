@@ -251,6 +251,16 @@ const Navbar = () => {
               ))}
               
               {/* Pet Soul Button in Mobile */}
+              {/* Account Button in Mobile */}
+              <Link
+                to={user ? "/dashboard" : "/login"}
+                onClick={() => setIsMenuOpen(false)}
+                className="block w-full mt-4 px-4 py-3 bg-gray-100 text-gray-900 rounded-lg text-base font-medium text-center flex items-center justify-center gap-2"
+              >
+                <User className="w-5 h-5" />
+                {user ? "My Account" : "Login / Sign Up"}
+              </Link>
+
               <Link
                 to="/my-pets"
                 onClick={() => setIsMenuOpen(false)}
