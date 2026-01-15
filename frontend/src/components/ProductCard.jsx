@@ -483,6 +483,78 @@ const ProductDetailModal = ({ product, onClose }) => {
               </Button>
             </div>
           </div>
+        {/* Reviews Section */}
+        <div className="border-t bg-gray-50 p-6">
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5 text-purple-600" />
+                    Customer Reviews ({reviews.length})
+                </h3>
+                <Button variant="outline" size="sm" onClick={() => setShowReviewForm(!showReviewForm)}>
+                    {showReviewForm ? 'Cancel' : 'Write a Review'}
+                </Button>
+            </div>
+
+            {showReviewForm && (
+                <div className="bg-white p-4 rounded-xl border mb-6 animate-in slide-in-from-top-2">
+                    <h4 className="font-semibold mb-3">Write a Review</h4>
+                    <div className="space-y-3">
+                        <Input 
+                            placeholder="Your Name" 
+                            value={newReview.author_name}
+                            onChange={(e) => setNewReview({...newReview, author_name: e.target.value})}
+                        />
+                        <Input 
+                            placeholder="Review Title" 
+                            value={newReview.title}
+                            onChange={(e) => setNewReview({...newReview, title: e.target.value})}
+                        />
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600">Rating:</span>
+                            <div className="flex gap-1">
+                                {[1,2,3,4,5].map(star => (
+                                    <button key={star} type="button" onClick={() => setNewReview({...newReview, rating: star})}>
+                                        <Star className={`w-5 h-5 ${star <= newReview.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <Textarea 
+                            placeholder="Share your experience..." 
+                            value={newReview.content}
+                            onChange={(e) => setNewReview({...newReview, content: e.target.value})}
+                        />
+                        <Button onClick={submitReview} disabled={submittingReview} className="w-full bg-purple-600">
+                            {submittingReview ? 'Submitting...' : 'Submit Review'}
+                        </Button>
+                    </div>
+                </div>
+            )}
+
+            <div className="space-y-4">
+                {reviews.map(review => (
+                    <div key={review.id} className="bg-white p-4 rounded-xl border shadow-sm">
+                        <div className="flex justify-between items-start mb-2">
+                            <div>
+                                <h5 className="font-semibold">{review.title}</h5>
+                                <div className="flex items-center gap-1">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                                    ))}
+                                </div>
+                            </div>
+                            <span className="text-xs text-gray-500">{new Date(review.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <p className="text-sm text-gray-600">{review.content}</p>
+                        <p className="text-xs text-gray-400 mt-2">- {review.author_name}</p>
+                    </div>
+                ))}
+                {reviews.length === 0 && !showReviewForm && (
+                    <p className="text-center text-gray-500 italic py-4">No reviews yet. Be the first!</p>
+                )}
+            </div>
+        </div>
+
         </div>
 
         {relatedProducts.length > 0 && (
