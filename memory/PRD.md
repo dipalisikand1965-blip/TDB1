@@ -172,6 +172,36 @@ ADMIN_PASSWORD=lola4304
 
 ## Changelog
 
+### Jan 15, 2025 (Session 2) - Smart Search Feature
+- ✅ **SMART SEARCH IMPLEMENTATION (Meilisearch)**
+  - **Technology**: Meilisearch v1.11.0 local binary running on port 7700
+  - **Backend Service**: `search_service.py` with async Meilisearch SDK
+  - **Auto-Indexing**: 392 products + 22 collections indexed on startup
+  - **Typo Tolerance**: Enabled (1 typo for 4+ chars, 2 typos for 8+ chars)
+  - **Synonyms**: dog/doggy/pup, cake/birthday cake, treat/snack, labrador/lab, birthday/bday
+- ✅ **Search API Endpoints**:
+  - `GET /api/search?q=query` - Full search with filters (category, min_price, max_price, pan_india, autoship, sort)
+  - `GET /api/search/typeahead?q=query` - Fast autocomplete (returns products + collections)
+  - `GET /api/search/stats` - Index statistics (products indexed, indexing status)
+  - `POST /api/search/reindex` - Admin endpoint to reindex all products (Basic Auth required)
+- ✅ **Global Search Bar** (`SearchBar.jsx`):
+  - Persistent search icon in Navbar opens search overlay
+  - Live typeahead with 300ms debounce
+  - Shows products (8 max) and collections (4 max) in dropdown
+  - Product results show image, name, category, price
+  - Collection results as clickable tags
+  - "View all results" button navigates to search page
+- ✅ **Search Results Page** (`SearchResults.jsx`):
+  - Full-page search with filter panel
+  - Category dropdown (12 categories)
+  - Sort options: Relevance, Price asc/desc, Name asc/desc
+  - Price range filter (Min/Max)
+  - Checkboxes: Pan India Shipping, Autoship Available
+  - Grid/List view toggle
+  - Load More pagination
+  - Empty state with browse suggestions
+- ✅ **Testing**: 18/18 backend tests passed, all frontend tests passed
+
 ### Jan 15, 2025 (Session 1) - Auth & Product Parity + Google Login + Autoship
 - ✅ **CRITICAL BUG FIX: Customer Authentication Persistence**
   - **Root Cause**: `AuthContext.jsx` was calling `/api/auth/me` with email as query param instead of Bearer token in Authorization header
