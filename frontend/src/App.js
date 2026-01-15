@@ -117,6 +117,9 @@ function MainLayout() {
         {/* All Products */}
         <Route path="/all" element={<ProductListing category="all" />} />
         
+        {/* Search Results */}
+        <Route path="/search" element={<SearchResults />} />
+        
         {/* Special Pages */}
         <Route path="/custom-cake" element={<CustomCakeDesigner />} />
         <Route path="/concierge" element={<MiraConcierge />} />
