@@ -178,7 +178,25 @@ MEILISEARCH_MASTER_KEY=tdb-search-key-2025
 
 ## Changelog
 
-### Jan 15, 2025 (Session 3) - Admin Fulfilment & Reports Dashboards
+### Jan 15, 2025 (Session 3 - Part 2) - Visual Analytics & Draft Orders
+- ✅ **VISUAL ANALYTICS CHARTS (recharts)**
+  - **Revenue Trend**: Area chart showing daily revenue over time with gradient fill
+  - **Revenue by City**: Horizontal bar chart with color-coded city bars
+  - **Top Products**: Horizontal bar chart showing product revenue
+  - **Customer Distribution**: Donut pie chart (New/Returning/Inactive)
+  - **Autoship Distribution**: Donut pie chart (Active/Paused/Cancelled subscribers)
+  - All charts support city filtering and time period selection
+
+- ✅ **DRAFT ORDERS FLOW VERIFIED**
+  - Create Draft Order modal with all fields: Source, Customer, Pet, Items, Delivery Date/Slot
+  - **Concierge Notes** field (internal only, for admin notes)
+  - Draft orders appear in list with WhatsApp/Email send buttons
+  - WhatsApp link generates pre-filled message with checkout link
+  - Email option available when customer email provided
+
+- ✅ **CODE QUALITY**: Moved MetricCard component outside ReportsManager to fix lint warnings
+
+### Jan 15, 2025 (Session 3 - Part 1) - Admin Fulfilment & Reports Dashboards
 - ✅ **MEILISEARCH PERSISTENCE FIX (P0)**
   - Downloaded Meilisearch v1.32.2 binary to `/usr/local/bin/meilisearch`
   - Created supervisor configuration at `/etc/supervisor/conf.d/meilisearch.conf`
