@@ -5664,11 +5664,90 @@ async def delete_collection(collection_id: str, username: str = Depends(verify_a
 # ==================== REVIEWS ====================
 
 @api_router.post("/reviews")
-async def create_review(review: ReviewCreate):
+async def create_review(review: ReviewCreate, current_user: dict = Depends(get_current_user_optional)):
     """Submit a new review"""
-    review_doc = Review(**review.model_dump()).model_dump()
+    # Get product info for the review
+    product = await db.products.find_one({"id": review.product_id}, {"_id": 0, "name": 1, "image": 1})
+    
+    review_doc = Review(
+        product_id=review.product_id,
+        author_name=review.reviewer_name or (current_user.get("name") if current_user else "Anonymous"),
+        user_email=review.reviewer_email or (current_user.get("email") if current_user else None),
+        user_id=current_user.get("id") if current_user else None,
+        rating=review.rating,
+        title=review.title,
+        content=review.comment,
+        image_url=review.image_url
+    ).model_dump()
+    
+    # Add product info for display
+    if product:
+        review_doc["product_name"] = product.get("name")
+        review_doc["product_image"] = product.get("image")
+    
     await db.reviews.insert_one(review_doc)
-    return {"message": "Review submitted for approval", "review": review_doc}
+    return {"message": "Review submitted for approval", "review": {k: v for k, v in review_doc.items() if k != "_id"}}
+
+
+@api_router.get("/reviews/my-reviews")
+async def get_my_reviews(current_user: dict = Depends(get_current_user)):
+    """Get reviews submitted by the logged-in user"""
+    reviews = await db.reviews.find(
+        {"user_email": current_user["email"]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    # Enrich with product info
+    for r in reviews:
+        product = await db.products.find_one({"id": r.get("product_id")}, {"_id": 0, "name": 1, "image": 1})
+        if product:
+            r["product_name"] = product.get("name")
+            r["product_image"] = product.get("image")
+        # Map content to comment for frontend compatibility
+        r["comment"] = r.get("content", "")
+    
+    return {"reviews": reviews}
+
+
+@api_router.put("/reviews/{review_id}")
+async def update_user_review(review_id: str, update: ReviewCreate, current_user: dict = Depends(get_current_user)):
+    """Update a review (only by the owner)"""
+    review = await db.reviews.find_one({"id": review_id})
+    if not review:
+        raise HTTPException(status_code=404, detail="Review not found")
+    
+    # Verify ownership
+    if review.get("user_email") != current_user.get("email"):
+        raise HTTPException(status_code=403, detail="You can only edit your own reviews")
+    
+    # Update the review
+    update_data = {
+        "author_name": update.reviewer_name or current_user.get("name"),
+        "rating": update.rating,
+        "content": update.comment,
+        "status": "pending"  # Re-submit for approval when edited
+    }
+    if update.title:
+        update_data["title"] = update.title
+    
+    await db.reviews.update_one({"id": review_id}, {"$set": update_data})
+    return {"message": "Review updated and submitted for re-approval"}
+
+
+@api_router.delete("/reviews/{review_id}")
+async def delete_user_review(review_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a review (only by the owner)"""
+    review = await db.reviews.find_one({"id": review_id})
+    if not review:
+        raise HTTPException(status_code=404, detail="Review not found")
+    
+    # Verify ownership
+    if review.get("user_email") != current_user.get("email"):
+        raise HTTPException(status_code=403, detail="You can only delete your own reviews")
+    
+    await db.reviews.delete_one({"id": review_id})
+    return {"message": "Review deleted"}
+
 
 @api_router.get("/products/{product_id}/reviews")
 async def get_product_reviews(product_id: str):
