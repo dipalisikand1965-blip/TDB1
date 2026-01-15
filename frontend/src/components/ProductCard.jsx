@@ -136,6 +136,7 @@ const ProductDetailModal = ({ product, onClose }) => {
     age: ''
   });
     purchaseType: 'onetime'
+    addPartyBox: false,
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
   
