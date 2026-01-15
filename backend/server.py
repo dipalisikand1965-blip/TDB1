@@ -1121,7 +1121,12 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     
     # Determine category from product_type, tags, and title
     product_type = shopify_product.get("product_type", "").lower()
-    tags = [t.lower() for t in shopify_product.get("tags", [])]
+    raw_tags = shopify_product.get("tags", [])
+    if isinstance(raw_tags, str):
+        tags = [t.strip().lower() for t in raw_tags.split(",")]
+    else:
+        tags = [str(t).lower() for t in raw_tags]
+        
     title = shopify_product.get("title", "").lower()
     handle = shopify_product.get("handle", "").lower()
     tags_str = " ".join(tags)
