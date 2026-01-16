@@ -3254,6 +3254,92 @@ async def get_related_products(product_id: str, limit: int = 4):
     }
 
 
+# ==================== ADMIN PRODUCT MANAGEMENT ====================
+
+DISPLAY_TAG_OPTIONS = [
+    {"id": "best-seller", "label": "🏆 Best Seller", "color": "pink"},
+    {"id": "limited", "label": "⏰ Limited Edition", "color": "red"},
+    {"id": "selling-fast", "label": "🔥 Selling Fast", "color": "amber"},
+    {"id": "discount", "label": "💰 On Discount", "color": "green"},
+    {"id": "new-arrival", "label": "✨ New Arrival", "color": "blue"},
+    {"id": "staff-pick", "label": "⭐ Staff Pick", "color": "indigo"},
+    {"id": "popular", "label": "💜 Popular", "color": "purple"},
+    {"id": "seasonal", "label": "🌸 Seasonal", "color": "rose"},
+    {"id": "exclusive", "label": "💎 Exclusive", "color": "cyan"}
+]
+
+@api_router.get("/admin/products/tag-options")
+async def get_display_tag_options():
+    """Get available display tag options"""
+    return {"tags": DISPLAY_TAG_OPTIONS}
+
+@api_router.put("/admin/products/{product_id}/display-tags")
+async def update_product_display_tags(product_id: str, tags: List[str]):
+    """Update display tags for a product"""
+    result = await db.products.update_one(
+        {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+        {"$set": {"display_tags": tags, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"success": True, "tags": tags}
+
+@api_router.put("/admin/products/{product_id}/bundle-config")
+async def update_product_bundle_config(product_id: str, bundle_config: dict):
+    """Update bundle configuration for a product"""
+    result = await db.products.update_one(
+        {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+        {"$set": {
+            "bundle_type": bundle_config.get("bundle_type"),
+            "bundle_includes": bundle_config.get("bundle_includes", {}),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"success": True, "config": bundle_config}
+
+@api_router.get("/admin/products/{product_id}")
+async def get_admin_product_details(product_id: str):
+    """Get full product details for admin editing"""
+    product = await db.products.find_one(
+        {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+        {"_id": 0}
+    )
+    
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"product": product}
+
+@api_router.put("/admin/products/{product_id}")
+async def update_admin_product(product_id: str, updates: dict):
+    """Update product details from admin"""
+    # Sanitize updates - only allow specific fields to be updated
+    allowed_fields = [
+        "name", "description", "price", "category", "display_tags",
+        "bundle_type", "bundle_includes", "options", "available",
+        "is_pan_india_shippable"
+    ]
+    
+    sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
+    sanitized["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.products.update_one(
+        {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+        {"$set": sanitized}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"success": True, "updated_fields": list(sanitized.keys())}
+
+
 # ==================== SEARCH API ====================
 
 async def mongodb_fallback_search_legacy(
