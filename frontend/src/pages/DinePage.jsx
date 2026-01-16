@@ -196,10 +196,33 @@ const DinePage = () => {
                 Going to a pet-friendly restaurant? Let other pet parents know! Schedule your visit and connect with fellow pet lovers for playdates and socializing.
               </p>
               <div className="flex gap-3">
-                <Button className="bg-white text-purple-600 hover:bg-gray-100">
+                <Button 
+                  className="bg-white text-purple-600 hover:bg-gray-100"
+                  onClick={() => {
+                    // Scroll to restaurants and show a toast or open first restaurant's buddy modal
+                    if (filteredRestaurants.length > 0) {
+                      setShowBuddyModal(filteredRestaurants[0]);
+                    } else {
+                      alert('Please select a restaurant below to schedule a visit');
+                    }
+                  }}
+                  data-testid="schedule-visit-btn"
+                >
                   <Calendar className="w-4 h-4 mr-2" /> Schedule a Visit
                 </Button>
-                <Button variant="outline" className="border-white text-white hover:bg-white/20">
+                <Button 
+                  variant="outline" 
+                  className="border-white text-white hover:bg-white/20"
+                  onClick={() => {
+                    // Show all upcoming meetups across all restaurants
+                    if (filteredRestaurants.length > 0) {
+                      setShowBuddyModal(filteredRestaurants[0]);
+                    } else {
+                      alert('No restaurants available');
+                    }
+                  }}
+                  data-testid="view-meetups-btn"
+                >
                   <MessageCircle className="w-4 h-4 mr-2" /> View Meetups
                 </Button>
               </div>
