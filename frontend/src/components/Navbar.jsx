@@ -46,11 +46,12 @@ const Navbar = () => {
       color: 'from-orange-500 to-red-500',
       description: 'Fresh meals & nutrition',
       path: '/dine',
-      isActive: false,
+      isActive: true,
       subItems: [
         { name: '🥘 Fresh Meals', path: '/meals' },
-        { name: '🍦 Frozen Treats', path: '/frozen' },
         { name: '🥜 Nut Butters', path: '/nut-butters' },
+        { name: '🍦 Frozen Treats', path: '/frozen' },
+        { name: '🍽️ Pet-Friendly Restaurants', path: '/dine', highlight: true },
       ]
     },
     { 
