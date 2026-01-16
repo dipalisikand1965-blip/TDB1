@@ -1241,11 +1241,16 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
             </Card>
           ) : (
             <div className="space-y-3">
-              {visits.map(visit => (
-                <Card key={visit.id} className="p-4">
+              {visits.map(visit => {
+                const hasVerification = visit.instagram || visit.facebook || visit.linkedin;
+                const petsList = visit.pets?.length > 0 ? visit.pets : (visit.pet_name ? [{name: visit.pet_name, breed: visit.pet_breed, about: visit.pet_about}] : []);
+                
+                return (
+                <Card key={visit.id} className={`p-4 ${hasVerification ? 'border-l-4 border-l-green-400' : ''}`}>
                   <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
+                    <div className="space-y-2 flex-1">
+                      {/* Header Row */}
+                      <div className="flex items-center gap-2 flex-wrap">
                         <h4 className="font-semibold">{visit.restaurant_name}</h4>
                         <Badge className={
                           visit.status === 'scheduled' ? 'bg-green-100 text-green-700' :
@@ -1254,29 +1259,85 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                         }>
                           {visit.status}
                         </Badge>
+                        {hasVerification && (
+                          <Badge className="bg-green-100 text-green-700 text-xs">
+                            ✓ Verified Profile
+                          </Badge>
+                        )}
+                        {visit.safety_agreed && (
+                          <Badge className="bg-amber-100 text-amber-700 text-xs">
+                            ✓ Safety Agreed
+                          </Badge>
+                        )}
                         {visit.looking_for_buddies && (
                           <Badge className="bg-pink-100 text-pink-700">
                             <Heart className="w-3 h-3 mr-1" /> Looking for Buddies
                           </Badge>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600">
-                        <span className="font-medium">{visit.user_name || 'Anonymous'}</span>
-                        {visit.user_email && <> • {visit.user_email}</>}
-                      </p>
+                      
+                      {/* User Details */}
+                      <div className="bg-gray-50 p-2 rounded text-sm">
+                        <p className="font-medium text-gray-800">
+                          {visit.title} {visit.first_name} {visit.last_name || visit.user_name || 'Anonymous'}
+                        </p>
+                        <div className="text-gray-600 text-xs space-y-0.5 mt-1">
+                          {visit.email && <p>📧 {visit.email}</p>}
+                          {visit.whatsapp && <p>📱 WhatsApp: {visit.whatsapp}</p>}
+                          {visit.notification_preference && <p>🔔 Prefers: {visit.notification_preference}</p>}
+                        </div>
+                        
+                        {/* Social Profiles */}
+                        {hasVerification && (
+                          <div className="flex gap-3 mt-2 pt-2 border-t">
+                            {visit.instagram && (
+                              <a href={visit.instagram.startsWith('http') ? visit.instagram : `https://instagram.com/${visit.instagram.replace('@','')}`} 
+                                 target="_blank" rel="noopener noreferrer"
+                                 className="text-pink-500 hover:text-pink-600 text-xs flex items-center gap-1">
+                                📷 Instagram
+                              </a>
+                            )}
+                            {visit.facebook && (
+                              <a href={visit.facebook.startsWith('http') ? visit.facebook : `https://facebook.com/${visit.facebook}`} 
+                                 target="_blank" rel="noopener noreferrer"
+                                 className="text-blue-600 hover:text-blue-700 text-xs flex items-center gap-1">
+                                👤 Facebook
+                              </a>
+                            )}
+                            {visit.linkedin && (
+                              <a href={visit.linkedin.startsWith('http') ? visit.linkedin : `https://linkedin.com/in/${visit.linkedin}`} 
+                                 target="_blank" rel="noopener noreferrer"
+                                 className="text-blue-700 hover:text-blue-800 text-xs flex items-center gap-1">
+                                💼 LinkedIn
+                              </a>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Visit Details */}
                       <p className="text-sm text-gray-500">
                         <Calendar className="w-3 h-3 inline mr-1" /> {visit.date} • 
                         <Clock className="w-3 h-3 inline mx-1" /> {visit.time_slot}
+                        {visit.restaurant_city && <> • 📍 {visit.restaurant_city}</>}
                       </p>
-                      {visit.pets && visit.pets.length > 0 && (
-                        <div className="flex gap-2 mt-2">
-                          {visit.pets.map((pet, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
-                              <PawPrint className="w-3 h-3 mr-1" /> {pet.name} ({pet.breed})
-                            </Badge>
-                          ))}
+                      
+                      {/* Pets Info */}
+                      {petsList.length > 0 && (
+                        <div className="bg-pink-50 p-2 rounded mt-2">
+                          <p className="text-xs font-medium text-pink-800 mb-1">🐕 Bringing {petsList.length} pet{petsList.length > 1 ? 's' : ''}:</p>
+                          <div className="space-y-1">
+                            {petsList.map((pet, idx) => (
+                              <div key={idx} className="text-xs text-pink-700">
+                                <span className="font-medium">{pet.name}</span>
+                                {pet.breed && <span className="text-pink-500"> ({pet.breed})</span>}
+                                {pet.about && <span className="italic text-pink-600"> - "{pet.about}"</span>}
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
+                      
                       {visit.notes && (
                         <p className="text-xs text-gray-400 italic mt-1">"{visit.notes}&rdquo;</p>
                       )}
