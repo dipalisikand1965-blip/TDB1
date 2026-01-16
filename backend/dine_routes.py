@@ -113,6 +113,7 @@ class RestaurantVisit(BaseModel):
     pet_ids: List[str] = []
     looking_for_buddies: bool = True
     notes: Optional[str] = None
+    notification_preference: str = "email"  # email or whatsapp
 
 
 class MeetupRequest(BaseModel):
