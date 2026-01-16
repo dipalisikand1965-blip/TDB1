@@ -535,7 +535,7 @@ const ServiceDesk = ({ authHeaders }) => {
     );
   };
 
-  // Settings Modal
+  // Settings Modal - Enhanced with SLA & Auto-Assignment
   const SettingsModal = () => {
     const [emailConfig, setEmailConfig] = useState({
       imap_host: '',
@@ -551,6 +551,135 @@ const ServiceDesk = ({ authHeaders }) => {
       webhook_verify_token: ''
     });
     const [saving, setSaving] = useState(false);
+    
+    // SLA & Auto-Assignment state
+    const [assignmentRules, setAssignmentRules] = useState([]);
+    const [slaRules, setSlaRules] = useState({ rules: [], defaults: [] });
+    const [conciergeAvailability, setConciergeAvailability] = useState([]);
+    const [loadingRules, setLoadingRules] = useState(false);
+    const [newAssignmentRule, setNewAssignmentRule] = useState({
+      name: '',
+      category: '',
+      urgency: '',
+      source: '',
+      assign_to: '',
+      priority: 50,
+      enabled: true
+    });
+    const [newSlaRule, setNewSlaRule] = useState({
+      name: '',
+      category: '',
+      urgency: '',
+      response_time_hours: 4,
+      resolution_time_hours: 24,
+      auto_escalate: true,
+      enabled: true
+    });
+
+    // Fetch SLA & Assignment rules
+    const fetchRules = async () => {
+      setLoadingRules(true);
+      try {
+        const [assignRes, slaRes, availRes] = await Promise.all([
+          fetch(`${API_URL}/api/tickets/sla/rules/assignment`, { headers: authHeaders }),
+          fetch(`${API_URL}/api/tickets/sla/rules/sla`, { headers: authHeaders }),
+          fetch(`${API_URL}/api/tickets/sla/concierges/availability`, { headers: authHeaders })
+        ]);
+        
+        if (assignRes.ok) {
+          const data = await assignRes.json();
+          setAssignmentRules(data.rules || []);
+        }
+        if (slaRes.ok) {
+          const data = await slaRes.json();
+          setSlaRules(data);
+        }
+        if (availRes.ok) {
+          const data = await availRes.json();
+          setConciergeAvailability(data.concierges || []);
+        }
+      } catch (err) {
+        console.error('Error fetching rules:', err);
+      }
+      setLoadingRules(false);
+    };
+
+    // Load rules when tab changes to SLA or Assignment
+    useEffect(() => {
+      if (activeSettingsTab === 'sla' || activeSettingsTab === 'assignment' || activeSettingsTab === 'team') {
+        fetchRules();
+      }
+    }, [activeSettingsTab]);
+
+    const handleSaveAssignmentRule = async () => {
+      if (!newAssignmentRule.name || !newAssignmentRule.assign_to) {
+        alert('Please enter a rule name and select who to assign to');
+        return;
+      }
+      setSaving(true);
+      try {
+        const res = await fetch(`${API_URL}/api/tickets/sla/rules/assignment`, {
+          method: 'POST',
+          headers: { ...authHeaders, 'Content-Type': 'application/json' },
+          body: JSON.stringify(newAssignmentRule)
+        });
+        if (res.ok) {
+          setNewAssignmentRule({ name: '', category: '', urgency: '', source: '', assign_to: '', priority: 50, enabled: true });
+          fetchRules();
+        }
+      } catch (err) {
+        console.error('Error saving assignment rule:', err);
+      }
+      setSaving(false);
+    };
+
+    const handleDeleteAssignmentRule = async (ruleName) => {
+      if (!confirm(`Delete rule "${ruleName}"?`)) return;
+      try {
+        await fetch(`${API_URL}/api/tickets/sla/rules/assignment/${encodeURIComponent(ruleName)}`, {
+          method: 'DELETE',
+          headers: authHeaders
+        });
+        fetchRules();
+      } catch (err) {
+        console.error('Error deleting rule:', err);
+      }
+    };
+
+    const handleSaveSlaRule = async () => {
+      if (!newSlaRule.name) {
+        alert('Please enter a rule name');
+        return;
+      }
+      setSaving(true);
+      try {
+        const res = await fetch(`${API_URL}/api/tickets/sla/rules/sla`, {
+          method: 'POST',
+          headers: { ...authHeaders, 'Content-Type': 'application/json' },
+          body: JSON.stringify(newSlaRule)
+        });
+        if (res.ok) {
+          setNewSlaRule({ name: '', category: '', urgency: '', response_time_hours: 4, resolution_time_hours: 24, auto_escalate: true, enabled: true });
+          fetchRules();
+        }
+      } catch (err) {
+        console.error('Error saving SLA rule:', err);
+      }
+      setSaving(false);
+    };
+
+    const handleToggleAvailability = async (conciergeId, available) => {
+      try {
+        await fetch(`${API_URL}/api/tickets/sla/concierges/availability`, {
+          method: 'POST',
+          headers: { ...authHeaders, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ concierge_id: conciergeId, available })
+        });
+        fetchRules();
+      } catch (err) {
+        console.error('Error updating availability:', err);
+      }
+    };
 
     const handleSaveIntegration = async (provider, config) => {
       setSaving(true);
@@ -569,21 +698,301 @@ const ServiceDesk = ({ authHeaders }) => {
 
     return (
       <Dialog open={showSettings} onOpenChange={setShowSettings}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Integration Settings</DialogTitle>
+            <DialogTitle>Service Desk Settings</DialogTitle>
           </DialogHeader>
           
           <Tabs value={activeSettingsTab} onValueChange={setActiveSettingsTab}>
-            <TabsList className="w-full">
-              <TabsTrigger value="email" className="flex-1">
-                <Mail className="w-4 h-4 mr-2" /> Email
+            <TabsList className="w-full grid grid-cols-5 mb-4">
+              <TabsTrigger value="assignment" className="text-xs">
+                <Zap className="w-3 h-3 mr-1" /> Auto-Assign
               </TabsTrigger>
-              <TabsTrigger value="whatsapp" className="flex-1">
-                <MessageSquare className="w-4 h-4 mr-2" /> WhatsApp
+              <TabsTrigger value="sla" className="text-xs">
+                <Clock className="w-3 h-3 mr-1" /> SLA Rules
+              </TabsTrigger>
+              <TabsTrigger value="team" className="text-xs">
+                <Users className="w-3 h-3 mr-1" /> Team
+              </TabsTrigger>
+              <TabsTrigger value="email" className="text-xs">
+                <Mail className="w-3 h-3 mr-1" /> Email
+              </TabsTrigger>
+              <TabsTrigger value="whatsapp" className="text-xs">
+                <MessageSquare className="w-3 h-3 mr-1" /> WhatsApp
               </TabsTrigger>
             </TabsList>
 
+            {/* AUTO-ASSIGNMENT TAB */}
+            <TabsContent value="assignment" className="space-y-4 mt-2">
+              <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                <p className="text-sm text-purple-800">
+                  <Zap className="w-4 h-4 inline mr-1" />
+                  Auto-assignment rules route new tickets to the right concierge based on category, urgency, or source.
+                </p>
+              </div>
+              
+              {/* Existing Rules */}
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">Active Rules</h4>
+                {loadingRules ? (
+                  <div className="flex justify-center py-4"><Loader2 className="w-5 h-5 animate-spin" /></div>
+                ) : assignmentRules.length === 0 ? (
+                  <p className="text-sm text-gray-500 py-2">No custom rules yet. Using default round-robin assignment.</p>
+                ) : (
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {assignmentRules.map((rule, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded border text-sm">
+                        <div className="flex-1">
+                          <span className="font-medium">{rule.name}</span>
+                          <span className="text-gray-500 ml-2">
+                            {rule.category && `${CATEGORY_ICONS[rule.category] || ''} ${rule.category}`}
+                            {rule.urgency && ` • ${rule.urgency}`}
+                            → <span className="text-purple-600">{rule.assign_to}</span>
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={rule.enabled ? 'default' : 'secondary'} className="text-xs">
+                            {rule.enabled ? 'Active' : 'Disabled'}
+                          </Badge>
+                          <Button variant="ghost" size="sm" onClick={() => handleDeleteAssignmentRule(rule.name)}>
+                            <Trash2 className="w-3 h-3 text-red-500" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Add New Rule */}
+              <div className="border-t pt-4">
+                <h4 className="font-medium text-sm mb-3">Add New Rule</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Rule Name *</Label>
+                    <Input
+                      value={newAssignmentRule.name}
+                      onChange={(e) => setNewAssignmentRule({ ...newAssignmentRule, name: e.target.value })}
+                      placeholder="e.g., Dine to Team Lead"
+                      className="text-sm"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Assign To *</Label>
+                    <Select value={newAssignmentRule.assign_to} onValueChange={(v) => setNewAssignmentRule({ ...newAssignmentRule, assign_to: v })}>
+                      <SelectTrigger className="text-sm"><SelectValue placeholder="Select concierge" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="round_robin">🔄 Round Robin (Auto)</SelectItem>
+                        {concierges.map(c => (
+                          <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Category Filter</Label>
+                    <Select value={newAssignmentRule.category} onValueChange={(v) => setNewAssignmentRule({ ...newAssignmentRule, category: v })}>
+                      <SelectTrigger className="text-sm"><SelectValue placeholder="Any category" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Any Category</SelectItem>
+                        {categories.map(c => (
+                          <SelectItem key={c.id} value={c.id}>{c.icon} {c.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Urgency Filter</Label>
+                    <Select value={newAssignmentRule.urgency} onValueChange={(v) => setNewAssignmentRule({ ...newAssignmentRule, urgency: v })}>
+                      <SelectTrigger className="text-sm"><SelectValue placeholder="Any urgency" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Any Urgency</SelectItem>
+                        <SelectItem value="critical">🔴 Critical</SelectItem>
+                        <SelectItem value="high">🟠 High</SelectItem>
+                        <SelectItem value="medium">🟡 Medium</SelectItem>
+                        <SelectItem value="low">⚪ Low</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Priority (Higher = First)</Label>
+                    <Input
+                      type="number"
+                      value={newAssignmentRule.priority}
+                      onChange={(e) => setNewAssignmentRule({ ...newAssignmentRule, priority: parseInt(e.target.value) || 0 })}
+                      className="text-sm"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Button onClick={handleSaveSlaRule} disabled={saving} className="w-full bg-purple-600 hover:bg-purple-700">
+                      {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                      Add Rule
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* SLA RULES TAB */}
+            <TabsContent value="sla" className="space-y-4 mt-2">
+              <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
+                <p className="text-sm text-amber-800">
+                  <Clock className="w-4 h-4 inline mr-1" />
+                  SLA rules define response and resolution time targets. Tickets breaching SLA are auto-escalated.
+                </p>
+              </div>
+
+              {/* Default SLAs */}
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">Default SLA by Urgency</h4>
+                <div className="grid grid-cols-4 gap-2">
+                  {(slaRules.defaults || []).map((sla, idx) => (
+                    <div key={idx} className="p-2 bg-gray-50 rounded border text-center">
+                      <Badge className={URGENCY_COLORS[sla.urgency] || 'bg-gray-100'}>{sla.urgency}</Badge>
+                      <div className="text-xs mt-1">
+                        <div>Response: <strong>{sla.response_hours}h</strong></div>
+                        <div>Resolution: <strong>{sla.resolution_hours}h</strong></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Custom SLA Rules */}
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">Custom SLA Rules</h4>
+                {(slaRules.rules || []).length === 0 ? (
+                  <p className="text-sm text-gray-500 py-2">No custom SLA rules. Default urgency-based SLAs apply.</p>
+                ) : (
+                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                    {(slaRules.rules || []).map((rule, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded border text-sm">
+                        <div>
+                          <span className="font-medium">{rule.name}</span>
+                          <span className="text-gray-500 ml-2">
+                            Response: {rule.response_time_hours}h • Resolution: {rule.resolution_time_hours}h
+                          </span>
+                        </div>
+                        <Badge variant={rule.enabled ? 'default' : 'secondary'}>{rule.enabled ? 'Active' : 'Off'}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Add Custom SLA */}
+              <div className="border-t pt-4">
+                <h4 className="font-medium text-sm mb-3">Add Custom SLA Rule</h4>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <Label className="text-xs">Rule Name *</Label>
+                    <Input
+                      value={newSlaRule.name}
+                      onChange={(e) => setNewSlaRule({ ...newSlaRule, name: e.target.value })}
+                      placeholder="e.g., VIP Fast Track"
+                      className="text-sm"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Category</Label>
+                    <Select value={newSlaRule.category} onValueChange={(v) => setNewSlaRule({ ...newSlaRule, category: v })}>
+                      <SelectTrigger className="text-sm"><SelectValue placeholder="Any" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Any Category</SelectItem>
+                        {categories.map(c => (
+                          <SelectItem key={c.id} value={c.id}>{c.icon} {c.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Urgency</Label>
+                    <Select value={newSlaRule.urgency} onValueChange={(v) => setNewSlaRule({ ...newSlaRule, urgency: v })}>
+                      <SelectTrigger className="text-sm"><SelectValue placeholder="Any" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Any</SelectItem>
+                        <SelectItem value="critical">Critical</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="low">Low</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Response Time (hours)</Label>
+                    <Input
+                      type="number"
+                      value={newSlaRule.response_time_hours}
+                      onChange={(e) => setNewSlaRule({ ...newSlaRule, response_time_hours: parseInt(e.target.value) || 1 })}
+                      className="text-sm"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Resolution Time (hours)</Label>
+                    <Input
+                      type="number"
+                      value={newSlaRule.resolution_time_hours}
+                      onChange={(e) => setNewSlaRule({ ...newSlaRule, resolution_time_hours: parseInt(e.target.value) || 1 })}
+                      className="text-sm"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Button onClick={handleSaveSlaRule} disabled={saving} className="w-full bg-amber-600 hover:bg-amber-700">
+                      {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                      Add SLA Rule
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* TEAM / CONCIERGE TAB */}
+            <TabsContent value="team" className="space-y-4 mt-2">
+              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-800">
+                  <Users className="w-4 h-4 inline mr-1" />
+                  Manage team availability and workload. Unavailable concierges won't receive new auto-assignments.
+                </p>
+              </div>
+
+              {loadingRules ? (
+                <div className="flex justify-center py-4"><Loader2 className="w-5 h-5 animate-spin" /></div>
+              ) : (
+                <div className="space-y-3">
+                  {conciergeAvailability.map((member, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-3 h-3 rounded-full ${member.available ? 'bg-green-500' : 'bg-gray-400'}`} />
+                        <div>
+                          <div className="font-medium">{member.name || member.concierge_id}</div>
+                          <div className="text-xs text-gray-500">
+                            {member.current_tickets} / {member.max_tickets} tickets
+                            {member.categories?.length > 0 && ` • Specializes: ${member.categories.join(', ')}`}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={member.available ? 'default' : 'secondary'} className={member.available ? 'bg-green-100 text-green-700' : ''}>
+                          {member.available ? 'Available' : 'Unavailable'}
+                        </Badge>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleToggleAvailability(member.concierge_id, !member.available)}
+                        >
+                          {member.available ? 'Set Away' : 'Set Available'}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {conciergeAvailability.length === 0 && (
+                    <p className="text-sm text-gray-500 text-center py-4">No team members configured yet.</p>
+                  )}
+                </div>
+              )}
+            </TabsContent>
+
+            {/* EMAIL TAB */}
             <TabsContent value="email" className="space-y-4 mt-4">
               <p className="text-sm text-gray-600">
                 Configure your email inbox to automatically capture emails as tickets.
