@@ -224,6 +224,15 @@ async def create_reservation(reservation: ReservationRequest):
     # Send confirmation email to customer
     if RESEND_API_KEY and reservation.email:
         try:
+            pet_info_html = ""
+            if reservation.pet_name:
+                pet_info_html = f"""
+                <div style="background: #fdf2f8; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #fbcfe8;">
+                    <p style="color: #be185d; margin: 0;"><strong>🐕 Bringing:</strong> {reservation.pet_name}{f' ({reservation.pet_breed})' if reservation.pet_breed else ''}</p>
+                    {f'<p style="color: #9d174d; margin: 5px 0 0; font-style: italic;">"{reservation.pet_about}"</p>' if reservation.pet_about else ''}
+                </div>
+                """
+            
             resend.Emails.send({
                 "from": f"The Doggy Company <{SENDER_EMAIL}>",
                 "to": [reservation.email],
@@ -248,6 +257,8 @@ async def create_reservation(reservation: ReservationRequest):
                             <p style="color: #4b5563;"><strong>🐕 Pets:</strong> {reservation.pets}</p>
                             {f'<p style="color: #16a34a;"><strong>🍽️ Pet Meal Pre-order:</strong> Yes</p>' if reservation.petMealPreorder else ''}
                         </div>
+                        
+                        {pet_info_html}
                         
                         <p style="color: #4b5563;">Our team will confirm your reservation within 2 hours. You'll receive another email once confirmed.</p>
                         
