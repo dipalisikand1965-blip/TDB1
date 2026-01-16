@@ -938,44 +938,6 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
                 <Calendar className="w-4 h-4 mr-2" /> Schedule My Visit
               </Button>
             </div>
-                      type="radio"
-                      name="notification_preference"
-                      value="email"
-                      checked={visitForm.notification_preference === 'email'}
-                      onChange={(e) => setVisitForm({...visitForm, notification_preference: e.target.value})}
-                      className="w-4 h-4 text-purple-600"
-                      data-testid="notification-email-radio"
-                    />
-                    <span className="text-sm flex items-center gap-1">
-                      <Bell className="w-3 h-3" /> Email
-                    </span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="notification_preference"
-                      value="whatsapp"
-                      checked={visitForm.notification_preference === 'whatsapp'}
-                      onChange={(e) => setVisitForm({...visitForm, notification_preference: e.target.value})}
-                      className="w-4 h-4 text-purple-600"
-                      data-testid="notification-whatsapp-radio"
-                    />
-                    <span className="text-sm flex items-center gap-1">
-                      <MessageCircle className="w-3 h-3" /> WhatsApp
-                    </span>
-                  </label>
-                </div>
-              </div>
-              
-              <Button 
-                className="w-full bg-purple-500 hover:bg-purple-600"
-                onClick={handleScheduleVisit}
-                disabled={!visitForm.date}
-                data-testid="schedule-visit-btn"
-              >
-                <Calendar className="w-4 h-4 mr-2" /> Schedule My Visit
-              </Button>
-            </div>
           )}
         </div>
       </Card>
