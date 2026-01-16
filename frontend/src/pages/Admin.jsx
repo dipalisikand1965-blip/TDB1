@@ -1125,10 +1125,10 @@ const Admin = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tabs */}
-        <div className="flex gap-2 mb-8 border-b pb-4 flex-wrap">
-          {            {/* CORE TOOLS */}
-            <span className="text-xs text-gray-500 px-2 py-1 font-semibold">CORE TOOLS</span>
-            { [
+        <div className="flex gap-2 mb-8 border-b pb-4 flex-wrap items-center">
+          {/* CORE TOOLS */}
+          <span className="text-xs text-gray-500 px-2 py-1 font-semibold uppercase">Core Tools</span>
+          {[
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { id: 'orders', label: 'Orders', icon: Package },
             { id: 'fulfilment', label: '📦 Fulfilment', icon: Truck },
@@ -1139,7 +1139,7 @@ const Admin = () => {
             { id: 'reports', label: '📊 Reports', icon: BarChart3 },
             { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
             { id: 'reviews', label: 'Reviews', icon: MessageCircle },
-            ].map((tab) => (
+          ].map((tab) => (
             <Button
               key={tab.id}
               variant={activeTab === tab.id ? 'default' : 'ghost'}
@@ -1153,16 +1153,16 @@ const Admin = () => {
           ))}
           
           {/* Divider */}
-          <div className="w-full h-px bg-gray-200 my-2" />
+          <div className="w-px h-6 bg-gray-300 mx-2" />
           
           {/* PILLAR TOOLS */}
-          <span className="text-xs text-gray-500 px-2 py-1 font-semibold">PILLAR TOOLS</span>
+          <span className="text-xs text-gray-500 px-2 py-1 font-semibold uppercase">Pillar Tools</span>
           {[
-            { id: 'products', label: '🎂 Celebrate (Products)', icon: Package },
+            { id: 'products', label: '🎂 Celebrate', icon: Package },
             { id: 'collections', label: 'Collections', icon: Layers },
             { id: 'requests', label: 'Custom Cakes', icon: Cake },
-            { id: 'dine', label: '🍽️ Dine Management', icon: Package },
-            { id: 'insights', label: '📝 Blog/Insights', icon: FileText },
+            { id: 'dine', label: '🍽️ Dine', icon: Package },
+            { id: 'insights', label: '📝 Blog', icon: FileText },
             { id: 'testimonials', label: 'Testimonials', icon: Star },
             { id: 'faqs', label: 'FAQs', icon: HelpCircle },
           ].map((tab) => (
@@ -1179,13 +1179,13 @@ const Admin = () => {
           ))}
           
           {/* Divider */}
-          <div className="w-full h-px bg-gray-200 my-2" />
+          <div className="w-px h-6 bg-gray-300 mx-2" />
           
           {/* OPERATIONS */}
-          <span className="text-xs text-gray-500 px-2 py-1 font-semibold">OPERATIONS</span>
+          <span className="text-xs text-gray-500 px-2 py-1 font-semibold uppercase">Operations</span>
           {[
             { id: 'discounts', label: '🎟️ Discounts', icon: Tag },
-            { id: 'abandoned', label: '🛒 Abandoned Carts', icon: ShoppingBag },
+            { id: 'abandoned', label: '🛒 Abandoned', icon: ShoppingBag },
             { id: 'autoship', label: '🔄 Autoship', icon: RefreshCw },
             { id: 'streaties', label: '🧡 Streaties', icon: Heart },
             { id: 'franchise', label: '🏪 Franchise', icon: Building },
