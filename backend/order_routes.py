@@ -94,6 +94,25 @@ async def create_order(order: dict):
         logger.info(f"New order: {order.get('orderId')} - Items: {items_summary}")
     except Exception as e:
         logger.error(f"Order logging failed: {e}")
+    
+    # Auto-create Service Desk ticket for cake order
+    try:
+        # Check if order contains cakes (for now, create ticket for all orders)
+        ticket_id = await create_ticket_from_event(db, "cake_order", {
+            "order_id": order.get("orderId") or order["id"],
+            "customer_name": order.get("customer", {}).get("name") or order.get("shipping_address", {}).get("name", "Customer"),
+            "customer_email": order.get("customer", {}).get("email") or order.get("email"),
+            "customer_phone": order.get("customer", {}).get("phone") or order.get("phone"),
+            "city": order.get("shipping_address", {}).get("city"),
+            "items": order.get("items", []),
+            "total": order.get("total") or order.get("subtotal", 0),
+            "delivery_date": order.get("delivery_date"),
+            "delivery_address": order.get("shipping_address", {}).get("address1", ""),
+            "special_instructions": order.get("note") or order.get("special_instructions")
+        })
+        logger.info(f"Auto-created ticket {ticket_id} for order {order.get('orderId')}")
+    except Exception as e:
+        logger.error(f"Failed to auto-create ticket for order: {e}")
 
     return {"message": "Order created", "orderId": order.get("orderId"), "id": order["id"]}
 
