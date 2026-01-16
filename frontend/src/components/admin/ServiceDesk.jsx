@@ -102,6 +102,12 @@ const ServiceDesk = ({ authHeaders }) => {
   const [replyText, setReplyText] = useState('');
   const [isInternalNote, setIsInternalNote] = useState(false);
   const [sendingReply, setSendingReply] = useState(false);
+  const [sendChannel, setSendChannel] = useState('internal'); // internal, email, whatsapp
+  
+  // SLA & Auto-assignment
+  const [slaStats, setSlaStats] = useState(null);
+  const [showSLAModal, setShowSLAModal] = useState(false);
+  const [autoAssigning, setAutoAssigning] = useState(false);
 
   // Fetch data
   const fetchTickets = useCallback(async () => {
