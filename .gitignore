@@ -279,3 +279,4 @@ meilisearch
 # Environment files
 *.env
 *.env.*
+frontend/node_modules/.cache/default-development/4.pack_

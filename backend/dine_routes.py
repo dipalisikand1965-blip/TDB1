@@ -237,7 +237,7 @@ async def admin_update_restaurant(
     restaurant: RestaurantCreate,
     username: str = Depends(verify_admin)
 ):
-    """Update a restaurant (admin)"""
+    """Update a restaurant (admin) - full update"""
     existing = await db.restaurants.find_one({"id": restaurant_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Restaurant not found")
@@ -251,6 +251,31 @@ async def admin_update_restaurant(
         {"id": restaurant_id},
         {"$set": update_data}
     )
+    
+    updated = await db.restaurants.find_one({"id": restaurant_id}, {"_id": 0})
+    return {"message": "Restaurant updated", "restaurant": updated}
+
+
+@dine_router.patch("/admin/dine/restaurants/{restaurant_id}")
+async def admin_patch_restaurant(
+    restaurant_id: str,
+    updates: RestaurantPartialUpdate,
+    username: str = Depends(verify_admin)
+):
+    """Partial update a restaurant (admin) - only updates provided fields"""
+    existing = await db.restaurants.find_one({"id": restaurant_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+    
+    # Only include non-None fields
+    update_data = {k: v for k, v in updates.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    if update_data:
+        await db.restaurants.update_one(
+            {"id": restaurant_id},
+            {"$set": update_data}
+        )
     
     updated = await db.restaurants.find_one({"id": restaurant_id}, {"_id": 0})
     return {"message": "Restaurant updated", "restaurant": updated}
