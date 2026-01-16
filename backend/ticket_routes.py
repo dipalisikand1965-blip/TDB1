@@ -513,6 +513,9 @@ async def update_ticket(ticket_id: str, update: TicketUpdate):
             else:
                 update_doc[key] = value
     
+    # Track if status changed to resolved
+    was_resolved = False
+    
     # Handle status changes
     if "status" in update_doc:
         now = datetime.now(timezone.utc).isoformat()
@@ -524,6 +527,7 @@ async def update_ticket(ticket_id: str, update: TicketUpdate):
                     status_code=400, 
                     detail="Resolution note is required when marking as resolved"
                 )
+            was_resolved = True
         
         if update_doc["status"] == "closed":
             update_doc["closed_at"] = now
@@ -534,8 +538,14 @@ async def update_ticket(ticket_id: str, update: TicketUpdate):
     )
     
     updated = await db.tickets.find_one({"_id": ticket["_id"]})
+    updated_serialized = serialize_ticket(updated)
     
-    return {"success": True, "ticket": serialize_ticket(updated)}
+    # Send email notification if resolved
+    if was_resolved:
+        # Need to re-fetch to get the full ticket with resolution note
+        await send_ticket_notification(updated_serialized, "resolved")
+    
+    return {"success": True, "ticket": updated_serialized}
 
 @router.post("/{ticket_id}/reply")
 async def add_reply(ticket_id: str, reply: TicketReply):
