@@ -734,3 +734,63 @@ PUT    /api/admin/dine/reservations/{id}/status - Update status
 3. 🟡 Razorpay checkout integration (blocked on user keys)
 4. 🟡 Continue Admin.jsx refactoring
 5. 🔵 Build out Stay, Travel, Care pillars
+
+---
+
+### Jan 16, 2026 - Pet Buddy Meetup Feature & Admin Enhancements
+
+#### ✅ PET BUDDY MEETUP FEATURE
+Pet parents can now connect at restaurants for playdates and socializing!
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Schedule a Visit** | ✅ | Pet parents can schedule when they're going to a restaurant |
+| **Who's Going** | ✅ | See other pet parents planning to visit |
+| **Connect Button** | ✅ | Send meetup requests to other pet parents |
+| **Time Slots** | ✅ | Morning, Afternoon, Evening options |
+| **Notes/Bio** | ✅ | Share pet info and what you're looking for |
+
+**Pet Buddy API Endpoints:**
+```
+POST /api/dine/visits              - Schedule a visit
+GET  /api/dine/restaurants/{id}/visits - Get upcoming visits (Who's Going)
+POST /api/dine/meetup-request      - Send meetup request
+GET  /api/dine/my-visits           - Get user's scheduled visits
+GET  /api/dine/meetup-requests     - Get meetup requests
+PUT  /api/dine/meetup-requests/{id}/respond - Accept/decline
+DELETE /api/dine/visits/{id}       - Cancel visit
+```
+
+#### ✅ ADMIN ENHANCEMENTS
+
+**New Restaurant Fields:**
+| Field | Type | Description |
+|-------|------|-------------|
+| `petMenuImage` | URL/Upload | Photo of the pet menu |
+| `miraRecommendation` | Text | Mira Pet Concierge recommendation |
+| `zomatoLink` | URL | Link to Zomato page |
+| `googleMapsLink` | URL | Link to Google Maps |
+| `specialOffers` | Text | Current promotions |
+| `address` | Text | Full address |
+
+**New Upload Endpoint:**
+- `POST /api/admin/dine/upload-pet-menu` - Upload pet menu image
+
+**Form Sections (Admin):**
+1. Basic Information
+2. Images (Restaurant + Pet Menu)
+3. 🐕 Pet Policy
+4. ✨ Mira's Pet Concierge Recommendation
+5. Restaurant Details
+6. Contact & Links
+
+#### ✅ FRONTEND FIXES
+- Fixed Fresh Meals links (now link to /search?q=treats, /search?q=meals, /search?q=cake)
+- Restaurants now load from database API instead of hardcoded data
+- Mira recommendations display on restaurant cards
+
+#### ✅ NEW DATA COLLECTIONS
+- `restaurant_visits` - Stores scheduled visits for Pet Buddy feature
+- `meetup_requests` - Stores meetup connection requests
+
+---
