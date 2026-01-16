@@ -164,6 +164,15 @@ const ServiceDesk = ({ authHeaders }) => {
     setTicketLoading(false);
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([fetchStats(), fetchTickets()]);
+    if (selectedTicket) {
+      await fetchTicketDetails(selectedTicket.ticket_id);
+    }
+    setRefreshing(false);
+  };
+
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
