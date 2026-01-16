@@ -2147,6 +2147,21 @@ async def request_custom_cake(
     }
     
     await db.custom_cake_requests.insert_one(request_data)
+    
+    # Auto-create Service Desk ticket for custom cake request
+    try:
+        ticket_id = await create_ticket_from_event(db, "custom_cake", {
+            "request_id": request_data["id"],
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "special_requests": notes,
+            "reference_image": file_path
+        })
+        logger.info(f"Auto-created ticket {ticket_id} for custom cake request {request_data['id']}")
+    except Exception as e:
+        logger.error(f"Failed to auto-create ticket for custom cake: {e}")
+    
     return {"message": "Request received successfully", "id": request_data["id"]}
 
 
