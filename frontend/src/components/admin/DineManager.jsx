@@ -105,6 +105,124 @@ const DineManager = ({ credentials }) => {
   useEffect(() => {
     fetchRestaurants();
   }, []);
+  
+  // Fetch reservations
+  const fetchReservations = async () => {
+    setIsLoading(true);
+    try {
+      const url = reservationFilter === 'all' 
+        ? `${API_URL}/api/admin/dine/reservations`
+        : `${API_URL}/api/admin/dine/reservations?status=${reservationFilter}`;
+      const response = await fetch(url, {
+        headers: { 'Authorization': getAuthHeader() }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setReservations(data.reservations || []);
+      }
+    } catch (error) {
+      console.error('Error fetching reservations:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Fetch buddy visits
+  const fetchVisits = async () => {
+    setIsLoading(true);
+    try {
+      const url = visitFilter === 'all'
+        ? `${API_URL}/api/admin/dine/visits`
+        : `${API_URL}/api/admin/dine/visits?status=${visitFilter}`;
+      const response = await fetch(url, {
+        headers: { 'Authorization': getAuthHeader() }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setVisits(data.visits || []);
+        setVisitStats(data.stats || {});
+      }
+    } catch (error) {
+      console.error('Error fetching visits:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Fetch meetups
+  const fetchMeetups = async () => {
+    setIsLoading(true);
+    try {
+      const url = meetupFilter === 'all'
+        ? `${API_URL}/api/admin/dine/meetups`
+        : `${API_URL}/api/admin/dine/meetups?status=${meetupFilter}`;
+      const response = await fetch(url, {
+        headers: { 'Authorization': getAuthHeader() }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMeetups(data.meetups || []);
+        setMeetupStats(data.stats || {});
+      }
+    } catch (error) {
+      console.error('Error fetching meetups:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Effect to load data based on active tab
+  useEffect(() => {
+    if (activeTab === 'reservations') fetchReservations();
+    else if (activeTab === 'visits') fetchVisits();
+    else if (activeTab === 'meetups') fetchMeetups();
+  }, [activeTab, reservationFilter, visitFilter, meetupFilter]);
+  
+  // Update reservation status
+  const updateReservationStatus = async (reservationId, newStatus) => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/dine/reservations/${reservationId}/status?status=${newStatus}`, {
+        method: 'PUT',
+        headers: { 'Authorization': getAuthHeader() }
+      });
+      if (response.ok) {
+        fetchReservations();
+      }
+    } catch (error) {
+      console.error('Error updating reservation:', error);
+    }
+  };
+  
+  // Update visit status
+  const updateVisitStatus = async (visitId, newStatus) => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/dine/visits/${visitId}/status?status=${newStatus}`, {
+        method: 'PUT',
+        headers: { 'Authorization': getAuthHeader() }
+      });
+      if (response.ok) {
+        fetchVisits();
+      }
+    } catch (error) {
+      console.error('Error updating visit:', error);
+    }
+  };
+  
+  // Delete meetup
+  const deleteMeetup = async (meetupId) => {
+    if (!confirm('Delete this meetup request?')) return;
+    try {
+      const response = await fetch(`${API_URL}/api/admin/dine/meetups/${meetupId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': getAuthHeader() }
+      });
+      if (response.ok) {
+        fetchMeetups();
+      }
+    } catch (error) {
+      console.error('Error deleting meetup:', error);
+    }
+  };
 
   // Save restaurant
   const saveRestaurant = async () => {
