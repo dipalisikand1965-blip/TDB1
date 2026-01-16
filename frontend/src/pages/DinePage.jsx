@@ -459,20 +459,33 @@ const RestaurantCard = ({ restaurant, getPetMenuBadge, getPetPolicyText, feature
   </Card>
 );
 
-// Pet Buddy Modal - NEW
+// Pet Buddy Modal - ENHANCED with full user/pet info
 const PetBuddyModal = ({ restaurant, onClose }) => {
   const [activeTab, setActiveTab] = useState('upcoming');
   const [schedulingVisit, setSchedulingVisit] = useState(false);
   const [visitForm, setVisitForm] = useState({
+    // Visit details
     date: '',
     time_slot: 'afternoon',
     looking_for_buddies: true,
     notes: '',
-    notification_preference: 'email'
+    notification_preference: 'email',
+    // User details
+    title: 'Mr.',
+    first_name: '',
+    last_name: '',
+    email: '',
+    whatsapp: '',
+    // Pet details
+    pet_name: '',
+    pet_breed: '',
+    pet_about: '',
+    pet_photo: ''
   });
   const [upcomingVisits, setUpcomingVisits] = useState([]);
   const [sendingRequest, setSendingRequest] = useState(null);
   const [requestSent, setRequestSent] = useState({});
+  const [formErrors, setFormErrors] = useState({});
 
   // Fetch upcoming visits
   useEffect(() => {
@@ -490,7 +503,23 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
     fetchVisits();
   }, [restaurant.id]);
 
+  const validateForm = () => {
+    const errors = {};
+    if (!visitForm.date) errors.date = 'Please select a date';
+    if (!visitForm.first_name.trim()) errors.first_name = 'First name is required';
+    if (!visitForm.last_name.trim()) errors.last_name = 'Last name is required';
+    if (!visitForm.email.trim()) errors.email = 'Email is required';
+    if (!visitForm.whatsapp.trim()) errors.whatsapp = 'WhatsApp number is required';
+    if (!visitForm.pet_name.trim()) errors.pet_name = 'Pet name is required';
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleScheduleVisit = async () => {
+    if (!validateForm()) {
+      alert('Please fill in all required fields');
+      return;
+    }
     try {
       const response = await fetch(`${API_URL}/api/dine/visits`, {
         method: 'POST',
@@ -504,7 +533,12 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
       if (response.ok) {
         alert('Visit scheduled! Other pet parents can now see your planned visit.');
         setSchedulingVisit(false);
-        setVisitForm({ date: '', time_slot: 'afternoon', looking_for_buddies: true, notes: '', notification_preference: 'email' });
+        setVisitForm({ 
+          date: '', time_slot: 'afternoon', looking_for_buddies: true, notes: '', 
+          notification_preference: 'email', title: 'Mr.', first_name: '', last_name: '',
+          email: '', whatsapp: '', pet_name: '', pet_breed: '', pet_about: '', pet_photo: ''
+        });
+        setFormErrors({});
         // Refresh visits
         const refreshResponse = await fetch(`${API_URL}/api/dine/restaurants/${restaurant.id}/visits`);
         if (refreshResponse.ok) {
