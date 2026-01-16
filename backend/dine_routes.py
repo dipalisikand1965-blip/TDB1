@@ -71,6 +71,13 @@ class RestaurantCreate(BaseModel):
     website: Optional[str] = None
     featured: bool = False
     verified: bool = False
+    # New fields
+    petMenuImage: Optional[str] = None  # Image of pet menu
+    miraRecommendation: Optional[str] = None  # Pet Concierge recommendation
+    zomatoLink: Optional[str] = None
+    googleMapsLink: Optional[str] = None
+    specialOffers: Optional[str] = None
+    address: Optional[str] = None
 
 
 class ReservationRequest(BaseModel):
