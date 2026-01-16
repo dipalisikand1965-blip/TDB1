@@ -11,6 +11,7 @@ import { Textarea } from './ui/textarea';
 import { Calendar } from './ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { format } from 'date-fns';
+import { API_URL } from '../utils/api';
 
 const ProductCard = ({ product }) => {
   const [showModal, setShowModal] = useState(false);
@@ -142,8 +143,7 @@ const ProductDetailModal = ({ product, onClose }) => {
   const [loadingRelated, setLoadingRelated] = useState(true);
   
   const { addToCart } = useCart();
-  const API_URL = process.env.REACT_APP_BACKEND_URL || '';
-
+  
   // Reviews state - declared at component level
   const [reviews, setReviews] = useState([]);
   const [showReviewForm, setShowReviewForm] = useState(false);

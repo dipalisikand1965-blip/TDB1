@@ -7,12 +7,12 @@ import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Badge } from '../components/ui/badge';
 import { 
+import { API_URL } from '../utils/api';
   PawPrint, Heart, Calendar, Camera, Sparkles, Gift, 
   ChevronRight, ChevronLeft, Check, Plus, X, Crown,
   Moon, Mountain, Sofa, Users, Utensils, Zap, Smile
 } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Persona icons mapping
 const PERSONA_ICONS = {

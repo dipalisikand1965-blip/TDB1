@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, Send, Loader2, PawPrint } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { API_URL } from '../utils/api';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const MiraEmbed = () => {
   const [messages, setMessages] = useState([

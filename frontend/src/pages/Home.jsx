@@ -9,8 +9,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '..
 import { Card } from '../components/ui/card';
 import { Star, Award, Leaf, Clock, Shield, ArrowRight, Sparkles, Heart, Users, Check, TrendingUp, Play, Instagram, CreditCard, Gift, Crown } from 'lucide-react';
 import { useInView, useCountUp } from '../hooks/useAnimations';
+import { API_URL } from '../utils/api';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const Home = () => {
   const [activeSlide, setActiveSlide] = useState(0);

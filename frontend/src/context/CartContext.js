@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { API_URL } from './api';
 
 const CartContext = createContext();
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Autoship discount tiers
 const AUTOSHIP_DISCOUNTS = {

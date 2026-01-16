@@ -6,6 +6,7 @@ import { Input } from '../components/ui/input';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import { 
+import { API_URL } from '../utils/api';
   Heart, 
   Circle, 
   Square, 
@@ -18,7 +19,6 @@ import {
   Cake
 } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Shape options with pricing (500g)
 const SHAPES = [

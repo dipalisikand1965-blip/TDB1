@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { 
+import { API_URL } from '../utils/api';
   Sparkles, MessageCircle, Gift, Search, Calendar, 
   Heart, Star, ChevronRight, PawPrint, Zap, Clock,
   MapPin, ShoppingBag, HelpCircle, Send, Loader2,
@@ -10,7 +11,6 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const MiraPage = () => {
   // Chat state

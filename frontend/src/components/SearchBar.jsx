@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Search, X, Loader2, ArrowRight, Tag } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
+import { API_URL } from '../utils/api';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const SearchBar = ({ onClose, isOverlay = false }) => {
   const [query, setQuery] = useState('');
