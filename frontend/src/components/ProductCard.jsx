@@ -51,6 +51,28 @@ const ProductCard = ({ product }) => {
             {product.isNew && <Badge className="bg-purple-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">New</Badge>}
             {product.isBestseller && <Badge className="bg-pink-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Bestseller</Badge>}
             {product.onSale && <Badge className="bg-orange-500 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Sale</Badge>}
+            {/* Custom Product Tags */}
+            {product.display_tags?.includes('best-seller') && !product.isBestseller && (
+              <Badge className="bg-pink-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">🏆 Best Seller</Badge>
+            )}
+            {product.display_tags?.includes('limited') && (
+              <Badge className="bg-red-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">⏰ Limited</Badge>
+            )}
+            {product.display_tags?.includes('selling-fast') && (
+              <Badge className="bg-amber-500 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">🔥 Selling Fast</Badge>
+            )}
+            {product.display_tags?.includes('discount') && !product.onSale && (
+              <Badge className="bg-green-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">💰 Discount</Badge>
+            )}
+            {product.display_tags?.includes('new-arrival') && !product.isNew && (
+              <Badge className="bg-blue-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">✨ New Arrival</Badge>
+            )}
+            {product.display_tags?.includes('staff-pick') && (
+              <Badge className="bg-indigo-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">⭐ Staff Pick</Badge>
+            )}
+            {product.display_tags?.includes('popular') && (
+              <Badge className="bg-purple-500 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">💜 Popular</Badge>
+            )}
           </div>
           {optionsCount > 1 && (
             <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 hidden sm:block">
