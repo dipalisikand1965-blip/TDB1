@@ -9,6 +9,7 @@ import uuid
 import csv
 import io
 import shutil
+import resend
 from datetime import datetime, timezone
 from typing import Optional, List
 from fastapi import APIRouter, HTTPException, Depends, File, UploadFile, Form
@@ -28,6 +29,12 @@ db: AsyncIOMotorDatabase = None
 
 # Admin credentials
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+
+# Resend configuration
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+if RESEND_API_KEY:
+    resend.api_key = RESEND_API_KEY
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "woof2025")
 security = HTTPBasic()
 
