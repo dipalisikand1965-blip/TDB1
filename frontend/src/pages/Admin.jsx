@@ -1066,6 +1066,7 @@ const Admin = () => {
             { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
             { id: 'members', label: 'Customers', icon: Users },
             { id: 'pets', label: '🐾 Pet Profiles', icon: PawPrint },
+            { id: 'dine', label: '🍽️ Dine', icon: Package },
             { id: 'loyalty', label: '⭐ Loyalty', icon: Star },
             { id: 'discounts', label: '🎟️ Discounts', icon: Tag },
             { id: 'abandoned', label: '🛒 Abandoned', icon: ShoppingBag },
