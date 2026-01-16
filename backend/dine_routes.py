@@ -881,7 +881,8 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
     visit_doc.pop("_id", None)
     
     # Send confirmation email
-    if RESEND_API_KEY and user_email:
+    confirmation_email = visit.email or contact_email
+    if RESEND_API_KEY and confirmation_email:
         try:
             time_slot_text = {
                 "morning": "Morning (9 AM - 12 PM)",
@@ -889,9 +890,18 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
                 "evening": "Evening (5 PM - 10 PM)"
             }.get(visit.time_slot, visit.time_slot)
             
+            pet_info_html = ""
+            if visit.pet_name:
+                pet_info_html = f"""
+                <div style="background: #fdf2f8; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #fbcfe8;">
+                    <p style="color: #be185d; margin: 0;"><strong>🐕 Bringing:</strong> {visit.pet_name}{f' ({visit.pet_breed})' if visit.pet_breed else ''}</p>
+                    {f'<p style="color: #9d174d; margin: 5px 0 0; font-style: italic;">"{visit.pet_about}"</p>' if visit.pet_about else ''}
+                </div>
+                """
+            
             resend.Emails.send({
                 "from": f"The Doggy Company <{SENDER_EMAIL}>",
-                "to": [user_email],
+                "to": [confirmation_email],
                 "subject": f"🐕 Pet Buddy Visit Scheduled - {restaurant.get('name')}",
                 "html": f"""
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -901,6 +911,7 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
                     </div>
                     <div style="padding: 30px; background: #fff;">
                         <h2 style="color: #1f2937;">Your Visit is Scheduled! 🎉</h2>
+                        <p style="color: #6b7280;">Hey {visit.title} {visit.first_name} {visit.last_name}!</p>
                         
                         <div style="background: #faf5ff; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #e9d5ff;">
                             <h3 style="color: #7c3aed; margin-top: 0;">📍 {restaurant.get('name')}</h3>
@@ -911,9 +922,11 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
                             {f'<p style="color: #4b5563;"><strong>📝 Notes:</strong> {visit.notes}</p>' if visit.notes else ''}
                         </div>
                         
+                        {pet_info_html}
+                        
                         {f'<p style="color: #16a34a; background: #f0fdf4; padding: 15px; border-radius: 8px;">✅ <strong>Looking for Pet Buddies!</strong> Other pet parents will be able to see your visit and send meetup requests.</p>' if visit.looking_for_buddies else ''}
                         
-                        <p style="color: #4b5563;">When someone wants to meet up with you, you'll receive a notification. Check back on the Dine page to see who else is visiting!</p>
+                        <p style="color: #4b5563;">When someone wants to meet up with you, you'll receive a notification via {visit.notification_preference}. Check back on the Dine page to see who else is visiting!</p>
                         
                         <p style="margin-top: 20px;">
                             <a href="https://thedoggycompany.in/dine" style="background: #8b5cf6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">View Pet Buddies</a>
@@ -925,7 +938,7 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
                 </div>
                 """
             })
-            logger.info(f"Visit confirmation email sent to {user_email}")
+            logger.info(f"Visit confirmation email sent to {confirmation_email}")
         except Exception as e:
             logger.error(f"Failed to send visit email: {e}")
     
