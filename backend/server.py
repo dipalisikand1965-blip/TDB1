@@ -610,6 +610,9 @@ from dine_routes import (
     set_database as set_dine_db
 )
 
+# Import ticket routes (Service Desk)
+from ticket_routes import router as ticket_router
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
