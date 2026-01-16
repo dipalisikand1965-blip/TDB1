@@ -6012,6 +6012,8 @@ app.include_router(order_router)
 app.include_router(user_router)
 app.include_router(dine_router)
 app.include_router(ticket_router)
+app.include_router(ticket_messaging_router)
+app.include_router(ticket_sla_router)
 
 @app.on_event("startup")
 async def startup_load_admin_credentials():
