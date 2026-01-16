@@ -650,34 +650,85 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
               ) : (
                 upcomingVisits.map((visit) => (
                   <Card key={visit.id} className="p-4 border-purple-100 hover:border-purple-300 transition-colors" data-testid={`visit-card-${visit.id}`}>
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex gap-3">
+                      {/* Pet Photo (if available) */}
+                      {visit.pet_photo && (
+                        <div className="flex-shrink-0">
+                          <img 
+                            src={visit.pet_photo} 
+                            alt={visit.pet_name || 'Pet'} 
+                            className="w-16 h-16 rounded-full object-cover border-2 border-purple-200"
+                          />
+                        </div>
+                      )}
+                      
                       <div className="flex-1 min-w-0">
-                        {/* User Name - NEW */}
-                        {visit.user_name && (
-                          <p className="font-semibold text-purple-700 mb-1 flex items-center gap-1">
-                            <Users className="w-3 h-3" />
-                            {visit.user_name}
-                          </p>
+                        {/* Person's Name with Title */}
+                        <p className="font-semibold text-purple-700 mb-1 flex items-center gap-1">
+                          <User className="w-3 h-3" />
+                          {visit.title || ''} {visit.first_name || ''} {visit.last_name || visit.user_name || 'Pet Parent'}
+                        </p>
+                        
+                        {/* Pet Info - Highlighted */}
+                        {visit.pet_name && (
+                          <div className="bg-purple-50 rounded-lg p-2 mb-2">
+                            <p className="text-sm font-medium text-purple-800 flex items-center gap-1">
+                              <Dog className="w-3 h-3" />
+                              Bringing: <span className="font-bold">{visit.pet_name}</span>
+                              {visit.pet_breed && <span className="text-purple-600">({visit.pet_breed})</span>}
+                            </p>
+                            {visit.pet_about && (
+                              <p className="text-xs text-purple-600 mt-1 italic">"{visit.pet_about}"</p>
+                            )}
+                          </div>
                         )}
-                        {/* Date & Time */}
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <Calendar className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                        
+                        {/* Date & Time & Location */}
+                        <div className="flex items-center gap-2 mb-1 flex-wrap text-sm">
+                          <Calendar className="w-3 h-3 text-purple-500 flex-shrink-0" />
                           <span className="font-medium">{visit.date}</span>
                           <Badge variant="outline" className="text-xs capitalize">{getTimeSlotLabel(visit.time_slot)}</Badge>
                         </div>
-                        {/* Restaurant Info - Always show */}
-                        <p className="text-sm text-gray-600 flex items-center gap-1 mb-1">
+                        <p className="text-xs text-gray-500 flex items-center gap-1">
                           <MapPin className="w-3 h-3 flex-shrink-0" />
-                          <span className="truncate">{visit.restaurant_name || restaurant.name}</span>
-                          {(visit.restaurant_city || restaurant.city) && (
-                            <span className="text-gray-400">• {visit.restaurant_city || restaurant.city}</span>
-                          )}
+                          {visit.restaurant_name || restaurant.name}
+                          {(visit.restaurant_city || restaurant.city) && `, ${visit.restaurant_city || restaurant.city}`}
                         </p>
-                        {/* Pets */}
-                        {visit.pets?.length > 0 && (
-                          <p className="text-sm text-gray-600 flex items-center gap-1">
-                            <Dog className="w-3 h-3 flex-shrink-0" />
-                            {visit.pets.map(p => p.name).join(', ')}
+                        
+                        {/* Notes */}
+                        {visit.notes && (
+                          <p className="text-xs text-gray-500 mt-1 italic">"{visit.notes}"</p>
+                        )}
+                      </div>
+                      
+                      {/* Connect Button */}
+                      <div className="flex-shrink-0 flex flex-col items-end gap-2">
+                        <Button 
+                          size="sm" 
+                          className={`${requestSent[visit.id] ? 'bg-green-500' : 'bg-purple-500 hover:bg-purple-600'}`}
+                          onClick={() => handleSendMeetupRequest(visit)}
+                          disabled={sendingRequest === visit.id || requestSent[visit.id]}
+                          data-testid={`connect-btn-${visit.id}`}
+                        >
+                          {sendingRequest === visit.id ? (
+                            <>
+                              <span className="w-3 h-3 mr-1 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              Sending...
+                            </>
+                          ) : requestSent[visit.id] ? (
+                            <>
+                              <Check className="w-3 h-3 mr-1" /> Sent!
+                            </>
+                          ) : (
+                            <>
+                              <Send className="w-3 h-3 mr-1" /> Connect
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))
                           </p>
                         )}
                         {/* Notes */}
