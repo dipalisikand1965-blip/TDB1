@@ -648,6 +648,20 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
         {"$push": {"meetup_requests": meetup_doc["id"]}}
     )
     
+    # Create notification for the target user
+    if visit.get("user_id"):
+        notification = {
+            "id": f"notif-{uuid.uuid4().hex[:12]}",
+            "user_id": visit.get("user_id"),
+            "type": "meetup_request",
+            "title": "New Meetup Request! 🐕",
+            "message": f"Someone wants to meet up with you at {visit.get('restaurant_name')} on {visit.get('date')}",
+            "related_id": meetup_doc["id"],
+            "read": False,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.dine_notifications.insert_one(notification)
+    
     return {"message": "Meetup request sent", "request_id": meetup_doc["id"]}
 
 
