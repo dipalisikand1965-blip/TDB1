@@ -368,8 +368,13 @@ const RestaurantCard = ({ restaurant, getPetMenuBadge, getPetPolicyText, feature
           </Badge>
         </div>
       )}
-      <div className="absolute top-3 right-3">
+      <div className="absolute top-3 right-3 flex flex-col gap-1">
         {getPetMenuBadge(restaurant.petMenuAvailable)}
+        {restaurant.birthdayPerks && (
+          <Badge className="bg-pink-500 text-white">
+            🎂 Birthday Perks
+          </Badge>
+        )}
       </div>
       <div className="absolute bottom-3 left-3 flex gap-2">
         <Badge className="bg-black/70 text-white backdrop-blur-sm">
@@ -390,12 +395,12 @@ const RestaurantCard = ({ restaurant, getPetMenuBadge, getPetPolicyText, feature
         {restaurant.area}, {restaurant.city}
       </p>
       
-      {/* Mira Recommendation */}
-      {restaurant.miraRecommendation && (
+      {/* Concierge® Recommendation */}
+      {restaurant.conciergeRecommendation && (
         <div className="p-2 bg-purple-50 rounded-lg mb-3 border border-purple-100">
           <p className="text-xs text-purple-700 flex items-start gap-1">
             <Sparkles className="w-3 h-3 mt-0.5 flex-shrink-0" />
-            <span className="line-clamp-2">{restaurant.miraRecommendation}</span>
+            <span className="line-clamp-2"><strong>Concierge®:</strong> {restaurant.conciergeRecommendation}</span>
           </p>
         </div>
       )}
