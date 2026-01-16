@@ -19,6 +19,9 @@ from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import secrets
 
+# Import auto-ticket creation
+from ticket_auto_create import create_ticket_from_event, update_ticket_from_event
+
 logger = logging.getLogger(__name__)
 
 # Create router
