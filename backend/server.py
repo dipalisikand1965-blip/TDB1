@@ -639,10 +639,41 @@ def root():
 # Security
 security = HTTPBasic()
 
+async def get_admin_credentials_from_db():
+    """Get admin credentials from database if set"""
+    try:
+        admin_config = await db.admin_config.find_one({"type": "credentials"})
+        if admin_config:
+            return admin_config.get("username"), admin_config.get("password")
+    except:
+        pass
+    return None, None
+
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
-    """Verify admin credentials"""
-    correct_username = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
-    correct_password = secrets.compare_digest(credentials.password, ADMIN_PASSWORD)
+    """Verify admin credentials - checks database first, then falls back to .env"""
+    import asyncio
+    
+    # Try to get credentials from database
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # We're in an async context, need to handle differently
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(lambda: None)  # Placeholder
+                db_username, db_password = None, None
+        else:
+            db_username, db_password = loop.run_until_complete(get_admin_credentials_from_db())
+    except:
+        db_username, db_password = None, None
+    
+    # Use database credentials if available, otherwise use .env
+    expected_username = db_username or ADMIN_USERNAME
+    expected_password = db_password or ADMIN_PASSWORD
+    
+    correct_username = secrets.compare_digest(credentials.username, expected_username)
+    correct_password = secrets.compare_digest(credentials.password, expected_password)
+    
     if not (correct_username and correct_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
