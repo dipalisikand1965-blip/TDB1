@@ -3,12 +3,11 @@ Universal Ticketing System / Service Desk
 Handles all concierge requests across multiple channels
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Query, UploadFile, File, Form
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, HTTPException, Query, Form
+from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 from bson import ObjectId
-import os
 import uuid
 
 router = APIRouter(prefix="/api/tickets", tags=["tickets"])
@@ -25,61 +24,47 @@ class MemberDetails(BaseModel):
     phone: Optional[str] = None
     whatsapp: Optional[str] = None
     email: Optional[str] = None
-    membership_type: Optional[str] = None  # e.g., "Gold", "Partner", "Regular"
+    membership_type: Optional[str] = None
     city: Optional[str] = None
     country: Optional[str] = "India"
 
 class TicketCreate(BaseModel):
-    # Member Details
     member: MemberDetails
-    
-    # Request Details
-    category: str  # Pillar: Celebrate, Dine, Travel, Stay, etc.
+    category: str
     sub_category: Optional[str] = None
-    urgency: str = "medium"  # low, medium, high, critical
+    urgency: str = "medium"
     deadline: Optional[str] = None
     description: str
-    
-    # Source
-    source: str = "internal"  # whatsapp, email, web, voice, internal
-    source_reference: Optional[str] = None  # e.g., email message ID, WhatsApp message ID
-    
-    # Optional
+    source: str = "internal"
+    source_reference: Optional[str] = None
     attachments: Optional[List[str]] = []
 
 class TicketUpdate(BaseModel):
-    # Member Details (optional updates)
     member: Optional[MemberDetails] = None
-    
-    # Request Details
     category: Optional[str] = None
     sub_category: Optional[str] = None
     urgency: Optional[str] = None
     deadline: Optional[str] = None
     description: Optional[str] = None
-    
-    # Concierge Fields
     assigned_to: Optional[str] = None
     status: Optional[str] = None
-    priority: Optional[int] = None  # 1-5, 1 being highest
+    priority: Optional[int] = None
     estimated_resolution_time: Optional[str] = None
     resolution_note: Optional[str] = None
-    
-    # Internal
     internal_notes: Optional[str] = None
     tags: Optional[List[str]] = None
 
 class TicketReply(BaseModel):
     message: str
-    is_internal: bool = False  # True = internal note, False = reply to member
-    channel: Optional[str] = None  # email, whatsapp, sms, phone
+    is_internal: bool = False
+    channel: Optional[str] = None
 
 class MemberNote(BaseModel):
     note: str
-    category: str = "general"  # preference, like, dislike, vip, general
+    category: str = "general"
 
 class IntegrationConfig(BaseModel):
-    provider: str  # email, whatsapp
+    provider: str
     config: Dict[str, Any]
     enabled: bool = False
 
@@ -121,21 +106,17 @@ URGENCY_LEVELS = [
 
 # ============== HELPER FUNCTIONS ==============
 
-def generate_ticket_id():
+async def generate_ticket_id():
     """Generate a unique ticket ID like TKT-20240116-001"""
     db = get_db()
     today = datetime.now(timezone.utc).strftime("%Y%m%d")
-    
-    # Count tickets created today using ticket_id pattern
-    count = db.tickets.count_documents({"ticket_id": {"$regex": f"^TKT-{today}"}})
-    
+    count = await db.tickets.count_documents({"ticket_id": {"$regex": f"^TKT-{today}"}})
     return f"TKT-{today}-{str(count + 1).zfill(3)}"
 
 def serialize_ticket(ticket: dict) -> dict:
     """Convert MongoDB ticket to JSON-serializable format"""
     if not ticket:
         return None
-    
     ticket["id"] = str(ticket.pop("_id"))
     return ticket
 
@@ -161,7 +142,7 @@ async def create_ticket(ticket: TicketCreate):
     """Create a new ticket"""
     db = get_db()
     
-    ticket_id = generate_ticket_id()
+    ticket_id = await generate_ticket_id()
     now = datetime.now(timezone.utc).isoformat()
     
     ticket_doc = {
@@ -175,16 +156,12 @@ async def create_ticket(ticket: TicketCreate):
         "source": ticket.source,
         "source_reference": ticket.source_reference,
         "attachments": ticket.attachments or [],
-        
-        # Concierge fields
         "assigned_to": None,
         "status": "new",
-        "priority": 3,  # Default medium priority
+        "priority": 3,
         "estimated_resolution_time": None,
         "actual_resolution_time": None,
         "resolution_note": None,
-        
-        # Conversation thread
         "messages": [{
             "id": str(uuid.uuid4()),
             "type": "ticket_created",
@@ -195,8 +172,6 @@ async def create_ticket(ticket: TicketCreate):
             "timestamp": now,
             "is_internal": False
         }],
-        
-        # Metadata
         "internal_notes": "",
         "tags": [],
         "created_at": now,
@@ -206,7 +181,7 @@ async def create_ticket(ticket: TicketCreate):
         "closed_at": None,
     }
     
-    result = db.tickets.insert_one(ticket_doc)
+    result = await db.tickets.insert_one(ticket_doc)
     ticket_doc["id"] = str(result.inserted_id)
     del ticket_doc["_id"]
     
@@ -259,12 +234,10 @@ async def list_tickets(
     
     sort_direction = -1 if sort_order == "desc" else 1
     
-    tickets = list(db.tickets.find(query)
-        .sort(sort_by, sort_direction)
-        .skip(offset)
-        .limit(limit))
+    cursor = db.tickets.find(query).sort(sort_by, sort_direction).skip(offset).limit(limit)
+    tickets = await cursor.to_list(length=limit)
     
-    total = db.tickets.count_documents(query)
+    total = await db.tickets.count_documents(query)
     
     return {
         "tickets": [serialize_ticket(t) for t in tickets],
@@ -281,66 +254,26 @@ async def get_ticket_stats():
     # Count by status
     status_counts = {}
     for status in TICKET_STATUSES:
-        count = db.tickets.count_documents({"status": status["id"]})
+        count = await db.tickets.count_documents({"status": status["id"]})
         status_counts[status["id"]] = count
     
-    # Count open tickets (not resolved/closed)
-    open_count = db.tickets.count_documents({"status": {"$nin": ["resolved", "closed"]}})
+    # Count open tickets
+    open_count = await db.tickets.count_documents({"status": {"$nin": ["resolved", "closed"]}})
     
     # Count by category
     category_counts = {}
     for cat in TICKET_CATEGORIES:
-        count = db.tickets.count_documents({"category": cat["id"]})
+        count = await db.tickets.count_documents({"category": cat["id"]})
         category_counts[cat["id"]] = count
     
-    # Count by urgency
+    # Count by urgency (open tickets only)
     urgency_counts = {}
     for urg in URGENCY_LEVELS:
-        count = db.tickets.count_documents({
+        count = await db.tickets.count_documents({
             "urgency": urg["id"],
             "status": {"$nin": ["resolved", "closed"]}
         })
         urgency_counts[urg["id"]] = count
-    
-    # Average response time (for tickets with first_response_at)
-    pipeline = [
-        {"$match": {"first_response_at": {"$ne": None}}},
-        {"$project": {
-            "response_time": {
-                "$divide": [
-                    {"$subtract": [
-                        {"$dateFromString": {"dateString": "$first_response_at"}},
-                        {"$dateFromString": {"dateString": "$created_at"}}
-                    ]},
-                    3600000  # Convert to hours
-                ]
-            }
-        }},
-        {"$group": {"_id": None, "avg_response_time": {"$avg": "$response_time"}}}
-    ]
-    
-    avg_response = list(db.tickets.aggregate(pipeline))
-    avg_response_hours = avg_response[0]["avg_response_time"] if avg_response else 0
-    
-    # Average resolution time
-    pipeline = [
-        {"$match": {"resolved_at": {"$ne": None}}},
-        {"$project": {
-            "resolution_time": {
-                "$divide": [
-                    {"$subtract": [
-                        {"$dateFromString": {"dateString": "$resolved_at"}},
-                        {"$dateFromString": {"dateString": "$created_at"}}
-                    ]},
-                    3600000
-                ]
-            }
-        }},
-        {"$group": {"_id": None, "avg_resolution_time": {"$avg": "$resolution_time"}}}
-    ]
-    
-    avg_resolution = list(db.tickets.aggregate(pipeline))
-    avg_resolution_hours = avg_resolution[0]["avg_resolution_time"] if avg_resolution else 0
     
     # Tickets by concierge
     pipeline = [
@@ -348,16 +281,17 @@ async def get_ticket_stats():
         {"$group": {"_id": "$assigned_to", "count": {"$sum": 1}}},
         {"$sort": {"count": -1}}
     ]
-    tickets_by_assignee = list(db.tickets.aggregate(pipeline))
+    cursor = db.tickets.aggregate(pipeline)
+    tickets_by_assignee = await cursor.to_list(length=100)
     
     # Recent tickets (last 24 hours)
     from datetime import timedelta
     yesterday = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
-    recent_count = db.tickets.count_documents({"created_at": {"$gte": yesterday}})
+    recent_count = await db.tickets.count_documents({"created_at": {"$gte": yesterday}})
     
-    # Overdue tickets (past deadline, not resolved/closed)
+    # Overdue tickets
     now = datetime.now(timezone.utc).isoformat()
-    overdue_count = db.tickets.count_documents({
+    overdue_count = await db.tickets.count_documents({
         "deadline": {"$lt": now, "$ne": None},
         "status": {"$nin": ["resolved", "closed"]}
     })
@@ -367,8 +301,6 @@ async def get_ticket_stats():
         "by_status": status_counts,
         "by_category": category_counts,
         "by_urgency": urgency_counts,
-        "avg_response_hours": round(avg_response_hours, 1),
-        "avg_resolution_hours": round(avg_resolution_hours, 1),
         "by_assignee": tickets_by_assignee,
         "recent_24h": recent_count,
         "overdue": overdue_count
@@ -379,12 +311,11 @@ async def get_ticket(ticket_id: str):
     """Get a single ticket by ID"""
     db = get_db()
     
-    # Try to find by ticket_id first, then by MongoDB _id
-    ticket = db.tickets.find_one({"ticket_id": ticket_id})
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
     
     if not ticket:
         try:
-            ticket = db.tickets.find_one({"_id": ObjectId(ticket_id)})
+            ticket = await db.tickets.find_one({"_id": ObjectId(ticket_id)})
         except:
             pass
     
@@ -398,18 +329,16 @@ async def update_ticket(ticket_id: str, update: TicketUpdate):
     """Update a ticket"""
     db = get_db()
     
-    # Find ticket
-    ticket = db.tickets.find_one({"ticket_id": ticket_id})
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
     if not ticket:
         try:
-            ticket = db.tickets.find_one({"_id": ObjectId(ticket_id)})
+            ticket = await db.tickets.find_one({"_id": ObjectId(ticket_id)})
         except:
             raise HTTPException(status_code=404, detail="Ticket not found")
     
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
     
-    # Build update
     update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
     update_data = update.dict(exclude_unset=True)
     
@@ -426,7 +355,6 @@ async def update_ticket(ticket_id: str, update: TicketUpdate):
         
         if update_doc["status"] == "resolved":
             update_doc["resolved_at"] = now
-            # Require resolution note
             if not update_doc.get("resolution_note") and not ticket.get("resolution_note"):
                 raise HTTPException(
                     status_code=400, 
@@ -435,21 +363,13 @@ async def update_ticket(ticket_id: str, update: TicketUpdate):
         
         if update_doc["status"] == "closed":
             update_doc["closed_at"] = now
-            # Must be resolved first
-            if ticket.get("status") != "resolved" and update_doc.get("status") != "resolved":
-                raise HTTPException(
-                    status_code=400,
-                    detail="Ticket must be resolved before closing"
-                )
     
-    # Update
-    db.tickets.update_one(
+    await db.tickets.update_one(
         {"_id": ticket["_id"]},
         {"$set": update_doc}
     )
     
-    # Fetch updated ticket
-    updated = db.tickets.find_one({"_id": ticket["_id"]})
+    updated = await db.tickets.find_one({"_id": ticket["_id"]})
     
     return {"success": True, "ticket": serialize_ticket(updated)}
 
@@ -458,10 +378,10 @@ async def add_reply(ticket_id: str, reply: TicketReply):
     """Add a reply/message to a ticket"""
     db = get_db()
     
-    ticket = db.tickets.find_one({"ticket_id": ticket_id})
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
     if not ticket:
         try:
-            ticket = db.tickets.find_one({"_id": ObjectId(ticket_id)})
+            ticket = await db.tickets.find_one({"_id": ObjectId(ticket_id)})
         except:
             raise HTTPException(status_code=404, detail="Ticket not found")
     
@@ -480,15 +400,12 @@ async def add_reply(ticket_id: str, reply: TicketReply):
         "is_internal": reply.is_internal
     }
     
-    update_doc = {
-        "updated_at": now,
-    }
+    update_doc = {"updated_at": now}
     
-    # Set first response time if this is the first reply
     if not ticket.get("first_response_at") and not reply.is_internal:
         update_doc["first_response_at"] = now
     
-    db.tickets.update_one(
+    await db.tickets.update_one(
         {"_id": ticket["_id"]},
         {
             "$push": {"messages": message},
@@ -503,10 +420,10 @@ async def assign_ticket(ticket_id: str, assignee: str = Form(...)):
     """Assign a ticket to a concierge"""
     db = get_db()
     
-    ticket = db.tickets.find_one({"ticket_id": ticket_id})
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
     if not ticket:
         try:
-            ticket = db.tickets.find_one({"_id": ObjectId(ticket_id)})
+            ticket = await db.tickets.find_one({"_id": ObjectId(ticket_id)})
         except:
             raise HTTPException(status_code=404, detail="Ticket not found")
     
@@ -515,7 +432,7 @@ async def assign_ticket(ticket_id: str, assignee: str = Form(...)):
     
     now = datetime.now(timezone.utc).isoformat()
     
-    db.tickets.update_one(
+    await db.tickets.update_one(
         {"_id": ticket["_id"]},
         {"$set": {
             "assigned_to": assignee,
@@ -528,13 +445,13 @@ async def assign_ticket(ticket_id: str, assignee: str = Form(...)):
 
 @router.delete("/{ticket_id}")
 async def delete_ticket(ticket_id: str):
-    """Delete a ticket (admin only)"""
+    """Delete a ticket"""
     db = get_db()
     
-    result = db.tickets.delete_one({"ticket_id": ticket_id})
+    result = await db.tickets.delete_one({"ticket_id": ticket_id})
     if result.deleted_count == 0:
         try:
-            result = db.tickets.delete_one({"_id": ObjectId(ticket_id)})
+            result = await db.tickets.delete_one({"_id": ObjectId(ticket_id)})
         except:
             pass
     
@@ -547,15 +464,16 @@ async def delete_ticket(ticket_id: str):
 
 @router.get("/members/{identifier}/notes")
 async def get_member_notes(identifier: str):
-    """Get all notes for a member (by email or phone)"""
+    """Get all notes for a member"""
     db = get_db()
     
-    notes = list(db.member_notes.find({
+    cursor = db.member_notes.find({
         "$or": [
             {"member_email": identifier},
             {"member_phone": identifier}
         ]
-    }).sort("created_at", -1))
+    }).sort("created_at", -1)
+    notes = await cursor.to_list(length=100)
     
     for note in notes:
         note["id"] = str(note.pop("_id"))
@@ -575,10 +493,10 @@ async def add_member_note(identifier: str, note: MemberNote):
         "note": note.note,
         "category": note.category,
         "created_at": now,
-        "created_by": "admin"  # TODO: get from auth
+        "created_by": "admin"
     }
     
-    result = db.member_notes.insert_one(note_doc)
+    result = await db.member_notes.insert_one(note_doc)
     note_doc["id"] = str(result.inserted_id)
     del note_doc["_id"]
     
@@ -589,13 +507,14 @@ async def get_member_ticket_history(identifier: str):
     """Get ticket history for a member"""
     db = get_db()
     
-    tickets = list(db.tickets.find({
+    cursor = db.tickets.find({
         "$or": [
             {"member.email": identifier},
             {"member.phone": identifier},
             {"member.whatsapp": identifier}
         ]
-    }).sort("created_at", -1).limit(50))
+    }).sort("created_at", -1).limit(50)
+    tickets = await cursor.to_list(length=50)
     
     return {"tickets": [serialize_ticket(t) for t in tickets]}
 
@@ -606,10 +525,11 @@ async def get_integrations():
     """Get all integration configurations"""
     db = get_db()
     
-    configs = list(db.ticket_integrations.find({}))
+    cursor = db.ticket_integrations.find({})
+    configs = await cursor.to_list(length=100)
+    
     for config in configs:
         config["id"] = str(config.pop("_id"))
-        # Mask sensitive data
         if "config" in config:
             for key in ["password", "api_key", "secret", "token"]:
                 if key in config["config"]:
@@ -624,11 +544,10 @@ async def save_integration(integration: IntegrationConfig):
     
     now = datetime.now(timezone.utc).isoformat()
     
-    # Check if exists
-    existing = db.ticket_integrations.find_one({"provider": integration.provider})
+    existing = await db.ticket_integrations.find_one({"provider": integration.provider})
     
     if existing:
-        db.ticket_integrations.update_one(
+        await db.ticket_integrations.update_one(
             {"provider": integration.provider},
             {"$set": {
                 "config": integration.config,
@@ -637,7 +556,7 @@ async def save_integration(integration: IntegrationConfig):
             }}
         )
     else:
-        db.ticket_integrations.insert_one({
+        await db.ticket_integrations.insert_one({
             "provider": integration.provider,
             "config": integration.config,
             "enabled": integration.enabled,
@@ -652,7 +571,7 @@ async def delete_integration(provider: str):
     """Delete an integration configuration"""
     db = get_db()
     
-    result = db.ticket_integrations.delete_one({"provider": provider})
+    result = await db.ticket_integrations.delete_one({"provider": provider})
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Integration not found")
@@ -666,11 +585,10 @@ async def get_concierges():
     """Get list of concierges for assignment"""
     db = get_db()
     
-    # Get from dedicated collection or return default list
-    concierges = list(db.concierges.find({}))
+    cursor = db.concierges.find({})
+    concierges = await cursor.to_list(length=100)
     
     if not concierges:
-        # Return default concierge list
         concierges = [
             {"id": "aditya", "name": "Aditya", "email": "aditya@thedoggycompany.in", "role": "senior"},
             {"id": "concierge1", "name": "Concierge 1", "email": "concierge1@thedoggycompany.in", "role": "junior"},
@@ -697,7 +615,7 @@ async def add_concierge(
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    result = db.concierges.insert_one(concierge_doc)
+    result = await db.concierges.insert_one(concierge_doc)
     concierge_doc["id"] = str(result.inserted_id)
     del concierge_doc["_id"]
     
