@@ -477,6 +477,61 @@ const ProductDetailModal = ({ product, onClose }) => {
               </div>
             )}
 
+            {/* Bundle Product Selectors - For Hampers */}
+            {isHamperProduct && (
+              <div className="space-y-4 mb-4 pt-3 border-t bg-gradient-to-br from-pink-50 to-purple-50 -mx-6 px-6 py-4">
+                <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                  🎁 Customize Your Hamper
+                </h4>
+                
+                {/* Select Cake */}
+                {bundleCakes.length > 0 && (
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 block mb-2">
+                      Select Cake
+                    </label>
+                    <select
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                      value={cartInput.selectedCake}
+                      onChange={(e) => setCartInput({...cartInput, selectedCake: e.target.value})}
+                    >
+                      <option value="">Choose a cake style...</option>
+                      {bundleCakes.map(cake => (
+                        <option key={cake.id} value={cake.name}>
+                          {cake.name} {cake.price ? `- ₹${cake.price}` : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                
+                {/* Select Toy */}
+                {bundleToys.length > 0 && (
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 block mb-2">
+                      Select Toy
+                    </label>
+                    <select
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                      value={cartInput.selectedToy}
+                      onChange={(e) => setCartInput({...cartInput, selectedToy: e.target.value})}
+                    >
+                      <option value="">Choose a toy...</option>
+                      {bundleToys.map(toy => (
+                        <option key={toy.id} value={toy.name}>
+                          {toy.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                
+                {loadingBundle && (
+                  <p className="text-xs text-gray-500">Loading options...</p>
+                )}
+              </div>
+            )}
+
             {/* Personalization - Only for food/cake products */}
             {['cakes', 'celebrate', 'hampers', 'fresh-food', 'meals', 'pupcakes', 'dognuts'].some(cat => 
               (product.category || '').toLowerCase().includes(cat) || 
