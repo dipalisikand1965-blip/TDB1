@@ -808,13 +808,14 @@ const ServiceDesk = ({ authHeaders }) => {
                     <Users className="w-4 h-4" /> Assignment
                   </h4>
                   <Select 
-                    value={selectedTicket.assigned_to || ''} 
-                    onValueChange={handleAssign}
+                    value={selectedTicket.assigned_to || 'unassigned'} 
+                    onValueChange={(v) => v !== 'unassigned' && handleAssign(v)}
                   >
                     <SelectTrigger className="h-8">
                       <SelectValue placeholder="Assign to..." />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
                       {concierges.map(c => (
                         <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                       ))}
