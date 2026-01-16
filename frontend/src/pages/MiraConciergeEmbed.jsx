@@ -137,7 +137,7 @@ const MiraConciergeEmbed = () => {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
             <Sparkles className="w-5 h-5 text-yellow-300" />
-            <span className="font-semibold text-sm tracking-wide uppercase">The Doggy Bakery Concierge®</span>
+            <span className="font-semibold text-sm tracking-wide uppercase">The Doggy Company Concierge®</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
             Your 24/7 Pet Lifestyle Assistant

@@ -250,7 +250,7 @@ const Checkout = () => {
       locationDetails = `📍 *DELIVERY ADDRESS:*\n${formData.address}\n${formData.landmark ? `Landmark: ${formData.landmark}\n` : ''}${formData.city} - ${formData.pincode}`;
     }
 
-    return `🐕 *NEW ORDER - The Doggy Bakery*
+    return `🐕 *NEW ORDER - The Doggy Company*
     
 📋 *Order ID:* ${orderData.orderId}
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
