@@ -612,6 +612,8 @@ from dine_routes import (
 
 # Import ticket routes (Service Desk)
 from ticket_routes import router as ticket_router
+from ticket_messaging import router as ticket_messaging_router
+from ticket_sla import router as ticket_sla_router
 
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
