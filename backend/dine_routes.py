@@ -284,3 +284,181 @@ async def admin_dine_stats(username: str = Depends(verify_admin)):
         },
         "cities": cities
     }
+
+
+# ==================== IMAGE UPLOAD ====================
+
+@dine_router.post("/admin/dine/upload-image")
+async def upload_restaurant_image(
+    file: UploadFile = File(...),
+    username: str = Depends(verify_admin)
+):
+    """Upload an image for a restaurant"""
+    # Validate file type
+    allowed_types = ["image/jpeg", "image/png", "image/webp", "image/jpg"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(
+            status_code=400, 
+            detail="Invalid file type. Please upload JPG, PNG, or WebP images."
+        )
+    
+    # Generate unique filename
+    ext = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+    unique_filename = f"rest_{uuid.uuid4().hex[:12]}.{ext}"
+    
+    # Create directory if not exists
+    upload_dir = "uploads/restaurants"
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    file_path = f"{upload_dir}/{unique_filename}"
+    
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        return {
+            "message": "Image uploaded successfully",
+            "filename": unique_filename,
+            "url": f"/uploads/restaurants/{unique_filename}"
+        }
+    except Exception as e:
+        logger.error(f"Error uploading image: {e}")
+        raise HTTPException(status_code=500, detail="Failed to upload image")
+
+
+# ==================== CSV EXPORT ====================
+
+@dine_router.get("/admin/dine/export-csv")
+async def export_restaurants_csv(username: str = Depends(verify_admin)):
+    """Export all restaurants as CSV"""
+    restaurants = await db.restaurants.find({}, {"_id": 0}).to_list(1000)
+    
+    if not restaurants:
+        raise HTTPException(status_code=404, detail="No restaurants to export")
+    
+    # Create CSV in memory
+    output = io.StringIO()
+    
+    # Define CSV fields
+    fieldnames = [
+        'id', 'name', 'area', 'city', 'petMenuAvailable', 'petPolicy',
+        'cuisine', 'tags', 'rating', 'reviewCount', 'priceRange', 'image',
+        'petMenuItems', 'timings', 'phone', 'instagram', 'website',
+        'featured', 'verified', 'created_at', 'updated_at'
+    ]
+    
+    writer = csv.DictWriter(output, fieldnames=fieldnames, extrasaction='ignore')
+    writer.writeheader()
+    
+    for rest in restaurants:
+        # Convert lists to comma-separated strings for CSV
+        row = {**rest}
+        if isinstance(row.get('cuisine'), list):
+            row['cuisine'] = '|'.join(row['cuisine'])
+        if isinstance(row.get('tags'), list):
+            row['tags'] = '|'.join(row['tags'])
+        if isinstance(row.get('petMenuItems'), list):
+            row['petMenuItems'] = '|'.join(row['petMenuItems'])
+        writer.writerow(row)
+    
+    output.seek(0)
+    
+    # Return as downloadable CSV
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename=restaurants_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        }
+    )
+
+
+# ==================== CSV IMPORT ====================
+
+@dine_router.post("/admin/dine/import-csv")
+async def import_restaurants_csv(
+    file: UploadFile = File(...),
+    username: str = Depends(verify_admin)
+):
+    """Import restaurants from CSV file"""
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="Please upload a CSV file")
+    
+    try:
+        # Read CSV content
+        content = await file.read()
+        content_str = content.decode('utf-8')
+        
+        reader = csv.DictReader(io.StringIO(content_str))
+        
+        imported = 0
+        updated = 0
+        errors = []
+        
+        for row_num, row in enumerate(reader, start=2):  # Start at 2 (header is row 1)
+            try:
+                # Skip empty rows
+                if not row.get('name'):
+                    continue
+                
+                # Parse list fields from pipe-separated values
+                cuisine = [c.strip() for c in row.get('cuisine', '').split('|') if c.strip()]
+                tags = [t.strip() for t in row.get('tags', '').split('|') if t.strip()]
+                pet_menu_items = [p.strip() for p in row.get('petMenuItems', '').split('|') if p.strip()]
+                
+                restaurant_doc = {
+                    "name": row.get('name', '').strip(),
+                    "area": row.get('area', '').strip(),
+                    "city": row.get('city', '').strip(),
+                    "petMenuAvailable": row.get('petMenuAvailable', 'no').strip(),
+                    "petPolicy": row.get('petPolicy', 'outdoor').strip(),
+                    "cuisine": cuisine,
+                    "tags": tags,
+                    "rating": float(row.get('rating', 4.0) or 4.0),
+                    "reviewCount": int(row.get('reviewCount', 0) or 0),
+                    "priceRange": row.get('priceRange', '₹₹').strip(),
+                    "image": row.get('image', '').strip() or None,
+                    "petMenuItems": pet_menu_items,
+                    "timings": row.get('timings', '').strip() or None,
+                    "phone": row.get('phone', '').strip() or None,
+                    "instagram": row.get('instagram', '').strip() or None,
+                    "website": row.get('website', '').strip() or None,
+                    "featured": str(row.get('featured', 'false')).lower() in ['true', '1', 'yes'],
+                    "verified": str(row.get('verified', 'false')).lower() in ['true', '1', 'yes'],
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+                
+                # Check if restaurant with same name and city exists
+                existing = await db.restaurants.find_one({
+                    "name": restaurant_doc["name"],
+                    "city": restaurant_doc["city"]
+                })
+                
+                if existing:
+                    # Update existing restaurant
+                    await db.restaurants.update_one(
+                        {"id": existing["id"]},
+                        {"$set": restaurant_doc}
+                    )
+                    updated += 1
+                else:
+                    # Create new restaurant
+                    restaurant_doc["id"] = f"rest-{uuid.uuid4().hex[:12]}"
+                    restaurant_doc["created_at"] = datetime.now(timezone.utc).isoformat()
+                    await db.restaurants.insert_one(restaurant_doc)
+                    imported += 1
+                    
+            except Exception as e:
+                errors.append(f"Row {row_num}: {str(e)}")
+                continue
+        
+        return {
+            "message": "CSV import completed",
+            "imported": imported,
+            "updated": updated,
+            "errors": errors[:10] if errors else []  # Return first 10 errors
+        }
+        
+    except Exception as e:
+        logger.error(f"CSV import error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to import CSV: {str(e)}")
