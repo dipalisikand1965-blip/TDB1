@@ -150,6 +150,14 @@ function MainLayout() {
         <Route path="/streaties" element={<Streaties />} />
         <Route path="/franchise" element={<Franchise />} />
         <Route path="/contact" element={<Contact />} />
+        
+        {/* Life Pillars */}
+        <Route path="/celebrate" element={<ProductListing category="cakes" />} />
+        <Route path="/dine" element={<PillarPage />} />
+        <Route path="/stay" element={<PillarPage />} />
+        <Route path="/travel" element={<PillarPage />} />
+        <Route path="/care" element={<PillarPage />} />
+        <Route path="/pillar/:pillarId" element={<PillarPage />} />
       </Routes>
       <Footer />
       <CartSidebar />
