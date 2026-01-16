@@ -9,7 +9,7 @@ import ReviewsManager from '../components/ReviewsManager';
 import AutoshipManager from '../components/AutoshipManager';
 import FulfilmentManager from '../components/FulfilmentManager';
 import ReportsManager from '../components/ReportsManager';
-import { DashboardTab, OrdersTab, MembersTab, ChatsTab } from '../components/admin';
+import { DashboardTab, OrdersTab, MembersTab, ChatsTab, DineManager } from '../components/admin';
 import {
   Lock,
   User,
