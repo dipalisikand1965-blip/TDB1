@@ -6,7 +6,6 @@ import { Input } from '../components/ui/input';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import { 
-import { API_URL } from '../utils/api';
   Heart, 
   Circle, 
   Square, 
@@ -18,6 +17,7 @@ import { API_URL } from '../utils/api';
   ImageIcon,
   Cake
 } from 'lucide-react';
+import { API_URL } from '../utils/api';
 
 
 // Shape options with pricing (500g)
