@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import { Clock, Bell, ArrowLeft, Sparkles, Home, UtensilsCrossed, Plane, HeartPulse, Cake } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
