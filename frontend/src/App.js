@@ -37,6 +37,7 @@ import MiraConciergeEmbed from "./pages/MiraConciergeEmbed";
 import AuthCallback from "./pages/AuthCallback";
 import Autoship from "./pages/Autoship";
 import SearchResults from "./pages/SearchResults";
+import PillarPage from "./pages/PillarPage";
 
 function App() {
   return (
