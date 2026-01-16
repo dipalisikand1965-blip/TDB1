@@ -1344,6 +1344,8 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                         <Badge className={
                           meetup.status === 'accepted' ? 'bg-green-100 text-green-700' :
                           meetup.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                          meetup.status === 'completed' ? 'bg-blue-100 text-blue-700' :
+                          meetup.status === 'declined' ? 'bg-red-100 text-red-700' :
                           'bg-gray-100 text-gray-700'
                         }>
                           {meetup.status}
@@ -1359,8 +1361,31 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                         <p className="text-xs text-gray-400 italic mt-1">"{meetup.message}&rdquo;</p>
                       )}
                     </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="destructive" onClick={() => deleteMeetup(meetup.id)}>
+                    <div className="flex flex-col gap-2">
+                      {/* Status change buttons */}
+                      <div className="flex gap-1">
+                        {meetup.status === 'pending' && (
+                          <>
+                            <Button size="sm" className="bg-green-500 hover:bg-green-600 h-7 text-xs" onClick={() => updateMeetupStatus(meetup.id, 'accepted')}>
+                              <Check className="w-3 h-3 mr-1" /> Accept
+                            </Button>
+                            <Button size="sm" variant="outline" className="h-7 text-xs text-red-600" onClick={() => updateMeetupStatus(meetup.id, 'declined')}>
+                              <XCircle className="w-3 h-3 mr-1" /> Decline
+                            </Button>
+                          </>
+                        )}
+                        {meetup.status === 'accepted' && (
+                          <Button size="sm" className="bg-blue-500 hover:bg-blue-600 h-7 text-xs" onClick={() => updateMeetupStatus(meetup.id, 'completed')}>
+                            <UserCheck className="w-3 h-3 mr-1" /> Complete
+                          </Button>
+                        )}
+                        {meetup.status !== 'cancelled' && meetup.status !== 'completed' && (
+                          <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => updateMeetupStatus(meetup.id, 'cancelled')}>
+                            <X className="w-3 h-3 mr-1" /> Cancel
+                          </Button>
+                        )}
+                      </div>
+                      <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={() => deleteMeetup(meetup.id)}>
                         <Trash2 className="w-3 h-3 mr-1" /> Delete
                       </Button>
                     </div>
