@@ -110,6 +110,37 @@ class MeetupRequest(BaseModel):
     message: Optional[str] = None
 
 
+class RestaurantPartialUpdate(BaseModel):
+    """For partial updates (PATCH)"""
+    name: Optional[str] = None
+    area: Optional[str] = None
+    city: Optional[str] = None
+    petMenuAvailable: Optional[str] = None
+    petPolicy: Optional[str] = None
+    cuisine: Optional[List[str]] = None
+    tags: Optional[List[str]] = None
+    rating: Optional[float] = None
+    reviewCount: Optional[int] = None
+    priceRange: Optional[str] = None
+    image: Optional[str] = None
+    petMenuItems: Optional[List[str]] = None
+    timings: Optional[str] = None
+    phone: Optional[str] = None
+    instagram: Optional[str] = None
+    website: Optional[str] = None
+    featured: Optional[bool] = None
+    verified: Optional[bool] = None
+    petMenuImage: Optional[str] = None
+    conciergeRecommendation: Optional[str] = None
+    zomatoLink: Optional[str] = None
+    googleMapsLink: Optional[str] = None
+    specialOffers: Optional[str] = None
+    address: Optional[str] = None
+    birthdayPerks: Optional[bool] = None
+    country: Optional[str] = None
+    state: Optional[str] = None
+
+
 # ==================== PUBLIC ROUTES ====================
 
 @dine_router.get("/dine/restaurants")
