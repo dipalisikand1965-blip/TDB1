@@ -71,13 +71,16 @@ class RestaurantCreate(BaseModel):
     website: Optional[str] = None
     featured: bool = False
     verified: bool = False
-    # New fields
+    # Enhanced fields
     petMenuImage: Optional[str] = None  # Image of pet menu
-    miraRecommendation: Optional[str] = None  # Pet Concierge recommendation
+    conciergeRecommendation: Optional[str] = None  # Your Concierge® recommends
     zomatoLink: Optional[str] = None
     googleMapsLink: Optional[str] = None
     specialOffers: Optional[str] = None
     address: Optional[str] = None
+    birthdayPerks: bool = False  # Offers birthday perks for pets
+    country: str = "India"
+    state: Optional[str] = None
 
 
 class ReservationRequest(BaseModel):
