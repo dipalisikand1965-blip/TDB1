@@ -1012,3 +1012,39 @@ Once you redeploy and confirm Dine is working, we'll build:
 - Reply functionality
 
 ---
+
+### Jan 16, 2026 - Pet Buddy Meetups Enhancement Complete
+
+#### ✅ PET BUDDY MEETUPS MODAL IMPROVEMENTS
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Restaurant Info in Header** | ✅ | Modal shows restaurant name AND city (e.g., "TherPup Café • Bangalore") |
+| **Enhanced Visit Cards** | ✅ | Cards now show: user name, date, time slot, restaurant name, city, pets, notes |
+| **Improved Connect Button** | ✅ | Shows loading spinner ("Sending..."), then success state ("Sent!" with checkmark) |
+| **Notification Preference** | ✅ | Schedule Visit form has Email/WhatsApp radio buttons for notification preference |
+| **Backend Storage** | ✅ | `notification_preference` field stored in visit document |
+| **WhatsApp Notifications** | ✅ | Uses wa.me click-to-chat link when user prefers WhatsApp |
+
+#### ✅ ADMIN MEETUP MANAGEMENT (DineManager.jsx)
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Meetup Requests Tab** | ✅ | Shows all meetup requests with stats (Total, Pending, Accepted, Declined) |
+| **Accept/Decline Buttons** | ✅ | Visible for pending meetups with proper status management |
+| **Complete Button** | ✅ | For accepted meetups to mark as completed |
+| **Cancel/Delete Actions** | ✅ | Admin can cancel or delete meetups |
+| **Email Notifications** | ✅ | Both parties notified when admin changes status |
+
+#### ✅ BACKEND UPDATES (dine_routes.py)
+- **RestaurantVisit Model**: Added `notification_preference` field (email/whatsapp)
+- **schedule_visit()**: Stores notification preference in visit document
+- **send_meetup_request()**: 
+  - Sends notifications based on target user's preference
+  - WhatsApp preference sends email with wa.me link
+  - Includes requester_name, target_user_name, restaurant_city in meetup document
+
+#### ✅ TEST COVERAGE
+- 12/12 backend API tests passed
+- All frontend UI tests passed
+- Created `/app/tests/test_pet_buddy_meetups.py` with comprehensive test coverage
+
+---
