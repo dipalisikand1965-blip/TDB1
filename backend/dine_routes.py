@@ -1136,8 +1136,10 @@ async def respond_to_meetup(request_id: str, accept: bool, user_id: str):
         raise HTTPException(status_code=404, detail="Request not found or not authorized")
     
     # Send notification to the requester
+    status_text = "accepted" if accept else "declined"
+    
     if meetup.get("requester_id"):
-        status_text = "accepted" if accept else "declined"
+        # In-app notification
         notification = {
             "id": f"notif-{uuid.uuid4().hex[:12]}",
             "user_id": meetup.get("requester_id"),
@@ -1149,6 +1151,101 @@ async def respond_to_meetup(request_id: str, accept: bool, user_id: str):
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         await db.dine_notifications.insert_one(notification)
+        
+        # Get requester's email to send notification
+        requester = await db.users.find_one({"id": meetup.get("requester_id")}, {"email": 1, "name": 1})
+        responder = await db.users.find_one({"id": user_id}, {"name": 1})
+        responder_name = responder.get("name", "A pet parent") if responder else "A pet parent"
+        
+        if requester and requester.get("email") and RESEND_API_KEY:
+            try:
+                if accept:
+                    # Send acceptance email with details
+                    resend.Emails.send({
+                        "from": f"Buddy Meet <{SENDER_EMAIL}>",
+                        "to": [requester["email"]],
+                        "subject": f"🎉 Great News! Your Meetup Request was Accepted!",
+                        "html": f"""
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+                                <h1 style="color: white; margin: 0;">Meetup Confirmed! 🐕💕🐕</h1>
+                            </div>
+                            
+                            <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb;">
+                                <p style="font-size: 18px;">Hey {requester.get('name', 'there')}!</p>
+                                
+                                <p><strong>{responder_name}</strong> has accepted your meetup request! Time to arrange the playdate! 🎉</p>
+                                
+                                <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
+                                    <p style="margin: 5px 0;"><strong>📍 Restaurant:</strong> {meetup.get('restaurant_name')}</p>
+                                    <p style="margin: 5px 0;"><strong>📅 Date:</strong> {meetup.get('visit_date')}</p>
+                                </div>
+                                
+                                <div style="background: #d1fae5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                                    <p style="margin: 0; font-size: 14px;">
+                                        <strong>What's Next?</strong><br>
+                                        Our Concierge® team will reach out to coordinate the meetup details. 
+                                        Get your pup ready for some fun! 🐾
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div style="background: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 12px 12px;">
+                                <p style="color: #9ca3af; margin: 0; font-size: 12px;">
+                                    The Doggy Company Concierge® | Making pet friendships happen! 🐾
+                                </p>
+                            </div>
+                        </div>
+                        """
+                    })
+                else:
+                    # Send decline email
+                    resend.Emails.send({
+                        "from": f"Buddy Meet <{SENDER_EMAIL}>",
+                        "to": [requester["email"]],
+                        "subject": f"Meetup Update - {meetup.get('restaurant_name')}",
+                        "html": f"""
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                            <div style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+                                <h1 style="color: white; margin: 0;">Meetup Update</h1>
+                            </div>
+                            
+                            <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb;">
+                                <p style="font-size: 16px;">Hey {requester.get('name', 'there')},</p>
+                                
+                                <p>Unfortunately, the other pet parent wasn't able to accept your meetup request at {meetup.get('restaurant_name')} on {meetup.get('visit_date')}.</p>
+                                
+                                <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                                    <p style="margin: 0; font-size: 14px;">
+                                        <strong>Don't worry!</strong><br>
+                                        There are plenty of other pet parents looking for buddies. 
+                                        Keep your "Looking for Buddies" option on for your next visit! 🐕
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div style="background: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 12px 12px;">
+                                <p style="color: #9ca3af; margin: 0; font-size: 12px;">
+                                    The Doggy Company Concierge® | Making pet friendships happen! 🐾
+                                </p>
+                            </div>
+                        </div>
+                        """
+                    })
+                
+                logger.info(f"Sent meetup {status_text} email to {requester['email']}")
+            except Exception as e:
+                logger.error(f"Failed to send meetup response email: {e}")
+    
+    # Also update the linked Service Desk ticket if exists
+    try:
+        from ticket_auto_create import update_ticket_from_event
+        await update_ticket_from_event(db, "meetup_request", request_id, {
+            "new_status": status_text,
+            "status_message": f"Meetup request was {status_text} by {responder_name}"
+        })
+    except Exception as e:
+        logger.error(f"Failed to update ticket for meetup response: {e}")
     
     return {"message": f"Meetup request {'accepted' if accept else 'declined'}"}
 
