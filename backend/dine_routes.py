@@ -696,6 +696,11 @@ async def get_meetup_requests(user_id: str, status: Optional[str] = None):
 @dine_router.put("/dine/meetup-requests/{request_id}/respond")
 async def respond_to_meetup(request_id: str, accept: bool, user_id: str):
     """Accept or decline a meetup request"""
+    # Get the meetup request first
+    meetup = await db.meetup_requests.find_one({"id": request_id})
+    if not meetup:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
     result = await db.meetup_requests.update_one(
         {"id": request_id, "target_user_id": user_id},
         {
@@ -708,6 +713,21 @@ async def respond_to_meetup(request_id: str, accept: bool, user_id: str):
     
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Request not found or not authorized")
+    
+    # Send notification to the requester
+    if meetup.get("requester_id"):
+        status_text = "accepted" if accept else "declined"
+        notification = {
+            "id": f"notif-{uuid.uuid4().hex[:12]}",
+            "user_id": meetup.get("requester_id"),
+            "type": f"meetup_{status_text}",
+            "title": f"Meetup Request {status_text.title()}! {'🎉' if accept else '😢'}",
+            "message": f"Your meetup request at {meetup.get('restaurant_name')} on {meetup.get('visit_date')} was {status_text}",
+            "related_id": request_id,
+            "read": False,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.dine_notifications.insert_one(notification)
     
     return {"message": f"Meetup request {'accepted' if accept else 'declined'}"}
 
