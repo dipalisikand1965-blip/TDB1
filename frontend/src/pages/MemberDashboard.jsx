@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../hooks/use-toast';
+import { API_URL } from '../utils/api';
 
 const MemberDashboard = () => {
   const { user, logout, token, loading: authLoading } = useAuth();
@@ -42,8 +43,6 @@ const MemberDashboard = () => {
     shareData: false,
     termsAccepted: true
   });
-
-  const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
   // Redirect to login if not authenticated (after auth check completes)
   useEffect(() => {

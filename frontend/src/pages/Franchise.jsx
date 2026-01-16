@@ -3,6 +3,7 @@ import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Store, TrendingUp, Users, Heart, CheckCircle, MapPin, Phone, Mail, Building2, Sparkles } from 'lucide-react';
+import { API_URL } from '../utils/api';
 
 const benefits = [
   {
@@ -46,8 +47,6 @@ const Franchise = () => {
   });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-
-  const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
