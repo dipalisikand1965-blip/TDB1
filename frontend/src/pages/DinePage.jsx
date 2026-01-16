@@ -679,6 +679,14 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
         <div className="p-4">
           {activeTab === 'upcoming' ? (
             <div className="space-y-4">
+              {/* Safety Notice */}
+              <div className="bg-amber-50 p-3 rounded-lg border border-amber-200 text-xs">
+                <p className="text-amber-800 flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span><strong>Safety First:</strong> Always verify profiles before meeting. Meet in public places. The Doggy Company facilitates connections but is not responsible for individual meetups.</span>
+                </p>
+              </div>
+              
               {upcomingVisits.length === 0 ? (
                 <div className="text-center py-8">
                   <Users className="w-12 h-12 mx-auto text-gray-300 mb-3" />
@@ -693,40 +701,80 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
                   </Button>
                 </div>
               ) : (
-                upcomingVisits.map((visit) => (
-                  <Card key={visit.id} className="p-4 border-purple-100 hover:border-purple-300 transition-colors" data-testid={`visit-card-${visit.id}`}>
+                upcomingVisits.map((visit) => {
+                  // Check if profile is verified (has at least one social link)
+                  const hasVerification = visit.instagram || visit.facebook || visit.linkedin;
+                  const petsList = visit.pets || [{ name: visit.pet_name, breed: visit.pet_breed, about: visit.pet_about, photo: visit.pet_photo }];
+                  
+                  return (
+                  <Card key={visit.id} className={`p-4 border-purple-100 hover:border-purple-300 transition-colors ${hasVerification ? 'ring-1 ring-green-200' : ''}`} data-testid={`visit-card-${visit.id}`}>
                     <div className="flex gap-3">
                       {/* Pet Photo (if available) */}
-                      {visit.pet_photo && (
+                      {(visit.pet_photo || petsList[0]?.photo) && (
                         <div className="flex-shrink-0">
                           <img 
-                            src={visit.pet_photo} 
-                            alt={visit.pet_name || 'Pet'} 
+                            src={visit.pet_photo || petsList[0]?.photo} 
+                            alt={visit.pet_name || petsList[0]?.name || 'Pet'} 
                             className="w-16 h-16 rounded-full object-cover border-2 border-purple-200"
                           />
                         </div>
                       )}
                       
                       <div className="flex-1 min-w-0">
-                        {/* Person's Name with Title */}
-                        <p className="font-semibold text-purple-700 mb-1 flex items-center gap-1">
-                          <User className="w-3 h-3" />
-                          {visit.title || ''} {visit.first_name || ''} {visit.last_name || visit.user_name || 'Pet Parent'}
-                        </p>
+                        {/* Person's Name with Verification Badge */}
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-semibold text-purple-700 flex items-center gap-1">
+                            <User className="w-3 h-3" />
+                            {visit.title || ''} {visit.first_name || ''} {visit.last_name || visit.user_name || 'Pet Parent'}
+                          </p>
+                          {hasVerification && (
+                            <Badge className="bg-green-100 text-green-700 text-xs px-1.5 py-0">
+                              <Check className="w-2 h-2 mr-0.5" /> Verified
+                            </Badge>
+                          )}
+                        </div>
                         
-                        {/* Pet Info - Highlighted */}
-                        {visit.pet_name && (
-                          <div className="bg-purple-50 rounded-lg p-2 mb-2">
-                            <p className="text-sm font-medium text-purple-800 flex items-center gap-1">
-                              <Dog className="w-3 h-3" />
-                              Bringing: <span className="font-bold">{visit.pet_name}</span>
-                              {visit.pet_breed && <span className="text-purple-600">({visit.pet_breed})</span>}
-                            </p>
-                            {visit.pet_about && (
-                              <p className="text-xs text-purple-600 mt-1 italic">"{visit.pet_about}"</p>
+                        {/* Social Profiles for Verification */}
+                        {hasVerification && (
+                          <div className="flex gap-2 mb-2">
+                            {visit.instagram && (
+                              <a href={visit.instagram.startsWith('http') ? visit.instagram : `https://instagram.com/${visit.instagram.replace('@', '')}`} 
+                                 target="_blank" rel="noopener noreferrer"
+                                 className="text-pink-500 hover:text-pink-600 text-xs flex items-center gap-0.5">
+                                <Instagram className="w-3 h-3" /> Instagram
+                              </a>
+                            )}
+                            {visit.facebook && (
+                              <a href={visit.facebook.startsWith('http') ? visit.facebook : `https://facebook.com/${visit.facebook}`} 
+                                 target="_blank" rel="noopener noreferrer"
+                                 className="text-blue-600 hover:text-blue-700 text-xs flex items-center gap-0.5">
+                                <Globe className="w-3 h-3" /> Facebook
+                              </a>
+                            )}
+                            {visit.linkedin && (
+                              <a href={visit.linkedin.startsWith('http') ? visit.linkedin : `https://linkedin.com/in/${visit.linkedin}`} 
+                                 target="_blank" rel="noopener noreferrer"
+                                 className="text-blue-700 hover:text-blue-800 text-xs flex items-center gap-0.5">
+                                <Globe className="w-3 h-3" /> LinkedIn
+                              </a>
                             )}
                           </div>
                         )}
+                        
+                        {/* Pet Info - Highlighted (supports multiple pets) */}
+                        <div className="bg-purple-50 rounded-lg p-2 mb-2">
+                          <p className="text-sm font-medium text-purple-800 flex items-center gap-1 mb-1">
+                            <Dog className="w-3 h-3" />
+                            Bringing {petsList.length} pet{petsList.length > 1 ? 's' : ''}:
+                          </p>
+                          {petsList.filter(p => p.name).map((pet, idx) => (
+                            <div key={idx} className="ml-4 text-xs text-purple-700">
+                              <span className="font-bold">{pet.name}</span>
+                              {pet.breed && <span className="text-purple-500"> ({pet.breed})</span>}
+                              {pet.about && <span className="italic text-purple-600"> - "{pet.about}"</span>}
+                            </div>
+                          ))}
+                        </div>
                         
                         {/* Date & Time & Location */}
                         <div className="flex items-center gap-2 mb-1 flex-wrap text-sm">
