@@ -1339,7 +1339,7 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                       )}
                       
                       {visit.notes && (
-                        <p className="text-xs text-gray-400 italic mt-1">"{visit.notes}&rdquo;</p>
+                        <p className="text-xs text-gray-400 italic mt-1">"{visit.notes}"</p>
                       )}
                     </div>
                     <div className="flex gap-2">
@@ -1356,7 +1356,8 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                     </div>
                   </div>
                 </Card>
-              ))}
+              );
+              })}
             </div>
           )}
         </div>
