@@ -632,6 +632,12 @@ const ServiceDesk = ({ authHeaders }) => {
             </div>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
+              <RefreshCw className={`w-4 h-4 mr-1 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowCategoryManager(true)}>
+              <Tag className="w-4 h-4 mr-1" /> Categories
+            </Button>
             <Button variant="outline" size="sm" onClick={() => setShowSettings(true)}>
               <Settings className="w-4 h-4 mr-1" /> Settings
             </Button>
