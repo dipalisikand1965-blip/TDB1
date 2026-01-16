@@ -47,7 +47,7 @@ const Franchise = () => {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const API_URL = process.env.REACT_APP_BACKEND_URL;
+  const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
