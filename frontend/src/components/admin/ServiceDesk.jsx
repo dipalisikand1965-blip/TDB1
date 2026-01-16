@@ -966,8 +966,19 @@ const ServiceDesk = ({ authHeaders }) => {
 
                 {/* Assignment */}
                 <Card className="p-3">
-                  <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-                    <Users className="w-4 h-4" /> Assignment
+                  <h4 className="text-sm font-medium mb-2 flex items-center justify-between">
+                    <span className="flex items-center gap-2"><Users className="w-4 h-4" /> Assignment</span>
+                    {!selectedTicket.assigned_to && (
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="h-6 text-xs"
+                        onClick={handleAutoAssign}
+                        disabled={autoAssigning}
+                      >
+                        <Zap className="w-3 h-3 mr-1" /> Auto
+                      </Button>
+                    )}
                   </h4>
                   <Select 
                     value={selectedTicket.assigned_to || 'unassigned'} 
