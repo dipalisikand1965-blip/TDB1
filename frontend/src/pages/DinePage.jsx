@@ -957,6 +957,10 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
     pets: 1,
     petMealPreorder: false,
     specialRequests: '',
+    // Pet details
+    pet_name: '',
+    pet_breed: '',
+    pet_about: '',
   });
 
   const handleSubmit = async (e) => {
