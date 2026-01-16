@@ -1082,6 +1082,295 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
           ))
         )}
       </div>
+      </>
+      )}
+      
+      {/* ============ RESERVATIONS TAB ============ */}
+      {activeTab === 'reservations' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex gap-2">
+              <Select value={reservationFilter} onValueChange={setReservationFilter}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Filter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="confirmed">Confirmed</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button variant="outline" onClick={fetchReservations}>
+              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+            </Button>
+          </div>
+          
+          {isLoading ? (
+            <div className="text-center py-8 text-gray-500">Loading reservations...</div>
+          ) : reservations.length === 0 ? (
+            <Card className="p-8 text-center text-gray-500">
+              <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>No reservations found</p>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {reservations.map(res => (
+                <Card key={res.id} className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-semibold">{res.restaurant_name || 'Unknown Restaurant'}</h4>
+                        <Badge className={
+                          res.status === 'confirmed' ? 'bg-green-100 text-green-700' :
+                          res.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                          res.status === 'completed' ? 'bg-blue-100 text-blue-700' :
+                          'bg-gray-100 text-gray-700'
+                        }>
+                          {res.status}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">{res.name}</span> • {res.email} • {res.phone}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        <Calendar className="w-3 h-3 inline mr-1" /> {res.date} at {res.time} • 
+                        <Users className="w-3 h-3 inline mx-1" /> {res.guests} guests
+                        {res.pets > 0 && <><PawPrint className="w-3 h-3 inline mx-1" /> {res.pets} pets</>}
+                      </p>
+                      {res.special_requests && (
+                        <p className="text-xs text-gray-400 italic">"{res.special_requests}"</p>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      {res.status === 'pending' && (
+                        <>
+                          <Button size="sm" className="bg-green-500 hover:bg-green-600" onClick={() => updateReservationStatus(res.id, 'confirmed')}>
+                            <Check className="w-3 h-3 mr-1" /> Confirm
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={() => updateReservationStatus(res.id, 'cancelled')}>
+                            <X className="w-3 h-3 mr-1" /> Cancel
+                          </Button>
+                        </>
+                      )}
+                      {res.status === 'confirmed' && (
+                        <Button size="sm" className="bg-blue-500 hover:bg-blue-600" onClick={() => updateReservationStatus(res.id, 'completed')}>
+                          <UserCheck className="w-3 h-3 mr-1" /> Complete
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* ============ PET BUDDY VISITS TAB ============ */}
+      {activeTab === 'visits' && (
+        <div className="space-y-4">
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <Card className="p-4 text-center">
+              <div className="text-2xl font-bold text-pink-600">{visitStats.total || 0}</div>
+              <div className="text-xs text-gray-500">Total Visits</div>
+            </Card>
+            <Card className="p-4 text-center">
+              <div className="text-2xl font-bold text-green-600">{visitStats.scheduled || 0}</div>
+              <div className="text-xs text-gray-500">Scheduled</div>
+            </Card>
+            <Card className="p-4 text-center">
+              <div className="text-2xl font-bold text-blue-600">{visitStats.completed || 0}</div>
+              <div className="text-xs text-gray-500">Completed</div>
+            </Card>
+            <Card className="p-4 text-center">
+              <div className="text-2xl font-bold text-purple-600">{visitStats.looking_for_buddies || 0}</div>
+              <div className="text-xs text-gray-500">Looking for Buddies</div>
+            </Card>
+            <Card className="p-4 text-center">
+              <div className="text-2xl font-bold text-gray-600">{visitStats.cancelled || 0}</div>
+              <div className="text-xs text-gray-500">Cancelled</div>
+            </Card>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex gap-2">
+              <Select value={visitFilter} onValueChange={setVisitFilter}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Filter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="scheduled">Scheduled</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button variant="outline" onClick={fetchVisits}>
+              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+            </Button>
+          </div>
+          
+          {isLoading ? (
+            <div className="text-center py-8 text-gray-500">Loading visits...</div>
+          ) : visits.length === 0 ? (
+            <Card className="p-8 text-center text-gray-500">
+              <PawPrint className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>No pet buddy visits found</p>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {visits.map(visit => (
+                <Card key={visit.id} className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-semibold">{visit.restaurant_name}</h4>
+                        <Badge className={
+                          visit.status === 'scheduled' ? 'bg-green-100 text-green-700' :
+                          visit.status === 'completed' ? 'bg-blue-100 text-blue-700' :
+                          'bg-gray-100 text-gray-700'
+                        }>
+                          {visit.status}
+                        </Badge>
+                        {visit.looking_for_buddies && (
+                          <Badge className="bg-pink-100 text-pink-700">
+                            <Heart className="w-3 h-3 mr-1" /> Looking for Buddies
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">{visit.user_name || 'Anonymous'}</span>
+                        {visit.user_email && <> • {visit.user_email}</>}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        <Calendar className="w-3 h-3 inline mr-1" /> {visit.date} • 
+                        <Clock className="w-3 h-3 inline mx-1" /> {visit.time_slot}
+                      </p>
+                      {visit.pets && visit.pets.length > 0 && (
+                        <div className="flex gap-2 mt-2">
+                          {visit.pets.map((pet, idx) => (
+                            <Badge key={idx} variant="outline" className="text-xs">
+                              <PawPrint className="w-3 h-3 mr-1" /> {pet.name} ({pet.breed})
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                      {visit.notes && (
+                        <p className="text-xs text-gray-400 italic mt-1">"{visit.notes}"</p>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      {visit.status === 'scheduled' && (
+                        <>
+                          <Button size="sm" className="bg-blue-500 hover:bg-blue-600" onClick={() => updateVisitStatus(visit.id, 'completed')}>
+                            <Check className="w-3 h-3 mr-1" /> Complete
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={() => updateVisitStatus(visit.id, 'cancelled')}>
+                            <X className="w-3 h-3 mr-1" /> Cancel
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* ============ MEETUP REQUESTS TAB ============ */}
+      {activeTab === 'meetups' && (
+        <div className="space-y-4">
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card className="p-4 text-center">
+              <div className="text-2xl font-bold text-rose-600">{meetupStats.total || 0}</div>
+              <div className="text-xs text-gray-500">Total Requests</div>
+            </Card>
+            <Card className="p-4 text-center">
+              <div className="text-2xl font-bold text-yellow-600">{meetupStats.pending || 0}</div>
+              <div className="text-xs text-gray-500">Pending</div>
+            </Card>
+            <Card className="p-4 text-center">
+              <div className="text-2xl font-bold text-green-600">{meetupStats.accepted || 0}</div>
+              <div className="text-xs text-gray-500">Accepted</div>
+            </Card>
+            <Card className="p-4 text-center">
+              <div className="text-2xl font-bold text-gray-600">{meetupStats.declined || 0}</div>
+              <div className="text-xs text-gray-500">Declined</div>
+            </Card>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex gap-2">
+              <Select value={meetupFilter} onValueChange={setMeetupFilter}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Filter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="accepted">Accepted</SelectItem>
+                  <SelectItem value="declined">Declined</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button variant="outline" onClick={fetchMeetups}>
+              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+            </Button>
+          </div>
+          
+          {isLoading ? (
+            <div className="text-center py-8 text-gray-500">Loading meetup requests...</div>
+          ) : meetups.length === 0 ? (
+            <Card className="p-8 text-center text-gray-500">
+              <Heart className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>No meetup requests found</p>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {meetups.map(meetup => (
+                <Card key={meetup.id} className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-semibold">{meetup.restaurant_name || 'Unknown'}</h4>
+                        <Badge className={
+                          meetup.status === 'accepted' ? 'bg-green-100 text-green-700' :
+                          meetup.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-gray-100 text-gray-700'
+                        }>
+                          {meetup.status}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">From:</span> {meetup.requester_name || 'Unknown'} → <span className="font-medium">To:</span> {meetup.target_user_name || 'Unknown'}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        <Calendar className="w-3 h-3 inline mr-1" /> {meetup.visit_date}
+                      </p>
+                      {meetup.message && (
+                        <p className="text-xs text-gray-400 italic mt-1">"{meetup.message}"</p>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="destructive" onClick={() => deleteMeetup(meetup.id)}>
+                        <Trash2 className="w-3 h-3 mr-1" /> Delete
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
