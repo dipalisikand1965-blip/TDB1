@@ -889,53 +889,116 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
                 </div>
               </div>
 
-              {/* SECTION 2: Your Pet Details */}
-              <div className="bg-pink-50 p-3 rounded-lg border border-pink-200">
-                <h4 className="font-semibold text-pink-800 mb-3 flex items-center gap-2">
-                  <Dog className="w-4 h-4" /> Your Pet
+              {/* SECTION 2: Social Profiles for Verification */}
+              <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-200">
+                <h4 className="font-semibold text-indigo-800 mb-2 flex items-center gap-2">
+                  <Globe className="w-4 h-4" /> Verify Your Identity (Recommended)
                 </h4>
-                <div className="grid grid-cols-2 gap-2 mb-2">
+                <p className="text-xs text-indigo-600 mb-3">Add at least one social profile so other pet parents can verify who they're meeting. Profiles with verification get a ✓ badge.</p>
+                <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className="text-xs font-medium text-gray-600">Pet's Name *</label>
+                    <label className="text-xs font-medium text-gray-600 flex items-center gap-1">
+                      <Instagram className="w-3 h-3 text-pink-500" /> Instagram
+                    </label>
                     <Input
-                      value={visitForm.pet_name}
-                      onChange={(e) => setVisitForm({...visitForm, pet_name: e.target.value})}
-                      placeholder="e.g., Bruno"
-                      className={`text-sm h-8 ${formErrors.pet_name ? 'border-red-400' : ''}`}
+                      value={visitForm.instagram}
+                      onChange={(e) => setVisitForm({...visitForm, instagram: e.target.value})}
+                      placeholder="@username or URL"
+                      className="text-sm h-8"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-gray-600">Breed (optional)</label>
+                    <label className="text-xs font-medium text-gray-600 flex items-center gap-1">
+                      <Globe className="w-3 h-3 text-blue-600" /> Facebook
+                    </label>
                     <Input
-                      value={visitForm.pet_breed}
-                      onChange={(e) => setVisitForm({...visitForm, pet_breed: e.target.value})}
-                      placeholder="e.g., Golden Retriever"
+                      value={visitForm.facebook}
+                      onChange={(e) => setVisitForm({...visitForm, facebook: e.target.value})}
+                      placeholder="Profile URL"
+                      className="text-sm h-8"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600 flex items-center gap-1">
+                      <Globe className="w-3 h-3 text-blue-700" /> LinkedIn
+                    </label>
+                    <Input
+                      value={visitForm.linkedin}
+                      onChange={(e) => setVisitForm({...visitForm, linkedin: e.target.value})}
+                      placeholder="Profile URL"
                       className="text-sm h-8"
                     />
                   </div>
                 </div>
-                <div>
-                  <label className="text-xs font-medium text-gray-600">About your pet (optional)</label>
-                  <textarea
-                    value={visitForm.pet_about}
-                    onChange={(e) => setVisitForm({...visitForm, pet_about: e.target.value})}
-                    className="w-full px-2 py-1.5 border rounded text-sm"
-                    rows={2}
-                    placeholder="e.g., Super friendly 2-year-old, loves to play fetch!"
-                  />
-                </div>
-                <div className="mt-2">
-                  <label className="text-xs font-medium text-gray-600">Pet Photo URL (optional)</label>
-                  <Input
-                    value={visitForm.pet_photo}
-                    onChange={(e) => setVisitForm({...visitForm, pet_photo: e.target.value})}
-                    placeholder="https://..."
-                    className="text-sm h-8"
-                  />
-                </div>
               </div>
 
-              {/* SECTION 3: Visit Details */}
+              {/* SECTION 3: Your Pets (Multiple Support) */}
+              <div className="bg-pink-50 p-3 rounded-lg border border-pink-200">
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-semibold text-pink-800 flex items-center gap-2">
+                    <Dog className="w-4 h-4" /> Your Pet{visitForm.pets.length > 1 ? 's' : ''} ({visitForm.pets.length})
+                  </h4>
+                  {visitForm.pets.length < 5 && (
+                    <Button variant="outline" size="sm" onClick={addPet} className="text-xs h-7">
+                      + Add Another Pet
+                    </Button>
+                  )}
+                </div>
+                
+                {visitForm.pets.map((pet, index) => (
+                  <div key={index} className={`${index > 0 ? 'mt-3 pt-3 border-t border-pink-200' : ''}`}>
+                    {visitForm.pets.length > 1 && (
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-xs font-medium text-pink-700">Pet #{index + 1}</span>
+                        <Button variant="ghost" size="sm" onClick={() => removePet(index)} className="text-xs h-6 text-red-500 hover:text-red-700">
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      <div>
+                        <label className="text-xs font-medium text-gray-600">Pet's Name *</label>
+                        <Input
+                          value={pet.name}
+                          onChange={(e) => updatePet(index, 'name', e.target.value)}
+                          placeholder="e.g., Bruno"
+                          className={`text-sm h-8 ${index === 0 && formErrors.pet_name ? 'border-red-400' : ''}`}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-gray-600">Breed</label>
+                        <Input
+                          value={pet.breed}
+                          onChange={(e) => updatePet(index, 'breed', e.target.value)}
+                          placeholder="e.g., Golden Retriever"
+                          className="text-sm h-8"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-gray-600">About this pet</label>
+                      <textarea
+                        value={pet.about}
+                        onChange={(e) => updatePet(index, 'about', e.target.value)}
+                        className="w-full px-2 py-1.5 border rounded text-sm"
+                        rows={1}
+                        placeholder="e.g., Friendly 2-year-old, loves to play!"
+                      />
+                    </div>
+                    <div className="mt-1">
+                      <label className="text-xs font-medium text-gray-600">Photo URL</label>
+                      <Input
+                        value={pet.photo}
+                        onChange={(e) => updatePet(index, 'photo', e.target.value)}
+                        placeholder="https://..."
+                        className="text-sm h-8"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* SECTION 4: Visit Details */}
               <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
                 <h4 className="font-semibold text-purple-800 mb-3 flex items-center gap-2">
                   <Calendar className="w-4 h-4" /> Visit Details
