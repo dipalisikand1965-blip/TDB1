@@ -196,21 +196,111 @@ const ServiceDesk = ({ authHeaders }) => {
     
     setSendingReply(true);
     try {
-      await fetch(`${API_URL}/api/tickets/${selectedTicket.ticket_id}/reply`, {
-        method: 'POST',
-        headers: { ...authHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: replyText,
-          is_internal: isInternalNote
-        })
-      });
+      if (isInternalNote || sendChannel === 'internal') {
+        // Internal note - use existing endpoint
+        await fetch(`${API_URL}/api/tickets/${selectedTicket.ticket_id}/reply`, {
+          method: 'POST',
+          headers: { ...authHeaders, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: replyText,
+            is_internal: isInternalNote
+          })
+        });
+      } else {
+        // Send via channel (email/whatsapp) using messaging API
+        const response = await fetch(`${API_URL}/api/tickets/messaging/send`, {
+          method: 'POST',
+          headers: { ...authHeaders, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ticket_id: selectedTicket.ticket_id,
+            message: replyText,
+            channel: sendChannel,
+            is_internal: false
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (sendChannel === 'whatsapp' && result.whatsapp_url) {
+          // Open WhatsApp in new tab
+          window.open(result.whatsapp_url, '_blank');
+        }
+        
+        if (!result.success) {
+          alert(result.error || 'Failed to send message');
+        }
+      }
       
       setReplyText('');
       fetchTicketDetails(selectedTicket.ticket_id);
     } catch (err) {
       console.error('Error sending reply:', err);
+      alert('Failed to send message');
     }
     setSendingReply(false);
+  };
+
+  const handleAutoAssign = async () => {
+    if (!selectedTicket) return;
+    
+    setAutoAssigning(true);
+    try {
+      const response = await fetch(`${API_URL}/api/tickets/sla/auto-assign/${selectedTicket.ticket_id}`, {
+        method: 'POST',
+        headers: authHeaders
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert(`Ticket auto-assigned to ${result.assigned_to}`);
+        fetchTicketDetails(selectedTicket.ticket_id);
+        fetchTickets();
+      } else {
+        alert(result.message || 'Could not auto-assign ticket');
+      }
+    } catch (err) {
+      console.error('Error auto-assigning:', err);
+    }
+    setAutoAssigning(false);
+  };
+
+  const handleAutoAssignAll = async () => {
+    if (!confirm('Auto-assign all unassigned tickets?')) return;
+    
+    setAutoAssigning(true);
+    try {
+      const response = await fetch(`${API_URL}/api/tickets/sla/auto-assign-all`, {
+        method: 'POST',
+        headers: authHeaders
+      });
+      
+      const result = await response.json();
+      
+      alert(`Assigned ${result.assigned_count} of ${result.total_unassigned} unassigned tickets`);
+      fetchTickets();
+      fetchStats();
+    } catch (err) {
+      console.error('Error auto-assigning all:', err);
+    }
+    setAutoAssigning(false);
+  };
+
+  const handleCheckEscalations = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/tickets/sla/check-escalations`, {
+        method: 'POST',
+        headers: authHeaders
+      });
+      
+      const result = await response.json();
+      
+      alert(`Escalated: ${result.escalated_count}, Notifications sent: ${result.notifications_sent}`);
+      fetchTickets();
+      fetchStats();
+    } catch (err) {
+      console.error('Error checking escalations:', err);
+    }
   };
 
   const handleStatusChange = async (newStatus) => {
