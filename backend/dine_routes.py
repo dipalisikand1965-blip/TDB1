@@ -321,6 +321,9 @@ async def create_reservation(reservation: ReservationRequest):
             "time": reservation.time,
             "guests": reservation.guests,
             "pets": reservation.pets,
+            "pet_name": reservation.pet_name,
+            "pet_breed": reservation.pet_breed,
+            "pet_about": reservation.pet_about,
             "special_requests": reservation.specialRequests,
             "occasion": reservation.occasion if hasattr(reservation, 'occasion') else None,
             "is_birthday": "birthday" in (reservation.specialRequests or "").lower() if reservation.specialRequests else False
