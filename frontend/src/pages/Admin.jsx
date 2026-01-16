@@ -1067,6 +1067,7 @@ const Admin = () => {
             { id: 'members', label: 'Customers', icon: Users },
             { id: 'pets', label: '🐾 Pet Profiles', icon: PawPrint },
             { id: 'dine', label: '🍽️ Dine', icon: Package },
+            { id: 'servicedesk', label: '🎫 Service Desk', icon: Ticket },
             { id: 'loyalty', label: '⭐ Loyalty', icon: Star },
             { id: 'discounts', label: '🎟️ Discounts', icon: Tag },
             { id: 'abandoned', label: '🛒 Abandoned', icon: ShoppingBag },
