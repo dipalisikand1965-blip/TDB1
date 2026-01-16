@@ -1094,6 +1094,9 @@ const Admin = () => {
               </div>
             </div>
             <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" onClick={() => setShowPasswordModal(true)} className="text-xs">
+                <Lock className="w-4 h-4 mr-1" /> Change Password
+              </Button>
               <Button variant="ghost" size="icon" onClick={fetchDashboard}>
                 <RefreshCw className="w-5 h-5" />
               </Button>
