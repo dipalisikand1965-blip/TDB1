@@ -851,10 +851,13 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                         {restaurant.verified && (
                           <Badge className="bg-blue-100 text-blue-700"><Check className="w-3 h-3 mr-1" /> Verified</Badge>
                         )}
+                        {restaurant.birthdayPerks && (
+                          <Badge className="bg-pink-100 text-pink-700">🎂 Birthday Perks</Badge>
+                        )}
                       </div>
                       <p className="text-sm text-gray-500 flex items-center gap-1">
                         <MapPin className="w-4 h-4" />
-                        {restaurant.area}, {restaurant.city}
+                        {restaurant.area}, {restaurant.city}{restaurant.state ? `, ${restaurant.state}` : ''}{restaurant.country && restaurant.country !== 'India' ? ` (${restaurant.country})` : ''}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
