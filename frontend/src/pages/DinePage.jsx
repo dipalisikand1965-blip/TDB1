@@ -4,7 +4,8 @@ import {
   UtensilsCrossed, MapPin, Search, Filter, Star, Clock, 
   Dog, Cat, ChevronRight, Phone, Globe, Instagram,
   Utensils, Coffee, Pizza, Leaf, Heart, Check, X, AlertCircle,
-  Sparkles, ShoppingBag, Truck, Users, Calendar, MessageCircle, Send
+  Sparkles, ShoppingBag, Truck, Users, Calendar, MessageCircle, Send,
+  Bell, Gift, Cake
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -12,6 +13,16 @@ import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// Get user from localStorage
+const getUser = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
+  } catch {
+    return null;
+  }
+};
 
 // Fresh Meals Categories
 const freshMealsCategories = [
@@ -29,6 +40,9 @@ const DinePage = () => {
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showBuddyModal, setShowBuddyModal] = useState(null);
+  const [currentUser, setCurrentUser] = useState(getUser());
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   // Fetch restaurants from API
   useEffect(() => {
