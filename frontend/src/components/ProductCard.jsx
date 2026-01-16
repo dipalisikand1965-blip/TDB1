@@ -230,6 +230,40 @@ const ProductDetailModal = ({ product, onClose }) => {
     fetchRelated();
   }, [product.id, API_URL]);
 
+  // Fetch bundle products (cakes and toys) for hamper products
+  React.useEffect(() => {
+    if (!isHamperProduct) return;
+    
+    const fetchBundleProducts = async () => {
+      setLoadingBundle(true);
+      try {
+        // Fetch cakes
+        const cakesRes = await fetch(`${API_URL}/api/products?category=cakes&limit=20`);
+        if (cakesRes.ok) {
+          const data = await cakesRes.json();
+          setBundleCakes(data.products || []);
+        }
+        
+        // Fetch toys
+        const toysRes = await fetch(`${API_URL}/api/products?category=accessories&limit=20`);
+        if (toysRes.ok) {
+          const data = await toysRes.json();
+          // Filter for toys only
+          const toys = (data.products || []).filter(p => 
+            (p.name || '').toLowerCase().includes('toy') ||
+            (p.name || '').toLowerCase().includes('squeaky')
+          );
+          setBundleToys(toys);
+        }
+      } catch (error) {
+        console.error('Failed to fetch bundle products:', error);
+      }
+      setLoadingBundle(false);
+    };
+    
+    fetchBundleProducts();
+  }, [isHamperProduct, API_URL]);
+
   // Fetch reviews
   useEffect(() => {
     const fetchReviews = async () => {
