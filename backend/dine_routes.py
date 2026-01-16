@@ -313,12 +313,22 @@ async def get_my_dining_history(user_id: Optional[str] = None, email: Optional[s
     if not user_id and not email:
         raise HTTPException(status_code=400, detail="user_id or email required")
     
-    # Get reservations
-    res_query = {"user_id": user_id} if user_id else {"email": email}
+    # Build query to match either user_id OR email for reservations
+    res_conditions = []
+    if user_id:
+        res_conditions.append({"user_id": user_id})
+    if email:
+        res_conditions.append({"email": email})
+    res_query = {"$or": res_conditions} if len(res_conditions) > 1 else res_conditions[0]
     reservations = await db.reservations.find(res_query, {"_id": 0}).sort("created_at", -1).to_list(50)
     
-    # Get visits
-    visit_query = {"user_id": user_id} if user_id else {"user_email": email}
+    # Build query for visits - match user_id OR user_email
+    visit_conditions = []
+    if user_id:
+        visit_conditions.append({"user_id": user_id})
+    if email:
+        visit_conditions.append({"user_email": email})
+    visit_query = {"$or": visit_conditions} if len(visit_conditions) > 1 else visit_conditions[0]
     visits = await db.restaurant_visits.find(visit_query, {"_id": 0}).sort("created_at", -1).to_list(50)
     
     # Get meetup requests (sent and received)
