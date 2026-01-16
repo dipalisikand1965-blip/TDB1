@@ -5993,6 +5993,7 @@ app.include_router(product_router)
 app.include_router(order_router)
 app.include_router(user_router)
 app.include_router(dine_router)
+app.include_router(ticket_router)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
