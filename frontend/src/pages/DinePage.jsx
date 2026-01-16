@@ -538,23 +538,39 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
     if (!visitForm.last_name.trim()) errors.last_name = 'Last name is required';
     if (!visitForm.email.trim()) errors.email = 'Email is required';
     if (!visitForm.whatsapp.trim()) errors.whatsapp = 'WhatsApp number is required';
-    if (!visitForm.pet_name.trim()) errors.pet_name = 'Pet name is required';
+    // At least first pet name required
+    if (!visitForm.pets[0]?.name?.trim()) errors.pet_name = 'At least one pet name is required';
+    // Safety agreement required
+    if (!visitForm.safety_agreed) errors.safety = 'You must agree to the safety guidelines';
+    // At least one social profile recommended (not required, but show warning)
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleScheduleVisit = async () => {
     if (!validateForm()) {
-      alert('Please fill in all required fields');
+      alert('Please fill in all required fields and agree to safety guidelines');
       return;
     }
+    
+    // Warn if no social profiles provided
+    if (!visitForm.instagram && !visitForm.facebook && !visitForm.linkedin) {
+      const proceed = confirm('You haven\'t added any social profile links. Other pet parents may be hesitant to connect without being able to verify your identity. Continue anyway?');
+      if (!proceed) return;
+    }
+    
     try {
       const response = await fetch(`${API_URL}/api/dine/visits`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           restaurant_id: restaurant.id,
-          ...visitForm
+          ...visitForm,
+          // Flatten first pet for backward compatibility
+          pet_name: visitForm.pets[0]?.name || '',
+          pet_breed: visitForm.pets[0]?.breed || '',
+          pet_about: visitForm.pets[0]?.about || '',
+          pet_photo: visitForm.pets[0]?.photo || ''
         })
       });
       
