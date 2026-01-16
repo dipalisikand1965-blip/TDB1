@@ -966,14 +966,26 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
     if not visit:
         raise HTTPException(status_code=404, detail="Visit not found")
     
+    # Get requester info
+    requester_info = None
+    requester_email = None
+    if user_id:
+        requester_info = await db.users.find_one({"id": user_id}, {"_id": 0, "name": 1, "email": 1, "phone": 1})
+        requester_email = requester_info.get("email") if requester_info else None
+    
     meetup_doc = {
         "id": f"meetup-{uuid.uuid4().hex[:12]}",
         "visit_id": request.visit_id,
         "requester_id": user_id,
+        "requester_name": requester_info.get("name") if requester_info else "Pet Parent",
+        "requester_email": requester_email,
         "target_user_id": visit.get("user_id"),
+        "target_user_name": visit.get("user_name"),
         "restaurant_id": visit.get("restaurant_id"),
         "restaurant_name": visit.get("restaurant_name"),
+        "restaurant_city": visit.get("restaurant_city"),
         "visit_date": visit.get("date"),
+        "time_slot": visit.get("time_slot"),
         "message": request.message,
         "status": "pending",  # pending, accepted, declined
         "created_at": datetime.now(timezone.utc).isoformat()
@@ -987,7 +999,7 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
         {"$push": {"meetup_requests": meetup_doc["id"]}}
     )
     
-    # Create notification for the target user
+    # Create in-app notification for the target user
     if visit.get("user_id"):
         notification = {
             "id": f"notif-{uuid.uuid4().hex[:12]}",
@@ -1003,11 +1015,6 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
     
     # Auto-create Service Desk ticket for meetup request
     try:
-        # Get requester info if we have user_id
-        requester_info = None
-        if user_id:
-            requester_info = await db.users.find_one({"id": user_id}, {"_id": 0, "name": 1, "email": 1})
-        
         target_info = None
         if visit.get("user_id"):
             target_info = await db.users.find_one({"id": visit.get("user_id")}, {"_id": 0, "name": 1, "email": 1})
@@ -1015,7 +1022,7 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
         ticket_id = await create_ticket_from_event(db, "meetup_request", {
             "meetup_id": meetup_doc["id"],
             "requester_name": requester_info.get("name") if requester_info else "Pet Parent",
-            "requester_email": requester_info.get("email") if requester_info else None,
+            "requester_email": requester_email,
             "target_user_name": target_info.get("name") if target_info else visit.get("user_name", "Pet Parent"),
             "restaurant_name": visit.get("restaurant_name"),
             "visit_date": visit.get("date"),
@@ -1025,51 +1032,47 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
     except Exception as e:
         logger.error(f"Failed to auto-create ticket for meetup request: {e}")
     
-    # Send confirmation to requester
-    if user_email:
+    # Send notification to the TARGET user based on their preference
+    target_user_email = visit.get("user_email")
+    target_notification_pref = visit.get("notification_preference", "email")
+    whatsapp_number = os.environ.get("REACT_APP_WHATSAPP_NUMBER", "919663185747")
+    
+    if target_user_email and RESEND_API_KEY:
         try:
-            # Check user preference (email or WhatsApp)
-            user_prefs = await db.users.find_one({"id": user_id}, {"notification_preference": 1, "phone": 1})
-            notification_pref = user_prefs.get("notification_preference", "email") if user_prefs else "email"
-            
-            if notification_pref == "whatsapp" and user_prefs and user_prefs.get("phone"):
-                # For WhatsApp, we'd send via WhatsApp Business API
-                # For now, log it (WhatsApp integration requires business verification)
-                logger.info(f"Would send WhatsApp confirmation to {user_prefs.get('phone')} for meetup {meetup_doc['id']}")
-            
-            # Always send email confirmation
-            if RESEND_API_KEY:
+            if target_notification_pref == "whatsapp":
+                # For WhatsApp preference, send email with WhatsApp link
+                wa_message = f"Hi! Someone wants to meet up with you at {visit.get('restaurant_name')} on {visit.get('date')}. Check the app for details!"
+                wa_link = f"https://wa.me/{whatsapp_number}?text={wa_message.replace(' ', '%20')}"
+                
                 resend.Emails.send({
                     "from": f"Buddy Meet <{SENDER_EMAIL}>",
-                    "to": [user_email],
-                    "subject": f"🐕 Meetup Request Submitted - {visit.get('restaurant_name')}",
+                    "to": [target_user_email],
+                    "subject": f"🐕 New Meetup Request at {visit.get('restaurant_name')}!",
                     "html": f"""
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                        <div style="background: linear-gradient(135deg, #ec4899 0%, #9333ea 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
-                            <h1 style="color: white; margin: 0;">Meetup Request Sent! 💕</h1>
+                        <div style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+                            <h1 style="color: white; margin: 0;">New Meetup Request! 🐕</h1>
                         </div>
                         
                         <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb;">
-                            <p style="font-size: 16px;">Hey there!</p>
+                            <p style="font-size: 16px;">Hey {visit.get('user_name', 'there')}!</p>
                             
-                            <p>Your meetup request has been sent to another pet parent at <strong>{visit.get('restaurant_name')}</strong>!</p>
+                            <p>A fellow pet parent wants to meet up with you!</p>
                             
-                            <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ec4899;">
+                            <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #25D366;">
                                 <p style="margin: 5px 0;"><strong>📍 Restaurant:</strong> {visit.get('restaurant_name')}</p>
                                 <p style="margin: 5px 0;"><strong>📅 Date:</strong> {visit.get('date')}</p>
-                                {f'<p style="margin: 5px 0;"><strong>💬 Your Message:</strong> {request.message}</p>' if request.message else ''}
+                                {f'<p style="margin: 5px 0;"><strong>💬 Their Message:</strong> {request.message}</p>' if request.message else ''}
                             </div>
                             
-                            <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                                <p style="margin: 0; font-size: 14px;">
-                                    <strong>What happens next?</strong><br>
-                                    The other pet parent will receive your request and can choose to accept or decline. 
-                                    We'll notify you as soon as they respond!
-                                </p>
-                            </div>
+                            <p style="text-align: center; margin: 20px 0;">
+                                <a href="{wa_link}" style="background: #25D366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
+                                    💬 Chat on WhatsApp
+                                </a>
+                            </p>
                             
-                            <p style="font-size: 14px; color: #6b7280;">
-                                Our Concierge® team has been notified and will help coordinate if needed.
+                            <p style="text-align: center; font-size: 14px; color: #6b7280;">
+                                Or log in to the app to accept/decline this request
                             </p>
                         </div>
                         
@@ -1081,7 +1084,101 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
                     </div>
                     """
                 })
-                logger.info(f"Sent meetup confirmation email to {user_email}")
+                logger.info(f"Sent WhatsApp-preferred notification email to {target_user_email}")
+            else:
+                # Standard email notification
+                resend.Emails.send({
+                    "from": f"Buddy Meet <{SENDER_EMAIL}>",
+                    "to": [target_user_email],
+                    "subject": f"🐕 New Meetup Request at {visit.get('restaurant_name')}!",
+                    "html": f"""
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <div style="background: linear-gradient(135deg, #ec4899 0%, #9333ea 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+                            <h1 style="color: white; margin: 0;">New Meetup Request! 🐕</h1>
+                        </div>
+                        
+                        <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb;">
+                            <p style="font-size: 16px;">Hey {visit.get('user_name', 'there')}!</p>
+                            
+                            <p>A fellow pet parent wants to meet up with you!</p>
+                            
+                            <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ec4899;">
+                                <p style="margin: 5px 0;"><strong>📍 Restaurant:</strong> {visit.get('restaurant_name')}</p>
+                                <p style="margin: 5px 0;"><strong>📍 City:</strong> {visit.get('restaurant_city', 'N/A')}</p>
+                                <p style="margin: 5px 0;"><strong>📅 Date:</strong> {visit.get('date')}</p>
+                                {f'<p style="margin: 5px 0;"><strong>💬 Their Message:</strong> {request.message}</p>' if request.message else ''}
+                            </div>
+                            
+                            <p style="text-align: center; margin: 20px 0;">
+                                <a href="https://thedoggycompany.in/dine" style="background: #9333ea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
+                                    View Request & Respond
+                                </a>
+                            </p>
+                            
+                            <p style="font-size: 14px; color: #6b7280;">
+                                Log in to accept or decline this meetup request. Our Concierge® team will help coordinate!
+                            </p>
+                        </div>
+                        
+                        <div style="background: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 12px 12px;">
+                            <p style="color: #9ca3af; margin: 0; font-size: 12px;">
+                                The Doggy Company Concierge® | Making pet friendships happen! 🐾
+                            </p>
+                        </div>
+                    </div>
+                    """
+                })
+                logger.info(f"Sent meetup request notification email to {target_user_email}")
+        except Exception as e:
+            logger.error(f"Failed to send meetup notification to target user: {e}")
+    
+    # Send confirmation email to the REQUESTER
+    if requester_email and RESEND_API_KEY:
+        try:
+            resend.Emails.send({
+                "from": f"Buddy Meet <{SENDER_EMAIL}>",
+                "to": [requester_email],
+                "subject": f"🐕 Meetup Request Submitted - {visit.get('restaurant_name')}",
+                "html": f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <div style="background: linear-gradient(135deg, #ec4899 0%, #9333ea 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+                        <h1 style="color: white; margin: 0;">Meetup Request Sent! 💕</h1>
+                    </div>
+                    
+                    <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb;">
+                        <p style="font-size: 16px;">Hey {requester_info.get('name', 'there') if requester_info else 'there'}!</p>
+                        
+                        <p>Your meetup request has been sent to {visit.get('user_name', 'another pet parent')} at <strong>{visit.get('restaurant_name')}</strong>!</p>
+                        
+                        <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ec4899;">
+                            <p style="margin: 5px 0;"><strong>📍 Restaurant:</strong> {visit.get('restaurant_name')}</p>
+                            <p style="margin: 5px 0;"><strong>📍 City:</strong> {visit.get('restaurant_city', 'N/A')}</p>
+                            <p style="margin: 5px 0;"><strong>📅 Date:</strong> {visit.get('date')}</p>
+                            {f'<p style="margin: 5px 0;"><strong>💬 Your Message:</strong> {request.message}</p>' if request.message else ''}
+                        </div>
+                        
+                        <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                            <p style="margin: 0; font-size: 14px;">
+                                <strong>What happens next?</strong><br>
+                                The other pet parent will receive your request and can choose to accept or decline. 
+                                We'll notify you as soon as they respond!
+                            </p>
+                        </div>
+                        
+                        <p style="font-size: 14px; color: #6b7280;">
+                            Our Concierge® team has been notified and will help coordinate if needed.
+                        </p>
+                    </div>
+                    
+                    <div style="background: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 12px 12px;">
+                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">
+                            The Doggy Company Concierge® | Making pet friendships happen! 🐾
+                        </p>
+                    </div>
+                </div>
+                """
+            })
+            logger.info(f"Sent meetup confirmation email to requester {requester_email}")
         except Exception as e:
             logger.error(f"Failed to send meetup confirmation: {e}")
     
