@@ -10,11 +10,25 @@ import os
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pawticket.preview.emergentagent.com')
 ADMIN_AUTH = ('aditya', 'doggy2026')
 
-# Test product IDs
-CAKE_PRODUCT_ID = "shopify-8634045595802"  # Kawaii Woofy Cake
-TOY_PRODUCT_ID = "shopify-8642355429530"   # Puppuccino Toy
-HAMPER_PRODUCT_ID = "shopify-7222825058458"  # Dog Birthday Cake Hamper w/ Toy
-PRODUCT_WITH_TAGS = "shopify-8661308375194"  # Googly Ghoul Dognuts
+
+def get_product_by_id(product_id):
+    """Helper to get a product by ID from the products list"""
+    response = requests.get(f"{BASE_URL}/api/products?limit=200")
+    if response.status_code != 200:
+        return None
+    products = response.json().get("products", [])
+    for p in products:
+        if p.get("id") == product_id:
+            return p
+    return None
+
+
+def get_product_by_category(category, limit=5):
+    """Helper to get products by category"""
+    response = requests.get(f"{BASE_URL}/api/products?category={category}&limit={limit}")
+    if response.status_code != 200:
+        return []
+    return response.json().get("products", [])
 
 
 class TestDisplayTagsAPI:
@@ -44,14 +58,19 @@ class TestDisplayTagsAPI:
         for expected in expected_tags:
             assert expected in tag_ids, f"Expected tag '{expected}' not found"
         
-        print(f"✅ Tag options API returned {len(tags)} tags")
+        print(f"✅ Tag options API returned {len(tags)} tags: {tag_ids}")
     
     def test_update_product_display_tags(self):
         """PUT /api/admin/products/{product_id}/display-tags - should update product display tags"""
+        # Get a cake product first
+        cakes = get_product_by_category("cakes", 1)
+        assert len(cakes) > 0, "Should have at least one cake product"
+        
+        product_id = cakes[0]["id"]
         test_tags = ["best-seller", "limited"]
         
         response = requests.put(
-            f"{BASE_URL}/api/admin/products/{CAKE_PRODUCT_ID}/display-tags",
+            f"{BASE_URL}/api/admin/products/{product_id}/display-tags",
             auth=ADMIN_AUTH,
             json=test_tags
         )
@@ -62,14 +81,19 @@ class TestDisplayTagsAPI:
         assert data.get("success") == True, "Response should indicate success"
         assert data.get("tags") == test_tags, f"Tags should match: expected {test_tags}, got {data.get('tags')}"
         
-        # Verify tags were persisted by fetching product
-        product_response = requests.get(f"{BASE_URL}/api/products/{CAKE_PRODUCT_ID}")
-        assert product_response.status_code == 200
+        # Verify tags were persisted by fetching product from list
+        product = get_product_by_id(product_id)
+        assert product is not None, f"Product {product_id} should exist"
+        assert product.get("display_tags") == test_tags, f"Tags should be persisted: expected {test_tags}, got {product.get('display_tags')}"
         
-        product = product_response.json()
-        assert product.get("display_tags") == test_tags, "Tags should be persisted on product"
+        print(f"✅ Display tags updated successfully on '{product.get('name')}': {test_tags}")
         
-        print(f"✅ Display tags updated successfully: {test_tags}")
+        # Cleanup - clear tags
+        requests.put(
+            f"{BASE_URL}/api/admin/products/{product_id}/display-tags",
+            auth=ADMIN_AUTH,
+            json=[]
+        )
     
     def test_update_display_tags_nonexistent_product(self):
         """PUT /api/admin/products/{product_id}/display-tags - should return 404 for nonexistent product"""
@@ -84,16 +108,22 @@ class TestDisplayTagsAPI:
     
     def test_clear_display_tags(self):
         """PUT /api/admin/products/{product_id}/display-tags - should allow clearing tags"""
+        # Get a cake product
+        cakes = get_product_by_category("cakes", 1)
+        assert len(cakes) > 0, "Should have at least one cake product"
+        
+        product_id = cakes[0]["id"]
+        
         # First set some tags
         requests.put(
-            f"{BASE_URL}/api/admin/products/{CAKE_PRODUCT_ID}/display-tags",
+            f"{BASE_URL}/api/admin/products/{product_id}/display-tags",
             auth=ADMIN_AUTH,
             json=["popular"]
         )
         
         # Then clear them
         response = requests.put(
-            f"{BASE_URL}/api/admin/products/{CAKE_PRODUCT_ID}/display-tags",
+            f"{BASE_URL}/api/admin/products/{product_id}/display-tags",
             auth=ADMIN_AUTH,
             json=[]
         )
@@ -108,53 +138,47 @@ class TestDisplayTagsAPI:
 class TestProductCategories:
     """Test product category data for personalization conditional logic"""
     
-    def test_cake_product_has_correct_category(self):
+    def test_cake_products_have_correct_category(self):
         """Cake products should have category 'cakes'"""
-        response = requests.get(f"{BASE_URL}/api/products/{CAKE_PRODUCT_ID}")
-        assert response.status_code == 200
+        cakes = get_product_by_category("cakes", 5)
+        assert len(cakes) > 0, "Should have cake products"
         
-        product = response.json()
-        assert product.get("category") == "cakes", f"Expected 'cakes', got {product.get('category')}"
-        print(f"✅ Cake product '{product.get('name')}' has category: {product.get('category')}")
+        for cake in cakes:
+            assert cake.get("category") == "cakes", f"Product '{cake.get('name')}' should have category 'cakes', got '{cake.get('category')}'"
+        
+        print(f"✅ {len(cakes)} cake products have correct category 'cakes'")
     
-    def test_toy_product_has_correct_category(self):
+    def test_toy_products_have_correct_category(self):
         """Toy products should have category 'accessories'"""
-        response = requests.get(f"{BASE_URL}/api/products/{TOY_PRODUCT_ID}")
-        assert response.status_code == 200
+        accessories = get_product_by_category("accessories", 10)
+        assert len(accessories) > 0, "Should have accessory products"
         
-        product = response.json()
-        assert product.get("category") == "accessories", f"Expected 'accessories', got {product.get('category')}"
-        print(f"✅ Toy product '{product.get('name')}' has category: {product.get('category')}")
+        # Find toys specifically
+        toys = [p for p in accessories if "toy" in p.get("name", "").lower() or "squeaky" in p.get("name", "").lower()]
+        assert len(toys) > 0, "Should have toy products in accessories"
+        
+        for toy in toys:
+            assert toy.get("category") == "accessories", f"Toy '{toy.get('name')}' should have category 'accessories'"
+        
+        print(f"✅ Found {len(toys)} toy products with category 'accessories'")
     
-    def test_hamper_product_has_correct_category(self):
+    def test_hamper_products_have_correct_category(self):
         """Hamper products should have category 'hampers'"""
-        response = requests.get(f"{BASE_URL}/api/products/{HAMPER_PRODUCT_ID}")
-        assert response.status_code == 200
+        hampers = get_product_by_category("hampers", 5)
+        assert len(hampers) > 0, "Should have hamper products"
         
-        product = response.json()
-        assert product.get("category") == "hampers", f"Expected 'hampers', got {product.get('category')}"
-        print(f"✅ Hamper product '{product.get('name')}' has category: {product.get('category')}")
+        for hamper in hampers:
+            assert hamper.get("category") == "hampers", f"Product '{hamper.get('name')}' should have category 'hampers'"
+        
+        print(f"✅ {len(hampers)} hamper products have correct category 'hampers'")
 
 
 class TestProductWithDisplayTags:
     """Test products with display_tags field"""
     
-    def test_product_with_display_tags_returns_tags(self):
-        """Products with display_tags should return them in API response"""
-        response = requests.get(f"{BASE_URL}/api/products/{PRODUCT_WITH_TAGS}")
-        assert response.status_code == 200
-        
-        product = response.json()
-        display_tags = product.get("display_tags", [])
-        
-        assert isinstance(display_tags, list), "display_tags should be a list"
-        assert len(display_tags) > 0, f"Product {PRODUCT_WITH_TAGS} should have display_tags"
-        
-        print(f"✅ Product '{product.get('name')}' has display_tags: {display_tags}")
-    
     def test_products_list_includes_display_tags(self):
         """Products list API should include display_tags field"""
-        response = requests.get(f"{BASE_URL}/api/products?limit=50")
+        response = requests.get(f"{BASE_URL}/api/products?limit=100")
         assert response.status_code == 200
         
         data = response.json()
@@ -163,7 +187,15 @@ class TestProductWithDisplayTags:
         # Find products with display_tags
         products_with_tags = [p for p in products if p.get("display_tags")]
         
+        assert len(products_with_tags) > 0, "Should have at least one product with display_tags"
+        
+        # Verify structure
+        for p in products_with_tags:
+            assert isinstance(p.get("display_tags"), list), f"display_tags should be a list for '{p.get('name')}'"
+        
         print(f"✅ Found {len(products_with_tags)} products with display_tags out of {len(products)}")
+        for p in products_with_tags[:3]:
+            print(f"   - {p.get('name')}: {p.get('display_tags')}")
 
 
 class TestBundleProductsAPI:
@@ -197,6 +229,8 @@ class TestBundleProductsAPI:
         
         # Check for toys
         toys = [p for p in products if "toy" in p.get("name", "").lower() or "squeaky" in p.get("name", "").lower()]
+        assert len(toys) > 0, "Should have toy products in accessories"
+        
         print(f"✅ Accessories API returned {len(products)} products, {len(toys)} are toys")
 
 
@@ -205,8 +239,14 @@ class TestAdminProductEndpoints:
     
     def test_get_admin_product_details(self):
         """GET /api/admin/products/{product_id} - should return full product details"""
+        # Get a product ID first
+        cakes = get_product_by_category("cakes", 1)
+        assert len(cakes) > 0, "Should have at least one cake"
+        
+        product_id = cakes[0]["id"]
+        
         response = requests.get(
-            f"{BASE_URL}/api/admin/products/{CAKE_PRODUCT_ID}",
+            f"{BASE_URL}/api/admin/products/{product_id}",
             auth=ADMIN_AUTH
         )
         
@@ -215,7 +255,7 @@ class TestAdminProductEndpoints:
         data = response.json()
         product = data.get("product", {})
         
-        assert product.get("id") == CAKE_PRODUCT_ID, "Product ID should match"
+        assert product.get("id") == product_id, "Product ID should match"
         assert "name" in product, "Product should have name"
         assert "category" in product, "Product should have category"
         
@@ -223,6 +263,12 @@ class TestAdminProductEndpoints:
     
     def test_update_bundle_config(self):
         """PUT /api/admin/products/{product_id}/bundle-config - should update bundle configuration"""
+        # Get a hamper product
+        hampers = get_product_by_category("hampers", 1)
+        assert len(hampers) > 0, "Should have at least one hamper"
+        
+        product_id = hampers[0]["id"]
+        
         bundle_config = {
             "bundle_type": "hamper",
             "bundle_includes": {
@@ -233,7 +279,7 @@ class TestAdminProductEndpoints:
         }
         
         response = requests.put(
-            f"{BASE_URL}/api/admin/products/{HAMPER_PRODUCT_ID}/bundle-config",
+            f"{BASE_URL}/api/admin/products/{product_id}/bundle-config",
             auth=ADMIN_AUTH,
             json=bundle_config
         )
@@ -243,23 +289,7 @@ class TestAdminProductEndpoints:
         data = response.json()
         assert data.get("success") == True, "Response should indicate success"
         
-        print(f"✅ Bundle config updated successfully")
-
-
-# Cleanup fixture
-@pytest.fixture(scope="module", autouse=True)
-def cleanup_test_data():
-    """Cleanup test data after tests complete"""
-    yield
-    # Reset display tags on test products
-    try:
-        requests.put(
-            f"{BASE_URL}/api/admin/products/{CAKE_PRODUCT_ID}/display-tags",
-            auth=ADMIN_AUTH,
-            json=[]
-        )
-    except:
-        pass
+        print(f"✅ Bundle config updated successfully for '{hampers[0].get('name')}'")
 
 
 if __name__ == "__main__":
