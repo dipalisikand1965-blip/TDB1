@@ -13,7 +13,7 @@ import {
   Search, Plus, RefreshCw, Filter, X, Send, Clock, User, Phone, Mail,
   MapPin, Calendar, AlertCircle, CheckCircle, Loader2, MessageSquare,
   ChevronRight, Settings, BarChart3, Users, Tag, Paperclip, ExternalLink,
-  Inbox, ArrowUp, ArrowDown, MoreVertical, Edit, Trash2, Eye, Star
+  Inbox, ArrowUp, ArrowDown, MoreVertical, Edit, Trash2, Eye, Star, Zap
 } from 'lucide-react';
 
 // Category icons mapping
