@@ -124,7 +124,15 @@ class RestaurantVisit(BaseModel):
     last_name: str = ""
     email: str = ""
     whatsapp: str = ""
-    # Pet details
+    # Social profiles for verification
+    instagram: Optional[str] = None
+    facebook: Optional[str] = None
+    linkedin: Optional[str] = None
+    # Multiple pets support
+    pets: List[dict] = []  # [{name, breed, about, photo}]
+    # Safety agreement
+    safety_agreed: bool = False
+    # Legacy single pet fields (backward compatibility)
     pet_name: str = ""
     pet_breed: Optional[str] = None
     pet_about: Optional[str] = None
