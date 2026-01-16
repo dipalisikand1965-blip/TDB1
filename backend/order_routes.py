@@ -98,17 +98,22 @@ async def create_order(order: dict):
     # Auto-create Service Desk ticket for cake order
     try:
         # Check if order contains cakes (for now, create ticket for all orders)
+        customer = order.get("customer", {})
+        delivery = order.get("delivery", {})
+        
         ticket_id = await create_ticket_from_event(db, "cake_order", {
             "order_id": order.get("orderId") or order["id"],
-            "customer_name": order.get("customer", {}).get("name") or order.get("shipping_address", {}).get("name", "Customer"),
-            "customer_email": order.get("customer", {}).get("email") or order.get("email"),
-            "customer_phone": order.get("customer", {}).get("phone") or order.get("phone"),
-            "city": order.get("shipping_address", {}).get("city"),
+            "customer_name": customer.get("parentName") or customer.get("name") or "Customer",
+            "customer_email": customer.get("email") or order.get("email"),
+            "customer_phone": customer.get("phone") or customer.get("whatsappNumber") or order.get("phone"),
+            "city": delivery.get("city") or order.get("shipping_address", {}).get("city"),
             "items": order.get("items", []),
             "total": order.get("total") or order.get("subtotal", 0),
-            "delivery_date": order.get("delivery_date"),
-            "delivery_address": order.get("shipping_address", {}).get("address1", ""),
-            "special_instructions": order.get("note") or order.get("special_instructions")
+            "delivery_date": delivery.get("date") or order.get("delivery_date"),
+            "delivery_address": f"{delivery.get('address', '')} {delivery.get('landmark', '')} {delivery.get('city', '')} {delivery.get('pincode', '')}".strip(),
+            "special_instructions": order.get("specialInstructions") or order.get("note"),
+            "delivery_method": delivery.get("method", "delivery"),
+            "pickup_location": delivery.get("pickupLocation")
         })
         logger.info(f"Auto-created ticket {ticket_id} for order {order.get('orderId')}")
     except Exception as e:
