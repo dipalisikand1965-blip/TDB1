@@ -12,6 +12,9 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
+# Import auto-ticket creation
+from ticket_auto_create import create_ticket_from_event
+
 logger = logging.getLogger(__name__)
 
 # Create router
