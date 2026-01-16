@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Search, User, Heart, ChevronDown, Sparkles } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { ShoppingCart, Menu, X, Search, User, Heart, ChevronDown, Sparkles, Cake, UtensilsCrossed, Home, Plane, HeartPulse, Clock } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Button } from './ui/button';
 import { useAuth } from '../context/AuthContext';
@@ -8,46 +8,94 @@ import SearchBar from './SearchBar';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [activePillar, setActivePillar] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const moreRef = useRef(null);
+  const pillarRef = useRef(null);
   const { getCartCount, setIsCartOpen } = useCart();
   const { user } = useAuth();
   const location = useLocation();
 
-  // Main navigation items (visible in navbar) - condensed for cleaner look
-  const mainNavigation = [
-    { name: 'Cakes', path: '/cakes' },
-    { name: 'Build Your Cake', path: '/custom-cake', highlight: true },
-    { name: 'Treats', path: '/treats' },
-    { name: 'Pan India', path: '/pan-india' },
+  // Life Pillars - The core navigation
+  const pillars = [
+    { 
+      id: 'celebrate',
+      name: 'Celebrate', 
+      icon: Cake,
+      color: 'from-pink-500 to-purple-600',
+      description: 'Cakes, treats & party essentials',
+      path: '/celebrate',
+      isActive: true,
+      subItems: [
+        { name: '🎂 Birthday Cakes', path: '/cakes' },
+        { name: '✨ Build Your Cake', path: '/custom-cake', highlight: true },
+        { name: '🐕 Breed Cakes', path: '/breed-cakes' },
+        { name: '🧁 Pupcakes & Dognuts', path: '/pupcakes-dognuts' },
+        { name: '🎂 Bowto Cakes', path: '/mini-cakes' },
+        { name: '🍪 Treats & Biscuits', path: '/treats' },
+        { name: '🍪 Desi Treats', path: '/desi' },
+        { name: '🎁 Gift Hampers', path: '/hampers' },
+        { name: '📦 Pan India Delivery', path: '/pan-india' },
+        { name: '🐱 Cat Treats', path: '/cat-treats' },
+        { name: '🧸 Accessories', path: '/accessories' },
+      ]
+    },
+    { 
+      id: 'dine',
+      name: 'Dine', 
+      icon: UtensilsCrossed,
+      color: 'from-orange-500 to-red-500',
+      description: 'Fresh meals & nutrition',
+      path: '/dine',
+      isActive: false,
+      subItems: [
+        { name: '🥘 Fresh Meals', path: '/meals' },
+        { name: '🍦 Frozen Treats', path: '/frozen' },
+        { name: '🥜 Nut Butters', path: '/nut-butters' },
+      ]
+    },
+    { 
+      id: 'stay',
+      name: 'Stay', 
+      icon: Home,
+      color: 'from-green-500 to-teal-500',
+      description: 'Boarding & daycare',
+      path: '/stay',
+      isActive: false,
+      subItems: []
+    },
+    { 
+      id: 'travel',
+      name: 'Travel', 
+      icon: Plane,
+      color: 'from-blue-500 to-cyan-500',
+      description: 'Pet-friendly adventures',
+      path: '/travel',
+      isActive: false,
+      subItems: []
+    },
+    { 
+      id: 'care',
+      name: 'Care', 
+      icon: HeartPulse,
+      color: 'from-red-500 to-pink-500',
+      description: 'Health & wellness',
+      path: '/care',
+      isActive: false,
+      subItems: []
+    },
   ];
-
-  // More dropdown items
-  const moreNavigation = [
-    { name: '🎂 Bowto Cakes', path: '/mini-cakes' },
-    { name: '🐕 Breed Cakes', path: '/breed-cakes' },
-    { name: '🧁 Pupcakes & Dognuts', path: '/pupcakes-dognuts' },
-    { name: '🎁 Gift Hampers', path: '/hampers' },
-    { name: '🥘 Fresh Meals', path: '/meals' },
-    { name: '🍦 Frozen Treats', path: '/frozen' },
-    { name: '🥜 Nut Butters', path: '/nut-butters' },
-    { name: '🍪 Desi Treats', path: '/desi' },
-    { name: '🐱 Cat Treats', path: '/cat-treats' },
-    { name: '🧸 Accessories & Toys', path: '/accessories' },
-    { name: '⭐ Membership', path: '/membership' },
-  ];
-
-  // All navigation for mobile
-  const allNavigation = [...mainNavigation, ...moreNavigation];
 
   const isActive = (path) => location.pathname === path;
+  const isPillarActive = (pillar) => {
+    if (location.pathname === pillar.path) return true;
+    return pillar.subItems?.some(item => location.pathname === item.path);
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (moreRef.current && !moreRef.current.contains(event.target)) {
-        setIsMoreOpen(false);
+      if (pillarRef.current && !pillarRef.current.contains(event.target)) {
+        setActivePillar(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -61,8 +109,8 @@ const Navbar = () => {
   return (
     <>
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 text-center text-sm font-medium">
-        🎉 Same Day Delivery in Mumbai, Bangalore & Gurugram! 🚚
+      <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white py-2 px-4 text-center text-sm font-medium">
+        🐾 Welcome to The Doggy Company — Your Pet's Life Operating System! 🚀
       </div>
 
       {/* Search Overlay */}
@@ -89,68 +137,96 @@ const Navbar = () => {
             <Link to="/" className="flex items-center space-x-2">
               <img 
                 src="https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png?v=1718969706" 
-                alt="The Doggy Bakery Logo"
+                alt="The Doggy Company Logo"
                 className="h-10 w-auto"
               />
-              <span className="text-xl font-bold text-purple-600 hidden sm:block">
-                The Doggy Bakery
-              </span>
+              <div className="hidden sm:block">
+                <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  The Doggy Company
+                </span>
+                <span className="block text-[10px] text-gray-500 -mt-1">Pet Life Operating System</span>
+              </div>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-1">
-              {mainNavigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className={`px-3 py-2 rounded-full text-sm font-medium transition-all ${
-                    isActive(item.path)
-                      ? 'bg-purple-600 text-white'
-                      : item.highlight 
-                        ? 'bg-gradient-to-r from-orange-400 to-pink-500 text-white hover:from-orange-500 hover:to-pink-600 shadow-sm'
-                        : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                  data-testid={item.highlight ? 'build-cake-nav-btn' : undefined}
-                >
-                  {item.highlight && '🎂 '}{item.name}
-                </Link>
-              ))}
+            {/* Desktop Navigation - Life Pillars */}
+            <div className="hidden lg:flex items-center space-x-1" ref={pillarRef}>
+              {pillars.map((pillar) => {
+                const Icon = pillar.icon;
+                const hasDropdown = pillar.subItems && pillar.subItems.length > 0;
+                
+                return (
+                  <div key={pillar.id} className="relative">
+                    <button
+                      onClick={() => {
+                        if (hasDropdown) {
+                          setActivePillar(activePillar === pillar.id ? null : pillar.id);
+                        } else if (!pillar.isActive) {
+                          // Coming soon pillars - do nothing or show toast
+                        }
+                      }}
+                      onMouseEnter={() => hasDropdown && setActivePillar(pillar.id)}
+                      className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all ${
+                        isPillarActive(pillar)
+                          ? `bg-gradient-to-r ${pillar.color} text-white shadow-md`
+                          : pillar.isActive
+                            ? 'text-gray-700 hover:bg-gray-100'
+                            : 'text-gray-400 hover:text-gray-500'
+                      }`}
+                      data-testid={`pillar-${pillar.id}`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      {pillar.name}
+                      {!pillar.isActive && <Clock className="w-3 h-3 ml-0.5" />}
+                      {hasDropdown && <ChevronDown className={`w-3 h-3 transition-transform ${activePillar === pillar.id ? 'rotate-180' : ''}`} />}
+                    </button>
 
-              {/* More Dropdown */}
-              <div className="relative" ref={moreRef}>
-                <button
-                  onClick={() => setIsMoreOpen(!isMoreOpen)}
-                  className={`flex items-center px-3 py-2 rounded-full text-sm font-medium transition-all ${
-                    isMoreOpen ? 'bg-gray-100' : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  More
-                  <ChevronDown className={`w-4 h-4 ml-1 transition-transform ${isMoreOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {isMoreOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
-                    {moreNavigation.map((item) => (
-                      <Link
-                        key={item.name}
-                        to={item.path}
-                        onClick={() => setIsMoreOpen(false)}
-                        className={`block px-4 py-2.5 text-sm transition-colors ${
-                          isActive(item.path)
-                            ? 'bg-purple-50 text-purple-600'
-                            : 'text-gray-700 hover:bg-gray-50'
-                        }`}
+                    {/* Dropdown for active pillars */}
+                    {activePillar === pillar.id && hasDropdown && (
+                      <div 
+                        className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50"
+                        onMouseLeave={() => setActivePillar(null)}
                       >
-                        {item.name}
-                      </Link>
-                    ))}
+                        <div className={`px-4 py-2 bg-gradient-to-r ${pillar.color} text-white rounded-t-lg mx-2 mb-2`}>
+                          <div className="font-semibold">{pillar.name}</div>
+                          <div className="text-xs opacity-90">{pillar.description}</div>
+                        </div>
+                        {pillar.subItems.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            onClick={() => setActivePillar(null)}
+                            className={`block px-4 py-2.5 text-sm transition-colors ${
+                              isActive(item.path)
+                                ? 'bg-purple-50 text-purple-600 font-medium'
+                                : item.highlight
+                                  ? 'text-orange-600 font-medium hover:bg-orange-50'
+                                  : 'text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Coming Soon tooltip for inactive pillars */}
+                    {activePillar === pillar.id && !pillar.isActive && (
+                      <div 
+                        className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-gray-900 text-white text-center rounded-lg py-3 px-4 z-50"
+                        onMouseLeave={() => setActivePillar(null)}
+                      >
+                        <Clock className="w-5 h-5 mx-auto mb-1" />
+                        <div className="font-semibold">Coming Soon!</div>
+                        <div className="text-xs text-gray-300 mt-1">{pillar.description}</div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                );
+              })}
             </div>
 
-            {/* Pet Soul & Mira - Always visible on tablet+ */}
-            <div className="hidden sm:flex items-center gap-2">
+            {/* Pet Soul & Mira */}
+            <div className="hidden md:flex items-center gap-2">
               <Link
                 to="/my-pets"
                 className="px-3 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 transition-all shadow-sm"
@@ -176,6 +252,7 @@ const Navbar = () => {
                 size="icon" 
                 className="hidden md:flex h-9 w-9"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
+                data-testid="search-button"
               >
                 <Search className="w-5 h-5" />
               </Button>
@@ -215,54 +292,76 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden border-t border-gray-200 bg-white max-h-[70vh] overflow-y-auto">
-            <div className="px-4 py-4 space-y-1">
-              {allNavigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`block px-4 py-3 rounded-lg text-base font-medium transition-all ${
-                    isActive(item.path)
-                      ? 'bg-purple-50 text-purple-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              ))}
-              
-              {/* Pet Soul Button in Mobile */}
-              {/* Account Button in Mobile */}
-              <Link
-                to={user ? "/dashboard" : "/login"}
-                onClick={() => setIsMenuOpen(false)}
-                className="block w-full mt-4 px-4 py-3 bg-gray-100 text-gray-900 rounded-lg text-base font-medium text-center flex items-center justify-center gap-2"
-              >
-                <User className="w-5 h-5" />
-                {user ? "My Account" : "Login / Sign Up"}
-              </Link>
+          <div className="lg:hidden border-t border-gray-200 bg-white max-h-[80vh] overflow-y-auto">
+            <div className="px-4 py-4 space-y-2">
+              {/* Mobile Pillars */}
+              {pillars.map((pillar) => {
+                const Icon = pillar.icon;
+                return (
+                  <div key={pillar.id} className="space-y-1">
+                    <div className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium ${
+                      pillar.isActive 
+                        ? `bg-gradient-to-r ${pillar.color} text-white`
+                        : 'bg-gray-100 text-gray-400'
+                    }`}>
+                      <Icon className="w-5 h-5" />
+                      {pillar.name}
+                      {!pillar.isActive && <span className="text-xs ml-auto">Coming Soon</span>}
+                    </div>
+                    {pillar.isActive && pillar.subItems && (
+                      <div className="pl-4 space-y-1">
+                        {pillar.subItems.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            onClick={() => setIsMenuOpen(false)}
+                            className={`block px-3 py-2 rounded-lg text-sm ${
+                              isActive(item.path)
+                                ? 'bg-purple-100 text-purple-700 font-medium'
+                                : 'text-gray-600 hover:bg-gray-50'
+                            }`}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
 
-              <Link
-                to="/my-pets"
-                onClick={() => setIsMenuOpen(false)}
-                className="block w-full mt-4 px-4 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg text-base font-medium text-center"
-                data-testid="pet-soul-mobile-btn"
-              >
-                🐾 Pet Soul - Create Pet Profile
-              </Link>
-              
-              {/* Mira AI Button in Mobile */}
-              <button
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  openMiraAI();
-                }}
-                className="w-full mt-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-base font-medium flex items-center justify-center gap-2"
-              >
-                <Sparkles className="w-5 h-5" />
-                Chat with Mira AI
-              </button>
+              {/* Mobile Actions */}
+              <div className="pt-4 border-t border-gray-200 space-y-2">
+                <Link
+                  to="/my-pets"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium"
+                >
+                  🐾 Pet Soul
+                </Link>
+                <button
+                  onClick={() => { openMiraAI(); setIsMenuOpen(false); }}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  Ask Mira AI
+                </button>
+                <Link
+                  to="/membership"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-100 text-amber-700 font-medium"
+                >
+                  ⭐ Membership
+                </Link>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => { setIsSearchOpen(true); setIsMenuOpen(false); }}
+                >
+                  <Search className="w-5 h-5 mr-2" />
+                  Search
+                </Button>
+              </div>
             </div>
           </div>
         )}
