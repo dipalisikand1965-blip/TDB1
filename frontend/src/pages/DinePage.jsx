@@ -821,7 +821,8 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
                       </div>
                     </div>
                   </Card>
-                ))
+                );
+                })
               )}
             </div>
           ) : (
