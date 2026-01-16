@@ -794,3 +794,87 @@ DELETE /api/dine/visits/{id}       - Cancel visit
 - `meetup_requests` - Stores meetup connection requests
 
 ---
+
+---
+
+### Jan 16, 2026 - Concierge® Branding & Enhanced Features
+
+#### ✅ CONCIERGE® BRANDING UPDATE
+- All user-facing "Concierge" references updated to "Concierge®"
+- Updated across:
+  - DineManager.jsx ("Your Concierge® Recommends")
+  - DinePage.jsx ("Concierge®:")
+  - MiraPage.jsx, MiraConcierge.jsx, MiraConciergeEmbed.jsx
+  - MiraEmbed.jsx, MiraLandingEmbed.jsx
+  - Home.jsx ("Celebration Concierge®")
+  - Membership.jsx
+  - server.py
+
+#### ✅ CONCIERGE® RECOMMENDATIONS ADDED
+All 19 restaurants now have personalized Concierge® recommendations written for each venue.
+
+#### ✅ BIRTHDAY PERKS FEATURE
+- New `birthdayPerks` field in restaurant model
+- 🎂 Birthday Perks badge on restaurant cards
+- 5 restaurants marked with Birthday Perks:
+  - TherPup Café
+  - Woof & Waffle
+  - Diggin
+  - Petisfaction Café
+  - Dogs Bay Café
+- Stats card in admin showing count of restaurants with Birthday Perks
+
+#### ✅ ENHANCED RESTAURANT PARTNER MODULE
+**New Admin Fields:**
+- Country dropdown (India, USA, UK, UAE, Singapore, Australia)
+- State dropdown (dynamic based on country)
+- City text field
+- Full Address field
+- Google Maps Link field (free alternative)
+
+#### ✅ NOTIFICATION SYSTEM
+**New API Endpoints:**
+```
+GET  /api/dine/notifications?user_id={id}           - Get user notifications
+POST /api/dine/notifications                        - Create notification
+PUT  /api/dine/notifications/{id}/read              - Mark as read
+PUT  /api/dine/notifications/mark-all-read          - Mark all as read
+```
+
+**Notification Types:**
+- `meetup_request` - When someone sends a meetup request
+- `meetup_accepted` - When your request is accepted
+- `meetup_declined` - When your request is declined
+- `visit_reminder` - Upcoming visit reminders
+
+**Auto-notifications:**
+- Notification sent to target user when meetup request received
+- Notification sent to requester when their request is accepted/declined
+
+#### ✅ PARTIAL UPDATE API
+- New PATCH endpoint for restaurants: `PATCH /api/admin/dine/restaurants/{id}`
+- Allows updating only specific fields without requiring all fields
+
+---
+
+## Feature Summary: Pet Dining System
+
+| Feature | Status |
+|---------|--------|
+| Restaurant CRUD | ✅ |
+| Pet Menu / No Menu badges | ✅ |
+| Birthday Perks badge | ✅ |
+| Concierge® Recommendations | ✅ |
+| Pet Buddy Meetups | ✅ |
+| Schedule a Visit | ✅ |
+| Who's Going | ✅ |
+| Meetup Requests | ✅ |
+| Notification System | ✅ |
+| CSV Import/Export | ✅ |
+| Image Upload | ✅ |
+| Pet Menu Image | ✅ |
+| Country/State/City | ✅ |
+| Google Maps Link | ✅ |
+| Reservations | ✅ |
+
+---
