@@ -6011,6 +6011,70 @@ app.include_router(user_router)
 app.include_router(dine_router)
 app.include_router(ticket_router)
 
+@app.on_event("startup")
+async def startup_load_admin_credentials():
+    """Load admin credentials from database on startup"""
+    await load_admin_credentials_from_db()
+
+# ==================== ADMIN PASSWORD MANAGEMENT ====================
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str
+    new_password: str
+    confirm_password: str
+
+@app.post("/api/admin/change-password")
+async def change_admin_password(
+    request: PasswordChangeRequest,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Change admin password - stores in database"""
+    global _admin_credentials_cache
+    
+    # Verify current credentials
+    expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
+    if not secrets.compare_digest(request.current_password, expected_password):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    
+    # Validate new password
+    if request.new_password != request.confirm_password:
+        raise HTTPException(status_code=400, detail="New passwords do not match")
+    
+    if len(request.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Save to database
+    await db.admin_config.update_one(
+        {"type": "credentials"},
+        {"$set": {
+            "type": "credentials",
+            "username": credentials.username,
+            "password": request.new_password,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    
+    # Update cache immediately
+    _admin_credentials_cache["username"] = credentials.username
+    _admin_credentials_cache["password"] = request.new_password
+    _admin_credentials_cache["loaded"] = True
+    
+    return {"success": True, "message": "Password changed successfully"}
+
+@app.get("/api/admin/password-info")
+async def get_password_info(credentials: HTTPBasicCredentials = Depends(security)):
+    """Get info about password configuration"""
+    verify_admin(credentials)
+    
+    admin_config = await db.admin_config.find_one({"type": "credentials"})
+    
+    return {
+        "using_database_password": admin_config is not None,
+        "last_updated": admin_config.get("updated_at") if admin_config else None,
+        "username": credentials.username
+    }
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
