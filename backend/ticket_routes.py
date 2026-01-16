@@ -9,6 +9,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 from bson import ObjectId
 import uuid
+import os
 
 router = APIRouter(prefix="/api/tickets", tags=["tickets"])
 
@@ -16,6 +17,92 @@ router = APIRouter(prefix="/api/tickets", tags=["tickets"])
 def get_db():
     from server import db
     return db
+
+# Get Resend for email notifications
+def get_resend():
+    try:
+        import resend
+        api_key = os.environ.get("RESEND_API_KEY")
+        if api_key:
+            resend.api_key = api_key
+            return resend
+    except:
+        pass
+    return None
+
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
+BUSINESS_EMAIL = os.environ.get("REACT_APP_BUSINESS_EMAIL", "woof@thedoggybakery.in")
+
+async def send_ticket_notification(ticket: dict, notification_type: str = "created"):
+    """Send email notification for ticket events"""
+    resend_client = get_resend()
+    if not resend_client:
+        return False
+    
+    try:
+        member = ticket.get("member", {})
+        member_email = member.get("email")
+        
+        if notification_type == "created":
+            # Send confirmation to member
+            if member_email:
+                resend_client.Emails.send({
+                    "from": SENDER_EMAIL,
+                    "to": member_email,
+                    "subject": f"Ticket {ticket['ticket_id']} - We've received your request",
+                    "html": f"""
+                        <h2>Thank you for contacting The Doggy Company!</h2>
+                        <p>We've received your request and our concierge team will get back to you soon.</p>
+                        <p><strong>Ticket ID:</strong> {ticket['ticket_id']}</p>
+                        <p><strong>Category:</strong> {ticket.get('category', 'General')}</p>
+                        <p><strong>Your Request:</strong></p>
+                        <p style="background:#f5f5f5;padding:15px;border-radius:8px;">{ticket.get('description', '')}</p>
+                        <p>We'll keep you updated on the progress.</p>
+                        <p>Best regards,<br>The Doggy Company Concierge Team</p>
+                    """
+                })
+            
+            # Notify concierge team
+            resend_client.Emails.send({
+                "from": SENDER_EMAIL,
+                "to": BUSINESS_EMAIL,
+                "subject": f"🎫 New Ticket: {ticket['ticket_id']} - {ticket.get('category', 'General').upper()}",
+                "html": f"""
+                    <h2>New Service Desk Ticket</h2>
+                    <p><strong>Ticket ID:</strong> {ticket['ticket_id']}</p>
+                    <p><strong>Category:</strong> {ticket.get('category', 'General')}</p>
+                    <p><strong>Urgency:</strong> {ticket.get('urgency', 'medium').upper()}</p>
+                    <p><strong>Member:</strong> {member.get('name', 'Unknown')}</p>
+                    <p><strong>Phone:</strong> {member.get('phone', 'N/A')}</p>
+                    <p><strong>Email:</strong> {member.get('email', 'N/A')}</p>
+                    <p><strong>City:</strong> {member.get('city', 'N/A')}</p>
+                    <hr>
+                    <p><strong>Request:</strong></p>
+                    <p style="background:#fff3cd;padding:15px;border-radius:8px;">{ticket.get('description', '')}</p>
+                    <p><a href="https://thedoggycompany.in/admin">View in Service Desk →</a></p>
+                """
+            })
+        
+        elif notification_type == "resolved":
+            if member_email:
+                resend_client.Emails.send({
+                    "from": SENDER_EMAIL,
+                    "to": member_email,
+                    "subject": f"Ticket {ticket['ticket_id']} - Resolved ✓",
+                    "html": f"""
+                        <h2>Your request has been resolved!</h2>
+                        <p><strong>Ticket ID:</strong> {ticket['ticket_id']}</p>
+                        <p><strong>Resolution:</strong></p>
+                        <p style="background:#d4edda;padding:15px;border-radius:8px;">{ticket.get('resolution_note', 'Your request has been completed.')}</p>
+                        <p>Thank you for choosing The Doggy Company!</p>
+                        <p>Best regards,<br>The Doggy Company Concierge Team</p>
+                    """
+                })
+        
+        return True
+    except Exception as e:
+        print(f"Error sending ticket notification: {e}")
+        return False
 
 # ============== MODELS ==============
 
