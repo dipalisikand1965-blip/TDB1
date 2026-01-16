@@ -35,9 +35,10 @@ class SearchService:
         try:
             self.client = AsyncClient(
                 url=MEILISEARCH_URL,
-                api_key=MEILISEARCH_MASTER_KEY
+                api_key=MEILISEARCH_MASTER_KEY,
+                timeout=5  # 5 second timeout for all operations
             )
-            # Test connection
+            # Test connection with timeout
             await self.client.health()
             logger.info(f"✓ Connected to Meilisearch at {MEILISEARCH_URL}")
             
@@ -46,7 +47,7 @@ class SearchService:
             self._initialized = True
             
         except Exception as e:
-            logger.error(f"Failed to connect to Meilisearch: {e}")
+            logger.warning(f"Meilisearch unavailable (non-blocking): {e}")
             self._initialized = False
     
     async def disconnect(self):
