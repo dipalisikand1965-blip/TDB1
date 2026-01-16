@@ -229,6 +229,51 @@ const Admin = () => {
     };
   };
 
+  const handlePasswordChange = async () => {
+    setPasswordError('');
+    
+    if (passwordData.new !== passwordData.confirm) {
+      setPasswordError('New passwords do not match');
+      return;
+    }
+    
+    if (passwordData.new.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
+      return;
+    }
+    
+    setPasswordChanging(true);
+    try {
+      const response = await fetch(`${API_URL}/api/admin/change-password`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          current_password: passwordData.current,
+          new_password: passwordData.new,
+          confirm_password: passwordData.confirm
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        // Update stored auth with new password
+        const newAuth = btoa(`${username}:${passwordData.new}`);
+        localStorage.setItem('adminAuth', newAuth);
+        setPassword(passwordData.new);
+        
+        setShowPasswordModal(false);
+        setPasswordData({ current: '', new: '', confirm: '' });
+        alert('Password changed successfully!');
+      } else {
+        setPasswordError(data.detail || 'Failed to change password');
+      }
+    } catch (error) {
+      setPasswordError('An error occurred. Please try again.');
+    }
+    setPasswordChanging(false);
+  };
+
   const fetchDashboard = async () => {
     try {
       const response = await fetch(`${API_URL}/api/admin/dashboard`, {
