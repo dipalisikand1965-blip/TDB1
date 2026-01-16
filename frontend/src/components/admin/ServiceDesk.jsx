@@ -1009,19 +1009,37 @@ const ServiceDesk = ({ authHeaders }) => {
                           ? 'bg-yellow-50 border border-yellow-200' 
                           : msg.sender === 'member'
                             ? 'bg-gray-100'
-                            : 'bg-blue-50'
+                            : msg.type === 'outbound'
+                              ? 'bg-green-50 border border-green-200'
+                              : 'bg-blue-50'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-medium">
-                          {msg.sender === 'member' ? msg.sender_name || 'Member' : 'Concierge'}
+                        <span className="text-xs font-medium flex items-center gap-1">
+                          {msg.sender === 'member' ? msg.sender_name || 'Member' : 'Concierge®'}
                           {msg.is_internal && <Badge className="ml-2 text-xs bg-yellow-200">Internal Note</Badge>}
+                          {msg.channel && msg.channel !== 'internal' && (
+                            <Badge className="ml-1 text-xs bg-gray-200">
+                              {msg.channel === 'email' ? '📧' : msg.channel === 'whatsapp' ? '📱' : '💬'} {msg.channel}
+                            </Badge>
+                          )}
+                          {msg.type === 'inbound' && <Badge className="ml-1 text-xs bg-blue-200">Inbound</Badge>}
+                          {msg.type === 'outbound' && <Badge className="ml-1 text-xs bg-green-200">Sent</Badge>}
                         </span>
                         <span className="text-xs text-gray-400">
                           {new Date(msg.timestamp).toLocaleString()}
                         </span>
                       </div>
-                      <p className="text-sm">{msg.content}</p>
+                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                      {msg.attachments && msg.attachments.length > 0 && (
+                        <div className="mt-2 flex gap-1">
+                          {msg.attachments.map((att, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">
+                              <Paperclip className="w-3 h-3 mr-1" /> {att}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
