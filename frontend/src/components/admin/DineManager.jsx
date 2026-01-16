@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Plus, Edit, Trash2, Save, X, Search, MapPin, Star, 
   UtensilsCrossed, Check, AlertCircle, Phone, Globe, Instagram,
-  RefreshCw
+  RefreshCw, Upload, Download, FileSpreadsheet, Image as ImageIcon
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -17,6 +17,12 @@ const DineManager = ({ credentials }) => {
   const [editingRestaurant, setEditingRestaurant] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [importingCsv, setImportingCsv] = useState(false);
+  const [importResult, setImportResult] = useState(null);
+  
+  const fileInputRef = useRef(null);
+  const csvInputRef = useRef(null);
 
   const emptyRestaurant = {
     name: '',
@@ -114,6 +120,99 @@ const DineManager = ({ credentials }) => {
     }
   };
 
+  // Image upload handler
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+
+    try {
+      const response = await fetch(`${API_URL}/api/admin/dine/upload-image`, {
+        method: 'POST',
+        headers: { 'Authorization': getAuthHeader() },
+        body: formDataUpload
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Set the full URL for the image
+        const imageUrl = `${API_URL}${data.url}`;
+        setFormData(prev => ({ ...prev, image: imageUrl }));
+      } else {
+        alert('Failed to upload image');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Error uploading image');
+    } finally {
+      setUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  // CSV Export handler
+  const handleExportCsv = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/dine/export-csv`, {
+        headers: { 'Authorization': getAuthHeader() }
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `restaurants_export_${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } else {
+        alert('Failed to export CSV');
+      }
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      alert('Error exporting CSV');
+    }
+  };
+
+  // CSV Import handler
+  const handleImportCsv = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImportingCsv(true);
+    setImportResult(null);
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+
+    try {
+      const response = await fetch(`${API_URL}/api/admin/dine/import-csv`, {
+        method: 'POST',
+        headers: { 'Authorization': getAuthHeader() },
+        body: formDataUpload
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setImportResult(data);
+        fetchRestaurants();
+      } else {
+        const error = await response.json();
+        alert(`Failed to import CSV: ${error.detail}`);
+      }
+    } catch (error) {
+      console.error('Error importing CSV:', error);
+      alert('Error importing CSV');
+    } finally {
+      setImportingCsv(false);
+      if (csvInputRef.current) csvInputRef.current.value = '';
+    }
+  };
+
   const startEdit = (restaurant) => {
     setEditingRestaurant(restaurant);
     setFormData(restaurant);
@@ -152,7 +251,7 @@ const DineManager = ({ credentials }) => {
   return (
     <div className="space-y-6" data-testid="dine-manager">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <UtensilsCrossed className="w-6 h-6 text-orange-500" />
@@ -160,18 +259,75 @@ const DineManager = ({ credentials }) => {
           </h2>
           <p className="text-gray-500">Manage pet-friendly restaurants</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={fetchRestaurants}>
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" onClick={fetchRestaurants} data-testid="refresh-btn">
             <RefreshCw className="w-4 h-4 mr-2" /> Refresh
           </Button>
-          <Button onClick={startAdd} className="bg-orange-500 hover:bg-orange-600">
+          
+          {/* CSV Export Button */}
+          <Button 
+            variant="outline" 
+            onClick={handleExportCsv}
+            disabled={restaurants.length === 0}
+            data-testid="export-csv-btn"
+          >
+            <Download className="w-4 h-4 mr-2" /> Export CSV
+          </Button>
+          
+          {/* CSV Import Button */}
+          <Button 
+            variant="outline" 
+            onClick={() => csvInputRef.current?.click()}
+            disabled={importingCsv}
+            data-testid="import-csv-btn"
+          >
+            {importingCsv ? (
+              <><RefreshCw className="w-4 h-4 mr-2 animate-spin" /> Importing...</>
+            ) : (
+              <><FileSpreadsheet className="w-4 h-4 mr-2" /> Import CSV</>
+            )}
+          </Button>
+          <input
+            ref={csvInputRef}
+            type="file"
+            accept=".csv"
+            onChange={handleImportCsv}
+            className="hidden"
+          />
+          
+          <Button onClick={startAdd} className="bg-orange-500 hover:bg-orange-600" data-testid="add-restaurant-btn">
             <Plus className="w-4 h-4 mr-2" /> Add Restaurant
           </Button>
         </div>
       </div>
 
+      {/* Import Result */}
+      {importResult && (
+        <Card className="p-4 bg-green-50 border-green-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="font-semibold text-green-800">CSV Import Complete</h4>
+              <p className="text-sm text-green-700">
+                {importResult.imported} new restaurants added, {importResult.updated} updated
+                {importResult.errors?.length > 0 && `, ${importResult.errors.length} errors`}
+              </p>
+              {importResult.errors?.length > 0 && (
+                <ul className="text-xs text-red-600 mt-2">
+                  {importResult.errors.slice(0, 3).map((err, i) => (
+                    <li key={i}>{err}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => setImportResult(null)}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        </Card>
+      )}
+
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="p-4">
           <p className="text-sm text-gray-500">Total Restaurants</p>
           <p className="text-3xl font-bold text-gray-900">{restaurants.length}</p>
@@ -205,13 +361,14 @@ const DineManager = ({ credentials }) => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
+            data-testid="search-restaurants"
           />
         </div>
       </Card>
 
       {/* Add/Edit Form */}
       {(isAddingNew || editingRestaurant) && (
-        <Card className="p-6">
+        <Card className="p-6" data-testid="restaurant-form">
           <h3 className="font-semibold text-lg mb-4">
             {editingRestaurant ? 'Edit Restaurant' : 'Add New Restaurant'}
           </h3>
@@ -223,22 +380,67 @@ const DineManager = ({ credentials }) => {
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
                 placeholder="e.g., TherPup Café"
+                data-testid="input-name"
               />
             </div>
+            
+            {/* Image Upload Section */}
             <div>
-              <label className="text-sm font-medium">Image URL</label>
-              <Input
-                value={formData.image}
-                onChange={(e) => setFormData({...formData, image: e.target.value})}
-                placeholder="https://..."
-              />
+              <label className="text-sm font-medium">Restaurant Image</label>
+              <div className="flex gap-2">
+                <Input
+                  value={formData.image}
+                  onChange={(e) => setFormData({...formData, image: e.target.value})}
+                  placeholder="Image URL or upload"
+                  className="flex-1"
+                  data-testid="input-image"
+                />
+                <Button 
+                  type="button"
+                  variant="outline" 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingImage}
+                  data-testid="upload-image-btn"
+                >
+                  {uploadingImage ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4" />
+                  )}
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </div>
+              {formData.image && (
+                <div className="mt-2 relative w-24 h-24">
+                  <img 
+                    src={formData.image} 
+                    alt="Preview" 
+                    className="w-full h-full object-cover rounded-lg border"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                  <button
+                    onClick={() => setFormData({...formData, image: ''})}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
             </div>
+            
             <div>
               <label className="text-sm font-medium">Area *</label>
               <Input
                 value={formData.area}
                 onChange={(e) => setFormData({...formData, area: e.target.value})}
                 placeholder="e.g., Koramangala"
+                data-testid="input-area"
               />
             </div>
             <div>
@@ -247,6 +449,7 @@ const DineManager = ({ credentials }) => {
                 value={formData.city}
                 onChange={(e) => setFormData({...formData, city: e.target.value})}
                 placeholder="e.g., Bangalore"
+                data-testid="input-city"
               />
             </div>
             <div>
@@ -255,6 +458,7 @@ const DineManager = ({ credentials }) => {
                 value={formData.petMenuAvailable}
                 onChange={(e) => setFormData({...formData, petMenuAvailable: e.target.value})}
                 className="w-full px-3 py-2 border rounded-lg"
+                data-testid="select-pet-menu"
               >
                 <option value="yes">Yes - Full Pet Menu</option>
                 <option value="partial">Partial - Some Items</option>
@@ -267,6 +471,7 @@ const DineManager = ({ credentials }) => {
                 value={formData.petPolicy}
                 onChange={(e) => setFormData({...formData, petPolicy: e.target.value})}
                 className="w-full px-3 py-2 border rounded-lg"
+                data-testid="select-pet-policy"
               >
                 <option value="all-pets">All Pets Welcome</option>
                 <option value="outdoor">Outdoor Seating Only</option>
@@ -279,6 +484,7 @@ const DineManager = ({ credentials }) => {
                 value={formData.cuisine?.join(', ') || ''}
                 onChange={(e) => setFormData({...formData, cuisine: e.target.value.split(',').map(s => s.trim())})}
                 placeholder="e.g., Café, Continental, Pet-Friendly"
+                data-testid="input-cuisine"
               />
             </div>
             <div>
@@ -287,6 +493,7 @@ const DineManager = ({ credentials }) => {
                 value={formData.tags?.join(', ') || ''}
                 onChange={(e) => setFormData({...formData, tags: e.target.value.split(',').map(s => s.trim())})}
                 placeholder="e.g., Outdoor Seating, Dog Menu"
+                data-testid="input-tags"
               />
             </div>
             <div>
@@ -295,6 +502,7 @@ const DineManager = ({ credentials }) => {
                 value={formData.petMenuItems?.join(', ') || ''}
                 onChange={(e) => setFormData({...formData, petMenuItems: e.target.value.split(',').map(s => s.trim())})}
                 placeholder="e.g., Pupcakes, Dog Ice Cream"
+                data-testid="input-pet-menu-items"
               />
             </div>
             <div>
@@ -303,6 +511,7 @@ const DineManager = ({ credentials }) => {
                 value={formData.priceRange}
                 onChange={(e) => setFormData({...formData, priceRange: e.target.value})}
                 className="w-full px-3 py-2 border rounded-lg"
+                data-testid="select-price-range"
               >
                 <option value="₹">₹ - Budget</option>
                 <option value="₹₹">₹₹ - Moderate</option>
@@ -319,6 +528,7 @@ const DineManager = ({ credentials }) => {
                 max="5"
                 value={formData.rating}
                 onChange={(e) => setFormData({...formData, rating: parseFloat(e.target.value)})}
+                data-testid="input-rating"
               />
             </div>
             <div>
@@ -327,6 +537,7 @@ const DineManager = ({ credentials }) => {
                 value={formData.timings}
                 onChange={(e) => setFormData({...formData, timings: e.target.value})}
                 placeholder="e.g., 10 AM - 10 PM"
+                data-testid="input-timings"
               />
             </div>
             <div>
@@ -335,6 +546,7 @@ const DineManager = ({ credentials }) => {
                 value={formData.phone}
                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
                 placeholder="+91 98765 43210"
+                data-testid="input-phone"
               />
             </div>
             <div>
@@ -343,6 +555,16 @@ const DineManager = ({ credentials }) => {
                 value={formData.instagram}
                 onChange={(e) => setFormData({...formData, instagram: e.target.value})}
                 placeholder="@restauranthandle"
+                data-testid="input-instagram"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Website</label>
+              <Input
+                value={formData.website || ''}
+                onChange={(e) => setFormData({...formData, website: e.target.value})}
+                placeholder="https://..."
+                data-testid="input-website"
               />
             </div>
             <div className="flex items-center gap-4">
@@ -352,6 +574,7 @@ const DineManager = ({ credentials }) => {
                   checked={formData.featured}
                   onChange={(e) => setFormData({...formData, featured: e.target.checked})}
                   className="w-4 h-4"
+                  data-testid="checkbox-featured"
                 />
                 <span className="text-sm font-medium">Featured</span>
               </label>
@@ -361,6 +584,7 @@ const DineManager = ({ credentials }) => {
                   checked={formData.verified}
                   onChange={(e) => setFormData({...formData, verified: e.target.checked})}
                   className="w-4 h-4"
+                  data-testid="checkbox-verified"
                 />
                 <span className="text-sm font-medium">Verified</span>
               </label>
@@ -368,15 +592,47 @@ const DineManager = ({ credentials }) => {
           </div>
 
           <div className="flex gap-2 mt-6">
-            <Button onClick={saveRestaurant} className="bg-green-600 hover:bg-green-700">
+            <Button onClick={saveRestaurant} className="bg-green-600 hover:bg-green-700" data-testid="save-restaurant-btn">
               <Save className="w-4 h-4 mr-2" /> Save Restaurant
             </Button>
-            <Button variant="outline" onClick={cancelEdit}>
+            <Button variant="outline" onClick={cancelEdit} data-testid="cancel-btn">
               <X className="w-4 h-4 mr-2" /> Cancel
             </Button>
           </div>
         </Card>
       )}
+
+      {/* CSV Template Download */}
+      <Card className="p-4 bg-gray-50">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-medium text-gray-700">CSV Import Template</h4>
+            <p className="text-sm text-gray-500">
+              Download a sample CSV template to bulk import restaurants. 
+              Use pipe (|) to separate multiple values in cuisine, tags, and petMenuItems columns.
+            </p>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => {
+              const template = `name,area,city,petMenuAvailable,petPolicy,cuisine,tags,rating,priceRange,petMenuItems,timings,phone,instagram,website,featured,verified
+Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental|Italian,Outdoor Seating|Dog Menu,4.5,₹₹,Pupcakes|Dog Ice Cream,10 AM - 10 PM,+91 98765 43210,@samplecafe,https://sample.com,true,true`;
+              const blob = new Blob([template], { type: 'text/csv' });
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'restaurants_template.csv';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }}
+            data-testid="download-template-btn"
+          >
+            <Download className="w-4 h-4 mr-2" /> Download Template
+          </Button>
+        </div>
+      </Card>
 
       {/* Restaurant List */}
       <div className="space-y-4">
@@ -389,21 +645,34 @@ const DineManager = ({ credentials }) => {
           <Card className="p-8 text-center">
             <UtensilsCrossed className="w-12 h-12 mx-auto text-gray-300 mb-4" />
             <h3 className="font-semibold text-gray-900">No restaurants found</h3>
-            <p className="text-gray-500 mb-4">Add your first pet-friendly restaurant</p>
-            <Button onClick={startAdd} className="bg-orange-500 hover:bg-orange-600">
-              <Plus className="w-4 h-4 mr-2" /> Add Restaurant
-            </Button>
+            <p className="text-gray-500 mb-4">Add your first pet-friendly restaurant or import from CSV</p>
+            <div className="flex gap-2 justify-center">
+              <Button onClick={startAdd} className="bg-orange-500 hover:bg-orange-600">
+                <Plus className="w-4 h-4 mr-2" /> Add Restaurant
+              </Button>
+              <Button variant="outline" onClick={() => csvInputRef.current?.click()}>
+                <FileSpreadsheet className="w-4 h-4 mr-2" /> Import CSV
+              </Button>
+            </div>
           </Card>
         ) : (
           filteredRestaurants.map((restaurant) => (
-            <Card key={restaurant.id} className="p-4">
+            <Card key={restaurant.id} className="p-4" data-testid={`restaurant-card-${restaurant.id}`}>
               <div className="flex gap-4">
-                {restaurant.image && (
+                {restaurant.image ? (
                   <img 
                     src={restaurant.image} 
                     alt={restaurant.name}
                     className="w-24 h-24 object-cover rounded-lg"
+                    onError={(e) => { 
+                      e.target.onerror = null;
+                      e.target.src = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200';
+                    }}
                   />
+                ) : (
+                  <div className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <ImageIcon className="w-8 h-8 text-gray-400" />
+                  </div>
                 )}
                 <div className="flex-1">
                   <div className="flex items-start justify-between">
@@ -448,10 +717,10 @@ const DineManager = ({ credentials }) => {
                   )}
 
                   <div className="flex gap-2 mt-3">
-                    <Button size="sm" variant="outline" onClick={() => startEdit(restaurant)}>
+                    <Button size="sm" variant="outline" onClick={() => startEdit(restaurant)} data-testid={`edit-${restaurant.id}`}>
                       <Edit className="w-3 h-3 mr-1" /> Edit
                     </Button>
-                    <Button size="sm" variant="outline" className="text-red-600" onClick={() => deleteRestaurant(restaurant.id)}>
+                    <Button size="sm" variant="outline" className="text-red-600" onClick={() => deleteRestaurant(restaurant.id)} data-testid={`delete-${restaurant.id}`}>
                       <Trash2 className="w-3 h-3 mr-1" /> Delete
                     </Button>
                   </div>
