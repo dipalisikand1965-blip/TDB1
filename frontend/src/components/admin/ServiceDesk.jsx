@@ -824,7 +824,7 @@ const ServiceDesk = ({ authHeaders }) => {
                     />
                   </div>
                   <div className="flex items-end">
-                    <Button onClick={handleSaveSlaRule} disabled={saving} className="w-full bg-purple-600 hover:bg-purple-700">
+                    <Button onClick={handleSaveAssignmentRule} disabled={saving} className="w-full bg-purple-600 hover:bg-purple-700">
                       {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
                       Add Rule
                     </Button>
