@@ -1264,6 +1264,92 @@ async def cancel_visit(visit_id: str, user_id: str):
     return {"message": "Visit cancelled"}
 
 
+# ==================== ADMIN MEETUP MANAGEMENT ====================
+
+@dine_router.put("/admin/dine/meetups/{meetup_id}/status")
+async def admin_update_meetup_status(meetup_id: str, status: str, send_notification: bool = True):
+    """Admin endpoint to update meetup status and optionally notify both parties"""
+    valid_statuses = ["pending", "accepted", "declined", "cancelled", "completed"]
+    if status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
+    
+    meetup = await db.meetup_requests.find_one({"id": meetup_id})
+    if not meetup:
+        raise HTTPException(status_code=404, detail="Meetup request not found")
+    
+    old_status = meetup.get("status")
+    
+    await db.meetup_requests.update_one(
+        {"id": meetup_id},
+        {"$set": {
+            "status": status,
+            "admin_updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    # Send notifications if requested
+    if send_notification and RESEND_API_KEY and status != old_status:
+        # Get both users' info
+        requester = await db.users.find_one({"id": meetup.get("requester_id")}, {"email": 1, "name": 1})
+        target = await db.users.find_one({"id": meetup.get("target_user_id")}, {"email": 1, "name": 1})
+        
+        emails_to_notify = []
+        if requester and requester.get("email"):
+            emails_to_notify.append(requester["email"])
+        if target and target.get("email"):
+            emails_to_notify.append(target["email"])
+        
+        if emails_to_notify:
+            try:
+                status_emoji = {
+                    "accepted": "🎉",
+                    "declined": "😔",
+                    "cancelled": "❌",
+                    "completed": "✅"
+                }.get(status, "📝")
+                
+                resend.Emails.send({
+                    "from": f"Buddy Meet <{SENDER_EMAIL}>",
+                    "to": emails_to_notify,
+                    "subject": f"{status_emoji} Meetup Status Update - {meetup.get('restaurant_name')}",
+                    "html": f"""
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <div style="background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+                            <h1 style="color: white; margin: 0;">Meetup Update {status_emoji}</h1>
+                        </div>
+                        
+                        <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb;">
+                            <p>Your meetup at <strong>{meetup.get('restaurant_name')}</strong> on <strong>{meetup.get('visit_date')}</strong> has been updated.</p>
+                            
+                            <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+                                <p style="margin: 0; font-size: 14px; color: #6b7280;">Status changed from</p>
+                                <p style="margin: 10px 0; font-size: 18px;">
+                                    <span style="text-decoration: line-through; color: #9ca3af;">{old_status}</span>
+                                    →
+                                    <strong style="color: #9333ea;">{status.upper()}</strong>
+                                </p>
+                            </div>
+                            
+                            <p style="color: #6b7280; font-size: 14px;">
+                                If you have any questions, please reply to this email or contact our Concierge® team.
+                            </p>
+                        </div>
+                        
+                        <div style="background: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 12px 12px;">
+                            <p style="color: #9ca3af; margin: 0; font-size: 12px;">
+                                The Doggy Company Concierge® Team
+                            </p>
+                        </div>
+                    </div>
+                    """
+                })
+                logger.info(f"Sent meetup status update emails to {emails_to_notify}")
+            except Exception as e:
+                logger.error(f"Failed to send meetup status email: {e}")
+    
+    return {"success": True, "message": f"Meetup status updated to {status}", "notified": send_notification}
+
+
 # ==================== UPLOAD PET MENU IMAGE ====================
 
 @dine_router.post("/admin/dine/upload-pet-menu")
