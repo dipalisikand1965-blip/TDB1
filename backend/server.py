@@ -447,7 +447,7 @@ Make it special with treats from The Doggy Bakery! 🐾
 
 🎂 Shop now: https://thedoggycompany.in/cakes
 
-Need help choosing? Chat with Mira, our Pet Concierge!"""
+Need help choosing? Chat with Mira, our Concierge®!"""
     
     encoded_message = urllib.parse.quote(message)
     return f"https://wa.me/{WHATSAPP_NUMBER}?text={encoded_message}"
@@ -1750,7 +1750,7 @@ async def chat_with_mira(request: ChatRequest):
             return {"response": "I'm having trouble connecting to my brain right now. Please check my API key configuration.", "session_id": session_id}
 
         system_prompt = """ROLE & IDENTITY
-Mira is the world's most trusted Pet Concierge® — a living intelligence shaped by lineage, discretion, and a profound understanding of animal well-being. She is not a chatbot, a search engine, or a list-maker. She is the embodiment of private-office hospitality for the modern pet owner, speaking with the warmth, grace, and quiet authority of a dedicated estate manager who already knows your companion's quirks.
+Mira is the world's most trusted Concierge®® — a living intelligence shaped by lineage, discretion, and a profound understanding of animal well-being. She is not a chatbot, a search engine, or a list-maker. She is the embodiment of private-office hospitality for the modern pet owner, speaking with the warmth, grace, and quiet authority of a dedicated estate manager who already knows your companion's quirks.
 Every response must feel personally curated, sensory-rich, and seamlessly polished. The guest must never feel processed — only recognised.
 Mira mirrors the guest's language with cultural precision. When the guest uses English, she responds in formal yet warm British English, with correct spelling and register. When the guest shifts language, Mira follows naturally, never forcing translation unless clarity requires it.
 All city names, venues, clinics, brands, dates and times, and section headings must always appear in bold.
@@ -1869,7 +1869,7 @@ Continue until guest says Yes.
 Once guest confirms Yes, move directly to NOTE.
 
 8️⃣ NOTE (MANDATORY)
-Every Pet Concierge® recommendation is curated with veterinary awareness and trusted relationships. All arrangements remain subject to availability, vaccination verification, and final approval. Your request will be processed only once full details are provided and you type I confirm. Terms apply.
+Every Concierge®® recommendation is curated with veterinary awareness and trusted relationships. All arrangements remain subject to availability, vaccination verification, and final approval. Your request will be processed only once full details are provided and you type I confirm. Terms apply.
 Your information and your pet's medical history are handled with the utmost discretion and shared only with verified Concierge® partners for the sole purpose of fulfilment.
 
 9️⃣ CONSENT PROTOCOL (STRICT) (MANDATORY)
@@ -2791,7 +2791,7 @@ async def get_site_content(username: str = Depends(verify_admin)):
                 },
                 {
                     "title": "Meet Mira AI",
-                    "subtitle": "Your Pet Celebration Concierge",
+                    "subtitle": "Your Celebration Concierge®",
                     "description": "Get personalized recommendations, party ideas, and expert guidance",
                     "image": "https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=1200",
                     "cta": "Chat with Mira"
@@ -4001,7 +4001,7 @@ async def send_abandoned_cart_email(to_email: str, name: str, items: list,
                     </div>
                     
                     <p style="color: #6b7280; font-size: 14px;">
-                        Questions? Chat with Mira, our Pet Concierge, or contact us at woof@thedoggybakery.com
+                        Questions? Chat with Mira, our Concierge®, or contact us at woof@thedoggybakery.com
                     </p>
                 </div>
                 <div class="footer">
