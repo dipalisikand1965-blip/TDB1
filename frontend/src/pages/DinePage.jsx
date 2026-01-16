@@ -467,9 +467,12 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
     date: '',
     time_slot: 'afternoon',
     looking_for_buddies: true,
-    notes: ''
+    notes: '',
+    notification_preference: 'email'
   });
   const [upcomingVisits, setUpcomingVisits] = useState([]);
+  const [sendingRequest, setSendingRequest] = useState(null);
+  const [requestSent, setRequestSent] = useState({});
 
   // Fetch upcoming visits
   useEffect(() => {
@@ -501,7 +504,7 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
       if (response.ok) {
         alert('Visit scheduled! Other pet parents can now see your planned visit.');
         setSchedulingVisit(false);
-        setVisitForm({ date: '', time_slot: 'afternoon', looking_for_buddies: true, notes: '' });
+        setVisitForm({ date: '', time_slot: 'afternoon', looking_for_buddies: true, notes: '', notification_preference: 'email' });
         // Refresh visits
         const refreshResponse = await fetch(`${API_URL}/api/dine/restaurants/${restaurant.id}/visits`);
         if (refreshResponse.ok) {
@@ -514,23 +517,42 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
     }
   };
 
-  const handleSendMeetupRequest = async (visitId) => {
+  const handleSendMeetupRequest = async (visit) => {
+    if (sendingRequest || requestSent[visit.id]) return;
+    
+    setSendingRequest(visit.id);
     try {
       const response = await fetch(`${API_URL}/api/dine/meetup-request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          visit_id: visitId,
-          message: "Hey! Would love to meet up with you and your pet!"
+          visit_id: visit.id,
+          message: `Hey! Would love to meet up with you and your pet at ${restaurant.name}!`
         })
       });
       
       if (response.ok) {
-        alert('Meetup request sent!');
+        setRequestSent(prev => ({ ...prev, [visit.id]: true }));
+        alert(`Meetup request sent to ${visit.user_name || 'the pet parent'}! They will be notified and can accept or decline your request.`);
+      } else {
+        const error = await response.json();
+        alert(error.detail || 'Failed to send request. Please try again.');
       }
     } catch (error) {
       console.error('Error sending meetup request:', error);
+      alert('Failed to send meetup request. Please check your connection.');
+    } finally {
+      setSendingRequest(null);
     }
+  };
+
+  const getTimeSlotLabel = (slot) => {
+    const labels = {
+      morning: 'Morning',
+      afternoon: 'Afternoon',
+      evening: 'Evening'
+    };
+    return labels[slot] || slot;
   };
 
   return (
@@ -542,15 +564,16 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
           <div className="absolute bottom-3 left-4 text-white">
             <div className="flex items-center gap-2">
               <Users className="w-5 h-5" />
-              <h3 className="font-bold text-lg">Pet Buddy Meetups</h3>
+              <h3 className="font-bold text-lg" data-testid="buddy-modal-title">Pet Buddy Meetups</h3>
             </div>
-            <p className="text-sm opacity-90">{restaurant.name}</p>
+            <p className="text-sm opacity-90">{restaurant.name} • {restaurant.city}</p>
           </div>
           <Button 
             variant="ghost" 
             size="icon" 
             className="absolute top-2 right-2 text-white hover:bg-white/20"
             onClick={onClose}
+            data-testid="close-buddy-modal"
           >
             <X className="w-5 h-5" />
           </Button>
@@ -561,12 +584,14 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
           <button
             className={`flex-1 py-3 text-sm font-medium ${activeTab === 'upcoming' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500'}`}
             onClick={() => setActiveTab('upcoming')}
+            data-testid="whos-going-tab"
           >
             <Users className="w-4 h-4 inline mr-1" /> Who's Going ({upcomingVisits.length})
           </button>
           <button
             className={`flex-1 py-3 text-sm font-medium ${activeTab === 'schedule' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500'}`}
             onClick={() => setActiveTab('schedule')}
+            data-testid="schedule-visit-tab"
           >
             <Calendar className="w-4 h-4 inline mr-1" /> Schedule Visit
           </button>
@@ -583,36 +608,70 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
                   <Button 
                     className="mt-4 bg-purple-500 hover:bg-purple-600"
                     onClick={() => setActiveTab('schedule')}
+                    data-testid="schedule-first-visit-btn"
                   >
                     Schedule Your Visit
                   </Button>
                 </div>
               ) : (
                 upcomingVisits.map((visit) => (
-                  <Card key={visit.id} className="p-4 border-purple-100">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Calendar className="w-4 h-4 text-purple-500" />
+                  <Card key={visit.id} className="p-4 border-purple-100 hover:border-purple-300 transition-colors" data-testid={`visit-card-${visit.id}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        {/* User Name - NEW */}
+                        {visit.user_name && (
+                          <p className="font-semibold text-purple-700 mb-1 flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            {visit.user_name}
+                          </p>
+                        )}
+                        {/* Date & Time */}
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <Calendar className="w-4 h-4 text-purple-500 flex-shrink-0" />
                           <span className="font-medium">{visit.date}</span>
-                          <Badge variant="outline" className="text-xs capitalize">{visit.time_slot}</Badge>
+                          <Badge variant="outline" className="text-xs capitalize">{getTimeSlotLabel(visit.time_slot)}</Badge>
                         </div>
+                        {/* Restaurant Info - Always show */}
+                        <p className="text-sm text-gray-600 flex items-center gap-1 mb-1">
+                          <MapPin className="w-3 h-3 flex-shrink-0" />
+                          <span className="truncate">{visit.restaurant_name || restaurant.name}</span>
+                          {(visit.restaurant_city || restaurant.city) && (
+                            <span className="text-gray-400">• {visit.restaurant_city || restaurant.city}</span>
+                          )}
+                        </p>
+                        {/* Pets */}
                         {visit.pets?.length > 0 && (
                           <p className="text-sm text-gray-600 flex items-center gap-1">
-                            <Dog className="w-3 h-3" />
+                            <Dog className="w-3 h-3 flex-shrink-0" />
                             {visit.pets.map(p => p.name).join(', ')}
                           </p>
                         )}
+                        {/* Notes */}
                         {visit.notes && (
-                          <p className="text-sm text-gray-500 mt-1">"{visit.notes}"</p>
+                          <p className="text-sm text-gray-500 mt-1 italic">"{visit.notes}"</p>
                         )}
                       </div>
                       <Button 
                         size="sm" 
-                        className="bg-purple-500 hover:bg-purple-600"
-                        onClick={() => handleSendMeetupRequest(visit.id)}
+                        className={`flex-shrink-0 ${requestSent[visit.id] ? 'bg-green-500' : 'bg-purple-500 hover:bg-purple-600'}`}
+                        onClick={() => handleSendMeetupRequest(visit)}
+                        disabled={sendingRequest === visit.id || requestSent[visit.id]}
+                        data-testid={`connect-btn-${visit.id}`}
                       >
-                        <Send className="w-3 h-3 mr-1" /> Connect
+                        {sendingRequest === visit.id ? (
+                          <>
+                            <span className="w-3 h-3 mr-1 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            Sending...
+                          </>
+                        ) : requestSent[visit.id] ? (
+                          <>
+                            <Check className="w-3 h-3 mr-1" /> Sent!
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-3 h-3 mr-1" /> Connect
+                          </>
+                        )}
                       </Button>
                     </div>
                   </Card>
@@ -628,6 +687,7 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
                   value={visitForm.date}
                   onChange={(e) => setVisitForm({...visitForm, date: e.target.value})}
                   min={new Date().toISOString().split('T')[0]}
+                  data-testid="visit-date-input"
                 />
               </div>
               <div>
@@ -636,6 +696,7 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
                   value={visitForm.time_slot}
                   onChange={(e) => setVisitForm({...visitForm, time_slot: e.target.value})}
                   className="w-full px-3 py-2 border rounded-lg"
+                  data-testid="visit-timeslot-select"
                 >
                   <option value="morning">Morning (9 AM - 12 PM)</option>
                   <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
@@ -648,6 +709,7 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
                   value={visitForm.notes}
                   onChange={(e) => setVisitForm({...visitForm, notes: e.target.value})}
                   className="w-full px-3 py-2 border rounded-lg text-sm"
+                  data-testid="visit-notes-input"
                   rows={2}
                   placeholder="e.g., Bringing my Golden Retriever, looking for playmates!"
                 />
