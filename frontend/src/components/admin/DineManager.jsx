@@ -3,16 +3,22 @@ import {
   Plus, Edit, Trash2, Save, X, Search, MapPin, Star, 
   UtensilsCrossed, Check, AlertCircle, Phone, Globe, Instagram,
   RefreshCw, Upload, Download, FileSpreadsheet, Image as ImageIcon,
-  ExternalLink, MessageSquare, Sparkles
+  ExternalLink, MessageSquare, Sparkles, Calendar, Users, Clock,
+  PawPrint, Heart, UserCheck, XCircle, Eye
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { API_URL } from '../../utils/api';
 
 
 const DineManager = ({ credentials }) => {
+  // Active tab
+  const [activeTab, setActiveTab] = useState('restaurants');
+  
+  // Restaurant state
   const [restaurants, setRestaurants] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [editingRestaurant, setEditingRestaurant] = useState(null);
@@ -22,6 +28,21 @@ const DineManager = ({ credentials }) => {
   const [uploadingPetMenu, setUploadingPetMenu] = useState(false);
   const [importingCsv, setImportingCsv] = useState(false);
   const [importResult, setImportResult] = useState(null);
+  
+  // Reservations state
+  const [reservations, setReservations] = useState([]);
+  const [reservationStats, setReservationStats] = useState({});
+  const [reservationFilter, setReservationFilter] = useState('all');
+  
+  // Buddy Visits state
+  const [visits, setVisits] = useState([]);
+  const [visitStats, setVisitStats] = useState({});
+  const [visitFilter, setVisitFilter] = useState('all');
+  
+  // Meetups state
+  const [meetups, setMeetups] = useState([]);
+  const [meetupStats, setMeetupStats] = useState({});
+  const [meetupFilter, setMeetupFilter] = useState('all');
   
   const fileInputRef = useRef(null);
   const petMenuInputRef = useRef(null);
