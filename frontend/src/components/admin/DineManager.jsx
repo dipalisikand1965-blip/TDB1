@@ -1141,7 +1141,7 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                         {res.pets > 0 && <><PawPrint className="w-3 h-3 inline mx-1" /> {res.pets} pets</>}
                       </p>
                       {res.special_requests && (
-                        <p className="text-xs text-gray-400 italic">"{res.special_requests}"</p>
+                        <p className="text-xs text-gray-400 italic">&ldquo;{res.special_requests}&rdquo;</p>
                       )}
                     </div>
                     <div className="flex gap-2">
@@ -1261,7 +1261,7 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                         </div>
                       )}
                       {visit.notes && (
-                        <p className="text-xs text-gray-400 italic mt-1">"{visit.notes}"</p>
+                        <p className="text-xs text-gray-400 italic mt-1">"{visit.notes}&rdquo;</p>
                       )}
                     </div>
                     <div className="flex gap-2">
@@ -1356,7 +1356,7 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                         <Calendar className="w-3 h-3 inline mr-1" /> {meetup.visit_date}
                       </p>
                       {meetup.message && (
-                        <p className="text-xs text-gray-400 italic mt-1">"{meetup.message}"</p>
+                        <p className="text-xs text-gray-400 italic mt-1">"{meetup.message}&rdquo;</p>
                       )}
                     </div>
                     <div className="flex gap-2">
