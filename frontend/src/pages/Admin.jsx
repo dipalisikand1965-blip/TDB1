@@ -85,6 +85,7 @@ const Admin = () => {
   const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
   const [passwordChanging, setPasswordChanging] = useState(false);
   const [passwordError, setPasswordError] = useState('');
+  const [showPasswords, setShowPasswords] = useState({ current: false, new: false, confirm: false });
 
   useEffect(() => {
     if (selectedMember) {
