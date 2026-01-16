@@ -5,7 +5,7 @@ import {
   Dog, Cat, ChevronRight, Phone, Globe, Instagram,
   Utensils, Coffee, Pizza, Leaf, Heart, Check, X, AlertCircle,
   Sparkles, ShoppingBag, Truck, Users, Calendar, MessageCircle, Send,
-  Bell, Gift, Cake
+  Bell, Gift, Cake, User, Mail
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
