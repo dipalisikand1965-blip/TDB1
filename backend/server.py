@@ -5973,6 +5973,9 @@ set_order_db(db)
 # Set database for user routes
 set_user_db(db)
 
+# Set database for dine routes
+set_dine_db(db)
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
@@ -5986,6 +5989,7 @@ app.include_router(auth_router)
 app.include_router(product_router)
 app.include_router(order_router)
 app.include_router(user_router)
+app.include_router(dine_router)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
