@@ -580,7 +580,8 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
         setVisitForm({ 
           date: '', time_slot: 'afternoon', looking_for_buddies: true, notes: '', 
           notification_preference: 'email', title: 'Mr.', first_name: '', last_name: '',
-          email: '', whatsapp: '', pet_name: '', pet_breed: '', pet_about: '', pet_photo: ''
+          email: '', whatsapp: '', instagram: '', facebook: '', linkedin: '',
+          pets: [{ name: '', breed: '', about: '', photo: '' }], safety_agreed: false
         });
         setFormErrors({});
         // Refresh visits
