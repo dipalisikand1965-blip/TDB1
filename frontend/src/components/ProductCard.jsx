@@ -408,6 +408,14 @@ const ProductDetailModal = ({ product, onClose }) => {
               </div>
             )}
 
+            {/* Personalization - Only for food/cake products */}
+            {['cakes', 'celebrate', 'hampers', 'fresh-food', 'meals', 'pupcakes', 'dognuts'].some(cat => 
+              (product.category || '').toLowerCase().includes(cat) || 
+              (product.name || '').toLowerCase().includes('cake') ||
+              (product.name || '').toLowerCase().includes('meal') ||
+              (product.name || '').toLowerCase().includes('pupcake') ||
+              (product.name || '').toLowerCase().includes('dognut')
+            ) && (
             <div className="space-y-3 mb-4 pt-3 border-t">
               <label className="text-sm font-semibold text-gray-700 block">Personalization</label>
               <Input 
@@ -449,6 +457,7 @@ const ProductDetailModal = ({ product, onClose }) => {
                         setCartInput({...cartInput, date});
                         setCalendarOpen(false);
                       }}
+                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                       initialFocus
                     />
                   </PopoverContent>
@@ -466,6 +475,7 @@ const ProductDetailModal = ({ product, onClose }) => {
                 <option value="7pm-9pm">7 PM - 9 PM</option>
               </select>
             </div>
+            )}
 
             {/* Autoship Option */}
             {product.autoship_enabled && (
