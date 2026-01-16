@@ -76,6 +76,12 @@ const Admin = () => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
   const [memberDetails, setMemberDetails] = useState({ orders: [], pets: [] });
+  
+  // Password change
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
+  const [passwordChanging, setPasswordChanging] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
 
   useEffect(() => {
     if (selectedMember) {
