@@ -1018,28 +1018,92 @@ const ServiceDesk = ({ authHeaders }) => {
 
               {/* Reply Box */}
               <div className="border-t p-3">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-3 mb-2">
                   <label className="flex items-center gap-1 text-sm cursor-pointer">
                     <input
                       type="checkbox"
                       checked={isInternalNote}
-                      onChange={(e) => setIsInternalNote(e.target.checked)}
+                      onChange={(e) => {
+                        setIsInternalNote(e.target.checked);
+                        if (e.target.checked) setSendChannel('internal');
+                      }}
                       className="rounded"
                     />
                     Internal Note
                   </label>
+                  
+                  {!isInternalNote && (
+                    <div className="flex items-center gap-2 border-l pl-3">
+                      <span className="text-xs text-gray-500">Send via:</span>
+                      <div className="flex gap-1">
+                        <Button 
+                          size="sm" 
+                          variant={sendChannel === 'internal' ? 'default' : 'outline'}
+                          onClick={() => setSendChannel('internal')}
+                          className="h-7 px-2 text-xs"
+                        >
+                          💬 Internal
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant={sendChannel === 'email' ? 'default' : 'outline'}
+                          onClick={() => setSendChannel('email')}
+                          className="h-7 px-2 text-xs"
+                          disabled={!selectedTicket?.member?.email}
+                          title={selectedTicket?.member?.email ? 'Send via Email' : 'No email address'}
+                        >
+                          <Mail className="w-3 h-3 mr-1" /> Email
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant={sendChannel === 'whatsapp' ? 'default' : 'outline'}
+                          onClick={() => setSendChannel('whatsapp')}
+                          className="h-7 px-2 text-xs"
+                          disabled={!selectedTicket?.member?.phone && !selectedTicket?.member?.whatsapp}
+                          title={selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp ? 'Send via WhatsApp' : 'No phone number'}
+                        >
+                          📱 WhatsApp
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* SLA Info */}
+                  {selectedTicket?.sla_due_at && (
+                    <div className="ml-auto flex items-center gap-1 text-xs">
+                      <Clock className="w-3 h-3" />
+                      <span className={`${new Date(selectedTicket.sla_due_at) < new Date() ? 'text-red-600 font-bold' : 'text-gray-500'}`}>
+                        SLA: {new Date(selectedTicket.sla_due_at).toLocaleString()}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   <Textarea
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
-                    placeholder={isInternalNote ? "Add internal note..." : "Type your reply..."}
+                    placeholder={
+                      isInternalNote 
+                        ? "Add internal note..." 
+                        : sendChannel === 'email'
+                          ? "Type your email reply..."
+                          : sendChannel === 'whatsapp'
+                            ? "Type your WhatsApp message..."
+                            : "Type your reply..."
+                    }
                     className="resize-none"
                     rows={2}
                   />
-                  <Button onClick={handleReply} disabled={sendingReply || !replyText.trim()}>
-                    {sendingReply ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                  </Button>
+                  <div className="flex flex-col gap-1">
+                    <Button onClick={handleReply} disabled={sendingReply || !replyText.trim()} className="flex-1">
+                      {sendingReply ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    </Button>
+                    {sendChannel !== 'internal' && !isInternalNote && (
+                      <span className="text-xs text-center text-gray-400">
+                        {sendChannel === 'email' ? '📧' : '📱'}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </>
