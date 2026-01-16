@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { API_URL } from '../utils/api';
 
 const AuthContext = createContext();
 
@@ -7,8 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(() => localStorage.getItem('tdb_auth_token'));
-
-  const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
   const fetchUser = useCallback(async (currentToken) => {
     try {
