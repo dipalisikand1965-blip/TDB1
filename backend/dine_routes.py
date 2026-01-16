@@ -876,6 +876,12 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
     contact_email = visit.email or user_email
     display_name = f"{visit.first_name} {visit.last_name}".strip() if visit.first_name else (user_info.get("name") if user_info else None)
     
+    # Combine pets from form and pet_ids
+    all_pets = visit.pets if visit.pets else []
+    if not all_pets and visit.pet_name:
+        # Fallback to single pet format
+        all_pets = [{"name": visit.pet_name, "breed": visit.pet_breed, "about": visit.pet_about, "photo": visit.pet_photo}]
+    
     visit_doc = {
         "id": f"visit-{uuid.uuid4().hex[:12]}",
         "restaurant_id": visit.restaurant_id,
@@ -891,18 +897,26 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
         "last_name": visit.last_name,
         "email": visit.email,
         "whatsapp": visit.whatsapp,
-        # Pet details from form
-        "pet_name": visit.pet_name,
-        "pet_breed": visit.pet_breed,
-        "pet_about": visit.pet_about,
-        "pet_photo": visit.pet_photo,
+        # Social profiles for verification
+        "instagram": visit.instagram,
+        "facebook": visit.facebook,
+        "linkedin": visit.linkedin,
+        # Multiple pets support
+        "pets": all_pets or pets_info,
+        # Legacy single pet fields
+        "pet_name": visit.pet_name or (all_pets[0].get("name") if all_pets else ""),
+        "pet_breed": visit.pet_breed or (all_pets[0].get("breed") if all_pets else None),
+        "pet_about": visit.pet_about or (all_pets[0].get("about") if all_pets else None),
+        "pet_photo": visit.pet_photo or (all_pets[0].get("photo") if all_pets else None),
         # Visit details
         "date": visit.date,
         "time_slot": visit.time_slot,
-        "pets": pets_info,
         "looking_for_buddies": visit.looking_for_buddies,
         "notes": visit.notes,
         "notification_preference": visit.notification_preference,
+        # Safety
+        "safety_agreed": visit.safety_agreed,
+        "safety_agreed_at": datetime.now(timezone.utc).isoformat() if visit.safety_agreed else None,
         "status": "scheduled",
         "meetup_requests": [],
         "created_at": datetime.now(timezone.utc).isoformat()
