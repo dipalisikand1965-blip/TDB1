@@ -86,6 +86,20 @@ class ReservationRequest(BaseModel):
     specialRequests: Optional[str] = None
 
 
+class RestaurantVisit(BaseModel):
+    restaurant_id: str
+    date: str
+    time_slot: str  # morning, afternoon, evening
+    pet_ids: List[str] = []
+    looking_for_buddies: bool = True
+    notes: Optional[str] = None
+
+
+class MeetupRequest(BaseModel):
+    visit_id: str
+    message: Optional[str] = None
+
+
 # ==================== PUBLIC ROUTES ====================
 
 @dine_router.get("/dine/restaurants")
