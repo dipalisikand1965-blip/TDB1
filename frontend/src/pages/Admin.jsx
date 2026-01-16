@@ -1126,28 +1126,67 @@ const Admin = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tabs */}
         <div className="flex gap-2 mb-8 border-b pb-4 flex-wrap">
-          {[
+          {            {/* CORE TOOLS */}
+            <span className="text-xs text-gray-500 px-2 py-1 font-semibold">CORE TOOLS</span>
+            { [
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-            { id: 'fulfilment', label: '📦 Fulfilment', icon: Truck },
-            { id: 'reports', label: '📊 Reports', icon: BarChart3 },
             { id: 'orders', label: 'Orders', icon: Package },
-            { id: "reviews", label: "Reviews", icon: MessageCircle },
-            { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
+            { id: 'fulfilment', label: '📦 Fulfilment', icon: Truck },
             { id: 'members', label: 'Customers', icon: Users },
             { id: 'pets', label: '🐾 Pet Profiles', icon: PawPrint },
-            { id: 'dine', label: '🍽️ Dine', icon: Package },
             { id: 'servicedesk', label: '🎫 Service Desk', icon: Ticket },
             { id: 'loyalty', label: '⭐ Loyalty', icon: Star },
-            { id: 'discounts', label: '🎟️ Discounts', icon: Tag },
-            { id: 'abandoned', label: '🛒 Abandoned', icon: ShoppingBag },
-            { id: 'autoship', label: '🔄 Autoship', icon: RefreshCw },
-            { id: 'products', label: 'Products', icon: Package },
+            { id: 'reports', label: '📊 Reports', icon: BarChart3 },
+            { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
+            { id: 'reviews', label: 'Reviews', icon: MessageCircle },
+            ].map((tab) => (
+            <Button
+              key={tab.id}
+              variant={activeTab === tab.id ? 'default' : 'ghost'}
+              className={activeTab === tab.id ? 'bg-purple-600' : ''}
+              onClick={() => setActiveTab(tab.id)}
+              data-testid={`admin-tab-${tab.id}`}
+            >
+              <tab.icon className="w-4 h-4 mr-2" />
+              {tab.label}
+            </Button>
+          ))}
+          
+          {/* Divider */}
+          <div className="w-full h-px bg-gray-200 my-2" />
+          
+          {/* PILLAR TOOLS */}
+          <span className="text-xs text-gray-500 px-2 py-1 font-semibold">PILLAR TOOLS</span>
+          {[
+            { id: 'products', label: '🎂 Celebrate (Products)', icon: Package },
             { id: 'collections', label: 'Collections', icon: Layers },
-            { id: 'reviews', label: 'Reviews', icon: Star },
-            { id: 'testimonials', label: 'Testimonials', icon: Star },
-            { id: 'insights', label: 'Blog', icon: FileText },
-            { id: 'faqs', label: 'FAQs', icon: HelpCircle },
             { id: 'requests', label: 'Custom Cakes', icon: Cake },
+            { id: 'dine', label: '🍽️ Dine Management', icon: Package },
+            { id: 'insights', label: '📝 Blog/Insights', icon: FileText },
+            { id: 'testimonials', label: 'Testimonials', icon: Star },
+            { id: 'faqs', label: 'FAQs', icon: HelpCircle },
+          ].map((tab) => (
+            <Button
+              key={tab.id}
+              variant={activeTab === tab.id ? 'default' : 'ghost'}
+              className={activeTab === tab.id ? 'bg-purple-600' : ''}
+              onClick={() => setActiveTab(tab.id)}
+              data-testid={`admin-tab-${tab.id}`}
+            >
+              <tab.icon className="w-4 h-4 mr-2" />
+              {tab.label}
+            </Button>
+          ))}
+          
+          {/* Divider */}
+          <div className="w-full h-px bg-gray-200 my-2" />
+          
+          {/* OPERATIONS */}
+          <span className="text-xs text-gray-500 px-2 py-1 font-semibold">OPERATIONS</span>
+          {[
+            { id: 'discounts', label: '🎟️ Discounts', icon: Tag },
+            { id: 'abandoned', label: '🛒 Abandoned Carts', icon: ShoppingBag },
+            { id: 'autoship', label: '🔄 Autoship', icon: RefreshCw },
             { id: 'streaties', label: '🧡 Streaties', icon: Heart },
             { id: 'franchise', label: '🏪 Franchise', icon: Building },
           ].map((tab) => (
