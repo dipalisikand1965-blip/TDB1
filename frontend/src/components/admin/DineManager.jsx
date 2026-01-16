@@ -473,7 +473,7 @@ const DineManager = ({ credentials }) => {
               <div className="md:col-span-2">
                 <label className="text-sm font-medium">Full Address</label>
                 <Input
-                  value={formData.address || ''}}
+                  value={formData.address || ''}
                   onChange={(e) => setFormData({...formData, address: e.target.value})}
                   placeholder="123, 5th Cross, Koramangala..."
                 />
