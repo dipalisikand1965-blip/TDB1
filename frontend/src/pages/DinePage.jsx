@@ -720,13 +720,53 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
                   checked={visitForm.looking_for_buddies}
                   onChange={(e) => setVisitForm({...visitForm, looking_for_buddies: e.target.checked})}
                   className="w-4 h-4 text-purple-600 rounded"
+                  data-testid="looking-for-buddies-checkbox"
                 />
                 <span className="text-sm">I'm open to meetups with other pet parents</span>
               </label>
+              
+              {/* Notification Preference - NEW */}
+              <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
+                <label className="text-sm font-medium text-purple-700 mb-2 block">
+                  How would you like to be notified about meetup requests?
+                </label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="notification_preference"
+                      value="email"
+                      checked={visitForm.notification_preference === 'email'}
+                      onChange={(e) => setVisitForm({...visitForm, notification_preference: e.target.value})}
+                      className="w-4 h-4 text-purple-600"
+                      data-testid="notification-email-radio"
+                    />
+                    <span className="text-sm flex items-center gap-1">
+                      <Bell className="w-3 h-3" /> Email
+                    </span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="notification_preference"
+                      value="whatsapp"
+                      checked={visitForm.notification_preference === 'whatsapp'}
+                      onChange={(e) => setVisitForm({...visitForm, notification_preference: e.target.value})}
+                      className="w-4 h-4 text-purple-600"
+                      data-testid="notification-whatsapp-radio"
+                    />
+                    <span className="text-sm flex items-center gap-1">
+                      <MessageCircle className="w-3 h-3" /> WhatsApp
+                    </span>
+                  </label>
+                </div>
+              </div>
+              
               <Button 
                 className="w-full bg-purple-500 hover:bg-purple-600"
                 onClick={handleScheduleVisit}
                 disabled={!visitForm.date}
+                data-testid="schedule-visit-btn"
               >
                 <Calendar className="w-4 h-4 mr-2" /> Schedule My Visit
               </Button>
