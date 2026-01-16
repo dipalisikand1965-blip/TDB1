@@ -138,21 +138,23 @@ const ServiceDesk = ({ authHeaders }) => {
 
   const fetchMetadata = useCallback(async () => {
     try {
-      const [catRes, statusRes, conciergeRes, intRes] = await Promise.all([
+      const [catRes, statusRes, conciergeRes, intRes, slaRes] = await Promise.all([
         fetch(`${API_URL}/api/tickets/categories`, { headers: authHeaders }),
         fetch(`${API_URL}/api/tickets/statuses`, { headers: authHeaders }),
         fetch(`${API_URL}/api/tickets/concierges`, { headers: authHeaders }),
-        fetch(`${API_URL}/api/tickets/integrations`, { headers: authHeaders })
+        fetch(`${API_URL}/api/tickets/integrations`, { headers: authHeaders }),
+        fetch(`${API_URL}/api/tickets/sla/stats`, { headers: authHeaders }).catch(() => ({ json: () => ({}) }))
       ]);
       
-      const [catData, statusData, conciergeData, intData] = await Promise.all([
-        catRes.json(), statusRes.json(), conciergeRes.json(), intRes.json()
+      const [catData, statusData, conciergeData, intData, slaData] = await Promise.all([
+        catRes.json(), statusRes.json(), conciergeRes.json(), intRes.json(), slaRes.json()
       ]);
       
       setCategories(catData.categories || []);
       setStatuses(statusData.statuses || []);
       setConcierges(conciergeData.concierges || []);
       setIntegrations(intData.integrations || []);
+      setSlaStats(slaData);
     } catch (err) {
       console.error('Error fetching metadata:', err);
     }
