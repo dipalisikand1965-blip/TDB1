@@ -10,6 +10,7 @@ import AutoshipManager from '../components/AutoshipManager';
 import FulfilmentManager from '../components/FulfilmentManager';
 import ReportsManager from '../components/ReportsManager';
 import { DashboardTab, OrdersTab, MembersTab, ChatsTab, DineManager } from '../components/admin';
+import { API_URL } from '../utils/api';
 import {
   Lock,
   User,
@@ -57,8 +58,6 @@ import {
   Truck,
   BarChart3
 } from 'lucide-react';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
