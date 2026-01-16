@@ -543,15 +543,15 @@ const DineManager = ({ credentials }) => {
             </div>
           </div>
 
-          {/* Mira Recommendation */}
+          {/* Concierge Recommendation */}
           <div className="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
             <h4 className="text-sm font-semibold text-purple-700 mb-3 flex items-center gap-2">
-              <Sparkles className="w-4 h-4" /> Mira's Pet Concierge Recommendation
+              <Sparkles className="w-4 h-4" /> Your Concierge® Recommends
             </h4>
             <textarea
-              value={formData.miraRecommendation || ''}
-              onChange={(e) => setFormData({...formData, miraRecommendation: e.target.value})}
-              placeholder="Your Pet Concierge recommends: This cozy café is perfect for lazy Sunday brunches with your furry friend. The staff is incredibly pet-friendly, and they serve the best pupcakes in town! Pro tip: Book the garden table for the best experience."
+              value={formData.conciergeRecommendation || ''}
+              onChange={(e) => setFormData({...formData, conciergeRecommendation: e.target.value})}
+              placeholder="Your Concierge® recommends: This cozy café is perfect for lazy Sunday brunches with your furry friend. The staff is incredibly pet-friendly, and they serve the best pupcakes in town! Pro tip: Book the garden table for the best experience."
               className="w-full p-3 border rounded-lg text-sm"
               rows={3}
             />
@@ -799,10 +799,10 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                     ))}
                   </div>
 
-                  {restaurant.miraRecommendation && (
+                  {restaurant.conciergeRecommendation && (
                     <p className="text-sm text-purple-600 mt-2 flex items-start gap-1">
                       <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                      <span className="line-clamp-1">{restaurant.miraRecommendation}</span>
+                      <span className="line-clamp-1"><strong>Concierge®:</strong> {restaurant.conciergeRecommendation}</span>
                     </p>
                   )}
 
