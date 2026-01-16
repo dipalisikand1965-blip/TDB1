@@ -68,6 +68,14 @@ const MemberDashboard = () => {
           axios.get(`${API_URL}/api/autoship/my-subscriptions`, config).catch(() => ({ data: { subscriptions: [] } })),
           axios.get(`${API_URL}/api/reviews/my-reviews`, config).catch(() => ({ data: { reviews: [] } }))
         ]);
+        
+        // Fetch dining history
+        try {
+          const diningRes = await axios.get(`${API_URL}/api/dine/my-dining-history?user_id=${user.id || ''}&email=${user.email || ''}`);
+          setDiningHistory(diningRes.data || { reservations: { items: [] }, visits: { items: [] }, meetups: { items: [] } });
+        } catch (e) {
+          console.error('Failed to fetch dining history:', e);
+        }
 
         const userOrders = ordersRes.data.orders || [];
         setOrders(userOrders);
