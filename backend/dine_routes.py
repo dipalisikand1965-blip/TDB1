@@ -279,7 +279,153 @@ async def create_reservation(reservation: ReservationRequest):
     }
 
 
+# ==================== USER DINING HISTORY ====================
+
+@dine_router.get("/dine/my-reservations")
+async def get_my_reservations(user_id: Optional[str] = None, email: Optional[str] = None):
+    """Get user's dining reservations"""
+    if not user_id and not email:
+        raise HTTPException(status_code=400, detail="user_id or email required")
+    
+    query = {}
+    if user_id:
+        query["user_id"] = user_id
+    elif email:
+        query["email"] = email
+    
+    reservations = await db.reservations.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    
+    # Categorize by status
+    upcoming = [r for r in reservations if r.get("status") in ["pending", "confirmed"]]
+    past = [r for r in reservations if r.get("status") in ["completed", "cancelled", "no_show"]]
+    
+    return {
+        "reservations": reservations,
+        "upcoming": upcoming,
+        "past": past,
+        "total": len(reservations)
+    }
+
+
+@dine_router.get("/dine/my-dining-history")
+async def get_my_dining_history(user_id: Optional[str] = None, email: Optional[str] = None):
+    """Get complete dining history including reservations, visits, and meetups"""
+    if not user_id and not email:
+        raise HTTPException(status_code=400, detail="user_id or email required")
+    
+    # Get reservations
+    res_query = {"user_id": user_id} if user_id else {"email": email}
+    reservations = await db.reservations.find(res_query, {"_id": 0}).sort("created_at", -1).to_list(50)
+    
+    # Get visits
+    visit_query = {"user_id": user_id} if user_id else {"user_email": email}
+    visits = await db.restaurant_visits.find(visit_query, {"_id": 0}).sort("created_at", -1).to_list(50)
+    
+    # Get meetup requests (sent and received)
+    meetup_query = {"$or": [{"requester_id": user_id}, {"target_user_id": user_id}]} if user_id else {}
+    meetups = await db.meetup_requests.find(meetup_query, {"_id": 0}).sort("created_at", -1).to_list(50) if user_id else []
+    
+    return {
+        "reservations": {
+            "items": reservations,
+            "upcoming": [r for r in reservations if r.get("status") in ["pending", "confirmed"]],
+            "past": [r for r in reservations if r.get("status") not in ["pending", "confirmed"]]
+        },
+        "visits": {
+            "items": visits,
+            "upcoming": [v for v in visits if v.get("status") == "scheduled"],
+            "past": [v for v in visits if v.get("status") != "scheduled"]
+        },
+        "meetups": {
+            "items": meetups,
+            "pending": [m for m in meetups if m.get("status") == "pending"],
+            "accepted": [m for m in meetups if m.get("status") == "accepted"]
+        }
+    }
+
+
 # ==================== ADMIN ROUTES ====================
+
+@dine_router.get("/admin/dine/reservations")
+async def admin_get_reservations(
+    status: Optional[str] = None,
+    username: str = Depends(verify_admin)
+):
+    """Get all reservations (admin)"""
+    query = {}
+    if status:
+        query["status"] = status
+    
+    reservations = await db.reservations.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    
+    # Stats
+    stats = {
+        "total": len(reservations),
+        "pending": len([r for r in reservations if r.get("status") == "pending"]),
+        "confirmed": len([r for r in reservations if r.get("status") == "confirmed"]),
+        "completed": len([r for r in reservations if r.get("status") == "completed"]),
+        "cancelled": len([r for r in reservations if r.get("status") == "cancelled"])
+    }
+    
+    return {"reservations": reservations, "stats": stats}
+
+
+@dine_router.put("/admin/dine/reservations/{reservation_id}/status")
+async def admin_update_reservation_status(
+    reservation_id: str,
+    status: str,
+    username: str = Depends(verify_admin)
+):
+    """Update reservation status (admin)"""
+    valid_statuses = ["pending", "confirmed", "completed", "cancelled", "no_show"]
+    if status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
+    
+    reservation = await db.reservations.find_one({"id": reservation_id})
+    if not reservation:
+        raise HTTPException(status_code=404, detail="Reservation not found")
+    
+    await db.reservations.update_one(
+        {"id": reservation_id},
+        {"$set": {"status": status, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    # Send email notification to customer on status change
+    if RESEND_API_KEY and reservation.get("email") and status in ["confirmed", "cancelled"]:
+        try:
+            if status == "confirmed":
+                subject = f"✅ Reservation Confirmed - {reservation.get('restaurant_name')}"
+                message = f"Great news! Your reservation at {reservation.get('restaurant_name')} on {reservation.get('date')} at {reservation.get('time')} has been confirmed."
+            else:
+                subject = f"❌ Reservation Cancelled - {reservation.get('restaurant_name')}"
+                message = f"We're sorry, but your reservation at {reservation.get('restaurant_name')} on {reservation.get('date')} has been cancelled. Please contact us for assistance."
+            
+            resend.Emails.send({
+                "from": f"The Doggy Company <{SENDER_EMAIL}>",
+                "to": [reservation.get("email")],
+                "subject": subject,
+                "html": f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <div style="background: {'#16a34a' if status == 'confirmed' else '#dc2626'}; padding: 30px; text-align: center;">
+                        <h1 style="color: white; margin: 0;">{'✅' if status == 'confirmed' else '❌'} Reservation {status.title()}</h1>
+                    </div>
+                    <div style="padding: 30px;">
+                        <p style="color: #4b5563;">{message}</p>
+                        <div style="background: #f9fafb; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <p><strong>Restaurant:</strong> {reservation.get('restaurant_name')}</p>
+                            <p><strong>Date:</strong> {reservation.get('date')}</p>
+                            <p><strong>Time:</strong> {reservation.get('time')}</p>
+                            <p><strong>Guests:</strong> {reservation.get('guests')} | <strong>Pets:</strong> {reservation.get('pets')}</p>
+                        </div>
+                    </div>
+                </div>
+                """
+            })
+        except Exception as e:
+            logger.error(f"Failed to send status update email: {e}")
+    
+    return {"message": f"Reservation status updated to {status}"}
+
 
 @dine_router.get("/admin/dine/restaurants")
 async def admin_get_restaurants(username: str = Depends(verify_admin)):
