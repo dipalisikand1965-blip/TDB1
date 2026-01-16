@@ -900,6 +900,25 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
         except Exception as e:
             logger.error(f"Failed to send visit email: {e}")
     
+    # Auto-create Service Desk ticket for buddy visit
+    try:
+        ticket_id = await create_ticket_from_event(db, "buddy_visit", {
+            "visit_id": visit_doc["id"],
+            "user_name": visit_doc.get("user_name"),
+            "user_email": user_email,
+            "restaurant_name": restaurant.get("name"),
+            "restaurant_area": restaurant.get("area"),
+            "restaurant_city": restaurant.get("city"),
+            "date": visit.date,
+            "time_slot": visit.time_slot,
+            "pets": pets_info,
+            "looking_for_buddies": visit.looking_for_buddies,
+            "notes": visit.notes
+        })
+        logger.info(f"Auto-created ticket {ticket_id} for buddy visit {visit_doc['id']}")
+    except Exception as e:
+        logger.error(f"Failed to auto-create ticket for buddy visit: {e}")
+    
     return {"message": "Visit scheduled", "visit": visit_doc}
 
 
