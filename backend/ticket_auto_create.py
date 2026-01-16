@@ -191,6 +191,14 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
         })
     
     elif event_type == "cake_order":
+        delivery_method = event_data.get("delivery_method", "delivery")
+        delivery_info = ""
+        if delivery_method == "pickup":
+            delivery_info = f"**Pickup Location:** {event_data.get('pickup_location', 'Store')}"
+        else:
+            delivery_info = f"""**Delivery Address:** {event_data.get('delivery_address', 'Not provided')}
+**City:** {event_data.get('city', 'Not specified')}"""
+        
         ticket_doc.update({
             "category": "celebrate",
             "sub_category": "cake_order",
@@ -206,13 +214,16 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
 
 **Order ID:** {event_data.get('order_id', 'Unknown')}
 **Customer:** {event_data.get('customer_name')}
+**City:** {event_data.get('city', 'Not specified')}
 
 **Items:**
 {chr(10).join([f"  - {item.get('name', 'Item')} x{item.get('quantity', 1)} - ₹{item.get('price', 0)}" for item in event_data.get('items', [])])}
 
 **Total:** ₹{event_data.get('total', 0)}
+
+**Delivery Method:** {delivery_method.upper()}
 **Delivery Date:** {event_data.get('delivery_date', 'Not specified')}
-**Delivery Address:** {event_data.get('delivery_address', 'Not provided')}
+{delivery_info}
 
 **Special Instructions:** {event_data.get('special_instructions') or 'None'}
 
@@ -221,7 +232,7 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
             "source": "cake_order",
             "source_reference": event_data.get("order_id"),
             "linked_event_id": event_data.get("order_id"),
-            "tags": ["auto-created", "celebrate", "cake", "order"]
+            "tags": ["auto-created", "celebrate", "cake", "order", event_data.get("city", "").lower().replace(" ", "-")] if event_data.get("city") else ["auto-created", "celebrate", "cake", "order"]
         })
         
         ticket_doc["messages"].append({
