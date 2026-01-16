@@ -1434,7 +1434,16 @@ def transform_shopify_product(shopify_product: dict) -> dict:
         "tags": shopify_product.get("tags") if isinstance(shopify_product.get("tags"), list) else shopify_product.get("tags", "").split(", "),
         "shopify_handle": shopify_product.get("handle"),
         "available": any(v.get("available", True) for v in variants_data),
-        "synced_at": datetime.now(timezone.utc).isoformat()
+        "synced_at": datetime.now(timezone.utc).isoformat(),
+        # Display tags for badges (editable in admin)
+        "display_tags": [],
+        # Bundle configuration (for hampers)
+        "bundle_type": None,  # 'hamper', 'combo', etc.
+        "bundle_includes": {
+            "cake_selection": False,
+            "toy_selection": False,
+            "treat_selection": False
+        }
     }
 async def send_product_match_email(pet: dict, product: dict, match_reason: str):
     """Send email about a product match"""
