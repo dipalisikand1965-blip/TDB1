@@ -21,9 +21,9 @@ const FREE_SHIPPING_THRESHOLD = 3000;
 const SHIPPING_FEE = 150;
 
 const STORE_LOCATIONS = [
-  { id: 'bangalore', city: 'Bangalore', address: 'Indiranagar, Bangalore, 560038' },
-  { id: 'mumbai', city: 'Mumbai', address: 'Bandra West, Mumbai, 400050' },
-  { id: 'gurugram', city: 'Gurugram', address: 'DLF Phase 4, Gurugram, 122002' }
+  { id: 'mumbai', city: 'Mumbai', address: 'Shop 9, off Yari Road, Jeet Nagar, Versova, Andheri West, Mumbai 400061' },
+  { id: 'gurugram', city: 'Gurugram', address: 'Ground Floor, Wazirabad Rd, Wazirabad, Sector 52, Gurugram 122003' },
+  { id: 'bangalore', city: 'Bangalore', address: '147, 8th Main Rd, 3rd Block, Koramangala, Bengaluru 560034' }
 ];
 
 const addOns = [
