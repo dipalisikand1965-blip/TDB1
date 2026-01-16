@@ -1023,6 +1023,66 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
     except Exception as e:
         logger.error(f"Failed to auto-create ticket for meetup request: {e}")
     
+    # Send confirmation to requester
+    if user_email:
+        try:
+            # Check user preference (email or WhatsApp)
+            user_prefs = await db.users.find_one({"id": user_id}, {"notification_preference": 1, "phone": 1})
+            notification_pref = user_prefs.get("notification_preference", "email") if user_prefs else "email"
+            
+            if notification_pref == "whatsapp" and user_prefs and user_prefs.get("phone"):
+                # For WhatsApp, we'd send via WhatsApp Business API
+                # For now, log it (WhatsApp integration requires business verification)
+                logger.info(f"Would send WhatsApp confirmation to {user_prefs.get('phone')} for meetup {meetup_doc['id']}")
+            
+            # Always send email confirmation
+            if RESEND_API_KEY:
+                resend.Emails.send({
+                    "from": f"Buddy Meet <{SENDER_EMAIL}>",
+                    "to": [user_email],
+                    "subject": f"🐕 Meetup Request Submitted - {visit.get('restaurant_name')}",
+                    "html": f"""
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <div style="background: linear-gradient(135deg, #ec4899 0%, #9333ea 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+                            <h1 style="color: white; margin: 0;">Meetup Request Sent! 💕</h1>
+                        </div>
+                        
+                        <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb;">
+                            <p style="font-size: 16px;">Hey there!</p>
+                            
+                            <p>Your meetup request has been sent to another pet parent at <strong>{visit.get('restaurant_name')}</strong>!</p>
+                            
+                            <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ec4899;">
+                                <p style="margin: 5px 0;"><strong>📍 Restaurant:</strong> {visit.get('restaurant_name')}</p>
+                                <p style="margin: 5px 0;"><strong>📅 Date:</strong> {visit.get('date')}</p>
+                                {f'<p style="margin: 5px 0;"><strong>💬 Your Message:</strong> {request.message}</p>' if request.message else ''}
+                            </div>
+                            
+                            <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                                <p style="margin: 0; font-size: 14px;">
+                                    <strong>What happens next?</strong><br>
+                                    The other pet parent will receive your request and can choose to accept or decline. 
+                                    We'll notify you as soon as they respond!
+                                </p>
+                            </div>
+                            
+                            <p style="font-size: 14px; color: #6b7280;">
+                                Our Concierge® team has been notified and will help coordinate if needed.
+                            </p>
+                        </div>
+                        
+                        <div style="background: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 12px 12px;">
+                            <p style="color: #9ca3af; margin: 0; font-size: 12px;">
+                                The Doggy Company Concierge® | Making pet friendships happen! 🐾
+                            </p>
+                        </div>
+                    </div>
+                    """
+                })
+                logger.info(f"Sent meetup confirmation email to {user_email}")
+        except Exception as e:
+            logger.error(f"Failed to send meetup confirmation: {e}")
+    
     return {"message": "Meetup request sent", "request_id": meetup_doc["id"]}
 
 
