@@ -275,6 +275,28 @@ async def create_reservation(reservation: ReservationRequest):
         except Exception as e:
             logger.error(f"Failed to send admin notification: {e}")
     
+    # Auto-create Service Desk ticket for reservation
+    try:
+        ticket_id = await create_ticket_from_event(db, "reservation", {
+            "reservation_id": reservation_doc["id"],
+            "name": reservation.name,
+            "email": reservation.email,
+            "phone": reservation.phone,
+            "restaurant_name": restaurant.get("name"),
+            "restaurant_area": restaurant.get("area"),
+            "city": restaurant.get("city"),
+            "date": reservation.date,
+            "time": reservation.time,
+            "guests": reservation.guests,
+            "pets": reservation.pets,
+            "special_requests": reservation.specialRequests,
+            "occasion": reservation.occasion if hasattr(reservation, 'occasion') else None,
+            "is_birthday": "birthday" in (reservation.specialRequests or "").lower() if reservation.specialRequests else False
+        })
+        logger.info(f"Auto-created ticket {ticket_id} for reservation {reservation_doc['id']}")
+    except Exception as e:
+        logger.error(f"Failed to auto-create ticket for reservation: {e}")
+    
     return {
         "message": "Reservation request submitted",
         "reservation_id": reservation_doc["id"],
