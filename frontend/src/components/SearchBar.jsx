@@ -4,7 +4,7 @@ import { Search, X, Loader2, ArrowRight, Tag } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const SearchBar = ({ onClose, isOverlay = false }) => {
   const [query, setQuery] = useState('');
@@ -29,8 +29,16 @@ const SearchBar = ({ onClose, isOverlay = false }) => {
       const response = await fetch(`${API_URL}/api/search/typeahead?q=${encodeURIComponent(searchQuery)}&limit=8`);
       if (response.ok) {
         const data = await response.json();
-        setResults(data);
+        console.log('Search results:', data);
+        // Handle both formats: { products: [], collections: [] } or { hits: [] }
+        if (data.products || data.collections) {
+          setResults(data);
+        } else if (data.hits) {
+          setResults({ products: data.hits, collections: [] });
+        }
         setIsOpen(true);
+      } else {
+        console.error('Search response not ok:', response.status);
       }
     } catch (error) {
       console.error('Search error:', error);
