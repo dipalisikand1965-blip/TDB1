@@ -6,12 +6,11 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
 import { Switch } from './ui/switch';
+import { API_URL } from '../utils/api';
 import {
   Search, Plus, Edit, Trash2, Save, X, Image, 
   Layers, Check, AlertCircle, Loader2
 } from 'lucide-react';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const CollectionManager = ({ getAuthHeader }) => {
   const [collections, setCollections] = useState([]);

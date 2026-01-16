@@ -6,6 +6,7 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
 import { Switch } from './ui/switch';
+import { API_URL } from '../utils/api';
 import {
   Search, Plus, Edit, Trash2, Save, X, Image, 
   ChevronLeft, ChevronRight, Filter, Download, Upload,

@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Checkbox } from './ui/checkbox';
 import { toast } from '../hooks/use-toast';
+import { API_URL } from '../utils/api';
 import {
   Package, Truck, Clock, MapPin, RefreshCw, Search, Filter,
   ChefHat, Gift, Send, Eye, Edit, Printer, Phone, Mail,
