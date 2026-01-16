@@ -2,22 +2,81 @@ import React, { useState } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Phone, Mail, MapPin, Clock, MessageCircle, Send, CheckCircle } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, MessageCircle, Send, CheckCircle, Store, Truck, Navigation } from 'lucide-react';
+import { API_URL } from '../utils/api';
+
+// Store Locations with full details
+const STORES = [
+  {
+    city: 'Mumbai',
+    name: 'Mumbai Store',
+    address: 'Shop 9, off Yari Road, Jeet Nagar, Versova, Andheri West, Mumbai, Maharashtra 400061',
+    phone: '9663185747',
+    mapUrl: 'https://maps.google.com/?q=Shop+9+off+Yari+Road+Versova+Andheri+West+Mumbai+400061',
+    color: 'from-orange-500 to-red-500'
+  },
+  {
+    city: 'Gurugram',
+    name: 'Gurugram Store',
+    address: 'Ground Floor, Wazirabad Rd, Wazirabad, Sector 52, Gurugram, Haryana 122003',
+    phone: '9739982582',
+    mapUrl: 'https://maps.google.com/?q=Ground+Floor+Wazirabad+Rd+Sector+52+Gurugram+122003',
+    color: 'from-blue-500 to-indigo-500'
+  },
+  {
+    city: 'Bangalore',
+    name: 'Bangalore Store',
+    address: '147, 8th Main Rd, 3rd Block, Koramangala 3 Block, Koramangala, Bengaluru, Karnataka 560034',
+    phone: '9739982582',
+    mapUrl: 'https://maps.google.com/?q=147+8th+Main+Rd+Koramangala+Bengaluru+560034',
+    color: 'from-purple-500 to-pink-500'
+  }
+];
 
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
+    city: '',
     subject: '',
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In production, this would submit to an API
-    setSubmitted(true);
+    setSubmitting(true);
+    
+    try {
+      // Create a ticket for the contact form submission
+      const response = await fetch(`${API_URL}/api/tickets/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          member: {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            city: formData.city
+          },
+          category: 'shop',
+          sub_category: 'contact_form',
+          urgency: 'medium',
+          source: 'website_contact',
+          description: `**Subject:** ${formData.subject}\n\n**Message:**\n${formData.message}\n\n**City:** ${formData.city || 'Not specified'}`
+        })
+      });
+      
+      if (response.ok) {
+        setSubmitted(true);
+      }
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+    }
+    
+    setSubmitting(false);
   };
 
   return (
@@ -33,9 +92,63 @@ const Contact = () => {
           </p>
         </div>
 
+        {/* Store Locations - Featured Section */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
+              <Store className="w-6 h-6 text-purple-600" />
+              Store Pickup Locations
+            </h2>
+            <p className="text-gray-600 mt-2">Visit us for same-day cake pickups!</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            {STORES.map((store, idx) => (
+              <Card key={idx} className="overflow-hidden hover:shadow-xl transition-shadow">
+                <div className={`bg-gradient-to-r ${store.color} p-4 text-white`}>
+                  <h3 className="text-xl font-bold">{store.city}</h3>
+                  <p className="text-sm opacity-90">{store.name}</p>
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="flex items-start gap-2">
+                    <MapPin className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-gray-600">{store.address}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-gray-400" />
+                    <a href={`tel:${store.phone}`} className="text-sm text-purple-600 hover:underline">
+                      {store.phone}
+                    </a>
+                  </div>
+                  <a
+                    href={store.mapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition-colors w-full justify-center"
+                  >
+                    <Navigation className="w-4 h-4" />
+                    Get Directions
+                  </a>
+                </div>
+              </Card>
+            ))}
+          </div>
+          
+          {/* Pan India Delivery Banner */}
+          <Card className="mt-6 p-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+            <div className="flex items-center justify-center gap-4 flex-wrap">
+              <Truck className="w-8 h-8" />
+              <div className="text-center">
+                <h3 className="text-xl font-bold">Pan-India Delivery Available!</h3>
+                <p className="text-sm opacity-90">We deliver fresh cakes and treats to any city across India. Just tell us your city and address!</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Contact Info */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             <Card className="p-6 hover:shadow-lg transition-shadow">
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-purple-100 rounded-lg">
@@ -43,8 +156,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 mb-2">Call Us</h3>
-                  <p className="text-gray-600">9739982582</p>
-                  <p className="text-gray-600">9663185747</p>
+                  <p className="text-gray-600">9739982582 (Bangalore & Gurugram)</p>
+                  <p className="text-gray-600">9663185747 (Mumbai)</p>
                   <p className="text-sm text-gray-500 mt-1">Mon-Sun: 10AM - 8PM</p>
                 </div>
               </div>
@@ -59,7 +172,7 @@ const Contact = () => {
                   <h3 className="font-bold text-gray-900 mb-2">WhatsApp</h3>
                   <p className="text-gray-600">+91 96631 85747</p>
                   <a 
-                    href="https://wa.me/919663185747?text=Hi! I have a question about The Doggy Bakery"
+                    href="https://wa.me/919663185747?text=Hi! I have a question about The Doggy Company"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-green-600 font-medium mt-2 hover:underline"
@@ -77,24 +190,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 mb-2">Email Us</h3>
-                  <p className="text-gray-600">woof@thedoggybakery.in</p>
+                  <p className="text-gray-600">woof@thedoggycompany.in</p>
                   <p className="text-sm text-gray-500 mt-1">We reply within 24 hours</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 hover:shadow-lg transition-shadow">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-pink-100 rounded-lg">
-                  <MapPin className="w-6 h-6 text-pink-600" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-900 mb-2">Our Locations</h3>
-                  <div className="space-y-2 text-gray-600">
-                    <p><strong>Bengaluru:</strong> Indiranagar, Koramangala</p>
-                    <p><strong>Mumbai:</strong> Bandra, Andheri</p>
-                    <p><strong>Gurgaon:</strong> DLF Phase 1</p>
-                  </div>
                 </div>
               </div>
             </Card>
@@ -122,7 +219,7 @@ const Contact = () => {
               <div className="text-center py-12">
                 <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Message Sent!</h3>
-                <p className="text-gray-600">Thank you for reaching out. We'll get back to you soon!</p>
+                <p className="text-gray-600">Thank you for reaching out. Our Concierge® team will get back to you soon!</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -159,22 +256,33 @@ const Contact = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
-                    <select
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Your City *</label>
+                    <Input
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                      value={formData.subject}
-                      onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
-                    >
-                      <option value="">Select a subject</option>
-                      <option value="order">Order Inquiry</option>
-                      <option value="custom">Custom Cake Request</option>
-                      <option value="delivery">Delivery Question</option>
-                      <option value="feedback">Feedback</option>
-                      <option value="partnership">Business Partnership</option>
-                      <option value="other">Other</option>
-                    </select>
+                      value={formData.city}
+                      onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                      placeholder="Mumbai, Bangalore, Delhi..."
+                    />
                   </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
+                  <select
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    value={formData.subject}
+                    onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
+                  >
+                    <option value="">Select a subject</option>
+                    <option value="order">Order Inquiry</option>
+                    <option value="custom">Custom Cake Request</option>
+                    <option value="delivery">Delivery Question</option>
+                    <option value="pickup">Store Pickup</option>
+                    <option value="feedback">Feedback</option>
+                    <option value="partnership">Business Partnership</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
 
                 <div>
@@ -189,9 +297,16 @@ const Contact = () => {
                   />
                 </div>
 
-                <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 py-3">
-                  <Send className="w-4 h-4 mr-2" />
-                  Send Message
+                <Button 
+                  type="submit" 
+                  className="w-full bg-purple-600 hover:bg-purple-700 py-3"
+                  disabled={submitting}
+                >
+                  {submitting ? (
+                    <>Sending...</>
+                  ) : (
+                    <><Send className="w-4 h-4 mr-2" /> Send Message</>
+                  )}
                 </Button>
               </form>
             )}
