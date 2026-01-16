@@ -41,18 +41,48 @@ const URGENCY_COLORS = {
   critical: 'bg-red-100 text-red-600'
 };
 
+// Default statuses (fallback)
+const DEFAULT_STATUSES = [
+  { id: 'new', name: 'New', color: 'blue' },
+  { id: 'in_progress', name: 'In Progress', color: 'yellow' },
+  { id: 'waiting_on_member', name: 'Waiting on Member', color: 'orange' },
+  { id: 'escalated', name: 'Escalated', color: 'red' },
+  { id: 'resolved', name: 'Resolved', color: 'green' },
+  { id: 'closed', name: 'Closed', color: 'gray' }
+];
+
+// Default categories (pillars) - fallback
+const DEFAULT_CATEGORIES = [
+  { id: 'celebrate', name: 'Celebrate', icon: '🎂', description: 'Birthday cakes, celebrations' },
+  { id: 'dine', name: 'Dine', icon: '🍽️', description: 'Restaurant reservations, dining' },
+  { id: 'travel', name: 'Travel', icon: '✈️', description: 'Pet travel assistance' },
+  { id: 'stay', name: 'Stay', icon: '🏨', description: 'Pet-friendly accommodations' },
+  { id: 'enjoy', name: 'Enjoy', icon: '🎉', description: 'Events & experiences' },
+  { id: 'club', name: 'Club', icon: '👑', description: 'Membership & club services' },
+  { id: 'care', name: 'Care', icon: '💊', description: 'Pet health & wellness' },
+  { id: 'shop', name: 'Shop Assist', icon: '🛒', description: 'Product inquiries & orders' },
+  { id: 'work', name: 'Work', icon: '💼', description: 'Pet at work services' },
+  { id: 'fit', name: 'Fit', icon: '🏃', description: 'Pet fitness & activities' },
+  { id: 'exclusive', name: 'Exclusive', icon: '⭐', description: 'VIP & exclusive requests' },
+  { id: 'emergency', name: 'Emergency', icon: '🚨', description: 'Urgent pet emergencies' },
+  { id: 'advisory', name: 'Advisory', icon: '📋', description: 'Pet advice & consultation' },
+  { id: 'paperwork', name: 'Paperwork', icon: '📄', description: 'Documents & certifications' },
+  { id: 'referrals', name: 'Referrals', icon: '🤝', description: 'Partner referrals' }
+];
+
 const ServiceDesk = ({ authHeaders }) => {
   // State
   const [tickets, setTickets] = useState([]);
   const [stats, setStats] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [statuses, setStatuses] = useState([]);
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [statuses, setStatuses] = useState(DEFAULT_STATUSES);
   const [concierges, setConcierges] = useState([]);
   const [integrations, setIntegrations] = useState([]);
   
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [ticketLoading, setTicketLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   
   // Filters
   const [filters, setFilters] = useState({
@@ -65,6 +95,7 @@ const ServiceDesk = ({ authHeaders }) => {
   // Modals
   const [showNewTicket, setShowNewTicket] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [activeSettingsTab, setActiveSettingsTab] = useState('email');
   
   // Reply
