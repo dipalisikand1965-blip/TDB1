@@ -2927,30 +2927,60 @@ const Admin = () => {
             )}
             <div>
               <Label>Current Password</Label>
-              <Input
-                type="password"
-                value={passwordData.current}
-                onChange={(e) => setPasswordData({ ...passwordData, current: e.target.value })}
-                placeholder="Enter current password"
-              />
+              <div className="relative">
+                <Input
+                  type={showPasswords.current ? "text" : "password"}
+                  value={passwordData.current}
+                  onChange={(e) => setPasswordData({ ...passwordData, current: e.target.value })}
+                  placeholder="Enter current password"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswords({ ...showPasswords, current: !showPasswords.current })}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPasswords.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
             <div>
               <Label>New Password</Label>
-              <Input
-                type="password"
-                value={passwordData.new}
-                onChange={(e) => setPasswordData({ ...passwordData, new: e.target.value })}
-                placeholder="Enter new password (min 6 chars)"
-              />
+              <div className="relative">
+                <Input
+                  type={showPasswords.new ? "text" : "password"}
+                  value={passwordData.new}
+                  onChange={(e) => setPasswordData({ ...passwordData, new: e.target.value })}
+                  placeholder="Enter new password (min 6 chars)"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswords({ ...showPasswords, new: !showPasswords.new })}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPasswords.new ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
             <div>
               <Label>Confirm New Password</Label>
-              <Input
-                type="password"
-                value={passwordData.confirm}
-                onChange={(e) => setPasswordData({ ...passwordData, confirm: e.target.value })}
-                placeholder="Confirm new password"
-              />
+              <div className="relative">
+                <Input
+                  type={showPasswords.confirm ? "text" : "password"}
+                  value={passwordData.confirm}
+                  onChange={(e) => setPasswordData({ ...passwordData, confirm: e.target.value })}
+                  placeholder="Confirm new password"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswords({ ...showPasswords, confirm: !showPasswords.confirm })}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPasswords.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
           </div>
           <DialogFooter>
@@ -2958,6 +2988,7 @@ const Admin = () => {
               setShowPasswordModal(false);
               setPasswordData({ current: '', new: '', confirm: '' });
               setPasswordError('');
+              setShowPasswords({ current: false, new: false, confirm: false });
             }}>
               Cancel
             </Button>
