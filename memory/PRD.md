@@ -728,30 +728,59 @@ PUT    /api/admin/dine/reservations/{id}/status - Update status
 
 ---
 
-## Next Tasks (Priority Order)
-1. 🔴 **Service Desk Two-way Messaging** - Implement email/WhatsApp reply integration into ticket threads
-2. 🟡 **Service Desk Auto-assignment & SLA Rules** - Auto-assign tickets, SLA tracking
-3. 🟡 Razorpay checkout integration (blocked on user keys)
-4. 🟡 Continue Admin.jsx refactoring (~2900 lines needs breakdown)
-5. 🔵 Build out Stay, Travel, Care pillars
+### Jan 16, 2026 - Service Desk Two-Way Messaging & SLA Engine Complete
+
+#### ✅ TWO-WAY MESSAGING SYSTEM (`/app/backend/ticket_messaging.py`)
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Outbound Email** | ✅ | Send messages via Resend with Reply-To tracking |
+| **Outbound WhatsApp** | ✅ | Generates click-to-chat links with pre-filled message |
+| **Inbound Email Webhook** | ✅ | `/api/tickets/messaging/webhook/resend/inbound` receives email replies |
+| **Ticket ID Extraction** | ✅ | Parses ticket ID from email subject/body/to-address |
+| **Auto-create Ticket** | ✅ | Creates new ticket if email doesn't match existing |
+| **Conversation Thread** | ✅ | All messages tracked with channel badges |
+
+**Webhook Endpoints:**
+- `POST /api/tickets/messaging/webhook/resend` - Resend delivery events
+- `POST /api/tickets/messaging/webhook/resend/inbound` - Inbound email replies
+- `POST /api/tickets/messaging/webhook/whatsapp` - WhatsApp Business API (placeholder)
+
+#### ✅ SLA & AUTO-ASSIGNMENT ENGINE (`/app/backend/ticket_sla.py`)
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **SLA Stats** | ✅ | Breach rate, avg response time, by-concierge metrics |
+| **Auto-assign Single** | ✅ | Assigns ticket to best available concierge |
+| **Auto-assign All** | ✅ | Bulk assigns all unassigned tickets |
+| **Assignment Rules** | ✅ | Configurable rules (emergency→senior, round robin) |
+| **SLA Rules** | ✅ | Configurable response/resolution times by urgency |
+| **Escalation Engine** | ✅ | Auto-escalate breached tickets, send notifications |
+| **Concierge Availability** | ✅ | Track availability, max tickets, specializations |
+
+**SLA Defaults by Urgency:**
+| Urgency | Response | Resolution |
+|---------|----------|------------|
+| Critical | 1 hour | 4 hours |
+| High | 4 hours | 24 hours |
+| Medium | 12 hours | 48 hours |
+| Low | 24 hours | 72 hours |
+
+#### ✅ FRONTEND UPDATES (`ServiceDesk.jsx`)
+- **Metrics Bar**: SLA Breach Rate, Avg Response Time, Auto-Assign button, Check SLA button
+- **Reply Box**: Channel selector (Internal, Email, WhatsApp) with status indicators
+- **Conversation Thread**: Message channel badges (📧 email, 📱 whatsapp), Inbound/Sent badges
+- **Assignment Card**: Auto-assign button per ticket
+
+#### ✅ TESTING RESULTS
+- **iteration_12.json**: 16/16 backend tests passed, 100% frontend tests
+- Fixed route ordering bug in ticket_routes.py
 
 ---
 
-### Jan 16, 2026 - Verification Session Complete
-
-#### ✅ BUG FIXES VERIFIED
-| Issue | Status | Verification |
-|-------|--------|--------------|
-| Dine tab auth prompt bug | **FIXED** | Testing agent iteration_10 - DineManager loads without auth prompt |
-| Admin tabs reorganization | **VERIFIED** | Tabs organized into CORE TOOLS, PILLAR TOOLS, OPERATIONS |
-| My Dining tab in Member Dashboard | **FIXED & VERIFIED** | Testing agent iteration_11 - Fixed $or query bug in dining history API |
-
-#### ✅ TESTING COMPLETED
-- **iteration_10.json**: Admin panel frontend tests - 100% pass rate
-- **iteration_11.json**: Member Dashboard Dining tab - 17/17 backend tests, 100% frontend
-
-#### ✅ BUG FIX APPLIED
-- **dine_routes.py**: Fixed `my-dining-history` endpoint to use MongoDB `$or` query for user_id/email matching. Previously was returning empty results when both parameters provided.
+## Next Tasks (Priority Order)
+1. 🟡 Razorpay checkout integration (blocked on user keys)
+2. 🟡 Continue Admin.jsx refactoring (~2900 lines needs breakdown)
+3. 🔵 Build out Stay, Travel, Care pillars
+4. 🔵 WhatsApp Business API integration (requires Meta verification)
 
 ---
 
