@@ -1041,7 +1041,7 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
                 </div>
               </div>
 
-              {/* SECTION 4: Notification Preference */}
+              {/* SECTION 5: Notification Preference */}
               <div className="p-3 bg-green-50 rounded-lg border border-green-200">
                 <label className="text-sm font-medium text-green-700 mb-2 block">
                   How should we notify you about meetup requests?
@@ -1085,11 +1085,37 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
                 />
                 <span className="text-sm">I'm open to meetups with other pet parents</span>
               </label>
+
+              {/* SECTION 6: Safety Disclaimer & Agreement */}
+              <div className={`p-3 rounded-lg border ${formErrors.safety ? 'bg-red-50 border-red-300' : 'bg-amber-50 border-amber-200'}`}>
+                <h4 className="font-semibold text-amber-800 mb-2 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4" /> Community Safety Guidelines
+                </h4>
+                <div className="text-xs text-amber-700 space-y-1 mb-3">
+                  <p>• <strong>Pet Buddy Meetups</strong> is a community platform for pet parents to connect and socialize with their pets.</p>
+                  <p>• Always meet in <strong>public places</strong> like pet-friendly cafes listed on our platform.</p>
+                  <p>• <strong>Verify profiles</strong> using social media links before meeting.</p>
+                  <p>• The Doggy Company <strong>facilitates connections</strong> but is not responsible for individual meetups.</p>
+                  <p>• Report any inappropriate behavior to our team immediately.</p>
+                  <p>• This platform is <strong>strictly for pet socialization</strong>, not personal dating.</p>
+                </div>
+                <label className={`flex items-start gap-2 cursor-pointer p-2 rounded ${visitForm.safety_agreed ? 'bg-green-100' : 'bg-white'}`}>
+                  <input
+                    type="checkbox"
+                    checked={visitForm.safety_agreed}
+                    onChange={(e) => setVisitForm({...visitForm, safety_agreed: e.target.checked})}
+                    className="w-4 h-4 text-amber-600 rounded mt-0.5"
+                  />
+                  <span className="text-sm text-amber-800">
+                    I agree to the <strong>Community Safety Guidelines</strong> and understand that The Doggy Company is a platform for pet socialization. I will behave responsibly and report any issues.
+                  </span>
+                </label>
+              </div>
               
               <Button 
                 className="w-full bg-purple-500 hover:bg-purple-600"
                 onClick={handleScheduleVisit}
-                disabled={!visitForm.date || !visitForm.first_name || !visitForm.pet_name}
+                disabled={!visitForm.date || !visitForm.first_name || !visitForm.pets[0]?.name || !visitForm.safety_agreed}
                 data-testid="schedule-visit-btn"
               >
                 <Calendar className="w-4 h-4 mr-2" /> Schedule My Visit
