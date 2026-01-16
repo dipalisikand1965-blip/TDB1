@@ -710,12 +710,12 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
           </Button>
         </div>
 
-        {/* Mira Recommendation in Modal */}
-        {restaurant.miraRecommendation && (
+        {/* Concierge® Recommendation in Modal */}
+        {restaurant.conciergeRecommendation && (
           <div className="mx-4 mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
             <p className="text-sm text-purple-700 flex items-start gap-2">
               <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0" />
-              <span><strong>Mira recommends:</strong> {restaurant.miraRecommendation}</span>
+              <span><strong>Your Concierge® recommends:</strong> {restaurant.conciergeRecommendation}</span>
             </p>
           </div>
         )}
