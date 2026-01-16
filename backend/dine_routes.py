@@ -104,6 +104,10 @@ class ReservationRequest(BaseModel):
     pets: int = 1
     petMealPreorder: bool = False
     specialRequests: Optional[str] = None
+    # Pet details
+    pet_name: str = ""
+    pet_breed: Optional[str] = None
+    pet_about: Optional[str] = None
 
 
 class RestaurantVisit(BaseModel):
