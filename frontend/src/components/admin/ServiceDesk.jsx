@@ -621,12 +621,12 @@ const ServiceDesk = ({ authHeaders }) => {
 
           <div>
             <Label className="text-xs text-gray-500 mb-1 block">Status</Label>
-            <Select value={filters.status} onValueChange={(v) => setFilters({ ...filters, status: v })}>
+            <Select value={filters.status || 'all'} onValueChange={(v) => setFilters({ ...filters, status: v === 'all' ? '' : v })}>
               <SelectTrigger className="h-9">
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="open">Open</SelectItem>
                 {statuses.map(s => (
                   <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
@@ -637,12 +637,12 @@ const ServiceDesk = ({ authHeaders }) => {
 
           <div>
             <Label className="text-xs text-gray-500 mb-1 block">Category</Label>
-            <Select value={filters.category} onValueChange={(v) => setFilters({ ...filters, category: v })}>
+            <Select value={filters.category || 'all'} onValueChange={(v) => setFilters({ ...filters, category: v === 'all' ? '' : v })}>
               <SelectTrigger className="h-9">
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
+                <SelectItem value="all">All Categories</SelectItem>
                 {categories.map(c => (
                   <SelectItem key={c.id} value={c.id}>{c.icon} {c.name}</SelectItem>
                 ))}
@@ -652,12 +652,12 @@ const ServiceDesk = ({ authHeaders }) => {
 
           <div>
             <Label className="text-xs text-gray-500 mb-1 block">Urgency</Label>
-            <Select value={filters.urgency} onValueChange={(v) => setFilters({ ...filters, urgency: v })}>
+            <Select value={filters.urgency || 'all'} onValueChange={(v) => setFilters({ ...filters, urgency: v === 'all' ? '' : v })}>
               <SelectTrigger className="h-9">
                 <SelectValue placeholder="All Urgency" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Urgency</SelectItem>
+                <SelectItem value="all">All Urgency</SelectItem>
                 <SelectItem value="critical">Critical</SelectItem>
                 <SelectItem value="high">High</SelectItem>
                 <SelectItem value="medium">Medium</SelectItem>
