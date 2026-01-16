@@ -346,6 +346,9 @@ async def create_ticket(ticket: TicketCreate):
     ticket_doc["id"] = str(result.inserted_id)
     del ticket_doc["_id"]
     
+    # Send email notifications
+    await send_ticket_notification(ticket_doc, "created")
+    
     return {"success": True, "ticket": ticket_doc}
 
 @router.get("/")
