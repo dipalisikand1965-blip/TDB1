@@ -158,11 +158,24 @@ const ProductDetailModal = ({ product, onClose }) => {
     age: '',
     purchaseType: 'onetime',
     autoshipFrequency: '',
-    addPartyBox: false
+    addPartyBox: false,
+    // Bundle selections
+    selectedCake: '',
+    selectedToy: ''
   });
   
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
+  
+  // Bundle products (cakes and toys for hamper selection)
+  const [bundleCakes, setBundleCakes] = useState([]);
+  const [bundleToys, setBundleToys] = useState([]);
+  const [loadingBundle, setLoadingBundle] = useState(false);
+  
+  // Check if this is a bundle/hamper product
+  const isHamperProduct = (product.category || '').toLowerCase().includes('hamper') || 
+                          (product.name || '').toLowerCase().includes('hamper') ||
+                          (product.bundle_type === 'hamper');
   
   const { addToCart } = useCart();
   
