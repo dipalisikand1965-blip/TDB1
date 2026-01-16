@@ -76,7 +76,11 @@ const pillarConfig = {
 
 const PillarPage = () => {
   const { pillarId } = useParams();
-  const pillar = pillarConfig[pillarId] || pillarConfig.dine;
+  const location = useLocation();
+  
+  // Detect pillar from URL path if no param
+  const detectedPillar = pillarId || location.pathname.replace('/', '');
+  const pillar = pillarConfig[detectedPillar] || pillarConfig.dine;
   const Icon = pillar.icon;
 
   // If pillar is active, redirect to main page
