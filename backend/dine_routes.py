@@ -280,6 +280,9 @@ async def create_reservation(reservation: ReservationRequest):
     if RESEND_API_KEY:
         try:
             notification_email = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.in")
+            pet_info = f"<p><strong>🐕 Pet:</strong> {reservation.pet_name}{f' ({reservation.pet_breed})' if reservation.pet_breed else ''}</p>" if reservation.pet_name else ""
+            pet_about = f"<p><strong>About Pet:</strong> {reservation.pet_about}</p>" if reservation.pet_about else ""
+            
             resend.Emails.send({
                 "from": f"Dine Reservations <{SENDER_EMAIL}>",
                 "to": [notification_email],
@@ -293,6 +296,8 @@ async def create_reservation(reservation: ReservationRequest):
                     <p><strong>Email:</strong> {reservation.email}</p>
                     <p><strong>Date/Time:</strong> {reservation.date} at {reservation.time}</p>
                     <p><strong>Guests:</strong> {reservation.guests} | <strong>Pets:</strong> {reservation.pets}</p>
+                    {pet_info}
+                    {pet_about}
                     <p><strong>Pet Meal Pre-order:</strong> {'Yes' if reservation.petMealPreorder else 'No'}</p>
                     {f'<p><strong>Special Requests:</strong> {reservation.specialRequests}</p>' if reservation.specialRequests else ''}
                     <p style="margin-top: 20px;"><a href="https://thedoggycompany.in/admin" style="background: #f97316; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View in Admin</a></p>
