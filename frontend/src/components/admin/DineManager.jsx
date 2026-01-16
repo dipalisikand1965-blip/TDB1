@@ -338,7 +338,7 @@ const DineManager = ({ credentials }) => {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card className="p-4">
           <p className="text-sm text-gray-500">Total Restaurants</p>
           <p className="text-3xl font-bold text-gray-900">{restaurants.length}</p>
@@ -353,6 +353,12 @@ const DineManager = ({ credentials }) => {
           <p className="text-sm text-yellow-600">Partial Menu</p>
           <p className="text-3xl font-bold text-yellow-700">
             {restaurants.filter(r => r.petMenuAvailable === 'partial').length}
+          </p>
+        </Card>
+        <Card className="p-4 bg-pink-50">
+          <p className="text-sm text-pink-600">🎂 Birthday Perks</p>
+          <p className="text-3xl font-bold text-pink-700">
+            {restaurants.filter(r => r.birthdayPerks).length}
           </p>
         </Card>
         <Card className="p-4 bg-orange-50">
