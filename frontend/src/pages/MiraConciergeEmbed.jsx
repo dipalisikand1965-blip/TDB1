@@ -14,7 +14,7 @@ const MiraConciergeEmbed = () => {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Woof! 🐾 I'm Mira, your Pet Concierge! I can help you find vets, groomers, pet sitters, travel info, and much more. What do you need help with today?"
+      content: "Woof! 🐾 I'm Mira, your Concierge®! I can help you find vets, groomers, pet sitters, travel info, and much more. What do you need help with today?"
     }
   ]);
   const [input, setInput] = useState('');
@@ -190,7 +190,7 @@ const MiraConciergeEmbed = () => {
             </div>
             <div className="flex-1">
               <h3 className="font-bold">Mira</h3>
-              <p className="text-xs text-purple-100">Pet Concierge • Online 24/7</p>
+              <p className="text-xs text-purple-100">Concierge® • Online 24/7</p>
             </div>
             <div className="flex items-center gap-1">
               <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
@@ -261,7 +261,7 @@ const MiraConciergeEmbed = () => {
 
       {/* How it Works */}
       <div className="max-w-4xl mx-auto mt-16 px-4 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">How Mira Concierge Works</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">How Your Concierge® Works</h2>
         <div className="grid md:grid-cols-3 gap-6">
           <div>
             <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">1</div>
@@ -288,7 +288,7 @@ const MiraConciergeEmbed = () => {
           <div className="text-sm text-amber-800">
             <p className="font-bold mb-1">Important Disclaimer</p>
             <p>
-              Mira Concierge is an AI assistant designed to connect you with services and provide general lifestyle advice. 
+              Your Concierge® is an AI assistant designed to connect you with services and provide general lifestyle advice. 
               <strong> Mira does not provide medical diagnoses or treatments.</strong> For any medical concerns, we will strictly refer you to qualified veterinarians.
             </p>
           </div>

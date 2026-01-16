@@ -76,7 +76,7 @@ const MiraAI = () => {
             width="100%"
             height="100%"
             style={{ border: 'none' }}
-            title="Mira AI Concierge"
+            title="Mira AI Concierge®"
           />
         </div>
       )}

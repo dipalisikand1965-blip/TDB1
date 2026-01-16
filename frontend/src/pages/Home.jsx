@@ -49,7 +49,7 @@ const Home = () => {
     },
     {
       title: 'Meet Mira AI',
-      subtitle: 'Your Pet Celebration Concierge',
+      subtitle: 'Your Celebration Concierge®®',
       description: 'Get personalized recommendations, party ideas, and expert guidance',
       image: 'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=1200',
       cta: 'Chat with Mira'
@@ -246,7 +246,7 @@ const Home = () => {
               <h2 className="text-5xl font-black text-gray-900 mb-6">
                 Your Personal Pet
                 <span className="block bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Celebration Concierge
+                  Celebration Concierge®
                 </span>
               </h2>
               <p className="text-xl text-gray-700 mb-8 leading-relaxed">

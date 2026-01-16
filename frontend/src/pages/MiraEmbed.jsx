@@ -9,7 +9,7 @@ const MiraEmbed = () => {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Woof! 🐾 I'm Mira, your Pet Concierge at The Doggy Bakery! I can help you find the perfect treats, cakes, and gifts for your furry friend. What can I help you with today?"
+      content: "Woof! 🐾 I'm Mira, your Concierge® at The Doggy Bakery! I can help you find the perfect treats, cakes, and gifts for your furry friend. What can I help you with today?"
     }
   ]);
   const [input, setInput] = useState('');
@@ -86,7 +86,7 @@ const MiraEmbed = () => {
         </div>
         <div>
           <h1 className="font-bold text-lg">Mira</h1>
-          <p className="text-xs text-purple-100">Your Pet Concierge 🐾</p>
+          <p className="text-xs text-purple-100">Your Concierge® 🐾</p>
         </div>
       </div>
 

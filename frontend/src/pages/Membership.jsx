@@ -93,7 +93,7 @@ const Membership = () => {
       features: [
         { text: '12% discount on all orders', icon: Percent },
         { text: 'Priority same-day delivery', icon: Truck },
-        { text: 'Full Mira AI concierge access', icon: MessageCircle },
+        { text: 'Full Mira AI Concierge® access', icon: MessageCircle },
         { text: 'Exclusive party planning assistance', icon: Calendar },
         { text: 'Free delivery on all orders', icon: Truck },
         { text: 'Premium treats box monthly', icon: Gift },
@@ -162,7 +162,7 @@ const Membership = () => {
     },
     {
       q: 'How does the Mira AI access work?',
-      a: 'Pawsome members get basic Mira assistance for product recommendations. Premium unlocks full concierge services including party planning. VIP members get priority queue with faster response times and dedicated support.',
+      a: 'Pawsome members get basic Mira assistance for product recommendations. Premium unlocks full Concierge® services including party planning. VIP members get priority queue with faster response times and dedicated support.',
     },
     {
       q: 'What\'s included in the monthly treats?',
@@ -196,7 +196,7 @@ const Membership = () => {
           </h1>
           
           <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Unlock exclusive discounts, priority delivery, full access to Mira AI Concierge, 
+            Unlock exclusive discounts, priority delivery, full access to Mira AI Concierge®, 
             and monthly treats delivered to your doorstep. Because your fur baby deserves VIP treatment!
           </p>
 
@@ -321,7 +321,7 @@ const Membership = () => {
             <div>
               <Badge className="mb-4 bg-white/20 text-white">
                 <Sparkles className="w-4 h-4 mr-2" />
-                AI-Powered Concierge
+                AI-Powered Concierge®
               </Badge>
               <h2 className="text-3xl sm:text-4xl font-bold mb-6">
                 Meet Mira AI — Your Personal Pet Celebration Expert
@@ -329,7 +329,7 @@ const Membership = () => {
               <p className="text-lg text-purple-100 mb-8">
                 Mira isn't just a chatbot — she's your dedicated concierge for all things celebration. 
                 From planning the perfect birthday party to finding the right treats for dietary needs, 
-                Mira handles it all with the sophistication of a luxury concierge service.
+                Mira handles it all with the sophistication of a luxury Concierge® service.
               </p>
               
               <div className="space-y-4">
@@ -384,7 +384,7 @@ const Membership = () => {
                 </div>
                 <div className="space-y-4">
                   <div className="bg-white/10 rounded-2xl rounded-bl-none p-4">
-                    <p className="text-sm">Welcome to The Doggy Bakery! 🐾 I'm Mira, your personal celebration concierge. How may I assist you today?</p>
+                    <p className="text-sm">Welcome to The Doggy Bakery! 🐾 I'm Mira, your personal Celebration Concierge®. How may I assist you today?</p>
                   </div>
                   <div className="bg-purple-500 rounded-2xl rounded-br-none p-4 ml-8">
                     <p className="text-sm">I need to plan a birthday party for my Lab turning 3!</p>

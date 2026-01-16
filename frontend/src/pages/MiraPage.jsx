@@ -17,7 +17,7 @@ const MiraPage = () => {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Woof! 🐾 I'm Mira, your Pet Concierge! I can help you find perfect treats, plan celebrations, check delivery, and more. What can I help you with today?"
+      content: "Woof! 🐾 I'm Mira, your Concierge®! I can help you find perfect treats, plan celebrations, check delivery, and more. What can I help you with today?"
     }
   ]);
   const [input, setInput] = useState('');
@@ -141,7 +141,7 @@ const MiraPage = () => {
               <div className="text-center lg:text-left">
                 <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur rounded-full px-4 py-2 mb-6">
                   <Sparkles className="w-4 h-4" />
-                  <span className="text-sm font-medium">AI-Powered Pet Concierge</span>
+                  <span className="text-sm font-medium">AI-Powered Concierge®</span>
                 </div>
                 
                 <h1 className="text-4xl md:text-6xl font-black mb-6">
@@ -312,7 +312,7 @@ const MiraPage = () => {
                   </div>
                   <div>
                     <h3 className="font-bold">Mira</h3>
-                    <p className="text-xs text-purple-100">Pet Concierge • Online</p>
+                    <p className="text-xs text-purple-100">Concierge® • Online</p>
                   </div>
                   <div className="ml-auto flex items-center gap-1">
                     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>

@@ -86,7 +86,7 @@ const MiraLandingEmbed = () => {
             <div className="flex-1 text-center md:text-left">
               <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-1.5 mb-4">
                 <Sparkles className="w-4 h-4" />
-                <span className="text-sm font-medium">AI-Powered Pet Concierge</span>
+                <span className="text-sm font-medium">AI-Powered Concierge®</span>
               </div>
               
               <h1 className="text-3xl md:text-5xl font-black mb-4">
@@ -259,7 +259,7 @@ const MiraLandingEmbed = () => {
             <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Sparkles className="w-6 h-6" />
-                <span className="font-bold">Mira - Pet Concierge</span>
+                <span className="font-bold">Mira - Your Concierge®</span>
               </div>
               <button 
                 onClick={() => setShowChat(false)}
