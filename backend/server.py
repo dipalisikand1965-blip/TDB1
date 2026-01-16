@@ -639,37 +639,26 @@ def root():
 # Security
 security = HTTPBasic()
 
-async def get_admin_credentials_from_db():
-    """Get admin credentials from database if set"""
+# Cache for admin credentials from database
+_admin_credentials_cache = {"username": None, "password": None, "loaded": False}
+
+async def load_admin_credentials_from_db():
+    """Load admin credentials from database into cache"""
+    global _admin_credentials_cache
     try:
         admin_config = await db.admin_config.find_one({"type": "credentials"})
         if admin_config:
-            return admin_config.get("username"), admin_config.get("password")
-    except:
-        pass
-    return None, None
+            _admin_credentials_cache["username"] = admin_config.get("username")
+            _admin_credentials_cache["password"] = admin_config.get("password")
+            _admin_credentials_cache["loaded"] = True
+    except Exception as e:
+        print(f"Error loading admin credentials: {e}")
 
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
-    """Verify admin credentials - checks database first, then falls back to .env"""
-    import asyncio
-    
-    # Try to get credentials from database
-    try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            # We're in an async context, need to handle differently
-            import concurrent.futures
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(lambda: None)  # Placeholder
-                db_username, db_password = None, None
-        else:
-            db_username, db_password = loop.run_until_complete(get_admin_credentials_from_db())
-    except:
-        db_username, db_password = None, None
-    
-    # Use database credentials if available, otherwise use .env
-    expected_username = db_username or ADMIN_USERNAME
-    expected_password = db_password or ADMIN_PASSWORD
+    """Verify admin credentials - checks cached db credentials first, then falls back to .env"""
+    # Use cached database credentials if available, otherwise use .env
+    expected_username = _admin_credentials_cache.get("username") or ADMIN_USERNAME
+    expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
     
     correct_username = secrets.compare_digest(credentials.username, expected_username)
     correct_password = secrets.compare_digest(credentials.password, expected_password)
