@@ -192,6 +192,7 @@ async def create_reservation(reservation: ReservationRequest):
         **reservation.model_dump(),
         "restaurant_name": restaurant.get("name"),
         "restaurant_city": restaurant.get("city"),
+        "restaurant_area": restaurant.get("area"),
         "status": "pending",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "updated_at": datetime.now(timezone.utc).isoformat()
@@ -200,6 +201,76 @@ async def create_reservation(reservation: ReservationRequest):
     await db.reservations.insert_one(reservation_doc)
     
     logger.info(f"New reservation: {reservation_doc['id']} at {restaurant.get('name')}")
+    
+    # Send confirmation email to customer
+    if RESEND_API_KEY and reservation.email:
+        try:
+            resend.Emails.send({
+                "from": f"The Doggy Company <{SENDER_EMAIL}>",
+                "to": [reservation.email],
+                "subject": f"🍽️ Reservation Request - {restaurant.get('name')}",
+                "html": f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <div style="background: linear-gradient(135deg, #f97316, #ef4444); padding: 30px; text-align: center;">
+                        <h1 style="color: white; margin: 0;">🐾 The Doggy Company</h1>
+                        <p style="color: white; opacity: 0.9;">Dine Pillar</p>
+                    </div>
+                    <div style="padding: 30px; background: #fff;">
+                        <h2 style="color: #1f2937;">Hi {reservation.name}! 👋</h2>
+                        <p style="color: #4b5563;">Your reservation request has been submitted!</p>
+                        
+                        <div style="background: #f9fafb; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <h3 style="color: #1f2937; margin-top: 0;">📍 {restaurant.get('name')}</h3>
+                            <p style="color: #6b7280; margin: 5px 0;">{restaurant.get('area')}, {restaurant.get('city')}</p>
+                            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 15px 0;">
+                            <p style="color: #4b5563;"><strong>📅 Date:</strong> {reservation.date}</p>
+                            <p style="color: #4b5563;"><strong>🕐 Time:</strong> {reservation.time}</p>
+                            <p style="color: #4b5563;"><strong>👥 Guests:</strong> {reservation.guests}</p>
+                            <p style="color: #4b5563;"><strong>🐕 Pets:</strong> {reservation.pets}</p>
+                            {f'<p style="color: #16a34a;"><strong>🍽️ Pet Meal Pre-order:</strong> Yes</p>' if reservation.petMealPreorder else ''}
+                        </div>
+                        
+                        <p style="color: #4b5563;">Our team will confirm your reservation within 2 hours. You'll receive another email once confirmed.</p>
+                        
+                        <p style="color: #9ca3af; font-size: 14px; margin-top: 30px;">
+                            Questions? Reply to this email or chat with Your Concierge® on our website.
+                        </p>
+                    </div>
+                    <div style="background: #1f2937; padding: 20px; text-align: center;">
+                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggycompany.in</p>
+                    </div>
+                </div>
+                """
+            })
+            logger.info(f"Reservation confirmation email sent to {reservation.email}")
+        except Exception as e:
+            logger.error(f"Failed to send reservation email: {e}")
+    
+    # Send notification email to admin
+    if RESEND_API_KEY:
+        try:
+            notification_email = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.in")
+            resend.Emails.send({
+                "from": f"Dine Reservations <{SENDER_EMAIL}>",
+                "to": [notification_email],
+                "subject": f"🆕 New Reservation - {restaurant.get('name')} ({reservation.date})",
+                "html": f"""
+                <div style="font-family: Arial, sans-serif;">
+                    <h2>New Dining Reservation</h2>
+                    <p><strong>Restaurant:</strong> {restaurant.get('name')} ({restaurant.get('area')}, {restaurant.get('city')})</p>
+                    <p><strong>Customer:</strong> {reservation.name}</p>
+                    <p><strong>Phone:</strong> {reservation.phone}</p>
+                    <p><strong>Email:</strong> {reservation.email}</p>
+                    <p><strong>Date/Time:</strong> {reservation.date} at {reservation.time}</p>
+                    <p><strong>Guests:</strong> {reservation.guests} | <strong>Pets:</strong> {reservation.pets}</p>
+                    <p><strong>Pet Meal Pre-order:</strong> {'Yes' if reservation.petMealPreorder else 'No'}</p>
+                    {f'<p><strong>Special Requests:</strong> {reservation.specialRequests}</p>' if reservation.specialRequests else ''}
+                    <p style="margin-top: 20px;"><a href="https://thedoggycompany.in/admin" style="background: #f97316; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View in Admin</a></p>
+                </div>
+                """
+            })
+        except Exception as e:
+            logger.error(f"Failed to send admin notification: {e}")
     
     return {
         "message": "Reservation request submitted",
