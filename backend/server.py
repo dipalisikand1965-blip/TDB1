@@ -604,6 +604,12 @@ from user_routes import (
     PetPreferences
 )
 
+# Import dine routes (refactored)
+from dine_routes import (
+    dine_router,
+    set_database as set_dine_db
+)
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
