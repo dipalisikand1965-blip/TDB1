@@ -999,6 +999,30 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
         }
         await db.dine_notifications.insert_one(notification)
     
+    # Auto-create Service Desk ticket for meetup request
+    try:
+        # Get requester info if we have user_id
+        requester_info = None
+        if user_id:
+            requester_info = await db.users.find_one({"id": user_id}, {"_id": 0, "name": 1, "email": 1})
+        
+        target_info = None
+        if visit.get("user_id"):
+            target_info = await db.users.find_one({"id": visit.get("user_id")}, {"_id": 0, "name": 1, "email": 1})
+        
+        ticket_id = await create_ticket_from_event(db, "meetup_request", {
+            "meetup_id": meetup_doc["id"],
+            "requester_name": requester_info.get("name") if requester_info else "Pet Parent",
+            "requester_email": requester_info.get("email") if requester_info else None,
+            "target_user_name": target_info.get("name") if target_info else visit.get("user_name", "Pet Parent"),
+            "restaurant_name": visit.get("restaurant_name"),
+            "visit_date": visit.get("date"),
+            "message": request.message
+        })
+        logger.info(f"Auto-created ticket {ticket_id} for meetup request {meetup_doc['id']}")
+    except Exception as e:
+        logger.error(f"Failed to auto-create ticket for meetup request: {e}")
+    
     return {"message": "Meetup request sent", "request_id": meetup_doc["id"]}
 
 
