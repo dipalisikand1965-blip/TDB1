@@ -625,7 +625,7 @@ async def import_restaurants_csv(
 # ==================== PET BUDDY MEETUP FEATURE ====================
 
 @dine_router.post("/dine/visits")
-async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None):
+async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, user_email: Optional[str] = None):
     """Schedule a visit to a restaurant (for Pet Buddy feature)"""
     # Verify restaurant exists
     restaurant = await db.restaurants.find_one({"id": visit.restaurant_id})
@@ -640,6 +640,14 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None):
             if pet:
                 pets_info.append(pet)
     
+    # Get user info if user_id provided
+    user_info = None
+    if user_id:
+        user = await db.users.find_one({"id": user_id}, {"_id": 0, "id": 1, "name": 1, "email": 1})
+        if user:
+            user_info = user
+            user_email = user_email or user.get("email")
+    
     visit_doc = {
         "id": f"visit-{uuid.uuid4().hex[:12]}",
         "restaurant_id": visit.restaurant_id,
@@ -647,6 +655,8 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None):
         "restaurant_area": restaurant.get("area"),
         "restaurant_city": restaurant.get("city"),
         "user_id": user_id,
+        "user_email": user_email,
+        "user_name": user_info.get("name") if user_info else None,
         "date": visit.date,
         "time_slot": visit.time_slot,
         "pets": pets_info,
@@ -659,6 +669,55 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None):
     
     await db.restaurant_visits.insert_one(visit_doc)
     visit_doc.pop("_id", None)
+    
+    # Send confirmation email
+    if RESEND_API_KEY and user_email:
+        try:
+            time_slot_text = {
+                "morning": "Morning (9 AM - 12 PM)",
+                "afternoon": "Afternoon (12 PM - 5 PM)",
+                "evening": "Evening (5 PM - 10 PM)"
+            }.get(visit.time_slot, visit.time_slot)
+            
+            resend.Emails.send({
+                "from": f"The Doggy Company <{SENDER_EMAIL}>",
+                "to": [user_email],
+                "subject": f"🐕 Pet Buddy Visit Scheduled - {restaurant.get('name')}",
+                "html": f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <div style="background: linear-gradient(135deg, #8b5cf6, #ec4899); padding: 30px; text-align: center;">
+                        <h1 style="color: white; margin: 0;">🐾 Pet Buddy Meetups</h1>
+                        <p style="color: white; opacity: 0.9;">The Doggy Company</p>
+                    </div>
+                    <div style="padding: 30px; background: #fff;">
+                        <h2 style="color: #1f2937;">Your Visit is Scheduled! 🎉</h2>
+                        
+                        <div style="background: #faf5ff; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #e9d5ff;">
+                            <h3 style="color: #7c3aed; margin-top: 0;">📍 {restaurant.get('name')}</h3>
+                            <p style="color: #6b7280; margin: 5px 0;">{restaurant.get('area')}, {restaurant.get('city')}</p>
+                            <hr style="border: none; border-top: 1px solid #e9d5ff; margin: 15px 0;">
+                            <p style="color: #4b5563;"><strong>📅 Date:</strong> {visit.date}</p>
+                            <p style="color: #4b5563;"><strong>🕐 Time:</strong> {time_slot_text}</p>
+                            {f'<p style="color: #4b5563;"><strong>📝 Notes:</strong> {visit.notes}</p>' if visit.notes else ''}
+                        </div>
+                        
+                        {f'<p style="color: #16a34a; background: #f0fdf4; padding: 15px; border-radius: 8px;">✅ <strong>Looking for Pet Buddies!</strong> Other pet parents will be able to see your visit and send meetup requests.</p>' if visit.looking_for_buddies else ''}
+                        
+                        <p style="color: #4b5563;">When someone wants to meet up with you, you'll receive a notification. Check back on the Dine page to see who else is visiting!</p>
+                        
+                        <p style="margin-top: 20px;">
+                            <a href="https://thedoggycompany.in/dine" style="background: #8b5cf6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">View Pet Buddies</a>
+                        </p>
+                    </div>
+                    <div style="background: #1f2937; padding: 20px; text-align: center;">
+                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggycompany.in</p>
+                    </div>
+                </div>
+                """
+            })
+            logger.info(f"Visit confirmation email sent to {user_email}")
+        except Exception as e:
+            logger.error(f"Failed to send visit email: {e}")
     
     return {"message": "Visit scheduled", "visit": visit_doc}
 
