@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Plus, Edit, Trash2, Save, X, Search, MapPin, Star, 
   UtensilsCrossed, Check, AlertCircle, Phone, Globe, Instagram,
-  RefreshCw, Upload, Download, FileSpreadsheet, Image as ImageIcon
+  RefreshCw, Upload, Download, FileSpreadsheet, Image as ImageIcon,
+  ExternalLink, MessageSquare, Sparkles
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -18,16 +19,19 @@ const DineManager = ({ credentials }) => {
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingPetMenu, setUploadingPetMenu] = useState(false);
   const [importingCsv, setImportingCsv] = useState(false);
   const [importResult, setImportResult] = useState(null);
   
   const fileInputRef = useRef(null);
+  const petMenuInputRef = useRef(null);
   const csvInputRef = useRef(null);
 
   const emptyRestaurant = {
     name: '',
     area: '',
     city: '',
+    address: '',
     petMenuAvailable: 'no',
     petPolicy: 'outdoor',
     cuisine: [],
@@ -37,10 +41,15 @@ const DineManager = ({ credentials }) => {
     priceRange: '₹₹',
     image: '',
     petMenuItems: [],
+    petMenuImage: '',
     timings: '',
     phone: '',
     instagram: '',
     website: '',
+    zomatoLink: '',
+    googleMapsLink: '',
+    miraRecommendation: '',
+    specialOffers: '',
     featured: false,
     verified: false,
   };
@@ -121,16 +130,22 @@ const DineManager = ({ credentials }) => {
   };
 
   // Image upload handler
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = async (e, field = 'image') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploadingImage(true);
+    const setUploading = field === 'petMenuImage' ? setUploadingPetMenu : setUploadingImage;
+    setUploading(true);
+    
     const formDataUpload = new FormData();
     formDataUpload.append('file', file);
 
+    const endpoint = field === 'petMenuImage' 
+      ? `${API_URL}/api/admin/dine/upload-pet-menu`
+      : `${API_URL}/api/admin/dine/upload-image`;
+
     try {
-      const response = await fetch(`${API_URL}/api/admin/dine/upload-image`, {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Authorization': getAuthHeader() },
         body: formDataUpload
@@ -138,9 +153,8 @@ const DineManager = ({ credentials }) => {
 
       if (response.ok) {
         const data = await response.json();
-        // Set the full URL for the image
         const imageUrl = `${API_URL}${data.url}`;
-        setFormData(prev => ({ ...prev, image: imageUrl }));
+        setFormData(prev => ({ ...prev, [field]: imageUrl }));
       } else {
         alert('Failed to upload image');
       }
@@ -148,8 +162,12 @@ const DineManager = ({ credentials }) => {
       console.error('Error uploading image:', error);
       alert('Error uploading image');
     } finally {
-      setUploadingImage(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      setUploading(false);
+      if (field === 'petMenuImage' && petMenuInputRef.current) {
+        petMenuInputRef.current.value = '';
+      } else if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -215,7 +233,7 @@ const DineManager = ({ credentials }) => {
 
   const startEdit = (restaurant) => {
     setEditingRestaurant(restaurant);
-    setFormData(restaurant);
+    setFormData({...emptyRestaurant, ...restaurant});
     setIsAddingNew(false);
   };
 
@@ -264,7 +282,6 @@ const DineManager = ({ credentials }) => {
             <RefreshCw className="w-4 h-4 mr-2" /> Refresh
           </Button>
           
-          {/* CSV Export Button */}
           <Button 
             variant="outline" 
             onClick={handleExportCsv}
@@ -274,7 +291,6 @@ const DineManager = ({ credentials }) => {
             <Download className="w-4 h-4 mr-2" /> Export CSV
           </Button>
           
-          {/* CSV Import Button */}
           <Button 
             variant="outline" 
             onClick={() => csvInputRef.current?.click()}
@@ -309,15 +325,7 @@ const DineManager = ({ credentials }) => {
               <h4 className="font-semibold text-green-800">CSV Import Complete</h4>
               <p className="text-sm text-green-700">
                 {importResult.imported} new restaurants added, {importResult.updated} updated
-                {importResult.errors?.length > 0 && `, ${importResult.errors.length} errors`}
               </p>
-              {importResult.errors?.length > 0 && (
-                <ul className="text-xs text-red-600 mt-2">
-                  {importResult.errors.slice(0, 3).map((err, i) => (
-                    <li key={i}>{err}</li>
-                  ))}
-                </ul>
-              )}
             </div>
             <Button variant="ghost" size="sm" onClick={() => setImportResult(null)}>
               <X className="w-4 h-4" />
@@ -373,251 +381,340 @@ const DineManager = ({ credentials }) => {
             {editingRestaurant ? 'Edit Restaurant' : 'Add New Restaurant'}
           </h3>
           
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium">Restaurant Name *</label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                placeholder="e.g., TherPup Café"
-                data-testid="input-name"
-              />
-            </div>
-            
-            {/* Image Upload Section */}
-            <div>
-              <label className="text-sm font-medium">Restaurant Image</label>
-              <div className="flex gap-2">
+          {/* Basic Info */}
+          <div className="mb-6">
+            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <UtensilsCrossed className="w-4 h-4" /> Basic Information
+            </h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Restaurant Name *</label>
                 <Input
-                  value={formData.image}
-                  onChange={(e) => setFormData({...formData, image: e.target.value})}
-                  placeholder="Image URL or upload"
-                  className="flex-1"
-                  data-testid="input-image"
-                />
-                <Button 
-                  type="button"
-                  variant="outline" 
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploadingImage}
-                  data-testid="upload-image-btn"
-                >
-                  {uploadingImage ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Upload className="w-4 h-4" />
-                  )}
-                </Button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handleImageUpload}
-                  className="hidden"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  placeholder="e.g., TherPup Café"
                 />
               </div>
-              {formData.image && (
-                <div className="mt-2 relative w-24 h-24">
-                  <img 
-                    src={formData.image} 
-                    alt="Preview" 
-                    className="w-full h-full object-cover rounded-lg border"
-                    onError={(e) => { e.target.style.display = 'none'; }}
-                  />
-                  <button
-                    onClick={() => setFormData({...formData, image: ''})}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              )}
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium">Area *</label>
-              <Input
-                value={formData.area}
-                onChange={(e) => setFormData({...formData, area: e.target.value})}
-                placeholder="e.g., Koramangala"
-                data-testid="input-area"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">City *</label>
-              <Input
-                value={formData.city}
-                onChange={(e) => setFormData({...formData, city: e.target.value})}
-                placeholder="e.g., Bangalore"
-                data-testid="input-city"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Pet Menu Available *</label>
-              <select
-                value={formData.petMenuAvailable}
-                onChange={(e) => setFormData({...formData, petMenuAvailable: e.target.value})}
-                className="w-full px-3 py-2 border rounded-lg"
-                data-testid="select-pet-menu"
-              >
-                <option value="yes">Yes - Full Pet Menu</option>
-                <option value="partial">Partial - Some Items</option>
-                <option value="no">No - Pet-Friendly Only</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-sm font-medium">Pet Policy *</label>
-              <select
-                value={formData.petPolicy}
-                onChange={(e) => setFormData({...formData, petPolicy: e.target.value})}
-                className="w-full px-3 py-2 border rounded-lg"
-                data-testid="select-pet-policy"
-              >
-                <option value="all-pets">All Pets Welcome</option>
-                <option value="outdoor">Outdoor Seating Only</option>
-                <option value="small-pets">Small Pets Only</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-sm font-medium">Cuisine (comma separated)</label>
-              <Input
-                value={formData.cuisine?.join(', ') || ''}
-                onChange={(e) => setFormData({...formData, cuisine: e.target.value.split(',').map(s => s.trim())})}
-                placeholder="e.g., Café, Continental, Pet-Friendly"
-                data-testid="input-cuisine"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Tags (comma separated)</label>
-              <Input
-                value={formData.tags?.join(', ') || ''}
-                onChange={(e) => setFormData({...formData, tags: e.target.value.split(',').map(s => s.trim())})}
-                placeholder="e.g., Outdoor Seating, Dog Menu"
-                data-testid="input-tags"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Pet Menu Items (comma separated)</label>
-              <Input
-                value={formData.petMenuItems?.join(', ') || ''}
-                onChange={(e) => setFormData({...formData, petMenuItems: e.target.value.split(',').map(s => s.trim())})}
-                placeholder="e.g., Pupcakes, Dog Ice Cream"
-                data-testid="input-pet-menu-items"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Price Range</label>
-              <select
-                value={formData.priceRange}
-                onChange={(e) => setFormData({...formData, priceRange: e.target.value})}
-                className="w-full px-3 py-2 border rounded-lg"
-                data-testid="select-price-range"
-              >
-                <option value="₹">₹ - Budget</option>
-                <option value="₹₹">₹₹ - Moderate</option>
-                <option value="₹₹₹">₹₹₹ - Expensive</option>
-                <option value="₹₹₹₹">₹₹₹₹ - Premium</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-sm font-medium">Rating</label>
-              <Input
-                type="number"
-                step="0.1"
-                min="0"
-                max="5"
-                value={formData.rating}
-                onChange={(e) => setFormData({...formData, rating: parseFloat(e.target.value)})}
-                data-testid="input-rating"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Timings</label>
-              <Input
-                value={formData.timings}
-                onChange={(e) => setFormData({...formData, timings: e.target.value})}
-                placeholder="e.g., 10 AM - 10 PM"
-                data-testid="input-timings"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Phone</label>
-              <Input
-                value={formData.phone}
-                onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                placeholder="+91 98765 43210"
-                data-testid="input-phone"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Instagram</label>
-              <Input
-                value={formData.instagram}
-                onChange={(e) => setFormData({...formData, instagram: e.target.value})}
-                placeholder="@restauranthandle"
-                data-testid="input-instagram"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Website</label>
-              <Input
-                value={formData.website || ''}
-                onChange={(e) => setFormData({...formData, website: e.target.value})}
-                placeholder="https://..."
-                data-testid="input-website"
-              />
-            </div>
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.featured}
-                  onChange={(e) => setFormData({...formData, featured: e.target.checked})}
-                  className="w-4 h-4"
-                  data-testid="checkbox-featured"
+              <div>
+                <label className="text-sm font-medium">Area *</label>
+                <Input
+                  value={formData.area}
+                  onChange={(e) => setFormData({...formData, area: e.target.value})}
+                  placeholder="e.g., Koramangala"
                 />
-                <span className="text-sm font-medium">Featured</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.verified}
-                  onChange={(e) => setFormData({...formData, verified: e.target.checked})}
-                  className="w-4 h-4"
-                  data-testid="checkbox-verified"
+              </div>
+              <div>
+                <label className="text-sm font-medium">City *</label>
+                <Input
+                  value={formData.city}
+                  onChange={(e) => setFormData({...formData, city: e.target.value})}
+                  placeholder="e.g., Bangalore"
                 />
-                <span className="text-sm font-medium">Verified</span>
-              </label>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Full Address</label>
+                <Input
+                  value={formData.address || ''}
+                  onChange={(e) => setFormData({...formData, address: e.target.value})}
+                  placeholder="123, 5th Cross, Koramangala..."
+                />
+              </div>
             </div>
           </div>
 
-          <div className="flex gap-2 mt-6">
-            <Button onClick={saveRestaurant} className="bg-green-600 hover:bg-green-700" data-testid="save-restaurant-btn">
+          {/* Images */}
+          <div className="mb-6">
+            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <ImageIcon className="w-4 h-4" /> Images
+            </h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Restaurant Image */}
+              <div>
+                <label className="text-sm font-medium">Restaurant Image</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.image}
+                    onChange={(e) => setFormData({...formData, image: e.target.value})}
+                    placeholder="Image URL or upload"
+                    className="flex-1"
+                  />
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingImage}
+                  >
+                    {uploadingImage ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  </Button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, 'image')}
+                    className="hidden"
+                  />
+                </div>
+                {formData.image && (
+                  <div className="mt-2 relative w-20 h-20">
+                    <img src={formData.image} alt="Preview" className="w-full h-full object-cover rounded-lg border" />
+                    <button onClick={() => setFormData({...formData, image: ''})} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
+              </div>
+              
+              {/* Pet Menu Image */}
+              <div>
+                <label className="text-sm font-medium">Pet Menu Image 📋</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.petMenuImage || ''}
+                    onChange={(e) => setFormData({...formData, petMenuImage: e.target.value})}
+                    placeholder="Upload photo of pet menu"
+                    className="flex-1"
+                  />
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    onClick={() => petMenuInputRef.current?.click()}
+                    disabled={uploadingPetMenu}
+                  >
+                    {uploadingPetMenu ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  </Button>
+                  <input
+                    ref={petMenuInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, 'petMenuImage')}
+                    className="hidden"
+                  />
+                </div>
+                {formData.petMenuImage && (
+                  <div className="mt-2 relative w-20 h-20">
+                    <img src={formData.petMenuImage} alt="Pet Menu" className="w-full h-full object-cover rounded-lg border" />
+                    <button onClick={() => setFormData({...formData, petMenuImage: ''})} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Pet Policy */}
+          <div className="mb-6">
+            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              🐕 Pet Policy
+            </h4>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm font-medium">Pet Menu Available *</label>
+                <select
+                  value={formData.petMenuAvailable}
+                  onChange={(e) => setFormData({...formData, petMenuAvailable: e.target.value})}
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="yes">Yes - Full Pet Menu</option>
+                  <option value="partial">Partial - Some Items</option>
+                  <option value="no">No - Pet-Friendly Only</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Pet Policy *</label>
+                <select
+                  value={formData.petPolicy}
+                  onChange={(e) => setFormData({...formData, petPolicy: e.target.value})}
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="all-pets">All Pets Welcome</option>
+                  <option value="outdoor">Outdoor Seating Only</option>
+                  <option value="small-pets">Small Pets Only</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Pet Menu Items</label>
+                <Input
+                  value={formData.petMenuItems?.join(', ') || ''}
+                  onChange={(e) => setFormData({...formData, petMenuItems: e.target.value.split(',').map(s => s.trim())})}
+                  placeholder="Pupcakes, Dog Ice Cream..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Mira Recommendation */}
+          <div className="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
+            <h4 className="text-sm font-semibold text-purple-700 mb-3 flex items-center gap-2">
+              <Sparkles className="w-4 h-4" /> Mira's Pet Concierge Recommendation
+            </h4>
+            <textarea
+              value={formData.miraRecommendation || ''}
+              onChange={(e) => setFormData({...formData, miraRecommendation: e.target.value})}
+              placeholder="Your Pet Concierge recommends: This cozy café is perfect for lazy Sunday brunches with your furry friend. The staff is incredibly pet-friendly, and they serve the best pupcakes in town! Pro tip: Book the garden table for the best experience."
+              className="w-full p-3 border rounded-lg text-sm"
+              rows={3}
+            />
+          </div>
+
+          {/* Details */}
+          <div className="mb-6">
+            <h4 className="text-sm font-semibold text-gray-700 mb-3">Restaurant Details</h4>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm font-medium">Cuisine (comma separated)</label>
+                <Input
+                  value={formData.cuisine?.join(', ') || ''}
+                  onChange={(e) => setFormData({...formData, cuisine: e.target.value.split(',').map(s => s.trim())})}
+                  placeholder="Café, Continental, Italian"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Tags (comma separated)</label>
+                <Input
+                  value={formData.tags?.join(', ') || ''}
+                  onChange={(e) => setFormData({...formData, tags: e.target.value.split(',').map(s => s.trim())})}
+                  placeholder="Outdoor Seating, Dog Menu"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Price Range</label>
+                <select
+                  value={formData.priceRange}
+                  onChange={(e) => setFormData({...formData, priceRange: e.target.value})}
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="₹">₹ - Budget</option>
+                  <option value="₹₹">₹₹ - Moderate</option>
+                  <option value="₹₹₹">₹₹₹ - Expensive</option>
+                  <option value="₹₹₹₹">₹₹₹₹ - Premium</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Rating</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="5"
+                  value={formData.rating}
+                  onChange={(e) => setFormData({...formData, rating: parseFloat(e.target.value)})}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Timings</label>
+                <Input
+                  value={formData.timings || ''}
+                  onChange={(e) => setFormData({...formData, timings: e.target.value})}
+                  placeholder="10 AM - 10 PM"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Special Offers</label>
+                <Input
+                  value={formData.specialOffers || ''}
+                  onChange={(e) => setFormData({...formData, specialOffers: e.target.value})}
+                  placeholder="20% off on pet meals"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Contact & Links */}
+          <div className="mb-6">
+            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <ExternalLink className="w-4 h-4" /> Contact & Links
+            </h4>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm font-medium">Phone</label>
+                <Input
+                  value={formData.phone || ''}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  placeholder="+91 98765 43210"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Instagram</label>
+                <Input
+                  value={formData.instagram || ''}
+                  onChange={(e) => setFormData({...formData, instagram: e.target.value})}
+                  placeholder="@restauranthandle"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Website</label>
+                <Input
+                  value={formData.website || ''}
+                  onChange={(e) => setFormData({...formData, website: e.target.value})}
+                  placeholder="https://..."
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Zomato Link</label>
+                <Input
+                  value={formData.zomatoLink || ''}
+                  onChange={(e) => setFormData({...formData, zomatoLink: e.target.value})}
+                  placeholder="https://zomato.com/..."
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Google Maps</label>
+                <Input
+                  value={formData.googleMapsLink || ''}
+                  onChange={(e) => setFormData({...formData, googleMapsLink: e.target.value})}
+                  placeholder="https://maps.google.com/..."
+                />
+              </div>
+              <div className="flex items-center gap-4 pt-6">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.featured}
+                    onChange={(e) => setFormData({...formData, featured: e.target.checked})}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm font-medium">⭐ Featured</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.verified}
+                    onChange={(e) => setFormData({...formData, verified: e.target.checked})}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm font-medium">✓ Verified</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <Button onClick={saveRestaurant} className="bg-green-600 hover:bg-green-700">
               <Save className="w-4 h-4 mr-2" /> Save Restaurant
             </Button>
-            <Button variant="outline" onClick={cancelEdit} data-testid="cancel-btn">
+            <Button variant="outline" onClick={cancelEdit}>
               <X className="w-4 h-4 mr-2" /> Cancel
             </Button>
           </div>
         </Card>
       )}
 
-      {/* CSV Template Download */}
+      {/* CSV Template */}
       <Card className="p-4 bg-gray-50">
         <div className="flex items-center justify-between">
           <div>
             <h4 className="font-medium text-gray-700">CSV Import Template</h4>
             <p className="text-sm text-gray-500">
-              Download a sample CSV template to bulk import restaurants. 
-              Use pipe (|) to separate multiple values in cuisine, tags, and petMenuItems columns.
+              Use pipe (|) to separate multiple values in cuisine, tags, and petMenuItems.
             </p>
           </div>
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => {
-              const template = `name,area,city,petMenuAvailable,petPolicy,cuisine,tags,rating,priceRange,petMenuItems,timings,phone,instagram,website,featured,verified
-Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental|Italian,Outdoor Seating|Dog Menu,4.5,₹₹,Pupcakes|Dog Ice Cream,10 AM - 10 PM,+91 98765 43210,@samplecafe,https://sample.com,true,true`;
+              const template = `name,area,city,petMenuAvailable,petPolicy,cuisine,tags,rating,priceRange,petMenuItems,timings,phone,instagram,website,featured,verified,miraRecommendation,specialOffers
+Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seating|Dog Menu,4.5,₹₹,Pupcakes|Dog Ice Cream,10 AM - 10 PM,+91 98765 43210,@samplecafe,https://sample.com,true,true,Great spot for pet parents!,10% off on weekdays`;
               const blob = new Blob([template], { type: 'text/csv' });
               const url = window.URL.createObjectURL(blob);
               const a = document.createElement('a');
@@ -627,7 +724,6 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental|Italian,Outdoo
               a.click();
               document.body.removeChild(a);
             }}
-            data-testid="download-template-btn"
           >
             <Download className="w-4 h-4 mr-2" /> Download Template
           </Button>
@@ -645,7 +741,7 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental|Italian,Outdoo
           <Card className="p-8 text-center">
             <UtensilsCrossed className="w-12 h-12 mx-auto text-gray-300 mb-4" />
             <h3 className="font-semibold text-gray-900">No restaurants found</h3>
-            <p className="text-gray-500 mb-4">Add your first pet-friendly restaurant or import from CSV</p>
+            <p className="text-gray-500 mb-4">Add your first pet-friendly restaurant</p>
             <div className="flex gap-2 justify-center">
               <Button onClick={startAdd} className="bg-orange-500 hover:bg-orange-600">
                 <Plus className="w-4 h-4 mr-2" /> Add Restaurant
@@ -657,17 +753,14 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental|Italian,Outdoo
           </Card>
         ) : (
           filteredRestaurants.map((restaurant) => (
-            <Card key={restaurant.id} className="p-4" data-testid={`restaurant-card-${restaurant.id}`}>
+            <Card key={restaurant.id} className="p-4">
               <div className="flex gap-4">
                 {restaurant.image ? (
                   <img 
                     src={restaurant.image} 
                     alt={restaurant.name}
                     className="w-24 h-24 object-cover rounded-lg"
-                    onError={(e) => { 
-                      e.target.onerror = null;
-                      e.target.src = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200';
-                    }}
+                    onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200'; }}
                   />
                 ) : (
                   <div className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
@@ -677,17 +770,13 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental|Italian,Outdoo
                 <div className="flex-1">
                   <div className="flex items-start justify-between">
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-semibold text-lg">{restaurant.name}</h3>
                         {restaurant.featured && (
-                          <Badge className="bg-orange-100 text-orange-700">
-                            <Star className="w-3 h-3 mr-1" /> Featured
-                          </Badge>
+                          <Badge className="bg-orange-100 text-orange-700"><Star className="w-3 h-3 mr-1" /> Featured</Badge>
                         )}
                         {restaurant.verified && (
-                          <Badge className="bg-blue-100 text-blue-700">
-                            <Check className="w-3 h-3 mr-1" /> Verified
-                          </Badge>
+                          <Badge className="bg-blue-100 text-blue-700"><Check className="w-3 h-3 mr-1" /> Verified</Badge>
                         )}
                       </div>
                       <p className="text-sm text-gray-500 flex items-center gap-1">
@@ -705,24 +794,36 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental|Italian,Outdoo
                   </div>
                   
                   <div className="flex flex-wrap gap-1 mt-2">
-                    {restaurant.cuisine?.map((c, idx) => (
+                    {restaurant.cuisine?.slice(0, 4).map((c, idx) => (
                       <Badge key={idx} variant="outline" className="text-xs">{c}</Badge>
                     ))}
                   </div>
 
+                  {restaurant.miraRecommendation && (
+                    <p className="text-sm text-purple-600 mt-2 flex items-start gap-1">
+                      <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                      <span className="line-clamp-1">{restaurant.miraRecommendation}</span>
+                    </p>
+                  )}
+
                   {restaurant.petMenuItems?.length > 0 && (
-                    <p className="text-sm text-green-600 mt-2">
-                      🍽️ Menu: {restaurant.petMenuItems.join(', ')}
+                    <p className="text-sm text-green-600 mt-1">
+                      🍽️ {restaurant.petMenuItems.slice(0, 3).join(', ')}
                     </p>
                   )}
 
                   <div className="flex gap-2 mt-3">
-                    <Button size="sm" variant="outline" onClick={() => startEdit(restaurant)} data-testid={`edit-${restaurant.id}`}>
+                    <Button size="sm" variant="outline" onClick={() => startEdit(restaurant)}>
                       <Edit className="w-3 h-3 mr-1" /> Edit
                     </Button>
-                    <Button size="sm" variant="outline" className="text-red-600" onClick={() => deleteRestaurant(restaurant.id)} data-testid={`delete-${restaurant.id}`}>
+                    <Button size="sm" variant="outline" className="text-red-600" onClick={() => deleteRestaurant(restaurant.id)}>
                       <Trash2 className="w-3 h-3 mr-1" /> Delete
                     </Button>
+                    {restaurant.zomatoLink && (
+                      <a href={restaurant.zomatoLink} target="_blank" rel="noopener noreferrer">
+                        <Button size="sm" variant="outline"><ExternalLink className="w-3 h-3 mr-1" /> Zomato</Button>
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
