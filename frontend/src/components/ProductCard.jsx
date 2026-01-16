@@ -532,13 +532,20 @@ const ProductDetailModal = ({ product, onClose }) => {
               </div>
             )}
 
-            {/* Personalization - Only for food/cake products */}
-            {['cakes', 'celebrate', 'hampers', 'fresh-food', 'meals', 'pupcakes', 'dognuts'].some(cat => 
-              (product.category || '').toLowerCase().includes(cat) || 
+            {/* Personalization - Only for celebration/cake products (NOT meals) */}
+            {(
+              ['cakes', 'celebrate', 'hampers', 'pupcakes', 'dognuts'].some(cat => 
+                (product.category || '').toLowerCase().includes(cat)
+              ) || 
               (product.name || '').toLowerCase().includes('cake') ||
-              (product.name || '').toLowerCase().includes('meal') ||
               (product.name || '').toLowerCase().includes('pupcake') ||
-              (product.name || '').toLowerCase().includes('dognut')
+              (product.name || '').toLowerCase().includes('dognut') ||
+              (product.name || '').toLowerCase().includes('hamper')
+            ) && !(
+              // Exclude meals and fresh food
+              (product.category || '').toLowerCase().includes('meal') ||
+              (product.category || '').toLowerCase().includes('fresh-food') ||
+              (product.name || '').toLowerCase().includes('meal')
             ) && (
             <div className="space-y-3 mb-4 pt-3 border-t">
               <label className="text-sm font-semibold text-gray-700 block">Personalization</label>
