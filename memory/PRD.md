@@ -729,11 +729,29 @@ PUT    /api/admin/dine/reservations/{id}/status - Update status
 ---
 
 ## Next Tasks (Priority Order)
-1. 🔴 **User to redeploy** to fix live site issues
-2. 🟠 Seed more restaurant data (if needed)
+1. 🔴 **Service Desk Two-way Messaging** - Implement email/WhatsApp reply integration into ticket threads
+2. 🟡 **Service Desk Auto-assignment & SLA Rules** - Auto-assign tickets, SLA tracking
 3. 🟡 Razorpay checkout integration (blocked on user keys)
-4. 🟡 Continue Admin.jsx refactoring
+4. 🟡 Continue Admin.jsx refactoring (~2900 lines needs breakdown)
 5. 🔵 Build out Stay, Travel, Care pillars
+
+---
+
+### Jan 16, 2026 - Verification Session Complete
+
+#### ✅ BUG FIXES VERIFIED
+| Issue | Status | Verification |
+|-------|--------|--------------|
+| Dine tab auth prompt bug | **FIXED** | Testing agent iteration_10 - DineManager loads without auth prompt |
+| Admin tabs reorganization | **VERIFIED** | Tabs organized into CORE TOOLS, PILLAR TOOLS, OPERATIONS |
+| My Dining tab in Member Dashboard | **FIXED & VERIFIED** | Testing agent iteration_11 - Fixed $or query bug in dining history API |
+
+#### ✅ TESTING COMPLETED
+- **iteration_10.json**: Admin panel frontend tests - 100% pass rate
+- **iteration_11.json**: Member Dashboard Dining tab - 17/17 backend tests, 100% frontend
+
+#### ✅ BUG FIX APPLIED
+- **dine_routes.py**: Fixed `my-dining-history` endpoint to use MongoDB `$or` query for user_id/email matching. Previously was returning empty results when both parameters provided.
 
 ---
 
