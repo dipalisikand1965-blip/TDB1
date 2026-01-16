@@ -729,95 +729,215 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
                     </div>
                   </Card>
                 ))
-                          </p>
-                        )}
-                        {/* Notes */}
-                        {visit.notes && (
-                          <p className="text-sm text-gray-500 mt-1 italic">"{visit.notes}"</p>
-                        )}
-                      </div>
-                      <Button 
-                        size="sm" 
-                        className={`flex-shrink-0 ${requestSent[visit.id] ? 'bg-green-500' : 'bg-purple-500 hover:bg-purple-600'}`}
-                        onClick={() => handleSendMeetupRequest(visit)}
-                        disabled={sendingRequest === visit.id || requestSent[visit.id]}
-                        data-testid={`connect-btn-${visit.id}`}
-                      >
-                        {sendingRequest === visit.id ? (
-                          <>
-                            <span className="w-3 h-3 mr-1 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            Sending...
-                          </>
-                        ) : requestSent[visit.id] ? (
-                          <>
-                            <Check className="w-3 h-3 mr-1" /> Sent!
-                          </>
-                        ) : (
-                          <>
-                            <Send className="w-3 h-3 mr-1" /> Connect
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </Card>
-                ))
               )}
             </div>
           ) : (
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-700">Date</label>
-                <Input
-                  type="date"
-                  value={visitForm.date}
-                  onChange={(e) => setVisitForm({...visitForm, date: e.target.value})}
-                  min={new Date().toISOString().split('T')[0]}
-                  data-testid="visit-date-input"
-                />
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+              {/* SECTION 1: Your Details */}
+              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                <h4 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                  <User className="w-4 h-4" /> Your Details
+                </h4>
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Title *</label>
+                    <select
+                      value={visitForm.title}
+                      onChange={(e) => setVisitForm({...visitForm, title: e.target.value})}
+                      className={`w-full px-2 py-1.5 border rounded text-sm ${formErrors.title ? 'border-red-400' : ''}`}
+                    >
+                      <option value="Mr.">Mr.</option>
+                      <option value="Ms.">Ms.</option>
+                      <option value="Mrs.">Mrs.</option>
+                      <option value="Dr.">Dr.</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">First Name *</label>
+                    <Input
+                      value={visitForm.first_name}
+                      onChange={(e) => setVisitForm({...visitForm, first_name: e.target.value})}
+                      placeholder="First name"
+                      className={`text-sm h-8 ${formErrors.first_name ? 'border-red-400' : ''}`}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Last Name *</label>
+                    <Input
+                      value={visitForm.last_name}
+                      onChange={(e) => setVisitForm({...visitForm, last_name: e.target.value})}
+                      placeholder="Last name"
+                      className={`text-sm h-8 ${formErrors.last_name ? 'border-red-400' : ''}`}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Email *</label>
+                    <Input
+                      type="email"
+                      value={visitForm.email}
+                      onChange={(e) => setVisitForm({...visitForm, email: e.target.value})}
+                      placeholder="your@email.com"
+                      className={`text-sm h-8 ${formErrors.email ? 'border-red-400' : ''}`}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">WhatsApp Number *</label>
+                    <Input
+                      type="tel"
+                      value={visitForm.whatsapp}
+                      onChange={(e) => setVisitForm({...visitForm, whatsapp: e.target.value})}
+                      placeholder="+91 98765 43210"
+                      className={`text-sm h-8 ${formErrors.whatsapp ? 'border-red-400' : ''}`}
+                    />
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">Time Slot</label>
-                <select
-                  value={visitForm.time_slot}
-                  onChange={(e) => setVisitForm({...visitForm, time_slot: e.target.value})}
-                  className="w-full px-3 py-2 border rounded-lg"
-                  data-testid="visit-timeslot-select"
-                >
-                  <option value="morning">Morning (9 AM - 12 PM)</option>
-                  <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
-                  <option value="evening">Evening (5 PM - 10 PM)</option>
-                </select>
+
+              {/* SECTION 2: Your Pet Details */}
+              <div className="bg-pink-50 p-3 rounded-lg border border-pink-200">
+                <h4 className="font-semibold text-pink-800 mb-3 flex items-center gap-2">
+                  <Dog className="w-4 h-4" /> Your Pet
+                </h4>
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Pet's Name *</label>
+                    <Input
+                      value={visitForm.pet_name}
+                      onChange={(e) => setVisitForm({...visitForm, pet_name: e.target.value})}
+                      placeholder="e.g., Bruno"
+                      className={`text-sm h-8 ${formErrors.pet_name ? 'border-red-400' : ''}`}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Breed (optional)</label>
+                    <Input
+                      value={visitForm.pet_breed}
+                      onChange={(e) => setVisitForm({...visitForm, pet_breed: e.target.value})}
+                      placeholder="e.g., Golden Retriever"
+                      className="text-sm h-8"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-600">About your pet (optional)</label>
+                  <textarea
+                    value={visitForm.pet_about}
+                    onChange={(e) => setVisitForm({...visitForm, pet_about: e.target.value})}
+                    className="w-full px-2 py-1.5 border rounded text-sm"
+                    rows={2}
+                    placeholder="e.g., Super friendly 2-year-old, loves to play fetch!"
+                  />
+                </div>
+                <div className="mt-2">
+                  <label className="text-xs font-medium text-gray-600">Pet Photo URL (optional)</label>
+                  <Input
+                    value={visitForm.pet_photo}
+                    onChange={(e) => setVisitForm({...visitForm, pet_photo: e.target.value})}
+                    placeholder="https://..."
+                    className="text-sm h-8"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">Notes (optional)</label>
-                <textarea
-                  value={visitForm.notes}
-                  onChange={(e) => setVisitForm({...visitForm, notes: e.target.value})}
-                  className="w-full px-3 py-2 border rounded-lg text-sm"
-                  data-testid="visit-notes-input"
-                  rows={2}
-                  placeholder="e.g., Bringing my Golden Retriever, looking for playmates!"
-                />
+
+              {/* SECTION 3: Visit Details */}
+              <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                <h4 className="font-semibold text-purple-800 mb-3 flex items-center gap-2">
+                  <Calendar className="w-4 h-4" /> Visit Details
+                </h4>
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Date *</label>
+                    <Input
+                      type="date"
+                      value={visitForm.date}
+                      onChange={(e) => setVisitForm({...visitForm, date: e.target.value})}
+                      min={new Date().toISOString().split('T')[0]}
+                      className={`text-sm h-8 ${formErrors.date ? 'border-red-400' : ''}`}
+                      data-testid="visit-date-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Time Slot</label>
+                    <select
+                      value={visitForm.time_slot}
+                      onChange={(e) => setVisitForm({...visitForm, time_slot: e.target.value})}
+                      className="w-full px-2 py-1.5 border rounded text-sm"
+                      data-testid="visit-timeslot-select"
+                    >
+                      <option value="morning">Morning (9 AM - 12 PM)</option>
+                      <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
+                      <option value="evening">Evening (5 PM - 10 PM)</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-600">Additional Notes (optional)</label>
+                  <textarea
+                    value={visitForm.notes}
+                    onChange={(e) => setVisitForm({...visitForm, notes: e.target.value})}
+                    className="w-full px-2 py-1.5 border rounded text-sm"
+                    rows={2}
+                    placeholder="Any other details..."
+                  />
+                </div>
               </div>
+
+              {/* SECTION 4: Notification Preference */}
+              <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                <label className="text-sm font-medium text-green-700 mb-2 block">
+                  How should we notify you about meetup requests?
+                </label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="notification_preference"
+                      value="email"
+                      checked={visitForm.notification_preference === 'email'}
+                      onChange={(e) => setVisitForm({...visitForm, notification_preference: e.target.value})}
+                      className="w-4 h-4 text-green-600"
+                    />
+                    <span className="text-sm flex items-center gap-1">
+                      <Mail className="w-3 h-3" /> Email
+                    </span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="notification_preference"
+                      value="whatsapp"
+                      checked={visitForm.notification_preference === 'whatsapp'}
+                      onChange={(e) => setVisitForm({...visitForm, notification_preference: e.target.value})}
+                      className="w-4 h-4 text-green-600"
+                    />
+                    <span className="text-sm flex items-center gap-1">
+                      <MessageCircle className="w-3 h-3" /> WhatsApp
+                    </span>
+                  </label>
+                </div>
+              </div>
+
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={visitForm.looking_for_buddies}
                   onChange={(e) => setVisitForm({...visitForm, looking_for_buddies: e.target.checked})}
                   className="w-4 h-4 text-purple-600 rounded"
-                  data-testid="looking-for-buddies-checkbox"
                 />
                 <span className="text-sm">I'm open to meetups with other pet parents</span>
               </label>
               
-              {/* Notification Preference - NEW */}
-              <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
-                <label className="text-sm font-medium text-purple-700 mb-2 block">
-                  How would you like to be notified about meetup requests?
-                </label>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
+              <Button 
+                className="w-full bg-purple-500 hover:bg-purple-600"
+                onClick={handleScheduleVisit}
+                disabled={!visitForm.date || !visitForm.first_name || !visitForm.pet_name}
+                data-testid="schedule-visit-btn"
+              >
+                <Calendar className="w-4 h-4 mr-2" /> Schedule My Visit
+              </Button>
+            </div>
                       type="radio"
                       name="notification_preference"
                       value="email"
