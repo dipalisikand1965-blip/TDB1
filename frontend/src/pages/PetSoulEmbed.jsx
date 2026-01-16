@@ -5,11 +5,11 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { 
-import { API_URL } from '../utils/api';
   PawPrint, Plus, Calendar, Gift, Edit, Trash2, 
   Search, Crown, Moon, Mountain, Sofa, Users, 
   Utensils, Zap, Smile, ChevronRight, Heart, Sparkles
 } from 'lucide-react';
+import { API_URL } from '../utils/api';
 
 
 // Persona icons mapping

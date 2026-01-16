@@ -3,10 +3,10 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { 
-import { API_URL } from '../utils/api';
   Stethoscope, Plane, Scissors, Camera, Home, GraduationCap, 
   Sparkles, AlertCircle, Send, Loader2, PawPrint, MessageCircle
 } from 'lucide-react';
+import { API_URL } from '../utils/api';
 
 
 const MiraConcierge = () => {
