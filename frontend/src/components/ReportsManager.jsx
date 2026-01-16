@@ -5,6 +5,7 @@ import { Badge } from './ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { toast } from '../hooks/use-toast';
+import { API_URL } from '../utils/api';
 import {
   TrendingUp, DollarSign, Users, ShoppingBag, RefreshCw, Download,
   MapPin, Calendar, Package, Star, PawPrint, Truck, Search, BarChart3,
@@ -14,8 +15,6 @@ import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart
 } from 'recharts';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Chart colors
 const CHART_COLORS = {

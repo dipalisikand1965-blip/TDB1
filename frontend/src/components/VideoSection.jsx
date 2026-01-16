@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from './ui/card';
 import { Play, X } from 'lucide-react';
 import { Button } from './ui/button';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+import { API_URL } from '../utils/api';
 
 const VideoSection = () => {
   const [activeVideo, setActiveVideo] = useState(null);

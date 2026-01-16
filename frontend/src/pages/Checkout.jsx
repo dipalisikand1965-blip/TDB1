@@ -13,8 +13,8 @@ import {
   CheckCircle, User, Mail, PawPrint, Calendar, Gift, Sparkles,
   Crown, AlertCircle, Tag, Star, Loader2, X, Store
 } from 'lucide-react';
+import { API_URL } from '../utils/api';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 const WHATSAPP_NUMBER = process.env.REACT_APP_WHATSAPP_NUMBER || '919663185747';
 const BUSINESS_EMAIL = process.env.REACT_APP_BUSINESS_EMAIL || 'woof@thedoggybakery.in';
 const FREE_SHIPPING_THRESHOLD = 3000;
