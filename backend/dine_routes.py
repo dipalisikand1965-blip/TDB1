@@ -841,6 +841,10 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
             user_info = user
             user_email = user_email or user.get("email")
     
+    # Use form data or fallback to user data
+    contact_email = visit.email or user_email
+    display_name = f"{visit.first_name} {visit.last_name}".strip() if visit.first_name else (user_info.get("name") if user_info else None)
+    
     visit_doc = {
         "id": f"visit-{uuid.uuid4().hex[:12]}",
         "restaurant_id": visit.restaurant_id,
@@ -848,15 +852,27 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
         "restaurant_area": restaurant.get("area"),
         "restaurant_city": restaurant.get("city"),
         "user_id": user_id,
-        "user_email": user_email,
-        "user_name": user_info.get("name") if user_info else None,
+        "user_email": contact_email,
+        "user_name": display_name,
+        # User details from form
+        "title": visit.title,
+        "first_name": visit.first_name,
+        "last_name": visit.last_name,
+        "email": visit.email,
+        "whatsapp": visit.whatsapp,
+        # Pet details from form
+        "pet_name": visit.pet_name,
+        "pet_breed": visit.pet_breed,
+        "pet_about": visit.pet_about,
+        "pet_photo": visit.pet_photo,
+        # Visit details
         "date": visit.date,
         "time_slot": visit.time_slot,
         "pets": pets_info,
         "looking_for_buddies": visit.looking_for_buddies,
         "notes": visit.notes,
-        "notification_preference": visit.notification_preference,  # NEW: email or whatsapp
-        "status": "scheduled",  # scheduled, completed, cancelled
+        "notification_preference": visit.notification_preference,
+        "status": "scheduled",
         "meetup_requests": [],
         "created_at": datetime.now(timezone.utc).isoformat()
     }
