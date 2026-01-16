@@ -747,3 +747,95 @@ async def upload_pet_menu_image(
     except Exception as e:
         logger.error(f"Error uploading pet menu image: {e}")
         raise HTTPException(status_code=500, detail="Failed to upload image")
+
+
+# ==================== NOTIFICATIONS SYSTEM ====================
+
+@dine_router.get("/dine/notifications")
+async def get_user_notifications(user_id: str, unread_only: bool = False):
+    """Get notifications for a user"""
+    query = {"user_id": user_id}
+    if unread_only:
+        query["read"] = False
+    
+    notifications = await db.dine_notifications.find(
+        query, {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    
+    unread_count = await db.dine_notifications.count_documents({
+        "user_id": user_id, "read": False
+    })
+    
+    return {
+        "notifications": notifications,
+        "unread_count": unread_count
+    }
+
+
+@dine_router.post("/dine/notifications")
+async def create_notification(
+    user_id: str,
+    notification_type: str,  # meetup_request, meetup_accepted, meetup_declined, visit_reminder
+    title: str,
+    message: str,
+    related_id: Optional[str] = None  # meetup_id or visit_id
+):
+    """Create a notification for a user"""
+    notification = {
+        "id": f"notif-{uuid.uuid4().hex[:12]}",
+        "user_id": user_id,
+        "type": notification_type,
+        "title": title,
+        "message": message,
+        "related_id": related_id,
+        "read": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.dine_notifications.insert_one(notification)
+    notification.pop("_id", None)
+    
+    return {"message": "Notification created", "notification": notification}
+
+
+@dine_router.put("/dine/notifications/{notification_id}/read")
+async def mark_notification_read(notification_id: str, user_id: str):
+    """Mark a notification as read"""
+    result = await db.dine_notifications.update_one(
+        {"id": notification_id, "user_id": user_id},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    
+    return {"message": "Notification marked as read"}
+
+
+@dine_router.put("/dine/notifications/mark-all-read")
+async def mark_all_notifications_read(user_id: str):
+    """Mark all notifications as read for a user"""
+    result = await db.dine_notifications.update_many(
+        {"user_id": user_id, "read": False},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"message": f"Marked {result.modified_count} notifications as read"}
+
+
+# Helper function to send notification when meetup request is created
+async def send_meetup_notification(target_user_id: str, requester_name: str, restaurant_name: str, visit_date: str, meetup_id: str):
+    """Send notification for new meetup request"""
+    notification = {
+        "id": f"notif-{uuid.uuid4().hex[:12]}",
+        "user_id": target_user_id,
+        "type": "meetup_request",
+        "title": "New Meetup Request! 🐕",
+        "message": f"{requester_name or 'A pet parent'} wants to meet up at {restaurant_name} on {visit_date}",
+        "related_id": meetup_id,
+        "read": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.dine_notifications.insert_one(notification)
+    logger.info(f"Notification sent to {target_user_id} for meetup {meetup_id}")
