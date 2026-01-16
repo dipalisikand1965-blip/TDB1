@@ -1093,6 +1093,44 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
             </div>
           </div>
 
+          {/* Pet Details Section */}
+          <div className="p-4 bg-pink-50 border border-pink-200 rounded-lg">
+            <h4 className="font-semibold text-pink-800 mb-3 flex items-center gap-2">
+              <Dog className="w-4 h-4" /> About Your Pet
+            </h4>
+            <div className="grid grid-cols-2 gap-3 mb-2">
+              <div>
+                <label className="text-xs font-medium text-gray-600">Pet's Name *</label>
+                <Input
+                  value={formData.pet_name}
+                  onChange={(e) => setFormData({...formData, pet_name: e.target.value})}
+                  placeholder="e.g., Bruno"
+                  className="text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600">Breed (optional)</label>
+                <Input
+                  value={formData.pet_breed}
+                  onChange={(e) => setFormData({...formData, pet_breed: e.target.value})}
+                  placeholder="e.g., Golden Retriever"
+                  className="text-sm"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-gray-600">Tell us about your pet (optional)</label>
+              <textarea
+                value={formData.pet_about}
+                onChange={(e) => setFormData({...formData, pet_about: e.target.value})}
+                className="w-full p-2 border rounded text-sm"
+                rows={2}
+                placeholder="e.g., Friendly 2-year-old, loves treats, good with other dogs"
+              />
+            </div>
+          </div>
+
           {restaurant.petMenuAvailable === 'yes' && restaurant.petMenuItems?.length > 0 && (
             <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
               <label className="flex items-center gap-3 cursor-pointer">
