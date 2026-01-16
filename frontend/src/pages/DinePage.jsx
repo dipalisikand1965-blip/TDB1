@@ -11,19 +11,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
-
-// Use relative paths in production to avoid stale URL issues
-const getApiUrl = () => {
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    // Use relative paths for production domains
-    if (hostname === 'thedoggycompany.in' || hostname.endsWith('.emergent.host')) {
-      return '';
-    }
-  }
-  return process.env.REACT_APP_BACKEND_URL || '';
-};
-const API_URL = getApiUrl();
+import { API_URL } from '../utils/api';
 
 // Get user from localStorage
 const getUser = () => {
