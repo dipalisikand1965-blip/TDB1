@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-import { API_URL } from '../../utils/api';
   Plus, Edit, Trash2, Save, X, Search, MapPin, Star, 
   UtensilsCrossed, Check, AlertCircle, Phone, Globe, Instagram,
   RefreshCw, Upload, Download, FileSpreadsheet, Image as ImageIcon,
@@ -10,6 +9,7 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
+import { API_URL } from '../../utils/api';
 
 
 const DineManager = ({ credentials }) => {
