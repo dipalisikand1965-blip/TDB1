@@ -1586,6 +1586,11 @@ const Admin = () => {
           <DineManager credentials={{ username, password }} />
         )}
 
+        {/* Service Desk Tab */}
+        {activeTab === 'servicedesk' && (
+          <ServiceDesk authHeaders={getAuthHeaders()} />
+        )}
+
         {/* Pet Profiles Tab */}
         {activeTab === 'pets' && (
           <div className="space-y-6">
