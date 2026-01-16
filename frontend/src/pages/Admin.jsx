@@ -296,6 +296,17 @@ const Admin = () => {
   useEffect(() => {
     const storedAuth = localStorage.getItem('adminAuth');
     if (storedAuth) {
+      // Decode and restore username/password from stored auth
+      try {
+        const decoded = atob(storedAuth);
+        const [storedUsername, storedPassword] = decoded.split(':');
+        if (storedUsername && storedPassword) {
+          setUsername(storedUsername);
+          setPassword(storedPassword);
+        }
+      } catch (e) {
+        console.error('Error decoding stored auth:', e);
+      }
       setIsAuthenticated(true);
       fetchDashboard();
     }
