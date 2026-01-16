@@ -2908,6 +2908,63 @@ const Admin = () => {
           </Card>
         </div>
       )}
+
+      {/* Password Change Modal */}
+      <Dialog open={showPasswordModal} onOpenChange={setShowPasswordModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock className="w-5 h-5" /> Change Admin Password
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {passwordError && (
+              <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+                {passwordError}
+              </div>
+            )}
+            <div>
+              <Label>Current Password</Label>
+              <Input
+                type="password"
+                value={passwordData.current}
+                onChange={(e) => setPasswordData({ ...passwordData, current: e.target.value })}
+                placeholder="Enter current password"
+              />
+            </div>
+            <div>
+              <Label>New Password</Label>
+              <Input
+                type="password"
+                value={passwordData.new}
+                onChange={(e) => setPasswordData({ ...passwordData, new: e.target.value })}
+                placeholder="Enter new password (min 6 chars)"
+              />
+            </div>
+            <div>
+              <Label>Confirm New Password</Label>
+              <Input
+                type="password"
+                value={passwordData.confirm}
+                onChange={(e) => setPasswordData({ ...passwordData, confirm: e.target.value })}
+                placeholder="Confirm new password"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowPasswordModal(false);
+              setPasswordData({ current: '', new: '', confirm: '' });
+              setPasswordError('');
+            }}>
+              Cancel
+            </Button>
+            <Button onClick={handlePasswordChange} disabled={passwordChanging}>
+              {passwordChanging ? 'Changing...' : 'Change Password'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
