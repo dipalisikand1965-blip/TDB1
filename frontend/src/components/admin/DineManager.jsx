@@ -48,10 +48,13 @@ const DineManager = ({ credentials }) => {
     website: '',
     zomatoLink: '',
     googleMapsLink: '',
-    miraRecommendation: '',
+    conciergeRecommendation: '',
     specialOffers: '',
+    birthdayPerks: false,
     featured: false,
     verified: false,
+    country: 'India',
+    state: '',
   };
 
   const [formData, setFormData] = useState(emptyRestaurant);
