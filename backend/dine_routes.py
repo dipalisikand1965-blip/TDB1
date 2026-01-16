@@ -483,3 +483,208 @@ async def import_restaurants_csv(
     except Exception as e:
         logger.error(f"CSV import error: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to import CSV: {str(e)}")
+
+
+# ==================== PET BUDDY MEETUP FEATURE ====================
+
+@dine_router.post("/dine/visits")
+async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None):
+    """Schedule a visit to a restaurant (for Pet Buddy feature)"""
+    # Verify restaurant exists
+    restaurant = await db.restaurants.find_one({"id": visit.restaurant_id})
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+    
+    # Get pet info if pet_ids provided
+    pets_info = []
+    if visit.pet_ids:
+        for pet_id in visit.pet_ids:
+            pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "id": 1, "name": 1, "breed": 1, "photo": 1})
+            if pet:
+                pets_info.append(pet)
+    
+    visit_doc = {
+        "id": f"visit-{uuid.uuid4().hex[:12]}",
+        "restaurant_id": visit.restaurant_id,
+        "restaurant_name": restaurant.get("name"),
+        "restaurant_area": restaurant.get("area"),
+        "restaurant_city": restaurant.get("city"),
+        "user_id": user_id,
+        "date": visit.date,
+        "time_slot": visit.time_slot,
+        "pets": pets_info,
+        "looking_for_buddies": visit.looking_for_buddies,
+        "notes": visit.notes,
+        "status": "scheduled",  # scheduled, completed, cancelled
+        "meetup_requests": [],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.restaurant_visits.insert_one(visit_doc)
+    visit_doc.pop("_id", None)
+    
+    return {"message": "Visit scheduled", "visit": visit_doc}
+
+
+@dine_router.get("/dine/restaurants/{restaurant_id}/visits")
+async def get_restaurant_visits(restaurant_id: str, date: Optional[str] = None):
+    """Get upcoming visits at a restaurant (Who's Going feature)"""
+    query = {
+        "restaurant_id": restaurant_id,
+        "status": "scheduled",
+        "looking_for_buddies": True
+    }
+    
+    if date:
+        query["date"] = date
+    else:
+        # Default to upcoming visits (today and future)
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        query["date"] = {"$gte": today}
+    
+    visits = await db.restaurant_visits.find(query, {"_id": 0}).sort("date", 1).to_list(50)
+    
+    # Group by date
+    grouped = {}
+    for visit in visits:
+        date_key = visit.get("date")
+        if date_key not in grouped:
+            grouped[date_key] = []
+        grouped[date_key].append(visit)
+    
+    return {
+        "restaurant_id": restaurant_id,
+        "visits": visits,
+        "grouped_by_date": grouped,
+        "total_upcoming": len(visits)
+    }
+
+
+@dine_router.post("/dine/meetup-request")
+async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = None):
+    """Send a meetup request to another pet parent"""
+    # Get the visit
+    visit = await db.restaurant_visits.find_one({"id": request.visit_id})
+    if not visit:
+        raise HTTPException(status_code=404, detail="Visit not found")
+    
+    meetup_doc = {
+        "id": f"meetup-{uuid.uuid4().hex[:12]}",
+        "visit_id": request.visit_id,
+        "requester_id": user_id,
+        "target_user_id": visit.get("user_id"),
+        "restaurant_id": visit.get("restaurant_id"),
+        "restaurant_name": visit.get("restaurant_name"),
+        "visit_date": visit.get("date"),
+        "message": request.message,
+        "status": "pending",  # pending, accepted, declined
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.meetup_requests.insert_one(meetup_doc)
+    
+    # Add to visit's meetup_requests list
+    await db.restaurant_visits.update_one(
+        {"id": request.visit_id},
+        {"$push": {"meetup_requests": meetup_doc["id"]}}
+    )
+    
+    return {"message": "Meetup request sent", "request_id": meetup_doc["id"]}
+
+
+@dine_router.get("/dine/my-visits")
+async def get_my_visits(user_id: str):
+    """Get user's scheduled visits"""
+    visits = await db.restaurant_visits.find(
+        {"user_id": user_id},
+        {"_id": 0}
+    ).sort("date", -1).to_list(50)
+    
+    return {"visits": visits}
+
+
+@dine_router.get("/dine/meetup-requests")
+async def get_meetup_requests(user_id: str, status: Optional[str] = None):
+    """Get meetup requests for a user"""
+    query = {
+        "$or": [
+            {"requester_id": user_id},
+            {"target_user_id": user_id}
+        ]
+    }
+    if status:
+        query["status"] = status
+    
+    requests = await db.meetup_requests.find(query, {"_id": 0}).sort("created_at", -1).to_list(50)
+    
+    return {"requests": requests}
+
+
+@dine_router.put("/dine/meetup-requests/{request_id}/respond")
+async def respond_to_meetup(request_id: str, accept: bool, user_id: str):
+    """Accept or decline a meetup request"""
+    result = await db.meetup_requests.update_one(
+        {"id": request_id, "target_user_id": user_id},
+        {
+            "$set": {
+                "status": "accepted" if accept else "declined",
+                "responded_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Request not found or not authorized")
+    
+    return {"message": f"Meetup request {'accepted' if accept else 'declined'}"}
+
+
+@dine_router.delete("/dine/visits/{visit_id}")
+async def cancel_visit(visit_id: str, user_id: str):
+    """Cancel a scheduled visit"""
+    result = await db.restaurant_visits.update_one(
+        {"id": visit_id, "user_id": user_id},
+        {"$set": {"status": "cancelled"}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Visit not found or not authorized")
+    
+    return {"message": "Visit cancelled"}
+
+
+# ==================== UPLOAD PET MENU IMAGE ====================
+
+@dine_router.post("/admin/dine/upload-pet-menu")
+async def upload_pet_menu_image(
+    file: UploadFile = File(...),
+    username: str = Depends(verify_admin)
+):
+    """Upload a pet menu image for a restaurant"""
+    allowed_types = ["image/jpeg", "image/png", "image/webp", "image/jpg"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(
+            status_code=400, 
+            detail="Invalid file type. Please upload JPG, PNG, or WebP images."
+        )
+    
+    ext = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+    unique_filename = f"petmenu_{uuid.uuid4().hex[:12]}.{ext}"
+    
+    upload_dir = "uploads/pet-menus"
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    file_path = f"{upload_dir}/{unique_filename}"
+    
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        return {
+            "message": "Pet menu image uploaded successfully",
+            "filename": unique_filename,
+            "url": f"/uploads/pet-menus/{unique_filename}"
+        }
+    except Exception as e:
+        logger.error(f"Error uploading pet menu image: {e}")
+        raise HTTPException(status_code=500, detail="Failed to upload image")
