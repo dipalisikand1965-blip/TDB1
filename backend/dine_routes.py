@@ -1166,3 +1166,143 @@ async def send_meetup_notification(target_user_id: str, requester_name: str, res
     
     await db.dine_notifications.insert_one(notification)
     logger.info(f"Notification sent to {target_user_id} for meetup {meetup_id}")
+
+
+
+# ============== ADMIN ENDPOINTS FOR VISITS & MEETUPS ==============
+
+@dine_router.get("/admin/dine/visits")
+async def admin_get_visits(
+    status: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    limit: int = 50
+):
+    """Admin endpoint to get all pet buddy visits"""
+    query = {}
+    
+    if status:
+        query["status"] = status
+    
+    if date_from:
+        query["date"] = {"$gte": date_from}
+    if date_to:
+        if "date" in query:
+            query["date"]["$lte"] = date_to
+        else:
+            query["date"] = {"$lte": date_to}
+    
+    cursor = db.restaurant_visits.find(query, {"_id": 0}).sort("date", -1).limit(limit)
+    visits = await cursor.to_list(length=limit)
+    
+    # Get stats
+    total = await db.restaurant_visits.count_documents({})
+    scheduled = await db.restaurant_visits.count_documents({"status": "scheduled"})
+    completed = await db.restaurant_visits.count_documents({"status": "completed"})
+    cancelled = await db.restaurant_visits.count_documents({"status": "cancelled"})
+    looking_for_buddies = await db.restaurant_visits.count_documents({"looking_for_buddies": True, "status": "scheduled"})
+    
+    return {
+        "visits": visits,
+        "stats": {
+            "total": total,
+            "scheduled": scheduled,
+            "completed": completed,
+            "cancelled": cancelled,
+            "looking_for_buddies": looking_for_buddies
+        }
+    }
+
+@dine_router.put("/admin/dine/visits/{visit_id}/status")
+async def admin_update_visit_status(visit_id: str, status: str, notes: Optional[str] = None):
+    """Admin endpoint to update visit status"""
+    valid_statuses = ["scheduled", "completed", "cancelled", "no_show"]
+    if status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
+    
+    update_doc = {
+        "status": status,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    if notes:
+        update_doc["admin_notes"] = notes
+    
+    result = await db.restaurant_visits.update_one(
+        {"id": visit_id},
+        {"$set": update_doc}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Visit not found")
+    
+    return {"success": True, "message": f"Visit status updated to {status}"}
+
+@dine_router.get("/admin/dine/meetups")
+async def admin_get_meetups(
+    status: Optional[str] = None,
+    limit: int = 50
+):
+    """Admin endpoint to get all meetup requests"""
+    query = {}
+    
+    if status:
+        query["status"] = status
+    
+    cursor = db.meetup_requests.find(query, {"_id": 0}).sort("created_at", -1).limit(limit)
+    meetups = await cursor.to_list(length=limit)
+    
+    # Get stats
+    total = await db.meetup_requests.count_documents({})
+    pending = await db.meetup_requests.count_documents({"status": "pending"})
+    accepted = await db.meetup_requests.count_documents({"status": "accepted"})
+    declined = await db.meetup_requests.count_documents({"status": "declined"})
+    
+    return {
+        "meetups": meetups,
+        "stats": {
+            "total": total,
+            "pending": pending,
+            "accepted": accepted,
+            "declined": declined
+        }
+    }
+
+@dine_router.delete("/admin/dine/meetups/{meetup_id}")
+async def admin_delete_meetup(meetup_id: str):
+    """Admin endpoint to delete a meetup request"""
+    result = await db.meetup_requests.delete_one({"id": meetup_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Meetup request not found")
+    
+    return {"success": True, "message": "Meetup request deleted"}
+
+@dine_router.get("/admin/dine/buddy-stats")
+async def admin_get_buddy_stats():
+    """Get overall stats for buddy meetup feature"""
+    # Visits stats
+    total_visits = await db.restaurant_visits.count_documents({})
+    visits_with_buddies = await db.restaurant_visits.count_documents({"looking_for_buddies": True})
+    
+    # Meetup stats
+    total_meetups = await db.meetup_requests.count_documents({})
+    successful_meetups = await db.meetup_requests.count_documents({"status": "accepted"})
+    
+    # Top restaurants for buddy visits
+    pipeline = [
+        {"$match": {"looking_for_buddies": True}},
+        {"$group": {"_id": "$restaurant_name", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 5}
+    ]
+    top_restaurants = await db.restaurant_visits.aggregate(pipeline).to_list(5)
+    
+    return {
+        "total_visits": total_visits,
+        "visits_looking_for_buddies": visits_with_buddies,
+        "total_meetup_requests": total_meetups,
+        "successful_meetups": successful_meetups,
+        "match_rate": round(successful_meetups / total_meetups * 100, 1) if total_meetups > 0 else 0,
+        "top_buddy_restaurants": top_restaurants
+    }
