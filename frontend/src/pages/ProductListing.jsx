@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { SlidersHorizontal, Loader2, ChevronDown } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 const PRODUCTS_PER_PAGE = 20;
 
 const ProductListing = ({ category = 'all' }) => {

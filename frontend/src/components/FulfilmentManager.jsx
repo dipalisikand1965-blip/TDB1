@@ -15,7 +15,7 @@ import {
   Calendar, CheckCircle, Loader2, AlertCircle, Users, FileText, Bell
 } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Default statuses (will be overridden by API)
 const DEFAULT_STATUSES = [

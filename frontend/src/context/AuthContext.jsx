@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(() => localStorage.getItem('tdb_auth_token'));
 
-  const API_URL = process.env.REACT_APP_BACKEND_URL;
+  const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
   const fetchUser = useCallback(async (currentToken) => {
     try {

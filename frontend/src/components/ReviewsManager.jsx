@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Star, Check, X, MessageSquare, Filter } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const ReviewsManager = ({ getAuthHeader }) => {
   const [reviews, setReviews] = useState([]);

@@ -11,7 +11,7 @@ import {
   Layers, Check, AlertCircle, Loader2
 } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const CollectionManager = ({ getAuthHeader }) => {
   const [collections, setCollections] = useState([]);
