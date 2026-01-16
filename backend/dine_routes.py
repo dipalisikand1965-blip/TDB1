@@ -844,6 +844,7 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
         "pets": pets_info,
         "looking_for_buddies": visit.looking_for_buddies,
         "notes": visit.notes,
+        "notification_preference": visit.notification_preference,  # NEW: email or whatsapp
         "status": "scheduled",  # scheduled, completed, cancelled
         "meetup_requests": [],
         "created_at": datetime.now(timezone.utc).isoformat()
