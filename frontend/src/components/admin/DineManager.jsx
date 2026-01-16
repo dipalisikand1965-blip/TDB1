@@ -399,12 +399,54 @@ const DineManager = ({ credentials }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Area *</label>
-                <Input
-                  value={formData.area}
-                  onChange={(e) => setFormData({...formData, area: e.target.value})}
-                  placeholder="e.g., Koramangala"
-                />
+                <label className="text-sm font-medium">Country</label>
+                <select
+                  value={formData.country || 'India'}
+                  onChange={(e) => setFormData({...formData, country: e.target.value, state: '', city: ''})}
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="India">🇮🇳 India</option>
+                  <option value="USA">🇺🇸 United States</option>
+                  <option value="UK">🇬🇧 United Kingdom</option>
+                  <option value="UAE">🇦🇪 UAE</option>
+                  <option value="Singapore">🇸🇬 Singapore</option>
+                  <option value="Australia">🇦🇺 Australia</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium">State</label>
+                <select
+                  value={formData.state || ''}
+                  onChange={(e) => setFormData({...formData, state: e.target.value})}
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="">Select State</option>
+                  {formData.country === 'India' && (
+                    <>
+                      <option value="Karnataka">Karnataka</option>
+                      <option value="Maharashtra">Maharashtra</option>
+                      <option value="Delhi">Delhi</option>
+                      <option value="Tamil Nadu">Tamil Nadu</option>
+                      <option value="Telangana">Telangana</option>
+                      <option value="Gujarat">Gujarat</option>
+                      <option value="Rajasthan">Rajasthan</option>
+                      <option value="West Bengal">West Bengal</option>
+                      <option value="Kerala">Kerala</option>
+                      <option value="Uttar Pradesh">Uttar Pradesh</option>
+                      <option value="Haryana">Haryana</option>
+                      <option value="Punjab">Punjab</option>
+                      <option value="Goa">Goa</option>
+                    </>
+                  )}
+                  {formData.country === 'USA' && (
+                    <>
+                      <option value="California">California</option>
+                      <option value="New York">New York</option>
+                      <option value="Texas">Texas</option>
+                      <option value="Florida">Florida</option>
+                    </>
+                  )}
+                </select>
               </div>
               <div>
                 <label className="text-sm font-medium">City *</label>
@@ -415,9 +457,17 @@ const DineManager = ({ credentials }) => {
                 />
               </div>
               <div>
+                <label className="text-sm font-medium">Area / Locality *</label>
+                <Input
+                  value={formData.area}
+                  onChange={(e) => setFormData({...formData, area: e.target.value})}
+                  placeholder="e.g., Koramangala"
+                />
+              </div>
+              <div className="md:col-span-2">
                 <label className="text-sm font-medium">Full Address</label>
                 <Input
-                  value={formData.address || ''}
+                  value={formData.address || ''}}
                   onChange={(e) => setFormData({...formData, address: e.target.value})}
                   placeholder="123, 5th Cross, Koramangala..."
                 />
