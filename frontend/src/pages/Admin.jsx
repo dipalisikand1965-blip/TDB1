@@ -1038,7 +1038,7 @@ const Admin = () => {
               <Lock className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Admin Portal</h1>
-            <p className="text-gray-500 mt-2">The Doggy Bakery</p>
+            <p className="text-gray-500 mt-2">The Doggy Company</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
