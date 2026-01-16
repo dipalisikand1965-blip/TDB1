@@ -3359,12 +3359,8 @@ async def get_search_stats():
 @api_router.post("/search/reindex")
 async def reindex_search(credentials: HTTPBasicCredentials = Depends(security)):
     """Reindex all products in the search engine (admin only)"""
-    # Verify admin credentials
-    username = os.environ.get("ADMIN_USERNAME", "admin")
-    password = os.environ.get("ADMIN_PASSWORD", "woof2025")
-    
-    if credentials.username != username or credentials.password != password:
-        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+    # Verify admin credentials using the centralized verify_admin function
+    verify_admin(credentials)
     
     # Fetch all products
     products = await db.products.find({}, {"_id": 0}).to_list(10000)
