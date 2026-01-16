@@ -3997,6 +3997,10 @@ async def check_abandoned_carts():
                 reminder_type = "final"  # 72 hour final reminder with discount
             
             if reminder_type and RESEND_API_KEY:
+                # Rate limit: wait 1 second between emails to avoid Resend rate limits
+                if reminders_sent > 0:
+                    await asyncio.sleep(1.0)
+                    
                 success = await send_abandoned_cart_email(
                     to_email=email,
                     name=name,
