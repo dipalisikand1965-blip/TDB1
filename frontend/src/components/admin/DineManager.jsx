@@ -558,7 +558,7 @@ const DineManager = ({ credentials }) => {
           {/* Pet Policy */}
           <div className="mb-6">
             <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              🐕 Pet Policy
+              🐕 Pet Policy & Perks
             </h4>
             <div className="grid md:grid-cols-3 gap-4">
               <div>
@@ -592,6 +592,20 @@ const DineManager = ({ credentials }) => {
                   onChange={(e) => setFormData({...formData, petMenuItems: e.target.value.split(',').map(s => s.trim())})}
                   placeholder="Pupcakes, Dog Ice Cream..."
                 />
+              </div>
+              <div className="md:col-span-3 p-3 bg-pink-50 rounded-lg border border-pink-200">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.birthdayPerks || false}
+                    onChange={(e) => setFormData({...formData, birthdayPerks: e.target.checked})}
+                    className="w-5 h-5 text-pink-600 rounded"
+                  />
+                  <div>
+                    <span className="font-medium text-pink-800">🎂 Birthday Perks Available</span>
+                    <p className="text-xs text-pink-600">Restaurant offers special treats/discounts for pet birthdays</p>
+                  </div>
+                </label>
               </div>
             </div>
           </div>
