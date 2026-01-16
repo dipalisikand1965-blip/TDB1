@@ -124,8 +124,82 @@ def serialize_ticket(ticket: dict) -> dict:
 
 @router.get("/categories")
 async def get_categories():
-    """Get all ticket categories (pillars)"""
-    return {"categories": TICKET_CATEGORIES}
+    """Get all ticket categories (pillars) including custom ones"""
+    db = get_db()
+    
+    # Get custom categories from database
+    cursor = db.ticket_categories.find({})
+    custom_cats = await cursor.to_list(length=100)
+    
+    # Combine default and custom
+    all_categories = list(TICKET_CATEGORIES)
+    for cat in custom_cats:
+        cat["id"] = cat.get("id") or str(cat.pop("_id"))
+        if "_id" in cat:
+            del cat["_id"]
+        cat["isCustom"] = True
+        all_categories.append(cat)
+    
+    return {"categories": all_categories}
+
+@router.post("/categories/custom")
+async def add_custom_category(category: Dict[str, Any]):
+    """Add a custom category"""
+    db = get_db()
+    
+    category_doc = {
+        "id": category.get("id"),
+        "name": category.get("name"),
+        "icon": category.get("icon", "📁"),
+        "description": category.get("description", ""),
+        "isCustom": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.ticket_categories.insert_one(category_doc)
+    
+    return {"success": True, "category": category_doc}
+
+@router.delete("/categories/custom/{category_id}")
+async def delete_custom_category(category_id: str):
+    """Delete a custom category"""
+    db = get_db()
+    
+    result = await db.ticket_categories.delete_one({"id": category_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    return {"success": True}
+
+@router.post("/categories/sub")
+async def add_sub_category(sub_category: Dict[str, Any]):
+    """Add a sub-category"""
+    db = get_db()
+    
+    sub_cat_doc = {
+        "id": sub_category.get("id"),
+        "name": sub_category.get("name"),
+        "parent_id": sub_category.get("parentId"),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.ticket_sub_categories.insert_one(sub_cat_doc)
+    
+    return {"success": True, "sub_category": sub_cat_doc}
+
+@router.get("/categories/{category_id}/sub")
+async def get_sub_categories(category_id: str):
+    """Get sub-categories for a category"""
+    db = get_db()
+    
+    cursor = db.ticket_sub_categories.find({"parent_id": category_id})
+    sub_cats = await cursor.to_list(length=100)
+    
+    for sc in sub_cats:
+        sc["id"] = str(sc.pop("_id"))
+    
+    return {"sub_categories": sub_cats}
 
 @router.get("/statuses")
 async def get_statuses():
