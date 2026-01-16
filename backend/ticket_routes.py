@@ -126,9 +126,8 @@ def generate_ticket_id():
     db = get_db()
     today = datetime.now(timezone.utc).strftime("%Y%m%d")
     
-    # Count tickets created today
-    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-    count = db.tickets.count_documents({"created_at": {"$gte": today_start.isoformat()}})
+    # Count tickets created today using ticket_id pattern
+    count = db.tickets.count_documents({"ticket_id": {"$regex": f"^TKT-{today}"}})
     
     return f"TKT-{today}-{str(count + 1).zfill(3)}"
 
