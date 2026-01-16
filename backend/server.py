@@ -457,19 +457,27 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
     global sync_task
     
-    # Initialize search service
-    try:
-        await search_service.connect()
-        # Index all existing products on startup
-        products = await db.products.find({}, {"_id": 0}).to_list(10000)
-        if products:
-            await search_service.index_products_batch(products)
-        # Index collections
-        collections = await db.collections.find({}, {"_id": 0}).to_list(1000)
-        if collections:
-            await search_service.index_collections_batch(collections)
-    except Exception as e:
-        logger.error(f"Search service initialization failed: {e}")
+    # Initialize search service in background (non-blocking)
+    # This prevents slow Meilisearch connection from blocking app startup
+    async def init_search_background():
+        try:
+            await asyncio.wait_for(search_service.connect(), timeout=5.0)
+            # Index products in background after app is ready
+            products = await db.products.find({}, {"_id": 0}).to_list(10000)
+            if products:
+                await search_service.index_products_batch(products)
+            # Index collections
+            collections = await db.collections.find({}, {"_id": 0}).to_list(1000)
+            if collections:
+                await search_service.index_collections_batch(collections)
+            logger.info("Search service initialized successfully in background")
+        except asyncio.TimeoutError:
+            logger.warning("Search service connection timed out - search will be unavailable")
+        except Exception as e:
+            logger.warning(f"Search service initialization failed (non-blocking): {e}")
+    
+    # Start search initialization in background (don't await)
+    asyncio.create_task(init_search_background())
     
     # Start the auto-sync background task
     sync_task = asyncio.create_task(auto_sync_products())
