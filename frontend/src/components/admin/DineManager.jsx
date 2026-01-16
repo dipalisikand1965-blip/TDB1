@@ -417,8 +417,45 @@ const DineManager = ({ credentials }) => {
             <UtensilsCrossed className="w-6 h-6 text-orange-500" />
             Dine Management
           </h2>
-          <p className="text-gray-500">Manage pet-friendly restaurants</p>
+          <p className="text-gray-500">Restaurants, Reservations & Buddy Meetups</p>
         </div>
+      </div>
+      
+      {/* Tab Navigation */}
+      <div className="flex gap-2 border-b pb-2 overflow-x-auto">
+        <Button 
+          variant={activeTab === 'restaurants' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('restaurants')}
+          className={activeTab === 'restaurants' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+        >
+          <UtensilsCrossed className="w-4 h-4 mr-2" /> Restaurants
+        </Button>
+        <Button 
+          variant={activeTab === 'reservations' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('reservations')}
+          className={activeTab === 'reservations' ? 'bg-purple-500 hover:bg-purple-600' : ''}
+        >
+          <Calendar className="w-4 h-4 mr-2" /> Reservations
+        </Button>
+        <Button 
+          variant={activeTab === 'visits' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('visits')}
+          className={activeTab === 'visits' ? 'bg-pink-500 hover:bg-pink-600' : ''}
+        >
+          <PawPrint className="w-4 h-4 mr-2" /> Pet Buddy Visits
+        </Button>
+        <Button 
+          variant={activeTab === 'meetups' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('meetups')}
+          className={activeTab === 'meetups' ? 'bg-rose-500 hover:bg-rose-600' : ''}
+        >
+          <Heart className="w-4 h-4 mr-2" /> Meetup Requests
+        </Button>
+      </div>
+      
+      {/* ============ RESTAURANTS TAB ============ */}
+      {activeTab === 'restaurants' && (
+        <>
         <div className="flex gap-2 flex-wrap">
           <Button variant="outline" onClick={fetchRestaurants} data-testid="refresh-btn">
             <RefreshCw className="w-4 h-4 mr-2" /> Refresh
@@ -457,7 +494,6 @@ const DineManager = ({ credentials }) => {
             <Plus className="w-4 h-4 mr-2" /> Add Restaurant
           </Button>
         </div>
-      </div>
 
       {/* Import Result */}
       {importResult && (
