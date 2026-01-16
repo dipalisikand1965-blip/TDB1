@@ -224,6 +224,23 @@ const DineManager = ({ credentials }) => {
     }
   };
 
+  // Update meetup status (admin)
+  const updateMeetupStatus = async (meetupId, newStatus) => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/dine/meetups/${meetupId}/status?status=${newStatus}&send_notification=true`, {
+        method: 'PUT',
+        headers: { 'Authorization': getAuthHeader() }
+      });
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Meetup status updated to ${newStatus}. ${result.notified ? 'Both parties have been notified via email.' : ''}`);
+        fetchMeetups();
+      }
+    } catch (error) {
+      console.error('Error updating meetup status:', error);
+    }
+  };
+
   // Save restaurant
   const saveRestaurant = async () => {
     try {
