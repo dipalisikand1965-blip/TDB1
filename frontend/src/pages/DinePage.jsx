@@ -459,7 +459,7 @@ const RestaurantCard = ({ restaurant, getPetMenuBadge, getPetPolicyText, feature
   </Card>
 );
 
-// Pet Buddy Modal - ENHANCED with full user/pet info
+// Pet Buddy Modal - ENHANCED with full user/pet info + Safety
 const PetBuddyModal = ({ restaurant, onClose }) => {
   const [activeTab, setActiveTab] = useState('upcoming');
   const [schedulingVisit, setSchedulingVisit] = useState(false);
@@ -476,16 +476,44 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
     last_name: '',
     email: '',
     whatsapp: '',
-    // Pet details
-    pet_name: '',
-    pet_breed: '',
-    pet_about: '',
-    pet_photo: ''
+    // Social profiles for verification
+    instagram: '',
+    facebook: '',
+    linkedin: '',
+    // Multiple pets support
+    pets: [{ name: '', breed: '', about: '', photo: '' }],
+    // Safety agreement
+    safety_agreed: false
   });
   const [upcomingVisits, setUpcomingVisits] = useState([]);
   const [sendingRequest, setSendingRequest] = useState(null);
   const [requestSent, setRequestSent] = useState({});
   const [formErrors, setFormErrors] = useState({});
+
+  // Add another pet
+  const addPet = () => {
+    if (visitForm.pets.length < 5) {
+      setVisitForm({
+        ...visitForm,
+        pets: [...visitForm.pets, { name: '', breed: '', about: '', photo: '' }]
+      });
+    }
+  };
+
+  // Remove a pet
+  const removePet = (index) => {
+    if (visitForm.pets.length > 1) {
+      const newPets = visitForm.pets.filter((_, i) => i !== index);
+      setVisitForm({ ...visitForm, pets: newPets });
+    }
+  };
+
+  // Update pet at index
+  const updatePet = (index, field, value) => {
+    const newPets = [...visitForm.pets];
+    newPets[index] = { ...newPets[index], [field]: value };
+    setVisitForm({ ...visitForm, pets: newPets });
+  };
 
   // Fetch upcoming visits
   useEffect(() => {
