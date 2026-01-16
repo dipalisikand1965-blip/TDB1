@@ -1214,6 +1214,11 @@ const Admin = () => {
           <ReportsManager authHeaders={getAuthHeaders()} />
         )}
 
+        {/* Product Tags Tab */}
+        {activeTab === 'product-tags' && (
+          <ProductTagsManager credentials={{ username, password }} />
+        )}
+
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && dashboard && (
           <DashboardTab 
