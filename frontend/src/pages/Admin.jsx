@@ -1580,6 +1580,11 @@ const Admin = () => {
           </div>
         )}
 
+        {/* Dine Tab */}
+        {activeTab === 'dine' && (
+          <DineManager credentials={{ username, password }} />
+        )}
+
         {/* Pet Profiles Tab */}
         {activeTab === 'pets' && (
           <div className="space-y-6">
