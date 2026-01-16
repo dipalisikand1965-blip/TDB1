@@ -114,6 +114,17 @@ class RestaurantVisit(BaseModel):
     looking_for_buddies: bool = True
     notes: Optional[str] = None
     notification_preference: str = "email"  # email or whatsapp
+    # User details
+    title: str = "Mr."  # Mr., Ms., Mrs., Dr.
+    first_name: str = ""
+    last_name: str = ""
+    email: str = ""
+    whatsapp: str = ""
+    # Pet details
+    pet_name: str = ""
+    pet_breed: Optional[str] = None
+    pet_about: Optional[str] = None
+    pet_photo: Optional[str] = None
 
 
 class MeetupRequest(BaseModel):
