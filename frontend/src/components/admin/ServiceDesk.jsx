@@ -728,8 +728,26 @@ const ServiceDesk = ({ authHeaders }) => {
               <div className="text-2xl font-bold text-blue-500">{stats?.recent_24h || 0}</div>
               <div className="text-xs text-gray-600">Last 24h</div>
             </div>
+            {slaStats && (
+              <>
+                <div className="border-l pl-4 text-center">
+                  <div className="text-2xl font-bold text-purple-600">{slaStats.sla_breach_rate || 0}%</div>
+                  <div className="text-xs text-gray-600">SLA Breach Rate</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">{slaStats.avg_first_response_hours || '-'}h</div>
+                  <div className="text-xs text-gray-600">Avg Response</div>
+                </div>
+              </>
+            )}
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleAutoAssignAll} disabled={autoAssigning} title="Auto-assign all unassigned tickets">
+              <Zap className={`w-4 h-4 mr-1 ${autoAssigning ? 'animate-pulse' : ''}`} /> Auto-Assign
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleCheckEscalations} title="Check and escalate overdue tickets">
+              <AlertCircle className="w-4 h-4 mr-1" /> Check SLA
+            </Button>
             <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
               <RefreshCw className={`w-4 h-4 mr-1 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
             </Button>
