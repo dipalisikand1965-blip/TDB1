@@ -511,7 +511,34 @@ async def report_policy_mismatch(report: PolicyMismatchReport):
         "created_at": now
     })
     
-    return {"success": True, "report_id": report_doc["id"]}
+    # Create Service Desk ticket for follow-up
+    today = datetime.now(timezone.utc).strftime("%Y%m%d")
+    ticket_count = await db.tickets.count_documents({"ticket_id": {"$regex": f"^TKT-{today}"}})
+    ticket_id = f"TKT-{today}-{str(ticket_count + 1).zfill(3)}"
+    
+    ticket_doc = {
+        "ticket_id": ticket_id,
+        "member": {
+            "name": report.reporter_name,
+            "email": report.reporter_email
+        },
+        "category": "stay",
+        "sub_category": "policy_mismatch",
+        "urgency": "high",
+        "description": f"Policy mismatch reported for {property.get('name')}: {report.issue_type}\n\nDetails: {report.description}",
+        "source": "Stay Mismatch Report",
+        "source_reference": report_doc["id"],
+        "status": "new",
+        "priority": 1,  # High priority
+        "tags": ["stay", "policy-mismatch", "auto-created"],
+        "created_at": now,
+        "updated_at": now,
+        "auto_created_from": "stay_mismatch",
+        "linked_event_id": report_doc["id"]
+    }
+    await db.tickets.insert_one(ticket_doc)
+    
+    return {"success": True, "report_id": report_doc["id"], "ticket_id": ticket_id}
 
 
 # ==================== ADMIN ROUTES ====================
