@@ -50,6 +50,12 @@ from collection_routes import (
     set_collection_db,
     set_collection_admin_verify
 )
+from partner_routes import (
+    router as partner_router,
+    admin_router as partner_admin_router,
+    set_partner_db,
+    set_partner_admin_verify
+)
 
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
