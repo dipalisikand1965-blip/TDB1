@@ -577,7 +577,7 @@ async def get_autoship_settings():
 
 
 @router.put("/autoship/tiers")
-async def update_autoship_tiers(tiers: List[AutoshipTier], username: str = Depends(lambda: verify_admin)):
+async def update_autoship_tiers(tiers: List[AutoshipTier]):
     """Update default autoship discount tiers"""
     await db.autoship_settings.update_one(
         {"type": "default_tiers"},
@@ -586,7 +586,7 @@ async def update_autoship_tiers(tiers: List[AutoshipTier], username: str = Depen
                 "type": "default_tiers",
                 "tiers": [t.dict() for t in tiers],
                 "updated_at": datetime.now(timezone.utc).isoformat(),
-                "updated_by": username
+                "updated_by": "admin"
             }
         },
         upsert=True
