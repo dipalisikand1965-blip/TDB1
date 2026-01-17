@@ -571,14 +571,7 @@ async def public_get_navbar_collections():
 @public_router.get("/collections/{slug}")
 async def public_get_collection_by_slug(slug: str):
     """Get a single published collection by slug"""
-    import logging
-    logger = logging.getLogger("collection_routes")
-    
-    logger.info(f"Looking for collection with slug: {slug}")
-    logger.info(f"DB object: {db}")
-    
     if db is None:
-        logger.error("Database is None!")
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     now = datetime.now(timezone.utc).isoformat()
@@ -590,8 +583,6 @@ async def public_get_collection_by_slug(slug: str):
         },
         {"_id": 0}
     )
-    
-    logger.info(f"Query result: {collection is not None}")
     
     if not collection:
         raise HTTPException(status_code=404, detail="Collection not found")
