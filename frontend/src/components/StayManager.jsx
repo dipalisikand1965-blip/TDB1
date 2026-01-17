@@ -30,6 +30,7 @@ const StayManager = ({ getAuthHeader }) => {
   const [showPawRewardModal, setShowPawRewardModal] = useState(false);
   const [showTagsModal, setShowTagsModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
+  const [showEventModal, setShowEventModal] = useState(false);
   const [eligibleProducts, setEligibleProducts] = useState([]);
   const [pillarTags, setPillarTags] = useState([]);
   const [filters, setFilters] = useState({ status: '', city: '', type: '' });
@@ -39,6 +40,7 @@ const StayManager = ({ getAuthHeader }) => {
   const [stayProducts, setStayProducts] = useState([]);
   const [staySocials, setStaySocials] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [productStats, setProductStats] = useState({ bundles: 0, socials: 0, orders: 0 });
 
   const fetchData = useCallback(async () => {
