@@ -41,11 +41,20 @@ const PET_FEATURES = [
   'Pick-up & drop-off'
 ];
 
+const STEP_TITLES = [
+  'Business Type',
+  'Business Details', 
+  'Features & Services',
+  'Documents',
+  'Agreement'
+];
+
 const PartnerOnboarding = () => {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [applicationId, setApplicationId] = useState(null);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
   
   const [formData, setFormData] = useState({
     partner_type: '',
@@ -65,7 +74,17 @@ const PartnerOnboarding = () => {
     services_offered: [],
     price_range: '',
     how_heard_about_us: '',
-    additional_notes: ''
+    additional_notes: '',
+    // Document fields
+    gst_number: '',
+    pan_number: '',
+    gst_document: null,
+    pan_document: null,
+    business_license: null,
+    // Agreement fields
+    agreement_accepted: false,
+    signature_name: '',
+    signature_date: new Date().toISOString().split('T')[0]
   });
 
   const updateForm = (field, value) => {
