@@ -273,6 +273,192 @@ const StayPage = () => {
         )}
       </div>
 
+      {/* Stay Products / Travel Essentials Section */}
+      {bundles.length > 0 && (
+        <div className="bg-gradient-to-b from-amber-50 to-white py-12 px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Package className="w-6 h-6 text-amber-600" />
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Stay Essentials</h2>
+              </div>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Curated travel kits and bundles for your pawcation. Everything your furry friend needs for a comfortable stay.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {bundles.slice(0, 8).map((bundle) => (
+                <Card 
+                  key={bundle.id} 
+                  className="overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer"
+                  onClick={() => setSelectedBundle(bundle)}
+                  data-testid={`bundle-card-${bundle.id}`}
+                >
+                  <div className="relative h-40">
+                    <img 
+                      src={bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600'} 
+                      alt={bundle.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    
+                    {bundle.discount_percent > 0 && (
+                      <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 bg-red-500 rounded-full text-xs font-bold text-white">
+                        <Percent className="w-3 h-3" /> {Math.round(bundle.discount_percent)}% OFF
+                      </div>
+                    )}
+                    
+                    {bundle.featured && (
+                      <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-amber-500 rounded-full text-xs font-medium text-white">
+                        <Sparkles className="w-3 h-3" /> Featured
+                      </div>
+                    )}
+                    
+                    <div className="absolute bottom-2 left-2 right-2 text-white">
+                      <h3 className="font-bold text-sm line-clamp-1">{bundle.name}</h3>
+                    </div>
+                  </div>
+
+                  <div className="p-3">
+                    <p className="text-xs text-gray-600 line-clamp-2 mb-2">{bundle.description}</p>
+                    
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {bundle.tags?.slice(0, 2).map((tag, idx) => (
+                        <span key={idx} className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-lg font-bold text-green-600">₹{bundle.bundle_price}</span>
+                        {bundle.original_price > bundle.bundle_price && (
+                          <span className="text-xs text-gray-400 line-through ml-1">₹{bundle.original_price}</span>
+                        )}
+                      </div>
+                      <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-xs">
+                        <ShoppingBag className="w-3 h-3 mr-1" /> Add
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {bundles.length > 8 && (
+              <div className="text-center mt-6">
+                <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50">
+                  View All {bundles.length} Bundles <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Stay Socials / Pawcation Events Section */}
+      {socials.length > 0 && (
+        <div className="bg-gradient-to-b from-purple-50 to-white py-12 px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <PartyPopper className="w-6 h-6 text-purple-600" />
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Pawcation Socials</h2>
+              </div>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Connect with fellow pet parents! Join group activities, meetups, and events at our partner properties.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {socials.slice(0, 6).map((social) => (
+                <Card 
+                  key={social.id} 
+                  className="overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer"
+                  onClick={() => setSelectedSocial(social)}
+                  data-testid={`social-card-${social.id}`}
+                >
+                  <div className="relative h-36">
+                    <img 
+                      src={social.image || social.property_image || 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=600'} 
+                      alt={social.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                    
+                    <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 bg-purple-600 rounded-full text-xs font-medium text-white capitalize">
+                      <Users className="w-3 h-3" /> {social.event_type?.replace(/_/g, ' ')}
+                    </div>
+                    
+                    {social.price_per_pet === 0 && (
+                      <div className="absolute top-2 right-2 px-2 py-1 bg-green-500 rounded-full text-xs font-bold text-white">
+                        FREE
+                      </div>
+                    )}
+                    
+                    <div className="absolute bottom-2 left-2 right-2 text-white">
+                      <h3 className="font-bold text-sm line-clamp-1">{social.title}</h3>
+                      <p className="text-xs opacity-90 flex items-center gap-1">
+                        <MapPin className="w-3 h-3" /> {social.property_name || social.property_city}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-3">
+                    <div className="flex items-center gap-3 text-xs text-gray-600 mb-2">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" /> {social.event_date}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> {social.event_time}
+                      </span>
+                    </div>
+                    
+                    <p className="text-xs text-gray-600 line-clamp-2 mb-2">{social.description}</p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <Footprints className="w-3 h-3" />
+                        <span>{social.current_participants || 0}/{social.max_participants} spots</span>
+                      </div>
+                      <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-xs">
+                        Join Event
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {socials.length > 6 && (
+              <div className="text-center mt-6">
+                <Button variant="outline" className="border-purple-500 text-purple-600 hover:bg-purple-50">
+                  View All Events <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Bundle Details Modal */}
+      {selectedBundle && (
+        <BundleDetailsModal 
+          bundle={selectedBundle}
+          onClose={() => setSelectedBundle(null)}
+        />
+      )}
+
+      {/* Social Event Details Modal */}
+      {selectedSocial && (
+        <SocialDetailsModal 
+          social={selectedSocial}
+          onClose={() => setSelectedSocial(null)}
+        />
+      )}
+
       {/* Property Details Modal */}
       {selectedProperty && !showBookingModal && (
         <PropertyDetailsModal 
