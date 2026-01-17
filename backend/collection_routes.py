@@ -527,9 +527,9 @@ async def search_items_for_collection(
 
 # ==================== PUBLIC ROUTES ====================
 
-public_router = APIRouter(prefix="/api/collections", tags=["Public Collections"])
+public_router = APIRouter(prefix="/api/campaign", tags=["Public Collections"])
 
-@public_router.get("")
+@public_router.get("/collections")
 async def public_get_collections():
     """Get all published collections for public display"""
     now = datetime.now(timezone.utc).isoformat()
