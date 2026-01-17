@@ -168,7 +168,7 @@ const Navbar = () => {
             </Link>
 
             {/* Desktop Navigation - Life Pillars */}
-            <div className="hidden lg:flex items-center space-x-1" ref={pillarRef}>
+            <div className="hidden lg:flex items-center space-x-0.5" ref={pillarRef}>
               {pillars.map((pillar) => {
                 const Icon = pillar.icon;
                 const hasDropdown = pillar.subItems && pillar.subItems.length > 0;
@@ -184,7 +184,7 @@ const Navbar = () => {
                         }
                       }}
                       onMouseEnter={() => hasDropdown && setActivePillar(pillar.id)}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all ${
+                      className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all ${
                         isPillarActive(pillar)
                           ? `bg-gradient-to-r ${pillar.color} text-white shadow-md`
                           : pillar.isActive
@@ -193,10 +193,10 @@ const Navbar = () => {
                       }`}
                       data-testid={`pillar-${pillar.id}`}
                     >
-                      <Icon className="w-4 h-4" />
+                      <Icon className="w-3.5 h-3.5" />
                       {pillar.name}
-                      {!pillar.isActive && <Clock className="w-3 h-3 ml-0.5" />}
-                      {hasDropdown && <ChevronDown className={`w-3 h-3 transition-transform ${activePillar === pillar.id ? 'rotate-180' : ''}`} />}
+                      {!pillar.isActive && <Clock className="w-2.5 h-2.5 ml-0.5" />}
+                      {hasDropdown && <ChevronDown className={`w-2.5 h-2.5 transition-transform ${activePillar === pillar.id ? 'rotate-180' : ''}`} />}
                     </button>
 
                     {/* Dropdown for active pillars */}
