@@ -554,6 +554,13 @@ const DineManager = ({ credentials }) => {
         >
           <Heart className="w-4 h-4 mr-2" /> Meetup Requests
         </Button>
+        <Button 
+          variant={activeTab === 'bundles' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('bundles')}
+          className={activeTab === 'bundles' ? 'bg-green-500 hover:bg-green-600' : ''}
+        >
+          <Sparkles className="w-4 h-4 mr-2" /> Dine Bundles
+        </Button>
       </div>
       
       {/* ============ RESTAURANTS TAB ============ */}
