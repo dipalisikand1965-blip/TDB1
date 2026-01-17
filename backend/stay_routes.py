@@ -282,6 +282,7 @@ class StayPropertyUpdate(BaseModel):
     cuisine_available: Optional[List[str]] = None
     nearby_vet: Optional[str] = None
     nearby_pet_places: Optional[List[str]] = None
+    paw_reward: Optional[PawReward] = None
     status: Optional[str] = None
     featured: Optional[bool] = None
     verified: Optional[bool] = None
