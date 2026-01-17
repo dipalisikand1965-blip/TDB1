@@ -133,8 +133,8 @@ const StayManager = ({ getAuthHeader }) => {
     try {
       const isNew = !product.id;
       const url = isNew 
-        ? `${API_URL}/api/admin/stay/products`
-        : `${API_URL}/api/admin/stay/products/${product.id}`;
+        ? `${API_URL}/api/admin/stay/social/bundles`
+        : `${API_URL}/api/admin/stay/social/bundles/${product.id}`;
       
       const response = await fetch(url, {
         method: isNew ? 'POST' : 'PUT',
