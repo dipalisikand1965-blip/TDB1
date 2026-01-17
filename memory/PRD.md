@@ -129,11 +129,22 @@
 
 ## API Endpoints (Key)
 - `/api/admin/pricing/*` - Pricing Hub
-- `/api/admin/reports/pillars/*` - Pillar Reports
+- `/api/admin/reports/pillars/*` - Pillar Reports (including partners and mira)
+- `/api/admin/migration/*` - Data Migration Tool
 - `/api/admin/enhanced-collections/*` - Campaign Collections
 - `/api/campaign/collections/*` - Public collections
 - `/api/partners/*` - Partner onboarding
 - `/api/dine/*` - Restaurant & visits
+
+---
+
+## UI/UX Updates (Jan 17, 2026)
+- **Page Title**: Changed from "Doggy Bakery" to "The Doggy Company | Pet Life Operating System"
+- **Footer Phone Numbers**: Added +91 prefix (+91 9739982582, +91 9663185747)
+- **Scroll to Top**: Footer links now scroll to top of page on navigation
+- **Partner Form**: Pet Hotel & Pet Boarding split into separate options
+- **Partner Documents**: GST, PAN, Company Turnover now mandatory
+- **Agreement Date**: Auto-fills with current date (read-only)
 
 ---
 
