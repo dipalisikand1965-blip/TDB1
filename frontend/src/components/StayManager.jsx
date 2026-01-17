@@ -96,7 +96,7 @@ const StayManager = ({ getAuthHeader }) => {
     if (!window.confirm('This will seed 8 Stay Bundles and 3 Social Events. Continue?')) return;
     
     try {
-      const response = await fetch(`${API_URL}/api/admin/stay/seed-products`, {
+      const response = await fetch(`${API_URL}/api/admin/stay/social/seed-products`, {
         method: 'POST',
         headers: getAuthHeader()
       });
