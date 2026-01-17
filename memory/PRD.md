@@ -243,27 +243,38 @@ Pet Menu, Off-leash area, Pet sitter, Grooming, Vet on call, Trails, Beach acces
 ## Upcoming Tasks (Priority Order)
 
 ### P0 - High Priority
-1. **Stay Pillar Development**
-   - Pet hotels, boarding, daycare listings
-   - Room types & pricing
-   - Availability calendar
-   - Booking system
+1. **Full Admin Integration for Stay Products & Socials**
+   - Orders for Stay Bundles should flow through entire system
+   - Appear in Orders tab, create notifications
+   - Bundle purchase tracking
+
+2. **Pet Profile Enhancements**
+   - Pillar-wise view in admin panel
+   - Full "operating system" view for each pet
+   - Track pet's interactions across pillars
 
 ### P1 - Medium Priority
-2. Razorpay Payment Integration
-3. Push Notifications & Email Alerts enhancement
-4. Care Pillar Development (groomers, vets, trainers)
+3. **Care Pillar Development** (groomers, vets, trainers)
+4. Razorpay Payment Integration
+5. Push Notifications & Email Alerts enhancement
 
 ### P2 - Lower Priority
-5. Travel Pillar Development
-6. Landing Page Redesign
-7. Admin.jsx Refactoring (currently 2300+ lines)
-8. server.py Modularization
+6. Travel Pillar Development
+7. Landing Page Redesign
+8. Admin.jsx Refactoring (currently 2300+ lines)
+9. server.py Modularization
+
+---
+
+## Bug Fixes (Jan 17, 2026)
+1. ✅ **Stay Products Not Displaying**: Fixed missing JSX rendering in StayPage.jsx for bundles and socials sections
+2. ✅ **Email Domain Verification**: Updated SENDER_EMAIL to woof@thedoggybakery.in (user verified domain)
+3. ✅ **Shopify 'Untitled' Products**: Added fallback name handling using handle or ID when title is null/empty
 
 ---
 
 ## Known Issues
-- Shopify Sync 'Untitled' Products (recurring, needs monitoring)
+- Review submission: User reported not working (could not reproduce, may need browser console logs)
 - Production vs Preview database sync (collections need to be seeded separately)
 
 ---
