@@ -148,6 +148,32 @@ const ReportsManager = ({ authHeaders }) => {
     }
   }, [authHeaders, period]);
 
+  // Fetch partner report
+  const fetchPartnerReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/partners?period=${period}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setPartnerReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch partner report:', error);
+    }
+  }, [authHeaders, period]);
+
+  // Fetch mira AI report
+  const fetchMiraReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/mira?period=${period}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setMiraReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch mira report:', error);
+    }
+  }, [authHeaders, period]);
+
   // Fetch executive summary
   const fetchExecutiveSummary = useCallback(async () => {
     try {
