@@ -1699,4 +1699,334 @@ const PawRewardModal = ({ property, eligibleProducts, onClose, onSave }) => {
   );
 };
 
+// Stay Product Bundle Modal Component
+const StayProductModal = ({ product, onClose, onSave }) => {
+  const isNew = !product;
+  const [formData, setFormData] = useState({
+    name: product?.name || '',
+    description: product?.description || '',
+    category: product?.category || 'travel_kit',
+    bundle_price: product?.bundle_price || 0,
+    original_price: product?.original_price || 0,
+    image: product?.image || '',
+    tags: product?.tags || [],
+    for_trip_type: product?.for_trip_type || [],
+    featured: product?.featured || false,
+    items: product?.items || []
+  });
+  const [saving, setSaving] = useState(false);
+  const [newTag, setNewTag] = useState('');
+  const [newItem, setNewItem] = useState({ name: '', quantity: 1, price: 0 });
+
+  const categories = [
+    { id: 'travel_kit', name: 'Travel Kit' },
+    { id: 'comfort_pack', name: 'Comfort Pack' },
+    { id: 'adventure_bundle', name: 'Adventure Bundle' },
+    { id: 'first_time_pack', name: 'First Time Pack' },
+    { id: 'luxury_collection', name: 'Luxury Collection' },
+    { id: 'hygiene_kit', name: 'Hygiene Kit' }
+  ];
+
+  const tripTypes = [
+    { id: 'beach', name: 'Beach' },
+    { id: 'mountain', name: 'Mountain' },
+    { id: 'forest', name: 'Forest' },
+    { id: 'road_trip', name: 'Road Trip' },
+    { id: 'weekend', name: 'Weekend' },
+    { id: 'luxury', name: 'Luxury' }
+  ];
+
+  const addTag = () => {
+    if (newTag && !formData.tags.includes(newTag)) {
+      setFormData({ ...formData, tags: [...formData.tags, newTag] });
+      setNewTag('');
+    }
+  };
+
+  const removeTag = (tag) => {
+    setFormData({ ...formData, tags: formData.tags.filter(t => t !== tag) });
+  };
+
+  const addItem = () => {
+    if (newItem.name && newItem.price > 0) {
+      setFormData({ ...formData, items: [...formData.items, { ...newItem }] });
+      setNewItem({ name: '', quantity: 1, price: 0 });
+    }
+  };
+
+  const removeItem = (index) => {
+    setFormData({ ...formData, items: formData.items.filter((_, i) => i !== index) });
+  };
+
+  const toggleTripType = (type) => {
+    const current = formData.for_trip_type;
+    if (current.includes(type)) {
+      setFormData({ ...formData, for_trip_type: current.filter(t => t !== type) });
+    } else {
+      setFormData({ ...formData, for_trip_type: [...current, type] });
+    }
+  };
+
+  const calculateDiscount = () => {
+    if (formData.original_price > 0 && formData.bundle_price > 0) {
+      return Math.round(((formData.original_price - formData.bundle_price) / formData.original_price) * 100);
+    }
+    return 0;
+  };
+
+  const handleSave = async () => {
+    if (!formData.name || formData.bundle_price <= 0) {
+      alert('Please fill in name and bundle price');
+      return;
+    }
+    
+    setSaving(true);
+    const dataToSave = {
+      ...formData,
+      discount_percent: calculateDiscount()
+    };
+    if (product?.id) {
+      dataToSave.id = product.id;
+    }
+    await onSave(dataToSave);
+    setSaving(false);
+  };
+
+  return (
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Package className="w-5 h-5 text-amber-500" />
+            {isNew ? 'Create New Bundle' : `Edit Bundle - ${product.name}`}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6 py-4">
+          {/* Basic Info */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <Label>Bundle Name *</Label>
+              <Input
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="e.g., Weekend Getaway Kit"
+                className="mt-1"
+              />
+            </div>
+            
+            <div className="col-span-2">
+              <Label>Description</Label>
+              <Textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Describe what's included and who it's for..."
+                className="mt-1"
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <Label>Category</Label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                className="w-full p-2 border rounded-lg mt-1"
+              >
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <Label>Image URL</Label>
+              <Input
+                value={formData.image}
+                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                placeholder="https://..."
+                className="mt-1"
+              />
+            </div>
+          </div>
+
+          {/* Pricing */}
+          <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+            <h4 className="font-semibold text-green-800 mb-3">Pricing</h4>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label>Original Price (₹) *</Label>
+                <Input
+                  type="number"
+                  value={formData.original_price}
+                  onChange={(e) => setFormData({ ...formData, original_price: parseInt(e.target.value) || 0 })}
+                  placeholder="1499"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Bundle Price (₹) *</Label>
+                <Input
+                  type="number"
+                  value={formData.bundle_price}
+                  onChange={(e) => setFormData({ ...formData, bundle_price: parseInt(e.target.value) || 0 })}
+                  placeholder="1199"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Discount</Label>
+                <div className="mt-1 p-2 bg-white rounded-lg border text-center">
+                  <span className="text-2xl font-bold text-green-600">{calculateDiscount()}%</span>
+                  <span className="text-sm text-gray-500 block">OFF</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bundle Items */}
+          <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+            <h4 className="font-semibold text-amber-800 mb-3">Bundle Items</h4>
+            
+            {/* Existing Items */}
+            {formData.items.length > 0 && (
+              <div className="space-y-2 mb-4">
+                {formData.items.map((item, index) => (
+                  <div key={index} className="flex items-center gap-3 p-2 bg-white rounded-lg">
+                    <span className="flex-1 text-sm">{item.name}</span>
+                    <span className="text-xs text-gray-500">x{item.quantity}</span>
+                    <span className="text-sm font-medium">₹{item.price}</span>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="text-red-500 h-6 w-6 p-0"
+                      onClick={() => removeItem(index)}
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Add New Item */}
+            <div className="flex items-end gap-2">
+              <div className="flex-1">
+                <Label className="text-xs">Item Name</Label>
+                <Input
+                  value={newItem.name}
+                  onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+                  placeholder="e.g., Travel Treats Pack"
+                  className="mt-1 h-9"
+                />
+              </div>
+              <div className="w-20">
+                <Label className="text-xs">Qty</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={newItem.quantity}
+                  onChange={(e) => setNewItem({ ...newItem, quantity: parseInt(e.target.value) || 1 })}
+                  className="mt-1 h-9"
+                />
+              </div>
+              <div className="w-24">
+                <Label className="text-xs">Price (₹)</Label>
+                <Input
+                  type="number"
+                  value={newItem.price}
+                  onChange={(e) => setNewItem({ ...newItem, price: parseInt(e.target.value) || 0 })}
+                  placeholder="299"
+                  className="mt-1 h-9"
+                />
+              </div>
+              <Button size="sm" onClick={addItem} className="h-9 bg-amber-500 hover:bg-amber-600">
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Trip Types */}
+          <div>
+            <Label>Suitable for Trip Types</Label>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {tripTypes.map(type => (
+                <button
+                  key={type.id}
+                  type="button"
+                  onClick={() => toggleTripType(type.id)}
+                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                    formData.for_trip_type.includes(type.id)
+                      ? 'bg-amber-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {type.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tags */}
+          <div>
+            <Label>Tags</Label>
+            <div className="flex flex-wrap gap-2 mt-2 mb-2">
+              {formData.tags.map((tag, idx) => (
+                <span 
+                  key={idx} 
+                  className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-sm flex items-center gap-1"
+                >
+                  {tag}
+                  <button onClick={() => removeTag(tag)} className="hover:text-red-500">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={newTag}
+                onChange={(e) => setNewTag(e.target.value)}
+                placeholder="Add tag..."
+                className="flex-1"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+              />
+              <Button variant="outline" onClick={addTag}>Add</Button>
+            </div>
+          </div>
+
+          {/* Featured Toggle */}
+          <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
+            <div>
+              <h4 className="font-semibold text-purple-800">Featured Bundle</h4>
+              <p className="text-sm text-purple-600">Show this bundle prominently</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.featured}
+                onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>
+            </label>
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button 
+            className="bg-amber-500 hover:bg-amber-600"
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+            {isNew ? 'Create Bundle' : 'Save Changes'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export default StayManager;
