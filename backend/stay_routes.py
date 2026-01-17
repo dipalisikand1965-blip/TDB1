@@ -146,6 +146,29 @@ class StayCommercials(BaseModel):
     partner_coupon_codes: List[str] = []
 
 
+class PawReward(BaseModel):
+    """Paw Reward - Complimentary treat with every booking"""
+    enabled: bool = True
+    product_id: Optional[str] = None  # Product ID from inventory
+    product_name: Optional[str] = None
+    product_image: Optional[str] = None
+    product_price: Optional[float] = None
+    max_value: float = 600  # Up to ₹600
+    custom_message: Optional[str] = None  # "Every stay earns your dog a Paw Reward"
+
+
+class PillarTag(BaseModel):
+    """Pillar-wise Tag"""
+    id: Optional[str] = None
+    name: str
+    pillar: str  # stay, dine, travel, care
+    category: str  # rewards, amenities, features, policies
+    icon: Optional[str] = None
+    color: Optional[str] = None
+    description: Optional[str] = None
+    active: bool = True
+
+
 class StayPropertyCreate(BaseModel):
     """Stay Property Creation Model"""
     # TAB 1: Property Basics
