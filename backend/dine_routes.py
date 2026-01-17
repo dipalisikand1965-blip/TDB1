@@ -30,6 +30,34 @@ dine_router = APIRouter(prefix="/api", tags=["Dine"])
 # Database reference
 db: AsyncIOMotorDatabase = None
 
+# Admin notification helper (will be set from server.py)
+_create_admin_notification = None
+
+def set_admin_notification_handler(handler):
+    """Set the admin notification handler from server.py"""
+    global _create_admin_notification
+    _create_admin_notification = handler
+
+async def notify_admin(notification_type, title, message, category="dine", related_id=None, link_to=None, priority="normal", metadata=None):
+    """Create admin notification if handler is set"""
+    if _create_admin_notification:
+        try:
+            await _create_admin_notification(
+                notification_type=notification_type,
+                title=title,
+                message=message,
+                category=category,
+                related_id=related_id,
+                link_to=link_to,
+                priority=priority,
+                metadata=metadata
+            )
+        except Exception as e:
+            logger.error(f"Failed to create admin notification: {e}")
+
+# Database reference
+db: AsyncIOMotorDatabase = None
+
 # Admin credentials
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 
