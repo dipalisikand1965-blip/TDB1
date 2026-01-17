@@ -790,8 +790,16 @@ const EnhancedCollectionManager = ({ getAuthHeader }) => {
                   <option value="stay">Stays</option>
                   <option value="service">Services</option>
                 </select>
-                <Button onClick={searchItems} disabled={searching}>
-                  {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Search'}
+                <Button onClick={searchItems} disabled={searching} className="bg-purple-600 hover:bg-purple-700">
+                  {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Search className="w-4 h-4 mr-1" /> Search</>}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => { setSearchQuery(''); searchItems(); }}
+                  disabled={searching}
+                  title="Browse all products"
+                >
+                  Browse All
                 </Button>
               </div>
               
