@@ -6608,6 +6608,20 @@ async def seed_stay_data(
     result = await seed_stay_properties(db, force_reseed=force_reseed)
     return result
 
+
+@app.post("/api/admin/stay/seed-bundles")
+async def seed_stay_bundle_data(
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Seed Stay product bundles"""
+    verify_admin(credentials)
+    bundles_result = await seed_stay_bundles(db)
+    socials_result = await seed_sample_socials(db)
+    return {
+        "bundles": bundles_result,
+        "socials": socials_result
+    }
+
 # ==================== ADMIN PASSWORD MANAGEMENT ====================
 
 class PasswordChangeRequest(BaseModel):
