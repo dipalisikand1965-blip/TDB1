@@ -34,13 +34,13 @@
 - **NEW**: CSV export functionality
 - Auto-ticket creation from Mira AI chats
 
-### 5. Partner Onboarding Module ✅
+### 5. Partner Onboarding Module ✅ (UPDATED - Jan 17, 2026)
 - **5-Step Registration Form**:
-  1. Business Type (Restaurant, Hotel, Groomer, etc.)
-  2. Business Details
+  1. Business Type - **Pet Hotel & Pet Boarding now separate options**
+  2. Business Details - **Added "Additional Cities" for multi-city presence**
   3. Pet-Friendly Features & Services
-  4. Documents (GST, PAN uploads)
-  5. Agreement & Digital Signature
+  4. Documents - **GST, PAN, Company Turnover now MANDATORY**
+  5. Agreement - **Date auto-filled to current date (read-only)**
 - **NEW**: Concierge Notes in admin for internal tracking
 - Admin approval workflow
 
