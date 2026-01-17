@@ -114,7 +114,7 @@ const StayManager = ({ getAuthHeader }) => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
     
     try {
-      const response = await fetch(`${API_URL}/api/admin/stay/products/${productId}`, {
+      const response = await fetch(`${API_URL}/api/admin/stay/social/bundles/${productId}`, {
         method: 'DELETE',
         headers: getAuthHeader()
       });
