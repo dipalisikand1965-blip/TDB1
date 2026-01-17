@@ -160,6 +160,9 @@ function MainLayout() {
         <Route path="/travel" element={<PillarPage />} />
         <Route path="/care" element={<PillarPage />} />
         <Route path="/pillar/:pillarId" element={<PillarPage />} />
+        
+        {/* Campaign Collections */}
+        <Route path="/collections/:slug" element={<CollectionPage />} />
       </Routes>
       <Footer />
       <CartSidebar />
