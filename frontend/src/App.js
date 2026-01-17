@@ -164,6 +164,10 @@ function MainLayout() {
         
         {/* Campaign Collections */}
         <Route path="/collections/:slug" element={<CollectionPage />} />
+        
+        {/* Partner Onboarding */}
+        <Route path="/partner" element={<PartnerOnboarding />} />
+        <Route path="/become-a-partner" element={<PartnerOnboarding />} />
       </Routes>
       <Footer />
       <CartSidebar />
