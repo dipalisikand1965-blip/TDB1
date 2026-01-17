@@ -514,3 +514,225 @@ async def get_pricing_stats():
         "shipping_rules": shipping_rules,
         "pillar_commissions": commissions
     }
+
+
+# ==================== AUTOSHIP SETTINGS ====================
+
+class AutoshipTier(BaseModel):
+    tier_name: str  # "first", "second_to_fourth", "fifth_plus"
+    min_order: int
+    max_order: Optional[int] = None  # None means unlimited
+    discount_percent: float
+
+class AutoshipProductOverride(BaseModel):
+    product_id: str
+    discount_percent: float
+    is_special: bool = False
+    special_label: Optional[str] = None
+    special_until: Optional[str] = None  # ISO date string
+    notes: Optional[str] = None
+
+class AutoshipSettings(BaseModel):
+    default_tiers: List[AutoshipTier]
+    product_overrides: List[AutoshipProductOverride] = []
+
+
+@router.get("/autoship/settings")
+async def get_autoship_settings():
+    """Get current autoship settings including default tiers and product overrides"""
+    # Get default tiers (or return defaults if not customized)
+    tiers_doc = await db.autoship_settings.find_one({"type": "default_tiers"})
+    
+    default_tiers = [
+        {"tier_name": "first", "min_order": 1, "max_order": 1, "discount_percent": 10},
+        {"tier_name": "second_to_fourth", "min_order": 2, "max_order": 4, "discount_percent": 15},
+        {"tier_name": "fifth_plus", "min_order": 5, "max_order": None, "discount_percent": 30}
+    ]
+    
+    if tiers_doc:
+        default_tiers = tiers_doc.get("tiers", default_tiers)
+    
+    # Get all product overrides
+    overrides = await db.autoship_product_overrides.find({}, {"_id": 0}).to_list(1000)
+    
+    # Get product names for overrides
+    for override in overrides:
+        product = await db.products.find_one({"id": override["product_id"]}, {"_id": 0, "name": 1, "image": 1})
+        if product:
+            override["product_name"] = product.get("name")
+            override["product_image"] = product.get("image")
+    
+    # Count active special offers
+    now = datetime.now(timezone.utc).isoformat()
+    active_specials = sum(1 for o in overrides if o.get("is_special") and (not o.get("special_until") or o.get("special_until") > now))
+    
+    return {
+        "default_tiers": default_tiers,
+        "product_overrides": overrides,
+        "stats": {
+            "total_overrides": len(overrides),
+            "active_specials": active_specials
+        }
+    }
+
+
+@router.put("/autoship/tiers")
+async def update_autoship_tiers(tiers: List[AutoshipTier], username: str = Depends(lambda: verify_admin)):
+    """Update default autoship discount tiers"""
+    await db.autoship_settings.update_one(
+        {"type": "default_tiers"},
+        {
+            "$set": {
+                "type": "default_tiers",
+                "tiers": [t.dict() for t in tiers],
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "updated_by": username
+            }
+        },
+        upsert=True
+    )
+    
+    return {"success": True, "message": "Autoship tiers updated"}
+
+
+@router.post("/autoship/product-override")
+async def add_product_autoship_override(override: AutoshipProductOverride, username: str = Depends(lambda: verify_admin)):
+    """Add or update autoship discount override for a specific product"""
+    # Verify product exists
+    product = await db.products.find_one({"id": override.product_id})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    override_doc = {
+        "product_id": override.product_id,
+        "discount_percent": override.discount_percent,
+        "is_special": override.is_special,
+        "special_label": override.special_label or ("Special Offer" if override.is_special else None),
+        "special_until": override.special_until,
+        "notes": override.notes,
+        "updated_at": now,
+        "updated_by": username
+    }
+    
+    await db.autoship_product_overrides.update_one(
+        {"product_id": override.product_id},
+        {"$set": override_doc},
+        upsert=True
+    )
+    
+    # Also update the product document for quick access
+    await db.products.update_one(
+        {"id": override.product_id},
+        {
+            "$set": {
+                "autoship_discount_percent": override.discount_percent,
+                "autoship_special_until": override.special_until,
+                "autoship_is_special": override.is_special,
+                "autoship_special_label": override.special_label
+            }
+        }
+    )
+    
+    return {
+        "success": True,
+        "message": f"Autoship override set for {product.get('name')}",
+        "override": override_doc
+    }
+
+
+@router.delete("/autoship/product-override/{product_id}")
+async def remove_product_autoship_override(product_id: str, username: str = Depends(lambda: verify_admin)):
+    """Remove autoship override for a product (revert to default tiers)"""
+    result = await db.autoship_product_overrides.delete_one({"product_id": product_id})
+    
+    # Also remove from product document
+    await db.products.update_one(
+        {"id": product_id},
+        {
+            "$unset": {
+                "autoship_discount_percent": "",
+                "autoship_special_until": "",
+                "autoship_is_special": "",
+                "autoship_special_label": ""
+            }
+        }
+    )
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Override not found")
+    
+    return {"success": True, "message": "Override removed, product will use default tiers"}
+
+
+@router.get("/autoship/products")
+async def get_products_for_autoship():
+    """Get all products with their autoship settings for the admin UI"""
+    products = await db.products.find(
+        {},
+        {
+            "_id": 0,
+            "id": 1,
+            "name": 1,
+            "image": 1,
+            "category": 1,
+            "price": 1,
+            "autoship_discount_percent": 1,
+            "autoship_special_until": 1,
+            "autoship_is_special": 1,
+            "autoship_special_label": 1
+        }
+    ).to_list(10000)
+    
+    return {"products": products}
+
+
+@router.post("/autoship/bulk-override")
+async def bulk_update_autoship_overrides(
+    product_ids: List[str],
+    discount_percent: float,
+    is_special: bool = False,
+    special_label: Optional[str] = None,
+    special_until: Optional[str] = None,
+    username: str = Depends(lambda: verify_admin)
+):
+    """Bulk update autoship overrides for multiple products"""
+    now = datetime.now(timezone.utc).isoformat()
+    updated = 0
+    
+    for product_id in product_ids:
+        override_doc = {
+            "product_id": product_id,
+            "discount_percent": discount_percent,
+            "is_special": is_special,
+            "special_label": special_label or ("Special Offer" if is_special else None),
+            "special_until": special_until,
+            "updated_at": now,
+            "updated_by": username
+        }
+        
+        await db.autoship_product_overrides.update_one(
+            {"product_id": product_id},
+            {"$set": override_doc},
+            upsert=True
+        )
+        
+        await db.products.update_one(
+            {"id": product_id},
+            {
+                "$set": {
+                    "autoship_discount_percent": discount_percent,
+                    "autoship_special_until": special_until,
+                    "autoship_is_special": is_special,
+                    "autoship_special_label": special_label
+                }
+            }
+        )
+        updated += 1
+    
+    return {
+        "success": True,
+        "message": f"Updated autoship settings for {updated} products",
+        "updated": updated
+    }
