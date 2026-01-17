@@ -14,12 +14,7 @@
   "frontend_issues": {
     "ui_bugs": [],
     "integration_issues": [],
-    "design_issues": [
-      {
-        "screen": "Notification Panel",
-        "issues": ["Delete button (trash icon) has opacity-0 class making it invisible even on hover - the group-hover:opacity-100 class doesn't work because parent doesn't have 'group' class"]
-      }
-    ]
+    "design_issues": []
   },
   "test_report_links": [
     "/app/tests/test_admin_notifications.py",
