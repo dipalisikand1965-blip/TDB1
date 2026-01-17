@@ -559,19 +559,39 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
       if (!proceed) return;
     }
     
+    // Build request payload
+    const payload = {
+      restaurant_id: restaurant.id,
+      date: visitForm.date,
+      time_slot: visitForm.time_slot,
+      looking_for_buddies: visitForm.looking_for_buddies,
+      notes: visitForm.notes,
+      notification_preference: visitForm.notification_preference,
+      title: visitForm.title,
+      first_name: visitForm.first_name,
+      last_name: visitForm.last_name,
+      email: visitForm.email,
+      whatsapp: visitForm.whatsapp,
+      instagram: visitForm.instagram,
+      facebook: visitForm.facebook,
+      linkedin: visitForm.linkedin,
+      pets: visitForm.pets,
+      safety_agreed: visitForm.safety_agreed,
+      // Flatten first pet for backward compatibility
+      pet_name: visitForm.pets[0]?.name || '',
+      pet_breed: visitForm.pets[0]?.breed || '',
+      pet_about: visitForm.pets[0]?.about || '',
+      pet_photo: visitForm.pets[0]?.photo || ''
+    };
+    
+    // Log for debugging
+    console.log('Submitting visit with payload:', JSON.stringify(payload, null, 2));
+    
     try {
       const response = await fetch(`${API_URL}/api/dine/visits`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          restaurant_id: restaurant.id,
-          ...visitForm,
-          // Flatten first pet for backward compatibility
-          pet_name: visitForm.pets[0]?.name || '',
-          pet_breed: visitForm.pets[0]?.breed || '',
-          pet_about: visitForm.pets[0]?.about || '',
-          pet_photo: visitForm.pets[0]?.photo || ''
-        })
+        body: JSON.stringify(payload)
       });
       
       if (response.ok) {
