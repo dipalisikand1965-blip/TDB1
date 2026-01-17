@@ -71,6 +71,68 @@ const StayManager = ({ getAuthHeader }) => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+  
+  const fetchEligibleProducts = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/stay/paw-rewards/eligible-products`);
+      if (response.ok) {
+        const data = await response.json();
+        setEligibleProducts(data.products || []);
+      }
+    } catch (error) {
+      console.error('Error fetching eligible products:', error);
+    }
+  };
+  
+  const fetchPillarTags = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/stay/tags?pillar=stay`);
+      if (response.ok) {
+        const data = await response.json();
+        setPillarTags(data.tags || []);
+      }
+    } catch (error) {
+      console.error('Error fetching tags:', error);
+    }
+  };
+  
+  const handleUpdatePawReward = async (propertyId, pawReward) => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/stay/properties/${propertyId}/paw-reward`, {
+        method: 'POST',
+        headers: {
+          ...getAuthHeader(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(pawReward)
+      });
+      if (response.ok) {
+        alert('Paw Reward updated successfully!');
+        fetchData();
+        setShowPawRewardModal(false);
+      }
+    } catch (error) {
+      console.error('Error updating Paw Reward:', error);
+      alert('Failed to update Paw Reward');
+    }
+  };
+  
+  const handleBulkAssignPawRewards = async () => {
+    if (!window.confirm('This will auto-assign Paw Rewards to all properties that don\'t have one. Continue?')) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/admin/stay/properties/assign-paw-rewards`, {
+        method: 'POST',
+        headers: getAuthHeader()
+      });
+      const data = await response.json();
+      alert(data.message);
+      fetchData();
+    } catch (error) {
+      console.error('Error assigning Paw Rewards:', error);
+      alert('Failed to assign Paw Rewards');
+    }
+  };
 
   const handleSeedProperties = async () => {
     if (!window.confirm('This will seed the database with 32 curated pet-friendly hotels from across India. Continue?')) return;
