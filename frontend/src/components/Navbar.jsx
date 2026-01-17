@@ -77,10 +77,12 @@ const Navbar = () => {
       name: 'Stay', 
       icon: Home,
       color: 'from-green-500 to-teal-500',
-      description: 'Boarding & daycare',
+      description: 'Pet-friendly hotels & resorts',
       path: '/stay',
-      isActive: false,
-      subItems: []
+      isActive: true,
+      subItems: [
+        { name: '🏨 All Pet-Friendly Stays', path: '/stay' },
+      ]
     },
     { 
       id: 'travel',
