@@ -309,12 +309,21 @@ const PartnerOnboarding = () => {
                   />
                 </div>
                 <div>
-                  <Label>City *</Label>
+                  <Label>City (Primary Location) *</Label>
                   <Input 
                     value={formData.city}
                     onChange={(e) => updateForm('city', e.target.value)}
-                    placeholder="e.g. Bangalore, Mumbai"
+                    placeholder="e.g. Bangalore"
                   />
+                </div>
+                <div>
+                  <Label>Additional Cities (if multi-city presence)</Label>
+                  <Input 
+                    value={formData.additional_cities}
+                    onChange={(e) => updateForm('additional_cities', e.target.value)}
+                    placeholder="e.g. Mumbai, Delhi, Pune (comma separated)"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Leave blank if single location</p>
                 </div>
                 <div>
                   <Label>Full Address</Label>
