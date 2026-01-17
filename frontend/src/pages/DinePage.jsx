@@ -33,8 +33,11 @@ const freshMealsCategories = [
 ];
 
 const DinePage = () => {
+  const { addToCart } = useCart();
   const [restaurants, setRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
+  const [bundles, setBundles] = useState([]);
+  const [selectedBundle, setSelectedBundle] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCity, setSelectedCity] = useState('all');
   const [petMenuFilter, setPetMenuFilter] = useState('all');
