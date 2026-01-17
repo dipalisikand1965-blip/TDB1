@@ -64,6 +64,7 @@ const PartnerOnboarding = () => {
     email: '',
     phone: '',
     city: '',
+    additional_cities: '', // For multi-city presence
     address: '',
     website: '',
     instagram: '',
@@ -79,6 +80,7 @@ const PartnerOnboarding = () => {
     // Document fields
     gst_number: '',
     pan_number: '',
+    company_turnover: '', // Annual turnover
     gst_document: null,
     pan_document: null,
     business_license: null,
