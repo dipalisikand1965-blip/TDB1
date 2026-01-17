@@ -823,6 +823,15 @@ const StayManager = ({ getAuthHeader }) => {
           onSave={handleUpdatePawReward}
         />
       )}
+      
+      {/* Stay Product Modal */}
+      {showProductModal && (
+        <StayProductModal
+          product={selectedProduct}
+          onClose={() => { setShowProductModal(false); setSelectedProduct(null); }}
+          onSave={handleSaveProduct}
+        />
+      )}
     </div>
   );
 };
