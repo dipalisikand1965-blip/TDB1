@@ -2351,6 +2351,11 @@ const Admin = () => {
         {activeTab === 'pricing' && (
           <PricingHub getAuthHeader={getAuthHeaders} />
         )}
+
+        {/* Data Migration Tab */}
+        {activeTab === 'migration' && (
+          <DataMigration adminAuth={btoa(`${username}:${password}`)} />
+        )}
       </div>
 
       {/* Pet Profile Detail Modal */}
