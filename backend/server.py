@@ -84,6 +84,14 @@ from admin_auth import (
     set_admin_env_credentials
 )
 
+# Stay pillar routes
+from stay_routes import (
+    stay_router,
+    stay_admin_router,
+    set_database as set_stay_db
+)
+from stay_seeder import seed_stay_properties
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
