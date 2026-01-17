@@ -2482,6 +2482,16 @@ async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
                         link_to="/admin?tab=chats",
                         priority="normal"
                     )
+                    
+                    # Create Service Desk ticket for new Mira chat
+                    await create_ticket_from_event(db, "mira_chat", {
+                        "chat_id": conv_id,
+                        "name": extracted.get('name', 'Website Visitor'),
+                        "email": extracted.get('email'),
+                        "phone": extracted.get('phone'),
+                        "preview": extracted.get('preview', ''),
+                        "messages": extracted.get('message_count', 0)
+                    })
             
             return {
                 "message": "Chatbase sync completed",
