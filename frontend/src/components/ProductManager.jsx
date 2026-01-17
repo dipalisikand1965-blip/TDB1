@@ -84,6 +84,117 @@ const ProductManager = ({ credentials }) => {
   // Sync status
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState(null);
+  
+  // CSV Import
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = React.useRef(null);
+
+  // CSV Export function
+  const exportToCSV = () => {
+    const headers = [
+      'id', 'name', 'description', 'category', 'price', 'original_price',
+      'image', 'status', 'available', 'tags', 'sizes', 'flavors', 'shopify_id', 'shopify_handle'
+    ];
+    
+    const csvRows = [headers.join(',')];
+    
+    filteredProducts.forEach(product => {
+      const row = [
+        product.id || '',
+        `"${(product.name || '').replace(/"/g, '""')}"`,
+        `"${(product.description || '').replace(/"/g, '""').substring(0, 500)}"`,
+        product.category || '',
+        product.price || 0,
+        product.original_price || '',
+        product.image || '',
+        product.status || 'active',
+        product.available !== false ? 'true' : 'false',
+        `"${(product.tags || []).join(', ')}"`,
+        `"${(product.sizes || []).map(s => s.name || s).join(', ')}"`,
+        `"${(product.flavors || []).map(f => f.name || f).join(', ')}"`,
+        product.shopify_id || '',
+        product.shopify_handle || ''
+      ];
+      csvRows.push(row.join(','));
+    });
+    
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `products_export_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+  };
+
+  // CSV Import function
+  const handleCSVImport = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const lines = text.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      
+      const products = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        
+        // Parse CSV line (handling quoted values)
+        const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+        const product = {};
+        
+        headers.forEach((header, idx) => {
+          let value = values[idx] || '';
+          // Remove quotes
+          if (value.startsWith('"') && value.endsWith('"')) {
+            value = value.slice(1, -1).replace(/""/g, '"');
+          }
+          product[header] = value;
+        });
+        
+        if (product.name) {
+          products.push({
+            name: product.name,
+            description: product.description || '',
+            category: product.category || 'other',
+            price: parseFloat(product.price) || 0,
+            original_price: product.original_price ? parseFloat(product.original_price) : null,
+            image: product.image || '',
+            status: product.status || 'active',
+            available: product.available !== 'false',
+            tags: product.tags ? product.tags.split(',').map(t => t.trim()) : []
+          });
+        }
+      }
+      
+      // Send to backend
+      const response = await fetch(`${API_URL}/api/admin/products/import-csv`, {
+        method: 'POST',
+        headers: {
+          'Authorization': getAuthHeader(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ products })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Successfully imported ${result.imported} products!`);
+        fetchProducts();
+      } else {
+        const error = await response.json();
+        alert(`Import failed: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('CSV import error:', error);
+      alert('Failed to parse CSV file');
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   // Fetch collections
   const fetchCollections = async () => {
