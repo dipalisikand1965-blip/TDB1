@@ -495,6 +495,272 @@ const StayPage = () => {
         </div>
       )}
 
+      {/* Trip Planner Modal */}
+      {showTripPlanner && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowTripPlanner(false)}>
+          <Card className="max-w-4xl w-full max-h-[90vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="relative bg-gradient-to-r from-green-600 to-emerald-500 p-6 text-white">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="absolute top-4 right-4 text-white hover:bg-white/20"
+                onClick={() => setShowTripPlanner(false)}
+              >
+                <X className="w-6 h-6" />
+              </Button>
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-8 h-8" />
+                <div>
+                  <h2 className="text-2xl font-bold">Plan Your Pawcation</h2>
+                  <p className="opacity-90 text-sm">Get personalized recommendations for the perfect pet-friendly trip</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-8rem)]">
+              {!tripPlan ? (
+                // Trip Planner Form
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">Where do you want to go?</label>
+                      <select
+                        value={tripForm.destination_city}
+                        onChange={e => setTripForm({...tripForm, destination_city: e.target.value})}
+                        className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="">Select Destination</option>
+                        {tripOptions.cities.map(city => (
+                          <option key={city} value={city}>{city}</option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">What kind of trip?</label>
+                      <select
+                        value={tripForm.trip_type}
+                        onChange={e => setTripForm({...tripForm, trip_type: e.target.value})}
+                        className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="">Select Trip Type</option>
+                        {tripOptions.trip_types.map(type => (
+                          <option key={type.id} value={type.id}>{type.icon} {type.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">Your Pet's Name</label>
+                      <Input
+                        value={tripForm.pet_name}
+                        onChange={e => setTripForm({...tripForm, pet_name: e.target.value})}
+                        placeholder="e.g., Bruno"
+                        className="h-12"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">Breed (optional)</label>
+                      <Input
+                        value={tripForm.pet_breed}
+                        onChange={e => setTripForm({...tripForm, pet_breed: e.target.value})}
+                        placeholder="e.g., Golden Retriever"
+                        className="h-12"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">Check-in Date</label>
+                      <Input
+                        type="date"
+                        value={tripForm.check_in_date}
+                        onChange={e => setTripForm({...tripForm, check_in_date: e.target.value})}
+                        className="h-12"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">Check-out Date</label>
+                      <Input
+                        type="date"
+                        value={tripForm.check_out_date}
+                        onChange={e => setTripForm({...tripForm, check_out_date: e.target.value})}
+                        className="h-12"
+                      />
+                    </div>
+                  </div>
+
+                  <Button 
+                    className="w-full h-12 bg-green-600 hover:bg-green-700 text-lg font-semibold"
+                    onClick={generateTripPlan}
+                    disabled={tripPlannerLoading}
+                    data-testid="generate-trip-plan-btn"
+                  >
+                    {tripPlannerLoading ? (
+                      <><Loader2 className="w-5 h-5 animate-spin mr-2" /> Creating Your Plan...</>
+                    ) : (
+                      <><Sparkles className="w-5 h-5 mr-2" /> Generate My Pawcation Plan</>
+                    )}
+                  </Button>
+                </div>
+              ) : (
+                // Trip Plan Results
+                <div className="space-y-6">
+                  {/* Header with edit option */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">
+                        {tripPlan.destination || 'Your'} {tripPlan.trip_type && `${tripPlan.trip_type.replace(/_/g, ' ')}`} Pawcation
+                      </h3>
+                      <p className="text-gray-600 text-sm">Here's what we recommend for {tripForm.pet_name || 'your pup'}!</p>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => setTripPlan(null)}>
+                      Edit Plan
+                    </Button>
+                  </div>
+
+                  {/* Tips Section */}
+                  {tripPlan.tips?.length > 0 && (
+                    <div className="bg-amber-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-amber-800 mb-2 flex items-center gap-2">
+                        <Sparkles className="w-4 h-4" /> Trip Tips for {tripForm.pet_name || 'Your Pup'}
+                      </h4>
+                      <ul className="space-y-1">
+                        {tripPlan.tips.map((tip, idx) => (
+                          <li key={idx} className="text-sm text-amber-700 flex items-start gap-2">
+                            <CheckCircle className="w-4 h-4 mt-0.5 text-amber-600 flex-shrink-0" />
+                            {tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Recommended Properties */}
+                  {tripPlan.properties?.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <Home className="w-4 h-4" /> Recommended Stays ({tripPlan.properties.length})
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {tripPlan.properties.slice(0, 6).map(property => (
+                          <Card 
+                            key={property.id} 
+                            className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+                            onClick={() => { setSelectedProperty(property); setShowTripPlanner(false); }}
+                          >
+                            <div className="relative h-24">
+                              <img 
+                                src={property.photos?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'}
+                                alt={property.name}
+                                className="w-full h-full object-cover"
+                              />
+                              {property.paw_rating?.overall && (
+                                <div className="absolute top-1 right-1 bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                                  <PawPrint className="w-3 h-3" /> {property.paw_rating.overall.toFixed(1)}
+                                </div>
+                              )}
+                            </div>
+                            <div className="p-2">
+                              <h5 className="font-semibold text-sm line-clamp-1">{property.name}</h5>
+                              <p className="text-xs text-gray-500 flex items-center gap-1">
+                                <MapPin className="w-3 h-3" /> {property.city}
+                              </p>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Recommended Bundles */}
+                  {tripPlan.bundles?.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <Package className="w-4 h-4" /> Pack These Essentials
+                      </h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {tripPlan.bundles.map(bundle => (
+                          <Card 
+                            key={bundle.id} 
+                            className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+                            onClick={() => { setSelectedBundle(bundle); setShowTripPlanner(false); }}
+                          >
+                            <div className="relative h-20">
+                              <img 
+                                src={bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400'}
+                                alt={bundle.name}
+                                className="w-full h-full object-cover"
+                              />
+                              {bundle.discount_percent > 0 && (
+                                <span className="absolute top-1 left-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                                  {Math.round(bundle.discount_percent)}% OFF
+                                </span>
+                              )}
+                            </div>
+                            <div className="p-2">
+                              <h5 className="font-semibold text-xs line-clamp-1">{bundle.name}</h5>
+                              <p className="text-xs text-green-600 font-bold">₹{bundle.bundle_price}</p>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Upcoming Events */}
+                  {tripPlan.events?.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <PartyPopper className="w-4 h-4" /> Upcoming Pawcation Socials
+                      </h4>
+                      <div className="space-y-2">
+                        {tripPlan.events.map(event => (
+                          <div 
+                            key={event.id}
+                            className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg cursor-pointer hover:bg-purple-100 transition-colors"
+                            onClick={() => { setSelectedSocial(event); setShowTripPlanner(false); }}
+                          >
+                            <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                              <img 
+                                src={event.image || 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=200'}
+                                alt={event.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h5 className="font-semibold text-sm text-purple-800 line-clamp-1">{event.title}</h5>
+                              <p className="text-xs text-purple-600 flex items-center gap-2">
+                                <Calendar className="w-3 h-3" /> {event.event_date}
+                                <MapPin className="w-3 h-3" /> {event.property_city}
+                              </p>
+                            </div>
+                            {event.price_per_pet === 0 && (
+                              <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">FREE</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* CTA */}
+                  <Button 
+                    className="w-full bg-green-600 hover:bg-green-700"
+                    onClick={() => setShowTripPlanner(false)}
+                  >
+                    Start Browsing Stays
+                  </Button>
+                </div>
+              )}
+            </div>
+          </Card>
+        </div>
+      )}
+
       {/* Bundle Details Modal */}
       {selectedBundle && (
         <BundleDetailsModal 
