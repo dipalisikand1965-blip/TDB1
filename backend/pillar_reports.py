@@ -703,6 +703,54 @@ async def get_mira_report(period: str = "this_month"):
             "created_at": chat.get("created_at", "")
         })
     
+    # === CONVERSION TRACKING ===
+    # Get orders within date range
+    orders = await db.orders.find(date_query).to_list(10000)
+    
+    # Track conversions - chats that have linked orders or user emails matching order emails
+    chat_emails = set()
+    for chat in all_chats:
+        email = chat.get("user_email") or chat.get("email")
+        if email:
+            chat_emails.add(email.lower())
+    
+    order_emails = set()
+    for order in orders:
+        email = order.get("email") or order.get("customer_email")
+        if email:
+            order_emails.add(email.lower())
+    
+    # Count chats with 'converted' status
+    converted_count = status_counts.get("converted", 0)
+    
+    # Also count chats where user went on to place an order
+    email_conversions = len(chat_emails & order_emails)
+    
+    # Total conversions (unique count)
+    total_conversions = max(converted_count, email_conversions)
+    
+    # Calculate conversion rate
+    conversion_rate = (total_conversions / len(all_chats) * 100) if all_chats else 0
+    
+    # Calculate revenue from converted chats
+    converted_revenue = 0
+    for order in orders:
+        email = (order.get("email") or order.get("customer_email") or "").lower()
+        if email in chat_emails:
+            converted_revenue += order.get("total", 0) or order.get("amount", 0) or 0
+    
+    # Conversion by service type
+    service_conversions = {}
+    for chat in all_chats:
+        if chat.get("status") == "converted":
+            service = chat.get("service_type", "General")
+            service_conversions[service] = service_conversions.get(service, 0) + 1
+    
+    conversion_by_service = [
+        {"service": k, "conversions": v, "rate": round(v / service_counts.get(k, 1) * 100, 1)}
+        for k, v in sorted(service_conversions.items(), key=lambda x: x[1], reverse=True)
+    ]
+    
     return {
         "period": period,
         "metrics": {
@@ -716,21 +764,31 @@ async def get_mira_report(period: str = "this_month"):
             "chats_with_pet_info": has_pet_info,
             "active_chats": status_counts["active"],
             "resolved_chats": status_counts["resolved"],
-            "converted_chats": status_counts["converted"]
+            "converted_chats": total_conversions,
+            "conversion_rate": round(conversion_rate, 1),
+            "converted_revenue": round(converted_revenue, 2)
         },
         "service_breakdown": service_breakdown[:8],
         "city_breakdown": city_breakdown,
         "status_breakdown": [
             {"status": "Active", "count": status_counts["active"], "color": "#22c55e"},
             {"status": "Resolved", "count": status_counts["resolved"], "color": "#3b82f6"},
-            {"status": "Converted", "count": status_counts["converted"], "color": "#9333ea"},
+            {"status": "Converted", "count": total_conversions, "color": "#9333ea"},
             {"status": "Abandoned", "count": status_counts["abandoned"], "color": "#6b7280"}
         ],
+        "conversion_tracking": {
+            "total_conversions": total_conversions,
+            "conversion_rate": round(conversion_rate, 1),
+            "converted_revenue": round(converted_revenue, 2),
+            "by_service": conversion_by_service[:5]
+        },
         "daily_trend": daily_trend[-30:],
         "recent_conversations": recent_list,
         "insights": [
             f"Total of {len(all_chats)} conversations with {total_messages} messages",
             f"Average {round(avg_messages, 1)} messages per conversation",
+            f"Conversion rate: {round(conversion_rate, 1)}% ({total_conversions} orders)",
+            f"Revenue from Mira chats: ₹{converted_revenue:,.0f}",
             f"{has_pet_info} conversations include pet information",
             f"Most popular service: {service_breakdown[0]['service'] if service_breakdown else 'N/A'}"
         ]
