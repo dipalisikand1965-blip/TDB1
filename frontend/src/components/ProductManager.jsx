@@ -608,11 +608,39 @@ const ProductManager = ({ credentials }) => {
               <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
+            
+            {/* CSV Export */}
+            <Button variant="outline" onClick={exportToCSV} title="Export to CSV">
+              <Download className="w-4 h-4 mr-2" /> Export CSV
+            </Button>
+            
+            {/* CSV Import */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept=".csv"
+              onChange={handleCSVImport}
+              className="hidden"
+            />
+            <Button 
+              variant="outline" 
+              onClick={() => fileInputRef.current?.click()}
+              disabled={importing}
+              title="Import from CSV"
+            >
+              {importing ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Upload className="w-4 h-4 mr-2" />
+              )}
+              Import CSV
+            </Button>
+            
             <Button onClick={handleSync} disabled={syncing} className="bg-purple-600 hover:bg-purple-700">
               {syncing ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Syncing...</>
               ) : (
-                <><Download className="w-4 h-4 mr-2" /> Sync from Shopify</>
+                <><RefreshCw className="w-4 h-4 mr-2" /> Sync from Shopify</>
               )}
             </Button>
             <Button 
