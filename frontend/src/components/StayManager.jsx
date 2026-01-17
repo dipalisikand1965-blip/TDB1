@@ -534,6 +534,16 @@ const StayManager = ({ getAuthHeader }) => {
           getBookingStatusColor={getBookingStatusColor}
         />
       )}
+      
+      {/* Paw Reward Modal */}
+      {showPawRewardModal && selectedProperty && (
+        <PawRewardModal
+          property={selectedProperty}
+          eligibleProducts={eligibleProducts}
+          onClose={() => { setShowPawRewardModal(false); setSelectedProperty(null); }}
+          onSave={handleUpdatePawReward}
+        />
+      )}
     </div>
   );
 };
