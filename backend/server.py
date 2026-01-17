@@ -2925,6 +2925,174 @@ async def bulk_import_products(products: List[dict], username: str = Depends(ver
     return {"message": f"Imported {len(products)} products"}
 
 
+# ==================== APP SETTINGS & FULFILMENT ROUTES ====================
+
+@admin_router.get("/settings")
+async def get_app_settings(username: str = Depends(verify_admin)):
+    """Get global application settings including pickup cities"""
+    settings = await db.app_settings.find_one({"id": "global_settings"}, {"_id": 0})
+    if not settings:
+        # Return default settings
+        default_settings = {
+            "id": "global_settings",
+            "pickup_cities": ["Mumbai", "Gurugram", "Bangalore"],
+            "pan_india_shipping": True,
+            "default_fulfilment_type": "shipping",
+            "bakery_pickup_only_categories": ["cakes", "fresh_treats"],
+            "store_locations": [
+                {"id": "mumbai", "city": "Mumbai", "address": "Shop 9, off Yari Road, Jeet Nagar, Versova, Andheri West, Mumbai 400061"},
+                {"id": "gurugram", "city": "Gurugram", "address": "Ground Floor, Wazirabad Rd, Wazirabad, Sector 52, Gurugram 122003"},
+                {"id": "bangalore", "city": "Bangalore", "address": "147, 8th Main Rd, 3rd Block, Koramangala, Bengaluru 560034"}
+            ],
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.app_settings.insert_one(default_settings)
+        return default_settings
+    return settings
+
+
+@admin_router.put("/settings")
+async def update_app_settings(updates: UpdateAppSettings, username: str = Depends(verify_admin)):
+    """Update global application settings"""
+    update_data = {k: v for k, v in updates.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.app_settings.update_one(
+        {"id": "global_settings"},
+        {"$set": update_data},
+        upsert=True
+    )
+    
+    return {"message": "Settings updated successfully"}
+
+
+@api_router.get("/settings/public")
+async def get_public_settings():
+    """Get public settings (pickup cities, store locations) for checkout"""
+    settings = await db.app_settings.find_one({"id": "global_settings"}, {"_id": 0})
+    if not settings:
+        return {
+            "pickup_cities": ["Mumbai", "Gurugram", "Bangalore"],
+            "pan_india_shipping": True,
+            "bakery_pickup_only_categories": ["cakes", "fresh_treats"],
+            "store_locations": [
+                {"id": "mumbai", "city": "Mumbai", "address": "Shop 9, off Yari Road, Jeet Nagar, Versova, Andheri West, Mumbai 400061"},
+                {"id": "gurugram", "city": "Gurugram", "address": "Ground Floor, Wazirabad Rd, Wazirabad, Sector 52, Gurugram 122003"},
+                {"id": "bangalore", "city": "Bangalore", "address": "147, 8th Main Rd, 3rd Block, Koramangala, Bengaluru 560034"}
+            ]
+        }
+    return {
+        "pickup_cities": settings.get("pickup_cities", []),
+        "pan_india_shipping": settings.get("pan_india_shipping", True),
+        "bakery_pickup_only_categories": settings.get("bakery_pickup_only_categories", []),
+        "store_locations": settings.get("store_locations", [])
+    }
+
+
+@admin_router.put("/products/{product_id}/fulfilment")
+async def update_product_fulfilment(
+    product_id: str, 
+    fulfilment: ProductFulfilmentUpdate,
+    username: str = Depends(verify_admin)
+):
+    """Update a product's fulfilment type and regional availability"""
+    if fulfilment.fulfilment_type not in FULFILMENT_TYPES:
+        raise HTTPException(status_code=400, detail=f"Invalid fulfilment type. Must be one of: {FULFILMENT_TYPES}")
+    
+    update_data = {
+        "fulfilment_type": fulfilment.fulfilment_type,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    if fulfilment.regions is not None:
+        update_data["regions"] = fulfilment.regions
+    
+    result = await db.products.update_one(
+        {"id": product_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"message": "Product fulfilment settings updated"}
+
+
+@admin_router.post("/products/bulk-fulfilment")
+async def bulk_update_product_fulfilment(
+    product_ids: List[str],
+    fulfilment_type: str = Query(..., description="shipping, store_pickup, or both"),
+    regions: Optional[List[str]] = Query(None, description="List of regions/cities"),
+    username: str = Depends(verify_admin)
+):
+    """Bulk update fulfilment settings for multiple products"""
+    if fulfilment_type not in FULFILMENT_TYPES:
+        raise HTTPException(status_code=400, detail=f"Invalid fulfilment type. Must be one of: {FULFILMENT_TYPES}")
+    
+    update_data = {
+        "fulfilment_type": fulfilment_type,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    if regions is not None:
+        update_data["regions"] = regions
+    
+    result = await db.products.update_many(
+        {"id": {"$in": product_ids}},
+        {"$set": update_data}
+    )
+    
+    return {"message": f"Updated {result.modified_count} products"}
+
+
+@admin_router.post("/products/migrate-fulfilment-defaults")
+async def migrate_products_with_fulfilment_defaults(username: str = Depends(verify_admin)):
+    """
+    Data migration: Add default fulfilment settings to all products that don't have them.
+    - Cakes/Fresh items: store_pickup (limited to pickup cities)
+    - Other products: shipping (pan-india)
+    """
+    settings = await db.app_settings.find_one({"id": "global_settings"}, {"_id": 0})
+    bakery_categories = settings.get("bakery_pickup_only_categories", ["cakes", "fresh_treats"]) if settings else ["cakes", "fresh_treats"]
+    pickup_cities = settings.get("pickup_cities", ["Mumbai", "Gurugram", "Bangalore"]) if settings else ["Mumbai", "Gurugram", "Bangalore"]
+    
+    # Update bakery items (cakes, fresh treats) - store_pickup only
+    bakery_result = await db.products.update_many(
+        {
+            "fulfilment_type": {"$exists": False},
+            "$or": [
+                {"category": {"$in": bakery_categories}},
+                {"name": {"$regex": "cake", "$options": "i"}}
+            ]
+        },
+        {
+            "$set": {
+                "fulfilment_type": "store_pickup",
+                "regions": pickup_cities,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    # Update all other products - shipping (pan-india)
+    other_result = await db.products.update_many(
+        {"fulfilment_type": {"$exists": False}},
+        {
+            "$set": {
+                "fulfilment_type": "shipping",
+                "regions": ["Pan India"],
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    return {
+        "message": "Migration complete",
+        "bakery_products_updated": bakery_result.modified_count,
+        "other_products_updated": other_result.modified_count
+    }
+
+
 # ==================== SITE CONTENT MANAGEMENT ROUTES ====================
 
 @admin_router.get("/site-content")
