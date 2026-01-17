@@ -392,7 +392,23 @@ const StayPage = () => {
                           <span className="text-xs text-gray-400 line-through ml-1">₹{bundle.original_price}</span>
                         )}
                       </div>
-                      <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-xs">
+                      <Button 
+                        size="sm" 
+                        className="bg-amber-500 hover:bg-amber-600 text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart({
+                            id: bundle.id,
+                            name: bundle.name,
+                            price: bundle.bundle_price,
+                            image: bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+                            description: bundle.description,
+                            category: 'stay_bundle',
+                            pillar: 'stay'
+                          }, 'Bundle', bundle.category || 'travel', 1);
+                        }}
+                        data-testid={`add-bundle-${bundle.id}`}
+                      >
                         <ShoppingBag className="w-3 h-3 mr-1" /> Add
                       </Button>
                     </div>
