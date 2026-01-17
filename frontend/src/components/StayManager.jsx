@@ -477,6 +477,197 @@ const StayManager = ({ getAuthHeader }) => {
           )}
         </TabsContent>
 
+        {/* Products Tab */}
+        <TabsContent value="products" className="space-y-4">
+          {/* Products Stats */}
+          <div className="grid grid-cols-4 gap-4">
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-amber-100 rounded-lg">
+                  <Package className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{stayProducts.length}</p>
+                  <p className="text-sm text-gray-500">Stay Bundles</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Users className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{staySocials.length}</p>
+                  <p className="text-sm text-gray-500">Social Events</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <DollarSign className="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">
+                    ₹{stayProducts.reduce((sum, p) => sum + (p.bundle_price || 0), 0).toLocaleString()}
+                  </p>
+                  <p className="text-sm text-gray-500">Total Value</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Gift className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{stayProducts.filter(p => p.featured).length}</p>
+                  <p className="text-sm text-gray-500">Featured</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Products Actions */}
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-lg">Stay Products & Bundles</h3>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={fetchData}>
+                  <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="border-amber-500 text-amber-600 hover:bg-amber-50"
+                  onClick={handleSeedProducts}
+                >
+                  <Upload className="w-4 h-4 mr-2" /> Seed Products
+                </Button>
+                <Button 
+                  className="bg-amber-500 hover:bg-amber-600"
+                  onClick={() => { setSelectedProduct(null); setShowProductModal(true); }}
+                >
+                  <Plus className="w-4 h-4 mr-2" /> Add Bundle
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          {/* Products Grid */}
+          {stayProducts.length === 0 ? (
+            <Card className="p-8 text-center">
+              <Package className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+              <h3 className="text-lg font-semibold text-gray-600 mb-2">No Stay Products Yet</h3>
+              <p className="text-gray-500 mb-4">Create travel bundles and kits for pet parents</p>
+              <Button onClick={handleSeedProducts} className="bg-amber-500 hover:bg-amber-600">
+                <Upload className="w-4 h-4 mr-2" /> Seed Sample Products
+              </Button>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {stayProducts.map((product) => (
+                <Card key={product.id} className="overflow-hidden">
+                  <div className="relative h-40">
+                    <img 
+                      src={product.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400'}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                    {product.featured && (
+                      <Badge className="absolute top-2 right-2 bg-amber-500">
+                        <Sparkles className="w-3 h-3 mr-1" /> Featured
+                      </Badge>
+                    )}
+                    {product.discount_percent > 0 && (
+                      <Badge className="absolute top-2 left-2 bg-red-500">
+                        {Math.round(product.discount_percent)}% OFF
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h4 className="font-semibold text-lg mb-1">{product.name}</h4>
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-2">{product.description}</p>
+                    
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {product.tags?.slice(0, 3).map((tag, idx) => (
+                        <span key={idx} className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <span className="text-xl font-bold text-green-600">₹{product.bundle_price}</span>
+                        {product.original_price > product.bundle_price && (
+                          <span className="text-sm text-gray-400 line-through ml-2">₹{product.original_price}</span>
+                        )}
+                      </div>
+                      <span className="text-xs text-gray-500">{product.items?.length || 0} items</span>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="flex-1"
+                        onClick={() => { setSelectedProduct(product); setShowProductModal(true); }}
+                      >
+                        <Edit className="w-3 h-3 mr-1" /> Edit
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="text-red-600 hover:text-red-700"
+                        onClick={() => handleDeleteProduct(product.id)}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {/* Social Events Section */}
+          <Card className="p-4 mt-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-lg flex items-center gap-2">
+                <Users className="w-5 h-5 text-purple-600" /> Pawcation Socials
+              </h3>
+              <Button variant="outline" size="sm">
+                <Plus className="w-4 h-4 mr-2" /> Add Event
+              </Button>
+            </div>
+            
+            {staySocials.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Users className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                <p>No social events yet. Click "Seed Products" to add sample events.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {staySocials.map((social) => (
+                  <div key={social.id} className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                    <img 
+                      src={social.image || 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=200'}
+                      alt={social.title}
+                      className="w-16 h-16 rounded-lg object-cover"
+                    />
+                    <div className="flex-1">
+                      <h5 className="font-semibold text-sm">{social.title}</h5>
+                      <p className="text-xs text-gray-500">{social.event_date} • {social.property_city}</p>
+                      <p className="text-xs text-purple-600">{social.current_participants || 0}/{social.max_participants} spots</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </TabsContent>
+
         {/* Bookings Tab */}
         <TabsContent value="bookings" className="space-y-4">
           <Card className="p-4">
