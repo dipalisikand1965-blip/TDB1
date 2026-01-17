@@ -643,7 +643,7 @@ async def add_product_autoship_override(override: AutoshipProductOverride):
 
 
 @router.delete("/autoship/product-override/{product_id}")
-async def remove_product_autoship_override(product_id: str, username: str = Depends(lambda: verify_admin)):
+async def remove_product_autoship_override(product_id: str):
     """Remove autoship override for a product (revert to default tiers)"""
     result = await db.autoship_product_overrides.delete_one({"product_id": product_id})
     
