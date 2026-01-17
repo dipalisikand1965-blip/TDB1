@@ -596,7 +596,7 @@ async def update_autoship_tiers(tiers: List[AutoshipTier]):
 
 
 @router.post("/autoship/product-override")
-async def add_product_autoship_override(override: AutoshipProductOverride, username: str = Depends(lambda: verify_admin)):
+async def add_product_autoship_override(override: AutoshipProductOverride):
     """Add or update autoship discount override for a specific product"""
     # Verify product exists
     product = await db.products.find_one({"id": override.product_id})
@@ -613,7 +613,7 @@ async def add_product_autoship_override(override: AutoshipProductOverride, usern
         "special_until": override.special_until,
         "notes": override.notes,
         "updated_at": now,
-        "updated_by": username
+        "updated_by": "admin"
     }
     
     await db.autoship_product_overrides.update_one(
