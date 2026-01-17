@@ -553,7 +553,7 @@ async def public_get_collections():
     
     return {"collections": collections}
 
-@public_router.get("/navbar")
+@public_router.get("/collections/navbar")
 async def public_get_navbar_collections():
     """Get collections that should appear in navbar"""
     now = datetime.now(timezone.utc).isoformat()
