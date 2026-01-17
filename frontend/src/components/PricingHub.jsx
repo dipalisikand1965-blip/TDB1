@@ -24,6 +24,95 @@ const PILLARS = [
 
 const GST_RATES = [0, 5, 12, 18, 28];
 
+// Inline editable row for partner commissions
+const PartnerCommissionRow = ({ partner, partnerType, defaultCommission, getAuthHeader, onUpdate, formatCurrency }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [commissionType, setCommissionType] = useState(partner.commission_type || 'percentage');
+  const [commissionValue, setCommissionValue] = useState(partner.commission_value || defaultCommission);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch(
+        `${API_URL}/api/admin/pricing/partner-commissions/${partnerType}/${partner.id}?commission_type=${commissionType}&commission_value=${commissionValue}`,
+        { method: 'PATCH', headers: getAuthHeader() }
+      );
+      if (res.ok) {
+        setIsEditing(false);
+        onUpdate();
+      }
+    } catch (err) {
+      console.error('Error saving:', err);
+    }
+    setSaving(false);
+  };
+
+  return (
+    <tr className="border-b hover:bg-gray-50">
+      <td className="p-3">
+        <div>
+          <p className="font-medium">{partner.name}</p>
+          <p className="text-xs text-gray-400">{partner.id}</p>
+        </div>
+      </td>
+      <td className="p-3 text-gray-500">{partner.city || '-'}</td>
+      <td className="p-3 text-center">
+        {isEditing ? (
+          <select
+            className="border rounded px-2 py-1 text-sm"
+            value={commissionType}
+            onChange={(e) => setCommissionType(e.target.value)}
+          >
+            <option value="percentage">Percentage (%)</option>
+            <option value="fixed">Fixed (₹)</option>
+          </select>
+        ) : (
+          <Badge variant="outline" className={commissionType === 'fixed' ? 'bg-blue-50' : 'bg-green-50'}>
+            {commissionType === 'fixed' ? '₹ Fixed' : '% Per Booking'}
+          </Badge>
+        )}
+      </td>
+      <td className="p-3 text-right">
+        {isEditing ? (
+          <div className="flex items-center justify-end gap-1">
+            <Input
+              type="number"
+              value={commissionValue}
+              onChange={(e) => setCommissionValue(parseFloat(e.target.value) || 0)}
+              className="w-24 text-right"
+            />
+            <span className="text-gray-500">{commissionType === 'fixed' ? '₹' : '%'}</span>
+          </div>
+        ) : (
+          <span className="font-medium">
+            {commissionType === 'fixed' 
+              ? formatCurrency(commissionValue || 0)
+              : `${commissionValue || defaultCommission}%`
+            }
+          </span>
+        )}
+      </td>
+      <td className="p-3 text-center">
+        {isEditing ? (
+          <div className="flex items-center justify-center gap-1">
+            <Button size="sm" onClick={handleSave} disabled={saving}>
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        ) : (
+          <Button size="sm" variant="ghost" onClick={() => setIsEditing(true)}>
+            <Edit className="w-4 h-4" />
+          </Button>
+        )}
+      </td>
+    </tr>
+  );
+};
+
 const PricingHub = ({ getAuthHeader }) => {
   const [activeTab, setActiveTab] = useState('products');
   const [loading, setLoading] = useState(true);
