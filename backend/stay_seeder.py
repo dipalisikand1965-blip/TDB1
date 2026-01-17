@@ -6,8 +6,11 @@ Scrapes pet-friendly hotels from various sources and seeds the database
 import asyncio
 import uuid
 import re
+import logging
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
+
+logger = logging.getLogger(__name__)
 
 # Sample pet-friendly hotels data (curated from research)
 # In production, this would be scraped from the URLs, but for reliability we use curated data
