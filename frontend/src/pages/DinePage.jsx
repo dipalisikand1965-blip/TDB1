@@ -428,7 +428,7 @@ const RestaurantCard = ({ restaurant, getPetMenuBadge, getPetPolicyText, feature
       )}
       
       <div className="flex flex-wrap gap-1 mb-3">
-        {restaurant.cuisine?.slice(0, 3).map((c, idx) => (
+        {(Array.isArray(restaurant.cuisine) ? restaurant.cuisine : [restaurant.cuisine]).filter(Boolean).slice(0, 3).map((c, idx) => (
           <Badge key={idx} variant="outline" className="text-xs">{c}</Badge>
         ))}
       </div>
