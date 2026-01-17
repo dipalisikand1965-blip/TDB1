@@ -40,6 +40,7 @@ import SearchResults from "./pages/SearchResults";
 import PillarPage from "./pages/PillarPage";
 import DinePage from "./pages/DinePage";
 import CollectionPage from "./pages/CollectionPage";
+import PartnerOnboarding from "./pages/PartnerOnboarding";
 
 function App() {
   return (
