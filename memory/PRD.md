@@ -7,7 +7,41 @@ World-class e-commerce website for The Doggy Bakery. Target domain: **thedoggyco
 
 ## Complete Features Status (Updated Jan 17, 2025)
 
-### 🔔 Admin Notification Center ✅ **NEW - Jan 17, 2025**
+### 🏛️ Multi-Pillar Product Classification ✅ **NEW - Jan 17, 2025**
+Comprehensive pillar and category management system:
+- **5 Core Pillars**: Celebrate (353 products), Dine (39 products), Stay, Travel, Care
+- **Admin UI**: Pillars tab in CONFIG section - create/edit/delete pillars with icon, color, nav settings
+- **Categories**: Each pillar has its own categories (13 for Celebrate, 5 for Dine, etc.)
+- **Product Placements**: Products can belong to multiple pillars/categories with:
+  - Primary placement (for breadcrumbs)
+  - Visibility toggle (show/hide from listings)
+  - Multiple placements per product
+- **Migration**: 392 existing products auto-migrated to pillar/category structure
+- **API Endpoints**:
+  - `GET/POST /api/admin/pillars` - Pillar management
+  - `GET/POST /api/admin/pillars/categories` - Category management
+  - `PUT /api/admin/pillars/products/{id}/placements` - Product placement management
+  - `GET /api/pillars` - Public pillar listing
+  - `GET /api/pillars/{slug}` - Public pillar products
+
+### 🎯 Campaign Collections ✅ **NEW - Jan 17, 2025**
+Enhanced collection system for curated campaign pages:
+- **Multi-Pillar Items**: Add products, restaurants, stays, services to one collection
+- **Section Builder**: Create sections with title, layout (grid/carousel/list), items
+- **Display Options**: 
+  - Show in navbar (temporary feature)
+  - Show on homepage
+  - Show in pillar submenus
+- **Visibility Control**: Published/draft, start/end dates
+- **Item Customization**: Override name, image, button text per item
+- **Auto-generated Pages**: `/collections/{slug}` routes
+- **API Endpoints**:
+  - `GET/POST /api/admin/enhanced-collections` - Collection CRUD
+  - `PUT /api/admin/enhanced-collections/{id}` - Update collection
+  - `POST /api/admin/enhanced-collections/{id}/sections` - Section management
+  - `GET /api/collections/{slug}` - Public collection page
+
+### 🔔 Admin Notification Center ✅ **Jan 17, 2025**
 Real-time notification system for admin dashboard:
 - **Bell Icon**: In admin header with unread count badge (pulse animation)
 - **Notification Types**: Orders, Reservations, Meetups, Member Signups, Reviews, Mira Chats
