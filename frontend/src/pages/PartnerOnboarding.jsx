@@ -113,10 +113,13 @@ const PartnerOnboarding = () => {
           ...formData,
           seating_capacity: formData.seating_capacity ? parseInt(formData.seating_capacity) : null,
           room_capacity: formData.room_capacity ? parseInt(formData.room_capacity) : null,
+          additional_cities: formData.additional_cities,
+          company_turnover: formData.company_turnover,
           // Document info (actual files would be uploaded separately)
           documents: {
             gst_number: formData.gst_number,
             pan_number: formData.pan_number,
+            company_turnover: formData.company_turnover,
             has_gst_doc: !!formData.gst_document,
             has_pan_doc: !!formData.pan_document,
             has_business_license: !!formData.business_license
@@ -124,7 +127,7 @@ const PartnerOnboarding = () => {
           agreement: {
             accepted: formData.agreement_accepted,
             signature_name: formData.signature_name,
-            signature_date: formData.signature_date,
+            signature_date: new Date().toISOString().split('T')[0],
             signed_at: new Date().toISOString()
           }
         })
