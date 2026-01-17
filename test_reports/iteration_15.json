@@ -28,7 +28,8 @@
     "The delete button visibility relies on group-hover but parent lacks 'group' class"
   ],
   "updated_files": [
-    "/app/tests/test_admin_notifications.py"
+    "/app/tests/test_admin_notifications.py",
+    "/app/frontend/src/components/admin/NotificationBell.jsx"
   ],
   "success_rate": {
     "backend": "93% (13/14 tests passed, 1 skipped due to known bug)",
