@@ -1494,10 +1494,19 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     if len(clean_desc) < 10:
         clean_desc = f"Delicious {category.replace('-', ' ')} made with love for your furry friend."
     
+    # Get product name with fallback for untitled products
+    product_name = (shopify_product.get("title") or "").strip()
+    if not product_name:
+        # Use handle as fallback, or generate from ID
+        product_name = shopify_product.get("handle", "").replace("-", " ").title()
+        if not product_name:
+            product_name = f"Product {shopify_product.get('id', 'Unknown')}"
+        logger.warning(f"Shopify product missing title, using fallback: {product_name}")
+    
     return {
         "id": f"shopify-{shopify_product.get('id')}",
         "shopify_id": shopify_product.get("id"),
-        "name": shopify_product.get("title", "").strip(),
+        "name": product_name,
         "description": clean_desc,
         "price": min_price,
         "originalPrice": min_price,
