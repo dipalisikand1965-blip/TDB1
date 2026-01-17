@@ -344,6 +344,107 @@ async def add_bundle_to_cart(bundle_id: str, user_email: str):
     return {"message": "Bundle added to cart", "cart_item_id": cart_item["id"]}
 
 
+class StayBundleOrder(BaseModel):
+    """Stay Bundle Order"""
+    bundle_id: str
+    quantity: int = 1
+    customer_name: str
+    customer_email: str
+    customer_phone: str
+    shipping_address: Optional[str] = None
+    notes: Optional[str] = None
+
+
+@stay_products_router.post("/bundles/{bundle_id}/order")
+async def create_bundle_order(bundle_id: str, order: StayBundleOrder):
+    """Create an order for a Stay bundle - integrates with main orders system"""
+    bundle = await db.stay_bundles.find_one({"id": bundle_id})
+    if not bundle:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    now = datetime.now(timezone.utc)
+    today = now.strftime("%Y%m%d")
+    
+    # Generate order ID (same pattern as main orders)
+    order_count = await db.orders.count_documents({"order_id": {"$regex": f"^ORD-{today}"}})
+    order_id = f"ORD-{today}-{str(order_count + 1).zfill(4)}"
+    
+    total_amount = bundle["bundle_price"] * order.quantity
+    
+    # Create order document (matches main order schema)
+    order_doc = {
+        "order_id": order_id,
+        "source": "stay_bundle",
+        "pillar": "stay",
+        "status": "pending",
+        "customer": {
+            "name": order.customer_name,
+            "email": order.customer_email,
+            "phone": order.customer_phone
+        },
+        "items": [{
+            "type": "stay_bundle",
+            "bundle_id": bundle_id,
+            "name": bundle["name"],
+            "price": bundle["bundle_price"],
+            "original_price": bundle["original_price"],
+            "quantity": order.quantity,
+            "image": bundle.get("image"),
+            "included_items": bundle.get("items", [])
+        }],
+        "subtotal": total_amount,
+        "discount": (bundle["original_price"] - bundle["bundle_price"]) * order.quantity,
+        "shipping": 0,  # Free shipping for bundles
+        "total": total_amount,
+        "shipping_address": order.shipping_address,
+        "notes": order.notes,
+        "payment_status": "pending",
+        "fulfillment_status": "unfulfilled",
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat()
+    }
+    
+    await db.orders.insert_one(order_doc)
+    
+    # Create notification for admin
+    await db.notifications.insert_one({
+        "id": f"notif-{uuid.uuid4().hex[:8]}",
+        "type": "new_order",
+        "title": f"🎁 New Stay Bundle Order - {order_id}",
+        "message": f"{order.customer_name} ordered {bundle['name']} (₹{total_amount})",
+        "category": "stay",
+        "related_id": order_id,
+        "link_to": f"/admin?tab=orders&order={order_id}",
+        "priority": "high",
+        "read": False,
+        "created_at": now.isoformat()
+    })
+    
+    # Remove from cart if exists
+    await db.cart.delete_many({
+        "user_email": order.customer_email,
+        "bundle_id": bundle_id
+    })
+    
+    return {
+        "success": True,
+        "order_id": order_id,
+        "total": total_amount,
+        "message": f"Order {order_id} created successfully!"
+    }
+
+
+@stay_products_router.get("/orders")
+async def get_stay_orders(email: Optional[str] = None, limit: int = 50):
+    """Get Stay bundle orders"""
+    query = {"pillar": "stay"}
+    if email:
+        query["customer.email"] = email
+    
+    orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    return {"orders": orders, "total": len(orders)}
+
+
 # ==================== STAY BUDDIES ====================
 
 @stay_social_router.get("/buddies")
