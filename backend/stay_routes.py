@@ -723,6 +723,250 @@ async def get_trip_planner_options():
     }
 
 
+# ==================== PAW REWARD SYSTEM ====================
+
+async def get_random_reward_product():
+    """Get a random treat product under ₹600 for Paw Reward"""
+    # Try to find products from the products collection (treats under ₹600)
+    products = await db.products.find({
+        "category": {"$in": ["treats", "Treats", "snacks", "Snacks"]},
+        "price": {"$lte": 600},
+        "price": {"$gt": 0}
+    }, {"_id": 0}).limit(20).to_list(20)
+    
+    # If no products found, use fallback treats
+    if not products:
+        fallback_treats = [
+            {"id": "treat-001", "name": "Chicken Jerky Bites", "price": 299, "image": "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=400"},
+            {"id": "treat-002", "name": "Peanut Butter Cookies", "price": 249, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400"},
+            {"id": "treat-003", "name": "Sweet Potato Chews", "price": 349, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400"},
+            {"id": "treat-004", "name": "Banana Pupcakes (6pc)", "price": 449, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400"},
+            {"id": "treat-005", "name": "Salmon Training Treats", "price": 399, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400"},
+            {"id": "treat-006", "name": "Veggie Dental Sticks", "price": 279, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400"},
+        ]
+        products = fallback_treats
+    
+    import random
+    product = random.choice(products)
+    
+    return {
+        "enabled": True,
+        "product_id": product.get("id", f"treat-{uuid.uuid4().hex[:6]}"),
+        "product_name": product.get("name", "Complimentary Treat"),
+        "product_image": product.get("image", "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400"),
+        "product_price": product.get("price", 299),
+        "max_value": 600,
+        "custom_message": "Every stay earns your dog a Paw Reward!"
+    }
+
+
+@stay_router.get("/paw-rewards/eligible-products")
+async def get_eligible_reward_products():
+    """Get all products eligible for Paw Reward (treats under ₹600)"""
+    products = await db.products.find({
+        "category": {"$in": ["treats", "Treats", "snacks", "Snacks"]},
+        "price": {"$lte": 600},
+        "price": {"$gt": 0}
+    }, {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1, "images": 1}).limit(50).to_list(50)
+    
+    # Add fallback treats if no products found
+    if not products:
+        products = [
+            {"id": "treat-001", "name": "Chicken Jerky Bites", "price": 299, "image": "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=400"},
+            {"id": "treat-002", "name": "Peanut Butter Cookies", "price": 249, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400"},
+            {"id": "treat-003", "name": "Sweet Potato Chews", "price": 349, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400"},
+            {"id": "treat-004", "name": "Banana Pupcakes (6pc)", "price": 449, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400"},
+            {"id": "treat-005", "name": "Salmon Training Treats", "price": 399, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400"},
+            {"id": "treat-006", "name": "Veggie Dental Sticks", "price": 279, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400"},
+        ]
+    
+    # Normalize image field
+    for p in products:
+        if not p.get("image") and p.get("images"):
+            p["image"] = p["images"][0] if p["images"] else None
+    
+    return {"products": products, "total": len(products)}
+
+
+# ==================== PILLAR TAGS SYSTEM ====================
+
+@stay_router.get("/tags")
+async def get_pillar_tags(pillar: Optional[str] = None, category: Optional[str] = None):
+    """Get all pillar tags"""
+    query = {"active": True}
+    if pillar:
+        query["pillar"] = pillar
+    if category:
+        query["category"] = category
+    
+    tags = await db.pillar_tags.find(query, {"_id": 0}).to_list(100)
+    
+    # If no tags exist, return default tags
+    if not tags:
+        default_tags = [
+            # Stay Tags
+            {"id": "tag-paw-reward", "name": "Paw Reward", "pillar": "stay", "category": "rewards", "icon": "🎁", "color": "amber", "description": "Complimentary treat with every booking", "active": True},
+            {"id": "tag-pet-menu", "name": "Pet Menu", "pillar": "stay", "category": "amenities", "icon": "🍖", "color": "orange", "description": "In-house pet dining options", "active": True},
+            {"id": "tag-off-leash", "name": "Off-Leash Area", "pillar": "stay", "category": "amenities", "icon": "🐕", "color": "green", "description": "Designated off-leash zones", "active": True},
+            {"id": "tag-pet-sitter", "name": "Pet Sitter", "pillar": "stay", "category": "amenities", "icon": "👤", "color": "blue", "description": "On-call pet sitting service", "active": True},
+            {"id": "tag-grooming", "name": "Grooming", "pillar": "stay", "category": "amenities", "icon": "✨", "color": "purple", "description": "Pet grooming services available", "active": True},
+            {"id": "tag-vet-call", "name": "Vet on Call", "pillar": "stay", "category": "amenities", "icon": "🏥", "color": "red", "description": "24/7 veterinary support", "active": True},
+            {"id": "tag-trails", "name": "Walking Trails", "pillar": "stay", "category": "amenities", "icon": "🌲", "color": "green", "description": "Pet-friendly walking trails", "active": True},
+            {"id": "tag-beach", "name": "Beach Access", "pillar": "stay", "category": "amenities", "icon": "🏖️", "color": "cyan", "description": "Pet-friendly beach nearby", "active": True},
+            {"id": "tag-pool", "name": "Pet Pool", "pillar": "stay", "category": "amenities", "icon": "🏊", "color": "blue", "description": "Dedicated pet swimming area", "active": True},
+            # Dine Tags
+            {"id": "tag-dine-treat", "name": "Paw Treat Included", "pillar": "dine", "category": "rewards", "icon": "🦴", "color": "amber", "description": "Complimentary treat with meal", "active": True},
+            {"id": "tag-dog-menu", "name": "Dog Menu", "pillar": "dine", "category": "amenities", "icon": "📋", "color": "orange", "description": "Dedicated pet menu available", "active": True},
+            {"id": "tag-outdoor", "name": "Outdoor Seating", "pillar": "dine", "category": "amenities", "icon": "☀️", "color": "yellow", "description": "Pet-friendly outdoor area", "active": True},
+            {"id": "tag-water-bowl", "name": "Water Bowls", "pillar": "dine", "category": "amenities", "icon": "💧", "color": "blue", "description": "Fresh water always available", "active": True},
+            # Travel Tags
+            {"id": "tag-travel-kit", "name": "Pet Kit Included", "pillar": "travel", "category": "rewards", "icon": "🎒", "color": "amber", "description": "Travel essentials included", "active": True},
+            {"id": "tag-climate", "name": "Climate Control", "pillar": "travel", "category": "amenities", "icon": "❄️", "color": "cyan", "description": "Temperature-controlled pet area", "active": True},
+            # Care Tags
+            {"id": "tag-first-visit", "name": "First Visit Discount", "pillar": "care", "category": "rewards", "icon": "🎉", "color": "purple", "description": "Special offer for first-time visitors", "active": True},
+            {"id": "tag-certified", "name": "Certified Trainer", "pillar": "care", "category": "features", "icon": "🏅", "color": "gold", "description": "Certified professional trainer", "active": True},
+        ]
+        
+        # Filter by pillar/category if specified
+        if pillar:
+            default_tags = [t for t in default_tags if t["pillar"] == pillar]
+        if category:
+            default_tags = [t for t in default_tags if t["category"] == category]
+        
+        return {"tags": default_tags, "total": len(default_tags)}
+    
+    return {"tags": tags, "total": len(tags)}
+
+
+@stay_admin_router.post("/tags")
+async def create_pillar_tag(tag: PillarTag, username: str = Depends(verify_admin)):
+    """Create a new pillar tag"""
+    now = datetime.now(timezone.utc).isoformat()
+    
+    tag_doc = {
+        "id": tag.id or f"tag-{uuid.uuid4().hex[:8]}",
+        **tag.model_dump(exclude={"id"}),
+        "created_at": now,
+        "created_by": username
+    }
+    
+    await db.pillar_tags.insert_one(tag_doc)
+    del tag_doc["_id"]
+    
+    return {"message": "Tag created", "tag": tag_doc}
+
+
+@stay_admin_router.put("/tags/{tag_id}")
+async def update_pillar_tag(tag_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update a pillar tag"""
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    updates["updated_by"] = username
+    
+    result = await db.pillar_tags.update_one(
+        {"id": tag_id},
+        {"$set": updates}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Tag not found")
+    
+    return {"message": "Tag updated"}
+
+
+@stay_admin_router.delete("/tags/{tag_id}")
+async def delete_pillar_tag(tag_id: str, username: str = Depends(verify_admin)):
+    """Delete a pillar tag"""
+    result = await db.pillar_tags.delete_one({"id": tag_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Tag not found")
+    
+    return {"message": "Tag deleted"}
+
+
+@stay_admin_router.post("/tags/seed")
+async def seed_default_tags(username: str = Depends(verify_admin)):
+    """Seed default pillar tags"""
+    default_tags = [
+        # Stay Tags
+        {"id": "tag-paw-reward", "name": "Paw Reward", "pillar": "stay", "category": "rewards", "icon": "🎁", "color": "amber", "description": "Complimentary treat with every booking", "active": True},
+        {"id": "tag-pet-menu", "name": "Pet Menu", "pillar": "stay", "category": "amenities", "icon": "🍖", "color": "orange", "description": "In-house pet dining options", "active": True},
+        {"id": "tag-off-leash", "name": "Off-Leash Area", "pillar": "stay", "category": "amenities", "icon": "🐕", "color": "green", "description": "Designated off-leash zones", "active": True},
+        {"id": "tag-pet-sitter", "name": "Pet Sitter", "pillar": "stay", "category": "amenities", "icon": "👤", "color": "blue", "description": "On-call pet sitting service", "active": True},
+        {"id": "tag-grooming", "name": "Grooming", "pillar": "stay", "category": "amenities", "icon": "✨", "color": "purple", "description": "Pet grooming services available", "active": True},
+        {"id": "tag-vet-call", "name": "Vet on Call", "pillar": "stay", "category": "amenities", "icon": "🏥", "color": "red", "description": "24/7 veterinary support", "active": True},
+        {"id": "tag-trails", "name": "Walking Trails", "pillar": "stay", "category": "amenities", "icon": "🌲", "color": "green", "description": "Pet-friendly walking trails", "active": True},
+        {"id": "tag-beach", "name": "Beach Access", "pillar": "stay", "category": "amenities", "icon": "🏖️", "color": "cyan", "description": "Pet-friendly beach nearby", "active": True},
+        {"id": "tag-pool", "name": "Pet Pool", "pillar": "stay", "category": "amenities", "icon": "🏊", "color": "blue", "description": "Dedicated pet swimming area", "active": True},
+        # Dine Tags
+        {"id": "tag-dine-treat", "name": "Paw Treat Included", "pillar": "dine", "category": "rewards", "icon": "🦴", "color": "amber", "description": "Complimentary treat with meal", "active": True},
+        {"id": "tag-dog-menu", "name": "Dog Menu", "pillar": "dine", "category": "amenities", "icon": "📋", "color": "orange", "description": "Dedicated pet menu available", "active": True},
+        {"id": "tag-outdoor", "name": "Outdoor Seating", "pillar": "dine", "category": "amenities", "icon": "☀️", "color": "yellow", "description": "Pet-friendly outdoor area", "active": True},
+        {"id": "tag-water-bowl", "name": "Water Bowls", "pillar": "dine", "category": "amenities", "icon": "💧", "color": "blue", "description": "Fresh water always available", "active": True},
+        # Travel Tags
+        {"id": "tag-travel-kit", "name": "Pet Kit Included", "pillar": "travel", "category": "rewards", "icon": "🎒", "color": "amber", "description": "Travel essentials included", "active": True},
+        {"id": "tag-climate", "name": "Climate Control", "pillar": "travel", "category": "amenities", "icon": "❄️", "color": "cyan", "description": "Temperature-controlled pet area", "active": True},
+        # Care Tags
+        {"id": "tag-first-visit", "name": "First Visit Discount", "pillar": "care", "category": "rewards", "icon": "🎉", "color": "purple", "description": "Special offer for first-time visitors", "active": True},
+        {"id": "tag-certified", "name": "Certified Trainer", "pillar": "care", "category": "features", "icon": "🏅", "color": "gold", "description": "Certified professional trainer", "active": True},
+    ]
+    
+    now = datetime.now(timezone.utc).isoformat()
+    seeded = 0
+    
+    for tag in default_tags:
+        existing = await db.pillar_tags.find_one({"id": tag["id"]})
+        if not existing:
+            tag["created_at"] = now
+            tag["created_by"] = username
+            await db.pillar_tags.insert_one(tag)
+            seeded += 1
+    
+    return {"message": f"Seeded {seeded} tags", "total": len(default_tags)}
+
+
+@stay_admin_router.post("/properties/{property_id}/paw-reward")
+async def update_property_paw_reward(
+    property_id: str, 
+    paw_reward: PawReward,
+    username: str = Depends(verify_admin)
+):
+    """Update Paw Reward for a specific property"""
+    result = await db.stay_properties.update_one(
+        {"id": property_id},
+        {"$set": {
+            "paw_reward": paw_reward.model_dump(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_by": username
+        }}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+    return {"message": "Paw Reward updated", "paw_reward": paw_reward.model_dump()}
+
+
+@stay_admin_router.post("/properties/assign-paw-rewards")
+async def bulk_assign_paw_rewards(username: str = Depends(verify_admin)):
+    """Auto-assign Paw Rewards to all properties that don't have one"""
+    properties = await db.stay_properties.find(
+        {"$or": [{"paw_reward": None}, {"paw_reward.enabled": False}, {"paw_reward": {"$exists": False}}]},
+        {"_id": 0, "id": 1}
+    ).to_list(1000)
+    
+    assigned = 0
+    for prop in properties:
+        paw_reward = await get_random_reward_product()
+        await db.stay_properties.update_one(
+            {"id": prop["id"]},
+            {"$set": {"paw_reward": paw_reward}}
+        )
+        assigned += 1
+    
+    return {"message": f"Assigned Paw Rewards to {assigned} properties", "assigned": assigned}
+
+
 # ==================== ADMIN ROUTES ====================
 
 # --- TAB 1: Property Basics ---
