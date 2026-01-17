@@ -8,10 +8,11 @@ import { Textarea } from './ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { API_URL } from '../utils/api';
+import AutoshipSettings from './AutoshipSettings';
 import {
   Search, Filter, Download, Upload, Edit, Save, Loader2, RefreshCw,
   DollarSign, Percent, Package, Truck, Building2, Calculator, CheckCircle,
-  ArrowUpDown, ChevronDown, X, Plus, Trash2, IndianRupee, FileSpreadsheet
+  ArrowUpDown, ChevronDown, X, Plus, Trash2, IndianRupee, FileSpreadsheet, Sparkles
 } from 'lucide-react';
 
 const PILLARS = [
