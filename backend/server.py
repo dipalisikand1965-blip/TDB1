@@ -479,9 +479,11 @@ async def lifespan(app: FastAPI):
     # Start search initialization in background (don't await)
     asyncio.create_task(init_search_background())
     
-    # Start the auto-sync background task
-    sync_task = asyncio.create_task(auto_sync_products())
-    logger.info("Auto-sync background task started")
+    # NOTE: Auto-sync with Shopify DISABLED - use manual sync only
+    # This prevents local product changes from being overwritten
+    # sync_task = asyncio.create_task(auto_sync_products())
+    # logger.info("Auto-sync background task started")
+    logger.info("Auto-sync DISABLED - use manual sync via /api/admin/sync-products endpoint")
     
     # Start the celebration reminder scheduler
     # Runs daily at 9:00 AM IST (3:30 AM UTC)
