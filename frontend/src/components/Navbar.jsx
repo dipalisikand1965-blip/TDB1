@@ -5,15 +5,33 @@ import { useCart } from '../context/CartContext';
 import { Button } from './ui/button';
 import { useAuth } from '../context/AuthContext';
 import SearchBar from './SearchBar';
+import { API_URL } from '../utils/api';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activePillar, setActivePillar] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [navbarCollections, setNavbarCollections] = useState([]);
   const pillarRef = useRef(null);
   const { getCartCount, setIsCartOpen } = useCart();
   const { user } = useAuth();
   const location = useLocation();
+
+  // Fetch collections that should appear in navbar
+  useEffect(() => {
+    const fetchNavbarCollections = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/campaign/collections/navbar`);
+        if (res.ok) {
+          const data = await res.json();
+          setNavbarCollections(data.collections || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch navbar collections:', error);
+      }
+    };
+    fetchNavbarCollections();
+  }, []);
 
   // Life Pillars - The core navigation
   const pillars = [
