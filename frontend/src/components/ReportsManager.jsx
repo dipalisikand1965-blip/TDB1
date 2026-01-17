@@ -813,6 +813,315 @@ const ReportsManager = ({ authHeaders }) => {
           </div>
         </TabsContent>
 
+        {/* Partner Reports Tab */}
+        <TabsContent value="partners">
+          <div className="space-y-6">
+            {/* Partner Metrics */}
+            <div className="grid md:grid-cols-4 gap-4">
+              <MetricCard 
+                title="Total Applications" 
+                value={partnerReport?.metrics?.total_applications || 0} 
+                icon={Building} 
+                color="purple" 
+              />
+              <MetricCard 
+                title="Pending Review" 
+                value={partnerReport?.metrics?.pending || 0} 
+                icon={Clock} 
+                color="orange" 
+              />
+              <MetricCard 
+                title="Approved" 
+                value={partnerReport?.metrics?.approved || 0} 
+                icon={Users} 
+                color="green" 
+              />
+              <MetricCard 
+                title="Approval Rate" 
+                value={`${partnerReport?.metrics?.approval_rate || 0}%`} 
+                icon={TrendingUp} 
+                color="blue" 
+              />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Status Breakdown */}
+              <Card className="p-4">
+                <h3 className="font-semibold mb-4">📊 Application Status</h3>
+                <div className="space-y-3">
+                  {partnerReport?.status_breakdown?.map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-3">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">{item.status}</span>
+                          <span className="text-sm font-bold">{item.count}</span>
+                        </div>
+                        <div className="h-2 bg-gray-100 rounded-full mt-1 overflow-hidden">
+                          <div 
+                            className="h-full rounded-full transition-all"
+                            style={{ 
+                              width: `${partnerReport?.metrics?.total_applications ? (item.count / partnerReport.metrics.total_applications * 100) : 0}%`,
+                              backgroundColor: item.color 
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
+              {/* Category Breakdown */}
+              <Card className="p-4">
+                <h3 className="font-semibold mb-4">🏢 By Business Category</h3>
+                <div className="space-y-2">
+                  {partnerReport?.category_breakdown?.map((item, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                      <span className="font-medium">{item.category}</span>
+                      <Badge variant="secondary">{item.count}</Badge>
+                    </div>
+                  ))}
+                  {(!partnerReport?.category_breakdown || partnerReport.category_breakdown.length === 0) && (
+                    <p className="text-gray-500 text-sm text-center py-4">No partner applications yet</p>
+                  )}
+                </div>
+              </Card>
+            </div>
+
+            {/* City Breakdown */}
+            <Card className="p-4">
+              <h3 className="font-semibold mb-4">🏙️ Partners by City</h3>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {partnerReport?.city_breakdown?.map((item, idx) => (
+                  <div key={idx} className="p-3 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg text-center">
+                    <p className="text-2xl font-bold text-purple-600">{item.count}</p>
+                    <p className="text-sm text-gray-600">{item.city}</p>
+                  </div>
+                ))}
+                {(!partnerReport?.city_breakdown || partnerReport.city_breakdown.length === 0) && (
+                  <p className="text-gray-500 text-sm col-span-full text-center py-4">No data available</p>
+                )}
+              </div>
+            </Card>
+
+            {/* Recent Applications */}
+            <Card className="p-4">
+              <h3 className="font-semibold mb-4">📋 Recent Applications</h3>
+              {partnerReport?.recent_applications?.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="p-3 text-left">Business Name</th>
+                        <th className="p-3 text-left">Category</th>
+                        <th className="p-3 text-left">City</th>
+                        <th className="p-3 text-center">Status</th>
+                        <th className="p-3 text-right">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {partnerReport.recent_applications.map((app, idx) => (
+                        <tr key={idx} className="border-b hover:bg-gray-50">
+                          <td className="p-3 font-medium">{app.business_name}</td>
+                          <td className="p-3 text-gray-500">{app.category}</td>
+                          <td className="p-3 text-gray-500">{app.city}</td>
+                          <td className="p-3 text-center">
+                            <Badge className={
+                              app.status === 'approved' ? 'bg-green-100 text-green-700' :
+                              app.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                              app.status === 'under_review' ? 'bg-blue-100 text-blue-700' :
+                              'bg-yellow-100 text-yellow-700'
+                            }>
+                              {app.status}
+                            </Badge>
+                          </td>
+                          <td className="p-3 text-right text-gray-500">
+                            {app.created_at ? new Date(app.created_at).toLocaleDateString() : '-'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Building className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                  <p>No partner applications yet</p>
+                  <p className="text-sm">Partner applications will appear here once submitted</p>
+                </div>
+              )}
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Mira AI Reports Tab */}
+        <TabsContent value="mira">
+          <div className="space-y-6">
+            {/* Mira Metrics */}
+            <div className="grid md:grid-cols-4 gap-4">
+              <MetricCard 
+                title="Total Conversations" 
+                value={miraReport?.metrics?.total_conversations || 0} 
+                icon={Heart} 
+                color="pink" 
+              />
+              <MetricCard 
+                title="Total Messages" 
+                value={miraReport?.metrics?.total_messages || 0} 
+                icon={Users} 
+                color="purple" 
+              />
+              <MetricCard 
+                title="Avg Messages/Chat" 
+                value={miraReport?.metrics?.avg_messages_per_chat || 0} 
+                icon={TrendingUp} 
+                color="blue" 
+              />
+              <MetricCard 
+                title="Response Rate" 
+                value={`${miraReport?.metrics?.response_rate || 0}%`} 
+                icon={Clock} 
+                color="green" 
+              />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Service Type Breakdown */}
+              <Card className="p-4">
+                <h3 className="font-semibold mb-4">🎯 Conversations by Service</h3>
+                <div className="space-y-3">
+                  {miraReport?.service_breakdown?.map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-3">
+                      <div className="w-20 text-sm font-medium">{item.service}</div>
+                      <div className="flex-1 bg-gray-100 rounded-full h-6 overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-end pr-2"
+                          style={{ width: `${item.percentage || 0}%` }}
+                        >
+                          <span className="text-xs text-white font-medium">{item.percentage}%</span>
+                        </div>
+                      </div>
+                      <div className="w-12 text-right text-sm font-semibold">{item.count}</div>
+                    </div>
+                  ))}
+                  {(!miraReport?.service_breakdown || miraReport.service_breakdown.length === 0) && (
+                    <p className="text-gray-500 text-sm text-center py-4">No conversation data yet</p>
+                  )}
+                </div>
+              </Card>
+
+              {/* Status Breakdown */}
+              <Card className="p-4">
+                <h3 className="font-semibold mb-4">📊 Conversation Status</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {miraReport?.status_breakdown?.map((item, idx) => (
+                    <div key={idx} className="p-4 rounded-lg text-center" style={{ backgroundColor: `${item.color}15` }}>
+                      <p className="text-3xl font-bold" style={{ color: item.color }}>{item.count}</p>
+                      <p className="text-sm text-gray-600">{item.status}</p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
+
+            {/* Message Stats */}
+            <Card className="p-4 bg-gradient-to-r from-pink-50 to-purple-50">
+              <div className="flex flex-wrap justify-around gap-4">
+                <div className="text-center">
+                  <p className="text-sm text-gray-500">User Messages</p>
+                  <p className="text-2xl font-bold text-pink-600">{miraReport?.metrics?.user_messages || 0}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-gray-500">AI Responses</p>
+                  <p className="text-2xl font-bold text-purple-600">{miraReport?.metrics?.ai_responses || 0}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-gray-500">With Pet Info</p>
+                  <p className="text-2xl font-bold text-blue-600">{miraReport?.metrics?.chats_with_pet_info || 0}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-gray-500">Converted</p>
+                  <p className="text-2xl font-bold text-green-600">{miraReport?.metrics?.converted_chats || 0}</p>
+                </div>
+              </div>
+            </Card>
+
+            {/* City Breakdown */}
+            <Card className="p-4">
+              <h3 className="font-semibold mb-4">🏙️ Conversations by City</h3>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {miraReport?.city_breakdown?.map((item, idx) => (
+                  <div key={idx} className="p-3 bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg text-center">
+                    <p className="text-2xl font-bold text-purple-600">{item.count}</p>
+                    <p className="text-sm text-gray-600">{item.city}</p>
+                  </div>
+                ))}
+                {(!miraReport?.city_breakdown || miraReport.city_breakdown.length === 0) && (
+                  <p className="text-gray-500 text-sm col-span-full text-center py-4">No data available</p>
+                )}
+              </div>
+            </Card>
+
+            {/* Insights */}
+            {miraReport?.insights && miraReport.insights.length > 0 && (
+              <Card className="p-4">
+                <h3 className="font-semibold mb-4">💡 Insights</h3>
+                <ul className="space-y-2">
+                  {miraReport.insights.map((insight, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-sm text-gray-700">
+                      <span className="text-pink-500">✓</span>
+                      {insight}
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            )}
+
+            {/* Recent Conversations */}
+            <Card className="p-4">
+              <h3 className="font-semibold mb-4">💬 Recent Conversations</h3>
+              {miraReport?.recent_conversations?.length > 0 ? (
+                <div className="space-y-3">
+                  {miraReport.recent_conversations.map((chat, idx) => (
+                    <div key={idx} className="p-3 border rounded-lg hover:bg-gray-50">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Badge variant="outline" className="text-xs">{chat.service_type}</Badge>
+                            <Badge className={
+                              chat.status === 'converted' ? 'bg-purple-100 text-purple-700' :
+                              chat.status === 'resolved' ? 'bg-blue-100 text-blue-700' :
+                              chat.status === 'active' ? 'bg-green-100 text-green-700' :
+                              'bg-gray-100 text-gray-700'
+                            }>
+                              {chat.status}
+                            </Badge>
+                            {chat.pet_name && chat.pet_name !== '-' && (
+                              <span className="text-xs text-gray-500">🐕 {chat.pet_name}</span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 line-clamp-1">{chat.preview}</p>
+                        </div>
+                        <div className="text-right text-xs text-gray-400">
+                          <p>{chat.city}</p>
+                          <p>{chat.messages_count} msgs</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Heart className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                  <p>No conversations yet</p>
+                  <p className="text-sm">Mira AI conversations will appear here</p>
+                </div>
+              )}
+            </Card>
+          </div>
+        </TabsContent>
+
         {/* Executive Summary */}
         <TabsContent value="executive">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
