@@ -1190,6 +1190,7 @@ const Admin = () => {
             { id: 'collections', label: 'Collections', icon: Layers },
             { id: 'requests', label: 'Custom Cakes', icon: Cake },
             { id: 'dine', label: '🍽️ Dine', icon: Package },
+            { id: 'stay', label: '🏨 Stay', icon: Building },
             { id: 'insights', label: '📝 Blog', icon: FileText },
             { id: 'testimonials', label: 'Testimonials', icon: Star },
             { id: 'faqs', label: 'FAQs', icon: HelpCircle },
