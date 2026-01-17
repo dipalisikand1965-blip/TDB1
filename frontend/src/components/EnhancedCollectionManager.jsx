@@ -767,7 +767,7 @@ const EnhancedCollectionManager = ({ getAuthHeader }) => {
             
             {/* Item Search */}
             <div className="border-t pt-4">
-              <Label className="mb-2 block">Add Items</Label>
+              <Label className="mb-2 block font-semibold">Add Items to Section</Label>
               <div className="flex gap-2 mb-3">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -775,14 +775,14 @@ const EnhancedCollectionManager = ({ getAuthHeader }) => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && searchItems()}
-                    placeholder="Search products, restaurants, stays..."
+                    placeholder="Type product name and press Enter or click Search..."
                     className="pl-9"
                   />
                 </div>
                 <select 
                   value={searchType}
                   onChange={(e) => setSearchType(e.target.value)}
-                  className="border rounded-md px-3"
+                  className="border rounded-md px-3 text-sm"
                 >
                   <option value="all">All Types</option>
                   <option value="product">Products</option>
