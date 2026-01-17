@@ -1217,6 +1217,27 @@ const Admin = () => {
               {tab.label}
             </Button>
           ))}
+          
+          {/* Divider */}
+          <div className="w-px h-6 bg-gray-300 mx-2" />
+          
+          {/* CONFIGURATION */}
+          <span className="text-xs text-gray-500 px-2 py-1 font-semibold uppercase">Config</span>
+          {[
+            { id: 'pillars', label: '🏛️ Pillars', icon: Layers },
+            { id: 'campaigns', label: '🎯 Campaigns', icon: Sparkles },
+          ].map((tab) => (
+            <Button
+              key={tab.id}
+              variant={activeTab === tab.id ? 'default' : 'ghost'}
+              className={activeTab === tab.id ? 'bg-purple-600' : ''}
+              onClick={() => setActiveTab(tab.id)}
+              data-testid={`admin-tab-${tab.id}`}
+            >
+              <tab.icon className="w-4 h-4 mr-2" />
+              {tab.label}
+            </Button>
+          ))}
         </div>
 
         {/* Fulfilment Tab */}
