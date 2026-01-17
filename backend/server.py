@@ -6473,6 +6473,10 @@ set_pillar_reports_admin_verify(verify_admin)
 set_restaurant_scraper_db(db)
 set_restaurant_scraper_admin(verify_admin)
 
+# Set database for data migration
+set_migration_db(db)
+set_migration_admin_verify(verify_admin)
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
