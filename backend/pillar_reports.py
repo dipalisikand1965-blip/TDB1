@@ -486,3 +486,252 @@ async def get_pillar_comparison(period: str = "this_month"):
             f"Total estimated profit: ₹{total_profit:,.0f}"
         ]
     }
+
+
+# ==================== PARTNER REPORTS ====================
+
+@router.get("/partners")
+async def get_partner_report(period: str = "this_month"):
+    """Get partner application and performance report"""
+    start_date, end_date = get_date_range(period)
+    
+    # Get all partner applications
+    all_applications = await db.partner_applications.find({}).to_list(1000)
+    
+    # Filter by date range for new applications
+    date_query = {"created_at": {"$gte": start_date, "$lte": end_date}}
+    period_applications = await db.partner_applications.find(date_query).to_list(1000)
+    
+    # Status breakdown
+    status_counts = {"pending": 0, "approved": 0, "rejected": 0, "under_review": 0}
+    for app in all_applications:
+        status = app.get("status", "pending").lower()
+        if status in status_counts:
+            status_counts[status] += 1
+        else:
+            status_counts["pending"] += 1
+    
+    # Category breakdown
+    category_counts = {}
+    for app in all_applications:
+        category = app.get("business_category") or app.get("business_type") or "Other"
+        category_counts[category] = category_counts.get(category, 0) + 1
+    
+    category_breakdown = [
+        {"category": k, "count": v} 
+        for k, v in sorted(category_counts.items(), key=lambda x: x[1], reverse=True)
+    ]
+    
+    # City breakdown
+    city_counts = {}
+    for app in all_applications:
+        city = app.get("city", "Unknown")
+        city_counts[city] = city_counts.get(city, 0) + 1
+    
+    city_breakdown = [
+        {"city": k, "count": v}
+        for k, v in sorted(city_counts.items(), key=lambda x: x[1], reverse=True)
+    ][:10]
+    
+    # Recent applications (last 10)
+    recent_applications = sorted(
+        all_applications, 
+        key=lambda x: x.get("created_at", ""), 
+        reverse=True
+    )[:10]
+    
+    recent_list = []
+    for app in recent_applications:
+        recent_list.append({
+            "id": app.get("id", str(app.get("_id", ""))),
+            "business_name": app.get("business_name", "Unknown"),
+            "category": app.get("business_category") or app.get("business_type") or "Other",
+            "city": app.get("city", "Unknown"),
+            "status": app.get("status", "pending"),
+            "created_at": app.get("created_at", "")
+        })
+    
+    # Get partner commissions earned (from restaurants)
+    restaurants = await db.restaurants.find({"partner_id": {"$exists": True}}).to_list(500)
+    reservations = await db.reservations.find(date_query).to_list(10000)
+    
+    partner_revenue = {}
+    for res in reservations:
+        partner_id = res.get("partner_id")
+        if partner_id:
+            est_commission = res.get("estimated_commission", 50)
+            partner_revenue[partner_id] = partner_revenue.get(partner_id, 0) + est_commission
+    
+    total_commission = sum(partner_revenue.values())
+    
+    # Daily trend
+    daily_apps = {}
+    for app in period_applications:
+        date = app.get("created_at", "")[:10]
+        if date:
+            daily_apps[date] = daily_apps.get(date, 0) + 1
+    
+    daily_trend = [{"date": k, "applications": v} for k, v in sorted(daily_apps.items())]
+    
+    return {
+        "period": period,
+        "metrics": {
+            "total_applications": len(all_applications),
+            "new_this_period": len(period_applications),
+            "pending": status_counts["pending"],
+            "approved": status_counts["approved"],
+            "rejected": status_counts["rejected"],
+            "under_review": status_counts["under_review"],
+            "approval_rate": round(
+                (status_counts["approved"] / len(all_applications) * 100) if all_applications else 0, 1
+            ),
+            "total_commission_earned": round(total_commission, 2)
+        },
+        "status_breakdown": [
+            {"status": "Pending", "count": status_counts["pending"], "color": "#f59e0b"},
+            {"status": "Under Review", "count": status_counts["under_review"], "color": "#3b82f6"},
+            {"status": "Approved", "count": status_counts["approved"], "color": "#22c55e"},
+            {"status": "Rejected", "count": status_counts["rejected"], "color": "#ef4444"}
+        ],
+        "category_breakdown": category_breakdown[:8],
+        "city_breakdown": city_breakdown,
+        "recent_applications": recent_list,
+        "daily_trend": daily_trend[-30:]
+    }
+
+
+# ==================== MIRA AI REPORTS ====================
+
+@router.get("/mira")
+async def get_mira_report(period: str = "this_month"):
+    """Get Mira AI chat analytics report"""
+    start_date, end_date = get_date_range(period)
+    
+    # Get all chats
+    all_chats = await db.mira_chats.find({}).to_list(10000)
+    
+    # Filter by date range
+    date_query = {"created_at": {"$gte": start_date, "$lte": end_date}}
+    period_chats = await db.mira_chats.find(date_query).to_list(10000)
+    
+    # If no date filtering works, use all chats
+    if not period_chats:
+        period_chats = all_chats
+    
+    # Calculate total messages
+    total_messages = 0
+    user_messages = 0
+    ai_messages = 0
+    
+    for chat in all_chats:
+        messages = chat.get("messages", [])
+        total_messages += len(messages)
+        for msg in messages:
+            role = msg.get("role", "")
+            if role == "user":
+                user_messages += 1
+            elif role == "assistant":
+                ai_messages += 1
+    
+    # Service type breakdown
+    service_counts = {}
+    for chat in all_chats:
+        service = chat.get("service_type", "General")
+        service_counts[service] = service_counts.get(service, 0) + 1
+    
+    service_breakdown = [
+        {"service": k, "count": v, "percentage": round(v / len(all_chats) * 100, 1) if all_chats else 0}
+        for k, v in sorted(service_counts.items(), key=lambda x: x[1], reverse=True)
+    ]
+    
+    # City breakdown
+    city_counts = {}
+    for chat in all_chats:
+        city = chat.get("city", "Unknown")
+        city_counts[city] = city_counts.get(city, 0) + 1
+    
+    city_breakdown = [
+        {"city": k, "count": v}
+        for k, v in sorted(city_counts.items(), key=lambda x: x[1], reverse=True)
+    ][:10]
+    
+    # Status breakdown
+    status_counts = {"active": 0, "resolved": 0, "converted": 0, "abandoned": 0}
+    for chat in all_chats:
+        status = chat.get("status", "active").lower()
+        if status in status_counts:
+            status_counts[status] += 1
+        else:
+            status_counts["active"] += 1
+    
+    # Pet info stats
+    has_pet_info = sum(1 for c in all_chats if c.get("pet_name"))
+    
+    # Daily trend
+    daily_chats = {}
+    for chat in all_chats:
+        date = chat.get("created_at", "")[:10]
+        if date:
+            daily_chats[date] = daily_chats.get(date, 0) + 1
+    
+    daily_trend = [{"date": k, "chats": v} for k, v in sorted(daily_chats.items())]
+    
+    # Average messages per chat
+    avg_messages = total_messages / len(all_chats) if all_chats else 0
+    
+    # Calculate response rate (chats with AI responses / total chats)
+    chats_with_response = sum(1 for c in all_chats if any(
+        m.get("role") == "assistant" for m in c.get("messages", [])
+    ))
+    response_rate = (chats_with_response / len(all_chats) * 100) if all_chats else 0
+    
+    # Recent chats
+    recent_chats = sorted(all_chats, key=lambda x: x.get("created_at", ""), reverse=True)[:10]
+    recent_list = []
+    for chat in recent_chats:
+        messages = chat.get("messages", [])
+        first_user_msg = next((m.get("content", "")[:100] for m in messages if m.get("role") == "user"), "No message")
+        recent_list.append({
+            "id": chat.get("id", str(chat.get("_id", ""))),
+            "session_id": chat.get("session_id", "Unknown")[:20],
+            "pet_name": chat.get("pet_name", "-"),
+            "city": chat.get("city", "Unknown"),
+            "service_type": chat.get("service_type", "General"),
+            "messages_count": len(messages),
+            "status": chat.get("status", "active"),
+            "preview": first_user_msg,
+            "created_at": chat.get("created_at", "")
+        })
+    
+    return {
+        "period": period,
+        "metrics": {
+            "total_conversations": len(all_chats),
+            "conversations_this_period": len(period_chats),
+            "total_messages": total_messages,
+            "user_messages": user_messages,
+            "ai_responses": ai_messages,
+            "avg_messages_per_chat": round(avg_messages, 1),
+            "response_rate": round(response_rate, 1),
+            "chats_with_pet_info": has_pet_info,
+            "active_chats": status_counts["active"],
+            "resolved_chats": status_counts["resolved"],
+            "converted_chats": status_counts["converted"]
+        },
+        "service_breakdown": service_breakdown[:8],
+        "city_breakdown": city_breakdown,
+        "status_breakdown": [
+            {"status": "Active", "count": status_counts["active"], "color": "#22c55e"},
+            {"status": "Resolved", "count": status_counts["resolved"], "color": "#3b82f6"},
+            {"status": "Converted", "count": status_counts["converted"], "color": "#9333ea"},
+            {"status": "Abandoned", "count": status_counts["abandoned"], "color": "#6b7280"}
+        ],
+        "daily_trend": daily_trend[-30:],
+        "recent_conversations": recent_list,
+        "insights": [
+            f"Total of {len(all_chats)} conversations with {total_messages} messages",
+            f"Average {round(avg_messages, 1)} messages per conversation",
+            f"{has_pet_info} conversations include pet information",
+            f"Most popular service: {service_breakdown[0]['service'] if service_breakdown else 'N/A'}"
+        ]
+    }
