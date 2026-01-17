@@ -18,7 +18,7 @@ const ReviewsManager = ({ getAuthHeader }) => {
         : `${API_URL}/api/admin/reviews?status=${statusFilter}`;
         
       const response = await fetch(url, {
-        headers: { 'Authorization': getAuthHeader() }
+        headers: getAuthHeader()
       });
       if (response.ok) {
         const data = await response.json();
