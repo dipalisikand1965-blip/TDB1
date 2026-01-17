@@ -15,7 +15,8 @@ import {
 
 const PARTNER_TYPES = [
   { id: 'restaurant', name: 'Restaurant / Café', icon: Utensils, color: '#F97316' },
-  { id: 'stay', name: 'Pet Hotel / Boarding', icon: Home, color: '#10B981' },
+  { id: 'pet_hotel', name: 'Pet Hotel', icon: Home, color: '#10B981' },
+  { id: 'pet_boarding', name: 'Pet Boarding', icon: Home, color: '#059669' },
   { id: 'groomer', name: 'Grooming Salon', icon: Scissors, color: '#EC4899' },
   { id: 'vet', name: 'Veterinary Clinic', icon: Stethoscope, color: '#3B82F6' },
   { id: 'trainer', name: 'Pet Trainer', icon: GraduationCap, color: '#8B5CF6' },
