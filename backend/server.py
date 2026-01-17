@@ -71,6 +71,11 @@ from restaurant_discovery import (
     set_restaurant_scraper_db,
     set_restaurant_scraper_admin
 )
+from data_migration import (
+    router as migration_router,
+    set_migration_db,
+    set_migration_admin_verify
+)
 
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
