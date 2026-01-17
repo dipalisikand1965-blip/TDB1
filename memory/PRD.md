@@ -34,6 +34,13 @@
 - **NEW**: CSV export functionality
 - Auto-ticket creation from Mira AI chats
 
+### 4. Multi-Admin System with Email Password Reset ✅ (NEW - Jan 17, 2026)
+- Multiple admin users supported (email/password based)
+- Created initial admin: **dipali@clubconcierge.in** (password: DoggyAdmin2026!)
+- Email-based password reset workflow
+- Admin management (add/remove admins)
+- Legacy username/password login still supported
+
 ### 5. Partner Onboarding Module ✅ (UPDATED - Jan 17, 2026)
 - **5-Step Registration Form**:
   1. Business Type - **Pet Hotel & Pet Boarding now separate options**
