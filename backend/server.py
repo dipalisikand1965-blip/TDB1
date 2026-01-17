@@ -6437,6 +6437,10 @@ set_pillar_admin_verify(verify_admin)
 set_collection_db(db)
 set_collection_admin_verify(verify_admin)
 
+# Set database for partner routes
+set_partner_db(db)
+set_partner_admin_verify(verify_admin)
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
