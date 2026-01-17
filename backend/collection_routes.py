@@ -568,7 +568,7 @@ async def public_get_navbar_collections():
     
     return {"collections": collections}
 
-@public_router.get("/{slug}")
+@public_router.get("/collections/{slug}")
 async def public_get_collection_by_slug(slug: str):
     """Get a single published collection by slug"""
     import logging
