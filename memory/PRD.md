@@ -63,7 +63,33 @@
 - **Stay Report**: Bookings, revenue, nights (ready for when Stay pillar launches)
 - **Pillar Comparison**: Profit breakdown, activity comparison, insights
 
-### 8. Product CSV Management ✅
+### 8. Partner Reports ✅ (NEW - Jan 17, 2026)
+- Total applications, pending/approved/rejected counts
+- Approval rate metrics
+- Applications by business category (Restaurant, Hotel, Groomer, etc.)
+- Applications by city
+- Recent applications table with status
+- Daily application trend
+
+### 9. Mira AI Reports ✅ (NEW - Jan 17, 2026)
+- Total conversations and messages
+- Average messages per conversation
+- Response rate metrics
+- Conversations by service type (Birthday, Vet, Grooming, etc.)
+- Conversation status breakdown (Active, Resolved, Converted, Abandoned)
+- Conversations by city
+- User messages vs AI responses
+- Chats with pet info captured
+- Recent conversations list with previews
+- AI insights summary
+
+### 10. Data Migration Tool ✅ (NEW - Jan 17, 2026)
+- Export all data (products, restaurants, pillars, categories, collections) as JSON
+- Import data from JSON file to any environment
+- Seed core data (pillars & categories) for fresh deployments
+- Solves preview vs production database sync issues
+
+### 11. Product CSV Management ✅
 - Import/export products via CSV
 - Bulk operations support
 
