@@ -44,6 +44,12 @@ const DineManager = ({ credentials }) => {
   const [meetupStats, setMeetupStats] = useState({});
   const [meetupFilter, setMeetupFilter] = useState('all');
   
+  // Bundles state
+  const [bundles, setBundles] = useState([]);
+  const [bundleStats, setBundleStats] = useState({});
+  const [editingBundle, setEditingBundle] = useState(null);
+  const [isAddingBundle, setIsAddingBundle] = useState(false);
+  
   const fileInputRef = useRef(null);
   const petMenuInputRef = useRef(null);
   const csvInputRef = useRef(null);
