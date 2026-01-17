@@ -816,6 +816,19 @@ async def admin_get_buddy_connections(username: str = Depends(verify_admin)):
     return {"connections": connections, "stats": stats}
 
 
+@stay_social_admin_router.post("/seed-products")
+async def admin_seed_products(username: str = Depends(verify_admin)):
+    """Seed Stay Bundles and Social Events"""
+    bundles_result = await seed_stay_bundles(db)
+    socials_result = await seed_sample_socials(db)
+    
+    return {
+        "message": "Stay products seeded successfully!",
+        "bundles": bundles_result,
+        "socials": socials_result
+    }
+
+
 # ==================== SEEDING ====================
 
 async def seed_stay_bundles(db_instance):
