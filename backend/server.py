@@ -3562,6 +3562,23 @@ City: {order.get('delivery', {}).get('city')}
 Special Instructions: {order.get('specialInstructions', 'None')}"""
         
         logger.info(f"New order: {order.get('orderId')}")
+        
+        # Create admin notification
+        await create_admin_notification(
+            notification_type="order",
+            title=f"🛒 New Order #{order.get('orderId', '')[:8]}",
+            message=f"{order.get('customer', {}).get('parentName', 'Customer')} ordered {len(order.get('items', []))} item(s) - ₹{order.get('total', 0)}",
+            category="celebrate",
+            related_id=order["id"],
+            link_to="/admin?tab=orders",
+            priority="high" if order.get('total', 0) > 2000 else "normal",
+            metadata={
+                "order_id": order.get('orderId'),
+                "customer_name": order.get('customer', {}).get('parentName'),
+                "total": order.get('total'),
+                "items_count": len(order.get('items', []))
+            }
+        )
     except Exception as e:
         logger.error(f"Order notification failed: {e}")
     
