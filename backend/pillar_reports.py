@@ -360,15 +360,18 @@ async def get_stay_report(period: str = "this_month"):
     """Detailed report for Stay pillar (hotels/boarding)"""
     start_date, end_date = get_date_range(period)
     
-    # Check if stays collection exists
+    # Check if stay_properties collection exists
     collections = await db.list_collection_names()
     
-    if "stays" not in collections:
+    # Get stay properties
+    stay_properties = await db.stay_properties.find({"status": "live"}).to_list(500) if "stay_properties" in collections else []
+    
+    if not stay_properties:
         return {
             "pillar": "stay",
             "period": period,
-            "status": "coming_soon",
-            "message": "Stay pillar is not yet built. Coming soon!",
+            "status": "no_properties",
+            "message": "No live Stay properties yet. Seed properties via Admin → Stay → Seed Data.",
             "metrics": {
                 "total_bookings": 0,
                 "total_revenue": 0,
@@ -377,47 +380,117 @@ async def get_stay_report(period: str = "this_month"):
             }
         }
     
-    # Get stays
-    stays = await db.stays.find({}).to_list(500)
-    
     # Get bookings
     bookings = await db.stay_bookings.find({
         "created_at": {"$gte": start_date, "$lte": end_date}
     }).to_list(10000) if "stay_bookings" in collections else []
     
-    stay_map = {s["id"]: s for s in stays}
+    property_map = {p["id"]: p for p in stay_properties}
     
     # Property performance
     property_bookings = {}
     for booking in bookings:
-        sid = booking.get("stay_id", "unknown")
-        if sid not in property_bookings:
-            property_bookings[sid] = {"bookings": 0, "revenue": 0, "nights": 0}
-        property_bookings[sid]["bookings"] += 1
-        property_bookings[sid]["revenue"] += booking.get("total", 0)
-        property_bookings[sid]["nights"] += booking.get("nights", 1)
-    
-    # Top properties
-    top_properties = []
-    for sid, stats in property_bookings.items():
-        stay = stay_map.get(sid, {})
-        commission_type = stay.get("commission_type", "percentage")
-        commission_value = stay.get("commission_value", 12)
+        pid = booking.get("property_id", "unknown")
+        if pid not in property_bookings:
+            property_bookings[pid] = {"bookings": 0, "revenue": 0, "nights": 0, "confirmed": 0, "pending": 0}
+        property_bookings[pid]["bookings"] += 1
+        property_bookings[pid]["revenue"] += booking.get("total", 0)
+        # Calculate nights from dates
+        try:
+            check_in = booking.get("check_in_date", "")
+            check_out = booking.get("check_out_date", "")
+            if check_in and check_out:
+                from datetime import datetime
+                ci = datetime.strptime(check_in, "%Y-%m-%d")
+                co = datetime.strptime(check_out, "%Y-%m-%d")
+                nights = (co - ci).days
+                property_bookings[pid]["nights"] += max(1, nights)
+        except:
+            property_bookings[pid]["nights"] += 1
         
-        if commission_type == "fixed":
-            commission = stats["bookings"] * commission_value
-        else:
-            commission = stats["revenue"] * (commission_value / 100)
+        if booking.get("status") == "confirmed":
+            property_bookings[pid]["confirmed"] += 1
+        elif booking.get("status") == "pending":
+            property_bookings[pid]["pending"] += 1
+    
+    # Top properties by bookings
+    top_properties = []
+    total_commission = 0
+    for pid, stats in property_bookings.items():
+        prop = property_map.get(pid, {})
+        commercials = prop.get("commercials", {})
+        commission_rate = commercials.get("commission_rate", 12)
+        
+        commission = stats["revenue"] * (commission_rate / 100)
+        total_commission += commission
         
         top_properties.append({
-            "id": sid,
-            "name": stay.get("name", "Unknown"),
-            "city": stay.get("city", "Unknown"),
+            "id": pid,
+            "name": prop.get("name", "Unknown"),
+            "city": prop.get("city", "Unknown"),
+            "property_type": prop.get("property_type", "Unknown"),
+            "paw_rating": prop.get("paw_rating", {}).get("overall", 0),
             "bookings": stats["bookings"],
+            "confirmed": stats["confirmed"],
+            "pending": stats["pending"],
             "nights": stats["nights"],
             "revenue": round(stats["revenue"], 2),
             "estimated_commission": round(commission, 2)
         })
+    
+    top_properties.sort(key=lambda x: x["bookings"], reverse=True)
+    
+    # By property type
+    by_type = {}
+    for prop in stay_properties:
+        ptype = prop.get("property_type", "other")
+        if ptype not in by_type:
+            by_type[ptype] = {"count": 0, "bookings": 0}
+        by_type[ptype]["count"] += 1
+        by_type[ptype]["bookings"] += property_bookings.get(prop["id"], {}).get("bookings", 0)
+    
+    # By city
+    by_city = {}
+    for prop in stay_properties:
+        city = prop.get("city", "Unknown")
+        if city not in by_city:
+            by_city[city] = {"count": 0, "bookings": 0}
+        by_city[city]["count"] += 1
+        by_city[city]["bookings"] += property_bookings.get(prop["id"], {}).get("bookings", 0)
+    
+    # Booking status breakdown
+    status_breakdown = {
+        "pending": len([b for b in bookings if b.get("status") == "pending"]),
+        "contacted": len([b for b in bookings if b.get("status") == "contacted"]),
+        "confirmed": len([b for b in bookings if b.get("status") == "confirmed"]),
+        "cancelled": len([b for b in bookings if b.get("status") == "cancelled"]),
+        "completed": len([b for b in bookings if b.get("status") == "completed"])
+    }
+    
+    # Get mismatch reports count
+    mismatch_count = await db.policy_mismatch_reports.count_documents({"status": "open"}) if "policy_mismatch_reports" in collections else 0
+    
+    return {
+        "pillar": "stay",
+        "period": period,
+        "date_range": {"start": start_date, "end": end_date},
+        "status": "active",
+        "metrics": {
+            "total_properties": len(stay_properties),
+            "live_properties": len([p for p in stay_properties if p.get("status") == "live"]),
+            "with_pet_menu": len([p for p in stay_properties if p.get("pet_menu_available")]),
+            "verified": len([p for p in stay_properties if p.get("verified")]),
+            "total_bookings": len(bookings),
+            "total_revenue": round(sum(b.get("total", 0) for b in bookings), 2),
+            "estimated_commission": round(total_commission, 2),
+            "avg_paw_rating": round(sum(p.get("paw_rating", {}).get("overall", 0) for p in stay_properties) / len(stay_properties), 2) if stay_properties else 0,
+            "open_mismatch_reports": mismatch_count
+        },
+        "booking_status": status_breakdown,
+        "top_properties": top_properties[:10],
+        "by_property_type": [{"type": k, **v} for k, v in sorted(by_type.items(), key=lambda x: x[1]["bookings"], reverse=True)],
+        "by_city": [{"city": k, **v} for k, v in sorted(by_city.items(), key=lambda x: x[1]["bookings"], reverse=True)][:10]
+    }
     
     top_properties.sort(key=lambda x: x["revenue"], reverse=True)
     
