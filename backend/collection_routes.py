@@ -602,3 +602,81 @@ async def public_get_collection_by_slug(slug: str):
         collection["sections"] = await enrich_collection_items(collection["sections"])
     
     return {"collection": collection}
+
+
+@public_router.post("/seed-valentines")
+async def seed_valentines_collection():
+    """
+    One-time seed endpoint to create Valentine's collection if it doesn't exist.
+    This helps sync collections between preview and production environments.
+    """
+    # Check if already exists
+    existing = await db.enhanced_collections.find_one({"slug": "valentines-2025"})
+    if existing:
+        return {"message": "Valentine's collection already exists", "id": existing.get("id")}
+    
+    # Create the Valentine's collection
+    valentine_collection = {
+        "id": f"ecol-{uuid.uuid4().hex[:12]}",
+        "name": "Valentine's Day 2026 💕",
+        "slug": "valentines-2025",
+        "description": "Celebrate love with your furry best friend! Special cakes, treats, and gifts curated for the most paw-some Valentine's Day ever.",
+        "cover_image": "https://images.unsplash.com/photo-1518882605630-8f0e9a0a5188?w=800",
+        "banner_image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200",
+        "theme_color": "#EC4899",
+        "display_locations": {
+            "show_in_navbar": True,
+            "navbar_position": 0,
+            "pillar_ids": [],
+            "show_on_homepage": True,
+            "homepage_section": "featured"
+        },
+        "sections": [
+            {
+                "id": f"sec-{uuid.uuid4().hex[:8]}",
+                "title": "💕 Valentine's Specials",
+                "subtitle": "Handpicked favorites to celebrate love with your furry valentine",
+                "layout": "featured",
+                "columns": 4,
+                "background": "",
+                "items": []
+            },
+            {
+                "id": f"sec-{uuid.uuid4().hex[:8]}",
+                "title": "🎂 Celebration Cakes",
+                "subtitle": "Show your pup how much you love them",
+                "layout": "grid",
+                "columns": 4,
+                "background": "",
+                "items": []
+            },
+            {
+                "id": f"sec-{uuid.uuid4().hex[:8]}",
+                "title": "🎁 Love Gift Boxes",
+                "subtitle": "Complete celebration hampers",
+                "layout": "grid",
+                "columns": 4,
+                "background": "",
+                "items": []
+            }
+        ],
+        "visibility": {
+            "is_published": True,
+            "start_date": None,
+            "end_date": "2026-02-15T23:59:59"
+        },
+        "seo_title": "Valentine's Day 2026 - Special Pet Treats & Cakes | The Doggy Company",
+        "seo_description": "Make Valentine's Day special for your furry friend with our curated collection of heart-shaped cakes, romantic treats, and love-themed gifts.",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.enhanced_collections.insert_one(valentine_collection)
+    valentine_collection.pop("_id", None)
+    
+    return {
+        "message": "Valentine's collection created successfully!",
+        "id": valentine_collection["id"],
+        "slug": valentine_collection["slug"],
+        "note": "The collection has empty sections. Please add products via the admin panel."
+    }
