@@ -347,17 +347,5 @@ class TestNotificationCleanup:
         print(f"✓ Clear old notifications: {result['message']}")
 
 
-# Cleanup fixture to create test notifications for testing
-@pytest.fixture(scope="module", autouse=True)
-def setup_test_notifications(api_client, admin_auth):
-    """Create some test notifications before running tests"""
-    # This would typically be done via the create_admin_notification function
-    # For now, we rely on existing notifications in the system
-    yield
-    
-    # Cleanup: Delete any TEST_ prefixed data if needed
-    pass
-
-
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])
