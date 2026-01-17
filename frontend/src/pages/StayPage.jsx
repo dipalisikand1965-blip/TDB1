@@ -969,6 +969,39 @@ const PropertyDetailsModal = ({ property, onClose, onBookNow, getBadgeColor, Paw
               </span>
             ))}
           </div>
+          
+          {/* Paw Reward Banner */}
+          {property.paw_reward?.enabled && (
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 mb-6">
+              <div className="flex items-start gap-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <Gift className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-bold text-amber-800">🎁 Paw Reward Included!</h4>
+                    <span className="text-xs px-2 py-0.5 bg-amber-500 text-white rounded-full">TDC Special</span>
+                  </div>
+                  <p className="text-sm text-amber-700 mb-2">
+                    {property.paw_reward.custom_message || "Every stay earns your dog a Paw Reward!"}
+                  </p>
+                  <div className="flex items-center gap-3 bg-white rounded-lg p-2">
+                    {property.paw_reward.product_image && (
+                      <img 
+                        src={property.paw_reward.product_image} 
+                        alt={property.paw_reward.product_name}
+                        className="w-12 h-12 rounded-lg object-cover"
+                      />
+                    )}
+                    <div>
+                      <p className="font-semibold text-gray-800 text-sm">{property.paw_reward.product_name}</p>
+                      <p className="text-xs text-green-600">Complimentary (Worth ₹{property.paw_reward.product_price})</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid grid-cols-4 w-full">
