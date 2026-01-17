@@ -54,7 +54,8 @@ from partner_routes import (
     router as partner_router,
     admin_router as partner_admin_router,
     set_partner_db,
-    set_partner_admin_verify
+    set_partner_admin_verify,
+    set_partner_email_func
 )
 from pricing_routes import (
     router as pricing_router,
@@ -75,6 +76,12 @@ from data_migration import (
     router as migration_router,
     set_migration_db,
     set_migration_admin_verify
+)
+from admin_auth import (
+    router as admin_auth_router,
+    set_admin_db,
+    set_admin_email_func,
+    set_admin_env_credentials
 )
 
 # APScheduler for background jobs
