@@ -6338,6 +6338,14 @@ set_dine_db(db)
 # Set admin notification handler for dine routes
 set_admin_notification_handler(create_admin_notification)
 
+# Set database for pillar routes
+set_pillar_db(db)
+set_pillar_admin_verify(verify_admin)
+
+# Set database for enhanced collection routes
+set_collection_db(db)
+set_collection_admin_verify(verify_admin)
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
@@ -6355,6 +6363,10 @@ app.include_router(dine_router)
 app.include_router(ticket_router)
 app.include_router(ticket_messaging_router)
 app.include_router(ticket_sla_router)
+app.include_router(pillar_router)
+app.include_router(pillar_public_router)
+app.include_router(enhanced_collection_router)
+app.include_router(collection_public_router)
 
 @app.on_event("startup")
 async def startup_load_admin_credentials():
