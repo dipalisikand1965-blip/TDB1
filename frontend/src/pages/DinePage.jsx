@@ -352,6 +352,84 @@ const DinePage = () => {
           )}
         </section>
 
+        {/* Dine Essentials - Bundles Section */}
+        {bundles.length > 0 && (
+          <section className="mt-16" data-testid="dine-essentials-section">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                  <Package className="w-8 h-8 text-orange-500" />
+                  Dine Essentials
+                </h2>
+                <p className="text-gray-600 mt-1">Everything you need for dining out with your furry friend</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {bundles.map(bundle => (
+                <Card 
+                  key={bundle.id} 
+                  className="overflow-hidden hover:shadow-xl transition-all cursor-pointer group"
+                  onClick={() => setSelectedBundle(bundle)}
+                  data-testid={`dine-bundle-${bundle.id}`}
+                >
+                  <div className="relative h-40">
+                    <img 
+                      src={bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800'} 
+                      alt={bundle.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    {bundle.discount_percent > 0 && (
+                      <Badge className="absolute top-2 right-2 bg-red-500">
+                        {bundle.discount_percent}% OFF
+                      </Badge>
+                    )}
+                    {bundle.featured && (
+                      <Badge className="absolute top-2 left-2 bg-orange-500">
+                        <Sparkles className="w-3 h-3 mr-1" /> Featured
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <Badge variant="outline" className="mb-2 text-xs capitalize">
+                      {bundle.category?.replace('_', ' ')}
+                    </Badge>
+                    <h3 className="font-semibold text-gray-900 line-clamp-1">{bundle.name}</h3>
+                    <p className="text-sm text-gray-500 line-clamp-2 mt-1">{bundle.description}</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <div>
+                        <span className="text-lg font-bold text-green-600">₹{bundle.bundle_price}</span>
+                        {bundle.original_price > bundle.bundle_price && (
+                          <span className="text-xs text-gray-400 line-through ml-1">₹{bundle.original_price}</span>
+                        )}
+                      </div>
+                      <Button 
+                        size="sm" 
+                        className="bg-orange-500 hover:bg-orange-600 text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart({
+                            id: bundle.id,
+                            name: bundle.name,
+                            price: bundle.bundle_price,
+                            image: bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+                            description: bundle.description,
+                            category: 'dine_bundle',
+                            pillar: 'dine'
+                          }, 'Bundle', bundle.category || 'dine', 1);
+                        }}
+                        data-testid={`add-dine-bundle-${bundle.id}`}
+                      >
+                        <ShoppingBag className="w-3 h-3 mr-1" /> Add
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Add Your Restaurant CTA */}
         <Card className="mt-12 p-8 bg-gradient-to-r from-orange-500 to-red-500 text-white text-center">
           <h3 className="text-2xl font-bold mb-2">Own a Pet-Friendly Restaurant?</h3>
