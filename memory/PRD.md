@@ -355,6 +355,7 @@ A personalized trip recommendation engine that suggests:
 ## Known Issues
 - Review submission: User reported not working (could not reproduce, may need browser console logs)
 - Production vs Preview database sync (collections need to be seeded separately)
+- Shopify Sync 'Untitled' Products: Patched with fallback, root cause TBD
 
 ---
 
