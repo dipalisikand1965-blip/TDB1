@@ -171,7 +171,7 @@ function MainLayout() {
         {/* Life Pillars */}
         <Route path="/celebrate" element={<ProductListing category="cakes" />} />
         <Route path="/dine" element={<DinePage />} />
-        <Route path="/stay" element={<PillarPage />} />
+        <Route path="/stay" element={<StayPage />} />
         <Route path="/travel" element={<PillarPage />} />
         <Route path="/care" element={<PillarPage />} />
         <Route path="/pillar/:pillarId" element={<PillarPage />} />
