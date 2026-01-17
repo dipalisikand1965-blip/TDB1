@@ -2337,6 +2337,11 @@ const Admin = () => {
         {activeTab === 'campaigns' && (
           <EnhancedCollectionManager getAuthHeader={getAuthHeaders} />
         )}
+
+        {/* Partner Management Tab */}
+        {activeTab === 'partners' && (
+          <PartnerManager getAuthHeader={getAuthHeaders} />
+        )}
       </div>
 
       {/* Pet Profile Detail Modal */}
