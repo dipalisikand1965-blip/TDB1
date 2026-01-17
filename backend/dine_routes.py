@@ -368,6 +368,23 @@ async def create_reservation(reservation: ReservationRequest):
     except Exception as e:
         logger.error(f"Failed to auto-create ticket for reservation: {e}")
     
+    # Create admin notification
+    await notify_admin(
+        notification_type="reservation",
+        title=f"🍽️ New Reservation at {restaurant.get('name', 'Restaurant')}",
+        message=f"{reservation.name} booked for {reservation.date} at {reservation.time} ({reservation.guests} guests, {reservation.pets} pets)",
+        category="dine",
+        related_id=reservation_doc["id"],
+        link_to="/admin?tab=dine&subtab=reservations",
+        priority="normal",
+        metadata={
+            "restaurant": restaurant.get("name"),
+            "customer": reservation.name,
+            "date": reservation.date,
+            "time": reservation.time
+        }
+    )
+    
     return {
         "message": "Reservation request submitted",
         "reservation_id": reservation_doc["id"],
