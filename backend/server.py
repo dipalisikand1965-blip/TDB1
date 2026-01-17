@@ -5837,6 +5837,23 @@ async def create_review(review: ReviewCreate, current_user: dict = Depends(get_c
         review_doc["product_image"] = product.get("image")
     
     await db.reviews.insert_one(review_doc)
+    
+    # Create admin notification for new review
+    await create_admin_notification(
+        notification_type="review",
+        title=f"⭐ New {review.rating}-Star Review",
+        message=f"{review_doc.get('author_name', 'Someone')} reviewed {product.get('name', 'a product') if product else 'a product'}",
+        category="celebrate",
+        related_id=review_doc.get("id"),
+        link_to="/admin?tab=reviews",
+        priority="high" if review.rating <= 2 else "normal",
+        metadata={
+            "rating": review.rating,
+            "product": product.get("name") if product else None,
+            "reviewer": review_doc.get("author_name")
+        }
+    )
+    
     return {"message": "Review submitted for approval", "review": {k: v for k, v in review_doc.items() if k != "_id"}}
 
 
