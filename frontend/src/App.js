@@ -101,6 +101,7 @@ function AppRouter() {
 function MainLayout() {
   return (
     <div className="App">
+      <ScrollToTop />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
