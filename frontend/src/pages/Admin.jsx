@@ -12,6 +12,7 @@ import AutoshipManager from '../components/AutoshipManager';
 import FulfilmentManager from '../components/FulfilmentManager';
 import ReportsManager from '../components/ReportsManager';
 import { DashboardTab, OrdersTab, MembersTab, ChatsTab, DineManager, ServiceDesk, ProductTagsManager } from '../components/admin';
+import NotificationBell from '../components/admin/NotificationBell';
 import { API_URL } from '../utils/api';
 import {
   Lock,
@@ -1112,6 +1113,18 @@ const Admin = () => {
               <Button variant="ghost" size="sm" onClick={() => setShowPasswordModal(true)} className="text-xs">
                 <Lock className="w-4 h-4 mr-1" /> Change Password
               </Button>
+              <NotificationBell 
+                credentials={{ username, password }}
+                onNavigate={(link) => {
+                  // Parse the link to extract tab and subtab
+                  const url = new URL(link, window.location.origin);
+                  const tab = url.searchParams.get('tab');
+                  const subtab = url.searchParams.get('subtab');
+                  if (tab) {
+                    setActiveTab(tab);
+                  }
+                }}
+              />
               <Button variant="ghost" size="icon" onClick={fetchDashboard}>
                 <RefreshCw className="w-5 h-5" />
               </Button>

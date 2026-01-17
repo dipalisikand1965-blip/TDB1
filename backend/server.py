@@ -2456,6 +2456,18 @@ async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
                 else:
                     await db.chatbase_chats.insert_one(chat_data)
                     synced_count += 1
+                    
+                    # Create notification for new Mira chat
+                    customer_display = extracted['name'] or extracted['email'] or extracted['phone'] or 'New visitor'
+                    await create_admin_notification(
+                        notification_type="chat",
+                        title="New Mira Chat",
+                        message=f"{customer_display} started a conversation. {extracted['preview'][:100]}..." if extracted['preview'] else f"{customer_display} started a conversation",
+                        category="general",
+                        related_id=conv_id,
+                        link_to="/admin?tab=chats",
+                        priority="normal"
+                    )
             
             return {
                 "message": "Chatbase sync completed",
