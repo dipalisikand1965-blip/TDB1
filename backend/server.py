@@ -6462,6 +6462,8 @@ app.include_router(pillar_router)
 app.include_router(pillar_public_router)
 app.include_router(enhanced_collection_router)
 app.include_router(collection_public_router)
+app.include_router(partner_router)
+app.include_router(partner_admin_router)
 
 @app.on_event("startup")
 async def startup_load_admin_credentials():
