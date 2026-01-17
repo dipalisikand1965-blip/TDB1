@@ -34,9 +34,9 @@ stay_admin_router = APIRouter(prefix="/api/admin/stay", tags=["Stay Admin"])
 # Database reference
 db: AsyncIOMotorDatabase = None
 
-# Admin credentials
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "woof2025")
+# Admin verifier (will be set from server.py)
+_verify_admin = None
+
 security = HTTPBasic()
 
 # Resend configuration
@@ -51,10 +51,21 @@ def set_database(database: AsyncIOMotorDatabase):
     db = database
 
 
+def set_admin_verify(verify_func):
+    """Set the admin verification function from server.py"""
+    global _verify_admin
+    _verify_admin = verify_func
+
+
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
-    """Verify admin credentials"""
-    correct_username = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
-    correct_password = secrets.compare_digest(credentials.password, ADMIN_PASSWORD)
+    """Verify admin credentials using the shared verifier"""
+    if _verify_admin:
+        return _verify_admin(credentials)
+    # Fallback - use env vars
+    admin_username = os.environ.get("ADMIN_USERNAME", "admin")
+    admin_password = os.environ.get("ADMIN_PASSWORD", "woof2025")
+    correct_username = secrets.compare_digest(credentials.username, admin_username)
+    correct_password = secrets.compare_digest(credentials.password, admin_password)
     if not (correct_username and correct_password):
         raise HTTPException(
             status_code=401,
