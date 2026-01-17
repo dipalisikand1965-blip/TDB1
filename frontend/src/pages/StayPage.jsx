@@ -6,6 +6,7 @@ import { Badge } from '../components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { API_URL } from '../utils/api';
+import { useCart } from '../context/CartContext';
 import {
   Search, Filter, MapPin, Star, Heart, Dog, Calendar, Phone, Globe, 
   ChevronRight, Sparkles, Shield, TreePine, Sun, Waves, Mountain,
