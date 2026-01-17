@@ -113,7 +113,7 @@
 - Admin credentials: aditya / lola4304
 - Chatbase API Key: d4f1656b-7634-4692-a1c8-14bdbd010285
 - Production URL: https://thedoggycompany.in
-- Preview URL: https://doggy-helpdesk.preview.emergentagent.com
+- Preview URL: https://pet-alerts.preview.emergentagent.com
 - Shopify source: https://thedoggybakery.com/products.json
 
 ---
