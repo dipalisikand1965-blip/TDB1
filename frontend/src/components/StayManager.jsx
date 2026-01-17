@@ -2136,4 +2136,307 @@ const StayProductModal = ({ product, onClose, onSave }) => {
   );
 };
 
+// Stay Event Modal Component
+const StayEventModal = ({ event, properties, onClose, onSave }) => {
+  const isNew = !event;
+  const [formData, setFormData] = useState({
+    title: event?.title || '',
+    description: event?.description || '',
+    event_type: event?.event_type || 'meetup',
+    event_date: event?.event_date || '',
+    event_time: event?.event_time || '10:00 AM',
+    property_id: event?.property_id || '',
+    property_name: event?.property_name || '',
+    property_city: event?.property_city || '',
+    max_participants: event?.max_participants || 20,
+    price_per_pet: event?.price_per_pet || 0,
+    image: event?.image || '',
+    activities: event?.activities || [],
+    what_to_bring: event?.what_to_bring || [],
+    status: event?.status || 'active'
+  });
+  const [saving, setSaving] = useState(false);
+  const [newActivity, setNewActivity] = useState('');
+  const [newItem, setNewItem] = useState('');
+
+  const eventTypes = [
+    { id: 'meetup', name: 'Meetup' },
+    { id: 'sunset_social', name: 'Sunset Social' },
+    { id: 'trail_pack', name: 'Trail Pack Walk' },
+    { id: 'photo_walk', name: 'Photo Walk' },
+    { id: 'beach_party', name: 'Beach Party' },
+    { id: 'playdate', name: 'Playdate' },
+    { id: 'training', name: 'Training Session' }
+  ];
+
+  const handlePropertySelect = (propId) => {
+    const prop = properties.find(p => p.id === propId);
+    if (prop) {
+      setFormData({
+        ...formData,
+        property_id: prop.id,
+        property_name: prop.name,
+        property_city: prop.city
+      });
+    }
+  };
+
+  const addActivity = () => {
+    if (newActivity && !formData.activities.includes(newActivity)) {
+      setFormData({ ...formData, activities: [...formData.activities, newActivity] });
+      setNewActivity('');
+    }
+  };
+
+  const removeActivity = (activity) => {
+    setFormData({ ...formData, activities: formData.activities.filter(a => a !== activity) });
+  };
+
+  const addBringItem = () => {
+    if (newItem && !formData.what_to_bring.includes(newItem)) {
+      setFormData({ ...formData, what_to_bring: [...formData.what_to_bring, newItem] });
+      setNewItem('');
+    }
+  };
+
+  const removeBringItem = (item) => {
+    setFormData({ ...formData, what_to_bring: formData.what_to_bring.filter(i => i !== item) });
+  };
+
+  const handleSave = async () => {
+    if (!formData.title || !formData.event_date) {
+      alert('Please fill in title and event date');
+      return;
+    }
+    
+    setSaving(true);
+    const dataToSave = { ...formData };
+    if (event?.id) {
+      dataToSave.id = event.id;
+    }
+    await onSave(dataToSave);
+    setSaving(false);
+  };
+
+  return (
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-purple-500" />
+            {isNew ? 'Create New Event' : `Edit Event - ${event.title}`}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-5 py-4">
+          {/* Basic Info */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <Label>Event Title *</Label>
+              <Input
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="e.g., Sunset Beach Pawty"
+                className="mt-1"
+              />
+            </div>
+            
+            <div className="col-span-2">
+              <Label>Description</Label>
+              <Textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Describe the event..."
+                className="mt-1"
+                rows={2}
+              />
+            </div>
+
+            <div>
+              <Label>Event Type</Label>
+              <select
+                value={formData.event_type}
+                onChange={(e) => setFormData({ ...formData, event_type: e.target.value })}
+                className="w-full p-2 border rounded-lg mt-1"
+              >
+                {eventTypes.map(type => (
+                  <option key={type.id} value={type.id}>{type.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <Label>Image URL</Label>
+              <Input
+                value={formData.image}
+                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                placeholder="https://..."
+                className="mt-1"
+              />
+            </div>
+          </div>
+
+          {/* Date & Time */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Event Date *</Label>
+              <Input
+                type="date"
+                value={formData.event_date}
+                onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label>Event Time</Label>
+              <Input
+                value={formData.event_time}
+                onChange={(e) => setFormData({ ...formData, event_time: e.target.value })}
+                placeholder="10:00 AM - 12:00 PM"
+                className="mt-1"
+              />
+            </div>
+          </div>
+
+          {/* Location */}
+          <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+            <h4 className="font-semibold text-purple-800 mb-3">Event Location</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Select Property</Label>
+                <select
+                  value={formData.property_id}
+                  onChange={(e) => handlePropertySelect(e.target.value)}
+                  className="w-full p-2 border rounded-lg mt-1"
+                >
+                  <option value="">Select a property...</option>
+                  {properties.filter(p => p.status === 'live').map(prop => (
+                    <option key={prop.id} value={prop.id}>{prop.name} - {prop.city}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <Label>City</Label>
+                <Input
+                  value={formData.property_city}
+                  onChange={(e) => setFormData({ ...formData, property_city: e.target.value })}
+                  placeholder="City name"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Capacity & Price */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Max Participants</Label>
+              <Input
+                type="number"
+                min={1}
+                value={formData.max_participants}
+                onChange={(e) => setFormData({ ...formData, max_participants: parseInt(e.target.value) || 20 })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label>Price per Pet (₹) - 0 for FREE</Label>
+              <Input
+                type="number"
+                min={0}
+                value={formData.price_per_pet}
+                onChange={(e) => setFormData({ ...formData, price_per_pet: parseInt(e.target.value) || 0 })}
+                className="mt-1"
+              />
+            </div>
+          </div>
+
+          {/* Activities */}
+          <div>
+            <Label>Activities</Label>
+            <div className="flex flex-wrap gap-2 mt-2 mb-2">
+              {formData.activities.map((activity, idx) => (
+                <span 
+                  key={idx} 
+                  className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-sm flex items-center gap-1"
+                >
+                  {activity}
+                  <button onClick={() => removeActivity(activity)} className="hover:text-red-500">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={newActivity}
+                onChange={(e) => setNewActivity(e.target.value)}
+                placeholder="Add activity (e.g., Group Walk)"
+                className="flex-1"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addActivity())}
+              />
+              <Button variant="outline" onClick={addActivity}>Add</Button>
+            </div>
+          </div>
+
+          {/* What to Bring */}
+          <div>
+            <Label>What to Bring</Label>
+            <div className="flex flex-wrap gap-2 mt-2 mb-2">
+              {formData.what_to_bring.map((item, idx) => (
+                <span 
+                  key={idx} 
+                  className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm flex items-center gap-1"
+                >
+                  {item}
+                  <button onClick={() => removeBringItem(item)} className="hover:text-red-500">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={newItem}
+                onChange={(e) => setNewItem(e.target.value)}
+                placeholder="Add item (e.g., Water bottle)"
+                className="flex-1"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addBringItem())}
+              />
+              <Button variant="outline" onClick={addBringItem}>Add</Button>
+            </div>
+          </div>
+
+          {/* Status */}
+          <div>
+            <Label>Status</Label>
+            <select
+              value={formData.status}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              className="w-full p-2 border rounded-lg mt-1"
+            >
+              <option value="active">Active</option>
+              <option value="draft">Draft</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button 
+            className="bg-purple-500 hover:bg-purple-600"
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+            {isNew ? 'Create Event' : 'Save Changes'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export default StayManager;
