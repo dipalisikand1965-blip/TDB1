@@ -967,22 +967,82 @@ const ReportsManager = ({ authHeaders }) => {
                 color="pink" 
               />
               <MetricCard 
+                title="Conversion Rate" 
+                value={`${miraReport?.metrics?.conversion_rate || 0}%`} 
+                icon={TrendingUp} 
+                color="green" 
+              />
+              <MetricCard 
+                title="Converted Orders" 
+                value={miraReport?.metrics?.converted_chats || 0} 
+                icon={ShoppingBag} 
+                color="purple" 
+              />
+              <MetricCard 
+                title="Revenue from Mira" 
+                value={`₹${(miraReport?.metrics?.converted_revenue || 0).toLocaleString()}`} 
+                icon={DollarSign} 
+                color="blue" 
+              />
+            </div>
+
+            {/* Conversion Tracking Section */}
+            {miraReport?.conversion_tracking && (
+              <Card className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+                <h3 className="font-semibold mb-4 text-green-800">🎯 Conversion Tracking</h3>
+                <div className="grid md:grid-cols-3 gap-4 mb-4">
+                  <div className="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <p className="text-3xl font-bold text-green-600">{miraReport.conversion_tracking.conversion_rate}%</p>
+                    <p className="text-sm text-gray-600">Conversion Rate</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <p className="text-3xl font-bold text-purple-600">{miraReport.conversion_tracking.total_conversions}</p>
+                    <p className="text-sm text-gray-600">Total Conversions</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <p className="text-3xl font-bold text-blue-600">₹{miraReport.conversion_tracking.converted_revenue?.toLocaleString()}</p>
+                    <p className="text-sm text-gray-600">Revenue Generated</p>
+                  </div>
+                </div>
+                {miraReport.conversion_tracking.by_service?.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 mb-2">Conversions by Service:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {miraReport.conversion_tracking.by_service.map((item, idx) => (
+                        <Badge key={idx} variant="outline" className="bg-white">
+                          {item.service}: {item.conversions} ({item.rate}%)
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </Card>
+            )}
+
+            <div className="grid md:grid-cols-4 gap-4">
+              <MetricCard 
                 title="Total Messages" 
                 value={miraReport?.metrics?.total_messages || 0} 
                 icon={Users} 
-                color="purple" 
+                color="pink" 
               />
               <MetricCard 
                 title="Avg Messages/Chat" 
                 value={miraReport?.metrics?.avg_messages_per_chat || 0} 
                 icon={TrendingUp} 
-                color="blue" 
+                color="purple" 
               />
               <MetricCard 
                 title="Response Rate" 
                 value={`${miraReport?.metrics?.response_rate || 0}%`} 
                 icon={Clock} 
-                color="green" 
+                color="blue" 
+              />
+              <MetricCard 
+                title="With Pet Info" 
+                value={miraReport?.metrics?.chats_with_pet_info || 0} 
+                icon={Heart} 
+                color="pink" 
               />
             </div>
 
