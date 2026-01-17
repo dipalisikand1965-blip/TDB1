@@ -489,37 +489,56 @@ const PartnerOnboarding = () => {
                 Upload your business documents for verification. This helps us ensure trust and safety for all users.
               </p>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
-                <p className="text-sm text-amber-800">
-                  <strong>📝 Note:</strong> Document upload is optional at this stage. You can also submit these later during the verification process.
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <p className="text-sm text-red-800">
+                  <strong>📋 Required:</strong> GST Number, PAN Number, and their documents are mandatory for verification. Please ensure all fields are filled before proceeding.
                 </p>
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <Label>GST Number</Label>
+                  <Label>GST Number *</Label>
                   <Input 
                     value={formData.gst_number}
                     onChange={(e) => updateForm('gst_number', e.target.value.toUpperCase())}
                     placeholder="e.g. 29ABCDE1234F1Z5"
                     maxLength={15}
+                    required
                   />
                   <p className="text-xs text-gray-500 mt-1">15-character GST Identification Number</p>
                 </div>
                 <div>
-                  <Label>PAN Number</Label>
+                  <Label>PAN Number *</Label>
                   <Input 
                     value={formData.pan_number}
                     onChange={(e) => updateForm('pan_number', e.target.value.toUpperCase())}
                     placeholder="e.g. ABCDE1234F"
                     maxLength={10}
+                    required
                   />
                   <p className="text-xs text-gray-500 mt-1">10-character PAN Card Number</p>
                 </div>
               </div>
 
+              <div>
+                <Label>Annual Company Turnover *</Label>
+                <select
+                  value={formData.company_turnover}
+                  onChange={(e) => updateForm('company_turnover', e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  required
+                >
+                  <option value="">Select turnover range</option>
+                  <option value="below_10L">Below ₹10 Lakhs</option>
+                  <option value="10L_50L">₹10 Lakhs - ₹50 Lakhs</option>
+                  <option value="50L_1Cr">₹50 Lakhs - ₹1 Crore</option>
+                  <option value="1Cr_5Cr">₹1 Crore - ₹5 Crore</option>
+                  <option value="above_5Cr">Above ₹5 Crore</option>
+                </select>
+              </div>
+
               <div className="space-y-4">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 transition-colors">
+                <div className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${formData.gst_document ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-purple-400'}`}>
                   <input
                     type="file"
                     id="gst_doc"
@@ -536,13 +555,13 @@ const PartnerOnboarding = () => {
                       )}
                     </div>
                     <p className="font-medium text-gray-700">
-                      {formData.gst_document ? formData.gst_document.name : 'Upload GST Certificate'}
+                      {formData.gst_document ? formData.gst_document.name : 'Upload GST Certificate *'}
                     </p>
                     <p className="text-sm text-gray-500">PDF, JPG or PNG (max 5MB)</p>
                   </label>
                 </div>
 
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 transition-colors">
+                <div className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${formData.pan_document ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-purple-400'}`}>
                   <input
                     type="file"
                     id="pan_doc"
@@ -559,7 +578,7 @@ const PartnerOnboarding = () => {
                       )}
                     </div>
                     <p className="font-medium text-gray-700">
-                      {formData.pan_document ? formData.pan_document.name : 'Upload PAN Card'}
+                      {formData.pan_document ? formData.pan_document.name : 'Upload PAN Card *'}
                     </p>
                     <p className="text-sm text-gray-500">PDF, JPG or PNG (max 5MB)</p>
                   </label>
