@@ -3378,6 +3378,81 @@ async def update_admin_product(product_id: str, updates: dict):
     return {"success": True, "updated_fields": list(sanitized.keys())}
 
 
+class CSVImportRequest(BaseModel):
+    products: List[dict]
+
+
+@api_router.post("/admin/products/import-csv")
+async def import_products_csv(
+    request: CSVImportRequest,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Import products from CSV data"""
+    verify_admin(credentials)
+    
+    imported = 0
+    updated = 0
+    errors = []
+    
+    for product_data in request.products:
+        try:
+            # Check if product exists by name
+            existing = await db.products.find_one({"name": product_data.get("name")})
+            
+            product_doc = {
+                "name": product_data.get("name", ""),
+                "description": product_data.get("description", ""),
+                "category": product_data.get("category", "other"),
+                "price": float(product_data.get("price", 0)),
+                "image": product_data.get("image", ""),
+                "status": product_data.get("status", "active"),
+                "available": product_data.get("available", True),
+                "tags": product_data.get("tags", []),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            if product_data.get("original_price"):
+                product_doc["original_price"] = float(product_data["original_price"])
+            
+            if existing:
+                # Update existing product
+                await db.products.update_one(
+                    {"_id": existing["_id"]},
+                    {"$set": product_doc}
+                )
+                updated += 1
+            else:
+                # Create new product
+                product_doc["id"] = f"csv-{uuid.uuid4().hex[:12]}"
+                product_doc["created_at"] = datetime.now(timezone.utc).isoformat()
+                await db.products.insert_one(product_doc)
+                imported += 1
+                
+        except Exception as e:
+            errors.append(f"Error with '{product_data.get('name', 'Unknown')}': {str(e)}")
+    
+    return {
+        "imported": imported,
+        "updated": updated,
+        "errors": errors[:10] if errors else []
+    }
+
+
+@api_router.get("/admin/products/export-csv")
+async def export_products_csv(
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Export all products as CSV-compatible JSON"""
+    verify_admin(credentials)
+    
+    products = await db.products.find({}, {"_id": 0}).to_list(10000)
+    
+    return {
+        "products": products,
+        "total": len(products)
+    }
+
+
 # ==================== SEARCH API ====================
 
 async def mongodb_fallback_search_legacy(
