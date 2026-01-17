@@ -458,6 +458,15 @@ const DinePage = () => {
           onClose={() => setShowBuddyModal(null)}
         />
       )}
+      
+      {/* Dine Bundle Details Modal */}
+      {selectedBundle && (
+        <DineBundleModal 
+          bundle={selectedBundle}
+          onClose={() => setSelectedBundle(null)}
+          addToCart={addToCart}
+        />
+      )}
     </div>
   );
 };
