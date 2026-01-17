@@ -70,6 +70,79 @@ const ReportsManager = ({ authHeaders }) => {
   const [operations, setOperations] = useState(null);
   const [reviewsReport, setReviewsReport] = useState(null);
   const [financialReport, setFinancialReport] = useState(null);
+  
+  // Pillar Reports data
+  const [pillarSummary, setPillarSummary] = useState(null);
+  const [celebrateReport, setCelebrateReport] = useState(null);
+  const [dineReport, setDineReport] = useState(null);
+  const [stayReport, setStayReport] = useState(null);
+  const [pillarComparison, setPillarComparison] = useState(null);
+  const [selectedPillar, setSelectedPillar] = useState('summary');
+
+  // Fetch pillar summary
+  const fetchPillarSummary = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/summary?period=${period}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setPillarSummary(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch pillar summary:', error);
+    }
+  }, [authHeaders, period]);
+
+  // Fetch celebrate report
+  const fetchCelebrateReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/celebrate?period=${period}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setCelebrateReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch celebrate report:', error);
+    }
+  }, [authHeaders, period]);
+
+  // Fetch dine report
+  const fetchDineReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/dine?period=${period}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setDineReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch dine report:', error);
+    }
+  }, [authHeaders, period]);
+
+  // Fetch stay report
+  const fetchStayReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/stay?period=${period}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setStayReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch stay report:', error);
+    }
+  }, [authHeaders, period]);
+
+  // Fetch pillar comparison
+  const fetchPillarComparison = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/comparison?period=${period}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setPillarComparison(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch pillar comparison:', error);
+    }
+  }, [authHeaders, period]);
 
   // Fetch executive summary
   const fetchExecutiveSummary = useCallback(async () => {
