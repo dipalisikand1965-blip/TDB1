@@ -584,7 +584,8 @@ from auth_routes import (
     create_access_token,
     get_password_hash_secure,
     verify_password_secure,
-    MEMBERSHIP_TIERS
+    MEMBERSHIP_TIERS,
+    set_admin_notification_handler as set_auth_notification_handler
 )
 
 # Import product routes (refactored)
