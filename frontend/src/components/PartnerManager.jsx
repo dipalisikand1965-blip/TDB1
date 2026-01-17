@@ -166,6 +166,7 @@ const PartnerManager = ({ getAuthHeader }) => {
 
   const openDetail = (app) => {
     setSelectedApp(app);
+    setConciergeNotes(app.admin_notes || '');
     setShowDetail(true);
   };
 
