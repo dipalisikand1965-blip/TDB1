@@ -6294,6 +6294,8 @@ set_reports_db(db)
 
 # Set database for auth routes
 set_auth_db(db)
+# Set admin notification handler for auth routes
+set_auth_notification_handler(create_admin_notification)
 
 # Set database for product routes
 set_product_db(db)
