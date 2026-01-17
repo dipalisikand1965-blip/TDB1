@@ -879,6 +879,32 @@ class CollectionUpdate(BaseModel):
     show_in_menu: Optional[bool] = None
 
 
+# ==================== GLOBAL SETTINGS & FULFILMENT SYSTEM ====================
+
+# Fulfilment type constants
+FULFILMENT_TYPES = ["shipping", "store_pickup", "both"]
+
+class AppSettings(BaseModel):
+    """Application-wide settings stored in app_settings collection"""
+    id: str = "global_settings"
+    pickup_cities: List[str] = ["Mumbai", "Gurugram", "Bangalore"]  # Cities where store pickup is available
+    pan_india_shipping: bool = True  # Whether pan-india shipping is enabled
+    default_fulfilment_type: str = "shipping"  # Default for new products
+    bakery_pickup_only_categories: List[str] = ["cakes", "fresh_treats"]  # Categories that require pickup in specific cities
+    updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class UpdateAppSettings(BaseModel):
+    pickup_cities: Optional[List[str]] = None
+    pan_india_shipping: Optional[bool] = None
+    default_fulfilment_type: Optional[str] = None
+    bakery_pickup_only_categories: Optional[List[str]] = None
+
+class ProductFulfilmentUpdate(BaseModel):
+    """Update product fulfillment settings"""
+    fulfilment_type: str  # shipping, store_pickup, both
+    regions: Optional[List[str]] = None  # List of regions/cities where product is available
+
+
 # ==================== MEMBERSHIP SYSTEM ====================
 
 # Membership tier limits
