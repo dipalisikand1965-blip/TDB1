@@ -25,7 +25,7 @@
   ],
   "critical_code_review_comments": [
     "Route ordering in FastAPI: Static routes should be defined before parameterized routes to avoid matching issues",
-    "The delete button visibility relies on group-hover but parent lacks 'group' class"
+    "FIXED: Added 'group' class to notification item div to enable hover-visible delete button"
   ],
   "updated_files": [
     "/app/tests/test_admin_notifications.py",
