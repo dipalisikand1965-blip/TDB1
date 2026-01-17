@@ -1753,6 +1753,11 @@ const Admin = () => {
           <DineManager credentials={{ username, password }} />
         )}
 
+        {/* Stay Tab */}
+        {activeTab === 'stay' && (
+          <StayManager getAuthHeader={getAuthHeaders} />
+        )}
+
         {/* Service Desk Tab */}
         {activeTab === 'servicedesk' && (
           <ServiceDesk authHeaders={getAuthHeaders()} />
