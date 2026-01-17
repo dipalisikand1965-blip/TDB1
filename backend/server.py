@@ -37,6 +37,20 @@ from emergentintegrations.llm.chat import LlmChat, UserMessage
 # Import search service
 from search_service import search_service
 
+# Import pillar and collection routes
+from pillar_routes import (
+    router as pillar_router, 
+    public_router as pillar_public_router,
+    set_pillar_db, 
+    set_pillar_admin_verify
+)
+from collection_routes import (
+    router as enhanced_collection_router,
+    public_router as collection_public_router,
+    set_collection_db,
+    set_collection_admin_verify
+)
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
