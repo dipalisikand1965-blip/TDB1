@@ -371,6 +371,7 @@ const StayManager = ({ getAuthHeader }) => {
                   onEdit={() => { setSelectedProperty(property); setShowPropertyModal(true); }}
                   onDelete={() => handleDeleteProperty(property.id)}
                   onStatusChange={handleUpdateStatus}
+                  onEditPawReward={() => { setSelectedProperty(property); fetchEligibleProducts(); setShowPawRewardModal(true); }}
                   getStatusColor={getStatusColor}
                 />
               ))}
