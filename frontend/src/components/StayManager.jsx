@@ -13,7 +13,7 @@ import {
   Building2, MapPin, Phone, Globe, Mail, Star, Dog, CheckCircle,
   AlertTriangle, FileText, DollarSign, Calendar, Clock, RefreshCw,
   ChevronDown, X, Filter, Download, Upload, PawPrint, Shield,
-  TreePine, Heart, Sparkles, Users, MessageCircle, TrendingUp
+  TreePine, Heart, Sparkles, Users, MessageCircle, TrendingUp, Gift, Tag
 } from 'lucide-react';
 
 const StayManager = ({ getAuthHeader }) => {
@@ -27,6 +27,10 @@ const StayManager = ({ getAuthHeader }) => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showPropertyModal, setShowPropertyModal] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [showPawRewardModal, setShowPawRewardModal] = useState(false);
+  const [showTagsModal, setShowTagsModal] = useState(false);
+  const [eligibleProducts, setEligibleProducts] = useState([]);
+  const [pillarTags, setPillarTags] = useState([]);
   const [filters, setFilters] = useState({ status: '', city: '', type: '' });
   const [cities, setCities] = useState([]);
 
