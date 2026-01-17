@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { Button } from '../components/ui/button';
@@ -11,7 +11,7 @@ import { toast } from '../hooks/use-toast';
 import { 
   ArrowLeft, CreditCard, Truck, MapPin, Phone, MessageCircle, 
   CheckCircle, User, Mail, PawPrint, Calendar, Gift, Sparkles,
-  Crown, AlertCircle, Tag, Star, Loader2, X, Store
+  Crown, AlertCircle, Tag, Star, Loader2, X, Store, Package, Info
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 
@@ -20,11 +20,18 @@ const BUSINESS_EMAIL = process.env.REACT_APP_BUSINESS_EMAIL || 'woof@thedoggybak
 const FREE_SHIPPING_THRESHOLD = 3000;
 const SHIPPING_FEE = 150;
 
-const STORE_LOCATIONS = [
+// Default store locations (will be fetched from API)
+const DEFAULT_STORE_LOCATIONS = [
   { id: 'mumbai', city: 'Mumbai', address: 'Shop 9, off Yari Road, Jeet Nagar, Versova, Andheri West, Mumbai 400061' },
   { id: 'gurugram', city: 'Gurugram', address: 'Ground Floor, Wazirabad Rd, Wazirabad, Sector 52, Gurugram 122003' },
   { id: 'bangalore', city: 'Bangalore', address: '147, 8th Main Rd, 3rd Block, Koramangala, Bengaluru 560034' }
 ];
+
+// Default pickup cities
+const DEFAULT_PICKUP_CITIES = ['Mumbai', 'Gurugram', 'Bangalore'];
+
+// Categories that require store pickup
+const DEFAULT_BAKERY_CATEGORIES = ['cakes', 'fresh_treats'];
 
 const addOns = [
   { id: 'ao-1', name: 'Birthday Bandana', price: 299, image: 'https://thedoggybakery.com/cdn/shop/products/WhatsAppImage2022-05-13at3.24.11PM.jpg?v=1655357921&width=100' },
@@ -42,9 +49,19 @@ const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   
+  // App Settings State
+  const [appSettings, setAppSettings] = useState({
+    pickup_cities: DEFAULT_PICKUP_CITIES,
+    store_locations: DEFAULT_STORE_LOCATIONS,
+    bakery_pickup_only_categories: DEFAULT_BAKERY_CATEGORIES,
+    pan_india_shipping: true
+  });
+  const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+  
   // Delivery Method State
   const [deliveryMethod, setDeliveryMethod] = useState('delivery'); // 'delivery' or 'pickup'
   const [pickupLocation, setPickupLocation] = useState('');
+  const [isPanIndiaDelivery, setIsPanIndiaDelivery] = useState(false);
 
   // Discount & Loyalty State
   const [discountCode, setDiscountCode] = useState('');
@@ -66,6 +83,7 @@ const Checkout = () => {
     address: '',
     landmark: '',
     city: 'Bangalore',
+    customCity: '', // For Pan-India text input
     pincode: '',
     
     // Pet Details (MANDATORY for cakes)
@@ -83,6 +101,84 @@ const Checkout = () => {
     // Offers
     couponCode: ''
   });
+
+  // Fetch app settings on mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/settings/public`);
+        if (res.ok) {
+          const data = await res.json();
+          setAppSettings({
+            pickup_cities: data.pickup_cities || DEFAULT_PICKUP_CITIES,
+            store_locations: data.store_locations || DEFAULT_STORE_LOCATIONS,
+            bakery_pickup_only_categories: data.bakery_pickup_only_categories || DEFAULT_BAKERY_CATEGORIES,
+            pan_india_shipping: data.pan_india_shipping !== false
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch settings:', err);
+      } finally {
+        setIsLoadingSettings(false);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  // Analyze cart for fulfillment requirements
+  const cartAnalysis = useMemo(() => {
+    const bakeryCategories = appSettings.bakery_pickup_only_categories;
+    
+    const hasBakeryItems = cartItems.some(item => {
+      const category = item.category?.toLowerCase() || '';
+      const name = item.name?.toLowerCase() || '';
+      return bakeryCategories.some(cat => category.includes(cat) || name.includes('cake'));
+    });
+    
+    const hasShippableItems = cartItems.some(item => {
+      const category = item.category?.toLowerCase() || '';
+      const name = item.name?.toLowerCase() || '';
+      const isBakery = bakeryCategories.some(cat => category.includes(cat) || name.includes('cake'));
+      return !isBakery;
+    });
+    
+    const isMixedCart = hasBakeryItems && hasShippableItems;
+    const bakeryOnlyCart = hasBakeryItems && !hasShippableItems;
+    const shippableOnlyCart = hasShippableItems && !hasBakeryItems;
+    
+    // Get bakery items for display
+    const bakeryItems = cartItems.filter(item => {
+      const category = item.category?.toLowerCase() || '';
+      const name = item.name?.toLowerCase() || '';
+      return bakeryCategories.some(cat => category.includes(cat) || name.includes('cake'));
+    });
+    
+    // Get shippable items for display
+    const shippableItems = cartItems.filter(item => {
+      const category = item.category?.toLowerCase() || '';
+      const name = item.name?.toLowerCase() || '';
+      const isBakery = bakeryCategories.some(cat => category.includes(cat) || name.includes('cake'));
+      return !isBakery;
+    });
+    
+    return {
+      hasBakeryItems,
+      hasShippableItems,
+      isMixedCart,
+      bakeryOnlyCart,
+      shippableOnlyCart,
+      bakeryItems,
+      shippableItems
+    };
+  }, [cartItems, appSettings.bakery_pickup_only_categories]);
+
+  // Auto-set delivery method based on cart analysis
+  useEffect(() => {
+    if (cartAnalysis.bakeryOnlyCart) {
+      setDeliveryMethod('pickup');
+      setIsPanIndiaDelivery(false);
+    }
+  }, [cartAnalysis.bakeryOnlyCart]);
 
   // Auto-populate from Cart Items (PDP Data)
   useEffect(() => {
@@ -188,6 +284,16 @@ const Checkout = () => {
     }
   };
 
+  // Handle Pan-India toggle
+  const handlePanIndiaToggle = (enabled) => {
+    setIsPanIndiaDelivery(enabled);
+    if (enabled) {
+      setFormData(prev => ({ ...prev, city: '', customCity: '' }));
+    } else {
+      setFormData(prev => ({ ...prev, city: 'Bangalore', customCity: '' }));
+    }
+  };
+
   const validateForm = () => {
     const errors = {};
     
@@ -196,21 +302,29 @@ const Checkout = () => {
     if (!formData.phone.trim()) errors.phone = 'Phone number is required';
     if (!formData.whatsappNumber.trim()) errors.whatsappNumber = 'WhatsApp number is required';
     
-    // Address only required for Delivery
+    // Address validation based on delivery method
     if (deliveryMethod === 'delivery') {
       if (!formData.address.trim()) errors.address = 'Address is required';
-      if (!formData.city.trim()) errors.city = 'City is required';
+      
+      // City validation
+      if (isPanIndiaDelivery) {
+        if (!formData.customCity.trim()) errors.customCity = 'City name is required for Pan-India delivery';
+      } else {
+        if (!formData.city.trim()) errors.city = 'City is required';
+      }
+      
       if (!formData.pincode.trim()) errors.pincode = 'Pincode is required';
     } else {
       if (!pickupLocation) errors.pickupLocation = 'Please select a store location';
     }
     
+    // For mixed cart, validate that user selected a pickup location for bakery items
+    if (cartAnalysis.isMixedCart && !pickupLocation) {
+      errors.pickupLocation = 'Please select a pickup location for bakery items (cakes)';
+    }
+    
     // Pet name is MANDATORY for cakes (goes on the cake!)
-    const hasCake = cartItems.some(item => 
-      item.category?.includes('cake') || 
-      item.name?.toLowerCase().includes('cake')
-    );
-    if (hasCake && !formData.petName.trim()) {
+    if (cartAnalysis.hasBakeryItems && !formData.petName.trim()) {
       errors.petName = "Pet's name is required - we put it on the cake! 🎂";
     }
     
@@ -236,18 +350,51 @@ const Checkout = () => {
     toast({ title: "Added!", description: `${addOn.name} added to order.` });
   };
 
+  // Get the effective city for the order
+  const getEffectiveCity = () => {
+    if (deliveryMethod === 'pickup') {
+      const store = appSettings.store_locations.find(s => s.id === pickupLocation);
+      return store?.city || '';
+    }
+    return isPanIndiaDelivery ? formData.customCity : formData.city;
+  };
+
   // Generate order summary for WhatsApp
   const generateWhatsAppMessage = (orderData) => {
     const subtotal = getCartTotal();
-    const deliveryFee = deliveryMethod === 'pickup' ? 0 : (subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE);
-    const total = subtotal + deliveryFee;
+    const deliveryFee = calculateDeliveryFee();
+    const total = orderData.finalTotal;
     
+    // Build location details based on fulfilment type
     let locationDetails = '';
-    if (deliveryMethod === 'pickup') {
-      const store = STORE_LOCATIONS.find(s => s.id === pickupLocation);
+    if (cartAnalysis.isMixedCart) {
+      const store = appSettings.store_locations.find(s => s.id === pickupLocation);
+      locationDetails = `🍰 *BAKERY ITEMS PICKUP:* ${store?.city} (${store?.address})
+
+📦 *SHIPPABLE ITEMS DELIVERY:*
+${formData.address}
+${formData.landmark ? `Landmark: ${formData.landmark}\n` : ''}${getEffectiveCity()} - ${formData.pincode}
+${isPanIndiaDelivery ? '(Pan-India Delivery)' : ''}`;
+    } else if (deliveryMethod === 'pickup') {
+      const store = appSettings.store_locations.find(s => s.id === pickupLocation);
       locationDetails = `🛍️ *PICKUP:* ${store?.city} (${store?.address})`;
     } else {
-      locationDetails = `📍 *DELIVERY ADDRESS:*\n${formData.address}\n${formData.landmark ? `Landmark: ${formData.landmark}\n` : ''}${formData.city} - ${formData.pincode}`;
+      locationDetails = `📍 *DELIVERY ADDRESS:*
+${formData.address}
+${formData.landmark ? `Landmark: ${formData.landmark}\n` : ''}${getEffectiveCity()} - ${formData.pincode}
+${isPanIndiaDelivery ? '(Pan-India Delivery)' : ''}`;
+    }
+
+    // Build fulfilment type info
+    let fulfilmentInfo = '';
+    if (cartAnalysis.isMixedCart) {
+      fulfilmentInfo = `*SPLIT FULFILMENT ORDER*
+🍰 Bakery Items: Store Pickup
+📦 Other Items: ${isPanIndiaDelivery ? 'Pan-India Shipping' : 'City Delivery'}`;
+    } else if (deliveryMethod === 'pickup') {
+      fulfilmentInfo = 'Store Pickup';
+    } else {
+      fulfilmentInfo = isPanIndiaDelivery ? 'Pan-India Shipping' : 'City Delivery';
     }
 
     return `🐕 *NEW ORDER - The Doggy Company*
@@ -262,11 +409,13 @@ const Checkout = () => {
 • Email: ${formData.email || 'Not provided'}
 
 🐾 *PET DETAILS:*
-• Pet Name: *${formData.petName || 'Not specified'}* ${formData.petName ? '(FOR CAKE)' : ''}
+• Pet Name: *${formData.petName || 'Not specified'}* ${formData.petName && cartAnalysis.hasBakeryItems ? '(FOR CAKE)' : ''}
 • Breed: ${formData.petBreed || 'Not specified'}
 • Age: ${formData.petAge || 'Not specified'}
 
 ${locationDetails}
+
+🚚 *FULFILMENT:* ${fulfilmentInfo}
 
 📦 *ORDER ITEMS:*
 ${cartItems.map(item => `
@@ -277,7 +426,6 @@ ${cartItems.map(item => `
   ${item.customDetails?.date ? `Date: ${new Date(item.customDetails.date).toDateString()}` : ''}`).join('')}
 
 🚚 *PREFERENCE:*
-• Method: ${deliveryMethod === 'pickup' ? 'PICKUP' : 'DELIVERY'}
 • Date: ${formData.deliveryDate ? new Date(formData.deliveryDate).toDateString() : 'ASAP'}
 • Time: ${formData.deliveryTime === 'morning' ? '9AM-12PM' : formData.deliveryTime === 'afternoon' ? '12PM-4PM' : '4PM-8PM'}
 
@@ -289,11 +437,29 @@ Subtotal: ₹${subtotal}
 Delivery: ${deliveryFee === 0 ? 'FREE! 🎉' : `₹${deliveryFee}`}
 ${orderData.discountCode ? `Discount (${orderData.discountCode}): -₹${orderData.discountAmount}` : ''}
 ${orderData.loyaltyPointsUsed ? `Loyalty Points (${orderData.loyaltyPointsUsed} pts): -₹${orderData.loyaltyDiscount}` : ''}
-*TOTAL: ₹${orderData.finalTotal}*
+*TOTAL: ₹${total}*
 
 _GST applicable on final invoice_
 
 ✅ *Please confirm this order and send me the payment link to proceed.*`;
+  };
+
+  // Calculate delivery fee based on fulfilment type
+  const calculateDeliveryFee = () => {
+    const subtotal = getCartTotal();
+    
+    // Pure pickup - no delivery fee
+    if (deliveryMethod === 'pickup' && !cartAnalysis.isMixedCart) {
+      return 0;
+    }
+    
+    // Free shipping threshold
+    if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+      return 0;
+    }
+    
+    // Mixed cart or delivery - standard fee
+    return SHIPPING_FEE;
   };
 
   const handleSubmit = async (e) => {
@@ -311,11 +477,21 @@ _GST applicable on final invoice_
     setIsSubmitting(true);
     
     const subtotal = getCartTotal();
-    const deliveryFee = deliveryMethod === 'pickup' ? 0 : (subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE);
+    const deliveryFee = calculateDeliveryFee();
     const discountAmount = appliedDiscount?.discount_amount || 0;
     const totalBeforeDelivery = subtotal - discountAmount - loyaltyDiscount;
     const total = Math.max(0, totalBeforeDelivery) + deliveryFee;
     const orderId = `TDB-${Date.now().toString(36).toUpperCase()}`;
+    
+    // Determine fulfilment type
+    let fulfilmentType = 'delivery';
+    if (cartAnalysis.isMixedCart) {
+      fulfilmentType = 'split';
+    } else if (deliveryMethod === 'pickup') {
+      fulfilmentType = 'store_pickup';
+    } else if (isPanIndiaDelivery) {
+      fulfilmentType = 'pan_india_shipping';
+    }
     
     // Save order to backend
     try {
@@ -333,11 +509,13 @@ _GST applicable on final invoice_
           age: formData.petAge
         },
         delivery: {
-          method: deliveryMethod, // 'delivery' or 'pickup'
-          pickupLocation: deliveryMethod === 'pickup' ? pickupLocation : null,
+          method: deliveryMethod,
+          fulfilmentType: fulfilmentType,
+          pickupLocation: pickupLocation || null,
+          isPanIndia: isPanIndiaDelivery,
           address: formData.address,
           landmark: formData.landmark,
-          city: formData.city,
+          city: getEffectiveCity(),
           pincode: formData.pincode,
           date: formData.deliveryDate,
           time: formData.deliveryTime
@@ -349,7 +527,8 @@ _GST applicable on final invoice_
           flavor: item.selectedFlavor,
           quantity: item.quantity,
           price: item.price,
-          customDetails: item.customDetails
+          customDetails: item.customDetails,
+          category: item.category
         })),
         specialInstructions: formData.specialInstructions,
         isGift: formData.isGift,
@@ -362,7 +541,19 @@ _GST applicable on final invoice_
         deliveryFee,
         total,
         status: 'pending',
-        paymentStatus: 'unpaid'
+        paymentStatus: 'unpaid',
+        // Split fulfillment details for mixed carts
+        splitFulfilment: cartAnalysis.isMixedCart ? {
+          bakeryPickup: {
+            location: pickupLocation,
+            items: cartAnalysis.bakeryItems.map(i => i.name)
+          },
+          shipping: {
+            address: `${formData.address}, ${getEffectiveCity()} - ${formData.pincode}`,
+            items: cartAnalysis.shippableItems.map(i => i.name),
+            isPanIndia: isPanIndiaDelivery
+          }
+        } : null
       };
       
       await fetch(`${API_URL}/api/orders`, {
@@ -412,8 +603,11 @@ _GST applicable on final invoice_
       loyaltyPointsUsed: pointsToRedeem,
       loyaltyDiscount,
       deliveryMethod,
+      fulfilmentType,
       pickupLocation,
-      deliveryFee
+      deliveryFee,
+      isPanIndia: isPanIndiaDelivery,
+      isMixedCart: cartAnalysis.isMixedCart
     });
     
     // Show order placed
@@ -461,6 +655,20 @@ _GST applicable on final invoice_
             <p className="text-gray-600 mb-8">
               Thank you, {orderDetails.customer.parentName}! Your pawsome treats are being prepared.
             </p>
+
+            {/* Split Fulfilment Notice */}
+            {orderDetails.isMixedCart && (
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <Info className="w-5 h-5 text-blue-600" />
+                  <p className="text-blue-800 font-semibold">Split Fulfilment Order</p>
+                </div>
+                <p className="text-sm text-blue-700">
+                  🍰 <strong>Bakery items:</strong> Pickup from store<br />
+                  📦 <strong>Other items:</strong> {orderDetails.isPanIndia ? 'Pan-India shipping' : 'Delivery to your address'}
+                </p>
+              </div>
+            )}
 
             {/* Savings Banner */}
             {(orderDetails.discountAmount > 0 || orderDetails.loyaltyDiscount > 0) && (
@@ -513,7 +721,9 @@ _GST applicable on final invoice_
               <h3 className="font-semibold text-gray-900 mb-4">Order Summary</h3>
               <div className="space-y-3">
                 <div className="text-sm font-medium text-purple-700 mb-2">
-                  Method: {orderDetails.deliveryMethod === 'pickup' ? 'Store Pickup' : 'Delivery'}
+                  Fulfilment: {orderDetails.fulfilmentType === 'split' ? 'Split (Pickup + Delivery)' : 
+                              orderDetails.fulfilmentType === 'store_pickup' ? 'Store Pickup' : 
+                              orderDetails.fulfilmentType === 'pan_india_shipping' ? 'Pan-India Shipping' : 'Delivery'}
                 </div>
                 {orderDetails.items.map((item, idx) => (
                   <div key={idx} className="flex justify-between text-sm">
@@ -569,11 +779,8 @@ _GST applicable on final invoice_
   }
 
   const subtotal = getCartTotal();
-  const deliveryFee = deliveryMethod === 'pickup' ? 0 : (subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE);
+  const deliveryFee = calculateDeliveryFee();
   const total = subtotal + deliveryFee;
-  const hasCake = cartItems.some(item => 
-    item.category?.includes('cake') || item.name?.toLowerCase().includes('cake')
-  );
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 md:py-12">
@@ -583,6 +790,61 @@ _GST applicable on final invoice_
         </Button>
 
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+
+        {/* Mixed Cart Alert */}
+        {cartAnalysis.isMixedCart && (
+          <Card className="p-4 mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+            <div className="flex items-start gap-3">
+              <Info className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+              <div>
+                <p className="font-semibold text-blue-900">Split Fulfilment Order</p>
+                <p className="text-sm text-blue-700 mt-1">
+                  Your cart contains both <strong>bakery items</strong> (cakes, fresh treats) and <strong>shippable products</strong>.
+                </p>
+                <div className="mt-3 grid md:grid-cols-2 gap-3">
+                  <div className="bg-white rounded-lg p-3 border border-blue-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Store className="w-4 h-4 text-purple-600" />
+                      <span className="font-medium text-sm">Store Pickup (Bakery)</span>
+                    </div>
+                    <ul className="text-xs text-gray-600">
+                      {cartAnalysis.bakeryItems.map((item, idx) => (
+                        <li key={idx}>• {item.name}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="bg-white rounded-lg p-3 border border-blue-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Truck className="w-4 h-4 text-green-600" />
+                      <span className="font-medium text-sm">Home Delivery / Shipping</span>
+                    </div>
+                    <ul className="text-xs text-gray-600">
+                      {cartAnalysis.shippableItems.map((item, idx) => (
+                        <li key={idx}>• {item.name}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Bakery Only Alert */}
+        {cartAnalysis.bakeryOnlyCart && (
+          <Card className="p-4 mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+            <div className="flex items-start gap-3">
+              <Store className="w-6 h-6 text-amber-600 flex-shrink-0 mt-1" />
+              <div>
+                <p className="font-semibold text-amber-900">Store Pickup Required</p>
+                <p className="text-sm text-amber-700 mt-1">
+                  Fresh cakes and bakery items require <strong>store pickup</strong> to ensure freshness. 
+                  Please select your nearest store below.
+                </p>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Membership Promotion */}
         <Card className="p-4 mb-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
@@ -676,10 +938,10 @@ _GST applicable on final invoice_
                 <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                   <PawPrint className="w-5 h-5 text-purple-600" />
                   Pet Details
-                  {hasCake && <Badge variant="destructive" className="ml-2">Required for Cake</Badge>}
+                  {cartAnalysis.hasBakeryItems && <Badge variant="destructive" className="ml-2">Required for Cake</Badge>}
                 </h2>
                 
-                {hasCake && (
+                {cartAnalysis.hasBakeryItems && (
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 flex items-start gap-2">
                     <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-yellow-800">
@@ -690,7 +952,7 @@ _GST applicable on final invoice_
                 
                 <div className="grid md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="petName">Pet&apos;s Name {hasCake ? '*' : ''}</Label>
+                    <Label htmlFor="petName">Pet&apos;s Name {cartAnalysis.hasBakeryItems ? '*' : ''}</Label>
                     <Input
                       id="petName"
                       name="petName"
@@ -725,147 +987,249 @@ _GST applicable on final invoice_
                 </div>
               </Card>
 
-              {/* Delivery / Pickup Selection */}
-              <Card className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  {deliveryMethod === 'delivery' ? (
-                    <Truck className="w-5 h-5 text-purple-600" />
-                  ) : (
+              {/* Store Pickup Section (for bakery items or bakery-only carts) */}
+              {(cartAnalysis.hasBakeryItems || cartAnalysis.isMixedCart) && (
+                <Card className="p-6">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <Store className="w-5 h-5 text-purple-600" />
-                  )}
-                  Delivery Method
-                </h2>
-
-                <div className="flex gap-4 mb-6">
-                  <button
-                    type="button"
-                    onClick={() => setDeliveryMethod('delivery')}
-                    className={`flex-1 p-4 border rounded-xl flex flex-col items-center gap-2 transition-all ${
-                      deliveryMethod === 'delivery'
-                        ? 'border-purple-600 bg-purple-50 text-purple-700'
-                        : 'border-gray-200 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Truck className="w-6 h-6" />
-                    <span className="font-semibold">Home Delivery</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDeliveryMethod('pickup')}
-                    className={`flex-1 p-4 border rounded-xl flex flex-col items-center gap-2 transition-all ${
-                      deliveryMethod === 'pickup'
-                        ? 'border-purple-600 bg-purple-50 text-purple-700'
-                        : 'border-gray-200 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Store className="w-6 h-6" />
-                    <span className="font-semibold">Store Pickup</span>
-                  </button>
-                </div>
-
-                {deliveryMethod === 'delivery' ? (
-                  /* Delivery Address Form */
-                  <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                    <div>
-                      <Label htmlFor="address">Street Address *</Label>
-                      <Textarea
-                        id="address"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleInputChange}
-                        placeholder="House/Flat No., Building Name, Street"
-                        className={formErrors.address ? 'border-red-500' : ''}
-                        data-testid="checkout-address"
-                      />
-                      {formErrors.address && <p className="text-red-500 text-xs mt-1">{formErrors.address}</p>}
-                    </div>
-                    <div>
-                      <Label htmlFor="landmark">Landmark</Label>
-                      <Input
-                        id="landmark"
-                        name="landmark"
-                        value={formData.landmark}
-                        onChange={handleInputChange}
-                        placeholder="Near any famous place"
-                      />
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="city">City *</Label>
-                        <select
-                          id="city"
-                          name="city"
-                          value={formData.city}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 border rounded-lg"
-                          data-testid="checkout-city"
-                        >
-                          <option value="Bangalore">Bangalore</option>
-                          <option value="Mumbai">Mumbai</option>
-                          <option value="Gurgaon">Gurgaon / Gurugram</option>
-                          <option value="Delhi">Delhi NCR</option>
-                        </select>
-                      </div>
-                      <div>
-                        <Label htmlFor="pincode">Pincode *</Label>
-                        <Input
-                          id="pincode"
-                          name="pincode"
-                          value={formData.pincode}
-                          onChange={handleInputChange}
-                          placeholder="6-digit pincode"
-                          className={formErrors.pincode ? 'border-red-500' : ''}
-                          data-testid="checkout-pincode"
-                        />
-                        {formErrors.pincode && <p className="text-red-500 text-xs mt-1">{formErrors.pincode}</p>}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  /* Pickup Location Selection */
-                  <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                    <Label>Select Pickup Store *</Label>
-                    <div className="grid gap-3">
-                      {STORE_LOCATIONS.map((loc) => (
-                        <div 
-                          key={loc.id}
-                          className={`p-4 border rounded-xl cursor-pointer flex items-center gap-3 transition-all ${
-                            pickupLocation === loc.id 
-                              ? 'border-purple-600 bg-purple-50' 
-                              : 'border-gray-200 hover:border-purple-300'
-                          }`}
-                          onClick={() => {
-                            setPickupLocation(loc.id);
+                    {cartAnalysis.isMixedCart ? 'Bakery Items Pickup Location *' : 'Pickup Location *'}
+                  </h2>
+                  
+                  <p className="text-sm text-gray-600 mb-4">
+                    {cartAnalysis.isMixedCart 
+                      ? 'Select where to pick up your fresh cakes and bakery items:'
+                      : 'Select your nearest store for pickup:'}
+                  </p>
+                  
+                  <div className="grid gap-3">
+                    {appSettings.store_locations.map((loc) => (
+                      <div 
+                        key={loc.id}
+                        className={`p-4 border rounded-xl cursor-pointer flex items-center gap-3 transition-all ${
+                          pickupLocation === loc.id 
+                            ? 'border-purple-600 bg-purple-50' 
+                            : 'border-gray-200 hover:border-purple-300'
+                        }`}
+                        onClick={() => {
+                          setPickupLocation(loc.id);
+                          if (!cartAnalysis.isMixedCart) {
                             setFormData(prev => ({ ...prev, city: loc.city }));
-                          }}
-                        >
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                            pickupLocation === loc.id ? 'border-purple-600' : 'border-gray-300'
-                          }`}>
-                            {pickupLocation === loc.id && <div className="w-2.5 h-2.5 rounded-full bg-purple-600" />}
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-900">{loc.city}</p>
-                            <p className="text-sm text-gray-500">{loc.address}</p>
-                          </div>
+                          }
+                        }}
+                        data-testid={`pickup-location-${loc.id}`}
+                      >
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          pickupLocation === loc.id ? 'border-purple-600' : 'border-gray-300'
+                        }`}>
+                          {pickupLocation === loc.id && <div className="w-2.5 h-2.5 rounded-full bg-purple-600" />}
                         </div>
-                      ))}
-                    </div>
-                    {formErrors.pickupLocation && <p className="text-red-500 text-xs">{formErrors.pickupLocation}</p>}
-                    
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm flex gap-2">
+                        <div>
+                          <p className="font-medium text-gray-900">{loc.city}</p>
+                          <p className="text-sm text-gray-500">{loc.address}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {formErrors.pickupLocation && <p className="text-red-500 text-xs mt-2">{formErrors.pickupLocation}</p>}
+                  
+                  {!cartAnalysis.isMixedCart && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-4 text-sm flex gap-2">
                       <Sparkles className="w-5 h-5 text-green-600" />
                       <p className="text-green-800">Store pickup is always <strong>FREE</strong>! No shipping charges.</p>
                     </div>
-                  </div>
-                )}
-              </Card>
+                  )}
+                </Card>
+              )}
+
+              {/* Delivery Address Section (for shippable items or mixed carts) */}
+              {(cartAnalysis.hasShippableItems || cartAnalysis.isMixedCart) && !cartAnalysis.bakeryOnlyCart && (
+                <Card className="p-6">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Truck className="w-5 h-5 text-purple-600" />
+                    {cartAnalysis.isMixedCart ? 'Delivery Address (For Shippable Items) *' : 'Delivery Address *'}
+                  </h2>
+
+                  {/* Delivery Method Toggle (only for non-bakery or mixed carts) */}
+                  {!cartAnalysis.isMixedCart && cartAnalysis.shippableOnlyCart && (
+                    <div className="flex gap-4 mb-6">
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryMethod('delivery')}
+                        className={`flex-1 p-4 border rounded-xl flex flex-col items-center gap-2 transition-all ${
+                          deliveryMethod === 'delivery'
+                            ? 'border-purple-600 bg-purple-50 text-purple-700'
+                            : 'border-gray-200 hover:bg-gray-50'
+                        }`}
+                        data-testid="delivery-method-delivery"
+                      >
+                        <Truck className="w-6 h-6" />
+                        <span className="font-semibold">Home Delivery</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryMethod('pickup')}
+                        className={`flex-1 p-4 border rounded-xl flex flex-col items-center gap-2 transition-all ${
+                          deliveryMethod === 'pickup'
+                            ? 'border-purple-600 bg-purple-50 text-purple-700'
+                            : 'border-gray-200 hover:bg-gray-50'
+                        }`}
+                        data-testid="delivery-method-pickup"
+                      >
+                        <Store className="w-6 h-6" />
+                        <span className="font-semibold">Store Pickup</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Pure pickup mode - show store locations */}
+                  {deliveryMethod === 'pickup' && !cartAnalysis.isMixedCart && !cartAnalysis.hasBakeryItems && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                      <Label>Select Pickup Store *</Label>
+                      <div className="grid gap-3">
+                        {appSettings.store_locations.map((loc) => (
+                          <div 
+                            key={loc.id}
+                            className={`p-4 border rounded-xl cursor-pointer flex items-center gap-3 transition-all ${
+                              pickupLocation === loc.id 
+                                ? 'border-purple-600 bg-purple-50' 
+                                : 'border-gray-200 hover:border-purple-300'
+                            }`}
+                            onClick={() => {
+                              setPickupLocation(loc.id);
+                              setFormData(prev => ({ ...prev, city: loc.city }));
+                            }}
+                          >
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                              pickupLocation === loc.id ? 'border-purple-600' : 'border-gray-300'
+                            }`}>
+                              {pickupLocation === loc.id && <div className="w-2.5 h-2.5 rounded-full bg-purple-600" />}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{loc.city}</p>
+                              <p className="text-sm text-gray-500">{loc.address}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {formErrors.pickupLocation && <p className="text-red-500 text-xs">{formErrors.pickupLocation}</p>}
+                      
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm flex gap-2">
+                        <Sparkles className="w-5 h-5 text-green-600" />
+                        <p className="text-green-800">Store pickup is always <strong>FREE</strong>! No shipping charges.</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Delivery address form (for delivery method or mixed carts) */}
+                  {(deliveryMethod === 'delivery' || cartAnalysis.isMixedCart) && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                      
+                      {/* Pan-India Toggle */}
+                      {appSettings.pan_india_shipping && (
+                        <div className="flex items-center justify-between p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+                          <div className="flex items-center gap-2">
+                            <Package className="w-5 h-5 text-indigo-600" />
+                            <div>
+                              <p className="font-medium text-sm text-indigo-900">Pan-India Shipping</p>
+                              <p className="text-xs text-indigo-600">Ship to any city across India</p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handlePanIndiaToggle(!isPanIndiaDelivery)}
+                            className={`relative w-12 h-6 rounded-full transition-colors ${
+                              isPanIndiaDelivery ? 'bg-indigo-600' : 'bg-gray-300'
+                            }`}
+                            data-testid="pan-india-toggle"
+                          >
+                            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                              isPanIndiaDelivery ? 'translate-x-6' : 'translate-x-0'
+                            }`} />
+                          </button>
+                        </div>
+                      )}
+
+                      <div>
+                        <Label htmlFor="address">Street Address *</Label>
+                        <Textarea
+                          id="address"
+                          name="address"
+                          value={formData.address}
+                          onChange={handleInputChange}
+                          placeholder="House/Flat No., Building Name, Street"
+                          className={formErrors.address ? 'border-red-500' : ''}
+                          data-testid="checkout-address"
+                        />
+                        {formErrors.address && <p className="text-red-500 text-xs mt-1">{formErrors.address}</p>}
+                      </div>
+                      <div>
+                        <Label htmlFor="landmark">Landmark</Label>
+                        <Input
+                          id="landmark"
+                          name="landmark"
+                          value={formData.landmark}
+                          onChange={handleInputChange}
+                          placeholder="Near any famous place"
+                        />
+                      </div>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="city">City *</Label>
+                          {isPanIndiaDelivery ? (
+                            /* Pan-India: Free text input */
+                            <>
+                              <Input
+                                id="customCity"
+                                name="customCity"
+                                value={formData.customCity}
+                                onChange={handleInputChange}
+                                placeholder="Enter any city in India"
+                                className={formErrors.customCity ? 'border-red-500' : ''}
+                                data-testid="checkout-custom-city"
+                              />
+                              {formErrors.customCity && <p className="text-red-500 text-xs mt-1">{formErrors.customCity}</p>}
+                            </>
+                          ) : (
+                            /* Standard: Dropdown for service cities */
+                            <select
+                              id="city"
+                              name="city"
+                              value={formData.city}
+                              onChange={handleInputChange}
+                              className="w-full px-3 py-2 border rounded-lg"
+                              data-testid="checkout-city"
+                            >
+                              {appSettings.pickup_cities.map(city => (
+                                <option key={city} value={city}>{city}</option>
+                              ))}
+                              <option value="Delhi">Delhi NCR</option>
+                            </select>
+                          )}
+                        </div>
+                        <div>
+                          <Label htmlFor="pincode">Pincode *</Label>
+                          <Input
+                            id="pincode"
+                            name="pincode"
+                            value={formData.pincode}
+                            onChange={handleInputChange}
+                            placeholder="6-digit pincode"
+                            className={formErrors.pincode ? 'border-red-500' : ''}
+                            data-testid="checkout-pincode"
+                          />
+                          {formErrors.pincode && <p className="text-red-500 text-xs mt-1">{formErrors.pincode}</p>}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              )}
 
               {/* Delivery Preferences (Date/Time) */}
               <Card className="p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-purple-600" />
-                  {deliveryMethod === 'pickup' ? 'Pickup' : 'Delivery'} Preferences
+                  {deliveryMethod === 'pickup' && !cartAnalysis.isMixedCart ? 'Pickup' : 'Delivery'} Preferences
                 </h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
@@ -972,7 +1336,7 @@ _GST applicable on final invoice_
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">
-                        {deliveryMethod === 'pickup' ? 'Store Pickup' : 'Delivery'}
+                        {cartAnalysis.isMixedCart ? 'Shipping' : deliveryMethod === 'pickup' ? 'Store Pickup' : 'Delivery'}
                       </span>
                       {deliveryFee === 0 ? (
                         <span className="text-green-600 font-medium">FREE! 🎉</span>
@@ -998,7 +1362,7 @@ _GST applicable on final invoice_
                         <span>-₹{loyaltyDiscount}</span>
                       </div>
                     )}
-                    {deliveryMethod === 'delivery' && subtotal < FREE_SHIPPING_THRESHOLD && (
+                    {deliveryMethod === 'delivery' && subtotal < FREE_SHIPPING_THRESHOLD && !cartAnalysis.bakeryOnlyCart && (
                       <p className="text-xs text-purple-600 bg-purple-50 p-2 rounded">
                         Add ₹{FREE_SHIPPING_THRESHOLD - subtotal} more for FREE delivery!
                       </p>
