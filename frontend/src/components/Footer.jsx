@@ -85,6 +85,7 @@ const Footer = () => {
               <li><Link to="/insights" className="hover:text-pink-500 transition-colors">TDC Insights</Link></li>
               <li><Link to="/dine" className="hover:text-pink-500 transition-colors">Dine with Pets</Link></li>
               <li><Link to="/franchise" className="hover:text-pink-500 transition-colors">Own A Bakery</Link></li>
+              <li><Link to="/partner" className="hover:text-pink-500 transition-colors">Become a Partner</Link></li>
               <li><Link to="/contact" className="hover:text-pink-500 transition-colors">Contact Us</Link></li>
             </ul>
           </div>
