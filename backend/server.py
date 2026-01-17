@@ -6289,6 +6289,8 @@ set_user_db(db)
 
 # Set database for dine routes
 set_dine_db(db)
+# Set admin notification handler for dine routes
+set_admin_notification_handler(create_admin_notification)
 
 # Include routers
 app.include_router(api_router)
