@@ -51,6 +51,10 @@ class PartnerApplication(BaseModel):
     photos: Optional[List[str]] = []
     how_heard_about_us: Optional[str] = None
     additional_notes: Optional[str] = None
+    # Document fields
+    documents: Optional[dict] = None  # {gst_number, pan_number, has_gst_doc, has_pan_doc, has_business_license}
+    # Agreement fields
+    agreement: Optional[dict] = None  # {accepted, signature_name, signature_date, signed_at}
 
 class PartnerUpdate(BaseModel):
     status: Optional[str] = None  # pending, reviewing, approved, rejected, active, inactive
