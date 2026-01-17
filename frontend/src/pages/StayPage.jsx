@@ -33,15 +33,57 @@ const StayPage = () => {
   const [selectedSocial, setSelectedSocial] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [favorites, setFavorites] = useState([]);
+  
+  // Trip Planner state
+  const [showTripPlanner, setShowTripPlanner] = useState(false);
+  const [tripPlannerLoading, setTripPlannerLoading] = useState(false);
+  const [tripPlan, setTripPlan] = useState(null);
+  const [tripForm, setTripForm] = useState({
+    destination_city: '',
+    trip_type: '',
+    pet_name: '',
+    pet_breed: '',
+    check_in_date: '',
+    check_out_date: ''
+  });
+  const [tripOptions, setTripOptions] = useState({ cities: [], trip_types: [] });
 
   useEffect(() => {
     fetchProperties();
     fetchBundles();
     fetchSocials();
+    fetchTripPlannerOptions();
     // Load favorites from localStorage
     const savedFavorites = JSON.parse(localStorage.getItem('stay_favorites') || '[]');
     setFavorites(savedFavorites);
   }, []);
+  
+  const fetchTripPlannerOptions = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/stay/trip-planner/options`);
+      const data = await response.json();
+      setTripOptions(data);
+    } catch (error) {
+      console.error('Error fetching trip planner options:', error);
+    }
+  };
+  
+  const generateTripPlan = async () => {
+    setTripPlannerLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/stay/trip-planner`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tripForm)
+      });
+      const data = await response.json();
+      setTripPlan(data);
+    } catch (error) {
+      console.error('Error generating trip plan:', error);
+    } finally {
+      setTripPlannerLoading(false);
+    }
+  };
 
   const fetchBundles = async () => {
     try {
