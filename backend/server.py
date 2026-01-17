@@ -6074,6 +6074,156 @@ async def delete_streaties_donation(donation_id: str, username: str = Depends(ve
     return {"message": "Donation deleted"}
 
 
+# ==================== ADMIN NOTIFICATION CENTER ====================
+
+async def create_admin_notification(
+    notification_type: str,
+    title: str,
+    message: str,
+    category: str = "general",
+    related_id: str = None,
+    link_to: str = None,
+    priority: str = "normal",
+    metadata: dict = None
+):
+    """
+    Create a notification for admin dashboard
+    
+    Types: order, reservation, meetup, chat, review, member, stock, ticket, system
+    Categories: celebrate, dine, stay, care, travel, general
+    Priority: low, normal, high, urgent
+    """
+    notification = {
+        "id": f"notif-{uuid.uuid4().hex[:12]}",
+        "type": notification_type,
+        "title": title,
+        "message": message,
+        "category": category,
+        "related_id": related_id,
+        "link_to": link_to,  # e.g., "/admin?tab=orders" or "/admin?tab=dine&subtab=reservations"
+        "priority": priority,
+        "metadata": metadata or {},
+        "read": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.admin_notifications.insert_one(notification)
+    logger.info(f"Admin notification created: {notification_type} - {title}")
+    return notification["id"]
+
+
+@api_router.get("/admin/notifications")
+async def get_admin_notifications(
+    limit: int = 50,
+    unread_only: bool = False,
+    category: str = None,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Get admin notifications"""
+    verify_admin(credentials)
+    
+    query = {}
+    if unread_only:
+        query["read"] = False
+    if category:
+        query["category"] = category
+    
+    notifications = await db.admin_notifications.find(
+        query, {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Get unread count
+    unread_count = await db.admin_notifications.count_documents({"read": False})
+    
+    # Get counts by category
+    pipeline = [
+        {"$match": {"read": False}},
+        {"$group": {"_id": "$category", "count": {"$sum": 1}}}
+    ]
+    category_counts = {}
+    async for doc in db.admin_notifications.aggregate(pipeline):
+        category_counts[doc["_id"]] = doc["count"]
+    
+    return {
+        "notifications": notifications,
+        "unread_count": unread_count,
+        "category_counts": category_counts
+    }
+
+
+@api_router.put("/admin/notifications/{notification_id}/read")
+async def mark_notification_read(
+    notification_id: str,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Mark a notification as read"""
+    verify_admin(credentials)
+    
+    result = await db.admin_notifications.update_one(
+        {"id": notification_id},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    
+    return {"message": "Notification marked as read"}
+
+
+@api_router.put("/admin/notifications/mark-all-read")
+async def mark_all_notifications_read(
+    category: str = None,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Mark all notifications as read"""
+    verify_admin(credentials)
+    
+    query = {"read": False}
+    if category:
+        query["category"] = category
+    
+    result = await db.admin_notifications.update_many(
+        query,
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"message": f"Marked {result.modified_count} notifications as read"}
+
+
+@api_router.delete("/admin/notifications/{notification_id}")
+async def delete_notification(
+    notification_id: str,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Delete a notification"""
+    verify_admin(credentials)
+    
+    result = await db.admin_notifications.delete_one({"id": notification_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    
+    return {"message": "Notification deleted"}
+
+
+@api_router.delete("/admin/notifications/clear-old")
+async def clear_old_notifications(
+    days: int = 30,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Clear notifications older than X days"""
+    verify_admin(credentials)
+    
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    
+    result = await db.admin_notifications.delete_many({
+        "created_at": {"$lt": cutoff.isoformat()},
+        "read": True
+    })
+    
+    return {"message": f"Deleted {result.deleted_count} old notifications"}
+
+
 # ==================== APP SETUP ====================
 
 app.add_middleware(
