@@ -319,6 +319,36 @@ const ServiceDesk = ({ authHeaders }) => {
     }
   };
 
+  // CSV Export function
+  const exportTicketsCSV = () => {
+    const headers = ['ticket_id', 'member_name', 'member_email', 'member_phone', 'category', 'source', 'status', 'urgency', 'description', 'assigned_to', 'created_at', 'updated_at'];
+    const rows = [headers.join(',')];
+    
+    tickets.forEach(ticket => {
+      const row = [
+        ticket.ticket_id || '',
+        ticket.member?.name || '',
+        ticket.member?.email || '',
+        ticket.member?.phone || '',
+        ticket.category || '',
+        ticket.source || '',
+        ticket.status || '',
+        ticket.urgency || '',
+        (ticket.description || '').replace(/"/g, '""').replace(/\n/g, ' '),
+        ticket.assigned_to || '',
+        ticket.created_at || '',
+        ticket.updated_at || ''
+      ];
+      rows.push(row.map(cell => `"${cell}"`).join(','));
+    });
+    
+    const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `service_desk_tickets_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+  };
+
   const handleStatusChange = async (newStatus) => {
     if (!selectedTicket) return;
     
