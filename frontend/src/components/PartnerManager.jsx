@@ -10,11 +10,14 @@ import { API_URL } from '../utils/api';
 import {
   Search, Filter, Download, Upload, Eye, Edit, Trash2, CheckCircle,
   XCircle, Clock, Building2, Utensils, Home, Scissors, Stethoscope,
-  Loader2, ExternalLink, Mail, Phone, MapPin, Globe, Instagram
+  Loader2, ExternalLink, Mail, Phone, MapPin, Globe, Instagram,
+  AlertCircle, FileCheck, Send, History
 } from 'lucide-react';
 
 const TYPE_ICONS = {
   restaurant: Utensils,
+  pet_hotel: Home,
+  pet_boarding: Home,
   stay: Home,
   groomer: Scissors,
   vet: Stethoscope,
@@ -39,6 +42,16 @@ const PartnerManager = ({ getAuthHeader }) => {
   const [showDetail, setShowDetail] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [conciergeNotes, setConciergeNotes] = useState('');
+  
+  // Action dialog state
+  const [showActionDialog, setShowActionDialog] = useState(false);
+  const [actionType, setActionType] = useState(''); // approve, reject, request_info
+  const [actionReason, setActionReason] = useState('');
+  const [actionCommission, setActionCommission] = useState('');
+  
+  // Document verification state
+  const [showDocVerify, setShowDocVerify] = useState(false);
+  const [docVerification, setDocVerification] = useState({ gst: null, pan: null, notes: '' });
 
   const fetchApplications = async () => {
     setLoading(true);
