@@ -3745,33 +3745,61 @@ async def get_order(order_id: str):
 
 # ==================== AUTOSHIP SYSTEM ====================
 
-# Autoship discount logic
-def calculate_autoship_discount(order_count: int, original_price: float) -> dict:
+def calculate_autoship_discount(order_count: int, original_price: float, product_override: dict = None) -> dict:
     """
     Calculate discount based on autoship order count
-    Order 1: 25% off (max ₹300)
-    Orders 4-5: 40% off
-    Orders 6-7+: 50% off
+    NEW TIERS:
+    - Order 1: 10% off
+    - Orders 2-4: 15% off
+    - Orders 5+: 30% off
+    
+    Can be overridden at product level with custom discount
     """
+    # Default tier discounts
     if order_count == 1:
-        discount_percent = 25
-        max_discount = 300
-        discount = min(original_price * 0.25, max_discount)
-    elif order_count in [4, 5]:
-        discount_percent = 40
-        discount = original_price * 0.40
-    elif order_count >= 6:
-        discount_percent = 50
-        discount = original_price * 0.50
+        base_discount_percent = 10
+    elif order_count >= 2 and order_count <= 4:
+        base_discount_percent = 15
+    elif order_count >= 5:
+        base_discount_percent = 30
     else:
-        discount_percent = 0
-        discount = 0
+        base_discount_percent = 0
+    
+    # Check for product-level override
+    is_special = False
+    discount_percent = base_discount_percent
+    
+    if product_override:
+        custom_discount = product_override.get("autoship_discount_percent")
+        special_until = product_override.get("autoship_special_until")
+        
+        # Check if special offer is still valid
+        if custom_discount and custom_discount > 0:
+            if special_until:
+                from datetime import datetime, timezone
+                try:
+                    expiry = datetime.fromisoformat(special_until.replace('Z', '+00:00'))
+                    if datetime.now(timezone.utc) <= expiry:
+                        discount_percent = custom_discount
+                        is_special = custom_discount > base_discount_percent
+                except:
+                    discount_percent = custom_discount
+                    is_special = custom_discount > base_discount_percent
+            else:
+                # No expiry - always use custom discount
+                discount_percent = custom_discount
+                is_special = custom_discount > base_discount_percent
+    
+    discount = original_price * (discount_percent / 100)
     
     return {
         "discount_percent": discount_percent,
+        "base_discount_percent": base_discount_percent,
         "discount_amount": round(discount, 2),
         "final_price": round(original_price - discount, 2),
-        "order_count": order_count
+        "order_count": order_count,
+        "is_special_offer": is_special,
+        "has_product_override": product_override is not None and product_override.get("autoship_discount_percent") is not None
     }
 
 
