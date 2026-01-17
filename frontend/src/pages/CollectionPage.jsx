@@ -20,7 +20,7 @@ const CollectionPage = () => {
     const fetchCollection = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${API_URL}/api/collections/${slug}`);
+        const res = await fetch(`${API_URL}/api/campaign/collections/${slug}`);
         if (res.ok) {
           const data = await res.json();
           setCollection(data.collection);
