@@ -6238,22 +6238,6 @@ async def mark_all_notifications_read(
     return {"message": f"Marked {result.modified_count} notifications as read"}
 
 
-@api_router.delete("/admin/notifications/{notification_id}")
-async def delete_notification(
-    notification_id: str,
-    credentials: HTTPBasicCredentials = Depends(security)
-):
-    """Delete a notification"""
-    verify_admin(credentials)
-    
-    result = await db.admin_notifications.delete_one({"id": notification_id})
-    
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Notification not found")
-    
-    return {"message": "Notification deleted"}
-
-
 @api_router.delete("/admin/notifications/clear-old")
 async def clear_old_notifications(
     days: int = 30,
@@ -6270,6 +6254,22 @@ async def clear_old_notifications(
     })
     
     return {"message": f"Deleted {result.deleted_count} old notifications"}
+
+
+@api_router.delete("/admin/notifications/{notification_id}")
+async def delete_notification(
+    notification_id: str,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Delete a notification"""
+    verify_admin(credentials)
+    
+    result = await db.admin_notifications.delete_one({"id": notification_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    
+    return {"message": "Notification deleted"}
 
 
 # ==================== APP SETUP ====================
