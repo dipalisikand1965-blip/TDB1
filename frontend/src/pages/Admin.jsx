@@ -2325,6 +2325,16 @@ const Admin = () => {
             )}
           </div>
         )}
+
+        {/* Pillars & Categories Tab */}
+        {activeTab === 'pillars' && (
+          <PillarCategoryManager getAuthHeader={getAuthHeaders} />
+        )}
+
+        {/* Campaign Collections Tab */}
+        {activeTab === 'campaigns' && (
+          <EnhancedCollectionManager getAuthHeader={getAuthHeaders} />
+        )}
       </div>
 
       {/* Pet Profile Detail Modal */}
