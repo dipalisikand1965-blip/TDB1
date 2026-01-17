@@ -220,6 +220,9 @@ class StayPropertyCreate(BaseModel):
     # TAB 5: Commercials
     commercials: Optional[StayCommercials] = None
     
+    # Paw Reward
+    paw_reward: Optional[PawReward] = None
+    
     # For humans
     room_categories: List[str] = []
     human_amenities: List[str] = []  # pool, spa, kids, etc.
