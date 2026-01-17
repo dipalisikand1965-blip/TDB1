@@ -920,6 +920,16 @@ const StayManager = ({ getAuthHeader }) => {
           onSave={handleSaveProduct}
         />
       )}
+      
+      {/* Stay Event Modal */}
+      {showEventModal && (
+        <StayEventModal
+          event={selectedEvent}
+          properties={properties}
+          onClose={() => { setShowEventModal(false); setSelectedEvent(null); }}
+          onSave={handleSaveEvent}
+        />
+      )}
     </div>
   );
 };
