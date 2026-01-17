@@ -38,10 +38,43 @@
 **Public Features** (`/stay`):
 - 32 curated pet-friendly hotels across India (Goa, Rajasthan, Kerala, Himachal, Uttarakhand, Maharashtra, Karnataka, Tamil Nadu, Haryana, Andaman, Puducherry)
 - Property cards with images, Paw Ratings, pet fees, badges
+- **🎁 Paw Reward badges on all properties** - "Complimentary treat with every booking"
 - Filters: City, Property Type, Min Rating, Vibe Tags (Beach, Mountain, Luxury, Quiet, etc.)
 - Property details modal with 4 tabs: Overview, Pet Policy, Paw Rating, Amenities
+- **Paw Reward section in property details** showing complimentary product image, name, and value
 - 3-step booking request wizard (Guest Details → Pet Profile → Stay Details)
 - Request-based booking model (concierge handles)
+
+**Paw Reward System** ✅ (NEW - Jan 17, 2026):
+- Every booking includes a complimentary treat (up to ₹600)
+- Badge displays on property cards: "🎁 Paw Reward"
+- Property detail modal shows the specific reward product with image
+- Auto-assigned to properties initially, fully customizable in admin
+- **Admin Features**:
+  - "Assign Paw Rewards" bulk action button
+  - Per-property Paw Reward editing modal
+  - Select from eligible products (treats under ₹600)
+  - Custom message configuration
+  - Enable/disable per property
+- **API Endpoints**:
+  - `GET /api/stay/paw-rewards/eligible-products` - List treats under ₹600
+  - `POST /api/admin/stay/properties/{id}/paw-reward` - Update property's Paw Reward
+  - `POST /api/admin/stay/properties/assign-paw-rewards` - Bulk assign to all properties
+
+**Pillar Tags System** ✅ (NEW - Jan 17, 2026):
+- Pillar-wise tags (Stay, Dine, Travel, Care)
+- Categories: Rewards, Amenities, Features, Policies
+- 17 default tags seeded including:
+  - Stay: Paw Reward, Pet Menu, Off-Leash Area, Pet Sitter, Grooming, Vet on Call, Walking Trails, Beach Access, Pet Pool
+  - Dine: Paw Treat Included, Dog Menu, Outdoor Seating, Water Bowls
+  - Travel: Pet Kit Included, Climate Control
+  - Care: First Visit Discount, Certified Trainer
+- **API Endpoints**:
+  - `GET /api/stay/tags` - Get all tags (filter by pillar/category)
+  - `POST /api/admin/stay/tags` - Create tag
+  - `PUT /api/admin/stay/tags/{id}` - Update tag
+  - `DELETE /api/admin/stay/tags/{id}` - Delete tag
+  - `POST /api/admin/stay/tags/seed` - Seed default tags
 
 **Stay Essentials (Products/Bundles)** ✅ (FIXED - Jan 17, 2026):
 - 8 curated travel bundles displayed in "Stay Essentials" section
