@@ -797,21 +797,24 @@ const EnhancedCollectionManager = ({ getAuthHeader }) => {
               
               {/* Search Results */}
               {searchResults.length > 0 && (
-                <div className="border rounded-lg max-h-40 overflow-y-auto mb-4">
+                <div className="border rounded-lg max-h-48 overflow-y-auto mb-4 bg-white">
+                  <div className="sticky top-0 bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 border-b">
+                    {searchResults.length} results found - Click to add
+                  </div>
                   {searchResults.map((item) => {
                     const Icon = ITEM_TYPE_ICONS[item.item_type] || Layers;
                     const isAdded = sectionForm.items.some(i => i.item_id === item.item_id);
                     return (
                       <div 
                         key={`${item.item_type}-${item.item_id}`}
-                        className={`flex items-center gap-3 p-2 hover:bg-gray-50 cursor-pointer ${isAdded ? 'bg-green-50' : ''}`}
+                        className={`flex items-center gap-3 p-3 hover:bg-purple-50 cursor-pointer border-b last:border-b-0 ${isAdded ? 'bg-green-50' : ''}`}
                         onClick={() => !isAdded && addItemToSection(item)}
                       >
                         {item.image ? (
-                          <img src={item.image} alt="" className="w-10 h-10 rounded object-cover" />
+                          <img src={item.image} alt="" className="w-12 h-12 rounded object-cover" />
                         ) : (
-                          <div className="w-10 h-10 rounded bg-gray-100 flex items-center justify-center">
-                            <Icon className="w-5 h-5 text-gray-400" />
+                          <div className="w-12 h-12 rounded bg-gray-100 flex items-center justify-center">
+                            <Icon className="w-6 h-6 text-gray-400" />
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
@@ -819,9 +822,11 @@ const EnhancedCollectionManager = ({ getAuthHeader }) => {
                           <p className="text-xs text-gray-500">{item.item_type} {item.price && `• ₹${item.price}`}</p>
                         </div>
                         {isAdded ? (
-                          <Badge className="bg-green-500">Added</Badge>
+                          <Badge className="bg-green-500 text-white">✓ Added</Badge>
                         ) : (
-                          <Plus className="w-4 h-4 text-gray-400" />
+                          <Button size="sm" variant="outline" className="text-purple-600">
+                            <Plus className="w-4 h-4 mr-1" /> Add
+                          </Button>
                         )}
                       </div>
                     );
