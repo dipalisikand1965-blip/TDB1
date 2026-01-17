@@ -10,11 +10,15 @@ import {
   Search, Filter, MapPin, Star, Heart, Dog, Calendar, Phone, Globe, 
   ChevronRight, Sparkles, Shield, TreePine, Sun, Waves, Mountain,
   Home, Building2, Tent, CheckCircle, X, Users, Clock, Loader2,
-  PawPrint, AlertTriangle, MessageCircle, ChevronDown
+  PawPrint, AlertTriangle, MessageCircle, ChevronDown, ShoppingBag,
+  Package, Percent, PartyPopper, Camera, Footprints
 } from 'lucide-react';
 
 const StayPage = () => {
+  const [activeSection, setActiveSection] = useState('stays');
   const [properties, setProperties] = useState([]);
+  const [bundles, setBundles] = useState([]);
+  const [socials, setSocials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     city: '',
@@ -25,15 +29,39 @@ const StayPage = () => {
   });
   const [cities, setCities] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
+  const [selectedBundle, setSelectedBundle] = useState(null);
+  const [selectedSocial, setSelectedSocial] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     fetchProperties();
+    fetchBundles();
+    fetchSocials();
     // Load favorites from localStorage
     const savedFavorites = JSON.parse(localStorage.getItem('stay_favorites') || '[]');
     setFavorites(savedFavorites);
   }, []);
+
+  const fetchBundles = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/stay/products/bundles`);
+      const data = await response.json();
+      setBundles(data.bundles || []);
+    } catch (error) {
+      console.error('Error fetching bundles:', error);
+    }
+  };
+
+  const fetchSocials = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/stay/social/events`);
+      const data = await response.json();
+      setSocials(data.events || []);
+    } catch (error) {
+      console.error('Error fetching socials:', error);
+    }
+  };
 
   const fetchProperties = async () => {
     setLoading(true);
