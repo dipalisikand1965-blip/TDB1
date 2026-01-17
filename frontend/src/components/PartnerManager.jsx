@@ -38,6 +38,7 @@ const PartnerManager = ({ getAuthHeader }) => {
   const [selectedApp, setSelectedApp] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [conciergeNotes, setConciergeNotes] = useState('');
 
   const fetchApplications = async () => {
     setLoading(true);
