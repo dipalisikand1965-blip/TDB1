@@ -1271,4 +1271,153 @@ const BookingModal = ({ booking, onClose, onUpdateStatus, getBookingStatusColor 
   );
 };
 
+// Paw Reward Modal Component
+const PawRewardModal = ({ property, eligibleProducts, onClose, onSave }) => {
+  const [pawReward, setPawReward] = useState({
+    enabled: property.paw_reward?.enabled ?? true,
+    product_id: property.paw_reward?.product_id || '',
+    product_name: property.paw_reward?.product_name || '',
+    product_image: property.paw_reward?.product_image || '',
+    product_price: property.paw_reward?.product_price || 0,
+    max_value: property.paw_reward?.max_value || 600,
+    custom_message: property.paw_reward?.custom_message || 'Every stay earns your dog a Paw Reward!'
+  });
+  const [saving, setSaving] = useState(false);
+
+  const handleProductSelect = (product) => {
+    setPawReward({
+      ...pawReward,
+      product_id: product.id,
+      product_name: product.name,
+      product_image: product.image || product.images?.[0] || '',
+      product_price: product.price
+    });
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    await onSave(property.id, pawReward);
+    setSaving(false);
+  };
+
+  return (
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Gift className="w-5 h-5 text-amber-500" />
+            Edit Paw Reward - {property.name}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6 py-4">
+          {/* Enable/Disable Toggle */}
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200">
+            <div>
+              <h4 className="font-semibold text-amber-800">Paw Reward Active</h4>
+              <p className="text-sm text-amber-600">Show Paw Reward badge on this property</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={pawReward.enabled}
+                onChange={(e) => setPawReward({ ...pawReward, enabled: e.target.checked })}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+            </label>
+          </div>
+
+          {/* Current Reward */}
+          {pawReward.product_name && (
+            <div className="p-4 bg-white border rounded-lg">
+              <h4 className="font-semibold mb-3">Current Reward</h4>
+              <div className="flex items-center gap-4">
+                {pawReward.product_image && (
+                  <img 
+                    src={pawReward.product_image} 
+                    alt={pawReward.product_name}
+                    className="w-16 h-16 rounded-lg object-cover"
+                  />
+                )}
+                <div>
+                  <p className="font-medium">{pawReward.product_name}</p>
+                  <p className="text-sm text-green-600">Worth ₹{pawReward.product_price}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Select Product */}
+          <div>
+            <h4 className="font-semibold mb-3">Select Reward Product (Treats under ₹600)</h4>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-60 overflow-y-auto">
+              {eligibleProducts.map((product) => (
+                <div
+                  key={product.id}
+                  onClick={() => handleProductSelect(product)}
+                  className={`p-3 border rounded-lg cursor-pointer transition-all ${
+                    pawReward.product_id === product.id 
+                      ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-500' 
+                      : 'border-gray-200 hover:border-amber-300 hover:bg-amber-50/50'
+                  }`}
+                >
+                  <img 
+                    src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200'}
+                    alt={product.name}
+                    className="w-full h-20 object-cover rounded-lg mb-2"
+                  />
+                  <p className="text-sm font-medium line-clamp-1">{product.name}</p>
+                  <p className="text-xs text-green-600">₹{product.price}</p>
+                </div>
+              ))}
+              
+              {eligibleProducts.length === 0 && (
+                <div className="col-span-3 text-center py-8 text-gray-500">
+                  <Gift className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                  <p>Loading products...</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Custom Message */}
+          <div>
+            <Label>Custom Message</Label>
+            <Input
+              value={pawReward.custom_message}
+              onChange={(e) => setPawReward({ ...pawReward, custom_message: e.target.value })}
+              placeholder="Every stay earns your dog a Paw Reward!"
+              className="mt-1"
+            />
+          </div>
+
+          {/* Max Value */}
+          <div>
+            <Label>Max Reward Value (₹)</Label>
+            <Input
+              type="number"
+              value={pawReward.max_value}
+              onChange={(e) => setPawReward({ ...pawReward, max_value: parseInt(e.target.value) || 600 })}
+              className="mt-1 w-32"
+            />
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button 
+            className="bg-amber-500 hover:bg-amber-600"
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+            Save Paw Reward
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export default StayManager;
