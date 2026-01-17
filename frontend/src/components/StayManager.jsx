@@ -691,7 +691,12 @@ const StayManager = ({ getAuthHeader }) => {
               <h3 className="font-semibold text-lg flex items-center gap-2">
                 <Users className="w-5 h-5 text-purple-600" /> Pawcation Socials
               </h3>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="border-purple-400 text-purple-600 hover:bg-purple-50"
+                onClick={() => { setSelectedEvent(null); setShowEventModal(true); }}
+              >
                 <Plus className="w-4 h-4 mr-2" /> Add Event
               </Button>
             </div>
@@ -704,18 +709,47 @@ const StayManager = ({ getAuthHeader }) => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {staySocials.map((social) => (
-                  <div key={social.id} className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
-                    <img 
-                      src={social.image || 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=200'}
-                      alt={social.title}
-                      className="w-16 h-16 rounded-lg object-cover"
-                    />
-                    <div className="flex-1">
-                      <h5 className="font-semibold text-sm">{social.title}</h5>
-                      <p className="text-xs text-gray-500">{social.event_date} • {social.property_city}</p>
-                      <p className="text-xs text-purple-600">{social.current_participants || 0}/{social.max_participants} spots</p>
+                  <Card key={social.id} className="overflow-hidden bg-purple-50 border-purple-100">
+                    <div className="relative h-32">
+                      <img 
+                        src={social.image || 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=400'}
+                        alt={social.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <Badge className="absolute top-2 left-2 bg-purple-600 capitalize">
+                        {social.event_type?.replace(/_/g, ' ')}
+                      </Badge>
+                      {social.price_per_pet === 0 && (
+                        <Badge className="absolute top-2 right-2 bg-green-500">FREE</Badge>
+                      )}
                     </div>
-                  </div>
+                    <div className="p-3">
+                      <h5 className="font-semibold text-sm mb-1">{social.title}</h5>
+                      <p className="text-xs text-gray-500 mb-1">{social.event_date} • {social.event_time}</p>
+                      <p className="text-xs text-gray-500 mb-2">{social.property_name}, {social.property_city}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-purple-600">{social.current_participants || 0}/{social.max_participants} spots</span>
+                        <div className="flex gap-1">
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="h-7 px-2"
+                            onClick={() => { setSelectedEvent(social); setShowEventModal(true); }}
+                          >
+                            <Edit className="w-3 h-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="h-7 px-2 text-red-500"
+                            onClick={() => handleDeleteEvent(social.id)}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
                 ))}
               </div>
             )}
