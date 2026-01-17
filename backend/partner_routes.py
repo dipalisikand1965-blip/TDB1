@@ -401,3 +401,305 @@ async def import_partners_csv(data: dict, username: str = Depends(lambda: verify
         imported += 1
     
     return {"imported": imported}
+
+
+# ==================== DOCUMENT VERIFICATION ====================
+
+class DocumentVerification(BaseModel):
+    gst_verified: Optional[bool] = None
+    pan_verified: Optional[bool] = None
+    business_license_verified: Optional[bool] = None
+    verification_notes: Optional[str] = None
+
+@admin_router.put("/{partner_id}/verify-documents")
+async def verify_partner_documents(
+    partner_id: str,
+    verification: DocumentVerification,
+    username: str = Depends(lambda: verify_admin)
+):
+    """Verify partner documents (GST, PAN, etc.)"""
+    application = await db.partner_applications.find_one({"id": partner_id})
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Build document verification status
+    doc_status = application.get("document_verification", {})
+    update_data = {}
+    
+    if verification.gst_verified is not None:
+        doc_status["gst_verified"] = verification.gst_verified
+        doc_status["gst_verified_at"] = now
+        doc_status["gst_verified_by"] = username
+        
+    if verification.pan_verified is not None:
+        doc_status["pan_verified"] = verification.pan_verified
+        doc_status["pan_verified_at"] = now
+        doc_status["pan_verified_by"] = username
+        
+    if verification.business_license_verified is not None:
+        doc_status["business_license_verified"] = verification.business_license_verified
+        doc_status["business_license_verified_at"] = now
+        doc_status["business_license_verified_by"] = username
+        
+    if verification.verification_notes:
+        doc_status["notes"] = verification.verification_notes
+    
+    # Check if all required documents are verified
+    all_verified = (
+        doc_status.get("gst_verified", False) and 
+        doc_status.get("pan_verified", False)
+    )
+    doc_status["all_verified"] = all_verified
+    
+    update_data["document_verification"] = doc_status
+    update_data["updated_at"] = now
+    
+    await db.partner_applications.update_one(
+        {"id": partner_id},
+        {"$set": update_data}
+    )
+    
+    updated = await db.partner_applications.find_one({"id": partner_id}, {"_id": 0})
+    return {"application": updated, "all_documents_verified": all_verified}
+
+
+# ==================== APPROVAL/REJECTION WORKFLOW ====================
+
+class ApprovalAction(BaseModel):
+    action: str  # approve, reject, request_info
+    reason: Optional[str] = None
+    admin_notes: Optional[str] = None
+    commission_rate: Optional[float] = None
+
+# Email sending function - will be set from server.py
+send_partner_email = None
+
+def set_partner_email_func(email_func):
+    global send_partner_email
+    send_partner_email = email_func
+
+@admin_router.post("/{partner_id}/action")
+async def process_partner_action(
+    partner_id: str,
+    action_data: ApprovalAction,
+    username: str = Depends(lambda: verify_admin)
+):
+    """Process approval, rejection, or request for more info"""
+    application = await db.partner_applications.find_one({"id": partner_id})
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    update_data = {"updated_at": now}
+    email_subject = ""
+    email_body = ""
+    
+    if action_data.action == "approve":
+        update_data["status"] = "approved"
+        update_data["approved_at"] = now
+        update_data["approved_by"] = username
+        if action_data.commission_rate:
+            update_data["commission_rate"] = action_data.commission_rate
+        if action_data.admin_notes:
+            update_data["admin_notes"] = action_data.admin_notes
+            
+        email_subject = "🎉 Congratulations! Your Partner Application is Approved"
+        email_body = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); padding: 30px; text-align: center;">
+                <h1 style="color: white; margin: 0;">🎉 Application Approved!</h1>
+            </div>
+            <div style="padding: 30px; background: #fff;">
+                <h2>Welcome to The Doggy Company Family!</h2>
+                <p>Hi {application.get('contact_name', 'Partner')},</p>
+                <p>We're thrilled to inform you that your application for <strong>{application.get('business_name')}</strong> has been approved!</p>
+                <p>Our onboarding team will contact you within 2-3 business days to complete the setup process.</p>
+                {f'<p><strong>Note from our team:</strong> {action_data.reason}</p>' if action_data.reason else ''}
+                <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="color: #16a34a; margin-top: 0;">What happens next?</h3>
+                    <ul>
+                        <li>Our team will verify your documents</li>
+                        <li>We'll set up your listing on our platform</li>
+                        <li>Training materials will be shared</li>
+                        <li>You'll receive access to the partner dashboard</li>
+                    </ul>
+                </div>
+                <p>If you have any questions, reply to this email or contact us at woof@thedoggycompany.in</p>
+            </div>
+            <div style="background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; color: #666;">
+                The Doggy Company | woof@thedoggycompany.in
+            </div>
+        </div>
+        """
+        
+    elif action_data.action == "reject":
+        update_data["status"] = "rejected"
+        update_data["rejected_at"] = now
+        update_data["rejected_by"] = username
+        update_data["rejection_reason"] = action_data.reason
+        if action_data.admin_notes:
+            update_data["admin_notes"] = action_data.admin_notes
+            
+        email_subject = "Update on Your Partner Application"
+        email_body = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: #722282; padding: 30px; text-align: center;">
+                <h1 style="color: white; margin: 0;">🐕 The Doggy Company</h1>
+            </div>
+            <div style="padding: 30px; background: #fff;">
+                <h2>Application Update</h2>
+                <p>Hi {application.get('contact_name', 'Partner')},</p>
+                <p>Thank you for your interest in partnering with The Doggy Company.</p>
+                <p>After careful review, we regret to inform you that we're unable to move forward with your application for <strong>{application.get('business_name')}</strong> at this time.</p>
+                {f'<p><strong>Reason:</strong> {action_data.reason}</p>' if action_data.reason else ''}
+                <p>This decision was based on our current requirements and operational capacity. We encourage you to apply again in the future as our needs evolve.</p>
+                <p>If you have questions or would like feedback, please contact us at woof@thedoggycompany.in</p>
+            </div>
+            <div style="background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; color: #666;">
+                The Doggy Company | woof@thedoggycompany.in
+            </div>
+        </div>
+        """
+        
+    elif action_data.action == "request_info":
+        update_data["status"] = "reviewing"
+        update_data["info_requested_at"] = now
+        update_data["info_requested_by"] = username
+        update_data["info_request_reason"] = action_data.reason
+        if action_data.admin_notes:
+            update_data["admin_notes"] = action_data.admin_notes
+            
+        email_subject = "Additional Information Required - Partner Application"
+        email_body = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: #f59e0b; padding: 30px; text-align: center;">
+                <h1 style="color: white; margin: 0;">📋 Information Needed</h1>
+            </div>
+            <div style="padding: 30px; background: #fff;">
+                <h2>We Need More Information</h2>
+                <p>Hi {application.get('contact_name', 'Partner')},</p>
+                <p>Thank you for applying to partner with The Doggy Company.</p>
+                <p>To continue processing your application for <strong>{application.get('business_name')}</strong>, we need some additional information:</p>
+                <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+                    <p style="margin: 0;"><strong>{action_data.reason}</strong></p>
+                </div>
+                <p>Please reply to this email with the requested information, or contact us if you have any questions.</p>
+            </div>
+            <div style="background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; color: #666;">
+                The Doggy Company | woof@thedoggycompany.in
+            </div>
+        </div>
+        """
+    else:
+        raise HTTPException(status_code=400, detail="Invalid action. Use: approve, reject, or request_info")
+    
+    # Update the application
+    await db.partner_applications.update_one(
+        {"id": partner_id},
+        {"$set": update_data}
+    )
+    
+    # Send email notification
+    email_sent = False
+    if send_partner_email and application.get("email"):
+        try:
+            await send_partner_email(
+                to_email=application["email"],
+                subject=email_subject,
+                html_content=email_body
+            )
+            email_sent = True
+        except Exception as e:
+            print(f"Error sending partner email: {e}")
+    
+    # Create notification for admin
+    notification = {
+        "id": f"notif-{uuid.uuid4().hex[:8]}",
+        "type": f"partner_{action_data.action}",
+        "title": f"Partner {action_data.action.title()}: {application.get('business_name')}",
+        "message": f"{username} {action_data.action}ed {application.get('business_name')} ({application.get('partner_type')})",
+        "partner_id": partner_id,
+        "created_by": username,
+        "read": False,
+        "created_at": now
+    }
+    await db.notifications.insert_one(notification)
+    
+    updated = await db.partner_applications.find_one({"id": partner_id}, {"_id": 0})
+    return {
+        "success": True,
+        "action": action_data.action,
+        "application": updated,
+        "email_sent": email_sent
+    }
+
+
+@admin_router.get("/{partner_id}/history")
+async def get_partner_history(partner_id: str, username: str = Depends(lambda: verify_admin)):
+    """Get action history for a partner application"""
+    application = await db.partner_applications.find_one({"id": partner_id})
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    # Build history from application data
+    history = []
+    
+    history.append({
+        "action": "submitted",
+        "timestamp": application.get("created_at"),
+        "by": application.get("email")
+    })
+    
+    if application.get("reviewed_at"):
+        history.append({
+            "action": "reviewed",
+            "timestamp": application.get("reviewed_at"),
+            "by": application.get("reviewed_by", "Admin")
+        })
+    
+    if application.get("info_requested_at"):
+        history.append({
+            "action": "info_requested",
+            "timestamp": application.get("info_requested_at"),
+            "by": application.get("info_requested_by"),
+            "reason": application.get("info_request_reason")
+        })
+    
+    if application.get("approved_at"):
+        history.append({
+            "action": "approved",
+            "timestamp": application.get("approved_at"),
+            "by": application.get("approved_by")
+        })
+    
+    if application.get("rejected_at"):
+        history.append({
+            "action": "rejected",
+            "timestamp": application.get("rejected_at"),
+            "by": application.get("rejected_by"),
+            "reason": application.get("rejection_reason")
+        })
+    
+    # Document verification history
+    doc_verify = application.get("document_verification", {})
+    if doc_verify.get("gst_verified_at"):
+        history.append({
+            "action": "gst_verified" if doc_verify.get("gst_verified") else "gst_rejected",
+            "timestamp": doc_verify.get("gst_verified_at"),
+            "by": doc_verify.get("gst_verified_by")
+        })
+    
+    if doc_verify.get("pan_verified_at"):
+        history.append({
+            "action": "pan_verified" if doc_verify.get("pan_verified") else "pan_rejected",
+            "timestamp": doc_verify.get("pan_verified_at"),
+            "by": doc_verify.get("pan_verified_by")
+        })
+    
+    # Sort by timestamp
+    history.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+    
+    return {"history": history}
+
