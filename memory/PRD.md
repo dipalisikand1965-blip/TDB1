@@ -375,3 +375,13 @@ A personalized trip recommendation engine that suggests:
 ---
 
 *Last Updated: January 17, 2026*
+
+---
+
+## Changelog (Jan 17, 2026 - Latest Session)
+- ✅ Implemented Global Scale Foundation with App Settings API
+- ✅ Built Advanced Checkout with Split-Fulfillment Logic
+- ✅ Added Pan-India Shipping toggle for nationwide delivery
+- ✅ Migrated 392 products with fulfillment_type field
+- ✅ Created comprehensive test suite (19 tests, 100% pass rate)
+
