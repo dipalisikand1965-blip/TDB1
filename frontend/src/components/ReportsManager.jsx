@@ -9,7 +9,7 @@ import { API_URL } from '../utils/api';
 import {
   TrendingUp, DollarSign, Users, ShoppingBag, RefreshCw, Download,
   MapPin, Calendar, Package, Star, PawPrint, Truck, Search, BarChart3,
-  ArrowUp, ArrowDown, Loader2, Building, Heart, Clock
+  ArrowUp, ArrowDown, Loader2, Building, Heart, Clock, Layers, Utensils, Moon
 } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
