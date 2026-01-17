@@ -6544,6 +6544,7 @@ set_partner_email_func(send_admin_email)
 
 # Set database for Stay routes
 set_stay_db(db)
+set_stay_admin_verify(verify_admin)
 
 # Include routers
 app.include_router(api_router)
