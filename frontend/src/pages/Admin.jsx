@@ -1227,6 +1227,7 @@ const Admin = () => {
           {[
             { id: 'pillars', label: '🏛️ Pillars', icon: Layers },
             { id: 'campaigns', label: '🎯 Campaigns', icon: Sparkles },
+            { id: 'partners', label: '🤝 Partners', icon: Building },
           ].map((tab) => (
             <Button
               key={tab.id}
