@@ -688,92 +688,107 @@ const PricingHub = ({ getAuthHeader }) => {
 
         {/* Partners Tab */}
         <TabsContent value="partners" className="space-y-4">
-          <h3 className="text-lg font-semibold">Individual Partner Commissions</h3>
-          <p className="text-sm text-gray-500 mb-4">
-            Override commission rates for specific restaurants, hotels, or service providers.
-          </p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-semibold">Restaurant & Stay Commissions</h3>
+              <p className="text-sm text-gray-500">
+                Set commission rates for individual restaurants and properties (% per booking or fixed ₹ amount)
+              </p>
+            </div>
+            <Button variant="outline" onClick={fetchPartnerCommissions}>
+              <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+            </Button>
+          </div>
 
           <Tabs defaultValue="restaurants">
             <TabsList>
-              <TabsTrigger value="restaurants">🍽️ Restaurants ({partnerCommissions.restaurants?.length || 0})</TabsTrigger>
-              <TabsTrigger value="stays">🏨 Stays ({partnerCommissions.stays?.length || 0})</TabsTrigger>
+              <TabsTrigger value="restaurants">🍽️ Dine - Restaurants ({partnerCommissions.restaurants?.length || 0})</TabsTrigger>
+              <TabsTrigger value="stays">🏨 Stay - Hotels/Properties ({partnerCommissions.stays?.length || 0})</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="restaurants">
+            <TabsContent value="restaurants" className="mt-4">
               <Card className="overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b">
-                    <tr>
-                      <th className="p-3 text-left">Restaurant</th>
-                      <th className="p-3 text-left">City</th>
-                      <th className="p-3 text-center">Commission Type</th>
-                      <th className="p-3 text-right">Value</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {partnerCommissions.restaurants?.map((restaurant) => (
-                      <tr key={restaurant.id} className="border-b">
-                        <td className="p-3 font-medium">{restaurant.name}</td>
-                        <td className="p-3 text-gray-500">{restaurant.city}</td>
-                        <td className="p-3 text-center">
-                          <Badge variant="outline">{restaurant.commission_type || 'percentage'}</Badge>
-                        </td>
-                        <td className="p-3 text-right font-medium">
-                          {restaurant.commission_type === 'fixed' 
-                            ? formatCurrency(restaurant.commission_value || 0)
-                            : `${restaurant.commission_value || 10}%`
-                          }
-                        </td>
-                      </tr>
-                    ))}
-                    {(!partnerCommissions.restaurants || partnerCommissions.restaurants.length === 0) && (
+                <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
+                  <span className="font-medium">All Restaurants</span>
+                  <Badge className="bg-orange-100 text-orange-700">Default: 10% commission</Badge>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 border-b">
                       <tr>
-                        <td colSpan={4} className="p-8 text-center text-gray-500">
-                          No restaurants with custom commissions
-                        </td>
+                        <th className="p-3 text-left">Restaurant</th>
+                        <th className="p-3 text-left">City</th>
+                        <th className="p-3 text-center">Commission Type</th>
+                        <th className="p-3 text-right">Commission Value</th>
+                        <th className="p-3 text-center">Actions</th>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {partnerCommissions.restaurants?.map((restaurant) => (
+                        <PartnerCommissionRow 
+                          key={restaurant.id}
+                          partner={restaurant}
+                          partnerType="restaurant"
+                          defaultCommission={10}
+                          getAuthHeader={getAuthHeader}
+                          onUpdate={fetchPartnerCommissions}
+                          formatCurrency={formatCurrency}
+                        />
+                      ))}
+                      {(!partnerCommissions.restaurants || partnerCommissions.restaurants.length === 0) && (
+                        <tr>
+                          <td colSpan={5} className="p-8 text-center text-gray-500">
+                            <Building2 className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                            No restaurants found. Add restaurants in the Dine Manager.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </Card>
             </TabsContent>
 
-            <TabsContent value="stays">
+            <TabsContent value="stays" className="mt-4">
               <Card className="overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b">
-                    <tr>
-                      <th className="p-3 text-left">Stay / Hotel</th>
-                      <th className="p-3 text-left">City</th>
-                      <th className="p-3 text-center">Commission Type</th>
-                      <th className="p-3 text-right">Value</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {partnerCommissions.stays?.map((stay) => (
-                      <tr key={stay.id} className="border-b">
-                        <td className="p-3 font-medium">{stay.name}</td>
-                        <td className="p-3 text-gray-500">{stay.city}</td>
-                        <td className="p-3 text-center">
-                          <Badge variant="outline">{stay.commission_type || 'percentage'}</Badge>
-                        </td>
-                        <td className="p-3 text-right font-medium">
-                          {stay.commission_type === 'fixed' 
-                            ? formatCurrency(stay.commission_value || 0)
-                            : `${stay.commission_value || 12}%`
-                          }
-                        </td>
-                      </tr>
-                    ))}
-                    {(!partnerCommissions.stays || partnerCommissions.stays.length === 0) && (
+                <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
+                  <span className="font-medium">All Stays & Hotels</span>
+                  <Badge className="bg-green-100 text-green-700">Default: 12% commission</Badge>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 border-b">
                       <tr>
-                        <td colSpan={4} className="p-8 text-center text-gray-500">
-                          No stays with custom commissions
-                        </td>
+                        <th className="p-3 text-left">Property</th>
+                        <th className="p-3 text-left">City</th>
+                        <th className="p-3 text-center">Commission Type</th>
+                        <th className="p-3 text-right">Commission Value</th>
+                        <th className="p-3 text-center">Actions</th>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {partnerCommissions.stays?.map((stay) => (
+                        <PartnerCommissionRow 
+                          key={stay.id}
+                          partner={stay}
+                          partnerType="stay"
+                          defaultCommission={12}
+                          getAuthHeader={getAuthHeader}
+                          onUpdate={fetchPartnerCommissions}
+                          formatCurrency={formatCurrency}
+                        />
+                      ))}
+                      {(!partnerCommissions.stays || partnerCommissions.stays.length === 0) && (
+                        <tr>
+                          <td colSpan={5} className="p-8 text-center text-gray-500">
+                            <Building2 className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                            No stays/hotels found. Build the Stay pillar to add properties.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </Card>
             </TabsContent>
           </Tabs>
