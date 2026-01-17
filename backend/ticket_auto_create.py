@@ -295,6 +295,87 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
             "is_internal": False
         })
     
+    elif event_type == "mira_chat":
+        ticket_doc.update({
+            "category": "general",
+            "sub_category": "chat_inquiry",
+            "urgency": "medium",
+            "member": {
+                "name": event_data.get("name", "Website Visitor"),
+                "email": event_data.get("email"),
+                "phone": event_data.get("phone"),
+                "city": None,
+                "country": "India"
+            },
+            "description": f"""💬 NEW MIRA AI CHAT
+
+**Visitor:** {event_data.get('name', 'Website Visitor')}
+**Email:** {event_data.get('email') or 'Not provided'}
+**Phone:** {event_data.get('phone') or 'Not provided'}
+
+**Chat Preview:**
+{event_data.get('preview', 'No preview available')[:500]}
+
+**Messages:** {event_data.get('messages', 0)} messages in conversation
+
+---
+*Auto-created from Mira AI chat*""",
+            "source": "mira_chat",
+            "source_reference": event_data.get("chat_id"),
+            "linked_event_id": event_data.get("chat_id"),
+            "tags": ["auto-created", "mira", "chat", "inquiry"]
+        })
+        
+        ticket_doc["messages"].append({
+            "id": str(uuid.uuid4()),
+            "type": "ticket_created",
+            "content": f"Mira AI chat from {event_data.get('name', 'website visitor')}",
+            "sender": "system",
+            "sender_name": "Mira AI",
+            "channel": "chat",
+            "timestamp": now,
+            "is_internal": False
+        })
+    
+    elif event_type == "email":
+        ticket_doc.update({
+            "category": "general",
+            "sub_category": "email_inquiry",
+            "urgency": "medium",
+            "member": {
+                "name": event_data.get("sender_name", "Customer"),
+                "email": event_data.get("sender_email"),
+                "phone": None,
+                "city": None,
+                "country": "India"
+            },
+            "description": f"""📧 NEW EMAIL INQUIRY
+
+**From:** {event_data.get('sender_name', 'Customer')} <{event_data.get('sender_email', 'unknown')}>
+**Subject:** {event_data.get('subject', 'No subject')}
+
+**Message:**
+{event_data.get('body', 'No content')[:1000]}
+
+---
+*Auto-created from email*""",
+            "source": "email",
+            "source_reference": event_data.get("email_id"),
+            "linked_event_id": event_data.get("email_id"),
+            "tags": ["auto-created", "email", "inquiry"]
+        })
+        
+        ticket_doc["messages"].append({
+            "id": str(uuid.uuid4()),
+            "type": "ticket_created",
+            "content": f"Email from {event_data.get('sender_name', 'customer')}: {event_data.get('subject', 'No subject')}",
+            "sender": "customer",
+            "sender_name": event_data.get("sender_name", "Customer"),
+            "channel": "email",
+            "timestamp": now,
+            "is_internal": False
+        })
+    
     # Insert the ticket
     await db.tickets.insert_one(ticket_doc)
     
