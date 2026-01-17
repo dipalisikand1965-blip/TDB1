@@ -537,13 +537,15 @@ async def public_get_collections():
     collections = await db.enhanced_collections.find(
         {
             "visibility.is_published": True,
-            "$or": [
-                {"visibility.start_date": None},
-                {"visibility.start_date": {"$lte": now}}
-            ],
-            "$or": [
-                {"visibility.end_date": None},
-                {"visibility.end_date": {"$gte": now}}
+            "$and": [
+                {"$or": [
+                    {"visibility.start_date": None},
+                    {"visibility.start_date": {"$lte": now}}
+                ]},
+                {"$or": [
+                    {"visibility.end_date": None},
+                    {"visibility.end_date": {"$gte": now}}
+                ]}
             ]
         },
         {"_id": 0, "id": 1, "name": 1, "slug": 1, "description": 1, "cover_image": 1, "theme_color": 1}
