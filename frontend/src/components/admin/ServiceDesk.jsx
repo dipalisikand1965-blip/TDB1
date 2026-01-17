@@ -1312,9 +1312,14 @@ const ServiceDesk = ({ authHeaders }) => {
         <div className="w-80 flex-shrink-0 border rounded-lg overflow-hidden flex flex-col">
           <div className="bg-gray-50 px-3 py-2 border-b flex items-center justify-between">
             <span className="text-sm font-medium">Tickets ({tickets.length})</span>
-            <Button variant="ghost" size="sm" onClick={() => { fetchTickets(); fetchStats(); }}>
-              <RefreshCw className="w-4 h-4" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="sm" onClick={exportTicketsCSV} title="Export to CSV">
+                <Download className="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => { fetchTickets(); fetchStats(); }}>
+                <RefreshCw className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto">
             {tickets.length === 0 ? (
