@@ -688,9 +688,11 @@ const PartnerOnboarding = () => {
                     <Label>Date</Label>
                     <Input 
                       type="date"
-                      value={formData.signature_date}
-                      onChange={(e) => updateForm('signature_date', e.target.value)}
+                      value={new Date().toISOString().split('T')[0]}
+                      readOnly
+                      className="bg-gray-100 cursor-not-allowed"
                     />
+                    <p className="text-xs text-gray-500 mt-1">Today's date (auto-filled)</p>
                   </div>
                 </div>
               </div>
