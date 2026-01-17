@@ -11,7 +11,7 @@ import {
   ChevronRight, Sparkles, Shield, TreePine, Sun, Waves, Mountain,
   Home, Building2, Tent, CheckCircle, X, Users, Clock, Loader2,
   PawPrint, AlertTriangle, MessageCircle, ChevronDown, ShoppingBag,
-  Package, Percent, PartyPopper, Camera, Footprints
+  Package, Percent, PartyPopper, Camera, Footprints, Gift
 } from 'lucide-react';
 
 const StayPage = () => {
