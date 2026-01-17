@@ -92,6 +92,15 @@ from stay_routes import (
     set_admin_verify as set_stay_admin_verify
 )
 from stay_seeder import seed_stay_properties
+from stay_social_routes import (
+    stay_products_router,
+    stay_social_router,
+    stay_social_admin_router,
+    set_database as set_stay_social_db,
+    set_admin_verify as set_stay_social_admin_verify,
+    seed_stay_bundles,
+    seed_sample_socials
+)
 
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
