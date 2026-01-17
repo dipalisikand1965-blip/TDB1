@@ -70,6 +70,16 @@ const StayManager = ({ getAuthHeader }) => {
         const data = await mismatchRes.json();
         setMismatches(data.reports || []);
       }
+      if (productsRes.ok) {
+        const data = await productsRes.json();
+        setStayProducts(data.bundles || []);
+        setProductStats(prev => ({ ...prev, bundles: data.total || 0 }));
+      }
+      if (socialsRes.ok) {
+        const data = await socialsRes.json();
+        setStaySocials(data.events || []);
+        setProductStats(prev => ({ ...prev, socials: data.total || 0 }));
+      }
     } catch (error) {
       console.error('Error fetching stay data:', error);
     } finally {
@@ -80,6 +90,74 @@ const StayManager = ({ getAuthHeader }) => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+  
+  // Seed Stay Products
+  const handleSeedProducts = async () => {
+    if (!window.confirm('This will seed 8 Stay Bundles and 3 Social Events. Continue?')) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/admin/stay/seed-products`, {
+        method: 'POST',
+        headers: getAuthHeader()
+      });
+      const data = await response.json();
+      alert(data.message || 'Products seeded successfully!');
+      fetchData();
+    } catch (error) {
+      console.error('Error seeding products:', error);
+      alert('Failed to seed products');
+    }
+  };
+  
+  // Delete Stay Product
+  const handleDeleteProduct = async (productId) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/admin/stay/products/${productId}`, {
+        method: 'DELETE',
+        headers: getAuthHeader()
+      });
+      if (response.ok) {
+        fetchData();
+      } else {
+        alert('Failed to delete product');
+      }
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
+  };
+  
+  // Save Stay Product
+  const handleSaveProduct = async (product) => {
+    try {
+      const isNew = !product.id;
+      const url = isNew 
+        ? `${API_URL}/api/admin/stay/products`
+        : `${API_URL}/api/admin/stay/products/${product.id}`;
+      
+      const response = await fetch(url, {
+        method: isNew ? 'POST' : 'PUT',
+        headers: {
+          ...getAuthHeader(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(product)
+      });
+      
+      if (response.ok) {
+        setShowProductModal(false);
+        setSelectedProduct(null);
+        fetchData();
+      } else {
+        const error = await response.json();
+        alert(error.detail || 'Failed to save product');
+      }
+    } catch (error) {
+      console.error('Error saving product:', error);
+      alert('Failed to save product');
+    }
+  };
   
   const fetchEligibleProducts = async () => {
     try {
