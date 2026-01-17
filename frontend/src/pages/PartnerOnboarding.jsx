@@ -172,19 +172,27 @@ const PartnerOnboarding = () => {
         </div>
 
         {/* Progress Steps */}
-        <div className="flex items-center justify-center mb-12">
-          {[1, 2, 3].map((s) => (
-            <React.Fragment key={s}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
-                step >= s ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-500'
-              }`}>
-                {s}
-              </div>
-              {s < 3 && (
-                <div className={`w-20 h-1 ${step > s ? 'bg-purple-600' : 'bg-gray-200'}`} />
-              )}
-            </React.Fragment>
-          ))}
+        <div className="flex items-center justify-center mb-12 overflow-x-auto pb-2">
+          {STEP_TITLES.map((title, idx) => {
+            const s = idx + 1;
+            return (
+              <React.Fragment key={s}>
+                <div className="flex flex-col items-center">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                    step >= s ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-500'
+                  }`}>
+                    {step > s ? <CheckCircle className="w-5 h-5" /> : s}
+                  </div>
+                  <span className={`text-xs mt-1 whitespace-nowrap ${step >= s ? 'text-purple-600' : 'text-gray-400'}`}>
+                    {title}
+                  </span>
+                </div>
+                {s < 5 && (
+                  <div className={`w-12 md:w-20 h-1 mx-1 ${step > s ? 'bg-purple-600' : 'bg-gray-200'}`} />
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
 
         <Card className="p-8">
