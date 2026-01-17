@@ -1379,12 +1379,17 @@ const ServiceDesk = ({ authHeaders }) => {
               {/* Header */}
               <div className="bg-gray-50 px-4 py-3 border-b">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-lg">{CATEGORY_ICONS[selectedTicket.category]}</span>
                     <span className="font-mono text-sm text-gray-500">{selectedTicket.ticket_id}</span>
                     <Badge className={STATUS_COLORS[selectedTicket.status]}>
                       {selectedTicket.status?.replace('_', ' ')}
                     </Badge>
+                    {selectedTicket.source && SOURCE_CONFIG[selectedTicket.source] && (
+                      <Badge className={SOURCE_CONFIG[selectedTicket.source].color}>
+                        {SOURCE_CONFIG[selectedTicket.source].icon} {SOURCE_CONFIG[selectedTicket.source].label}
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
                     <Select value={selectedTicket.status} onValueChange={handleStatusChange}>
