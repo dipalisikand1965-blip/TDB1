@@ -1231,6 +1231,7 @@ const Admin = () => {
             { id: 'campaigns', label: '🎯 Campaigns', icon: Sparkles },
             { id: 'partners', label: '🤝 Partners', icon: Building },
             { id: 'pricing', label: '💰 Pricing Hub', icon: DollarSign },
+            { id: 'migration', label: '📦 Data Migration', icon: CloudDownload },
           ].map((tab) => (
             <Button
               key={tab.id}
