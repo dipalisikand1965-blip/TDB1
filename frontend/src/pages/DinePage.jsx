@@ -1488,4 +1488,128 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
   );
 };
 
+// Dine Bundle Modal Component
+const DineBundleModal = ({ bundle, onClose, addToCart }) => {
+  const [loading, setLoading] = useState(false);
+  const [added, setAdded] = useState(false);
+
+  const handleAddToCart = async () => {
+    setLoading(true);
+    try {
+      addToCart({
+        id: bundle.id,
+        name: bundle.name,
+        price: bundle.bundle_price,
+        image: bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+        description: bundle.description,
+        category: 'dine_bundle',
+        pillar: 'dine',
+        bundleItems: bundle.items,
+        originalPrice: bundle.original_price,
+        discountPercent: bundle.discount_percent
+      }, 'Bundle', bundle.category || 'dine', 1);
+      setAdded(true);
+      setTimeout(() => {
+        setAdded(false);
+        onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Package className="w-5 h-5 text-orange-500" />
+            {bundle.name}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          {/* Bundle Image */}
+          <div className="relative rounded-lg overflow-hidden">
+            <img 
+              src={bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800'} 
+              alt={bundle.name}
+              className="w-full h-48 object-cover"
+            />
+            {bundle.discount_percent > 0 && (
+              <Badge className="absolute top-3 right-3 bg-red-500 text-lg px-3 py-1">
+                <Percent className="w-4 h-4 mr-1" /> {bundle.discount_percent}% OFF
+              </Badge>
+            )}
+          </div>
+
+          {/* Bundle Details */}
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Badge variant="outline" className="capitalize">{bundle.category?.replace('_', ' ')}</Badge>
+              {bundle.for_occasion && (
+                <Badge className="bg-orange-100 text-orange-800">
+                  <PartyPopper className="w-3 h-3 mr-1" /> {bundle.for_occasion}
+                </Badge>
+              )}
+            </div>
+            <p className="text-gray-600">{bundle.description}</p>
+          </div>
+
+          {/* What's Included */}
+          {bundle.items && bundle.items.length > 0 && (
+            <div className="bg-orange-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-orange-800 mb-2 flex items-center gap-2">
+                <Gift className="w-4 h-4" /> What's Included
+              </h4>
+              <ul className="space-y-1">
+                {bundle.items.map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm text-gray-700">
+                    <Check className="w-4 h-4 text-green-500" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Pricing */}
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div>
+              <p className="text-sm text-gray-500">Bundle Price</p>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-green-600">₹{bundle.bundle_price}</span>
+                {bundle.original_price > bundle.bundle_price && (
+                  <span className="text-lg text-gray-400 line-through">₹{bundle.original_price}</span>
+                )}
+              </div>
+              {bundle.discount_percent > 0 && (
+                <p className="text-sm text-green-600">You save ₹{bundle.original_price - bundle.bundle_price}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Add to Cart Button */}
+          <Button
+            className={`w-full py-6 text-lg ${added ? 'bg-green-600' : 'bg-orange-500 hover:bg-orange-600'}`}
+            onClick={handleAddToCart}
+            disabled={loading || added}
+            data-testid="dine-bundle-add-to-cart"
+          >
+            {loading ? (
+              <>Loading...</>
+            ) : added ? (
+              <><Check className="w-5 h-5 mr-2" /> Added to Cart!</>
+            ) : (
+              <><ShoppingBag className="w-5 h-5 mr-2" /> Add to Cart</>
+            )}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export default DinePage;
