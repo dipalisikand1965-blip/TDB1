@@ -6460,6 +6460,10 @@ set_partner_admin_verify(verify_admin)
 set_pricing_db(db)
 set_pricing_admin_verify(verify_admin)
 
+# Set database for pillar reports
+set_pillar_reports_db(db)
+set_pillar_reports_admin_verify(verify_admin)
+
 # Set database for restaurant discovery
 set_restaurant_scraper_db(db)
 set_restaurant_scraper_admin(verify_admin)
