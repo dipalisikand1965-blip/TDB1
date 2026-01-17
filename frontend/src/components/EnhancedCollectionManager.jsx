@@ -409,20 +409,20 @@ const EnhancedCollectionManager = ({ getAuthHeader }) => {
 
       {/* Collection Editor Modal */}
       <Dialog open={showEditor} onOpenChange={setShowEditor}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingCollection ? 'Edit Collection' : 'New Collection'}</DialogTitle>
           </DialogHeader>
           
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden flex flex-col">
-            <TabsList className="grid grid-cols-4">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-4 mb-4">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
               <TabsTrigger value="sections">Sections</TabsTrigger>
               <TabsTrigger value="display">Display</TabsTrigger>
               <TabsTrigger value="seo">SEO & Visibility</TabsTrigger>
             </TabsList>
             
-            <div className="flex-1 overflow-y-auto py-4">
+            <div className="min-h-[400px]">
               {/* Basic Info Tab */}
               <TabsContent value="basic" className="space-y-4 mt-0">
                 <div className="grid grid-cols-2 gap-4">
