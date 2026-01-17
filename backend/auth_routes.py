@@ -26,6 +26,9 @@ auth_router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 # Database reference
 db: AsyncIOMotorDatabase = None
 
+# Admin notification handler
+_create_admin_notification = None
+
 def set_database(database: AsyncIOMotorDatabase):
     global db
     db = database
