@@ -88,7 +88,8 @@ from admin_auth import (
 from stay_routes import (
     stay_router,
     stay_admin_router,
-    set_database as set_stay_db
+    set_database as set_stay_db,
+    set_admin_verify as set_stay_admin_verify
 )
 from stay_seeder import seed_stay_properties
 
