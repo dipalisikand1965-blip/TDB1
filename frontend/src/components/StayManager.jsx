@@ -538,7 +538,7 @@ const StayManager = ({ getAuthHeader }) => {
 };
 
 // Property Row Component
-const PropertyRow = ({ property, onEdit, onDelete, onStatusChange, getStatusColor }) => {
+const PropertyRow = ({ property, onEdit, onDelete, onStatusChange, onEditPawReward, getStatusColor }) => {
   return (
     <Card className="p-4">
       <div className="flex items-start gap-4">
@@ -559,6 +559,11 @@ const PropertyRow = ({ property, onEdit, onDelete, onStatusChange, getStatusColo
               <Badge className={getStatusColor(property.status)}>
                 {property.status}
               </Badge>
+              {property.paw_reward?.enabled && (
+                <Badge className="bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 border border-amber-300">
+                  <Gift className="w-3 h-3 mr-1" /> Paw Reward
+                </Badge>
+              )}
               {property.featured && (
                 <Badge className="bg-amber-100 text-amber-700">
                   <Sparkles className="w-3 h-3 mr-1" /> Featured
@@ -579,6 +584,11 @@ const PropertyRow = ({ property, onEdit, onDelete, onStatusChange, getStatusColo
             <span className="flex items-center gap-1">
               <PawPrint className="w-4 h-4 text-amber-500" /> {property.paw_rating?.overall?.toFixed(1) || '0.0'}
             </span>
+            {property.paw_reward?.enabled && (
+              <span className="flex items-center gap-1 text-amber-600" title={`Reward: ${property.paw_reward.product_name}`}>
+                <Gift className="w-4 h-4" /> {property.paw_reward.product_name?.substring(0, 15)}...
+              </span>
+            )}
             {property.pet_menu_available && (
               <span className="flex items-center gap-1 text-green-600">
                 <Dog className="w-4 h-4" /> Pet Menu
@@ -592,6 +602,15 @@ const PropertyRow = ({ property, onEdit, onDelete, onStatusChange, getStatusColo
           <div className="flex items-center gap-2 mt-3">
             <Button size="sm" variant="outline" onClick={onEdit}>
               <Edit className="w-3 h-3 mr-1" /> Edit
+            </Button>
+            
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="border-amber-400 text-amber-600 hover:bg-amber-50"
+              onClick={onEditPawReward}
+            >
+              <Gift className="w-3 h-3 mr-1" /> Paw Reward
             </Button>
             
             <select
