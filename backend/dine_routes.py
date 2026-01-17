@@ -63,7 +63,7 @@ ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 
 # Resend configuration
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggybakery.in")
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "woof2025")
@@ -303,7 +303,7 @@ async def create_reservation(reservation: ReservationRequest):
                         </p>
                     </div>
                     <div style="background: #1f2937; padding: 20px; text-align: center;">
-                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggycompany.in</p>
+                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggybakery.in</p>
                     </div>
                 </div>
                 """
@@ -1023,7 +1023,7 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
                         </p>
                     </div>
                     <div style="background: #1f2937; padding: 20px; text-align: center;">
-                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggycompany.in</p>
+                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggybakery.in</p>
                     </div>
                 </div>
                 """
