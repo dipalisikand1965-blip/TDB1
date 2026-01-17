@@ -602,7 +602,7 @@ api_router = APIRouter(prefix="/api")
 admin_router = APIRouter(prefix="/api/admin")
 
 # Import admin routes
-from admin_routes import fulfilment_router, set_database as set_admin_db
+from admin_routes import fulfilment_router, set_database as set_admin_routes_db
 
 # Import status engine
 from status_engine import status_router, set_database as set_status_db
