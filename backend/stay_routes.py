@@ -541,6 +541,161 @@ async def report_policy_mismatch(report: PolicyMismatchReport):
     return {"success": True, "report_id": report_doc["id"], "ticket_id": ticket_id}
 
 
+# ==================== TRIP PLANNER ====================
+
+class TripPlanRequest(BaseModel):
+    """Trip Planner request"""
+    destination_city: Optional[str] = None
+    trip_type: Optional[str] = None  # beach, mountain, road_trip, weekend, luxury, forest
+    pet_name: Optional[str] = None
+    pet_breed: Optional[str] = None
+    check_in_date: Optional[str] = None
+    check_out_date: Optional[str] = None
+
+
+@stay_router.post("/trip-planner")
+async def get_trip_recommendations(request: TripPlanRequest):
+    """
+    Trip Planner - Get personalized recommendations for:
+    - Stay properties matching destination and trip type
+    - Product bundles suitable for the trip type
+    - Upcoming social events at or near the destination
+    """
+    recommendations = {
+        "destination": request.destination_city,
+        "trip_type": request.trip_type,
+        "properties": [],
+        "bundles": [],
+        "events": [],
+        "tips": []
+    }
+    
+    # 1. Find matching properties
+    property_query = {"status": "live"}
+    if request.destination_city:
+        property_query["city"] = {"$regex": request.destination_city, "$options": "i"}
+    if request.trip_type:
+        property_query["vibe_tags"] = {"$regex": request.trip_type, "$options": "i"}
+    
+    properties = await db.stay_properties.find(property_query, {"_id": 0}).sort("paw_rating.overall", -1).limit(6).to_list(6)
+    recommendations["properties"] = properties
+    
+    # 2. Find matching bundles based on trip type
+    bundle_query = {"active": True}
+    if request.trip_type:
+        # Map trip types to bundle trip_types
+        trip_type_map = {
+            "beach": "beach",
+            "mountain": "mountain",
+            "road_trip": "road_trip",
+            "weekend": "weekend",
+            "luxury": "luxury",
+            "forest": "forest"
+        }
+        mapped_type = trip_type_map.get(request.trip_type.lower(), request.trip_type)
+        bundle_query["for_trip_type"] = mapped_type
+    
+    bundles = await db.stay_bundles.find(bundle_query, {"_id": 0}).sort("featured", -1).limit(4).to_list(4)
+    
+    # If no specific bundles found, get featured bundles
+    if not bundles:
+        bundles = await db.stay_bundles.find({"active": True, "featured": True}, {"_id": 0}).limit(4).to_list(4)
+    
+    recommendations["bundles"] = bundles
+    
+    # 3. Find upcoming events near destination or at properties
+    event_query = {"status": "active"}
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    event_query["event_date"] = {"$gte": today}
+    
+    if request.destination_city:
+        event_query["property_city"] = {"$regex": request.destination_city, "$options": "i"}
+    
+    events = await db.pawcation_socials.find(event_query, {"_id": 0}).sort("event_date", 1).limit(3).to_list(3)
+    
+    # If no events in destination, get any upcoming events
+    if not events:
+        events = await db.pawcation_socials.find(
+            {"status": "active", "event_date": {"$gte": today}}, 
+            {"_id": 0}
+        ).sort("event_date", 1).limit(3).to_list(3)
+    
+    recommendations["events"] = events
+    
+    # 4. Generate personalized tips
+    tips = []
+    pet_name = request.pet_name or "your pup"
+    
+    if request.trip_type:
+        trip_tips = {
+            "beach": [
+                f"Pack paw wax to protect {pet_name}'s paws from hot sand!",
+                "Bring a cooling mat for post-beach relaxation",
+                "Check if the beach allows dogs during your visit hours"
+            ],
+            "mountain": [
+                f"Ensure {pet_name} is comfortable with altitude - start slow!",
+                "Pack high-energy treats for trail walks",
+                "Bring a reflective collar for evening adventures"
+            ],
+            "road_trip": [
+                f"Take breaks every 2-3 hours for {pet_name} to stretch",
+                "Never leave your pet alone in the car",
+                "Pack motion sickness treats just in case"
+            ],
+            "weekend": [
+                f"Keep {pet_name}'s routine as normal as possible",
+                "Bring familiar items like their favorite blanket or toy",
+                "Check hotel pet policies before arrival"
+            ],
+            "luxury": [
+                f"Book spa treatments for {pet_name} in advance",
+                "Ask about in-room pet dining options",
+                "Request pet-friendly room amenities"
+            ],
+            "forest": [
+                f"Check for ticks after every outdoor adventure with {pet_name}",
+                "Keep your pet leashed to protect wildlife",
+                "Bring a first-aid kit for minor injuries"
+            ]
+        }
+        tips = trip_tips.get(request.trip_type.lower(), [
+            f"Always carry water and treats for {pet_name}",
+            "Keep vaccination records handy",
+            "Research nearest vet at your destination"
+        ])
+    else:
+        tips = [
+            f"Always carry water and treats for {pet_name}",
+            "Keep vaccination records handy",
+            "Research nearest vet at your destination"
+        ]
+    
+    recommendations["tips"] = tips
+    
+    return recommendations
+
+
+@stay_router.get("/trip-planner/options")
+async def get_trip_planner_options():
+    """Get available options for trip planner filters"""
+    cities = await db.stay_properties.distinct("city", {"status": "live"})
+    
+    trip_types = [
+        {"id": "beach", "name": "Beach Getaway", "icon": "🏖️"},
+        {"id": "mountain", "name": "Mountain Retreat", "icon": "🏔️"},
+        {"id": "forest", "name": "Forest Escape", "icon": "🌲"},
+        {"id": "road_trip", "name": "Road Trip", "icon": "🚗"},
+        {"id": "weekend", "name": "Weekend Break", "icon": "🌅"},
+        {"id": "luxury", "name": "Luxury Stay", "icon": "✨"}
+    ]
+    
+    return {
+        "cities": sorted(cities),
+        "trip_types": trip_types
+    }
+
+
 # ==================== ADMIN ROUTES ====================
 
 # --- TAB 1: Property Basics ---
