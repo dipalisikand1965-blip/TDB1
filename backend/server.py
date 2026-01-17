@@ -61,6 +61,11 @@ from pricing_routes import (
     set_pricing_db,
     set_pricing_admin_verify
 )
+from pillar_reports import (
+    router as pillar_reports_router,
+    set_pillar_reports_db,
+    set_pillar_reports_admin_verify
+)
 from restaurant_discovery import (
     router as restaurant_discovery_router,
     set_restaurant_scraper_db,
