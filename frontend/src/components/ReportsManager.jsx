@@ -540,6 +540,8 @@ const ReportsManager = ({ authHeaders }) => {
         <TabsList className="bg-white border flex-wrap h-auto p-1">
           <TabsTrigger value="executive" className="gap-1"><BarChart3 className="w-4 h-4" /> Executive</TabsTrigger>
           <TabsTrigger value="pillars" className="gap-1"><Layers className="w-4 h-4" /> 📊 Pillars</TabsTrigger>
+          <TabsTrigger value="partners" className="gap-1"><Building className="w-4 h-4" /> 🤝 Partners</TabsTrigger>
+          <TabsTrigger value="mira" className="gap-1"><Heart className="w-4 h-4" /> 🤖 Mira AI</TabsTrigger>
           <TabsTrigger value="revenue" className="gap-1"><DollarSign className="w-4 h-4" /> Revenue</TabsTrigger>
           <TabsTrigger value="autoship" className="gap-1"><RefreshCw className="w-4 h-4" /> Autoship</TabsTrigger>
           <TabsTrigger value="products" className="gap-1"><Package className="w-4 h-4" /> Products</TabsTrigger>
