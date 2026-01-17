@@ -48,24 +48,32 @@ const DinePage = () => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  // Fetch restaurants from API
+  // Fetch restaurants and bundles from API
   useEffect(() => {
-    const fetchRestaurants = async () => {
+    const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${API_URL}/api/dine/restaurants`);
-        if (response.ok) {
-          const data = await response.json();
+        // Fetch restaurants
+        const restaurantsRes = await fetch(`${API_URL}/api/dine/restaurants`);
+        if (restaurantsRes.ok) {
+          const data = await restaurantsRes.json();
           setRestaurants(data.restaurants || []);
           setFilteredRestaurants(data.restaurants || []);
         }
+        
+        // Fetch dine bundles
+        const bundlesRes = await fetch(`${API_URL}/api/dine/bundles`);
+        if (bundlesRes.ok) {
+          const bundlesData = await bundlesRes.json();
+          setBundles(bundlesData.bundles || []);
+        }
       } catch (error) {
-        console.error('Error fetching restaurants:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchRestaurants();
+    fetchData();
   }, []);
 
   // Get unique cities
