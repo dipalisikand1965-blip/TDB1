@@ -43,6 +43,23 @@
 - 3-step booking request wizard (Guest Details → Pet Profile → Stay Details)
 - Request-based booking model (concierge handles)
 
+**Stay Essentials (Products/Bundles)** ✅ (FIXED - Jan 17, 2026):
+- 8 curated travel bundles displayed in "Stay Essentials" section
+- Bundle types: Weekend Getaway Kit, Beach Pawcation Pack, Mountain Adventure Bundle, Road Trip Essentials, First Stay Starter Pack, Calm Traveler Kit, Luxury Stay Collection, Hygiene Hero Kit
+- Discount badges showing % OFF (15-26% discounts)
+- "Featured" badges for promoted bundles
+- Bundle detail modal showing included items and pricing
+- Add to Cart functionality
+- API: `GET /api/stay/products/bundles` - with category and featured filters
+
+**Pawcation Socials (Events)** ✅ (FIXED - Jan 17, 2026):
+- 3 sample events: Sunset Beach Pawty, Mountain Trail Pack Walk, Pawcation Photo Walk
+- Event types: sunset_social, trail_pack, photo_walk
+- FREE badge for complimentary events
+- Event detail modal with registration form
+- Registration creates notification for host
+- API: `GET /api/stay/social/events` - returns events with property info
+
 **Paw Rating System** (5 categories, 0-5 scale):
 - 🐾 Comfort (beds, bowls, space)
 - 🛡️ Safety (cleaning, hygiene, policies)
@@ -63,6 +80,9 @@ Pet Menu, Off-leash area, Pet sitter, Grooming, Vet on call, Trails, Beach acces
 **API Endpoints**:
 - `GET /api/stay/properties` - Public property listing with filters
 - `GET /api/stay/properties/{id}` - Single property details
+- `GET /api/stay/products/bundles` - Stay product bundles with filters
+- `GET /api/stay/social/events` - Pawcation social events
+- `POST /api/stay/social/events/{id}/register` - Event registration
 - `POST /api/stay/booking-request` - Create booking request
 - `POST /api/stay/report-mismatch` - Report policy mismatch
 - `GET/POST/PUT/DELETE /api/admin/stay/properties/*` - Admin CRUD
@@ -70,6 +90,7 @@ Pet Menu, Off-leash area, Pet sitter, Grooming, Vet on call, Trails, Beach acces
 - `GET/PUT /api/admin/stay/mismatch-reports/*` - Issue management
 - `GET /api/admin/stay/stats` - Dashboard statistics
 - `POST /api/admin/stay/seed` - Seed initial 32 hotels
+- `POST /api/admin/stay/seed-bundles` - Seed 8 product bundles
 
 ### 1. Multi-Pillar Product Classification System ✅
 - Products assignable to multiple Pillars (Celebrate, Dine, Stay, Travel, Care)
