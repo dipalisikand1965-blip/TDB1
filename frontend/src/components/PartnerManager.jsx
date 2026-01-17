@@ -391,6 +391,29 @@ const PartnerManager = ({ getAuthHeader }) => {
                   day: 'numeric', month: 'long', year: 'numeric'
                 })}
               </div>
+              
+              {/* Concierge Notes Section */}
+              <div className="border-t pt-4">
+                <Label className="text-gray-700 font-semibold flex items-center gap-2 mb-2">
+                  📝 Concierge Notes
+                  <span className="text-xs font-normal text-gray-400">(Internal use only)</span>
+                </Label>
+                <Textarea
+                  value={conciergeNotes}
+                  onChange={(e) => setConciergeNotes(e.target.value)}
+                  placeholder="Add internal notes about this partner application... (e.g., follow-up dates, special requirements, call notes)"
+                  className="min-h-[100px] mb-2"
+                />
+                <Button 
+                  size="sm" 
+                  onClick={() => saveConciergeNotes(selectedApp.id)}
+                  disabled={updating}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  {updating ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
+                  Save Notes
+                </Button>
+              </div>
             </div>
           )}
           
