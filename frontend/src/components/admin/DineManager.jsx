@@ -182,7 +182,87 @@ const DineManager = ({ credentials }) => {
     if (activeTab === 'reservations') fetchReservations();
     else if (activeTab === 'visits') fetchVisits();
     else if (activeTab === 'meetups') fetchMeetups();
+    else if (activeTab === 'bundles') fetchBundles();
   }, [activeTab, reservationFilter, visitFilter, meetupFilter]);
+  
+  // Fetch bundles
+  const fetchBundles = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/admin/dine/bundles`, {
+        headers: { 'Authorization': getAuthHeader() }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setBundles(data.bundles || []);
+        setBundleStats(data.stats || {});
+      }
+    } catch (error) {
+      console.error('Error fetching bundles:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Save bundle
+  const saveBundle = async (bundle) => {
+    try {
+      const isNew = !bundle.id || bundle.id.startsWith('new-');
+      const url = isNew 
+        ? `${API_URL}/api/admin/dine/bundles`
+        : `${API_URL}/api/admin/dine/bundles/${bundle.id}`;
+      
+      const response = await fetch(url, {
+        method: isNew ? 'POST' : 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': getAuthHeader() 
+        },
+        body: JSON.stringify(bundle)
+      });
+      
+      if (response.ok) {
+        fetchBundles();
+        setEditingBundle(null);
+        setIsAddingBundle(false);
+      }
+    } catch (error) {
+      console.error('Error saving bundle:', error);
+    }
+  };
+  
+  // Delete bundle
+  const deleteBundle = async (bundleId) => {
+    if (!confirm('Delete this bundle?')) return;
+    try {
+      const response = await fetch(`${API_URL}/api/admin/dine/bundles/${bundleId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': getAuthHeader() }
+      });
+      if (response.ok) {
+        fetchBundles();
+      }
+    } catch (error) {
+      console.error('Error deleting bundle:', error);
+    }
+  };
+  
+  // Seed bundles
+  const seedBundles = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/dine/bundles/seed`, {
+        method: 'POST',
+        headers: { 'Authorization': getAuthHeader() }
+      });
+      if (response.ok) {
+        const result = await response.json();
+        alert(result.message);
+        fetchBundles();
+      }
+    } catch (error) {
+      console.error('Error seeding bundles:', error);
+    }
+  };
   
   // Update reservation status
   const updateReservationStatus = async (reservationId, newStatus) => {
