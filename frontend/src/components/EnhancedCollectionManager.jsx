@@ -497,17 +497,18 @@ const EnhancedCollectionManager = ({ getAuthHeader }) => {
               
               {/* Sections Tab */}
               <TabsContent value="sections" className="space-y-4 mt-0">
-                <div className="flex justify-between items-center">
-                  <p className="text-sm text-gray-500">{formData.sections.length} sections</p>
-                  <Button size="sm" onClick={addSection}>
+                <div className="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                  <p className="text-sm text-gray-600 font-medium">{formData.sections.length} sections</p>
+                  <Button size="sm" onClick={addSection} className="bg-purple-600 hover:bg-purple-700">
                     <Plus className="w-4 h-4 mr-1" /> Add Section
                   </Button>
                 </div>
                 
                 {formData.sections.length === 0 ? (
-                  <Card className="p-6 text-center border-dashed">
-                    <p className="text-gray-500 mb-3">No sections yet</p>
-                    <Button size="sm" onClick={addSection}>
+                  <Card className="p-8 text-center border-dashed border-2 border-purple-200 bg-purple-50">
+                    <Layers className="w-12 h-12 mx-auto text-purple-400 mb-3" />
+                    <p className="text-gray-600 mb-4">No sections yet. Add your first section to start building your collection!</p>
+                    <Button onClick={addSection} className="bg-purple-600 hover:bg-purple-700">
                       <Plus className="w-4 h-4 mr-1" /> Add First Section
                     </Button>
                   </Card>
