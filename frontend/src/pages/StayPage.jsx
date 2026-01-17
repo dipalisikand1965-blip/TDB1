@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 
 const StayPage = () => {
+  const { addToCart } = useCart();
   const [activeSection, setActiveSection] = useState('stays');
   const [properties, setProperties] = useState([]);
   const [bundles, setBundles] = useState([]);
