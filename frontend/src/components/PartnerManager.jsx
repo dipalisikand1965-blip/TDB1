@@ -122,8 +122,35 @@ const PartnerManager = ({ getAuthHeader }) => {
     }
   };
 
+  const saveConciergeNotes = async (appId) => {
+    setUpdating(true);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/partners/${appId}`, {
+        method: 'PATCH',
+        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ admin_notes: conciergeNotes })
+      });
+      if (res.ok) {
+        // Update local state
+        setApplications(apps => apps.map(a => 
+          a.id === appId ? { ...a, admin_notes: conciergeNotes } : a
+        ));
+        if (selectedApp?.id === appId) {
+          setSelectedApp({ ...selectedApp, admin_notes: conciergeNotes });
+        }
+        alert('Concierge notes saved!');
+      } else {
+        alert('Failed to save notes');
+      }
+    } catch (error) {
+      console.error('Save notes error:', error);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const exportCSV = () => {
-    const headers = ['business_name', 'contact_name', 'email', 'phone', 'partner_type', 'city', 'status', 'created_at'];
+    const headers = ['business_name', 'contact_name', 'email', 'phone', 'partner_type', 'city', 'status', 'admin_notes', 'created_at'];
     const rows = [headers.join(',')];
     
     applications.forEach(app => {
