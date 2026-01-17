@@ -515,30 +515,32 @@ const EnhancedCollectionManager = ({ getAuthHeader }) => {
                 ) : (
                   <div className="space-y-3">
                     {formData.sections.map((section, index) => (
-                      <Card key={section.id || index} className="p-3">
+                      <Card key={section.id || index} className="p-4 hover:shadow-md transition-shadow">
                         <div className="flex items-center gap-3">
-                          <GripVertical className="w-4 h-4 text-gray-400 cursor-move" />
+                          <GripVertical className="w-5 h-5 text-gray-400 cursor-move" />
                           
-                          <div className="flex-1">
-                            <h4 className="font-medium">{section.title}</h4>
-                            <p className="text-xs text-gray-500">
-                              {section.layout} • {section.items?.length || 0} items
+                          <div className="flex-1 cursor-pointer" onClick={() => openSectionEditor(index)}>
+                            <h4 className="font-semibold text-gray-800">{section.title}</h4>
+                            <p className="text-sm text-gray-500">
+                              {section.layout} layout • {section.items?.length || 0} items
                             </p>
                           </div>
                           
-                          <div className="flex items-center gap-1">
-                            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => moveSection(index, 'up')} disabled={index === 0}>
-                              <ArrowUp className="w-4 h-4" />
+                          <div className="flex items-center gap-2">
+                            <Button size="sm" variant="outline" onClick={() => openSectionEditor(index)} className="text-purple-600 border-purple-200 hover:bg-purple-50">
+                              <Edit className="w-4 h-4 mr-1" /> Edit Items
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => moveSection(index, 'down')} disabled={index === formData.sections.length - 1}>
-                              <ArrowDown className="w-4 h-4" />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openSectionEditor(index)}>
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600" onClick={() => deleteSection(index)}>
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                            <div className="flex items-center border-l pl-2 ml-2">
+                              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => moveSection(index, 'up')} disabled={index === 0}>
+                                <ArrowUp className="w-4 h-4" />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => moveSection(index, 'down')} disabled={index === formData.sections.length - 1}>
+                                <ArrowDown className="w-4 h-4" />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => deleteSection(index)}>
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </Card>
