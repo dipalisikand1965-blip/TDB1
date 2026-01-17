@@ -1338,9 +1338,16 @@ const ServiceDesk = ({ authHeaders }) => {
                 >
                   <div className="flex items-start justify-between mb-1">
                     <span className="text-xs font-mono text-gray-500">{ticket.ticket_id}</span>
-                    <Badge className={`text-xs ${URGENCY_COLORS[ticket.urgency]}`}>
-                      {ticket.urgency}
-                    </Badge>
+                    <div className="flex items-center gap-1">
+                      {ticket.source && SOURCE_CONFIG[ticket.source] && (
+                        <Badge className={`text-xs ${SOURCE_CONFIG[ticket.source].color}`}>
+                          {SOURCE_CONFIG[ticket.source].icon} {SOURCE_CONFIG[ticket.source].label}
+                        </Badge>
+                      )}
+                      <Badge className={`text-xs ${URGENCY_COLORS[ticket.urgency]}`}>
+                        {ticket.urgency}
+                      </Badge>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">{CATEGORY_ICONS[ticket.category]}</span>
