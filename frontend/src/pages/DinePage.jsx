@@ -5,13 +5,15 @@ import {
   Dog, Cat, ChevronRight, Phone, Globe, Instagram,
   Utensils, Coffee, Pizza, Leaf, Heart, Check, X, AlertCircle,
   Sparkles, ShoppingBag, Truck, Users, Calendar, MessageCircle, Send,
-  Bell, Gift, Cake, User, Mail
+  Bell, Gift, Cake, User, Mail, Package, Percent, PartyPopper
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { API_URL } from '../utils/api';
+import { useCart } from '../context/CartContext';
 
 // Get user from localStorage
 const getUser = () => {
