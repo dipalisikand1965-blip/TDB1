@@ -37,12 +37,12 @@ const ReviewsManager = ({ getAuthHeader }) => {
 
   const updateStatus = async (id, status) => {
     try {
+      const headers = getAuthHeader();
+      headers['Content-Type'] = 'application/json';
+      
       const response = await fetch(`${API_URL}/api/admin/reviews/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': getAuthHeader()
-        },
+        headers,
         body: JSON.stringify({ status })
       });
       if (response.ok) {
