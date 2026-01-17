@@ -768,6 +768,7 @@ const StayPage = () => {
         <BundleDetailsModal 
           bundle={selectedBundle}
           onClose={() => setSelectedBundle(null)}
+          addToCart={addToCart}
         />
       )}
 
