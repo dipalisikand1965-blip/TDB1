@@ -6541,6 +6541,9 @@ async def send_admin_email(to_email: str, subject: str, html_content: str):
 set_admin_email_func(send_admin_email)
 set_partner_email_func(send_admin_email)
 
+# Set database for Stay routes
+set_stay_db(db)
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
