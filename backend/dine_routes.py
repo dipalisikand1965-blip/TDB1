@@ -1862,3 +1862,334 @@ async def admin_get_buddy_stats():
         "match_rate": round(successful_meetups / total_meetups * 100, 1) if total_meetups > 0 else 0,
         "top_buddy_restaurants": top_restaurants
     }
+
+
+# ==================== DINE BUNDLES / PRODUCTS ====================
+
+class DineBundle(BaseModel):
+    """Dine product bundle model"""
+    name: str
+    description: str
+    image: Optional[str] = None
+    bundle_price: float
+    original_price: float
+    category: str  # e.g., "dining_kit", "party_package", "gift_card", "pet_treats"
+    items: List[str] = []  # What's included
+    for_occasion: Optional[str] = None  # birthday, anniversary, casual, etc.
+    discount_percent: Optional[int] = None
+    featured: bool = False
+    active: bool = True
+    stock: Optional[int] = None
+    tags: List[str] = []
+
+
+class DineBundleUpdate(BaseModel):
+    """Partial update for dine bundle"""
+    name: Optional[str] = None
+    description: Optional[str] = None
+    image: Optional[str] = None
+    bundle_price: Optional[float] = None
+    original_price: Optional[float] = None
+    category: Optional[str] = None
+    items: Optional[List[str]] = None
+    for_occasion: Optional[str] = None
+    discount_percent: Optional[int] = None
+    featured: Optional[bool] = None
+    active: Optional[bool] = None
+    stock: Optional[int] = None
+    tags: Optional[List[str]] = None
+
+
+@dine_router.get("/dine/bundles")
+async def get_dine_bundles(
+    category: Optional[str] = None,
+    occasion: Optional[str] = None,
+    featured: Optional[bool] = None
+):
+    """Get all active dine bundles (public)"""
+    query = {"active": True}
+    if category:
+        query["category"] = category
+    if occasion:
+        query["for_occasion"] = occasion
+    if featured is not None:
+        query["featured"] = featured
+    
+    bundles = await db.dine_bundles.find(query, {"_id": 0}).sort("featured", -1).to_list(100)
+    categories = await db.dine_bundles.distinct("category", {"active": True})
+    occasions = await db.dine_bundles.distinct("for_occasion", {"active": True})
+    
+    return {
+        "bundles": bundles,
+        "categories": categories,
+        "occasions": occasions,
+        "total": len(bundles)
+    }
+
+
+@dine_router.get("/dine/bundles/{bundle_id}")
+async def get_dine_bundle(bundle_id: str):
+    """Get a specific dine bundle"""
+    bundle = await db.dine_bundles.find_one({"id": bundle_id}, {"_id": 0})
+    if not bundle:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    return bundle
+
+
+@dine_router.post("/dine/bundles/{bundle_id}/order")
+async def order_dine_bundle(
+    bundle_id: str,
+    customer_name: str = Form(...),
+    customer_email: str = Form(...),
+    customer_phone: str = Form(...),
+    delivery_address: Optional[str] = Form(None),
+    special_instructions: Optional[str] = Form(None),
+    quantity: int = Form(1)
+):
+    """Create an order for a dine bundle"""
+    bundle = await db.dine_bundles.find_one({"id": bundle_id})
+    if not bundle:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    order_id = f"DINE-{uuid.uuid4().hex[:8].upper()}"
+    total_price = bundle["bundle_price"] * quantity
+    
+    order = {
+        "id": order_id,
+        "order_type": "dine_bundle",
+        "bundle_id": bundle_id,
+        "bundle_name": bundle["name"],
+        "bundle_category": bundle.get("category", ""),
+        "quantity": quantity,
+        "unit_price": bundle["bundle_price"],
+        "total_price": total_price,
+        "customer": {
+            "name": customer_name,
+            "email": customer_email,
+            "phone": customer_phone
+        },
+        "delivery_address": delivery_address,
+        "special_instructions": special_instructions,
+        "status": "pending",
+        "payment_status": "unpaid",
+        "pillar": "dine",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.orders.insert_one(order)
+    
+    # Create admin notification
+    await notify_admin(
+        notification_type="new_order",
+        title=f"New Dine Bundle Order",
+        message=f"{customer_name} ordered {quantity}x {bundle['name']} (₹{total_price})",
+        category="dine",
+        related_id=order_id,
+        link_to=f"/admin?tab=orders",
+        priority="high",
+        metadata={"bundle_id": bundle_id, "total": total_price}
+    )
+    
+    # Create service desk ticket
+    try:
+        await create_ticket_from_event(
+            db=db,
+            event_type="dine_bundle_order",
+            event_data={
+                "order_id": order_id,
+                "bundle_name": bundle["name"],
+                "customer_name": customer_name,
+                "customer_email": customer_email,
+                "customer_phone": customer_phone,
+                "total": total_price
+            }
+        )
+    except Exception as e:
+        logger.error(f"Failed to create ticket for dine bundle order: {e}")
+    
+    return {
+        "success": True,
+        "order_id": order_id,
+        "message": f"Order placed successfully for {bundle['name']}",
+        "total": total_price
+    }
+
+
+# ==================== ADMIN: DINE BUNDLES ====================
+
+@dine_router.get("/admin/dine/bundles")
+async def admin_get_dine_bundles(username: str = Depends(verify_admin)):
+    """Get all dine bundles (admin)"""
+    bundles = await db.dine_bundles.find({}, {"_id": 0}).to_list(100)
+    
+    # Get stats
+    total = len(bundles)
+    active = sum(1 for b in bundles if b.get("active", True))
+    featured = sum(1 for b in bundles if b.get("featured", False))
+    
+    return {
+        "bundles": bundles,
+        "stats": {
+            "total": total,
+            "active": active,
+            "inactive": total - active,
+            "featured": featured
+        }
+    }
+
+
+@dine_router.post("/admin/dine/bundles")
+async def admin_create_dine_bundle(
+    bundle: DineBundle,
+    username: str = Depends(verify_admin)
+):
+    """Create a new dine bundle (admin)"""
+    bundle_id = f"dine-bundle-{uuid.uuid4().hex[:8]}"
+    
+    bundle_doc = {
+        "id": bundle_id,
+        **bundle.model_dump(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Calculate discount if not provided
+    if bundle.original_price > bundle.bundle_price and not bundle.discount_percent:
+        bundle_doc["discount_percent"] = int((1 - bundle.bundle_price / bundle.original_price) * 100)
+    
+    await db.dine_bundles.insert_one(bundle_doc)
+    
+    return {"success": True, "bundle": {k: v for k, v in bundle_doc.items() if k != "_id"}}
+
+
+@dine_router.put("/admin/dine/bundles/{bundle_id}")
+async def admin_update_dine_bundle(
+    bundle_id: str,
+    bundle: DineBundleUpdate,
+    username: str = Depends(verify_admin)
+):
+    """Update a dine bundle (admin)"""
+    existing = await db.dine_bundles.find_one({"id": bundle_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    update_data = {k: v for k, v in bundle.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    # Recalculate discount if prices changed
+    new_original = update_data.get("original_price", existing.get("original_price", 0))
+    new_bundle = update_data.get("bundle_price", existing.get("bundle_price", 0))
+    if new_original > new_bundle:
+        update_data["discount_percent"] = int((1 - new_bundle / new_original) * 100)
+    
+    await db.dine_bundles.update_one({"id": bundle_id}, {"$set": update_data})
+    
+    updated = await db.dine_bundles.find_one({"id": bundle_id}, {"_id": 0})
+    return {"success": True, "bundle": updated}
+
+
+@dine_router.delete("/admin/dine/bundles/{bundle_id}")
+async def admin_delete_dine_bundle(
+    bundle_id: str,
+    username: str = Depends(verify_admin)
+):
+    """Delete a dine bundle (admin)"""
+    result = await db.dine_bundles.delete_one({"id": bundle_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    return {"success": True, "message": "Bundle deleted"}
+
+
+@dine_router.post("/admin/dine/bundles/seed")
+async def seed_dine_bundles(username: str = Depends(verify_admin)):
+    """Seed sample dine bundles (admin)"""
+    sample_bundles = [
+        {
+            "id": "dine-bundle-birthday",
+            "name": "Pawty Birthday Package",
+            "description": "Complete birthday celebration kit for your furry friend! Includes doggy cake, treats, party hats, and decoration.",
+            "image": "https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=800",
+            "bundle_price": 2499,
+            "original_price": 3200,
+            "category": "party_package",
+            "items": ["Birthday Cake (500g)", "Gourmet Treats Pack", "Party Hat Set", "Paw Print Napkins", "Birthday Bandana"],
+            "for_occasion": "birthday",
+            "discount_percent": 22,
+            "featured": True,
+            "active": True,
+            "tags": ["birthday", "celebration", "party"]
+        },
+        {
+            "id": "dine-bundle-dining-kit",
+            "name": "Fine Dining Kit",
+            "description": "Everything you need for dining out with your pet. Portable bowl, treat pouch, and wipes.",
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "bundle_price": 899,
+            "original_price": 1200,
+            "category": "dining_kit",
+            "items": ["Collapsible Travel Bowl", "Treat Pouch", "Pet Wipes (20 pack)", "Portable Water Bottle"],
+            "for_occasion": "casual",
+            "discount_percent": 25,
+            "featured": True,
+            "active": True,
+            "tags": ["dining", "travel", "essentials"]
+        },
+        {
+            "id": "dine-bundle-treats",
+            "name": "Gourmet Treats Box",
+            "description": "A curated selection of vet-approved gourmet treats for your furry foodie.",
+            "image": "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=800",
+            "bundle_price": 699,
+            "original_price": 900,
+            "category": "pet_treats",
+            "items": ["Chicken Jerky (100g)", "Peanut Butter Biscuits", "Freeze-dried Liver", "Dental Chews"],
+            "for_occasion": "any",
+            "discount_percent": 22,
+            "featured": False,
+            "active": True,
+            "tags": ["treats", "gourmet", "healthy"]
+        },
+        {
+            "id": "dine-bundle-anniversary",
+            "name": "Adoption Anniversary Special",
+            "description": "Celebrate the day they came into your life! Special treats, toys, and a photo frame.",
+            "image": "https://images.unsplash.com/photo-1544568100-847a948585b9?w=800",
+            "bundle_price": 1599,
+            "original_price": 2000,
+            "category": "party_package",
+            "items": ["Mini Celebration Cake", "Premium Treats Hamper", "Squeaky Toy", "Paw Print Photo Frame"],
+            "for_occasion": "anniversary",
+            "discount_percent": 20,
+            "featured": True,
+            "active": True,
+            "tags": ["anniversary", "adoption", "celebration"]
+        },
+        {
+            "id": "dine-bundle-gift",
+            "name": "Pet Parent Gift Card",
+            "description": "Give the gift of choice! Redeemable at any TDC partner restaurant.",
+            "image": "https://images.unsplash.com/photo-1513267048331-5611cad62e41?w=800",
+            "bundle_price": 1000,
+            "original_price": 1000,
+            "category": "gift_card",
+            "items": ["₹1000 Gift Voucher", "Valid at 50+ partner restaurants"],
+            "for_occasion": "gift",
+            "discount_percent": 0,
+            "featured": False,
+            "active": True,
+            "tags": ["gift", "voucher", "restaurant"]
+        }
+    ]
+    
+    # Check existing
+    existing_count = await db.dine_bundles.count_documents({})
+    if existing_count > 0:
+        return {"message": f"Bundles already exist ({existing_count}). Skipping seed.", "seeded": 0}
+    
+    for bundle in sample_bundles:
+        bundle["created_at"] = datetime.now(timezone.utc).isoformat()
+        bundle["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.dine_bundles.insert_one(bundle)
+    
+    return {"message": "Dine bundles seeded successfully", "seeded": len(sample_bundles)}
