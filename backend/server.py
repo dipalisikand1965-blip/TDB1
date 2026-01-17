@@ -56,6 +56,11 @@ from partner_routes import (
     set_partner_db,
     set_partner_admin_verify
 )
+from pricing_routes import (
+    router as pricing_router,
+    set_pricing_db,
+    set_pricing_admin_verify
+)
 from restaurant_discovery import (
     router as restaurant_discovery_router,
     set_restaurant_scraper_db,
