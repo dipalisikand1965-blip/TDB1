@@ -491,27 +491,6 @@ async def get_stay_report(period: str = "this_month"):
         "by_property_type": [{"type": k, **v} for k, v in sorted(by_type.items(), key=lambda x: x[1]["bookings"], reverse=True)],
         "by_city": [{"city": k, **v} for k, v in sorted(by_city.items(), key=lambda x: x[1]["bookings"], reverse=True)][:10]
     }
-    
-    top_properties.sort(key=lambda x: x["revenue"], reverse=True)
-    
-    total_revenue = sum(b.get("total", 0) for b in bookings)
-    total_commission = sum(p["estimated_commission"] for p in top_properties)
-    
-    return {
-        "pillar": "stay",
-        "period": period,
-        "status": "active" if stays else "coming_soon",
-        "metrics": {
-            "total_bookings": len(bookings),
-            "total_revenue": round(total_revenue, 2),
-            "total_nights": sum(b.get("nights", 1) for b in bookings),
-            "estimated_commission": round(total_commission, 2),
-            "properties_count": len(stays),
-            "avg_booking_value": round(total_revenue / len(bookings), 2) if bookings else 0
-        },
-        "top_properties": top_properties[:10],
-        "daily_trend": []  # Add if needed
-    }
 
 
 @router.get("/comparison")
