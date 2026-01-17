@@ -141,8 +141,9 @@ async def get_pillar_summary(period: str = "this_month"):
                 "bookings": stay_count,
                 "revenue": round(stay_revenue, 2),
                 "estimated_commission": round(stay_commission, 2),
-                "properties_count": len(stays),
-                "status": "active" if stays else "coming_soon"
+                "properties_count": len(stay_properties),
+                "live_properties": len(stay_properties),
+                "status": "active" if stay_properties else "coming_soon"
             },
             "travel": {
                 "name": "Travel",
