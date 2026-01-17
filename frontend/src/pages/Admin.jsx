@@ -14,6 +14,7 @@ import ReportsManager from '../components/ReportsManager';
 import PillarCategoryManager from '../components/PillarCategoryManager';
 import EnhancedCollectionManager from '../components/EnhancedCollectionManager';
 import PartnerManager from '../components/PartnerManager';
+import PricingHub from '../components/PricingHub';
 import { DashboardTab, OrdersTab, MembersTab, ChatsTab, DineManager, ServiceDesk, ProductTagsManager } from '../components/admin';
 import NotificationBell from '../components/admin/NotificationBell';
 import { API_URL } from '../utils/api';
