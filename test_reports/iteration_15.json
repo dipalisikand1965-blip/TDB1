@@ -26,8 +26,7 @@
     "/app/test_reports/pytest/pytest_admin_notifications.xml"
   ],
   "action_items": [
-    "FIX (LOW): Reorder routes in server.py - move /admin/notifications/clear-old before /admin/notifications/{notification_id}",
-    "FIX (LOW): Add 'group' class to notification item div in NotificationBell.jsx to enable hover-visible delete button"
+    "FIX (LOW): Reorder routes in server.py - move /admin/notifications/clear-old before /admin/notifications/{notification_id}"
   ],
   "critical_code_review_comments": [
     "Route ordering in FastAPI: Static routes should be defined before parameterized routes to avoid matching issues",
