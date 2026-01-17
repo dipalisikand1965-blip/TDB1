@@ -1200,4 +1200,386 @@ const BookingRequestModal = ({ property, onClose }) => {
   );
 };
 
+// Bundle Details Modal Component
+const BundleDetailsModal = ({ bundle, onClose }) => {
+  const [loading, setLoading] = useState(false);
+  const [added, setAdded] = useState(false);
+
+  const handleAddToCart = async () => {
+    setLoading(true);
+    try {
+      // For now, just simulate adding to cart
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setAdded(true);
+      setTimeout(() => setAdded(false), 2000);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <Card className="max-w-2xl w-full max-h-[90vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+        {/* Header Image */}
+        <div className="relative h-48">
+          <img 
+            src={bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800'}
+            alt={bundle.name}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="absolute top-4 right-4 text-white hover:bg-white/20"
+            onClick={onClose}
+          >
+            <X className="w-6 h-6" />
+          </Button>
+          
+          {bundle.discount_percent > 0 && (
+            <div className="absolute top-4 left-4 flex items-center gap-1 px-3 py-1 bg-red-500 rounded-full text-sm font-bold text-white">
+              <Percent className="w-4 h-4" /> {Math.round(bundle.discount_percent)}% OFF
+            </div>
+          )}
+          
+          <div className="absolute bottom-4 left-4 text-white">
+            <h2 className="text-2xl font-bold">{bundle.name}</h2>
+            <p className="text-sm opacity-90 capitalize">{bundle.category?.replace(/_/g, ' ')} Bundle</p>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-12rem)]">
+          <p className="text-gray-600 mb-4">{bundle.description}</p>
+          
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {bundle.tags?.map((tag, idx) => (
+              <span key={idx} className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm">
+                {tag}
+              </span>
+            ))}
+          </div>
+          
+          {/* Trip Types */}
+          {bundle.for_trip_type?.length > 0 && (
+            <div className="mb-4">
+              <h4 className="font-semibold text-gray-700 mb-2">Perfect for:</h4>
+              <div className="flex flex-wrap gap-2">
+                {bundle.for_trip_type.map((trip, idx) => (
+                  <span key={idx} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm capitalize">
+                    {trip.replace(/_/g, ' ')}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Items in Bundle */}
+          <div className="mt-4">
+            <h4 className="font-semibold text-gray-700 mb-3">What's Included ({bundle.items?.length} items)</h4>
+            <div className="space-y-2">
+              {bundle.items?.map((item, idx) => (
+                <div key={idx} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span className="text-sm text-gray-700">{item.name}</span>
+                    {item.quantity > 1 && (
+                      <span className="text-xs bg-gray-100 px-2 py-0.5 rounded">x{item.quantity}</span>
+                    )}
+                  </div>
+                  <span className="text-sm text-gray-500">₹{item.price}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Pricing */}
+          <div className="mt-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Bundle Price</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-3xl font-bold text-green-600">₹{bundle.bundle_price}</span>
+                  {bundle.original_price > bundle.bundle_price && (
+                    <span className="text-lg text-gray-400 line-through">₹{bundle.original_price}</span>
+                  )}
+                </div>
+                <p className="text-sm text-green-600">You save ₹{bundle.original_price - bundle.bundle_price}</p>
+              </div>
+              <Button 
+                className={`px-6 py-3 ${added ? 'bg-green-600' : 'bg-amber-500 hover:bg-amber-600'}`}
+                onClick={handleAddToCart}
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : added ? (
+                  <><CheckCircle className="w-5 h-5 mr-2" /> Added!</>
+                ) : (
+                  <><ShoppingBag className="w-5 h-5 mr-2" /> Add to Cart</>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+// Social Event Details Modal Component
+const SocialDetailsModal = ({ social, onClose }) => {
+  const [loading, setLoading] = useState(false);
+  const [registered, setRegistered] = useState(false);
+  const [formData, setFormData] = useState({
+    member_name: '',
+    member_email: '',
+    member_phone: '',
+    pet_name: '',
+    pet_breed: '',
+    num_pets: 1,
+    special_requirements: ''
+  });
+
+  const handleRegister = async () => {
+    if (!formData.member_name || !formData.member_email || !formData.pet_name) {
+      alert('Please fill in required fields');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/stay/social/events/${social.id}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          social_id: social.id,
+          ...formData
+        })
+      });
+      
+      if (response.ok) {
+        setRegistered(true);
+      } else {
+        const error = await response.json();
+        alert(error.detail || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Error registering:', error);
+      alert('Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (registered) {
+    return (
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+        <Card className="max-w-md w-full p-8 text-center" onClick={e => e.stopPropagation()}>
+          <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <PartyPopper className="w-8 h-8 text-purple-600" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-2">You're In!</h3>
+          <p className="text-gray-600 mb-6">
+            You've successfully registered for <strong>{social.title}</strong>. 
+            We'll send you event details and reminders via email.
+          </p>
+          <Button className="w-full bg-purple-600 hover:bg-purple-700" onClick={onClose}>
+            Done
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  const spotsLeft = (social.max_participants || 10) - (social.current_participants || 0);
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <Card className="max-w-2xl w-full max-h-[90vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+        {/* Header Image */}
+        <div className="relative h-44">
+          <img 
+            src={social.image || social.property_image || 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=800'}
+            alt={social.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="absolute top-4 right-4 text-white hover:bg-white/20"
+            onClick={onClose}
+          >
+            <X className="w-6 h-6" />
+          </Button>
+          
+          <div className="absolute top-4 left-4 flex items-center gap-2">
+            <span className="px-3 py-1 bg-purple-600 rounded-full text-sm font-medium text-white capitalize">
+              {social.event_type?.replace(/_/g, ' ')}
+            </span>
+            {social.price_per_pet === 0 && (
+              <span className="px-3 py-1 bg-green-500 rounded-full text-sm font-bold text-white">FREE</span>
+            )}
+          </div>
+          
+          <div className="absolute bottom-4 left-4 text-white">
+            <h2 className="text-xl font-bold">{social.title}</h2>
+            <p className="text-sm opacity-90 flex items-center gap-1">
+              <MapPin className="w-3 h-3" /> {social.property_name}, {social.property_city}
+            </p>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-11rem)]">
+          {/* Event Info */}
+          <div className="flex flex-wrap items-center gap-4 mb-4 pb-4 border-b">
+            <div className="flex items-center gap-2 text-gray-600">
+              <Calendar className="w-4 h-4" />
+              <span>{social.event_date}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <Clock className="w-4 h-4" />
+              <span>{social.event_time}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <Users className="w-4 h-4" />
+              <span>{spotsLeft} spots left</span>
+            </div>
+            {social.price_per_pet > 0 && (
+              <div className="flex items-center gap-1 font-semibold text-purple-600">
+                ₹{social.price_per_pet}/pet
+              </div>
+            )}
+          </div>
+          
+          <p className="text-gray-600 mb-4">{social.description}</p>
+          
+          {/* Activities */}
+          {social.activities?.length > 0 && (
+            <div className="mb-4">
+              <h4 className="font-semibold text-gray-700 mb-2">Activities</h4>
+              <div className="flex flex-wrap gap-2">
+                {social.activities.map((activity, idx) => (
+                  <span key={idx} className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
+                    {activity}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* What to Bring */}
+          {social.what_to_bring?.length > 0 && (
+            <div className="mb-4">
+              <h4 className="font-semibold text-gray-700 mb-2">What to Bring</h4>
+              <ul className="grid grid-cols-2 gap-1">
+                {social.what_to_bring.map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500" /> {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {/* Registration Form */}
+          <div className="mt-6 p-4 bg-purple-50 rounded-lg">
+            <h4 className="font-semibold text-purple-800 mb-3">Register for this Event</h4>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-medium text-gray-600">Your Name *</label>
+                <Input 
+                  value={formData.member_name}
+                  onChange={e => setFormData({...formData, member_name: e.target.value})}
+                  placeholder="Full name"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600">Email *</label>
+                <Input 
+                  type="email"
+                  value={formData.member_email}
+                  onChange={e => setFormData({...formData, member_email: e.target.value})}
+                  placeholder="your@email.com"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600">Phone</label>
+                <Input 
+                  value={formData.member_phone}
+                  onChange={e => setFormData({...formData, member_phone: e.target.value})}
+                  placeholder="+91 XXXXX XXXXX"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600">Pet Name *</label>
+                <Input 
+                  value={formData.pet_name}
+                  onChange={e => setFormData({...formData, pet_name: e.target.value})}
+                  placeholder="Your pet's name"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600">Pet Breed</label>
+                <Input 
+                  value={formData.pet_breed}
+                  onChange={e => setFormData({...formData, pet_breed: e.target.value})}
+                  placeholder="e.g., Golden Retriever"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600">Number of Pets</label>
+                <Input 
+                  type="number"
+                  min={1}
+                  max={3}
+                  value={formData.num_pets}
+                  onChange={e => setFormData({...formData, num_pets: parseInt(e.target.value) || 1})}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            
+            <div className="mt-3">
+              <label className="text-xs font-medium text-gray-600">Special Requirements</label>
+              <textarea 
+                value={formData.special_requirements}
+                onChange={e => setFormData({...formData, special_requirements: e.target.value})}
+                className="w-full p-2 border rounded-lg text-sm mt-1"
+                rows={2}
+                placeholder="Any special needs or requirements..."
+              />
+            </div>
+            
+            <Button 
+              className="w-full mt-4 bg-purple-600 hover:bg-purple-700"
+              onClick={handleRegister}
+              disabled={loading || spotsLeft <= 0}
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : spotsLeft <= 0 ? (
+                'Event Full'
+              ) : (
+                <>Register Now {social.price_per_pet > 0 && `- ₹${social.price_per_pet}`}</>
+              )}
+            </Button>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
 export default StayPage;
