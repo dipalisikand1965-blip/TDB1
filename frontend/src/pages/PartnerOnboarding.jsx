@@ -439,7 +439,7 @@ const PartnerOnboarding = () => {
                   </div>
                 )}
                 
-                {formData.partner_type === 'stay' && (
+                {(formData.partner_type === 'pet_hotel' || formData.partner_type === 'pet_boarding') && (
                   <div>
                     <Label>Room/Kennel Capacity</Label>
                     <Input 
