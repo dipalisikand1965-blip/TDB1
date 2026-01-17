@@ -6419,7 +6419,7 @@ os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Set database for admin routes
-set_admin_db(db)
+set_admin_routes_db(db)
 
 # Set database for status engine
 set_status_db(db)
