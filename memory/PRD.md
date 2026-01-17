@@ -32,6 +32,45 @@
 - Eye icon added to admin login form password field
 - Click to toggle between showing/hiding password
 
+### Stay Pillar - Pet-Friendly Hotel Booking ✅ (NEW - Jan 17, 2026)
+**Vision**: "Your dog's second home — everywhere."
+
+**Public Features** (`/stay`):
+- 32 curated pet-friendly hotels across India (Goa, Rajasthan, Kerala, Himachal, Uttarakhand, Maharashtra, Karnataka, Tamil Nadu, Haryana, Andaman, Puducherry)
+- Property cards with images, Paw Ratings, pet fees, badges
+- Filters: City, Property Type, Min Rating, Vibe Tags (Beach, Mountain, Luxury, Quiet, etc.)
+- Property details modal with 4 tabs: Overview, Pet Policy, Paw Rating, Amenities
+- 3-step booking request wizard (Guest Details → Pet Profile → Stay Details)
+- Request-based booking model (concierge handles)
+
+**Paw Rating System** (5 categories, 0-5 scale):
+- 🐾 Comfort (beds, bowls, space)
+- 🛡️ Safety (cleaning, hygiene, policies)
+- 🚪 Freedom (areas dogs can access)
+- 💗 Care (grooming, vet support)
+- 🎉 Joy (play zones, activities)
+- Overall = Average of 5 categories
+
+**Property Badges**:
+Pet Menu, Off-leash area, Pet sitter, Grooming, Vet on call, Trails, Beach access
+
+**Admin Console** (5-Tab Structure):
+1. **Properties Tab**: CRUD operations, status management (Draft/Onboarding/Live/Paused/Suspended), search/filter
+2. **Bookings Tab**: View/manage booking requests, status updates (Pending/Contacted/Confirmed/Cancelled/Completed)
+3. **Issues Tab**: Policy mismatch reports, trust controls
+4. **Reports Tab**: By property type, by city breakdowns
+
+**API Endpoints**:
+- `GET /api/stay/properties` - Public property listing with filters
+- `GET /api/stay/properties/{id}` - Single property details
+- `POST /api/stay/booking-request` - Create booking request
+- `POST /api/stay/report-mismatch` - Report policy mismatch
+- `GET/POST/PUT/DELETE /api/admin/stay/properties/*` - Admin CRUD
+- `GET/PUT /api/admin/stay/bookings/*` - Booking management
+- `GET/PUT /api/admin/stay/mismatch-reports/*` - Issue management
+- `GET /api/admin/stay/stats` - Dashboard statistics
+- `POST /api/admin/stay/seed` - Seed initial 32 hotels
+
 ### 1. Multi-Pillar Product Classification System ✅
 - Products assignable to multiple Pillars (Celebrate, Dine, Stay, Travel, Care)
 - Categories within each pillar
