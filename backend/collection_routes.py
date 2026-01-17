@@ -22,6 +22,12 @@ def set_collection_admin_verify(verify_func):
     global verify_admin
     verify_admin = verify_func
 
+def get_admin_user():
+    """Dependency to verify admin - delegates to the verify_admin function set from server.py"""
+    if verify_admin is None:
+        raise HTTPException(status_code=500, detail="Admin verification not configured")
+    return verify_admin
+
 router = APIRouter(prefix="/api/admin/enhanced-collections", tags=["Enhanced Collections"])
 
 # ==================== MODELS ====================
