@@ -1312,6 +1312,22 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
         except Exception as e:
             logger.error(f"Failed to send meetup confirmation: {e}")
     
+    # Create admin notification for meetup request
+    await notify_admin(
+        notification_type="meetup",
+        title=f"🐕 New Pet Buddy Meetup Request",
+        message=f"{requester_info.get('name', 'Someone') if requester_info else 'Someone'} wants to meet at {visit.get('restaurant_name', 'a restaurant')} on {visit.get('date', 'TBD')}",
+        category="dine",
+        related_id=meetup_doc["id"],
+        link_to="/admin?tab=dine&subtab=meetups",
+        priority="normal",
+        metadata={
+            "restaurant": visit.get("restaurant_name"),
+            "requester": requester_info.get("name") if requester_info else None,
+            "date": visit.get("date")
+        }
+    )
+    
     return {"message": "Meetup request sent", "request_id": meetup_doc["id"]}
 
 
