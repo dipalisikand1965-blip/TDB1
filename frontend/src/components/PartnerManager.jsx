@@ -501,20 +501,92 @@ const PartnerManager = ({ getAuthHeader }) => {
                   Save Notes
                 </Button>
               </div>
+
+              {/* Document Verification Section */}
+              {selectedApp.documents && (
+                <div className="border-t pt-4">
+                  <Label className="text-gray-700 font-semibold flex items-center gap-2 mb-3">
+                    📄 Documents
+                  </Label>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">GST Number</span>
+                        {selectedApp.document_verification?.gst_verified ? (
+                          <Badge className="bg-green-100 text-green-700">✓ Verified</Badge>
+                        ) : selectedApp.document_verification?.gst_verified === false ? (
+                          <Badge className="bg-red-100 text-red-700">✗ Rejected</Badge>
+                        ) : (
+                          <Badge className="bg-yellow-100 text-yellow-700">Pending</Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">{selectedApp.documents?.gst_number || 'Not provided'}</p>
+                    </div>
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">PAN Number</span>
+                        {selectedApp.document_verification?.pan_verified ? (
+                          <Badge className="bg-green-100 text-green-700">✓ Verified</Badge>
+                        ) : selectedApp.document_verification?.pan_verified === false ? (
+                          <Badge className="bg-red-100 text-red-700">✗ Rejected</Badge>
+                        ) : (
+                          <Badge className="bg-yellow-100 text-yellow-700">Pending</Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">{selectedApp.documents?.pan_number || 'Not provided'}</p>
+                    </div>
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <span className="font-medium">Company Turnover</span>
+                      <p className="text-sm text-gray-600 mt-1">{selectedApp.documents?.company_turnover?.replace('_', ' ') || 'Not provided'}</p>
+                    </div>
+                    {selectedApp.additional_cities && (
+                      <div className="p-3 bg-gray-50 rounded-lg">
+                        <span className="font-medium">Additional Cities</span>
+                        <p className="text-sm text-gray-600 mt-1">{selectedApp.additional_cities}</p>
+                      </div>
+                    )}
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => {
+                      setDocVerification({
+                        gst: selectedApp.document_verification?.gst_verified || null,
+                        pan: selectedApp.document_verification?.pan_verified || null,
+                        notes: selectedApp.document_verification?.notes || ''
+                      });
+                      setShowDocVerify(true);
+                    }}
+                    className="mt-3"
+                  >
+                    <FileCheck className="w-4 h-4 mr-1" /> Verify Documents
+                  </Button>
+                </div>
+              )}
             </div>
           )}
           
-          <DialogFooter className="flex gap-2">
+          <DialogFooter className="flex flex-wrap gap-2">
             {selectedApp?.status === 'pending' && (
               <>
-                <Button variant="outline" onClick={() => { updateStatus(selectedApp.id, 'reviewing'); }}>
-                  Mark as Reviewing
+                <Button variant="outline" onClick={() => openActionDialog('request_info')}>
+                  <AlertCircle className="w-4 h-4 mr-1" /> Request Info
                 </Button>
-                <Button className="bg-green-600" onClick={() => { updateStatus(selectedApp.id, 'approved'); }}>
-                  Approve
+                <Button className="bg-green-600" onClick={() => openActionDialog('approve')}>
+                  <CheckCircle className="w-4 h-4 mr-1" /> Approve
                 </Button>
-                <Button variant="destructive" onClick={() => { updateStatus(selectedApp.id, 'rejected'); }}>
-                  Reject
+                <Button variant="destructive" onClick={() => openActionDialog('reject')}>
+                  <XCircle className="w-4 h-4 mr-1" /> Reject
+                </Button>
+              </>
+            )}
+            {selectedApp?.status === 'reviewing' && (
+              <>
+                <Button className="bg-green-600" onClick={() => openActionDialog('approve')}>
+                  <CheckCircle className="w-4 h-4 mr-1" /> Approve
+                </Button>
+                <Button variant="destructive" onClick={() => openActionDialog('reject')}>
+                  <XCircle className="w-4 h-4 mr-1" /> Reject
                 </Button>
               </>
             )}
@@ -523,6 +595,155 @@ const PartnerManager = ({ getAuthHeader }) => {
                 Convert to Listing
               </Button>
             )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Action Dialog (Approve/Reject/Request Info) */}
+      <Dialog open={showActionDialog} onOpenChange={setShowActionDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {actionType === 'approve' && '✅ Approve Partner'}
+              {actionType === 'reject' && '❌ Reject Partner'}
+              {actionType === 'request_info' && '📋 Request More Information'}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>
+                {actionType === 'approve' && 'Approval Message (optional)'}
+                {actionType === 'reject' && 'Rejection Reason *'}
+                {actionType === 'request_info' && 'What information do you need? *'}
+              </Label>
+              <Textarea
+                value={actionReason}
+                onChange={(e) => setActionReason(e.target.value)}
+                placeholder={
+                  actionType === 'approve' ? 'Add a message for the partner...' :
+                  actionType === 'reject' ? 'Explain why the application was rejected...' :
+                  'List the documents or information you need...'
+                }
+                className="min-h-[100px]"
+              />
+            </div>
+            
+            {actionType === 'approve' && (
+              <div>
+                <Label>Commission Rate (%)</Label>
+                <Input
+                  type="number"
+                  value={actionCommission}
+                  onChange={(e) => setActionCommission(e.target.value)}
+                  placeholder="e.g. 15"
+                  min="0"
+                  max="100"
+                />
+                <p className="text-xs text-gray-500 mt-1">Default commission rate for this partner</p>
+              </div>
+            )}
+            
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <Send className="w-4 h-4 inline mr-1" />
+                An email notification will be sent to <strong>{selectedApp?.email}</strong>
+              </p>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowActionDialog(false)}>Cancel</Button>
+            <Button
+              onClick={processAction}
+              disabled={updating || ((actionType === 'reject' || actionType === 'request_info') && !actionReason)}
+              className={
+                actionType === 'approve' ? 'bg-green-600' :
+                actionType === 'reject' ? 'bg-red-600' :
+                'bg-amber-600'
+              }
+            >
+              {updating ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
+              {actionType === 'approve' && 'Approve Partner'}
+              {actionType === 'reject' && 'Reject Application'}
+              {actionType === 'request_info' && 'Send Request'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Document Verification Dialog */}
+      <Dialog open={showDocVerify} onOpenChange={setShowDocVerify}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>📄 Verify Documents</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="p-4 border rounded-lg">
+              <Label>GST Certificate</Label>
+              <p className="text-sm text-gray-600 mb-2">{selectedApp?.documents?.gst_number || 'Not provided'}</p>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant={docVerification.gst === true ? 'default' : 'outline'}
+                  className={docVerification.gst === true ? 'bg-green-600' : ''}
+                  onClick={() => setDocVerification({...docVerification, gst: true})}
+                >
+                  <CheckCircle className="w-4 h-4 mr-1" /> Verify
+                </Button>
+                <Button
+                  size="sm"
+                  variant={docVerification.gst === false ? 'destructive' : 'outline'}
+                  onClick={() => setDocVerification({...docVerification, gst: false})}
+                >
+                  <XCircle className="w-4 h-4 mr-1" /> Reject
+                </Button>
+              </div>
+            </div>
+            
+            <div className="p-4 border rounded-lg">
+              <Label>PAN Card</Label>
+              <p className="text-sm text-gray-600 mb-2">{selectedApp?.documents?.pan_number || 'Not provided'}</p>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant={docVerification.pan === true ? 'default' : 'outline'}
+                  className={docVerification.pan === true ? 'bg-green-600' : ''}
+                  onClick={() => setDocVerification({...docVerification, pan: true})}
+                >
+                  <CheckCircle className="w-4 h-4 mr-1" /> Verify
+                </Button>
+                <Button
+                  size="sm"
+                  variant={docVerification.pan === false ? 'destructive' : 'outline'}
+                  onClick={() => setDocVerification({...docVerification, pan: false})}
+                >
+                  <XCircle className="w-4 h-4 mr-1" /> Reject
+                </Button>
+              </div>
+            </div>
+            
+            <div>
+              <Label>Verification Notes</Label>
+              <Textarea
+                value={docVerification.notes}
+                onChange={(e) => setDocVerification({...docVerification, notes: e.target.value})}
+                placeholder="Add notes about document verification..."
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDocVerify(false)}>Cancel</Button>
+            <Button
+              onClick={verifyDocuments}
+              disabled={updating || (docVerification.gst === null && docVerification.pan === null)}
+              className="bg-purple-600"
+            >
+              {updating ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
+              Save Verification
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
