@@ -4413,6 +4413,8 @@ async def get_all_orders(
     status: Optional[str] = None,
     city: Optional[str] = None,
     email: Optional[str] = None,
+    pillar: Optional[str] = None,
+    source: Optional[str] = None,
     limit: int = 100
 ):
     """Get all orders with filtering"""
@@ -4423,6 +4425,10 @@ async def get_all_orders(
         query["delivery.city"] = city
     if email:
         query["customer.email"] = email
+    if pillar:
+        query["pillar"] = pillar
+    if source:
+        query["source"] = source
     
     orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
     total = await db.orders.count_documents(query)
