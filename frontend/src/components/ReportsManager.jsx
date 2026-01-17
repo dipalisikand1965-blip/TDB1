@@ -503,6 +503,7 @@ const ReportsManager = ({ authHeaders }) => {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-white border flex-wrap h-auto p-1">
           <TabsTrigger value="executive" className="gap-1"><BarChart3 className="w-4 h-4" /> Executive</TabsTrigger>
+          <TabsTrigger value="pillars" className="gap-1"><Layers className="w-4 h-4" /> 📊 Pillars</TabsTrigger>
           <TabsTrigger value="revenue" className="gap-1"><DollarSign className="w-4 h-4" /> Revenue</TabsTrigger>
           <TabsTrigger value="autoship" className="gap-1"><RefreshCw className="w-4 h-4" /> Autoship</TabsTrigger>
           <TabsTrigger value="products" className="gap-1"><Package className="w-4 h-4" /> Products</TabsTrigger>
@@ -512,6 +513,267 @@ const ReportsManager = ({ authHeaders }) => {
           <TabsTrigger value="reviews" className="gap-1"><Star className="w-4 h-4" /> Reviews</TabsTrigger>
           <TabsTrigger value="financial" className="gap-1"><TrendingUp className="w-4 h-4" /> Financial</TabsTrigger>
         </TabsList>
+
+        {/* Pillar Reports Tab */}
+        <TabsContent value="pillars">
+          <div className="space-y-6">
+            {/* Pillar Summary Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              {pillarSummary?.pillars && Object.entries(pillarSummary.pillars).map(([key, pillar]) => (
+                <Card 
+                  key={key} 
+                  className={`p-4 cursor-pointer transition-all hover:shadow-lg ${selectedPillar === key ? 'ring-2 ring-purple-500' : ''}`}
+                  onClick={() => setSelectedPillar(key)}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">{pillar.icon}</span>
+                    <span className="font-semibold">{pillar.name}</span>
+                  </div>
+                  {key === 'celebrate' && (
+                    <>
+                      <p className="text-2xl font-bold text-green-600">{formatCurrency(pillar.revenue || 0)}</p>
+                      <p className="text-xs text-gray-500">{pillar.orders || 0} orders</p>
+                    </>
+                  )}
+                  {key === 'dine' && (
+                    <>
+                      <p className="text-2xl font-bold text-orange-600">{pillar.bookings || 0}</p>
+                      <p className="text-xs text-gray-500">bookings</p>
+                      <p className="text-sm text-green-600">{formatCurrency(pillar.estimated_commission || 0)} commission</p>
+                    </>
+                  )}
+                  {key === 'stay' && (
+                    <>
+                      <p className="text-2xl font-bold text-blue-600">{pillar.bookings || 0}</p>
+                      <p className="text-xs text-gray-500">{pillar.status === 'coming_soon' ? 'Coming Soon' : 'bookings'}</p>
+                    </>
+                  )}
+                  {(key === 'travel' || key === 'care') && (
+                    <p className="text-sm text-gray-400">Coming Soon</p>
+                  )}
+                </Card>
+              ))}
+            </div>
+
+            {/* Totals Bar */}
+            {pillarSummary?.totals && (
+              <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50">
+                <div className="flex flex-wrap justify-around gap-4">
+                  <div className="text-center">
+                    <p className="text-sm text-gray-500">Total Revenue</p>
+                    <p className="text-2xl font-bold text-purple-700">{formatCurrency(pillarSummary.totals.total_revenue)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-500">Total Commission</p>
+                    <p className="text-2xl font-bold text-green-600">{formatCurrency(pillarSummary.totals.total_commission)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-500">Total Bookings</p>
+                    <p className="text-2xl font-bold text-blue-600">{pillarSummary.totals.total_bookings}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-500">Est. Profit</p>
+                    <p className="text-2xl font-bold text-emerald-600">{formatCurrency(pillarSummary.totals.estimated_profit)}</p>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Pillar Sub-tabs */}
+            <Tabs value={selectedPillar} onValueChange={setSelectedPillar}>
+              <TabsList className="bg-gray-100">
+                <TabsTrigger value="summary">📊 Summary</TabsTrigger>
+                <TabsTrigger value="celebrate">🎂 Celebrate</TabsTrigger>
+                <TabsTrigger value="dine">🍽️ Dine</TabsTrigger>
+                <TabsTrigger value="stay">🏨 Stay</TabsTrigger>
+              </TabsList>
+
+              {/* Summary View */}
+              <TabsContent value="summary">
+                {pillarComparison && (
+                  <div className="grid md:grid-cols-2 gap-6 mt-4">
+                    <Card className="p-4">
+                      <h3 className="font-semibold mb-4">Profit by Pillar</h3>
+                      <div className="space-y-3">
+                        {pillarComparison.profit_comparison?.map((item, idx) => (
+                          <div key={idx} className="flex items-center gap-3">
+                            <div className="w-24 text-sm font-medium">{item.pillar}</div>
+                            <div className="flex-1 bg-gray-100 rounded-full h-6 overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-end pr-2"
+                                style={{ width: `${Math.min(item.percentage || 0, 100)}%` }}
+                              >
+                                <span className="text-xs text-white font-medium">{item.percentage || 0}%</span>
+                              </div>
+                            </div>
+                            <div className="w-28 text-right text-sm font-semibold">{formatCurrency(item.value)}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+                    <Card className="p-4">
+                      <h3 className="font-semibold mb-4">Activity by Pillar</h3>
+                      <div className="space-y-3">
+                        {pillarComparison.activity_comparison?.map((item, idx) => (
+                          <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                              <p className="font-medium">{item.pillar}</p>
+                              <p className="text-xs text-gray-500">{item.label}</p>
+                            </div>
+                            <p className="text-2xl font-bold">{item.value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+                    <Card className="p-4 md:col-span-2">
+                      <h3 className="font-semibold mb-4">💡 Insights</h3>
+                      <ul className="space-y-2">
+                        {pillarComparison.insights?.map((insight, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm text-gray-700">
+                            <span className="text-green-500">✓</span>
+                            {insight}
+                          </li>
+                        ))}
+                      </ul>
+                    </Card>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Celebrate Report */}
+              <TabsContent value="celebrate">
+                {celebrateReport && (
+                  <div className="space-y-6 mt-4">
+                    <div className="grid md:grid-cols-4 gap-4">
+                      <MetricCard title="Revenue" value={formatCurrency(celebrateReport.metrics?.total_revenue || 0)} icon={DollarSign} color="green" />
+                      <MetricCard title="Orders" value={celebrateReport.metrics?.total_orders || 0} icon={ShoppingBag} color="blue" />
+                      <MetricCard title="Items Sold" value={celebrateReport.metrics?.items_sold || 0} icon={Package} color="purple" />
+                      <MetricCard title="GST Collected" value={formatCurrency(celebrateReport.metrics?.gst_collected || 0)} icon={TrendingUp} color="orange" />
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <Card className="p-4">
+                        <h3 className="font-semibold mb-4">🏆 Top Products</h3>
+                        <div className="space-y-2">
+                          {celebrateReport.top_products?.slice(0, 8).map((product, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                              <div className="flex items-center gap-2">
+                                <span className="text-gray-400 w-5">{idx + 1}.</span>
+                                <span className="text-sm font-medium truncate max-w-[200px]">{product.name}</span>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-semibold text-green-600">{formatCurrency(product.revenue)}</p>
+                                <p className="text-xs text-gray-500">{product.quantity} sold</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </Card>
+                      
+                      <Card className="p-4">
+                        <h3 className="font-semibold mb-4">🏙️ Revenue by City</h3>
+                        <div className="space-y-2">
+                          {celebrateReport.city_breakdown?.slice(0, 8).map((city, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                              <span className="font-medium">{city.city}</span>
+                              <span className="font-semibold text-green-600">{formatCurrency(city.revenue)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </Card>
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Dine Report */}
+              <TabsContent value="dine">
+                {dineReport && (
+                  <div className="space-y-6 mt-4">
+                    <div className="grid md:grid-cols-4 gap-4">
+                      <MetricCard title="Total Bookings" value={dineReport.metrics?.total_bookings || 0} icon={Calendar} color="orange" />
+                      <MetricCard title="Reservations" value={dineReport.metrics?.total_reservations || 0} icon={Utensils} color="blue" />
+                      <MetricCard title="Buddy Visits" value={dineReport.metrics?.total_buddy_visits || 0} icon={Users} color="pink" />
+                      <MetricCard title="Est. Commission" value={formatCurrency(dineReport.metrics?.estimated_commission || 0)} icon={DollarSign} color="green" />
+                    </div>
+                    
+                    <Card className="p-4">
+                      <h3 className="font-semibold mb-4">🍽️ Top Restaurants</h3>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="p-3 text-left">Restaurant</th>
+                              <th className="p-3 text-left">City</th>
+                              <th className="p-3 text-center">Reservations</th>
+                              <th className="p-3 text-center">Buddy Visits</th>
+                              <th className="p-3 text-center">Guests</th>
+                              <th className="p-3 text-right">Commission</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {dineReport.top_restaurants?.map((restaurant, idx) => (
+                              <tr key={idx} className="border-b hover:bg-gray-50">
+                                <td className="p-3 font-medium">{restaurant.name}</td>
+                                <td className="p-3 text-gray-500">{restaurant.city}</td>
+                                <td className="p-3 text-center">{restaurant.reservations}</td>
+                                <td className="p-3 text-center">{restaurant.buddy_visits}</td>
+                                <td className="p-3 text-center">{restaurant.guests}</td>
+                                <td className="p-3 text-right font-semibold text-green-600">{formatCurrency(restaurant.estimated_commission)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </Card>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Stay Report */}
+              <TabsContent value="stay">
+                {stayReport && (
+                  <div className="space-y-6 mt-4">
+                    {stayReport.status === 'coming_soon' ? (
+                      <Card className="p-12 text-center">
+                        <span className="text-6xl mb-4 block">🏨</span>
+                        <h3 className="text-xl font-semibold mb-2">Stay Pillar Coming Soon</h3>
+                        <p className="text-gray-500">Pet hotels, boarding, and daycare features are under development.</p>
+                      </Card>
+                    ) : (
+                      <>
+                        <div className="grid md:grid-cols-4 gap-4">
+                          <MetricCard title="Total Bookings" value={stayReport.metrics?.total_bookings || 0} icon={Calendar} color="blue" />
+                          <MetricCard title="Revenue" value={formatCurrency(stayReport.metrics?.total_revenue || 0)} icon={DollarSign} color="green" />
+                          <MetricCard title="Total Nights" value={stayReport.metrics?.total_nights || 0} icon={Moon} color="purple" />
+                          <MetricCard title="Commission" value={formatCurrency(stayReport.metrics?.estimated_commission || 0)} icon={TrendingUp} color="orange" />
+                        </div>
+                        
+                        <Card className="p-4">
+                          <h3 className="font-semibold mb-4">🏨 Top Properties</h3>
+                          <div className="space-y-2">
+                            {stayReport.top_properties?.map((property, idx) => (
+                              <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                  <p className="font-medium">{property.name}</p>
+                                  <p className="text-xs text-gray-500">{property.city} • {property.nights} nights</p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="font-semibold">{formatCurrency(property.revenue)}</p>
+                                  <p className="text-xs text-green-600">{formatCurrency(property.estimated_commission)} commission</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </Card>
+                      </>
+                    )}
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+          </div>
+        </TabsContent>
 
         {/* Executive Summary */}
         <TabsContent value="executive">
