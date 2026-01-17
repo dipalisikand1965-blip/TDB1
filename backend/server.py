@@ -617,7 +617,8 @@ from user_routes import (
 # Import dine routes (refactored)
 from dine_routes import (
     dine_router,
-    set_database as set_dine_db
+    set_database as set_dine_db,
+    set_admin_notification_handler
 )
 
 # Import ticket routes (Service Desk)
