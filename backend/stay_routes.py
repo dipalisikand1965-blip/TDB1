@@ -1,0 +1,1158 @@
+"""
+STAY Routes for The Doggy Company
+Your dog's second home — everywhere.
+
+Handles:
+- Stay Partner Network (Hotels, Resorts, Villas, Farmstays)
+- Paw Rating System (Comfort, Safety, Freedom, Care, Joy)
+- Booking Requests (Concierge-based)
+- Pet Stay Profiles
+- Pet Menu & Add-ons
+"""
+
+import os
+import logging
+import uuid
+import csv
+import io
+import resend
+from datetime import datetime, timezone
+from typing import Optional, List, Dict, Any
+from fastapi import APIRouter, HTTPException, Depends, File, UploadFile
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field
+from motor.motor_asyncio import AsyncIOMotorDatabase
+import secrets
+
+logger = logging.getLogger(__name__)
+
+# Create routers
+stay_router = APIRouter(prefix="/api/stay", tags=["Stay"])
+stay_admin_router = APIRouter(prefix="/api/admin/stay", tags=["Stay Admin"])
+
+# Database reference
+db: AsyncIOMotorDatabase = None
+
+# Admin credentials
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "woof2025")
+security = HTTPBasic()
+
+# Resend configuration
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
+if RESEND_API_KEY:
+    resend.api_key = RESEND_API_KEY
+
+
+def set_database(database: AsyncIOMotorDatabase):
+    global db
+    db = database
+
+
+def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
+    """Verify admin credentials"""
+    correct_username = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
+    correct_password = secrets.compare_digest(credentials.password, ADMIN_PASSWORD)
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
+
+# ==================== MODELS ====================
+
+class PawRating(BaseModel):
+    """Paw Rating System - 5 categories"""
+    comfort: float = 0  # Beds, bowls, space (0-5)
+    safety: float = 0   # Cleaning, hygiene, policies (0-5)
+    freedom: float = 0  # Areas dogs can access (0-5)
+    care: float = 0     # Grooming/vet support (0-5)
+    joy: float = 0      # Play zones, activities (0-5)
+    overall: Optional[float] = None  # Calculated average
+
+
+class PetPolicy(BaseModel):
+    """Pet Policy Configuration"""
+    max_pets_per_room: int = 1
+    max_weight_kg: Optional[int] = None
+    breed_restrictions: List[str] = []
+    pet_fee_per_night: float = 0
+    pet_deposit: float = 0
+    cleaning_fee: float = 0
+    # Areas allowed (checkbox grid)
+    allowed_in_room: bool = True
+    allowed_in_lawn: bool = True
+    allowed_in_lobby: bool = False
+    allowed_in_restaurant_outdoor: bool = False
+    allowed_in_restaurant_indoor: bool = False
+    allowed_in_pool_area: bool = False
+    allowed_in_spa: bool = False
+    # Rules
+    leash_required: bool = True
+    muzzle_required: bool = False
+    vaccination_required: bool = True
+    pet_insurance_required: bool = False
+    # Documents
+    policy_pdf_url: Optional[str] = None
+    last_verified_date: Optional[str] = None
+    verified: bool = False
+
+
+class PetMenuItem(BaseModel):
+    """Pet Menu Item"""
+    id: Optional[str] = None
+    name: str
+    description: Optional[str] = None
+    price: float
+    category: str = "treats"  # treats, meals, snacks, drinks
+    dietary_notes: Optional[str] = None  # grain-free, chicken-free, etc.
+    available: bool = True
+    is_doggy_bakery: bool = False  # From Doggy Bakery inventory
+
+
+class StayAddOn(BaseModel):
+    """Stay Add-on Services"""
+    id: Optional[str] = None
+    name: str
+    description: Optional[str] = None
+    price: float
+    type: str  # grooming, pet_sitter, vet_on_call, photographer, welcome_kit
+    available: bool = True
+
+
+class StayCommercials(BaseModel):
+    """Commercial Configuration"""
+    contract_type: str = "commission"  # commission, fixed, barter, referral
+    commission_rate: float = 12  # Default 12% for Stay
+    member_price_discount: float = 0  # % discount for members
+    blackout_dates: List[str] = []
+    payment_terms: Optional[str] = None
+    partner_coupon_codes: List[str] = []
+
+
+class StayPropertyCreate(BaseModel):
+    """Stay Property Creation Model"""
+    # TAB 1: Property Basics
+    name: str
+    brand_group: Optional[str] = None
+    property_type: str  # resort, hotel, villa, farmstay, homestay
+    city: str
+    area: Optional[str] = None
+    state: Optional[str] = None
+    country: str = "India"
+    full_address: Optional[str] = None
+    geo_lat: Optional[float] = None
+    geo_lng: Optional[float] = None
+    contact_person: Optional[str] = None
+    contact_phone: Optional[str] = None
+    contact_email: Optional[str] = None
+    escalation_contact: Optional[str] = None
+    inventory_notes: Optional[str] = None  # How many pet rooms, categories
+    seasonality_notes: Optional[str] = None  # Monsoons, peak pet travel
+    photos: List[str] = []
+    photos_approved: bool = False
+    website: Optional[str] = None
+    booking_link: Optional[str] = None
+    
+    # Display fields
+    description: Optional[str] = None
+    highlights: List[str] = []
+    vibe_tags: List[str] = []  # Quiet, Social, Luxury, Outdoorsy, Beach, Forest, Mountain
+    
+    # TAB 2: Pet Policy
+    pet_policy: Optional[PetPolicy] = None
+    pet_policy_snapshot: Optional[str] = None  # 1-line summary
+    
+    # TAB 3: Paw Standards
+    paw_rating: Optional[PawRating] = None
+    badges: List[str] = []  # Pet Menu, Off-leash area, Pet sitter, Grooming, Vet on call, Trails
+    staff_training_completed: bool = False
+    staff_training_date: Optional[str] = None
+    last_audit_date: Optional[str] = None
+    compliance_status: str = "pending"  # pending, approved, conditional, warning, suspended
+    incident_history: List[Dict] = []
+    
+    # TAB 4: Pet Menu & Add-ons
+    pet_menu_available: bool = False
+    pet_menu_items: List[PetMenuItem] = []
+    pet_menu_prepared_by: str = "hotel"  # hotel, doggy_bakery_tie_up
+    add_ons: List[StayAddOn] = []
+    
+    # TAB 5: Commercials
+    commercials: Optional[StayCommercials] = None
+    
+    # For humans
+    room_categories: List[str] = []
+    human_amenities: List[str] = []  # pool, spa, kids, etc.
+    cuisine_available: List[str] = []
+    nearby_vet: Optional[str] = None
+    nearby_pet_places: List[str] = []
+    
+    # Status
+    status: str = "draft"  # draft, onboarding, live, paused, suspended
+    featured: bool = False
+    verified: bool = False
+    account_manager: Optional[str] = None
+    internal_notes: Optional[str] = None
+
+
+class StayPropertyUpdate(BaseModel):
+    """Partial update for Stay Property"""
+    name: Optional[str] = None
+    brand_group: Optional[str] = None
+    property_type: Optional[str] = None
+    city: Optional[str] = None
+    area: Optional[str] = None
+    state: Optional[str] = None
+    country: Optional[str] = None
+    full_address: Optional[str] = None
+    geo_lat: Optional[float] = None
+    geo_lng: Optional[float] = None
+    contact_person: Optional[str] = None
+    contact_phone: Optional[str] = None
+    contact_email: Optional[str] = None
+    escalation_contact: Optional[str] = None
+    inventory_notes: Optional[str] = None
+    seasonality_notes: Optional[str] = None
+    photos: Optional[List[str]] = None
+    photos_approved: Optional[bool] = None
+    website: Optional[str] = None
+    booking_link: Optional[str] = None
+    description: Optional[str] = None
+    highlights: Optional[List[str]] = None
+    vibe_tags: Optional[List[str]] = None
+    pet_policy: Optional[PetPolicy] = None
+    pet_policy_snapshot: Optional[str] = None
+    paw_rating: Optional[PawRating] = None
+    badges: Optional[List[str]] = None
+    staff_training_completed: Optional[bool] = None
+    staff_training_date: Optional[str] = None
+    last_audit_date: Optional[str] = None
+    compliance_status: Optional[str] = None
+    incident_history: Optional[List[Dict]] = None
+    pet_menu_available: Optional[bool] = None
+    pet_menu_items: Optional[List[PetMenuItem]] = None
+    pet_menu_prepared_by: Optional[str] = None
+    add_ons: Optional[List[StayAddOn]] = None
+    commercials: Optional[StayCommercials] = None
+    room_categories: Optional[List[str]] = None
+    human_amenities: Optional[List[str]] = None
+    cuisine_available: Optional[List[str]] = None
+    nearby_vet: Optional[str] = None
+    nearby_pet_places: Optional[List[str]] = None
+    status: Optional[str] = None
+    featured: Optional[bool] = None
+    verified: Optional[bool] = None
+    account_manager: Optional[str] = None
+    internal_notes: Optional[str] = None
+
+
+class BookingRequest(BaseModel):
+    """Stay Booking Request (Concierge-handled)"""
+    property_id: str
+    # Guest details
+    guest_name: str
+    guest_email: str
+    guest_phone: str
+    guest_whatsapp: Optional[str] = None
+    # Pet details
+    pet_name: str
+    pet_breed: Optional[str] = None
+    pet_weight_kg: Optional[float] = None
+    pet_age: Optional[str] = None
+    pet_gender: Optional[str] = None
+    # Stay profile (comprehensive)
+    sleep_habits: Optional[str] = None
+    fears: Optional[str] = None
+    food_preferences: Optional[str] = None
+    walking_times: Optional[str] = None
+    triggers: Optional[str] = None
+    favourite_toy: Optional[str] = None
+    special_needs: Optional[str] = None
+    # Booking details
+    check_in_date: str
+    check_out_date: str
+    num_rooms: int = 1
+    num_adults: int = 2
+    num_pets: int = 1
+    room_type_preference: Optional[str] = None
+    special_requests: Optional[str] = None
+    # Add-ons requested
+    pet_meal_preorder: bool = False
+    welcome_kit: bool = False
+    grooming_requested: bool = False
+    pet_sitter_requested: bool = False
+    # Membership tier
+    membership_tier: Optional[str] = None  # tier1, tier2, tier3
+
+
+class PolicyMismatchReport(BaseModel):
+    """Report a policy mismatch (trust control)"""
+    property_id: str
+    reporter_email: str
+    reporter_name: str
+    issue_type: str  # pet_fee_different, areas_restricted, policy_changed, other
+    description: str
+    booking_id: Optional[str] = None
+
+
+# ==================== PUBLIC ROUTES ====================
+
+@stay_router.get("/properties")
+async def get_stay_properties(
+    city: Optional[str] = None,
+    property_type: Optional[str] = None,
+    min_rating: Optional[float] = None,
+    max_pet_fee: Optional[float] = None,
+    badges: Optional[str] = None,  # Comma-separated
+    vibe: Optional[str] = None,
+    featured: Optional[bool] = None,
+    limit: int = 50,
+    skip: int = 0
+):
+    """Get all live stay properties (public)"""
+    query = {"status": "live"}
+    
+    if city:
+        query["city"] = {"$regex": city, "$options": "i"}
+    if property_type:
+        query["property_type"] = property_type
+    if min_rating:
+        query["paw_rating.overall"] = {"$gte": min_rating}
+    if max_pet_fee:
+        query["pet_policy.pet_fee_per_night"] = {"$lte": max_pet_fee}
+    if badges:
+        badge_list = [b.strip() for b in badges.split(",")]
+        query["badges"] = {"$all": badge_list}
+    if vibe:
+        query["vibe_tags"] = vibe
+    if featured:
+        query["featured"] = True
+    
+    # Exclude internal fields from public response
+    projection = {
+        "_id": 0,
+        "internal_notes": 0,
+        "account_manager": 0,
+        "commercials": 0,
+        "incident_history": 0
+    }
+    
+    properties = await db.stay_properties.find(query, projection).skip(skip).limit(limit).to_list(limit)
+    total = await db.stay_properties.count_documents(query)
+    
+    # Get cities for filter
+    cities = await db.stay_properties.distinct("city", {"status": "live"})
+    
+    return {
+        "properties": properties,
+        "total": total,
+        "cities": cities,
+        "property_types": ["resort", "hotel", "villa", "farmstay", "homestay"]
+    }
+
+
+@stay_router.get("/properties/{property_id}")
+async def get_stay_property(property_id: str):
+    """Get a specific stay property (public view)"""
+    projection = {
+        "_id": 0,
+        "internal_notes": 0,
+        "account_manager": 0,
+        "commercials": 0,
+        "incident_history": 0
+    }
+    
+    property = await db.stay_properties.find_one(
+        {"id": property_id, "status": "live"}, 
+        projection
+    )
+    
+    if not property:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+    return property
+
+
+@stay_router.post("/booking-request")
+async def create_booking_request(booking: BookingRequest):
+    """Create a booking request (sent to concierge)"""
+    # Verify property exists
+    property = await db.stay_properties.find_one({"id": booking.property_id})
+    if not property:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Create booking request
+    booking_doc = {
+        "id": f"stay-bk-{uuid.uuid4().hex[:12]}",
+        **booking.model_dump(),
+        "property_name": property.get("name"),
+        "property_city": property.get("city"),
+        "property_type": property.get("property_type"),
+        "status": "pending",  # pending, contacted, confirmed, cancelled, completed
+        "concierge_notes": "",
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.stay_bookings.insert_one(booking_doc)
+    
+    # Send confirmation email to guest
+    if RESEND_API_KEY and booking.guest_email:
+        try:
+            resend.Emails.send({
+                "from": f"The Doggy Company Stay <{SENDER_EMAIL}>",
+                "to": [booking.guest_email],
+                "subject": f"🏨 Stay Booking Request - {property.get('name')}",
+                "html": f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <div style="background: linear-gradient(135deg, #16a34a, #059669); padding: 30px; text-align: center;">
+                        <h1 style="color: white; margin: 0;">🐾 STAY</h1>
+                        <p style="color: white; opacity: 0.9;">Your dog's second home — everywhere</p>
+                    </div>
+                    <div style="padding: 30px; background: #fff;">
+                        <h2 style="color: #1f2937;">Hi {booking.guest_name}! 👋</h2>
+                        <p style="color: #4b5563;">Your stay request has been submitted!</p>
+                        
+                        <div style="background: #f0fdf4; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <h3 style="color: #16a34a; margin-top: 0;">🏨 {property.get('name')}</h3>
+                            <p style="color: #6b7280;">{property.get('city')}</p>
+                            <hr style="border: none; border-top: 1px solid #d1fae5; margin: 15px 0;">
+                            <p style="color: #4b5563;"><strong>📅 Check-in:</strong> {booking.check_in_date}</p>
+                            <p style="color: #4b5563;"><strong>📅 Check-out:</strong> {booking.check_out_date}</p>
+                            <p style="color: #4b5563;"><strong>🐕 Travelling with:</strong> {booking.pet_name}</p>
+                        </div>
+                        
+                        <p style="color: #4b5563;">Our Stay Concierge will review your request and contact you within 4 hours to confirm availability and finalize your booking.</p>
+                        
+                        <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                            <p style="color: #92400e; margin: 0;"><strong>💡 Tip:</strong> Check your WhatsApp for faster updates!</p>
+                        </div>
+                    </div>
+                    <div style="background: #1f2937; padding: 20px; text-align: center;">
+                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggybakery.in</p>
+                    </div>
+                </div>
+                """
+            })
+            logger.info(f"Stay booking confirmation sent to {booking.guest_email}")
+        except Exception as e:
+            logger.error(f"Failed to send stay booking email: {e}")
+    
+    # Create notification
+    await db.notifications.insert_one({
+        "id": f"notif-{uuid.uuid4().hex[:8]}",
+        "type": "stay_booking",
+        "title": f"🏨 New Stay Booking - {property.get('name')}",
+        "message": f"{booking.guest_name} requested stay for {booking.check_in_date} ({booking.pet_name})",
+        "category": "stay",
+        "related_id": booking_doc["id"],
+        "link_to": "/admin?tab=stay&subtab=bookings",
+        "read": False,
+        "created_at": now
+    })
+    
+    return {
+        "success": True,
+        "booking_id": booking_doc["id"],
+        "message": "Stay request submitted! Our concierge will contact you within 4 hours."
+    }
+
+
+@stay_router.post("/report-mismatch")
+async def report_policy_mismatch(report: PolicyMismatchReport):
+    """Report a policy mismatch (trust control)"""
+    property = await db.stay_properties.find_one({"id": report.property_id})
+    if not property:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    report_doc = {
+        "id": f"mismatch-{uuid.uuid4().hex[:8]}",
+        **report.model_dump(),
+        "property_name": property.get("name"),
+        "status": "open",  # open, investigating, resolved, dismissed
+        "resolution_notes": "",
+        "created_at": now
+    }
+    
+    await db.policy_mismatch_reports.insert_one(report_doc)
+    
+    # Create high-priority notification
+    await db.notifications.insert_one({
+        "id": f"notif-{uuid.uuid4().hex[:8]}",
+        "type": "policy_mismatch",
+        "title": f"⚠️ Policy Mismatch Reported - {property.get('name')}",
+        "message": f"{report.reporter_name} reported: {report.issue_type}",
+        "category": "stay",
+        "related_id": report_doc["id"],
+        "link_to": "/admin?tab=stay&subtab=mismatch",
+        "priority": "high",
+        "read": False,
+        "created_at": now
+    })
+    
+    return {"success": True, "report_id": report_doc["id"]}
+
+
+# ==================== ADMIN ROUTES ====================
+
+# --- TAB 1: Property Basics ---
+
+@stay_admin_router.get("/properties")
+async def admin_get_properties(
+    status: Optional[str] = None,
+    city: Optional[str] = None,
+    property_type: Optional[str] = None,
+    compliance: Optional[str] = None,
+    limit: int = 100,
+    username: str = Depends(verify_admin)
+):
+    """Get all stay properties (admin)"""
+    query = {}
+    if status:
+        query["status"] = status
+    if city:
+        query["city"] = {"$regex": city, "$options": "i"}
+    if property_type:
+        query["property_type"] = property_type
+    if compliance:
+        query["compliance_status"] = compliance
+    
+    properties = await db.stay_properties.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Stats
+    stats = {
+        "total": await db.stay_properties.count_documents({}),
+        "live": await db.stay_properties.count_documents({"status": "live"}),
+        "draft": await db.stay_properties.count_documents({"status": "draft"}),
+        "paused": await db.stay_properties.count_documents({"status": "paused"}),
+        "featured": await db.stay_properties.count_documents({"featured": True}),
+        "verified": await db.stay_properties.count_documents({"verified": True})
+    }
+    
+    cities = await db.stay_properties.distinct("city")
+    
+    return {"properties": properties, "stats": stats, "cities": cities}
+
+
+@stay_admin_router.post("/properties")
+async def admin_create_property(
+    property: StayPropertyCreate,
+    username: str = Depends(verify_admin)
+):
+    """Create a new stay property"""
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Calculate overall paw rating
+    if property.paw_rating:
+        scores = [property.paw_rating.comfort, property.paw_rating.safety, 
+                  property.paw_rating.freedom, property.paw_rating.care, 
+                  property.paw_rating.joy]
+        valid_scores = [s for s in scores if s > 0]
+        property.paw_rating.overall = round(sum(valid_scores) / len(valid_scores), 1) if valid_scores else 0
+    
+    property_doc = {
+        "id": f"stay-{uuid.uuid4().hex[:12]}",
+        **property.model_dump(),
+        "created_at": now,
+        "updated_at": now,
+        "created_by": username
+    }
+    
+    await db.stay_properties.insert_one(property_doc)
+    property_doc.pop("_id", None)
+    
+    logger.info(f"Created stay property: {property_doc['id']} - {property.name}")
+    
+    return {"message": "Property created", "property": property_doc}
+
+
+@stay_admin_router.get("/properties/{property_id}")
+async def admin_get_property(property_id: str, username: str = Depends(verify_admin)):
+    """Get a single stay property (admin full view)"""
+    property = await db.stay_properties.find_one({"id": property_id}, {"_id": 0})
+    if not property:
+        raise HTTPException(status_code=404, detail="Property not found")
+    return {"property": property}
+
+
+@stay_admin_router.put("/properties/{property_id}")
+async def admin_update_property(
+    property_id: str,
+    property: StayPropertyCreate,
+    username: str = Depends(verify_admin)
+):
+    """Full update of a stay property"""
+    existing = await db.stay_properties.find_one({"id": property_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+    # Calculate overall paw rating
+    if property.paw_rating:
+        scores = [property.paw_rating.comfort, property.paw_rating.safety, 
+                  property.paw_rating.freedom, property.paw_rating.care, 
+                  property.paw_rating.joy]
+        valid_scores = [s for s in scores if s > 0]
+        property.paw_rating.overall = round(sum(valid_scores) / len(valid_scores), 1) if valid_scores else 0
+    
+    update_data = {
+        **property.model_dump(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_by": username
+    }
+    
+    await db.stay_properties.update_one({"id": property_id}, {"$set": update_data})
+    
+    updated = await db.stay_properties.find_one({"id": property_id}, {"_id": 0})
+    return {"message": "Property updated", "property": updated}
+
+
+@stay_admin_router.patch("/properties/{property_id}")
+async def admin_patch_property(
+    property_id: str,
+    updates: StayPropertyUpdate,
+    username: str = Depends(verify_admin)
+):
+    """Partial update of a stay property"""
+    existing = await db.stay_properties.find_one({"id": property_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+    update_data = {k: v for k, v in updates.model_dump().items() if v is not None}
+    
+    # Recalculate paw rating if updated
+    if "paw_rating" in update_data and update_data["paw_rating"]:
+        pr = update_data["paw_rating"]
+        scores = [pr.get("comfort", 0), pr.get("safety", 0), pr.get("freedom", 0), 
+                  pr.get("care", 0), pr.get("joy", 0)]
+        valid_scores = [s for s in scores if s > 0]
+        update_data["paw_rating"]["overall"] = round(sum(valid_scores) / len(valid_scores), 1) if valid_scores else 0
+    
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update_data["updated_by"] = username
+    
+    await db.stay_properties.update_one({"id": property_id}, {"$set": update_data})
+    
+    updated = await db.stay_properties.find_one({"id": property_id}, {"_id": 0})
+    return {"message": "Property updated", "property": updated}
+
+
+@stay_admin_router.delete("/properties/{property_id}")
+async def admin_delete_property(property_id: str, username: str = Depends(verify_admin)):
+    """Delete a stay property"""
+    result = await db.stay_properties.delete_one({"id": property_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Property not found")
+    return {"message": "Property deleted"}
+
+
+@stay_admin_router.put("/properties/{property_id}/status")
+async def admin_update_status(
+    property_id: str,
+    status: str,
+    username: str = Depends(verify_admin)
+):
+    """Update property status"""
+    valid_statuses = ["draft", "onboarding", "live", "paused", "suspended"]
+    if status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be: {valid_statuses}")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    update = {
+        "status": status,
+        "updated_at": now,
+        f"{status}_at": now,
+        f"{status}_by": username
+    }
+    
+    result = await db.stay_properties.update_one({"id": property_id}, {"$set": update})
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+    return {"message": f"Status updated to {status}"}
+
+
+# --- TAB 2: Pet Policy ---
+
+@stay_admin_router.put("/properties/{property_id}/pet-policy")
+async def admin_update_pet_policy(
+    property_id: str,
+    policy: PetPolicy,
+    username: str = Depends(verify_admin)
+):
+    """Update pet policy for a property"""
+    now = datetime.now(timezone.utc).isoformat()
+    
+    policy_data = policy.model_dump()
+    policy_data["last_updated"] = now
+    policy_data["updated_by"] = username
+    
+    # Log policy change for version history
+    await db.stay_policy_history.insert_one({
+        "id": f"hist-{uuid.uuid4().hex[:8]}",
+        "property_id": property_id,
+        "policy": policy_data,
+        "changed_by": username,
+        "changed_at": now
+    })
+    
+    await db.stay_properties.update_one(
+        {"id": property_id},
+        {"$set": {"pet_policy": policy_data, "updated_at": now}}
+    )
+    
+    return {"message": "Pet policy updated"}
+
+
+@stay_admin_router.get("/properties/{property_id}/policy-history")
+async def admin_get_policy_history(property_id: str, username: str = Depends(verify_admin)):
+    """Get policy change history (version control)"""
+    history = await db.stay_policy_history.find(
+        {"property_id": property_id}, 
+        {"_id": 0}
+    ).sort("changed_at", -1).to_list(50)
+    
+    return {"history": history}
+
+
+# --- TAB 3: Paw Standards ---
+
+@stay_admin_router.put("/properties/{property_id}/paw-rating")
+async def admin_update_paw_rating(
+    property_id: str,
+    rating: PawRating,
+    username: str = Depends(verify_admin)
+):
+    """Update Paw Rating scores"""
+    scores = [rating.comfort, rating.safety, rating.freedom, rating.care, rating.joy]
+    valid_scores = [s for s in scores if s > 0]
+    rating.overall = round(sum(valid_scores) / len(valid_scores), 1) if valid_scores else 0
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    await db.stay_properties.update_one(
+        {"id": property_id},
+        {"$set": {
+            "paw_rating": rating.model_dump(),
+            "paw_rating_updated_at": now,
+            "paw_rating_updated_by": username,
+            "updated_at": now
+        }}
+    )
+    
+    return {"message": "Paw rating updated", "overall": rating.overall}
+
+
+@stay_admin_router.put("/properties/{property_id}/badges")
+async def admin_update_badges(
+    property_id: str,
+    badges: List[str],
+    username: str = Depends(verify_admin)
+):
+    """Update property badges"""
+    await db.stay_properties.update_one(
+        {"id": property_id},
+        {"$set": {
+            "badges": badges,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"message": "Badges updated"}
+
+
+@stay_admin_router.post("/properties/{property_id}/incident")
+async def admin_log_incident(
+    property_id: str,
+    incident: Dict,
+    username: str = Depends(verify_admin)
+):
+    """Log an incident for a property"""
+    now = datetime.now(timezone.utc).isoformat()
+    
+    incident_doc = {
+        "id": f"inc-{uuid.uuid4().hex[:8]}",
+        "type": incident.get("type", "general"),
+        "description": incident.get("description", ""),
+        "severity": incident.get("severity", "low"),  # low, medium, high, critical
+        "reported_by": username,
+        "reported_at": now,
+        "resolution": None,
+        "resolved_at": None
+    }
+    
+    await db.stay_properties.update_one(
+        {"id": property_id},
+        {
+            "$push": {"incident_history": incident_doc},
+            "$set": {"updated_at": now}
+        }
+    )
+    
+    # If high/critical, change compliance status
+    if incident.get("severity") in ["high", "critical"]:
+        await db.stay_properties.update_one(
+            {"id": property_id},
+            {"$set": {"compliance_status": "warning"}}
+        )
+    
+    return {"message": "Incident logged", "incident_id": incident_doc["id"]}
+
+
+# --- TAB 4: Pet Menu & Add-ons ---
+
+@stay_admin_router.put("/properties/{property_id}/pet-menu")
+async def admin_update_pet_menu(
+    property_id: str,
+    menu_items: List[PetMenuItem],
+    prepared_by: str = "hotel",
+    username: str = Depends(verify_admin)
+):
+    """Update pet menu items"""
+    # Add IDs to items without them
+    for item in menu_items:
+        if not item.id:
+            item.id = f"menu-{uuid.uuid4().hex[:6]}"
+    
+    await db.stay_properties.update_one(
+        {"id": property_id},
+        {"$set": {
+            "pet_menu_available": len(menu_items) > 0,
+            "pet_menu_items": [item.model_dump() for item in menu_items],
+            "pet_menu_prepared_by": prepared_by,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"message": "Pet menu updated", "items_count": len(menu_items)}
+
+
+@stay_admin_router.put("/properties/{property_id}/add-ons")
+async def admin_update_add_ons(
+    property_id: str,
+    add_ons: List[StayAddOn],
+    username: str = Depends(verify_admin)
+):
+    """Update add-on services"""
+    for addon in add_ons:
+        if not addon.id:
+            addon.id = f"addon-{uuid.uuid4().hex[:6]}"
+    
+    await db.stay_properties.update_one(
+        {"id": property_id},
+        {"$set": {
+            "add_ons": [a.model_dump() for a in add_ons],
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"message": "Add-ons updated", "count": len(add_ons)}
+
+
+# --- TAB 5: Commercials & Reporting ---
+
+@stay_admin_router.put("/properties/{property_id}/commercials")
+async def admin_update_commercials(
+    property_id: str,
+    commercials: StayCommercials,
+    username: str = Depends(verify_admin)
+):
+    """Update commercial settings"""
+    await db.stay_properties.update_one(
+        {"id": property_id},
+        {"$set": {
+            "commercials": commercials.model_dump(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"message": "Commercials updated"}
+
+
+@stay_admin_router.get("/properties/{property_id}/stats")
+async def admin_get_property_stats(property_id: str, username: str = Depends(verify_admin)):
+    """Get property performance stats"""
+    # Get bookings for this property
+    bookings = await db.stay_bookings.find({"property_id": property_id}).to_list(1000)
+    
+    total_bookings = len(bookings)
+    pending = len([b for b in bookings if b.get("status") == "pending"])
+    confirmed = len([b for b in bookings if b.get("status") == "confirmed"])
+    completed = len([b for b in bookings if b.get("status") == "completed"])
+    
+    # Pet menu attach rate
+    with_pet_meal = len([b for b in bookings if b.get("pet_meal_preorder")])
+    pet_menu_rate = round(with_pet_meal / total_bookings * 100, 1) if total_bookings > 0 else 0
+    
+    # Mismatch reports
+    mismatches = await db.policy_mismatch_reports.count_documents({"property_id": property_id})
+    
+    return {
+        "total_bookings": total_bookings,
+        "pending": pending,
+        "confirmed": confirmed,
+        "completed": completed,
+        "conversion_rate": round(confirmed / total_bookings * 100, 1) if total_bookings > 0 else 0,
+        "pet_menu_attach_rate": pet_menu_rate,
+        "mismatch_reports": mismatches
+    }
+
+
+# --- Booking Management ---
+
+@stay_admin_router.get("/bookings")
+async def admin_get_bookings(
+    status: Optional[str] = None,
+    property_id: Optional[str] = None,
+    limit: int = 100,
+    username: str = Depends(verify_admin)
+):
+    """Get all stay bookings"""
+    query = {}
+    if status:
+        query["status"] = status
+    if property_id:
+        query["property_id"] = property_id
+    
+    bookings = await db.stay_bookings.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    stats = {
+        "total": await db.stay_bookings.count_documents({}),
+        "pending": await db.stay_bookings.count_documents({"status": "pending"}),
+        "contacted": await db.stay_bookings.count_documents({"status": "contacted"}),
+        "confirmed": await db.stay_bookings.count_documents({"status": "confirmed"}),
+        "completed": await db.stay_bookings.count_documents({"status": "completed"})
+    }
+    
+    return {"bookings": bookings, "stats": stats}
+
+
+@stay_admin_router.put("/bookings/{booking_id}/status")
+async def admin_update_booking_status(
+    booking_id: str,
+    status: str,
+    concierge_notes: Optional[str] = None,
+    username: str = Depends(verify_admin)
+):
+    """Update booking status"""
+    valid_statuses = ["pending", "contacted", "confirmed", "cancelled", "completed"]
+    if status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be: {valid_statuses}")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    update = {
+        "status": status,
+        "updated_at": now,
+        f"{status}_at": now,
+        f"{status}_by": username
+    }
+    
+    if concierge_notes:
+        update["concierge_notes"] = concierge_notes
+    
+    result = await db.stay_bookings.update_one({"id": booking_id}, {"$set": update})
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    # Send email notification on status change
+    booking = await db.stay_bookings.find_one({"id": booking_id})
+    if RESEND_API_KEY and booking and booking.get("guest_email") and status in ["confirmed", "cancelled"]:
+        try:
+            if status == "confirmed":
+                subject = f"✅ Stay Confirmed - {booking.get('property_name')}"
+                message = f"Great news! Your stay at {booking.get('property_name')} has been confirmed."
+            else:
+                subject = f"❌ Stay Cancelled - {booking.get('property_name')}"
+                message = f"Unfortunately, your stay at {booking.get('property_name')} has been cancelled."
+            
+            resend.Emails.send({
+                "from": f"The Doggy Company Stay <{SENDER_EMAIL}>",
+                "to": [booking.get("guest_email")],
+                "subject": subject,
+                "html": f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px;">
+                    <h2>{subject}</h2>
+                    <p>{message}</p>
+                    <p><strong>Property:</strong> {booking.get('property_name')}</p>
+                    <p><strong>Check-in:</strong> {booking.get('check_in_date')}</p>
+                    <p><strong>Check-out:</strong> {booking.get('check_out_date')}</p>
+                    <p><strong>Pet:</strong> {booking.get('pet_name')}</p>
+                    {f"<p><strong>Note:</strong> {concierge_notes}</p>" if concierge_notes else ""}
+                </div>
+                """
+            })
+        except Exception as e:
+            logger.error(f"Failed to send booking status email: {e}")
+    
+    return {"message": f"Booking status updated to {status}"}
+
+
+# --- Mismatch Reports ---
+
+@stay_admin_router.get("/mismatch-reports")
+async def admin_get_mismatch_reports(
+    status: Optional[str] = None,
+    username: str = Depends(verify_admin)
+):
+    """Get policy mismatch reports"""
+    query = {}
+    if status:
+        query["status"] = status
+    
+    reports = await db.policy_mismatch_reports.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    
+    stats = {
+        "total": await db.policy_mismatch_reports.count_documents({}),
+        "open": await db.policy_mismatch_reports.count_documents({"status": "open"}),
+        "investigating": await db.policy_mismatch_reports.count_documents({"status": "investigating"}),
+        "resolved": await db.policy_mismatch_reports.count_documents({"status": "resolved"})
+    }
+    
+    return {"reports": reports, "stats": stats}
+
+
+@stay_admin_router.put("/mismatch-reports/{report_id}")
+async def admin_update_mismatch_report(
+    report_id: str,
+    status: str,
+    resolution_notes: Optional[str] = None,
+    username: str = Depends(verify_admin)
+):
+    """Update mismatch report status"""
+    now = datetime.now(timezone.utc).isoformat()
+    
+    update = {
+        "status": status,
+        "updated_at": now,
+        "updated_by": username
+    }
+    
+    if resolution_notes:
+        update["resolution_notes"] = resolution_notes
+    
+    if status == "resolved":
+        update["resolved_at"] = now
+        update["resolved_by"] = username
+    
+    await db.policy_mismatch_reports.update_one({"id": report_id}, {"$set": update})
+    
+    return {"message": "Report updated"}
+
+
+# --- CSV Export/Import ---
+
+@stay_admin_router.get("/export-csv")
+async def admin_export_csv(username: str = Depends(verify_admin)):
+    """Export all stay properties as CSV"""
+    properties = await db.stay_properties.find({}, {"_id": 0}).to_list(5000)
+    
+    if not properties:
+        raise HTTPException(status_code=404, detail="No properties to export")
+    
+    output = io.StringIO()
+    fieldnames = [
+        'id', 'name', 'property_type', 'city', 'area', 'state', 'country',
+        'full_address', 'website', 'contact_phone', 'contact_email',
+        'paw_rating_overall', 'pet_fee_per_night', 'max_pets_per_room',
+        'badges', 'vibe_tags', 'status', 'featured', 'verified'
+    ]
+    
+    writer = csv.DictWriter(output, fieldnames=fieldnames, extrasaction='ignore')
+    writer.writeheader()
+    
+    for prop in properties:
+        row = {
+            'id': prop.get('id'),
+            'name': prop.get('name'),
+            'property_type': prop.get('property_type'),
+            'city': prop.get('city'),
+            'area': prop.get('area'),
+            'state': prop.get('state'),
+            'country': prop.get('country'),
+            'full_address': prop.get('full_address'),
+            'website': prop.get('website'),
+            'contact_phone': prop.get('contact_phone'),
+            'contact_email': prop.get('contact_email'),
+            'paw_rating_overall': prop.get('paw_rating', {}).get('overall', 0),
+            'pet_fee_per_night': prop.get('pet_policy', {}).get('pet_fee_per_night', 0),
+            'max_pets_per_room': prop.get('pet_policy', {}).get('max_pets_per_room', 1),
+            'badges': '|'.join(prop.get('badges', [])),
+            'vibe_tags': '|'.join(prop.get('vibe_tags', [])),
+            'status': prop.get('status'),
+            'featured': prop.get('featured'),
+            'verified': prop.get('verified')
+        }
+        writer.writerow(row)
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename=stay_properties_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        }
+    )
+
+
+# --- Dashboard Stats ---
+
+@stay_admin_router.get("/stats")
+async def admin_get_stats(username: str = Depends(verify_admin)):
+    """Get Stay dashboard statistics"""
+    
+    # Properties stats
+    total_properties = await db.stay_properties.count_documents({})
+    live_properties = await db.stay_properties.count_documents({"status": "live"})
+    featured = await db.stay_properties.count_documents({"featured": True})
+    with_pet_menu = await db.stay_properties.count_documents({"pet_menu_available": True})
+    
+    # Bookings stats
+    total_bookings = await db.stay_bookings.count_documents({})
+    pending_bookings = await db.stay_bookings.count_documents({"status": "pending"})
+    confirmed_bookings = await db.stay_bookings.count_documents({"status": "confirmed"})
+    
+    # Mismatch reports
+    open_mismatches = await db.policy_mismatch_reports.count_documents({"status": "open"})
+    
+    # By property type
+    type_breakdown = await db.stay_properties.aggregate([
+        {"$group": {"_id": "$property_type", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]).to_list(10)
+    
+    # By city
+    city_breakdown = await db.stay_properties.aggregate([
+        {"$match": {"status": "live"}},
+        {"$group": {"_id": "$city", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10}
+    ]).to_list(10)
+    
+    return {
+        "properties": {
+            "total": total_properties,
+            "live": live_properties,
+            "featured": featured,
+            "with_pet_menu": with_pet_menu
+        },
+        "bookings": {
+            "total": total_bookings,
+            "pending": pending_bookings,
+            "confirmed": confirmed_bookings
+        },
+        "mismatches": {
+            "open": open_mismatches
+        },
+        "by_type": type_breakdown,
+        "by_city": city_breakdown
+    }
