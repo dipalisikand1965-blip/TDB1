@@ -29,19 +29,28 @@ const StayManager = ({ getAuthHeader }) => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showPawRewardModal, setShowPawRewardModal] = useState(false);
   const [showTagsModal, setShowTagsModal] = useState(false);
+  const [showProductModal, setShowProductModal] = useState(false);
   const [eligibleProducts, setEligibleProducts] = useState([]);
   const [pillarTags, setPillarTags] = useState([]);
   const [filters, setFilters] = useState({ status: '', city: '', type: '' });
   const [cities, setCities] = useState([]);
+  
+  // Stay Products state
+  const [stayProducts, setStayProducts] = useState([]);
+  const [staySocials, setStaySocials] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [productStats, setProductStats] = useState({ bundles: 0, socials: 0, orders: 0 });
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [propsRes, bookingsRes, statsRes, mismatchRes] = await Promise.all([
+      const [propsRes, bookingsRes, statsRes, mismatchRes, productsRes, socialsRes] = await Promise.all([
         fetch(`${API_URL}/api/admin/stay/properties?${new URLSearchParams(filters)}`, { headers: getAuthHeader() }),
         fetch(`${API_URL}/api/admin/stay/bookings`, { headers: getAuthHeader() }),
         fetch(`${API_URL}/api/admin/stay/stats`, { headers: getAuthHeader() }),
-        fetch(`${API_URL}/api/admin/stay/mismatch-reports`, { headers: getAuthHeader() })
+        fetch(`${API_URL}/api/admin/stay/mismatch-reports`, { headers: getAuthHeader() }),
+        fetch(`${API_URL}/api/stay/products/bundles`),
+        fetch(`${API_URL}/api/stay/social/events`)
       ]);
 
       if (propsRes.ok) {
