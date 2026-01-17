@@ -151,6 +151,7 @@ const StayManager = ({ getAuthHeader }) => {
         setShowProductModal(false);
         setSelectedProduct(null);
         fetchData();
+        alert(isNew ? 'Bundle created successfully!' : 'Bundle updated successfully!');
       } else {
         const error = await response.json();
         alert(error.detail || 'Failed to save product');
@@ -158,6 +159,57 @@ const StayManager = ({ getAuthHeader }) => {
     } catch (error) {
       console.error('Error saving product:', error);
       alert('Failed to save product');
+    }
+  };
+  
+  // Save Social Event
+  const handleSaveEvent = async (event) => {
+    try {
+      const isNew = !event.id;
+      const url = isNew 
+        ? `${API_URL}/api/admin/stay/social/events`
+        : `${API_URL}/api/admin/stay/social/events/${event.id}`;
+      
+      const response = await fetch(url, {
+        method: isNew ? 'POST' : 'PUT',
+        headers: {
+          ...getAuthHeader(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(event)
+      });
+      
+      if (response.ok) {
+        setShowEventModal(false);
+        setSelectedEvent(null);
+        fetchData();
+        alert(isNew ? 'Event created successfully!' : 'Event updated successfully!');
+      } else {
+        const error = await response.json();
+        alert(error.detail || 'Failed to save event');
+      }
+    } catch (error) {
+      console.error('Error saving event:', error);
+      alert('Failed to save event');
+    }
+  };
+  
+  // Delete Social Event
+  const handleDeleteEvent = async (eventId) => {
+    if (!window.confirm('Are you sure you want to delete this event?')) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/admin/stay/social/events/${eventId}`, {
+        method: 'DELETE',
+        headers: getAuthHeader()
+      });
+      if (response.ok) {
+        fetchData();
+      } else {
+        alert('Failed to delete event');
+      }
+    } catch (error) {
+      console.error('Error deleting event:', error);
     }
   };
   
