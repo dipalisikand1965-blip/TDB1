@@ -694,8 +694,7 @@ async def bulk_update_autoship_overrides(
     discount_percent: float,
     is_special: bool = False,
     special_label: Optional[str] = None,
-    special_until: Optional[str] = None,
-    username: str = Depends(lambda: verify_admin)
+    special_until: Optional[str] = None
 ):
     """Bulk update autoship overrides for multiple products"""
     now = datetime.now(timezone.utc).isoformat()
@@ -709,7 +708,7 @@ async def bulk_update_autoship_overrides(
             "special_label": special_label or ("Special Offer" if is_special else None),
             "special_until": special_until,
             "updated_at": now,
-            "updated_by": username
+            "updated_by": "admin"
         }
         
         await db.autoship_product_overrides.update_one(
