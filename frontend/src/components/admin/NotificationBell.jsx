@@ -236,7 +236,7 @@ const NotificationBell = ({ credentials, onNavigate }) => {
                     return (
                       <div
                         key={notification.id}
-                        className={`p-3 hover:bg-gray-50 cursor-pointer transition-colors ${
+                        className={`p-3 hover:bg-gray-50 cursor-pointer transition-colors group ${
                           !notification.read ? 'bg-blue-50/50' : ''
                         } ${priorityClass}`}
                         onClick={() => handleNotificationClick(notification)}
