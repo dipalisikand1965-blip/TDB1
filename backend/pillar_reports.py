@@ -96,15 +96,14 @@ async def get_pillar_summary(period: str = "this_month"):
     restaurants = await db.restaurants.find({}).to_list(500)
     active_restaurants = len([r for r in restaurants if r.get("is_active", True)])
     
-    # Stay Pillar - Bookings (if exists)
+    # Stay Pillar - Properties and Bookings
+    stay_properties = await db.stay_properties.find({"status": "live"}).to_list(500) if "stay_properties" in await db.list_collection_names() else []
     stay_bookings_query = {"created_at": {"$gte": start_date, "$lte": end_date}}
     stay_bookings = await db.stay_bookings.find(stay_bookings_query).to_list(1000) if "stay_bookings" in await db.list_collection_names() else []
     
     stay_count = len(stay_bookings)
     stay_revenue = sum(b.get("total", 0) for b in stay_bookings)
     stay_commission = stay_revenue * 0.12  # 12% commission
-    
-    stays = await db.stays.find({}).to_list(500) if "stays" in await db.list_collection_names() else []
     
     # Travel & Care (placeholder - not yet built)
     travel_bookings = 0
