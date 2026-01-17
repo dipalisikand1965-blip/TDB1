@@ -831,6 +831,13 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, onViewDetails, o
             <Sparkles className="w-3 h-3" /> Featured
           </div>
         )}
+        
+        {/* Paw Reward Badge */}
+        {property.paw_reward?.enabled && (
+          <div className="absolute bottom-14 right-3 flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full text-xs font-semibold text-white shadow-lg">
+            <Gift className="w-3 h-3" /> Paw Reward
+          </div>
+        )}
 
         {/* Location & Name */}
         <div className="absolute bottom-3 left-3 right-3 text-white">
