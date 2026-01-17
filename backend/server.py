@@ -6484,6 +6484,27 @@ set_restaurant_scraper_admin(verify_admin)
 set_migration_db(db)
 set_migration_admin_verify(verify_admin)
 
+# Set database for admin auth
+set_admin_db(db)
+set_admin_env_credentials(ADMIN_USERNAME, ADMIN_PASSWORD)
+
+# Create email helper for admin auth
+async def send_admin_email(to_email: str, subject: str, html_content: str):
+    """Send email using Resend"""
+    try:
+        resend.api_key = RESEND_API_KEY
+        resend.Emails.send({
+            "from": "The Doggy Company <woof@thedoggybakery.in>",
+            "to": to_email,
+            "subject": subject,
+            "html": html_content
+        })
+    except Exception as e:
+        print(f"Error sending email: {e}")
+
+set_admin_email_func(send_admin_email)
+set_partner_email_func(send_admin_email)
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
@@ -6511,6 +6532,7 @@ app.include_router(restaurant_discovery_router)
 app.include_router(pricing_router)
 app.include_router(pillar_reports_router)
 app.include_router(migration_router)
+app.include_router(admin_auth_router)
 
 @app.on_event("startup")
 async def startup_load_admin_credentials():
