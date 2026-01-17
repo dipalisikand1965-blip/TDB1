@@ -6580,6 +6580,18 @@ async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
     await load_admin_credentials_from_db()
 
+# ==================== STAY SEEDING ====================
+
+@app.post("/api/admin/stay/seed")
+async def seed_stay_data(
+    force_reseed: bool = False,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Seed the Stay properties database with curated pet-friendly hotels"""
+    verify_admin(credentials)
+    result = await seed_stay_properties(db, force_reseed=force_reseed)
+    return result
+
 # ==================== ADMIN PASSWORD MANAGEMENT ====================
 
 class PasswordChangeRequest(BaseModel):
