@@ -12,21 +12,29 @@ import re
 
 # Will be set from server.py
 db = None
-verify_admin = None
+_verify_admin_func = None
 
 def set_collection_db(database):
     global db
     db = database
 
 def set_collection_admin_verify(verify_func):
-    global verify_admin
-    verify_admin = verify_func
+    global _verify_admin_func
+    _verify_admin_func = verify_func
 
-def get_admin_user():
-    """Dependency to verify admin - delegates to the verify_admin function set from server.py"""
-    if verify_admin is None:
-        raise HTTPException(status_code=500, detail="Admin verification not configured")
-    return verify_admin
+# Create a proper dependency that uses the injected verify function
+from fastapi import Depends as FastAPIDepends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+import secrets
+
+security = HTTPBasic()
+
+async def get_admin_user(credentials: HTTPBasicCredentials = FastAPIDepends(security)):
+    """Verify admin credentials using the injected verify function or basic auth"""
+    if _verify_admin_func:
+        # Use the injected verify function
+        return _verify_admin_func(credentials)
+    raise HTTPException(status_code=500, detail="Admin verification not configured")
 
 router = APIRouter(prefix="/api/admin/enhanced-collections", tags=["Enhanced Collections"])
 
