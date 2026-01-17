@@ -162,6 +162,80 @@ const PartnerManager = ({ getAuthHeader }) => {
     }
   };
 
+  // Open action dialog
+  const openActionDialog = (type) => {
+    setActionType(type);
+    setActionReason('');
+    setActionCommission('');
+    setShowActionDialog(true);
+  };
+
+  // Process approval/rejection/info request
+  const processAction = async () => {
+    if (!selectedApp) return;
+    
+    setUpdating(true);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/partners/${selectedApp.id}/action`, {
+        method: 'POST',
+        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: actionType,
+          reason: actionReason,
+          commission_rate: actionCommission ? parseFloat(actionCommission) : null
+        })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        alert(`Partner ${actionType}${actionType === 'approve' ? 'd' : actionType === 'reject' ? 'ed' : ' - info requested'}! ${data.email_sent ? 'Email sent.' : ''}`);
+        setShowActionDialog(false);
+        setSelectedApp(data.application);
+        fetchApplications();
+      } else {
+        const error = await res.json();
+        alert(error.detail || 'Action failed');
+      }
+    } catch (error) {
+      console.error('Action error:', error);
+      alert('Failed to process action');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  // Verify documents
+  const verifyDocuments = async () => {
+    if (!selectedApp) return;
+    
+    setUpdating(true);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/partners/${selectedApp.id}/verify-documents`, {
+        method: 'PUT',
+        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gst_verified: docVerification.gst,
+          pan_verified: docVerification.pan,
+          verification_notes: docVerification.notes
+        })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        alert(`Documents verified! ${data.all_documents_verified ? 'All documents verified.' : 'Some documents pending.'}`);
+        setShowDocVerify(false);
+        setSelectedApp(data.application);
+        fetchApplications();
+      } else {
+        alert('Verification failed');
+      }
+    } catch (error) {
+      console.error('Verification error:', error);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const exportCSV = () => {
     const headers = ['business_name', 'contact_name', 'email', 'phone', 'partner_type', 'city', 'status', 'admin_notes', 'created_at'];
     const rows = [headers.join(',')];
