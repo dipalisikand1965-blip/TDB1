@@ -78,6 +78,10 @@ const ReportsManager = ({ authHeaders }) => {
   const [stayReport, setStayReport] = useState(null);
   const [pillarComparison, setPillarComparison] = useState(null);
   const [selectedPillar, setSelectedPillar] = useState('summary');
+  
+  // Partner and Mira AI Reports data
+  const [partnerReport, setPartnerReport] = useState(null);
+  const [miraReport, setMiraReport] = useState(null);
 
   // Fetch pillar summary
   const fetchPillarSummary = useCallback(async () => {
