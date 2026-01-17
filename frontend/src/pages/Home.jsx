@@ -49,7 +49,7 @@ const Home = () => {
     },
     {
       title: 'Meet Mira AI',
-      subtitle: 'Your Celebration Concierge®®',
+      subtitle: 'Your Celebration Concierge®',
       description: 'Get personalized recommendations, party ideas, and expert guidance',
       image: 'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=1200',
       cta: 'Chat with Mira'
