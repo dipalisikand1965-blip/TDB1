@@ -35,11 +35,12 @@ Enhanced collection system for curated campaign pages:
 - **Visibility Control**: Published/draft, start/end dates
 - **Item Customization**: Override name, image, button text per item
 - **Auto-generated Pages**: `/collections/{slug}` routes
+- **Live Example**: Valentine's Day 2026 collection at `/collections/valentines-2025` with 5 sections, 29 items
 - **API Endpoints**:
   - `GET/POST /api/admin/enhanced-collections` - Collection CRUD
   - `PUT /api/admin/enhanced-collections/{id}` - Update collection
   - `POST /api/admin/enhanced-collections/{id}/sections` - Section management
-  - `GET /api/collections/{slug}` - Public collection page
+  - `GET /api/campaign/collections/{slug}` - Public collection page
 
 ### 🔔 Admin Notification Center ✅ **Jan 17, 2025**
 Real-time notification system for admin dashboard:
