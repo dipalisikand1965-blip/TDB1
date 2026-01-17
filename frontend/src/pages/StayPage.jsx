@@ -192,10 +192,20 @@ const StayPage = () => {
           <p className="text-xl md:text-2xl opacity-90 mb-2">
             Your dog's second home — everywhere.
           </p>
-          <p className="text-sm opacity-75 max-w-2xl mx-auto">
+          <p className="text-sm opacity-75 max-w-2xl mx-auto mb-4">
             Discover India's most trusted pet-friendly stays. Each property is verified against 
             The Doggy Company Paw Standards for comfort, safety, and joy.
           </p>
+          
+          {/* Trip Planner CTA */}
+          <Button 
+            onClick={() => setShowTripPlanner(true)}
+            className="bg-white text-green-600 hover:bg-green-50 font-semibold px-6 py-3 rounded-full shadow-lg"
+            data-testid="trip-planner-btn"
+          >
+            <Sparkles className="w-5 h-5 mr-2" />
+            Plan Your Pawcation
+          </Button>
         </div>
 
         {/* Search Bar */}
