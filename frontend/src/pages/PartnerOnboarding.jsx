@@ -612,10 +612,19 @@ const PartnerOnboarding = () => {
                 <Button variant="outline" onClick={() => setStep(3)}>
                   Back
                 </Button>
-                <Button onClick={() => setStep(5)} className="bg-purple-600">
+                <Button 
+                  onClick={() => setStep(5)} 
+                  disabled={!formData.gst_number || !formData.pan_number || !formData.gst_document || !formData.pan_document || !formData.company_turnover}
+                  className="bg-purple-600"
+                >
                   Continue
                 </Button>
               </div>
+              {(!formData.gst_number || !formData.pan_number || !formData.gst_document || !formData.pan_document || !formData.company_turnover) && (
+                <p className="text-sm text-red-500 text-center mt-2">
+                  Please fill all required fields and upload documents to continue
+                </p>
+              )}
             </div>
           )}
 
