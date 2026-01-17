@@ -13,7 +13,8 @@ import {
   Search, Plus, RefreshCw, Filter, X, Send, Clock, User, Phone, Mail,
   MapPin, Calendar, AlertCircle, CheckCircle, Loader2, MessageSquare,
   ChevronRight, Settings, BarChart3, Users, Tag, Paperclip, ExternalLink,
-  Inbox, ArrowUp, ArrowDown, MoreVertical, Edit, Trash2, Eye, Star, Zap
+  Inbox, ArrowUp, ArrowDown, MoreVertical, Edit, Trash2, Eye, Star, Zap,
+  Download, ShoppingBag, Bot, Utensils, Hotel
 } from 'lucide-react';
 
 // Category icons mapping
@@ -21,6 +22,21 @@ const CATEGORY_ICONS = {
   celebrate: '🎂', dine: '🍽️', travel: '✈️', stay: '🏨', enjoy: '🎉',
   club: '👑', care: '💊', shop: '🛒', work: '💼', fit: '🏃',
   exclusive: '⭐', emergency: '🚨', advisory: '📋', paperwork: '📄', referrals: '🤝'
+};
+
+// Source labels and colors
+const SOURCE_CONFIG = {
+  new_order: { label: 'Order', color: 'bg-green-100 text-green-700', icon: '🛒' },
+  order: { label: 'Order', color: 'bg-green-100 text-green-700', icon: '🛒' },
+  mira_chat: { label: 'Mira Chat', color: 'bg-purple-100 text-purple-700', icon: '🤖' },
+  new_reservation: { label: 'Reservation', color: 'bg-orange-100 text-orange-700', icon: '🍽️' },
+  reservation: { label: 'Reservation', color: 'bg-orange-100 text-orange-700', icon: '🍽️' },
+  buddy_visit: { label: 'Pet Buddy', color: 'bg-pink-100 text-pink-700', icon: '🐕' },
+  email: { label: 'Email', color: 'bg-blue-100 text-blue-700', icon: '📧' },
+  internal: { label: 'Internal', color: 'bg-gray-100 text-gray-700', icon: '🏢' },
+  web: { label: 'Website', color: 'bg-cyan-100 text-cyan-700', icon: '🌐' },
+  phone: { label: 'Phone', color: 'bg-amber-100 text-amber-700', icon: '📞' },
+  partner: { label: 'Partner', color: 'bg-indigo-100 text-indigo-700', icon: '🤝' }
 };
 
 // Status colors
