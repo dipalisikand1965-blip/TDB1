@@ -246,18 +246,22 @@ const Navbar = () => {
 
             {/* Pet Soul & Mira */}
             <div className="hidden md:flex items-center gap-2">
-              {/* Valentine's Special - Temporary Campaign Link */}
-              <Link
-                to="/collections/valentines-2025"
-                className="px-3 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 to-red-500 text-white hover:from-pink-600 hover:to-red-600 transition-all shadow-sm animate-pulse hover:animate-none flex items-center gap-1"
-                data-testid="valentines-nav-btn"
-              >
-                💕 Valentine's
-              </Link>
+              {/* Dynamic Campaign Collections from API */}
+              {navbarCollections.map((collection) => (
+                <Link
+                  key={collection.id}
+                  to={`/collections/${collection.slug}`}
+                  className="px-3 py-1.5 rounded-full text-xs font-medium text-white hover:opacity-90 transition-all shadow-sm flex items-center gap-1"
+                  style={{ backgroundColor: collection.theme_color || '#EC4899' }}
+                  data-testid={`nav-collection-${collection.slug}`}
+                >
+                  {collection.name}
+                </Link>
+              ))}
 
               <Link
                 to="/my-pets"
-                className="px-3 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 transition-all shadow-sm"
+                className="px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 transition-all shadow-sm"
                 data-testid="pet-soul-nav-btn"
               >
                 🐾 Pet Soul
@@ -265,10 +269,10 @@ const Navbar = () => {
 
               <button
                 onClick={openMiraAI}
-                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-sm font-medium hover:from-purple-700 hover:to-pink-700 transition-all flex items-center gap-1.5 shadow-md hover:shadow-lg"
+                className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-xs font-medium hover:from-purple-700 hover:to-pink-700 transition-all flex items-center gap-1 shadow-md hover:shadow-lg"
                 data-testid="navbar-mira-ai-btn"
               >
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-3 h-3" />
                 Mira
               </button>
             </div>
