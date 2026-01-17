@@ -1560,17 +1560,34 @@ const BookingRequestModal = ({ property, onClose }) => {
 };
 
 // Bundle Details Modal Component
-const BundleDetailsModal = ({ bundle, onClose }) => {
+const BundleDetailsModal = ({ bundle, onClose, addToCart }) => {
   const [loading, setLoading] = useState(false);
   const [added, setAdded] = useState(false);
 
   const handleAddToCart = async () => {
     setLoading(true);
     try {
-      // For now, just simulate adding to cart
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Create cart item from bundle
+      const cartItem = {
+        id: bundle.id,
+        name: bundle.name,
+        price: bundle.bundle_price,
+        image: bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+        description: bundle.description,
+        category: 'stay_bundle',
+        pillar: 'stay',
+        bundleItems: bundle.items,
+        originalPrice: bundle.original_price,
+        discountPercent: bundle.discount_percent
+      };
+      
+      // Add to cart using the cart context
+      addToCart(cartItem, 'Bundle', bundle.category || 'travel', 1);
       setAdded(true);
-      setTimeout(() => setAdded(false), 2000);
+      setTimeout(() => {
+        setAdded(false);
+        onClose(); // Close modal after adding
+      }, 1500);
     } catch (error) {
       console.error('Error adding to cart:', error);
     } finally {
