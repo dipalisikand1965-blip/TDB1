@@ -339,6 +339,14 @@ const StayManager = ({ getAuthHeader }) => {
               <Button variant="outline" onClick={handleSeedProperties}>
                 <Upload className="w-4 h-4 mr-2" /> Seed Data
               </Button>
+              
+              <Button 
+                variant="outline" 
+                className="border-amber-500 text-amber-600 hover:bg-amber-50"
+                onClick={handleBulkAssignPawRewards}
+              >
+                <Gift className="w-4 h-4 mr-2" /> Assign Paw Rewards
+              </Button>
 
               <Button 
                 className="bg-green-600 hover:bg-green-700"
