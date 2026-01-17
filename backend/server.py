@@ -56,6 +56,11 @@ from partner_routes import (
     set_partner_db,
     set_partner_admin_verify
 )
+from restaurant_discovery import (
+    router as restaurant_discovery_router,
+    set_restaurant_scraper_db,
+    set_restaurant_scraper_admin
+)
 
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
