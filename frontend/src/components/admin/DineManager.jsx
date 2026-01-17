@@ -1155,7 +1155,7 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                   </div>
                   
                   <div className="flex flex-wrap gap-1 mt-2">
-                    {restaurant.cuisine?.slice(0, 4).map((c, idx) => (
+                    {(Array.isArray(restaurant.cuisine) ? restaurant.cuisine : []).slice(0, 4).map((c, idx) => (
                       <Badge key={idx} variant="outline" className="text-xs">{c}</Badge>
                     ))}
                   </div>
@@ -1167,7 +1167,7 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                     </p>
                   )}
 
-                  {restaurant.petMenuItems?.length > 0 && (
+                  {Array.isArray(restaurant.petMenuItems) && restaurant.petMenuItems.length > 0 && (
                     <p className="text-sm text-green-600 mt-1">
                       🍽️ {restaurant.petMenuItems.slice(0, 3).join(', ')}
                     </p>
