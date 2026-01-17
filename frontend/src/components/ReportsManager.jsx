@@ -312,7 +312,19 @@ const ReportsManager = ({ authHeaders }) => {
 
   useEffect(() => {
     fetchExecutiveSummary();
-  }, [period, fetchExecutiveSummary]);
+    // Also fetch pillar reports when period changes
+    fetchPillarSummary();
+    fetchPillarComparison();
+  }, [period, fetchExecutiveSummary, fetchPillarSummary, fetchPillarComparison]);
+
+  // Fetch detailed pillar report when selected
+  useEffect(() => {
+    if (activeTab === 'pillars') {
+      if (selectedPillar === 'celebrate') fetchCelebrateReport();
+      else if (selectedPillar === 'dine') fetchDineReport();
+      else if (selectedPillar === 'stay') fetchStayReport();
+    }
+  }, [activeTab, selectedPillar, fetchCelebrateReport, fetchDineReport, fetchStayReport]);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
