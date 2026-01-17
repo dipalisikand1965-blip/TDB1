@@ -49,6 +49,12 @@
   4. Documents - **GST, PAN, Company Turnover now MANDATORY**
   5. Agreement - **Date auto-filled to current date (read-only)**
 - **NEW**: Concierge Notes in admin for internal tracking
+- **NEW**: Document Verification (GST ✓/✗, PAN ✓/✗)
+- **NEW**: Approval Workflow with email notifications:
+  - Approve - sends congratulations email
+  - Reject - sends rejection email with reason
+  - Request Info - sends email asking for more details
+- **NEW**: Action history tracking per application
 - Admin approval workflow
 
 ### 6. Pricing, Shipping & Commercial Hub ✅ (NEW - Jan 17, 2026)
