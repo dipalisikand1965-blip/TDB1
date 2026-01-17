@@ -13,6 +13,25 @@
 
 ## Implemented Features
 
+### Enhanced Autoship System ✅ (NEW - Jan 17, 2026)
+- **Default Discount Tiers**: Admin-configurable discount tiers
+  - 1st Order: 10% off
+  - 2nd - 4th Orders: 15% off
+  - 5th Order Onwards: 30% off
+- **Product-Specific Overrides**: Set custom autoship discounts per product
+- **Special Offers**: Mark products as "Special" with custom labels and expiry dates
+- **Admin UI**: New "Autoship" tab in Pricing Hub (CONFIG section)
+- **API Endpoints**:
+  - `GET /api/admin/pricing/autoship/settings` - Get all settings
+  - `PUT /api/admin/pricing/autoship/tiers` - Update default tiers
+  - `POST /api/admin/pricing/autoship/product-override` - Add/update product override
+  - `DELETE /api/admin/pricing/autoship/product-override/{product_id}` - Remove override
+  - `GET /api/admin/pricing/autoship/products` - List products for override UI
+
+### Admin Login Password Visibility Toggle ✅ (NEW - Jan 17, 2026)
+- Eye icon added to admin login form password field
+- Click to toggle between showing/hiding password
+
 ### 1. Multi-Pillar Product Classification System ✅
 - Products assignable to multiple Pillars (Celebrate, Dine, Stay, Travel, Care)
 - Categories within each pillar
