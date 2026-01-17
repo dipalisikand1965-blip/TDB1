@@ -228,6 +228,15 @@ const Navbar = () => {
 
             {/* Pet Soul & Mira */}
             <div className="hidden md:flex items-center gap-2">
+              {/* Valentine's Special - Temporary Campaign Link */}
+              <Link
+                to="/collections/valentines-2025"
+                className="px-3 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 to-red-500 text-white hover:from-pink-600 hover:to-red-600 transition-all shadow-sm animate-pulse hover:animate-none flex items-center gap-1"
+                data-testid="valentines-nav-btn"
+              >
+                💕 Valentine's
+              </Link>
+
               <Link
                 to="/my-pets"
                 className="px-3 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 transition-all shadow-sm"
