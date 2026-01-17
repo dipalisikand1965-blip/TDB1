@@ -455,8 +455,208 @@ const PartnerOnboarding = () => {
                   Back
                 </Button>
                 <Button 
+                  onClick={() => setStep(4)} 
+                  className="bg-purple-600"
+                >
+                  Continue
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Documents */}
+          {step === 4 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Business Documents</h2>
+              <p className="text-gray-600 mb-6">
+                Upload your business documents for verification. This helps us ensure trust and safety for all users.
+              </p>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+                <p className="text-sm text-amber-800">
+                  <strong>📝 Note:</strong> Document upload is optional at this stage. You can also submit these later during the verification process.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <Label>GST Number</Label>
+                  <Input 
+                    value={formData.gst_number}
+                    onChange={(e) => updateForm('gst_number', e.target.value.toUpperCase())}
+                    placeholder="e.g. 29ABCDE1234F1Z5"
+                    maxLength={15}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">15-character GST Identification Number</p>
+                </div>
+                <div>
+                  <Label>PAN Number</Label>
+                  <Input 
+                    value={formData.pan_number}
+                    onChange={(e) => updateForm('pan_number', e.target.value.toUpperCase())}
+                    placeholder="e.g. ABCDE1234F"
+                    maxLength={10}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">10-character PAN Card Number</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 transition-colors">
+                  <input
+                    type="file"
+                    id="gst_doc"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    className="hidden"
+                    onChange={(e) => updateForm('gst_document', e.target.files[0])}
+                  />
+                  <label htmlFor="gst_doc" className="cursor-pointer">
+                    <div className="text-gray-400 mb-2">
+                      {formData.gst_document ? (
+                        <CheckCircle className="w-8 h-8 mx-auto text-green-500" />
+                      ) : (
+                        <Building2 className="w-8 h-8 mx-auto" />
+                      )}
+                    </div>
+                    <p className="font-medium text-gray-700">
+                      {formData.gst_document ? formData.gst_document.name : 'Upload GST Certificate'}
+                    </p>
+                    <p className="text-sm text-gray-500">PDF, JPG or PNG (max 5MB)</p>
+                  </label>
+                </div>
+
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 transition-colors">
+                  <input
+                    type="file"
+                    id="pan_doc"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    className="hidden"
+                    onChange={(e) => updateForm('pan_document', e.target.files[0])}
+                  />
+                  <label htmlFor="pan_doc" className="cursor-pointer">
+                    <div className="text-gray-400 mb-2">
+                      {formData.pan_document ? (
+                        <CheckCircle className="w-8 h-8 mx-auto text-green-500" />
+                      ) : (
+                        <Building2 className="w-8 h-8 mx-auto" />
+                      )}
+                    </div>
+                    <p className="font-medium text-gray-700">
+                      {formData.pan_document ? formData.pan_document.name : 'Upload PAN Card'}
+                    </p>
+                    <p className="text-sm text-gray-500">PDF, JPG or PNG (max 5MB)</p>
+                  </label>
+                </div>
+
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 transition-colors">
+                  <input
+                    type="file"
+                    id="license_doc"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    className="hidden"
+                    onChange={(e) => updateForm('business_license', e.target.files[0])}
+                  />
+                  <label htmlFor="license_doc" className="cursor-pointer">
+                    <div className="text-gray-400 mb-2">
+                      {formData.business_license ? (
+                        <CheckCircle className="w-8 h-8 mx-auto text-green-500" />
+                      ) : (
+                        <Building2 className="w-8 h-8 mx-auto" />
+                      )}
+                    </div>
+                    <p className="font-medium text-gray-700">
+                      {formData.business_license ? formData.business_license.name : 'Upload Business License / FSSAI (Optional)'}
+                    </p>
+                    <p className="text-sm text-gray-500">Trade license, FSSAI, or registration certificate</p>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex justify-between pt-6">
+                <Button variant="outline" onClick={() => setStep(3)}>
+                  Back
+                </Button>
+                <Button onClick={() => setStep(5)} className="bg-purple-600">
+                  Continue
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: Agreement */}
+          {step === 5 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Partner Agreement</h2>
+              <p className="text-gray-600 mb-6">
+                Please review and accept our partner terms to complete your application.
+              </p>
+
+              <div className="bg-gray-50 border rounded-lg p-6 max-h-64 overflow-y-auto text-sm text-gray-700 space-y-4">
+                <h3 className="font-bold text-lg">The Doggy Company Partner Agreement</h3>
+                
+                <p><strong>1. Partnership Terms</strong></p>
+                <p>By registering as a partner, you agree to provide pet-friendly services that meet our quality standards. You will maintain accurate business information and respond to customer inquiries promptly.</p>
+                
+                <p><strong>2. Listing & Visibility</strong></p>
+                <p>Your business will be listed on The Doggy Company platform upon approval. We reserve the right to feature, promote, or adjust listing visibility based on performance and customer feedback.</p>
+                
+                <p><strong>3. Service Standards</strong></p>
+                <p>Partners agree to maintain pet-safe environments, provide accurate service descriptions, honor published prices, and ensure staff are trained in pet handling.</p>
+                
+                <p><strong>4. Commission & Payments</strong></p>
+                <p>Commission rates will be communicated during the approval process. Payments will be processed according to the agreed schedule.</p>
+                
+                <p><strong>5. Reviews & Feedback</strong></p>
+                <p>Customers may leave reviews about their experience. Partners should address feedback professionally and constructively.</p>
+                
+                <p><strong>6. Termination</strong></p>
+                <p>Either party may terminate this partnership with 30 days written notice. Violations of terms may result in immediate suspension.</p>
+                
+                <p><strong>7. Data Protection</strong></p>
+                <p>Both parties agree to handle customer data in accordance with applicable privacy laws and not share sensitive information with third parties.</p>
+              </div>
+
+              <div className="space-y-4 border-t pt-6">
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="agreement"
+                    checked={formData.agreement_accepted}
+                    onChange={(e) => updateForm('agreement_accepted', e.target.checked)}
+                    className="mt-1 w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                  />
+                  <label htmlFor="agreement" className="text-sm text-gray-700">
+                    I have read and agree to the Partner Agreement terms and conditions. I confirm that all information provided is accurate and I am authorized to represent this business.
+                  </label>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Digital Signature (Full Name) *</Label>
+                    <Input 
+                      value={formData.signature_name}
+                      onChange={(e) => updateForm('signature_name', e.target.value)}
+                      placeholder="Type your full legal name"
+                    />
+                  </div>
+                  <div>
+                    <Label>Date</Label>
+                    <Input 
+                      type="date"
+                      value={formData.signature_date}
+                      onChange={(e) => updateForm('signature_date', e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-between pt-6">
+                <Button variant="outline" onClick={() => setStep(4)}>
+                  Back
+                </Button>
+                <Button 
                   onClick={handleSubmit} 
-                  disabled={submitting}
+                  disabled={submitting || !formData.agreement_accepted || !formData.signature_name}
                   className="bg-purple-600"
                 >
                   {submitting ? (
