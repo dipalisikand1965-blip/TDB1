@@ -173,7 +173,7 @@ async def enrich_collection_items(sections: List[dict]) -> List[dict]:
 # ==================== ADMIN ROUTES ====================
 
 @router.get("")
-async def get_enhanced_collections(username: str = Depends(lambda: verify_admin)):
+async def get_enhanced_collections(username: str = Depends(get_admin_user)):
     """Get all enhanced collections"""
     collections = await db.enhanced_collections.find(
         {}, {"_id": 0}
@@ -188,7 +188,7 @@ async def get_enhanced_collections(username: str = Depends(lambda: verify_admin)
     return {"collections": collections}
 
 @router.get("/{collection_id}")
-async def get_enhanced_collection(collection_id: str, username: str = Depends(lambda: verify_admin)):
+async def get_enhanced_collection(collection_id: str, username: str = Depends(get_admin_user)):
     """Get a single enhanced collection with full details"""
     collection = await db.enhanced_collections.find_one(
         {"id": collection_id}, {"_id": 0}
@@ -205,7 +205,7 @@ async def get_enhanced_collection(collection_id: str, username: str = Depends(la
 @router.post("")
 async def create_enhanced_collection(
     data: EnhancedCollectionCreate, 
-    username: str = Depends(lambda: verify_admin)
+    username: str = Depends(get_admin_user)
 ):
     """Create a new enhanced collection"""
     slug = data.slug or generate_slug(data.name)
@@ -256,7 +256,7 @@ async def create_enhanced_collection(
 async def update_enhanced_collection(
     collection_id: str,
     data: EnhancedCollectionUpdate,
-    username: str = Depends(lambda: verify_admin)
+    username: str = Depends(get_admin_user)
 ):
     """Update an enhanced collection"""
     existing = await db.enhanced_collections.find_one({"id": collection_id})
@@ -300,7 +300,7 @@ async def update_enhanced_collection(
     return {"collection": updated}
 
 @router.delete("/{collection_id}")
-async def delete_enhanced_collection(collection_id: str, username: str = Depends(lambda: verify_admin)):
+async def delete_enhanced_collection(collection_id: str, username: str = Depends(get_admin_user)):
     """Delete an enhanced collection"""
     existing = await db.enhanced_collections.find_one({"id": collection_id})
     if not existing:
@@ -310,7 +310,7 @@ async def delete_enhanced_collection(collection_id: str, username: str = Depends
     return {"message": "Collection deleted"}
 
 @router.post("/{collection_id}/duplicate")
-async def duplicate_enhanced_collection(collection_id: str, username: str = Depends(lambda: verify_admin)):
+async def duplicate_enhanced_collection(collection_id: str, username: str = Depends(get_admin_user)):
     """Duplicate an existing collection"""
     original = await db.enhanced_collections.find_one({"id": collection_id}, {"_id": 0})
     if not original:
@@ -341,7 +341,7 @@ async def duplicate_enhanced_collection(collection_id: str, username: str = Depe
 async def add_section(
     collection_id: str,
     section: CollectionSection,
-    username: str = Depends(lambda: verify_admin)
+    username: str = Depends(get_admin_user)
 ):
     """Add a section to a collection"""
     collection = await db.enhanced_collections.find_one({"id": collection_id})
@@ -366,7 +366,7 @@ async def update_section(
     collection_id: str,
     section_id: str,
     section: CollectionSection,
-    username: str = Depends(lambda: verify_admin)
+    username: str = Depends(get_admin_user)
 ):
     """Update a section within a collection"""
     collection = await db.enhanced_collections.find_one({"id": collection_id})
@@ -399,7 +399,7 @@ async def update_section(
 async def delete_section(
     collection_id: str,
     section_id: str,
-    username: str = Depends(lambda: verify_admin)
+    username: str = Depends(get_admin_user)
 ):
     """Delete a section from a collection"""
     collection = await db.enhanced_collections.find_one({"id": collection_id})
@@ -420,7 +420,7 @@ async def delete_section(
 async def reorder_sections(
     collection_id: str,
     section_ids: List[str],
-    username: str = Depends(lambda: verify_admin)
+    username: str = Depends(get_admin_user)
 ):
     """Reorder sections within a collection"""
     collection = await db.enhanced_collections.find_one({"id": collection_id})
@@ -454,7 +454,7 @@ async def search_items_for_collection(
     q: str = "",
     item_type: str = "all",
     limit: int = 20,
-    username: str = Depends(lambda: verify_admin)
+    username: str = Depends(get_admin_user)
 ):
     """Search for items to add to a collection"""
     results = []
