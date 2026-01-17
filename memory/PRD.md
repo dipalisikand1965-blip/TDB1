@@ -273,13 +273,42 @@ Pet Menu, Off-leash area, Pet sitter, Grooming, Vet on call, Trails, Beach acces
 
 ---
 
+## Global Scale Foundation & Advanced Checkout ✅ (NEW - Jan 17, 2026)
+
+### Core Features
+- **App Settings System**: Global configuration for pickup cities, store locations, and fulfillment rules
+- **Split-Fulfillment Checkout**: Handles mixed carts with bakery items (store pickup) and shippable items (delivery)
+- **Pan-India Shipping Toggle**: Dynamic switch between city dropdown and free-text input for nationwide delivery
+- **Product Fulfillment Types**: Products tagged as `shipping`, `store_pickup`, or `both`
+
+### Backend APIs
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/settings/public` | Public settings (pickup cities, stores, pan-india flag) |
+| `GET /api/admin/settings` | Admin-only full settings view |
+| `PUT /api/admin/settings` | Update app settings |
+| `PUT /api/admin/products/{id}/fulfilment` | Update product fulfillment type |
+| `POST /api/admin/products/bulk-fulfilment` | Bulk update products |
+| `POST /api/admin/products/migrate-fulfilment-defaults` | Migrate existing products |
+
+### Checkout Behaviors
+1. **Bakery-Only Cart** → "Store Pickup Required" alert, pickup location selection, FREE pickup
+2. **Shippable-Only Cart** → Home Delivery/Store Pickup toggle, Pan-India option
+3. **Mixed Cart** → "Split Fulfilment" alert, both pickup and delivery sections
+
+### Data Migration
+- 128 bakery products set to `store_pickup` (cakes, fresh treats)
+- 264 other products set to `shipping` (Pan-India)
+
+---
+
 ## Upcoming Tasks (Priority Order)
 
 ### P0 - High Priority
-1. **Full Admin Integration for Stay Products & Socials**
-   - Orders for Stay Bundles should flow through entire system
-   - Appear in Orders tab, create notifications
-   - Bundle purchase tracking
+1. **Dine Pillar Development**
+   - Restaurant partners with pet-friendly features
+   - Reservation system
+   - Admin management
 
 2. **Pet Profile Enhancements**
    - Pillar-wise view in admin panel
@@ -296,6 +325,7 @@ Pet Menu, Off-leash area, Pet sitter, Grooming, Vet on call, Trails, Beach acces
 7. Landing Page Redesign
 8. Admin.jsx Refactoring (currently 2300+ lines)
 9. server.py Modularization
+10. StayManager.jsx Refactoring (2000+ lines)
 
 ---
 
