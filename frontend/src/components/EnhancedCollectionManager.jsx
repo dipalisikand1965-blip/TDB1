@@ -274,15 +274,11 @@ const EnhancedCollectionManager = ({ getAuthHeader }) => {
 
   // Item Search
   const searchItems = async () => {
-    if (!searchQuery.trim()) {
-      alert('Please enter a search term');
-      return;
-    }
     setSearching(true);
     setSearchResults([]);
     try {
       const res = await fetch(
-        `${API_URL}/api/admin/enhanced-collections/search/items?q=${encodeURIComponent(searchQuery)}&item_type=${searchType}&limit=20`,
+        `${API_URL}/api/admin/enhanced-collections/search/items?q=${encodeURIComponent(searchQuery)}&item_type=${searchType}&limit=30`,
         { headers: getAuthHeader() }
       );
       if (res.ok) {
@@ -290,7 +286,7 @@ const EnhancedCollectionManager = ({ getAuthHeader }) => {
         console.log('Search results:', data);
         setSearchResults(data.items || []);
         if (!data.items || data.items.length === 0) {
-          alert(`No items found for "${searchQuery}"`);
+          alert(`No items found${searchQuery ? ` for "${searchQuery}"` : ''}`);
         }
       } else {
         console.error('Search failed:', res.status);
