@@ -71,8 +71,12 @@
 - Recent applications table with status
 - Daily application trend
 
-### 9. Mira AI Reports ✅ (NEW - Jan 17, 2026)
+### 9. Mira AI Reports ✅ (UPDATED - Jan 17, 2026)
 - Total conversations and messages
+- **NEW**: Real-time Conversion Tracking:
+  - Conversion rate (chats → orders)
+  - Revenue generated from Mira AI chats
+  - Conversions by service type
 - Average messages per conversation
 - Response rate metrics
 - Conversations by service type (Birthday, Vet, Grooming, etc.)
