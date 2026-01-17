@@ -886,6 +886,11 @@ const PricingHub = ({ getAuthHeader }) => {
             </TabsContent>
           </Tabs>
         </TabsContent>
+
+        {/* Autoship Tab */}
+        <TabsContent value="autoship" className="space-y-4">
+          <AutoshipSettings getAuthHeader={getAuthHeader} />
+        </TabsContent>
       </Tabs>
 
       {/* Bulk Edit Modal */}
