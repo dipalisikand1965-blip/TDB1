@@ -270,6 +270,22 @@ Pet Menu, Off-leash area, Pet sitter, Grooming, Vet on call, Trails, Beach acces
 1. ✅ **Stay Products Not Displaying**: Fixed missing JSX rendering in StayPage.jsx for bundles and socials sections
 2. ✅ **Email Domain Verification**: Updated SENDER_EMAIL to woof@thedoggybakery.in (user verified domain)
 3. ✅ **Shopify 'Untitled' Products**: Added fallback name handling using handle or ID when title is null/empty
+4. ✅ **Reviews Tab Auth Error**: Fixed ReviewsManager.jsx to use getAuthHeader() correctly instead of wrapping in extra object
+5. ✅ **Admin Dummy Data**: Added 5 testimonials, 5 blog posts, and 4 reviews for testing
+
+## New Feature (Jan 17, 2026)
+### Trip Planner 🎯
+A personalized trip recommendation engine that suggests:
+- **Stay properties** matching destination and trip type (beach, mountain, forest, road trip, weekend, luxury)
+- **Product bundles** suitable for the trip type
+- **Upcoming social events** at or near the destination
+- **Personalized tips** based on trip type and pet name
+
+**API Endpoints:**
+- `POST /api/stay/trip-planner` - Generate trip recommendations
+- `GET /api/stay/trip-planner/options` - Get available cities and trip types
+
+**Frontend:** "Plan Your Pawcation" button in hero section opens Trip Planner modal with form and results view.
 
 ---
 
