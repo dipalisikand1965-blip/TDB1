@@ -2344,6 +2344,11 @@ const Admin = () => {
         {activeTab === 'partners' && (
           <PartnerManager getAuthHeader={getAuthHeaders} />
         )}
+
+        {/* Pricing Hub Tab */}
+        {activeTab === 'pricing' && (
+          <PricingHub getAuthHeader={getAuthHeaders} />
+        )}
       </div>
 
       {/* Pet Profile Detail Modal */}
