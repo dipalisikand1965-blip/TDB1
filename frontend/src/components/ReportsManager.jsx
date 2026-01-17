@@ -356,6 +356,12 @@ const ReportsManager = ({ authHeaders }) => {
     }
   }, [activeTab, selectedPillar, fetchCelebrateReport, fetchDineReport, fetchStayReport]);
 
+  // Fetch partner and mira reports when their tabs are active
+  useEffect(() => {
+    if (activeTab === 'partners') fetchPartnerReport();
+    else if (activeTab === 'mira') fetchMiraReport();
+  }, [activeTab, fetchPartnerReport, fetchMiraReport]);
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
   };
