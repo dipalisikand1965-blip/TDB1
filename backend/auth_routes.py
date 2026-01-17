@@ -280,6 +280,23 @@ async def register_user(user: UserRegister):
     }
     
     await db.users.insert_one(user_doc)
+    
+    # Create admin notification for new member
+    await notify_admin(
+        notification_type="member",
+        title=f"👋 New Member Registered",
+        message=f"{user.name or 'Someone'} ({user.email}) just signed up!",
+        category="general",
+        related_id=user_doc["id"],
+        link_to="/admin?tab=members",
+        priority="normal",
+        metadata={
+            "name": user.name,
+            "email": user.email,
+            "phone": user.phone
+        }
+    )
+    
     return {"message": "Registration successful", "user_id": user_doc["id"]}
 
 
