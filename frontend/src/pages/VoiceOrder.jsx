@@ -97,8 +97,19 @@ export default function VoiceOrder() {
     setError('');
 
     try {
+      // Check audio size (max 10MB to avoid Cloudflare limits)
+      if (audioBlob.size > 10 * 1024 * 1024) {
+        setError('Audio file too large. Please record a shorter message (max 10MB).');
+        setUploading(false);
+        return;
+      }
+      
       const formData = new FormData();
-      formData.append('audio', audioBlob, 'voice_order.webm');
+      // Determine file extension from blob type
+      const fileExt = audioBlob.type?.includes('webm') ? 'webm' : 
+                      audioBlob.type?.includes('mp4') ? 'mp4' :
+                      audioBlob.type?.includes('wav') ? 'wav' : 'webm';
+      formData.append('audio', audioBlob, `voice_order.${fileExt}`);
       if (customerName) formData.append('customer_name', customerName);
       if (customerEmail) formData.append('customer_email', customerEmail);
       if (customerPhone) formData.append('customer_phone', customerPhone);
@@ -108,6 +119,20 @@ export default function VoiceOrder() {
         method: 'POST',
         body: formData
       });
+
+      // Handle non-JSON responses (like Cloudflare errors)
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        if (text.includes('cloudflare') || text.includes('Cloudflare')) {
+          setError('Request blocked by security. Please try uploading a smaller audio file.');
+        } else {
+          setError('Server error. Please try again.');
+        }
+        setUploading(false);
+        return;
+      }
 
       const data = await response.json();
 
@@ -121,7 +146,14 @@ export default function VoiceOrder() {
       }
     } catch (err) {
       console.error('Submit error:', err);
-      setError('Network error. Please try again.');
+      // More specific error messages
+      if (err.name === 'TypeError' && err.message.includes('fetch')) {
+        setError('Connection failed. Please check your internet and try again.');
+      } else if (err.name === 'AbortError') {
+        setError('Request timed out. Please try a shorter recording.');
+      } else {
+        setError(`Error: ${err.message || 'Network error. Please try again.'}`);
+      }
     } finally {
       setUploading(false);
     }
