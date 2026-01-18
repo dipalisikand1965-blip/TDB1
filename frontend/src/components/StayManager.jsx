@@ -542,6 +542,31 @@ const StayManager = ({ getAuthHeader }) => {
                 <Upload className="w-4 h-4 mr-2" /> Seed Data
               </Button>
               
+              {/* CSV Export */}
+              <Button 
+                variant="outline" 
+                onClick={async () => {
+                  try {
+                    const response = await fetch(`${API_URL}/api/admin/stay/export-csv`, {
+                      headers: getAuthHeader()
+                    });
+                    if (response.ok) {
+                      const blob = await response.blob();
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `stay_properties_${new Date().toISOString().split('T')[0]}.csv`;
+                      a.click();
+                    }
+                  } catch (error) {
+                    console.error('Export error:', error);
+                    alert('Failed to export properties');
+                  }
+                }}
+              >
+                <Download className="w-4 h-4 mr-2" /> Export CSV
+              </Button>
+              
               <Button 
                 variant="outline" 
                 className="border-amber-500 text-amber-600 hover:bg-amber-50"
