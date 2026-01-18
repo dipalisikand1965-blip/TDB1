@@ -1411,6 +1411,12 @@ async def admin_update_booking_status(
     if status not in valid_statuses:
         raise HTTPException(status_code=400, detail=f"Invalid status. Must be: {valid_statuses}")
     
+    # Get booking for notification
+    booking = await db.stay_bookings.find_one({"id": booking_id})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    old_status = booking.get("status")
     now = datetime.now(timezone.utc).isoformat()
     
     update = {
@@ -1425,37 +1431,73 @@ async def admin_update_booking_status(
     
     result = await db.stay_bookings.update_one({"id": booking_id}, {"$set": update})
     if result.modified_count == 0:
-        raise HTTPException(status_code=404, detail="Booking not found")
+        raise HTTPException(status_code=404, detail="Booking status unchanged")
     
-    # Send email notification on status change
-    booking = await db.stay_bookings.find_one({"id": booking_id})
-    if RESEND_API_KEY and booking and booking.get("guest_email") and status in ["confirmed", "cancelled"]:
+    # Send notifications on status change
+    if status != old_status:
+        # Send email notification
+        if RESEND_API_KEY and booking.get("guest_email") and status in ["confirmed", "cancelled"]:
+            try:
+                if status == "confirmed":
+                    subject = f"✅ Stay Confirmed - {booking.get('property_name')}"
+                    message = f"Great news! Your stay at {booking.get('property_name')} has been confirmed."
+                else:
+                    subject = f"❌ Stay Cancelled - {booking.get('property_name')}"
+                    message = f"Unfortunately, your stay at {booking.get('property_name')} has been cancelled."
+                
+                resend.Emails.send({
+                    "from": f"The Doggy Company Stay <{SENDER_EMAIL}>",
+                    "to": [booking.get("guest_email")],
+                    "subject": subject,
+                    "html": f"""
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px;">
+                        <h2>{subject}</h2>
+                        <p>{message}</p>
+                        <p><strong>Property:</strong> {booking.get('property_name')}</p>
+                        <p><strong>Check-in:</strong> {booking.get('check_in_date')}</p>
+                        <p><strong>Check-out:</strong> {booking.get('check_out_date')}</p>
+                        <p><strong>Pet:</strong> {booking.get('pet_name')}</p>
+                        {f"<p><strong>Note:</strong> {concierge_notes}</p>" if concierge_notes else ""}
+                    </div>
+                    """
+                })
+                logger.info(f"Stay booking status email sent to {booking.get('guest_email')}")
+            except Exception as e:
+                logger.error(f"Failed to send booking status email: {e}")
+        
+        # Trigger notification engine
         try:
-            if status == "confirmed":
-                subject = f"✅ Stay Confirmed - {booking.get('property_name')}"
-                message = f"Great news! Your stay at {booking.get('property_name')} has been confirmed."
-            else:
-                subject = f"❌ Stay Cancelled - {booking.get('property_name')}"
-                message = f"Unfortunately, your stay at {booking.get('property_name')} has been cancelled."
-            
-            resend.Emails.send({
-                "from": f"The Doggy Company Stay <{SENDER_EMAIL}>",
-                "to": [booking.get("guest_email")],
-                "subject": subject,
-                "html": f"""
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px;">
-                    <h2>{subject}</h2>
-                    <p>{message}</p>
-                    <p><strong>Property:</strong> {booking.get('property_name')}</p>
-                    <p><strong>Check-in:</strong> {booking.get('check_in_date')}</p>
-                    <p><strong>Check-out:</strong> {booking.get('check_out_date')}</p>
-                    <p><strong>Pet:</strong> {booking.get('pet_name')}</p>
-                    {f"<p><strong>Note:</strong> {concierge_notes}</p>" if concierge_notes else ""}
-                </div>
-                """
+            from notification_engine import notify_booking_status_change
+            await notify_booking_status_change(
+                booking={
+                    "id": booking_id,
+                    "guest_name": booking.get("guest_name"),
+                    "email": booking.get("guest_email"),
+                    "phone": booking.get("guest_phone"),
+                    "property_name": booking.get("property_name"),
+                    "check_in_date": booking.get("check_in_date"),
+                    "check_out_date": booking.get("check_out_date"),
+                    "pet_name": booking.get("pet_name"),
+                    "guests": booking.get("guests"),
+                    "pets": booking.get("pets")
+                },
+                new_status=status,
+                pillar="stay",
+                triggered_by="admin"
+            )
+            logger.info(f"Notification engine triggered for stay booking {booking_id}: {old_status} -> {status}")
+        except Exception as e:
+            logger.error(f"Failed to trigger notification engine for stay booking: {e}")
+        
+        # Update linked service desk ticket
+        try:
+            from ticket_auto_create import update_ticket_from_event
+            await update_ticket_from_event(db, "booking", booking_id, {
+                "new_status": status,
+                "pillar": "stay"
             })
         except Exception as e:
-            logger.error(f"Failed to send booking status email: {e}")
+            logger.error(f"Failed to update ticket for stay booking: {e}")
     
     return {"message": f"Booking status updated to {status}"}
 
