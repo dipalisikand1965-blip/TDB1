@@ -1568,9 +1568,10 @@ const BookingRequestModal = ({ property, onClose }) => {
             </Button>
           ) : (
             <Button 
-              className="bg-green-600 hover:bg-green-700 text-sm h-9"
+              className="bg-green-600 hover:bg-green-700 text-white text-sm h-9 min-w-[140px]"
               onClick={handleSubmit}
               disabled={loading || !formData.check_in_date || !formData.check_out_date || !formData.pet_name}
+              data-testid="stay-submit-btn"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Submit Request
