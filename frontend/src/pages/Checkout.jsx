@@ -373,7 +373,11 @@ const Checkout = () => {
       const store = appSettings.store_locations.find(s => s.id === pickupLocation);
       return store?.city || '';
     }
-    return isPanIndiaDelivery ? formData.customCity : formData.city;
+    // For "Others" selection or Pan-India, use customCity
+    if (isPanIndiaDelivery || formData.city === 'Others') {
+      return formData.customCity;
+    }
+    return formData.city;
   };
 
   // Generate order summary for WhatsApp
