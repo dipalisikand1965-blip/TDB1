@@ -1263,17 +1263,15 @@ const BookingRequestModal = ({ property, onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" onClick={onClose}>
+      {/* Mobile-first bottom sheet modal */}
       <div 
-        className="w-full sm:max-w-2xl bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col"
-        style={{ 
-          maxHeight: 'calc(100vh - 60px)',
-          height: 'auto'
-        }}
+        className="fixed bottom-0 left-0 right-0 sm:relative sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:max-w-2xl bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col"
+        style={{ maxHeight: '90vh' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-4 sm:p-6 border-b bg-white rounded-t-3xl sm:rounded-t-2xl">
+        <div className="p-4 sm:p-6 border-b bg-white rounded-t-3xl sm:rounded-t-2xl flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg sm:text-xl font-bold">Request Booking</h3>
