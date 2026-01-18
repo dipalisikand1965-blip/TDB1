@@ -2905,180 +2905,180 @@ const ServiceDesk = ({ authHeaders }) => {
           <DialogHeader>
             <DialogTitle>Manage Categories & Sub-categories</DialogTitle>
           </DialogHeader>
-// TEMP:           <CategoryManager 
-// TEMP:             categories={categories} 
-// TEMP:             setCategories={setCategories}
-// TEMP:             authHeaders={authHeaders}
-// TEMP:           />
+          <CategoryManager 
+            categories={categories} 
+            setCategories={setCategories}
+            authHeaders={authHeaders}
+          />
         </DialogContent>
       </Dialog>
     </div>
   );
 };
 
-// TEMP: // Category Manager Component
-// TEMP: const CategoryManager = ({ categories, setCategories, authHeaders }) => {
-// TEMP:   const [newCategory, setNewCategory] = useState({ name: '', icon: 'folder', description: '' });
-// TEMP:   const [newSubCategory, setNewSubCategory] = useState({ parentId: '', name: '' });
-// TEMP:   const [subCategories, setSubCategories] = useState({});
-// TEMP:   const [saving, setSaving] = useState(false);
-// TEMP: 
-// TEMP:   const handleAddCategory = async () => {
-// TEMP:     if (!newCategory.name.trim()) return;
-// TEMP:     
-// TEMP:     setSaving(true);
-// TEMP:     try {
-// TEMP:       const id = newCategory.name.toLowerCase().replace(/\s+/g, '_');
-// TEMP:       const categoryData = {
-// TEMP:         id,
-// TEMP:         name: newCategory.name,
-// TEMP:         icon: newCategory.icon || '📁',
-// TEMP:         description: newCategory.description || '',
-// TEMP:         isCustom: true
-// TEMP:       };
-// TEMP:       
-// TEMP:       // Save to backend
-// TEMP:       await fetch(`${API_URL}/api/tickets/categories/custom`, {
-// TEMP:         method: 'POST',
-// TEMP:         headers: { ...authHeaders, 'Content-Type': 'application/json' },
-// TEMP:         body: JSON.stringify(categoryData)
-// TEMP:       });
-// TEMP:       
-// TEMP:       setCategories([...categories, categoryData]);
-// TEMP:       setNewCategory({ name: '', icon: 'folder', description: '' });
-// TEMP:     } catch (err) {
-// TEMP:       console.error('Error adding category:', err);
-// TEMP:     }
-// TEMP:     setSaving(false);
-// TEMP:   };
-// TEMP: 
-// TEMP:   const handleAddSubCategory = async () => {
-// TEMP:     if (!newSubCategory.parentId || !newSubCategory.name.trim()) return;
-// TEMP:     
-// TEMP:     setSaving(true);
-// TEMP:     try {
-// TEMP:       const subCatData = {
-// TEMP:         parentId: newSubCategory.parentId,
-// TEMP:         name: newSubCategory.name,
-// TEMP:         id: newSubCategory.name.toLowerCase().replace(/\s+/g, '_')
-// TEMP:       };
-// TEMP:       
-// TEMP:       // Save to backend
-// TEMP:       await fetch(`${API_URL}/api/tickets/categories/sub`, {
-// TEMP:         method: 'POST',
-// TEMP:         headers: { ...authHeaders, 'Content-Type': 'application/json' },
-// TEMP:         body: JSON.stringify(subCatData)
-// TEMP:       });
-// TEMP:       
-// TEMP:       setSubCategories({
-// TEMP:         ...subCategories,
-// TEMP:         [newSubCategory.parentId]: [
-// TEMP:           ...(subCategories[newSubCategory.parentId] || []),
-// TEMP:           subCatData
-// TEMP:         ]
-// TEMP:       });
-// TEMP:       setNewSubCategory({ parentId: '', name: '' });
-// TEMP:     } catch (err) {
-// TEMP:       console.error('Error adding sub-category:', err);
-// TEMP:     }
-// TEMP:     setSaving(false);
-// TEMP:   };
-// TEMP: 
-// TEMP:   const handleDeleteCategory = async (categoryId) => {
-// TEMP:     if (!confirm('Delete this category?')) return;
-// TEMP:     
-// TEMP:     try {
-// TEMP:       await fetch(`${API_URL}/api/tickets/categories/custom/${categoryId}`, {
-// TEMP:         method: 'DELETE',
-// TEMP:         headers: authHeaders
-// TEMP:       });
-// TEMP:       
-// TEMP:       setCategories(categories.filter(c => c.id !== categoryId));
-// TEMP:     } catch (err) {
-// TEMP:       console.error('Error deleting category:', err);
-// TEMP:     }
-// TEMP:   };
-// TEMP: 
-// TEMP:   return (
-// TEMP:     <div className="space-y-6">
-// TEMP:       {/* Existing Categories */}
-// TEMP:       <div>
-// TEMP:         <h4 className="text-sm font-medium mb-3">Current Categories (Pillars)</h4>
-// TEMP:         <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
-// TEMP:           {categories.map(cat => (
-// TEMP:             <div key={cat.id} className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
-// TEMP:               <span>{cat.icon} {cat.name}</span>
-// TEMP:               {cat.isCustom && (
-// TEMP:                 <button 
-// TEMP:                   onClick={() => handleDeleteCategory(cat.id)}
-// TEMP:                   className="text-red-500 hover:text-red-700"
-// TEMP:                 >
-// TEMP:                   <X className="w-3 h-3" />
-// TEMP:                 </button>
-// TEMP:               )}
-// TEMP:             </div>
-// TEMP:           ))}
-// TEMP:         </div>
-// TEMP:       </div>
-// TEMP: 
-// TEMP:       {/* Add New Category */}
-// TEMP:       <div className="border-t pt-4">
-// TEMP:         <h4 className="text-sm font-medium mb-3">Add New Category</h4>
-// TEMP:         <div className="flex gap-2">
-// TEMP:           <Input
-// TEMP:             placeholder="Icon (emoji)"
-// TEMP:             value={newCategory.icon}
-// TEMP:             onChange={(e) => setNewCategory({ ...newCategory, icon: e.target.value })}
-// TEMP:             className="w-16"
-// TEMP:           />
-// TEMP:           <Input
-// TEMP:             placeholder="Category name"
-// TEMP:             value={newCategory.name}
-// TEMP:             onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-// TEMP:             className="flex-1"
-// TEMP:           />
-// TEMP:           <Input
-// TEMP:             placeholder="Description (optional)"
-// TEMP:             value={newCategory.description}
-// TEMP:             onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
-// TEMP:             className="flex-1"
-// TEMP:           />
-// TEMP:           <Button onClick={handleAddCategory} disabled={saving || !newCategory.name.trim()}>
-// TEMP:             <Plus className="w-4 h-4" />
-// TEMP:           </Button>
-// TEMP:         </div>
-// TEMP:       </div>
-// TEMP: 
-// TEMP:       {/* Add Sub-category */}
-// TEMP:       <div className="border-t pt-4">
-// TEMP:         <h4 className="text-sm font-medium mb-3">Add Sub-category</h4>
-// TEMP:         <div className="flex gap-2">
-// TEMP:           <Select 
-// TEMP:             value={newSubCategory.parentId} 
-// TEMP:             onValueChange={(v) => setNewSubCategory({ ...newSubCategory, parentId: v })}
-// TEMP:           >
-// TEMP:             <SelectTrigger className="w-48">
-// TEMP:               <SelectValue placeholder="Select parent category" />
-// TEMP:             </SelectTrigger>
-// TEMP:             <SelectContent>
-// TEMP:               {categories.map(cat => (
-// TEMP:                 <SelectItem key={cat.id} value={cat.id}>{cat.icon} {cat.name}</SelectItem>
-// TEMP:               ))}
-// TEMP:             </SelectContent>
-// TEMP:           </Select>
-// TEMP:           <Input
-// TEMP:             placeholder="Sub-category name"
-// TEMP:             value={newSubCategory.name}
-// TEMP:             onChange={(e) => setNewSubCategory({ ...newSubCategory, name: e.target.value })}
-// TEMP:             className="flex-1"
-// TEMP:           />
-// TEMP:           <Button onClick={handleAddSubCategory} disabled={saving || !newSubCategory.name.trim() || !newSubCategory.parentId}>
-// TEMP:             <Plus className="w-4 h-4" />
-// TEMP:           </Button>
-// TEMP:         </div>
-// TEMP:       </div>
-// TEMP:     </div>
-// TEMP:   );
-// TEMP: };
+// Category Manager Component
+const CategoryManager = ({ categories, setCategories, authHeaders }) => {
+  const [newCategory, setNewCategory] = useState({ name: '', icon: 'folder', description: '' });
+  const [newSubCategory, setNewSubCategory] = useState({ parentId: '', name: '' });
+  const [subCategories, setSubCategories] = useState({});
+  const [saving, setSaving] = useState(false);
+
+  const handleAddCategory = async () => {
+    if (!newCategory.name.trim()) return;
+    
+    setSaving(true);
+    try {
+      const id = newCategory.name.toLowerCase().replace(/\s+/g, '_');
+      const categoryData = {
+        id,
+        name: newCategory.name,
+        icon: newCategory.icon || '📁',
+        description: newCategory.description || '',
+        isCustom: true
+      };
+      
+      // Save to backend
+      await fetch(`${API_URL}/api/tickets/categories/custom`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify(categoryData)
+      });
+      
+      setCategories([...categories, categoryData]);
+      setNewCategory({ name: '', icon: 'folder', description: '' });
+    } catch (err) {
+      console.error('Error adding category:', err);
+    }
+    setSaving(false);
+  };
+
+  const handleAddSubCategory = async () => {
+    if (!newSubCategory.parentId || !newSubCategory.name.trim()) return;
+    
+    setSaving(true);
+    try {
+      const subCatData = {
+        parentId: newSubCategory.parentId,
+        name: newSubCategory.name,
+        id: newSubCategory.name.toLowerCase().replace(/\s+/g, '_')
+      };
+      
+      // Save to backend
+      await fetch(`${API_URL}/api/tickets/categories/sub`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify(subCatData)
+      });
+      
+      setSubCategories({
+        ...subCategories,
+        [newSubCategory.parentId]: [
+          ...(subCategories[newSubCategory.parentId] || []),
+          subCatData
+        ]
+      });
+      setNewSubCategory({ parentId: '', name: '' });
+    } catch (err) {
+      console.error('Error adding sub-category:', err);
+    }
+    setSaving(false);
+  };
+
+  const handleDeleteCategory = async (categoryId) => {
+    if (!confirm('Delete this category?')) return;
+    
+    try {
+      await fetch(`${API_URL}/api/tickets/categories/custom/${categoryId}`, {
+        method: 'DELETE',
+        headers: authHeaders
+      });
+      
+      setCategories(categories.filter(c => c.id !== categoryId));
+    } catch (err) {
+      console.error('Error deleting category:', err);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Existing Categories */}
+      <div>
+        <h4 className="text-sm font-medium mb-3">Current Categories (Pillars)</h4>
+        <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+          {categories.map(cat => (
+            <div key={cat.id} className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
+              <span>{cat.icon} {cat.name}</span>
+              {cat.isCustom && (
+                <button 
+                  onClick={() => handleDeleteCategory(cat.id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Add New Category */}
+      <div className="border-t pt-4">
+        <h4 className="text-sm font-medium mb-3">Add New Category</h4>
+        <div className="flex gap-2">
+          <Input
+            placeholder="Icon (emoji)"
+            value={newCategory.icon}
+            onChange={(e) => setNewCategory({ ...newCategory, icon: e.target.value })}
+            className="w-16"
+          />
+          <Input
+            placeholder="Category name"
+            value={newCategory.name}
+            onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
+            className="flex-1"
+          />
+          <Input
+            placeholder="Description (optional)"
+            value={newCategory.description}
+            onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
+            className="flex-1"
+          />
+          <Button onClick={handleAddCategory} disabled={saving || !newCategory.name.trim()}>
+            <Plus className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Add Sub-category */}
+      <div className="border-t pt-4">
+        <h4 className="text-sm font-medium mb-3">Add Sub-category</h4>
+        <div className="flex gap-2">
+          <Select 
+            value={newSubCategory.parentId} 
+            onValueChange={(v) => setNewSubCategory({ ...newSubCategory, parentId: v })}
+          >
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Select parent category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map(cat => (
+                <SelectItem key={cat.id} value={cat.id}>{cat.icon} {cat.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Input
+            placeholder="Sub-category name"
+            value={newSubCategory.name}
+            onChange={(e) => setNewSubCategory({ ...newSubCategory, name: e.target.value })}
+            className="flex-1"
+          />
+          <Button onClick={handleAddSubCategory} disabled={saving || !newSubCategory.name.trim() || !newSubCategory.parentId}>
+            <Plus className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default ServiceDesk;
