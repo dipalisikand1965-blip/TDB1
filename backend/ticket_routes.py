@@ -825,6 +825,22 @@ async def delete_ticket(ticket_id: str):
     
     return {"success": True}
 
+@router.post("/{ticket_id}/follow")
+async def follow_ticket(ticket_id: str):
+    """Follow a ticket for notifications"""
+    db = get_db()
+    
+    # Add to followers list
+    result = await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {"$addToSet": {"followers": "admin"}}  # In real app, use actual user id
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    return {"success": True, "message": "Now following this ticket"}
+
 # ============== MEMBER CRM ROUTES ==============
 
 @router.get("/members/{identifier}/notes")
