@@ -566,9 +566,44 @@ A personalized trip recommendation engine that suggests:
 ---
 
 ## Known Issues
-- Review submission: User reported not working (could not reproduce, may need browser console logs)
-- Production vs Preview database sync (collections need to be seeded separately)
-- Shopify Sync 'Untitled' Products: Patched with fallback, logging added for diagnosis
+
+---
+
+## Latest Updates (Jan 18, 2026)
+
+### Checkout Page City Enhancement ✅
+**"Others" city option for Pan-India shopping:**
+- Added "Others (Type your city)" option in checkout city dropdown
+- When selected, a text input appears for entering custom city name
+- Validation ensures custom city is required when "Others" is selected
+- Works alongside existing Pan-India shipping toggle
+- Allows shopping from any city in India without requiring Pan-India mode
+
+**Files Modified:**
+- `/app/frontend/src/pages/Checkout.jsx`
+
+### Pillar Bundles Tab in Pricing Hub ✅
+**Centralized bundle/package pricing across all pillars:**
+- New "Pillar Bundles" tab added to Pricing, Shipping & Commercial Hub
+- Shows bundles/packages organized by pillar (Celebrate, Dine, Stay, Travel, Care)
+- Each pillar tab shows bundle count and list with:
+  - Bundle name and image
+  - Type (party_package, dining_kit, etc.)
+  - Price and discounted price
+  - Active/Inactive status
+  - Edit action
+- Fetches data from respective pillar bundle APIs
+- Bundle Management Tips section with guidance for each pillar
+
+**Files Modified:**
+- `/app/frontend/src/components/PricingHub.jsx`
+
+**Pillar Bundle Sources:**
+- Celebrate: Products marked as bundles
+- Dine: `/api/admin/dine/bundles` (5 bundles available)
+- Stay: `/api/admin/stay/socials` (events/packages)
+- Travel: Products marked as bundles (future)
+- Care: Products marked as bundles (future)
 
 ---
 
