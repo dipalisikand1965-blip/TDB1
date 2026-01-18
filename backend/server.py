@@ -6952,6 +6952,9 @@ set_stay_admin_verify(verify_admin)
 set_stay_social_db(db)
 set_stay_social_admin_verify(verify_admin)
 
+# Set notification engine database
+set_notification_db(db)
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
