@@ -2537,7 +2537,6 @@ async def change_password(
     )
     
     # Update cache
-    global _admin_credentials_cache
     _admin_credentials_cache["password"] = new_password
     
     logger.info("Admin password changed successfully")
