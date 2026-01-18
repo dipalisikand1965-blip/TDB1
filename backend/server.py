@@ -3622,8 +3622,107 @@ async def seed_blog_posts(force: bool = False, username: str = Depends(verify_ad
     if force:
         await db.blog_posts.delete_many({})
     
-    # Call the auto-seed function
-    await auto_seed_blog_posts()
+    # Sample blog posts to seed
+    sample_posts = [
+        {
+            "id": f"post-{secrets.token_hex(4)}",
+            "slug": "top-10-pet-friendly-hotels-in-india",
+            "title": "Top 10 Pet-Friendly Hotels in India",
+            "excerpt": "Discover the best accommodations where your furry friend is as welcome as you are.",
+            "content": "Planning a vacation with your pet? Here are our top picks for pet-friendly hotels across India, from beachside resorts in Goa to mountain retreats in Himachal Pradesh...",
+            "image_url": None,
+            "category": "Travel",
+            "author": "The Doggy Company Team",
+            "status": "published",
+            "is_featured": True,
+            "views": 0,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "published_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"post-{secrets.token_hex(4)}",
+            "slug": "healthy-homemade-treats-for-your-dog",
+            "title": "Healthy Homemade Treats for Your Dog",
+            "excerpt": "Simple recipes to make nutritious and delicious treats at home.",
+            "content": "While our bakery offers premium treats, sometimes you might want to whip up something special at home. Here are 5 vet-approved recipes that your dog will love...",
+            "image_url": None,
+            "category": "Health",
+            "author": "Dr. Sneha Patel",
+            "status": "published",
+            "is_featured": False,
+            "views": 0,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "published_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"post-{secrets.token_hex(4)}",
+            "slug": "pet-friendly-cafes-in-bangalore-a-complete-guide",
+            "title": "Pet-Friendly Cafes in Bangalore: A Complete Guide",
+            "excerpt": "Brunch spots where your pooch can join the fun too!",
+            "content": "Bangalore has embraced the pet-friendly cafe culture like no other city in India. Here is our curated list of the best spots for a pawsome meal out...",
+            "image_url": None,
+            "category": "Dine",
+            "author": "Foodie Paws",
+            "status": "published",
+            "is_featured": False,
+            "views": 0,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "published_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"post-{secrets.token_hex(4)}",
+            "slug": "understanding-your-dogs-body-language",
+            "title": "Understanding Your Dog's Body Language",
+            "excerpt": "Learn to decode what your furry friend is really trying to tell you.",
+            "content": "Dogs communicate through a rich vocabulary of body language. From tail wags to ear positions, understanding these signals can strengthen your bond...",
+            "image_url": None,
+            "category": "Care",
+            "author": "Dr. Amit Kumar",
+            "status": "published",
+            "is_featured": False,
+            "views": 0,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "published_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"post-{secrets.token_hex(4)}",
+            "slug": "how-to-plan-the-perfect-gotcha-day-celebration",
+            "title": "How to Plan the Perfect Gotcha Day Celebration",
+            "excerpt": "Make your adopted pet's anniversary unforgettable!",
+            "content": "Gotcha Day - the anniversary of when your rescue pet joined your family - deserves to be celebrated! Here are creative ideas to make it special...",
+            "image_url": None,
+            "category": "Celebrate",
+            "author": "The Doggy Company Team",
+            "status": "published",
+            "is_featured": False,
+            "views": 0,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "published_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"post-{secrets.token_hex(4)}",
+            "slug": "5-tips-for-dog-birthday-parties",
+            "title": "5 Tips for Throwing the Perfect Dog Birthday Party",
+            "excerpt": "Make your pup's birthday celebration unforgettable!",
+            "content": "Your furry friend's birthday deserves a pawsome celebration! Here are our top tips for throwing the perfect dog birthday party that both pups and humans will enjoy...",
+            "image_url": None,
+            "category": "Celebrate",
+            "author": "TDB Team",
+            "status": "published",
+            "is_featured": True,
+            "views": 0,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "published_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+    
+    await db.blog_posts.insert_many(sample_posts)
     
     new_count = await db.blog_posts.count_documents({})
     return {"message": f"Seeded {new_count} blog posts", "seeded": new_count}
