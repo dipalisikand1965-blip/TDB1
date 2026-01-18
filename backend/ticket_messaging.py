@@ -222,10 +222,12 @@ async def send_outbound_message(message: OutboundMessage, background_tasks: Back
                 result["email_id"] = email_result.get("id") if isinstance(email_result, dict) else str(email_result)
             except Exception as e:
                 result["error"] = str(e)
+        elif not member_email:
+            result["error"] = "No email address available for this customer"
     
     elif message.channel == "whatsapp":
         # Generate WhatsApp click-to-chat link
-        phone = member.get("whatsapp") or member.get("phone")
+        phone = member_phone
         if phone:
             # Clean phone number
             phone = re.sub(r'[^\d]', '', phone)
