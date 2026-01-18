@@ -1520,6 +1520,119 @@ const ServiceDesk = ({ authHeaders }) => {
               </div>
             </TabsContent>
 
+            {/* ESCALATION RULES TAB */}
+            <TabsContent value="escalation" className="space-y-4 mt-2">
+              <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+                <p className="text-sm text-red-800">
+                  <ArrowUp className="w-4 h-4 inline mr-1" />
+                  Escalation rules automatically move tickets to senior staff when conditions are met. Rules run every 15 minutes.
+                </p>
+              </div>
+
+              {/* Run Manual Check Button */}
+              <div className="flex justify-end">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleRunEscalationCheck}
+                  className="text-red-600 border-red-300 hover:bg-red-50"
+                >
+                  <Zap className="w-4 h-4 mr-1" /> Run Escalation Check Now
+                </Button>
+              </div>
+
+              {/* Escalation Path */}
+              <div className="bg-slate-50 p-4 rounded-lg border space-y-2">
+                <h4 className="font-medium text-sm">⬆️ Escalation Path</h4>
+                <div className="flex items-center gap-2 text-sm">
+                  <Badge className="bg-blue-100 text-blue-700">Agent</Badge>
+                  <span>→</span>
+                  <Badge className="bg-amber-100 text-amber-700">Senior Agent</Badge>
+                  <span>→</span>
+                  <Badge className="bg-purple-100 text-purple-700">Manager</Badge>
+                  <span>→</span>
+                  <Badge className="bg-red-100 text-red-700">Super Admin</Badge>
+                </div>
+              </div>
+
+              {/* Escalation Rules List */}
+              {loadingEscalation ? (
+                <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-red-500" /></div>
+              ) : (
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm">Active Rules ({escalationRules.filter(r => r.enabled).length}/{escalationRules.length})</h4>
+                  <div className="border rounded-lg overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead className="bg-slate-100">
+                        <tr>
+                          <th className="px-3 py-2 text-left">Status</th>
+                          <th className="px-3 py-2 text-left">Rule Name</th>
+                          <th className="px-3 py-2 text-left">Trigger</th>
+                          <th className="px-3 py-2 text-left">Action</th>
+                          <th className="px-3 py-2 text-left">Priority Filter</th>
+                          <th className="px-3 py-2 text-left">Type</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {escalationRules.map((rule, idx) => (
+                          <tr key={rule.id || idx} className={`border-t hover:bg-slate-50 ${!rule.enabled ? 'opacity-50' : ''}`}>
+                            <td className="px-3 py-2">
+                              <button
+                                onClick={() => handleToggleEscalationRule(rule.id)}
+                                className={`w-10 h-5 rounded-full relative transition-colors ${rule.enabled ? 'bg-green-500' : 'bg-gray-300'}`}
+                              >
+                                <span className={`absolute w-4 h-4 bg-white rounded-full top-0.5 transition-transform ${rule.enabled ? 'right-0.5' : 'left-0.5'}`} />
+                              </button>
+                            </td>
+                            <td className="px-3 py-2">
+                              <div className="font-medium">{rule.name}</div>
+                              <div className="text-xs text-gray-500">{rule.description}</div>
+                            </td>
+                            <td className="px-3 py-2">
+                              <Badge variant="outline" className="text-xs">
+                                {rule.trigger?.type === 'unassigned_time' && `Unassigned > ${rule.trigger.hours}h`}
+                                {rule.trigger?.type === 'priority' && `Priority: ${rule.trigger.priority}`}
+                                {rule.trigger?.type === 'sla_breach' && 'SLA Breached'}
+                                {rule.trigger?.type === 'sla_warning' && `SLA Warning (${rule.trigger.minutes_before_breach}m)`}
+                                {rule.trigger?.type === 'no_response_time' && `No Response > ${rule.trigger.hours}h`}
+                              </Badge>
+                            </td>
+                            <td className="px-3 py-2">
+                              <Badge className={
+                                rule.action?.target_role === 'super_admin' ? 'bg-red-100 text-red-700' :
+                                rule.action?.target_role === 'manager' ? 'bg-purple-100 text-purple-700' :
+                                rule.action?.target_role === 'senior_agent' ? 'bg-amber-100 text-amber-700' :
+                                'bg-blue-100 text-blue-700'
+                              }>
+                                → {rule.action?.target_role?.replace('_', ' ')}
+                              </Badge>
+                            </td>
+                            <td className="px-3 py-2 text-xs">
+                              {rule.priority_filter ? rule.priority_filter.join(', ') : 'All'}
+                            </td>
+                            <td className="px-3 py-2">
+                              {rule.is_system ? (
+                                <Badge variant="secondary" className="text-xs">System</Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-xs">Custom</Badge>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Info about escalation */}
+              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 text-xs text-blue-800">
+                <strong>How it works:</strong> Every 15 minutes, the system checks all open tickets against these rules. 
+                If a ticket matches a rule's trigger condition, it's automatically reassigned to someone with the target role, 
+                and an escalation history entry is logged.
+              </div>
+            </TabsContent>
+
             {/* SLA RULES TAB */}
             <TabsContent value="sla" className="space-y-4 mt-2">
               <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
