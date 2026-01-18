@@ -19,7 +19,8 @@ import {
   Download, ShoppingBag, Bot, Utensils, Hotel, CheckSquare, Square, 
   UserPlus, XCircle, Archive, History, ChevronDown, Sparkles, Wand2,
   Brain, Lightbulb, Copy, ThumbsUp, ThumbsDown, Maximize2, Minimize2,
-  Bookmark, BookmarkPlus, Layout, PanelLeft, Activity, TrendingUp
+  Bookmark, BookmarkPlus, Layout, PanelLeft, Activity, TrendingUp,
+  GitMerge, Flag, Share2, BellRing, MailX, FileWarning
 } from 'lucide-react';
 
 // Category icons mapping
