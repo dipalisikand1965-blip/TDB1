@@ -436,6 +436,7 @@ async def general_inquiry(
 async def get_intakes(
     channel: Optional[str] = None,
     status: Optional[str] = None,
+    pillar: Optional[str] = None,
     limit: int = 50
 ):
     """Get channel intake requests (admin)"""
@@ -447,10 +448,22 @@ async def get_intakes(
         query["channel"] = channel
     if status:
         query["status"] = status
+    if pillar:
+        query["pillar"] = pillar
     
     intakes = await db.channel_intakes.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
     
-    return {"intakes": intakes, "count": len(intakes)}
+    # Get pillar counts
+    pillar_pipeline = [
+        {"$group": {"_id": "$pillar", "count": {"$sum": 1}}}
+    ]
+    pillar_stats = await db.channel_intakes.aggregate(pillar_pipeline).to_list(100)
+    
+    return {
+        "intakes": intakes, 
+        "count": len(intakes),
+        "by_pillar": {s["_id"]: s["count"] for s in pillar_stats if s["_id"]}
+    }
 
 
 @channel_router.get("/intakes/{request_id}")
