@@ -77,6 +77,11 @@ from data_migration import (
     set_migration_db,
     set_migration_admin_verify
 )
+from pet_soul_routes import (
+    pet_soul_router,
+    pet_soul_admin_router,
+    set_pet_soul_db
+)
 from admin_auth import (
     router as admin_auth_router,
     set_admin_db,
