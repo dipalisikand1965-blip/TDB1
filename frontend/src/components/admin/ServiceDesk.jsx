@@ -1959,6 +1959,86 @@ const ServiceDesk = ({ authHeaders }) => {
                   </div>
                 </Card>
 
+                {/* Customer History - NEW! */}
+                <Card className="p-3 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+                  <h4 className="text-sm font-medium mb-2 flex items-center gap-2 text-blue-800">
+                    <History className="w-4 h-4" /> Customer History
+                  </h4>
+                  {loadingHistory ? (
+                    <div className="text-center py-2">
+                      <Loader2 className="w-4 h-4 animate-spin mx-auto text-blue-500" />
+                    </div>
+                  ) : customerHistory ? (
+                    <div className="space-y-2">
+                      {/* Stats Row */}
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        <div className="bg-white/80 rounded p-1.5">
+                          <div className="text-lg font-bold text-blue-600">{customerHistory.stats.total_tickets}</div>
+                          <div className="text-[10px] text-gray-500">Tickets</div>
+                        </div>
+                        <div className="bg-white/80 rounded p-1.5">
+                          <div className="text-lg font-bold text-green-600">{customerHistory.stats.total_orders}</div>
+                          <div className="text-[10px] text-gray-500">Orders</div>
+                        </div>
+                        <div className="bg-white/80 rounded p-1.5">
+                          <div className="text-lg font-bold text-purple-600">{customerHistory.stats.total_bookings}</div>
+                          <div className="text-[10px] text-gray-500">Bookings</div>
+                        </div>
+                      </div>
+                      
+                      {/* Satisfaction */}
+                      {customerHistory.stats.avg_satisfaction && (
+                        <div className="flex items-center justify-center gap-1 bg-white/80 rounded p-1.5">
+                          <span className="text-yellow-500">
+                            {'⭐'.repeat(Math.round(customerHistory.stats.avg_satisfaction))}
+                          </span>
+                          <span className="text-xs text-gray-600">
+                            ({customerHistory.stats.avg_satisfaction}/5 avg)
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Recent Tickets */}
+                      {customerHistory.tickets.length > 0 && (
+                        <div>
+                          <div className="text-xs font-medium text-gray-600 mb-1">Recent Tickets</div>
+                          <div className="space-y-1 max-h-24 overflow-y-auto">
+                            {customerHistory.tickets.slice(0, 3).map(t => (
+                              <div 
+                                key={t.ticket_id} 
+                                className="text-xs bg-white/60 rounded p-1.5 flex items-center justify-between cursor-pointer hover:bg-white"
+                                onClick={() => fetchTicketDetails(t.ticket_id)}
+                              >
+                                <span className="font-mono text-gray-500">{t.ticket_id.slice(-8)}</span>
+                                <Badge className={`text-[10px] ${STATUS_COLORS[t.status] || 'bg-gray-100'}`}>
+                                  {t.status}
+                                </Badge>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Recent Orders */}
+                      {customerHistory.orders.length > 0 && (
+                        <div>
+                          <div className="text-xs font-medium text-gray-600 mb-1">Recent Orders</div>
+                          <div className="space-y-1 max-h-20 overflow-y-auto">
+                            {customerHistory.orders.slice(0, 2).map(o => (
+                              <div key={o.id} className="text-xs bg-white/60 rounded p-1.5 flex items-center justify-between">
+                                <span>₹{o.total}</span>
+                                <Badge variant="outline" className="text-[10px]">{o.status}</Badge>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-xs text-gray-500 text-center py-2">No history available</div>
+                  )}
+                </Card>
+
                 {/* Assignment */}
                 <Card className="p-3">
                   <h4 className="text-sm font-medium mb-2 flex items-center justify-between">
