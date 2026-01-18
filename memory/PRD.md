@@ -510,11 +510,22 @@ A personalized trip recommendation engine that suggests:
 
 ---
 
-*Last Updated: January 17, 2026*
+*Last Updated: January 18, 2026*
 
 ---
 
-## Changelog (Jan 17, 2026 - Latest Session)
+## Changelog (Jan 18, 2026 - Latest Session)
+- ✅ **Fixed Dine Reservation Form Crash** - Added Array.isArray check for cuisine filter in DinePage.jsx
+- ✅ **Fixed Dine/Stay Status Notifications** - Status changes now trigger notification engine and update service desk tickets
+- ✅ **Fixed Add Bundle Form Error** - Changed SelectItem value from empty string to 'any' in DineManager.jsx
+- ✅ **Improved Service Desk Reply UX** - Added clear "Email Guest" and "WhatsApp Guest" buttons with recipient preview
+- ✅ **Voice Order Ticket Integration** - Voice/channel intakes now auto-create service desk tickets with pillar detection
+- ✅ **Pillar Detection for Voice Orders** - Auto-detects pillar from message content (celebrate, dine, stay, travel, care)
+- ✅ **Removed Duplicate Routes** - Cleaned up duplicate status update routes in dine_routes.py
+
+---
+
+## Changelog (Jan 17, 2026 - Previous Session)
 - ✅ Implemented Global Scale Foundation with App Settings API
 - ✅ Built Advanced Checkout with Split-Fulfillment Logic
 - ✅ Added Pan-India Shipping toggle for nationwide delivery
