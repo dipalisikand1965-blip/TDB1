@@ -34,27 +34,10 @@ const MyPets = () => {
   const [personas, setPersonas] = useState({});
   const [upcomingCelebrations, setUpcomingCelebrations] = useState([]);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/login');
-    }
-  }, [authLoading, user, navigate]);
-
+  // No login required - show all pets (public view)
   useEffect(() => {
     const fetchData = async () => {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-      
       try {
-        // Auth headers for protected endpoints
-        const authHeaders = {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        };
-
         // Fetch personas (public endpoint)
         const personasRes = await fetch(`${API_URL}/api/pets/personas`);
         if (personasRes.ok) {
@@ -62,22 +45,46 @@ const MyPets = () => {
           setPersonas(data.personas || {});
         }
 
-        // Fetch ONLY the logged-in user's pets (protected endpoint)
-        const petsRes = await fetch(`${API_URL}/api/pets/my-pets`, {
-          headers: authHeaders
-        });
-        if (petsRes.ok) {
-          const data = await petsRes.json();
-          setPets(data.pets || []);
-        }
+        // If user is logged in, fetch their pets, otherwise fetch all pets (public)
+        if (token) {
+          // Auth headers for protected endpoints
+          const authHeaders = {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          };
 
-        // Fetch upcoming celebrations for user's pets only
-        const celebRes = await fetch(`${API_URL}/api/celebrations/my-upcoming?days=30`, {
-          headers: authHeaders
-        });
-        if (celebRes.ok) {
-          const data = await celebRes.json();
-          setUpcomingCelebrations(data.celebrations || []);
+          // Fetch ONLY the logged-in user's pets (protected endpoint)
+          const petsRes = await fetch(`${API_URL}/api/pets/my-pets`, {
+            headers: authHeaders
+          });
+          if (petsRes.ok) {
+            const data = await petsRes.json();
+            setPets(data.pets || []);
+          }
+
+          // Fetch upcoming celebrations for user's pets only
+          const celebRes = await fetch(`${API_URL}/api/celebrations/my-upcoming?days=30`, {
+            headers: authHeaders
+          });
+          if (celebRes.ok) {
+            const data = await celebRes.json();
+            setUpcomingCelebrations(data.celebrations || []);
+          }
+        } else {
+          // Public view - fetch all pets
+          const petsRes = await fetch(`${API_URL}/api/pets?limit=100`);
+          if (petsRes.ok) {
+            const data = await petsRes.json();
+            setPets(data.pets || []);
+          }
+
+          // Fetch public upcoming celebrations
+          const celebRes = await fetch(`${API_URL}/api/celebrations/upcoming?days=30`);
+          if (celebRes.ok) {
+            const data = await celebRes.json();
+            setUpcomingCelebrations(data.celebrations || []);
+          }
+        }
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);
