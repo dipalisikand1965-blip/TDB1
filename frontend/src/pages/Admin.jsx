@@ -1734,15 +1734,29 @@ const Admin = () => {
                   <div className="space-y-4">
                     <div>
                       <label className="text-sm font-medium">Category</label>
-                      <Input value={editingFaq.category || 'General'} onChange={(e) => setEditingFaq({...editingFaq, category: e.target.value})} placeholder="e.g., Orders & Delivery" list="faq-categories" />
-                      <datalist id="faq-categories">
-                        {faqCategories.map(cat => <option key={cat} value={cat} />)}
-                        <option value="Orders & Delivery" />
-                        <option value="Products & Ingredients" />
-                        <option value="Customization" />
-                        <option value="Payments & Refunds" />
-                        <option value="General" />
-                      </datalist>
+                      <select className="w-full border rounded-md p-2" value={editingFaq.category || 'General'} onChange={(e) => setEditingFaq({...editingFaq, category: e.target.value})}>
+                        <optgroup label="General">
+                          <option value="General">General</option>
+                          <option value="Orders & Delivery">Orders & Delivery</option>
+                          <option value="Products & Ingredients">Products & Ingredients</option>
+                          <option value="Customization">Customization</option>
+                          <option value="Payments & Refunds">Payments & Refunds</option>
+                        </optgroup>
+                        <optgroup label="Pillars">
+                          <option value="Celebrate">🎂 Celebrate</option>
+                          <option value="Dine">🍽️ Dine</option>
+                          <option value="Stay">🏨 Stay</option>
+                          <option value="Travel">✈️ Travel</option>
+                          <option value="Care">💊 Care</option>
+                          <option value="Shop">🛍️ Shop</option>
+                        </optgroup>
+                        <optgroup label="Features">
+                          <option value="Mira AI">Mira AI</option>
+                          <option value="Membership">Membership</option>
+                          <option value="Autoship">Autoship</option>
+                          <option value="Pet Soul">Pet Soul</option>
+                        </optgroup>
+                      </select>
                     </div>
                     <div>
                       <label className="text-sm font-medium">Question *</label>
