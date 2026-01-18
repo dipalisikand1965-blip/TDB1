@@ -1102,6 +1102,16 @@ const Admin = () => {
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
+            
+            <div className="text-center mt-4">
+              <a 
+                href="/admin/forgot-password" 
+                className="text-sm text-purple-600 hover:text-purple-700 hover:underline"
+                data-testid="forgot-password-link"
+              >
+                Forgot Password?
+              </a>
+            </div>
           </form>
         </Card>
       </div>
