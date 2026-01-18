@@ -4964,9 +4964,13 @@ async def check_abandoned_carts():
 
 
 async def send_abandoned_cart_email(to_email: str, name: str, items: list, 
-                                     subtotal: float, reminder_type: str, cart_id: str) -> bool:
-    """Send abandoned cart recovery email"""
+                                     subtotal: float, reminder_type: str, cart_id: str) -> dict:
+    """Send abandoned cart recovery email. Returns dict with success status and error message."""
     try:
+        # Check if Resend is configured
+        if not RESEND_API_KEY:
+            return {"success": False, "error": "Email service not configured (RESEND_API_KEY missing)"}
+        
         # Subject lines based on reminder type
         subjects = {
             "first": "🛒 You left something behind at The Doggy Bakery!",
