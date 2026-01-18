@@ -4176,6 +4176,9 @@ async def get_all_pillar_products(limit: int = 100, pillar: str = None):
     all_items = products + bundles
     
     return {"products": all_items, "total": len(all_items)}
+
+@api_router.get("/admin/products/tag-options")
+async def get_display_tag_options():
     """Get available display tag options"""
     return {"tags": DISPLAY_TAG_OPTIONS}
 
