@@ -204,6 +204,8 @@ async def process_intake(request: ChannelRequest) -> IntakeResponse:
         "raw_data": request.raw_data,
         "metadata": request.metadata,
         "status": "pending",
+        "pillar": "general",  # Default pillar - can be reassigned by admin
+        "assigned_pillar": None,  # For admin assignment
         "created_at": datetime.now(timezone.utc).isoformat(),
         "processed_at": None
     }
@@ -211,6 +213,95 @@ async def process_intake(request: ChannelRequest) -> IntakeResponse:
     # Save to database
     if db is not None:
         await db.channel_intakes.insert_one(intake_record)
+        
+        # AUTO-CREATE SERVICE DESK TICKET for voice/channel intakes
+        try:
+            customer_name = request.customer_name or extracted_data.get("customer_name") or "Unknown Customer"
+            customer_email = request.customer_email
+            
+            # Detect potential pillar from message content
+            detected_pillar = "general"
+            message_lower = request.message.lower()
+            if any(word in message_lower for word in ["cake", "treat", "bakery", "birthday", "celebration"]):
+                detected_pillar = "celebrate"
+            elif any(word in message_lower for word in ["restaurant", "dine", "reservation", "table", "lunch", "dinner"]):
+                detected_pillar = "dine"
+            elif any(word in message_lower for word in ["stay", "hotel", "resort", "booking", "vacation", "pawcation"]):
+                detected_pillar = "stay"
+            elif any(word in message_lower for word in ["travel", "flight", "transport", "relocate"]):
+                detected_pillar = "travel"
+            elif any(word in message_lower for word in ["groom", "vet", "doctor", "training", "spa"]):
+                detected_pillar = "care"
+            
+            # Create ticket
+            ticket_id = f"TKT-{secrets.token_hex(4).upper()}"
+            ticket_doc = {
+                "ticket_id": ticket_id,
+                "title": f"[{request.channel.upper()}] {request.request_type.title()} Request - {customer_name}",
+                "description": f"**Channel:** {request.channel}\n**Message:**\n{request.message}\n\n**Extracted Data:** {json.dumps(extracted_data, indent=2) if extracted_data else 'None'}",
+                "customer_name": customer_name,
+                "customer_email": customer_email,
+                "customer_phone": request.customer_phone,
+                "source": f"channel_intake_{request.channel}",
+                "source_id": request_id,
+                "pillar": detected_pillar,
+                "suggested_pillar": detected_pillar,
+                "category": "channel_order",
+                "status": "open",
+                "priority": "normal",
+                "assigned_to": None,
+                "messages": [{
+                    "id": f"msg-{secrets.token_hex(4)}",
+                    "sender": "system",
+                    "channel": "internal",
+                    "message": f"Auto-created from {request.channel} intake. Request ID: {request_id}",
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }],
+                "metadata": {
+                    "intake_id": request_id,
+                    "channel": request.channel,
+                    "extracted_data": extracted_data
+                },
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.service_desk_tickets.insert_one(ticket_doc)
+            
+            # Update intake with ticket ID
+            await db.channel_intakes.update_one(
+                {"request_id": request_id},
+                {"$set": {"ticket_id": ticket_id, "pillar": detected_pillar}}
+            )
+            
+            logger.info(f"Auto-created ticket {ticket_id} for {request.channel} intake {request_id}, pillar: {detected_pillar}")
+            
+            # Send notification
+            try:
+                from notification_engine import send_notification, NotificationEvent, NotificationRecipient
+                event = NotificationEvent(
+                    event_type="ticket_created",
+                    pillar=detected_pillar,
+                    reference_id=ticket_id,
+                    reference_type="ticket",
+                    customer=NotificationRecipient(
+                        name=customer_name,
+                        email=customer_email,
+                        phone=request.customer_phone
+                    ),
+                    data={
+                        "channel": request.channel,
+                        "message_preview": request.message[:100] + "..." if len(request.message) > 100 else request.message,
+                        "request_id": request_id
+                    },
+                    triggered_by="system"
+                )
+                await send_notification(event, ["email"])
+                logger.info(f"Notification sent for ticket {ticket_id}")
+            except Exception as ne:
+                logger.error(f"Failed to send notification for ticket {ticket_id}: {ne}")
+                
+        except Exception as e:
+            logger.error(f"Failed to create ticket for channel intake {request_id}: {e}")
     
     # Determine next steps based on extracted data
     next_steps = []
@@ -225,6 +316,8 @@ async def process_intake(request: ChannelRequest) -> IntakeResponse:
             next_steps.append("Store pickup requested")
     else:
         next_steps.append("Our team will review your request and contact you shortly")
+    
+    next_steps.append("A service desk ticket has been created for your request")
     
     return IntakeResponse(
         success=True,
