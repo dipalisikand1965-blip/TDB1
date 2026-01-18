@@ -5866,9 +5866,37 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
         synced = 0
         added = 0
         updated = 0
+        problematic_products = []  # Track products with issues
         
         for sp in shopify_products:
+            # DEBUG: Log raw Shopify product data for title issues
+            raw_title = sp.get("title")
+            raw_handle = sp.get("handle")
+            shopify_id = sp.get("id")
+            
+            # Check for problematic products BEFORE transform
+            if not raw_title or raw_title.strip() == "" or "untitled" in (raw_title or "").lower():
+                logger.warning(f"[SHOPIFY SYNC DEBUG] Problematic product detected:")
+                logger.warning(f"  - Shopify ID: {shopify_id}")
+                logger.warning(f"  - Raw Title: '{raw_title}'")
+                logger.warning(f"  - Handle: '{raw_handle}'")
+                logger.warning(f"  - Product Type: '{sp.get('product_type')}'")
+                logger.warning(f"  - Variants: {len(sp.get('variants', []))}")
+                logger.warning(f"  - Full product data: {sp}")
+                problematic_products.append({
+                    "shopify_id": shopify_id,
+                    "raw_title": raw_title,
+                    "handle": raw_handle,
+                    "product_type": sp.get("product_type")
+                })
+            
             transformed = transform_shopify_product(sp)
+            
+            # Verify transformation result
+            if not transformed.get("name") or "untitled" in transformed.get("name", "").lower():
+                logger.error(f"[SHOPIFY SYNC ERROR] Product still untitled after transform:")
+                logger.error(f"  - Transformed name: '{transformed.get('name')}'")
+                logger.error(f"  - From Shopify ID: {shopify_id}")
             
             # Check if product exists
             existing = await db.products.find_one({"shopify_id": sp["id"]})
