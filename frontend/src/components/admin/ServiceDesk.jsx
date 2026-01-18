@@ -1033,7 +1033,7 @@ const ServiceDesk = ({ authHeaders }) => {
                     <Select value={newAssignmentRule.urgency} onValueChange={(v) => setNewAssignmentRule({ ...newAssignmentRule, urgency: v })}>
                       <SelectTrigger className="text-sm"><SelectValue placeholder="Any urgency" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Any Urgency</SelectItem>
+                        <SelectItem value="all">Any Urgency</SelectItem>
                         <SelectItem value="critical">🔴 Critical</SelectItem>
                         <SelectItem value="high">🟠 High</SelectItem>
                         <SelectItem value="medium">🟡 Medium</SelectItem>
