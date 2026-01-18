@@ -133,9 +133,9 @@ export default function VoiceOrder() {
         return;
       }
       
-      // Validate file size (25MB max)
-      if (file.size > 25 * 1024 * 1024) {
-        setError('File too large. Maximum 25MB.');
+      // Validate file size (5MB max for Cloudflare compatibility)
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        setError(`File too large. Maximum ${MAX_FILE_SIZE_MB}MB. Try a shorter recording.`);
         return;
       }
       
