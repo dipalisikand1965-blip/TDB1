@@ -1550,8 +1550,8 @@ const BookingRequestModal = ({ property, onClose }) => {
           </div>
         </div>
 
-        {/* Footer - Absolutely positioned at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t bg-white flex gap-3">
+        {/* Footer */}
+        <div className="p-4 border-t bg-white flex gap-3">
           {step > 1 && (
             <Button variant="outline" onClick={() => setStep(step - 1)} className="text-sm">
               Back
