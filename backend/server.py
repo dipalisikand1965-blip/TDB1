@@ -5098,18 +5098,20 @@ async def send_abandoned_cart_email(to_email: str, name: str, items: list,
         
         email_response = resend.Emails.send(params)
         logger.info(f"Abandoned cart email ({reminder_type}) sent to {to_email}")
-        return True
+        return {"success": True, "error": None}
         
     except Exception as e:
         error_msg = str(e)
         # Handle common Resend errors gracefully (don't spam logs in production)
         if "verify a domain" in error_msg.lower() or "testing emails" in error_msg.lower():
             logger.warning(f"Abandoned cart email skipped (domain not verified): {to_email}")
+            return {"success": False, "error": "Email domain not verified. Please verify your domain in Resend dashboard."}
         elif "rate limit" in error_msg.lower() or "too many requests" in error_msg.lower():
             logger.warning(f"Abandoned cart email rate limited: {to_email}")
+            return {"success": False, "error": "Email rate limit reached. Please try again later."}
         else:
             logger.error(f"Failed to send abandoned cart email: {e}")
-        return False
+            return {"success": False, "error": f"Email sending failed: {error_msg}"}
 
 
 # Add abandoned cart checker to scheduler
