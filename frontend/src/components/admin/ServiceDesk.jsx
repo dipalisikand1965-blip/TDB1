@@ -1137,7 +1137,7 @@ const ServiceDesk = ({ authHeaders }) => {
                     <Select value={newSlaRule.urgency} onValueChange={(v) => setNewSlaRule({ ...newSlaRule, urgency: v })}>
                       <SelectTrigger className="text-sm"><SelectValue placeholder="Any" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Any</SelectItem>
+                        <SelectItem value="all">Any</SelectItem>
                         <SelectItem value="critical">Critical</SelectItem>
                         <SelectItem value="high">High</SelectItem>
                         <SelectItem value="medium">Medium</SelectItem>
