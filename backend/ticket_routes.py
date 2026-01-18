@@ -1748,3 +1748,124 @@ async def get_customer_full_history(identifier: str):
             "created_at": r.get("created_at")
         } for r in dine_reservations]
     }
+
+
+# ============== ATTACHMENT UPLOAD ==============
+
+@router.post("/{ticket_id}/attachments")
+async def upload_ticket_attachment(
+    ticket_id: str,
+    file: UploadFile = File(...)
+):
+    """Upload an attachment to a ticket"""
+    db = get_db()
+    
+    # Verify ticket exists
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    # Validate file type
+    allowed_types = [
+        'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+        'application/pdf', 
+        'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/plain', 'text/csv'
+    ]
+    
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail=f"File type {file.content_type} not allowed")
+    
+    # Check file size (max 10MB)
+    file_content = await file.read()
+    if len(file_content) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File size exceeds 10MB limit")
+    
+    # Create uploads directory
+    upload_dir = f"uploads/tickets/{ticket_id}"
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    # Generate unique filename
+    ext = file.filename.split('.')[-1] if '.' in file.filename else ''
+    unique_filename = f"{uuid.uuid4().hex[:8]}_{file.filename}"
+    file_path = f"{upload_dir}/{unique_filename}"
+    
+    # Save file
+    with open(file_path, "wb") as f:
+        f.write(file_content)
+    
+    # Update ticket with attachment info
+    attachment_info = {
+        "filename": file.filename,
+        "stored_filename": unique_filename,
+        "path": file_path,
+        "content_type": file.content_type,
+        "size": len(file_content),
+        "uploaded_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"attachments": attachment_info},
+            "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+        }
+    )
+    
+    return {
+        "success": True,
+        "filename": file.filename,
+        "path": file_path,
+        "size": len(file_content)
+    }
+
+
+@router.get("/{ticket_id}/attachments")
+async def get_ticket_attachments(ticket_id: str):
+    """Get all attachments for a ticket"""
+    db = get_db()
+    
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"attachments": 1})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    return {"attachments": ticket.get("attachments", [])}
+
+
+@router.delete("/{ticket_id}/attachments/{filename}")
+async def delete_ticket_attachment(ticket_id: str, filename: str):
+    """Delete an attachment from a ticket"""
+    db = get_db()
+    
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    # Find and remove attachment
+    attachments = ticket.get("attachments", [])
+    updated_attachments = [a for a in attachments if a.get("stored_filename") != filename and a.get("filename") != filename]
+    
+    if len(updated_attachments) == len(attachments):
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    
+    # Delete file from disk
+    for a in attachments:
+        if a.get("stored_filename") == filename or a.get("filename") == filename:
+            try:
+                os.remove(a.get("path", f"uploads/tickets/{ticket_id}/{filename}"))
+            except:
+                pass
+            break
+    
+    await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$set": {
+                "attachments": updated_attachments,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    return {"success": True, "message": "Attachment deleted"}
