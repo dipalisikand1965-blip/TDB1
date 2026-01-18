@@ -11,6 +11,7 @@ import ReviewsManager from '../components/ReviewsManager';
 import AutoshipManager from '../components/AutoshipManager';
 import FulfilmentManager from '../components/FulfilmentManager';
 import ReportsManager from '../components/ReportsManager';
+import MISDashboard from '../components/admin/MISDashboard';
 import PillarCategoryManager from '../components/PillarCategoryManager';
 import EnhancedCollectionManager from '../components/EnhancedCollectionManager';
 import PartnerManager from '../components/PartnerManager';
