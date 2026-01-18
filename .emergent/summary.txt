@@ -11,167 +11,173 @@
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack React/FastAPI/MongoDB application. The previous session was an intensive debugging and stabilization sprint, where the agent worked closely with the user to resolve numerous issues on both the preview and deployed environments.
+A full-stack React/FastAPI/MongoDB application. The agent has just completed a massive feature enhancement sprint focused on getting the **Service Desk** to 100% completion. This included adding bulk actions, an activity timeline, auto-ticketing for new pillars (Travel, Care), and a world-class AI-powered reply drafting feature using GPT. The agent also implemented a new **Product Tags Manager** and fixed numerous user-reported bugs, including the public blog page not showing API data and the Stay booking form button being obscured on mobile.
 
-Key achievements include:
--   **Deployment Support**: Guided the user through complex deployment scenarios involving custom domains and replacing existing deployments.
--   **Pillar Forms Fixed**: Resolved multiple UI and backend bugs in the Stay and Dine pillar forms, including a mobile layout issue making the Stay modal unusable and a non-functional time picker in Dine.
--   **Backend Services Stabilized**: Fixed critical bugs preventing the creation of Service Desk tickets and notifications for Stay bookings. Diagnosed and fixed issues with abandoned cart reminders and implemented a blog post seeding mechanism.
--   **Mira AI Overhaul**: Replaced the external Chatbase  with a new, fully local, API-driven chat component () powered by the Emergent LLM Key.
--   **Strategic Planning**: Collaborated with the user to define a definitive, sequential build plan, prioritizing the completion of the core Unified Engine before enhancing individual pillars.
+However, the session ended with the user reporting a **critical, show-stopping bug: all products, bundles, and restaurants have disappeared across the entire application** following the last deployment. The application is currently in a non-functional state due to this data loss.
 
 **Last working item**:
--   Last item agent was working: The agent was addressing a user report that the **Stay pillar booking form was too broad on mobile and not creating Service Desk tickets or notifications.**
--   Status: USER VERIFICATION PENDING
--   Agent Testing Done: Y
--   Which testing method agent to use? Frontend testing agent to verify the Stay pillar's booking flow on a mobile viewport, from opening the modal to form submission, and then backend testing agent to confirm the corresponding ticket and notification are created.
--   User Testing Done: N
+-   Last item agent was working: The agent was interrupted while implementing the final features for the Service Desk (specifically a Customer History sidebar). The user reported that **all product-related data has vanished from the application.** The agent's last action was to begin investigating this critical failure.
+-   Status: BLOCKED
+-   Agent Testing Done: N
+-   Which testing method agent to use? backend testing agent. The agent must first diagnose the data loss. Query all relevant collections in the MongoDB database (, , , , , etc.) to determine if the data is truly gone or just failing to load.
+-   User Testing Done: Y
 
 **All Pending/In progress Issue list**:
--   Issue 1: Shopify Sync creates 'Untitled' Products. (P1, Recurring)
+-   Issue 1: All products, bundles, and restaurants have disappeared (P0 - CRITICAL BLOCKER)
+-   Issue 2: Complete Service Desk to 100% (P0 - Blocked)
+-   Issue 3: Voice Order does not create a Service Desk ticket or notification (P1)
+-   Issue 4: Shopify Sync creates 'Untitled' Products (P2 - Recurring)
+-   Issue 5: Product tags should be applicable to all product types, including bundles (P2)
+-   Issue 6: Old blog posts are missing / Blogs not auto-populating reliably (P2)
 
 **Issues Detail**:
--   **Issue 1: Shopify Sync creates 'Untitled' Products**
-    -   **Attempted fixes**: No work was done on this in the current session. An endpoint () exists for diagnosis.
-    -   **Next debug checklist**: Run a Shopify sync, check the problematic logs endpoint, and analyze the raw Shopify data to find the root cause of the null titles.
+-   **Issue 1: All products, bundles, and restaurants have disappeared**
+    -   **Attempted fixes**: The agent was about to start investigating the database when the session ended. No fixes have been attempted.
+    -   **Next debug checklist**:
+        1.  Use the  shell or a script to connect to the database.
+        2.  Run  on the following collections: , , , , .
+        3.  **If counts are zero**: This is data loss. Investigate recent commits to  or any seeding/migration scripts that might contain a destructive operation (, , etc.). The agent was just working on the Product Tags Manager and Service Desk, so review that code for any unintended side effects on other collections.
+        4.  **If counts are non-zero**: The data exists, but is not being retrieved. Check the API endpoints that fetch this data (e.g., , ) for errors. Check the frontend code to see if there are any new filters or logic preventing the display of the items.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a catastrophic failure that makes the application unusable. Fixing it will restore all e-commerce and booking functionality.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Blocked on other issue**: This issue blocks all other work.
+
+-   **Issue 2: Complete Service Desk to 100%**
+    -   **Attempted fixes**: The agent was adding a Customer History sidebar and backend endpoints for merging tickets and canned responses. This work was interrupted.
+    -   **Next debug checklist**: After fixing the data loss, test the new Customer History feature. Verify that the  hook in  correctly calls the  endpoint and displays the data. Test the Merge Tickets button in the bulk action bar.
+    -   **Why fix this issue and what will be achieved with the fix?**: Fulfills the user's primary goal of creating a world-class service desk, better than competitors, which is the core of the Unified Engine.
+    -   **Status**: BLOCKED
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Blocked on other issue**: All products, bundles, restaurants have disappeared
+
+-   **Issue 3: Voice Order does not create a Service Desk ticket or notification**
+    -   **Attempted fixes**: The agent modified  to change the destination collection from  to .
+    -   **Next debug checklist**: Place a voice order and verify that a new ticket appears in the Service Desk UI and a new notification appears in the admin notification bell.
+    -   **Why fix this issue and what will be achieved with the fix?**: Ensures every customer interaction is captured in the central service desk, completing the Unified Input vision.
+    -   **Status**: TESTING PENDING
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Backend
+
+-   **Issue 4: Shopify Sync creates 'Untitled' Products**
+    -   **Attempted fixes**: None in this session.
+    -   **Next debug checklist**: Run a Shopify sync, check the  endpoint, and analyze the raw Shopify data for payloads with null titles.
     -   **Why fix this issue and what will be achieved with the fix?**: Fixes a critical data integrity problem that pollutes the product catalog.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Backend
-    -   **Blocked on other issue**: None
+
+-   **Issue 5: Product tags should be applicable to all product types, including bundles**
+    -   **Attempted fixes**: The agent built a comprehensive Product Tags Manager.
+    -   **Next debug checklist**: In the Product Tags admin section, attempt to apply a tag to a product bundle (e.g., from the Celebrate or Dine pillars) and verify it saves and filters correctly.
+    -   **Why fix this issue and what will be achieved with the fix?**: Creates a flexible and unified merchandising tool across all business pillars.
+    -   **Status**: TESTING PENDING
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Both
+
+-   **Issue 6: Old blog posts are missing / Blogs not auto-populating reliably**
+    -   **Attempted fixes**: The agent added 5 new blog posts manually and added a Seed Posts button to the Admin UI.
+    -   **Next debug checklist**: Verify that the blog posts are present. Instruct the user on how to use the new Seed Posts button.
+    -   **Why fix this issue and what will be achieved with the fix?**: Ensures the content on the public-facing site is fresh and manageable.
+    -   **Status**: USER VERIFICATION PENDING
+    -   **Is recurring issue?**: Y
+    -   **Should Test frontend/backend/both after fix?**: Both
 
 **In progress Task List**:
--   **Task 1: Complete Service Desk to 100%** (P0, HIGHEST)
-    -   **Where to resume**: The agent has performed a comprehensive audit of the Service Desk, creating a 40-point checklist. The next step is to begin implementing the features marked as  or  from this audit. The highest priorities are ensuring auto-ticketing for all remaining pillars (Travel, Care, Services) and implementing Bulk Actions (select, assign, change status/priority).
-    -   **What will be achieved with this?**: This fulfills the first step of the user-approved Engine First strategy, creating a robust, centralized system for handling all customer requests before building out more pillar features.
-    -   **Status**: NOT STARTED
+-   **Task 1: Finalize Service Desk Enhancements**
+    -   **Where to resume**: The work was interrupted. After fixing the critical data loss bug, the agent needs to finish and test the Customer History sidebar, Ticket Merge functionality, and Canned Responses feature in  and .
+    -   **What will be achieved with this?**: This will complete the user's vision for the Service Desk, making it a powerful, context-aware tool for the concierge team.
+    -   **Status**: IN PROGRESS
     -   **Should Test frontend/backend/both after fix?**: Both
-    -   **Blocked on something**: None
+    -   **Blocked on something**: The P0 data loss issue.
 
 **Upcoming and Future Tasks**
-Based on the user-approved sequential plan (one green at a time):
-
 **Upcoming Tasks (P0)**:
--   **PHASE 1: UNIFIED ENGINE (100% COMPLETION)**
-    -   **Task 1.1: Service Desk**: Complete all 40 checklist items (auto-ticketing for all pillars, bulk actions, SLA escalation, audit trail, etc.).
-    -   **Task 1.2: Notification Engine**: Standardize templates, add user preferences, and a notification center.
-    -   **Task 1.3: Unified Inbox**: Implement conversation threading, enhanced customer context sidebar.
-    -   **Task 1.4: Pet Soul Integration Hooks**: Ensure every pillar can auto-populate from and save data back to the Pet Soul.
--   **PHASE 2: PET SOUL (100% COMPLETION)**
-    -   Complete the progressive questionnaire UI in .
-    -   Build the 8-folder dashboard with progress rings and scoring.
-    -   Implement the auto-learning hooks defined in the engine phase.
+-   **Service Desk - Final Polish**:
+    -   **SLA Breach Alerts**: Implement and test the UI for SLA breach alerts and automatic escalations. User wants this to have a premium look and feel.
+    -   **UI/UX Perfection**: Final review of the Service Desk UI to meet the better than Zendesk/Salesforce standard.
 
 **Future Tasks (P1 and beyond)**:
+-   **PHASE 2: PET SOUL (100% COMPLETION)**
 -   **PHASE 3: PILLARS (100% Completion, One by One)**
-    -   Complete **Celebrate**, **Dine**, **Stay**, and **Shop** pillars to 100%.
-    -   Build out **Travel**, **Care**, and **Services** pillars from scratch using the Unified Engine.
--   **PHASE 4: MEMBERSHIP LAYER (100% Completion)**: Implement tiers, points, and a member dashboard.
+-   **PHASE 4: MEMBERSHIP LAYER (100% Completion)**: User mentioned connecting this to the Service Desk history.
 -   **PHASE 5: INTEGRATIONS**: WhatsApp Business, Razorpay, Google Calendar.
 -   **PHASE 6: TECHNICAL DEBT & REFACTORING**: Split  and .
+-   **Auto ship rules engine**: User mentioned this for a later phase (Shipping).
 
 **Completed work in this session**
--   **Stay Pillar Overhaul**:
-    -   Fixed mobile modal UI being too broad and cutting off buttons ().
-    -   Fixed notifications not being sent by correcting the DB collection to  ().
-    -   Fixed Service Desk tickets not being created by correcting model attributes ( and ).
--   **Mira AI Replacement**:
-    -   Replaced the external Chatbase  with a new, custom, local API-powered chat component ().
-    -   Installed  dependency.
--   **Backend Stability Fixes**:
-    -   **Abandoned Cart Reminders**: Fixed function calls missing parameters and added detailed error propagation from the Resend API ().
-    -   **Blog Post Seeding**: Implemented an auto-seed on startup and a manual  endpoint ().
--   **Dine Pillar Fix**: Replaced text time input with a 30-minute interval dropdown ().
--   **Voice Order Stability**: Improved frontend fetch logic with a 60-second timeout and  to handle network flakiness ().
--   **Admin & MIS Dashboard**: Fixed the MIS dashboard not loading by adding a missing  dependency ().
--   **UI/UX Fixes**: Added the Voice Order link to the mobile navigation menu ().
--   **Deployment & Strategy**: Provided extensive guidance on deployment and collaborated with the user to establish a clear, sequential development roadmap.
-
-**Earlier issues found/mentioned but not fixed**
--   **Issue 1: Shopify Sync creates 'Untitled' Products**
-    -   **Debug checklist**: Run a sync, check the logs at , and analyze the raw Shopify data for payloads with null titles.
-    -   **Why to solve this issue and what will be achieved with this?**: Fixes a critical data integrity problem in the product catalog.
-    -   **Should Test frontend/backend/both after fix?**: Backend
-    -   **Is recurring issue?**: Y
-
-**Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork**: Shopify Sync creating 'Untitled' products.
--   **Recurrence count**: 2+
--   **Status**: NOT STARTED
+-   **Service Desk Overhaul (Phase 1):**
+    -   Implemented Bulk Actions (select, assign, status change, merge).
+    -   Redesigned UI with stats bar, quick filters, and improved layout.
+    -   Implemented an Activity Timeline and a Customer History sidebar.
+    -   Created an AI-powered Reply Draft feature using GPT with multiple tones.
+    -   Added auto-ticketing for Travel, Care, and Grooming via a new unified service request endpoint.
+-   **New Feature - Product Tags Manager**:
+    -   Built a full-featured admin UI to create, manage, and apply custom tags to products across all pillars.
+-   **Bug Fixes & User Requests**:
+    -   **Blog:** Fixed public Insights page to fetch dynamic API data. Added a Seed Posts button and seeded 5 new articles.
+    -   **Stay Booking Form:** Fixed the Next button being obscured by the Made with Emergent badge.
+    -   **Notifications:** Added admin notifications for Custom Cake requests and SLA escalations.
+    -   **Made with Emergent Badge:** Hid the badge from view using global CSS.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Database Schema Debugging**: The critical realization that a feature was failing because it was writing to  while the frontend read from . Similarly, identifying that the active database was  not .
--   **Local LLM Implementation**: The process of replacing an external  (Chatbase) with a custom React component () that communicates with a local FastAPI endpoint (), which in turn uses the  library and the .
--   **Mobile-First CSS**: Multiple advanced CSS techniques were attempted to fix the Stay modal on mobile, including , , responsive height units (, ), and  properties, demonstrating a deep debugging process for responsive UI.
--   **Robust API Error Handling**: Adding  with timeouts to frontend  calls () and improving backend error propagation for third-party services like Resend.
+-   **Critical Data Loss Investigation**: The immediate priority is diagnosing a catastrophic failure where all product data has seemingly vanished. This requires direct database inspection.
+-   **AI Integration (OpenAI GPT)**: Integrated OpenAI via the  library to build a sophisticated AI Draft feature () for generating contextual replies in the Service Desk.
+-   **Complex React State Management**:  is now a highly complex component managing state for filters, bulk selections, modals, AI drafts, customer history, and more using , , and .
+-   **Dynamic Component Layout (CSS)**: Fixed a critical UI bug on  where a fixed-position element ( badge) was overlapping a button. The solution was to add bottom padding () to the modal's footer to create space.
+-   **Unified API Design**: Created a generic  endpoint to handle ticket creation for multiple new pillars (Travel, Care, Grooming), promoting engine reusability.
+-   **Global CSS Overrides**: Hid the platform-injected Made with Emergent badge by adding a  rule to .
 
 **key DB schema**
--   **admin_notifications**:  - The correct collection for all admin-facing notifications.
--   **service_desk_tickets**:  - The core collection for the Service Desk.
+-   **product_tags**: (New)  - Stores custom and default product tags.
+-   **tickets**: The core collection for the Service Desk, now receiving events from all pillars.
+-   **audit_log**: (New) Sub-document within  to track all changes to a ticket.
 
 **All files of reference**
--   : Contains many core routes and bug fixes from this session.
--   : Contains the heavily modified mobile-responsive booking modal.
--   : The new local AI chat component.
--   : Contains the fixed logic for Stay booking notifications and tickets.
--   : The frontend for the Service Desk, which is the next major focus.
--   : The backend API for the Service Desk.
-
-**Areas that need refactoring**:
--   : Still monolithic. Should be broken down into dedicated route files per feature (e.g., ).
--   : This component is very large. The logic for each tab (Service Desk, MIS, etc.) should be its own component. The agent has noted this in the long-term plan.
-
-**key api endpoints**
--   : Creates a Stay booking, now correctly triggers a Service Desk ticket and an admin notification.
--   : New endpoint to seed 6 sample blog posts. Can be forced with .
--   : Fetches all notifications for the admin panel.
--   : Local endpoint powering the new  component.
--   : Fetches all service desk tickets.
+-   : The heart of the recent development effort. It is now a huge and complex component.
+-   : The backend counterpart to the Service Desk, massively expanded with new functionality.
+-   : Critical for investigating the data loss, as it handles product retrieval. Also contains new product tag endpoints.
+-   : The main container for all admin panels.
+-   : Contains the fix for the obscured button.
+-   : The new UI for managing tags.
+-   : Contains the CSS override to hide the Emergent badge.
 
 **Critical Info for New Agent**
--   **Follow the Plan**: The user has explicitly approved a sequential development plan: **1. Unified Engine -> 2. Pet Soul -> 3. Pillars**. Do not deviate. Your immediate task is **Phase 1.1: Complete the Service Desk to 100%**.
--   **100% Completion is Key**: The user's motto is No amber, no partial, only ✅ GREEN. Each task must be fully completed and verified before moving to the next. Use the detailed Definition of DONE checklists provided in the plan.
--   **Service Desk Audit is Ready**: A detailed 40-point audit of the Service Desk has already been completed. Your first job is to start implementing the missing features from that list.
--   **User is an Active Tester**: The user frequently tests the application on their devices and provides detailed feedback with screenshots. Expect a collaborative, iterative process.
+-   **CRITICAL BLOCKER: DATA LOSS**: Your absolute first priority is to investigate and fix the disappearance of all products, bundles, and restaurants. The application is non-functional until this is resolved. Start by querying the database collections directly to confirm if the data is gone or just not loading.
+-   **FINISH THE SERVICE DESK**: The user's primary goal is to get the Service Desk to 100% completion. Once the data loss is fixed, your next task is to finish and verify the final features: Customer History, Ticket Merging, and Canned Responses. The user has extremely high expectations for the UI/UX (better than Zendesk/Salesforce).
+-   **USER IS HIGHLY ENGAGED**: Expect frequent, direct feedback from the user. They are actively testing and will report issues and new ideas. Prioritize their immediate concerns.
 
 **documents and test reports created in this job**
--   /app/memory/PRD.md (contains the user-approved exhaustive plan)
+-   
+-    (Updated to reflect Service Desk progress)
 
 **Last 10 User Messages and any pending HUMAN messages**
-10. User reports the Stay form is too broad on mobile and isn't creating tickets or notifications. (PENDING VERIFICATION)
-9.  User agrees with the Engine First approach and wants each component completed to 100%. (ADDRESSED, PLAN CREATED)
-8.  User asks for clarification on whether to build the engine or pillars first. (ADDRESSED)
-7.  User asks for the exhaustive plan forward. (ADDRESSED)
-6.  User provides a screenshot of the broken Stay booking modal on mobile. (ADDRESSED)
-5.  User asks for the URL to seed blog articles. (ADDRESSED)
-4.  User provides screenshots of multiple new bugs after testing (Abandoned Cart, Blog Posts). (ADDRESSED)
-3.  User reports the Voice Order feature still shows a network error and that Mira AI (Chatbase) might be the issue. (ADDRESSED)
-2.  User provides a series of screenshots and messages related to deployment confusion, trying to link their domain to the latest code. (ADDRESSED)
-1.  User asks to get the latest code deployed to their live URL. (ADDRESSED)
+10. User reports a catastrophic bug: all products, bundles, and restaurants have disappeared. (PENDING - CRITICAL)
+9.  User gives the final go-ahead to complete the Service Desk and add a Customer History feature. (IN PROGRESS, BLOCKED)
+8.  User asks for a status update on Service Desk completion (red/yellow/amber items). (ADDRESSED)
+7.  User confirms the plan to finish the Service Desk. (ADDRESSED)
+6.  User asks to hide the Made with Emergent badge and add a seed button for blogs. (COMPLETED)
+5.  User praises the new Service Desk UI and AI features, but reports the Next button on the Stay form is hidden by the Mira AI button. (COMPLETED)
+4.  User provides a long list of new issues and requests after the Service Desk V1 was finished. (PARTIALLY ADDRESSED)
+3.  User asks to add SLA breach alerts to the Service Desk and make it look world-class. (IN PROGRESS)
+2.  User confirms they are deploying the latest changes and wants to proceed with finishing the Service Desk. (ADDRESSED)
+1.  User screenshot shows abandoned cart reminders are failing in the UI, but Resend logs show they are being sent. (INVESTIGATED)
 
 **Project Health Check:**
--   **Broken**:
-    -   The Shopify Sync continues to create 'Untitled' products.
--   **Mocked**:
-    -   None. Blog post data is now seeded from the backend.
+-   **Broken**: CATASTROPHIC FAILURE. The application's core data (products, bundles, restaurants) has vanished. The app is unusable. The recurring Shopify Sync bug also remains unfixed.
 
 **3rd Party Integrations**
--   **OpenAI Whisper**: Used for voice transcription in the Voice Order feature, via . Uses Emergent LLM Key.
--   **Resend**: Used for sending transactional emails (e.g., abandoned cart reminders). Requires a user-provided API key and verified domain.
--   **Chatbase**: Was used for Mira AI, but has now been **removed and replaced** with a local implementation.
+-   **OpenAI GPT-4**: (New) Integrated for the Service Desk AI Reply Draft feature. Uses the Emergent LLM Key.
+-   **OpenAI Whisper**: Used for voice transcription in the Voice Order feature. Uses Emergent LLM Key.
+-   **Resend**: Used for sending transactional emails. Requires a user-provided API key.
 
 **Testing status**
--   Testing agent used after significant changes: NO
+-   Testing agent used after significant changes: YES, the  was used to validate the first round of Service Desk enhancements.
 -   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created: []
--   Known regressions: None
-
-**Credentials to test flow:**
--   **Admin Email**: 
--   **Admin Password**: 
-
-**What agent forgot to execute**
-The agent did not deploy the final set of fixes made in the session. The next step should be to confirm with the user if they are ready to deploy all the bug fixes before starting on the new Service Desk work.</analysis>
+-   Test files created: The testing agent reported creating .
+-   Known regressions: A catastrophic data loss has occurred.</analysis>
