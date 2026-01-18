@@ -5111,6 +5111,120 @@ async def delete_abandoned_cart(cart_id: str, username: str = Depends(verify_adm
     return {"message": "Cart deleted"}
 
 
+@admin_router.post("/abandoned-carts/{cart_id}/send-reminder")
+async def send_individual_cart_reminder(cart_id: str, username: str = Depends(verify_admin)):
+    """Send reminder to a specific abandoned cart"""
+    cart = await db.abandoned_carts.find_one(
+        {"$or": [{"id": cart_id}, {"session_id": cart_id}]},
+        {"_id": 0}
+    )
+    
+    if not cart:
+        raise HTTPException(status_code=404, detail="Cart not found")
+    
+    if not cart.get("email"):
+        raise HTTPException(status_code=400, detail="No email address for this cart")
+    
+    if cart.get("status") == "converted":
+        raise HTTPException(status_code=400, detail="Cart already converted to order")
+    
+    try:
+        success = await send_abandoned_cart_email(
+            to_email=cart["email"],
+            name=cart.get("name", "Pet Parent"),
+            items=cart.get("items", []),
+            subtotal=cart.get("subtotal", 0)
+        )
+        
+        if success:
+            # Update cart with reminder info
+            await db.abandoned_carts.update_one(
+                {"$or": [{"id": cart_id}, {"session_id": cart_id}]},
+                {
+                    "$set": {"last_reminder_sent": datetime.now(timezone.utc).isoformat()},
+                    "$inc": {"reminders_sent": 1}
+                }
+            )
+            
+            # Log the reminder
+            await db.abandoned_cart_reminders.insert_one({
+                "cart_id": cart_id,
+                "email": cart["email"],
+                "sent_at": datetime.now(timezone.utc).isoformat(),
+                "sent_by": username,
+                "manual": True
+            })
+            
+            return {"message": f"Reminder sent to {cart['email']}", "success": True}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to send email")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error sending reminder: {str(e)}")
+
+
+@admin_router.post("/abandoned-carts/send-reminders")
+async def send_bulk_cart_reminders(cart_ids: dict, username: str = Depends(verify_admin)):
+    """Send reminders to multiple abandoned carts"""
+    ids = cart_ids.get("cart_ids", [])
+    if not ids:
+        raise HTTPException(status_code=400, detail="No cart IDs provided")
+    
+    reminders_sent = 0
+    errors = []
+    
+    for cart_id in ids:
+        cart = await db.abandoned_carts.find_one(
+            {"$or": [{"id": cart_id}, {"session_id": cart_id}]},
+            {"_id": 0}
+        )
+        
+        if not cart:
+            errors.append(f"Cart {cart_id} not found")
+            continue
+        
+        if not cart.get("email"):
+            errors.append(f"Cart {cart_id} has no email")
+            continue
+        
+        if cart.get("status") == "converted":
+            continue
+        
+        try:
+            success = await send_abandoned_cart_email(
+                to_email=cart["email"],
+                name=cart.get("name", "Pet Parent"),
+                items=cart.get("items", []),
+                subtotal=cart.get("subtotal", 0)
+            )
+            
+            if success:
+                await db.abandoned_carts.update_one(
+                    {"$or": [{"id": cart_id}, {"session_id": cart_id}]},
+                    {
+                        "$set": {"last_reminder_sent": datetime.now(timezone.utc).isoformat()},
+                        "$inc": {"reminders_sent": 1}
+                    }
+                )
+                
+                await db.abandoned_cart_reminders.insert_one({
+                    "cart_id": cart_id,
+                    "email": cart["email"],
+                    "sent_at": datetime.now(timezone.utc).isoformat(),
+                    "sent_by": username,
+                    "manual": True,
+                    "bulk": True
+                })
+                
+                reminders_sent += 1
+        except Exception as e:
+            errors.append(f"Failed to send to {cart.get('email')}: {str(e)}")
+    
+    return {
+        "reminders_sent": reminders_sent,
+        "errors": errors if errors else None
+    }
+
+
 # ==================== ADMIN MEMBERS ====================
 
 @admin_router.get("/members")
