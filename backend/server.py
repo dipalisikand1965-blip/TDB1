@@ -3978,7 +3978,7 @@ async def create_order(order: dict):
     if has_cake_items:
         try:
             from ticket_auto_create import create_ticket_from_event
-            await create_ticket_from_event(
+            result = await create_ticket_from_event(
                 db=db,
                 event_type="cake_order",
                 event_data={
@@ -3997,9 +3997,9 @@ async def create_order(order: dict):
                     "reference_images": reference_images
                 }
             )
-            logger.info(f"Created service desk ticket for order {order.get('orderId')}")
+            logger.info(f"Service desk ticket result: {result} for order {order.get('orderId')}")
         except Exception as e:
-            logger.error(f"Failed to create service desk ticket: {e}")
+            logger.error(f"Failed to create service desk ticket: {e}", exc_info=True)
     
     # Send notification
     try:
