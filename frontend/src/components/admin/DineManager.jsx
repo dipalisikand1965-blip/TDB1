@@ -777,6 +777,87 @@ const DineManager = ({ credentials }) => {
                   placeholder="123, 5th Cross, Koramangala..."
                 />
               </div>
+              <div>
+                <label className="text-sm font-medium">Pincode</label>
+                <Input
+                  value={formData.pincode || ''}
+                  onChange={(e) => setFormData({...formData, pincode: e.target.value})}
+                  placeholder="560034"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Google Maps Link</label>
+                <Input
+                  value={formData.googleMapsLink || ''}
+                  onChange={(e) => setFormData({...formData, googleMapsLink: e.target.value})}
+                  placeholder="https://maps.google.com/..."
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Latitude</label>
+                <Input
+                  type="number"
+                  step="any"
+                  value={formData.geo_lat || ''}
+                  onChange={(e) => setFormData({...formData, geo_lat: e.target.value})}
+                  placeholder="12.9716"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Longitude</label>
+                <Input
+                  type="number"
+                  step="any"
+                  value={formData.geo_lng || ''}
+                  onChange={(e) => setFormData({...formData, geo_lng: e.target.value})}
+                  placeholder="77.5946"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Paw Reward Section */}
+          <div className="mb-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
+            <h4 className="text-sm font-semibold text-amber-800 mb-3 flex items-center gap-2">
+              🎁 Paw Reward (Birthday Perk)
+            </h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.paw_reward?.enabled || false}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    paw_reward: {...formData.paw_reward, enabled: e.target.checked},
+                    birthdayPerks: e.target.checked
+                  })}
+                  className="w-4 h-4 text-amber-600"
+                />
+                <label className="text-sm font-medium">Enable Birthday Perk</label>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Max Reward Value (₹)</label>
+                <Input
+                  type="number"
+                  value={formData.paw_reward?.max_value || 500}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    paw_reward: {...formData.paw_reward, max_value: parseInt(e.target.value) || 500}
+                  })}
+                  placeholder="500"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="text-sm font-medium">Reward Description</label>
+                <Input
+                  value={formData.paw_reward?.reward_description || ''}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    paw_reward: {...formData.paw_reward, reward_description: e.target.value}
+                  })}
+                  placeholder="Free TDB birthday cake when celebrating your dog's birthday here"
+                />
+              </div>
             </div>
           </div>
 
