@@ -1744,7 +1744,7 @@ const ServiceDesk = ({ authHeaders }) => {
               </>
             )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap items-center">
             <Button 
               variant="outline" 
               size="sm" 
