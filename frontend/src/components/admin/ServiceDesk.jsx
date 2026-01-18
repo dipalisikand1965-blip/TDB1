@@ -1232,8 +1232,12 @@ const ServiceDesk = ({ authHeaders }) => {
 
     // Load rules when tab changes to SLA or Assignment
     useEffect(() => {
-      if (activeSettingsTab === 'sla' || activeSettingsTab === 'assignment' || activeSettingsTab === 'team') {
+      if (activeSettingsTab === 'sla' || activeSettingsTab === 'assignment') {
         fetchRules();
+      }
+      if (activeSettingsTab === 'team') {
+        fetchRules();
+        fetchRolesAndUsers();
       }
     }, [activeSettingsTab]);
 
