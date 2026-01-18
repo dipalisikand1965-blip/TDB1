@@ -5268,11 +5268,22 @@ async def send_bulk_cart_reminders(cart_ids: dict, username: str = Depends(verif
             continue
         
         try:
+            # Determine reminder type based on how many reminders already sent
+            reminders_sent_count = cart.get("reminders_sent", 0)
+            if reminders_sent_count == 0:
+                reminder_type = "first"
+            elif reminders_sent_count == 1:
+                reminder_type = "second"
+            else:
+                reminder_type = "final"
+            
             success = await send_abandoned_cart_email(
                 to_email=cart["email"],
                 name=cart.get("name", "Pet Parent"),
                 items=cart.get("items", []),
-                subtotal=cart.get("subtotal", 0)
+                subtotal=cart.get("subtotal", 0),
+                reminder_type=reminder_type,
+                cart_id=cart_id
             )
             
             if success:
