@@ -267,9 +267,45 @@ const PartnerManager = ({ getAuthHeader }) => {
           <h2 className="text-xl font-bold">Partner Applications</h2>
           <p className="text-sm text-gray-500">Manage partner onboarding requests</p>
         </div>
-        <Button variant="outline" onClick={exportCSV}>
-          <Download className="w-4 h-4 mr-2" /> Export CSV
-        </Button>
+        <div className="flex gap-2">
+          {/* Import CSV */}
+          <div className="relative">
+            <input
+              type="file"
+              accept=".csv"
+              onChange={async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const formData = new FormData();
+                formData.append('file', file);
+                try {
+                  const response = await fetch(`${API_URL}/api/admin/partners/import-csv`, {
+                    method: 'POST',
+                    headers: getAuthHeader(),
+                    body: formData
+                  });
+                  if (response.ok) {
+                    const result = await response.json();
+                    alert(`Imported ${result.imported || 0} partner applications`);
+                    fetchApplications();
+                  } else {
+                    alert('Import failed');
+                  }
+                } catch (err) {
+                  alert('Import error: ' + err.message);
+                }
+                e.target.value = '';
+              }}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+            <Button variant="outline">
+              <Upload className="w-4 h-4 mr-2" /> Import CSV
+            </Button>
+          </div>
+          <Button variant="outline" onClick={exportCSV}>
+            <Download className="w-4 h-4 mr-2" /> Export CSV
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
