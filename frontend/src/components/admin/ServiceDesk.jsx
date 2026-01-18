@@ -1672,31 +1672,225 @@ const ServiceDesk = ({ authHeaders }) => {
   }
 
   return (
-    <div className="h-full flex flex-col">
-      {/* SLA Breach Alert Banner */}
-      {(stats?.overdue > 0 || (slaStats?.sla_breach_rate > 20)) && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-3 mb-4 rounded-r-lg flex items-center justify-between animate-pulse">
-          <div className="flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-red-500" />
-            <div>
-              <span className="font-medium text-red-800">
-                {stats?.overdue > 0 
-                  ? `⚠️ ${stats.overdue} ticket${stats.overdue > 1 ? 's' : ''} overdue!` 
-                  : `⚠️ SLA Breach Rate at ${slaStats?.sla_breach_rate}%`}
-              </span>
-              <span className="text-red-600 text-sm ml-2">Immediate attention required</span>
+    <div className={`h-full flex flex-col ${isFullscreen ? 'fixed inset-0 z-50 bg-white' : ''}`}>
+      {/* Top Navigation Bar - Zoho Style */}
+      <div className="bg-slate-900 text-white px-4 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          {/* Logo/Title */}
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🐕</span>
+            <span className="font-bold text-lg">Service Desk</span>
+          </div>
+          
+          {/* Top Tabs - Like Zoho */}
+          <div className="flex items-center gap-1 ml-4">
+            {[
+              { id: 'tickets', label: 'Tickets', icon: <Inbox className="w-4 h-4" /> },
+              { id: 'customers', label: 'Customers', icon: <Users className="w-4 h-4" /> },
+              { id: 'analytics', label: 'Analytics', icon: <BarChart3 className="w-4 h-4" /> },
+              { id: 'activities', label: 'Activities', icon: <Activity className="w-4 h-4" /> },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTopTab(tab.id)}
+                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+                  activeTopTab === tab.id 
+                    ? 'bg-white/20 text-white' 
+                    : 'text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {tab.icon}
+                <span className="text-sm font-medium">{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          {/* Quick Stats */}
+          <div className="flex items-center gap-4 mr-4">
+            <div className="text-center">
+              <span className="text-2xl font-bold text-white">{stats?.total_open || 0}</span>
+              <span className="text-xs text-slate-400 ml-1">Open</span>
+            </div>
+            <div className="text-center">
+              <span className="text-2xl font-bold text-red-400">{stats?.by_urgency?.critical || 0}</span>
+              <span className="text-xs text-slate-400 ml-1">Critical</span>
+            </div>
+            <div className="text-center">
+              <span className="text-2xl font-bold text-amber-400">{stats?.overdue || 0}</span>
+              <span className="text-xs text-slate-400 ml-1">Overdue</span>
             </div>
           </div>
+          
+          {/* Toggle Sidebar */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setShowSidebar(!showSidebar)}
+            className="text-white hover:bg-white/10"
+          >
+            <PanelLeft className="w-4 h-4" />
+          </Button>
+          
+          {/* Fullscreen Toggle */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            className="text-white hover:bg-white/10"
+          >
+            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+          </Button>
+          
+          {/* Settings */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setShowSettings(true)}
+            className="text-white hover:bg-white/10"
+          >
+            <Settings className="w-4 h-4" />
+          </Button>
+          
+          {/* New Ticket */}
           <Button 
             size="sm" 
-            variant="destructive" 
-            onClick={() => setQuickFilter('overdue')}
-            className="bg-red-600 hover:bg-red-700"
+            onClick={() => setShowNewTicket(true)}
+            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
           >
-            View Overdue
+            <Plus className="w-4 h-4 mr-1" /> New Ticket
           </Button>
         </div>
-      )}
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Sidebar - Zoho Style Views */}
+        {showSidebar && (
+          <div className="w-56 bg-slate-50 border-r flex-shrink-0 overflow-y-auto">
+            {/* Starred Views */}
+            <div className="p-3 border-b">
+              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1">
+                <Star className="w-3 h-3" /> Starred Views
+              </h3>
+              {savedViews.filter(v => starredViews.includes(v.id)).map(view => (
+                <button
+                  key={view.id}
+                  onClick={() => { setActiveView(view.id); setQuickFilter(view.id); }}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between group ${
+                    activeView === view.id 
+                      ? 'bg-amber-100 text-amber-800 font-medium' 
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <span>{view.icon}</span>
+                    <span>{view.name}</span>
+                  </span>
+                  <span className="text-xs text-slate-400">
+                    {view.id === 'all' ? tickets.length :
+                     view.id === 'critical' ? tickets.filter(t => t.urgency === 'critical' || t.urgency === 'high').length :
+                     view.id === 'today' ? tickets.filter(t => t.created_at?.startsWith(new Date().toISOString().split('T')[0])).length :
+                     ''}
+                  </span>
+                </button>
+              ))}
+            </div>
+            
+            {/* All Views */}
+            <div className="p-3 border-b">
+              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">All Views</h3>
+              {savedViews.filter(v => !starredViews.includes(v.id)).map(view => (
+                <button
+                  key={view.id}
+                  onClick={() => { setActiveView(view.id); setQuickFilter(view.id); }}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center gap-2 ${
+                    activeView === view.id 
+                      ? 'bg-amber-100 text-amber-800 font-medium' 
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  <span>{view.icon}</span>
+                  <span>{view.name}</span>
+                </button>
+              ))}
+            </div>
+            
+            {/* Pillar Views */}
+            <div className="p-3 border-b">
+              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">By Pillar</h3>
+              {PILLAR_VIEWS.map(view => (
+                <button
+                  key={view.id}
+                  onClick={() => { setActiveView(view.id); setFilters({...filters, category: view.id}); }}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between ${
+                    filters.category === view.id 
+                      ? 'bg-amber-100 text-amber-800 font-medium' 
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <span>{view.icon}</span>
+                    <span>{view.name}</span>
+                  </span>
+                  <span className="text-xs text-slate-400">
+                    {stats?.by_category?.[view.id] || 0}
+                  </span>
+                </button>
+              ))}
+            </div>
+            
+            {/* Agent Queue */}
+            <div className="p-3">
+              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Team Queue</h3>
+              {conciergeAvailability.slice(0, 5).map(agent => (
+                <button
+                  key={agent.concierge_id}
+                  onClick={() => setFilters({...filters, assigned_to: agent.concierge_id})}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between ${
+                    filters.assigned_to === agent.concierge_id 
+                      ? 'bg-amber-100 text-amber-800 font-medium' 
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${agent.available ? 'bg-green-500' : 'bg-gray-400'}`} />
+                    <span>{agent.name || agent.concierge_id}</span>
+                  </span>
+                  <span className="text-xs text-slate-400">{agent.current_tickets || 0}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Main Ticket Area */}
+        <div className="flex-1 flex flex-col overflow-hidden bg-slate-100 p-4">
+          {/* SLA Breach Alert Banner */}
+          {(stats?.overdue > 0 || (slaStats?.sla_breach_rate > 20)) && (
+            <div className="bg-red-50 border-l-4 border-red-500 p-3 mb-4 rounded-r-lg flex items-center justify-between animate-pulse">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-red-500" />
+                <div>
+                  <span className="font-medium text-red-800">
+                    {stats?.overdue > 0 
+                      ? `⚠️ ${stats.overdue} ticket${stats.overdue > 1 ? 's' : ''} overdue!` 
+                      : `⚠️ SLA Breach Rate at ${slaStats?.sla_breach_rate}%`}
+                  </span>
+                  <span className="text-red-600 text-sm ml-2">Immediate attention required</span>
+                </div>
+              </div>
+              <Button 
+                size="sm" 
+                variant="destructive" 
+                onClick={() => setQuickFilter('overdue')}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                View Overdue
+              </Button>
+            </div>
+          )}
       
       {/* Metrics Bar - Premium Glass Design */}
       <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-5 rounded-2xl mb-4 shadow-xl">
