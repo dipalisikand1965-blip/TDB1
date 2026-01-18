@@ -79,7 +79,6 @@ async def transcribe_voice(audio_file: UploadFile) -> VoiceTranscription:
     
     try:
         from emergentintegrations.llm.openai import OpenAISpeechToText
-        import asyncio
         
         # Initialize Whisper
         stt = OpenAISpeechToText(api_key=EMERGENT_LLM_KEY)
@@ -90,31 +89,39 @@ async def transcribe_voice(audio_file: UploadFile) -> VoiceTranscription:
             tmp.write(content)
             tmp_path = tmp.name
         
-        # Transcribe (sync call - run in thread pool to not block)
-        def do_transcribe():
-            with open(tmp_path, "rb") as audio:
-                return stt.transcribe(
-                    file=audio,
-                    model="whisper-1",
-                    response_format="verbose_json",
-                    language="en",
-                    prompt="This is a customer placing an order for dog treats, cakes, or services at The Doggy Company pet store."
-                )
-        
-        response = await asyncio.get_event_loop().run_in_executor(None, do_transcribe)
+        # Transcribe with verbose output for segments
+        with open(tmp_path, "rb") as audio:
+            response = await stt.transcribe(
+                file=audio,
+                model="whisper-1",
+                response_format="verbose_json",
+                language="en",
+                prompt="This is a customer placing an order for dog treats, cakes, or services at The Doggy Company pet store."
+            )
         
         # Clean up temp file
         os.unlink(tmp_path)
         
-        # Extract transcription data
-        transcription = VoiceTranscription(
-            text=response.text,
-            language=getattr(response, 'language', 'en'),
-            duration_seconds=getattr(response, 'duration', None),
-            segments=[
+        # Handle response - could be string or object
+        if isinstance(response, str):
+            text = response
+            language = 'en'
+            duration = None
+            segments = None
+        else:
+            text = getattr(response, 'text', str(response))
+            language = getattr(response, 'language', 'en')
+            duration = getattr(response, 'duration', None)
+            segments = [
                 {"start": s.start, "end": s.end, "text": s.text}
                 for s in getattr(response, 'segments', [])
             ] if hasattr(response, 'segments') else None
+        
+        transcription = VoiceTranscription(
+            text=text,
+            language=language,
+            duration_seconds=duration,
+            segments=segments
         )
         
         logger.info(f"Voice transcribed: {len(transcription.text)} chars")
