@@ -625,7 +625,7 @@ async def process_partner_action(
         "read": False,
         "created_at": now
     }
-    await db.notifications.insert_one(notification)
+    await db.admin_notifications.insert_one(notification)
     
     updated = await db.partner_applications.find_one({"id": partner_id}, {"_id": 0})
     return {

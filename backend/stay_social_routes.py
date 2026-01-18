@@ -410,7 +410,7 @@ async def create_bundle_order(bundle_id: str, order: StayBundleOrder):
     await db.orders.insert_one(order_doc)
     
     # Create notification for admin
-    await db.notifications.insert_one({
+    await db.admin_notifications.insert_one({
         "id": f"notif-{uuid.uuid4().hex[:8]}",
         "type": "new_order",
         "title": f"🎁 New Stay Bundle Order - {order_id}",
@@ -513,7 +513,7 @@ async def connect_with_buddy(request: StayBuddyRequest):
     await db.stay_buddy_connections.insert_one(connection)
     
     # Create notification
-    await db.notifications.insert_one({
+    await db.admin_notifications.insert_one({
         "id": f"notif-{uuid.uuid4().hex[:8]}",
         "type": "stay_buddy_request",
         "title": f"🐾 Stay Buddy Request from {request.member_name}",
@@ -626,7 +626,7 @@ async def register_for_social(event_id: str, registration: SocialRegistration):
     )
     
     # Create notification for host
-    await db.notifications.insert_one({
+    await db.admin_notifications.insert_one({
         "id": f"notif-{uuid.uuid4().hex[:8]}",
         "type": "social_registration",
         "title": f"🎉 New Registration - {event.get('title')}",
@@ -863,7 +863,7 @@ async def admin_create_social(social: PawcationSocial, username: str = Depends(v
     social_doc.pop("_id", None)
     
     # Create notification
-    await db.notifications.insert_one({
+    await db.admin_notifications.insert_one({
         "id": f"notif-{uuid.uuid4().hex[:8]}",
         "type": "new_social_event",
         "title": f"🎉 New Pawcation Social Created",
