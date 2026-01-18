@@ -2302,7 +2302,7 @@ const ServiceDesk = ({ authHeaders }) => {
                         {cannedResponses.map(resp => (
                           <DropdownMenuItem 
                             key={resp.id} 
-                            onClick={() => useCannedResponse(resp.content)}
+                            onClick={() => applyCannedResponse(resp.content)}
                             className="flex flex-col items-start py-2"
                           >
                             <span className="font-medium text-sm">{resp.name}</span>
