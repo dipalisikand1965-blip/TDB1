@@ -1824,6 +1824,64 @@ const Admin = () => {
                 </Card>
               </div>
             )}
+            
+            {/* Category Management Modal */}
+            {showCategoryModal && (
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                <Card className="w-full max-w-lg bg-white p-6">
+                  <h3 className="text-lg font-bold mb-4">Manage Blog Categories</h3>
+                  
+                  {/* Existing Categories */}
+                  <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
+                    {blogCategories.map(cat => (
+                      <div key={cat.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <div>
+                          <p className="font-medium">{cat.name}</p>
+                          <p className="text-xs text-gray-500">{cat.description}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button size="sm" variant="ghost" onClick={() => setEditingCategory(cat)}>
+                            <Edit className="w-3 h-3" />
+                          </Button>
+                          {!cat.is_default && (
+                            <Button size="sm" variant="ghost" className="text-red-500" onClick={() => deleteBlogCategory(cat.id)}>
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Add/Edit Category Form */}
+                  {editingCategory && (
+                    <div className="border-t pt-4 space-y-3">
+                      <h4 className="text-sm font-semibold">{editingCategory.id?.startsWith('new-') ? 'Add New' : 'Edit'} Category</h4>
+                      <div>
+                        <label className="text-sm font-medium">Name *</label>
+                        <Input value={editingCategory.name || ''} onChange={(e) => setEditingCategory({...editingCategory, name: e.target.value})} placeholder="Category name" />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Description</label>
+                        <Input value={editingCategory.description || ''} onChange={(e) => setEditingCategory({...editingCategory, description: e.target.value})} placeholder="Brief description" />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" onClick={() => saveBlogCategory(editingCategory)} disabled={!editingCategory.name}>
+                          {editingCategory.id?.startsWith('new-') ? 'Add' : 'Save'} Category
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => setEditingCategory({ id: `new-${Date.now()}`, name: '', description: '', order: blogCategories.length + 1 })}>
+                          Clear
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-end mt-4">
+                    <Button variant="outline" onClick={() => { setShowCategoryModal(false); setEditingCategory(null); }}>Close</Button>
+                  </div>
+                </Card>
+              </div>
+            )}
           </div>
         )}
 
