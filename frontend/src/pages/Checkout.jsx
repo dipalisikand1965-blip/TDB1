@@ -1229,20 +1229,43 @@ _GST applicable on final invoice_
                               {formErrors.customCity && <p className="text-red-500 text-xs mt-1">{formErrors.customCity}</p>}
                             </>
                           ) : (
-                            /* Standard: Dropdown for service cities */
-                            <select
-                              id="city"
-                              name="city"
-                              value={formData.city}
-                              onChange={handleInputChange}
-                              className="w-full px-3 py-2 border rounded-lg"
-                              data-testid="checkout-city"
-                            >
-                              {appSettings.pickup_cities.map(city => (
-                                <option key={city} value={city}>{city}</option>
-                              ))}
-                              <option value="Delhi">Delhi NCR</option>
-                            </select>
+                            /* Standard: Dropdown for service cities with "Others" option */
+                            <div className="space-y-2">
+                              <select
+                                id="city"
+                                name="city"
+                                value={formData.city}
+                                onChange={(e) => {
+                                  handleInputChange(e);
+                                  // Clear custom city when selecting from dropdown (unless Others)
+                                  if (e.target.value !== 'Others') {
+                                    setFormData(prev => ({ ...prev, customCity: '' }));
+                                  }
+                                }}
+                                className="w-full px-3 py-2 border rounded-lg"
+                                data-testid="checkout-city"
+                              >
+                                {appSettings.pickup_cities.map(city => (
+                                  <option key={city} value={city}>{city}</option>
+                                ))}
+                                <option value="Delhi">Delhi NCR</option>
+                                <option value="Others">Others (Type your city)</option>
+                              </select>
+                              {formData.city === 'Others' && (
+                                <Input
+                                  id="customCity"
+                                  name="customCity"
+                                  value={formData.customCity}
+                                  onChange={handleInputChange}
+                                  placeholder="Enter your city name"
+                                  className={formErrors.customCity ? 'border-red-500' : ''}
+                                  data-testid="checkout-other-city-input"
+                                />
+                              )}
+                              {formErrors.customCity && formData.city === 'Others' && (
+                                <p className="text-red-500 text-xs">{formErrors.customCity}</p>
+                              )}
+                            </div>
                           )}
                         </div>
                         <div>
