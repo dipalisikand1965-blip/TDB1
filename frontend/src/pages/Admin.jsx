@@ -69,7 +69,8 @@ import {
   Layers,
   Calendar,
   Truck,
-  BarChart3
+  BarChart3,
+  Inbox
 } from 'lucide-react';
 
 const Admin = () => {
