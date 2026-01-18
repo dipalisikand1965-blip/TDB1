@@ -7196,6 +7196,12 @@ set_stay_social_admin_verify(verify_admin)
 # Set notification engine database
 set_notification_db(db)
 
+# Set multi-channel intake database
+set_channel_db(db)
+
+# Set MIS reporting database
+set_mis_db(db)
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
