@@ -213,6 +213,10 @@ const ServiceDesk = ({ authHeaders }) => {
   const [roles, setRoles] = useState([]);
   const [teamUsers, setTeamUsers] = useState([]);
   const [loadingRolesUsers, setLoadingRolesUsers] = useState(false);
+  
+  // Escalation Rules
+  const [escalationRules, setEscalationRules] = useState([]);
+  const [loadingEscalation, setLoadingEscalation] = useState(false);
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
   
   // Quick Filters
