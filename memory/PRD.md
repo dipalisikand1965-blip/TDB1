@@ -491,7 +491,36 @@ A personalized trip recommendation engine that suggests:
 ## Known Issues
 - Review submission: User reported not working (could not reproduce, may need browser console logs)
 - Production vs Preview database sync (collections need to be seeded separately)
-- Shopify Sync 'Untitled' Products: Patched with fallback, root cause TBD
+- Shopify Sync 'Untitled' Products: Patched with fallback, logging added for diagnosis
+
+---
+
+## Voice Order & Channel Intake System ✅ (NEW - Jan 18, 2026)
+**Purpose**: Unified intake for orders via voice, text, WhatsApp, email, phone
+
+**Features**:
+- Voice Order page at `/voice-order` with audio recording and upload
+- Text order intake via API
+- Auto-creates service desk ticket for every intake
+- **Pillar Detection**: Automatically assigns pillar based on message keywords:
+  - `celebrate`: cake, treat, bakery, birthday, celebration
+  - `dine`: restaurant, reservation, table, lunch, dinner
+  - `stay`: hotel, resort, booking, vacation, pawcation
+  - `travel`: flight, transport, relocate
+  - `care`: groom, vet, doctor, training, spa
+- Tickets can be reassigned to different pillars by admin
+- OpenAI Whisper integration for voice transcription
+
+**API Endpoints**:
+- `POST /api/channels/voice/order` - Upload audio for transcription
+- `POST /api/channels/text/order` - Submit text order
+- `GET /api/channels/intakes` - List all intakes (with pillar filter)
+- `PATCH /api/channels/intakes/{id}/assign-pillar` - Reassign intake to pillar
+- `GET /api/channels/intakes/by-pillar/{pillar}` - Get intakes for specific pillar
+
+**Files**:
+- `/app/backend/channel_intake.py` - Core intake processing module
+- `/app/frontend/src/pages/VoiceOrder.jsx` - Voice order UI
 
 ---
 
