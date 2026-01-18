@@ -212,6 +212,91 @@ const ServiceDesk = ({ authHeaders }) => {
   // Quick Filters
   const [quickFilter, setQuickFilter] = useState('all'); // all, my_tickets, unassigned, overdue, today
 
+  // Individual Ticket Actions
+  const handleMarkSpam = async (ticketId) => {
+    if (!confirm('Mark this ticket as spam?')) return;
+    try {
+      await fetch(`${API_URL}/api/tickets/${ticketId}`, {
+        method: 'PATCH',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'spam', is_spam: true })
+      });
+      fetchTickets();
+    } catch (err) {
+      console.error('Error marking spam:', err);
+    }
+  };
+
+  const handleMarkUnread = async (ticketId) => {
+    try {
+      await fetch(`${API_URL}/api/tickets/${ticketId}`, {
+        method: 'PATCH',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_read: false })
+      });
+      fetchTickets();
+    } catch (err) {
+      console.error('Error marking unread:', err);
+    }
+  };
+
+  const handleDeleteTicket = async (ticketId) => {
+    if (!confirm('Are you sure you want to delete this ticket? This action cannot be undone.')) return;
+    try {
+      await fetch(`${API_URL}/api/tickets/${ticketId}`, {
+        method: 'DELETE',
+        headers: authHeaders
+      });
+      if (selectedTicket?.ticket_id === ticketId) {
+        setSelectedTicket(null);
+      }
+      fetchTickets();
+    } catch (err) {
+      console.error('Error deleting ticket:', err);
+    }
+  };
+
+  const handleCloneTicket = async (ticket) => {
+    try {
+      const clonedData = {
+        member: ticket.member,
+        category: ticket.category,
+        sub_category: ticket.sub_category,
+        description: `[CLONED] ${ticket.description}`,
+        urgency: ticket.urgency,
+        source: 'manual'
+      };
+      await fetch(`${API_URL}/api/tickets`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify(clonedData)
+      });
+      alert('Ticket cloned successfully');
+      fetchTickets();
+    } catch (err) {
+      console.error('Error cloning ticket:', err);
+      alert('Failed to clone ticket');
+    }
+  };
+
+  const handleFollowTicket = async (ticketId) => {
+    try {
+      await fetch(`${API_URL}/api/tickets/${ticketId}/follow`, {
+        method: 'POST',
+        headers: authHeaders
+      });
+      alert('You are now following this ticket');
+    } catch (err) {
+      console.error('Error following ticket:', err);
+    }
+  };
+
+  const handleFileIssue = (ticket) => {
+    // Open new ticket form with reference to this ticket
+    alert(`Filing issue for ticket ${ticket.ticket_id}. This will create a linked escalation ticket.`);
+    // Could open a modal or redirect to create escalation
+  };
+
   // Fetch canned responses
   const fetchCannedResponses = useCallback(async () => {
     try {
