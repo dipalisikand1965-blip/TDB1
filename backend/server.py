@@ -3605,6 +3605,68 @@ async def delete_blog_post(post_id: str, username: str = Depends(verify_admin)):
         raise HTTPException(status_code=404, detail="Blog post not found")
     return {"message": "Blog post deleted"}
 
+
+# Blog Categories
+@admin_router.get("/blog-categories")
+async def get_blog_categories(username: str = Depends(verify_admin)):
+    """Get all blog categories"""
+    categories = await db.blog_categories.find({}, {"_id": 0}).sort("order", 1).to_list(100)
+    
+    # If no custom categories, return defaults
+    if not categories:
+        default_cats = [
+            {"id": "cat-tips", "name": "Tips", "slug": "tips", "description": "Pet care tips and tricks", "order": 1, "is_default": True},
+            {"id": "cat-news", "name": "News", "slug": "news", "description": "Company and industry news", "order": 2, "is_default": True},
+            {"id": "cat-recipes", "name": "Recipes", "slug": "recipes", "description": "Pet food recipes", "order": 3, "is_default": True},
+            {"id": "cat-stories", "name": "Stories", "slug": "stories", "description": "Pet parent stories", "order": 4, "is_default": True},
+            {"id": "cat-health", "name": "Health", "slug": "health", "description": "Pet health information", "order": 5, "is_default": True},
+        ]
+        for cat in default_cats:
+            await db.blog_categories.insert_one(cat)
+        categories = default_cats
+    
+    return {"categories": categories}
+
+
+@admin_router.post("/blog-categories")
+async def create_blog_category(category: dict, username: str = Depends(verify_admin)):
+    """Create a new blog category"""
+    slug = category.get("name", "").lower().replace(" ", "-")
+    data = {
+        "id": f"cat-{uuid.uuid4().hex[:8]}",
+        "name": category.get("name", ""),
+        "slug": slug,
+        "description": category.get("description", ""),
+        "order": category.get("order", 99),
+        "is_default": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.blog_categories.insert_one(data)
+    return {"message": "Category created", "category": {k: v for k, v in data.items() if k != "_id"}}
+
+
+@admin_router.put("/blog-categories/{cat_id}")
+async def update_blog_category(cat_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update a blog category"""
+    result = await db.blog_categories.update_one({"id": cat_id}, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Category not found")
+    updated = await db.blog_categories.find_one({"id": cat_id}, {"_id": 0})
+    return {"message": "Category updated", "category": updated}
+
+
+@admin_router.delete("/blog-categories/{cat_id}")
+async def delete_blog_category(cat_id: str, username: str = Depends(verify_admin)):
+    """Delete a blog category"""
+    cat = await db.blog_categories.find_one({"id": cat_id})
+    if cat and cat.get("is_default"):
+        raise HTTPException(status_code=400, detail="Cannot delete default category")
+    result = await db.blog_categories.delete_one({"id": cat_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Category not found")
+    return {"message": "Category deleted"}
+
+
 @api_router.get("/blog-posts")
 async def get_public_blog_posts(category: Optional[str] = None, featured_only: bool = False):
     """Public endpoint for blog posts"""
