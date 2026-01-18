@@ -131,6 +131,19 @@ const PricingHub = ({ getAuthHeader }) => {
   const [editingRule, setEditingRule] = useState(null);
   const [showRuleModal, setShowRuleModal] = useState(false);
   
+  // Global App Settings (for checkout shipping thresholds)
+  const [appSettings, setAppSettings] = useState({
+    free_shipping_threshold: 3000,
+    default_shipping_fee: 150,
+    shipping_thresholds: [
+      { min_cart_value: 0, max_cart_value: 3000, shipping_fee: 150 },
+      { min_cart_value: 3000, max_cart_value: 999999, shipping_fee: 0 }
+    ],
+    pickup_cities: ['Mumbai', 'Gurugram', 'Bangalore'],
+    bakery_pickup_only_categories: ['cakes', 'fresh_treats', 'celebration']
+  });
+  const [savingSettings, setSavingSettings] = useState(false);
+  
   // Commission state
   const [commissions, setCommissions] = useState([]);
   const [partnerCommissions, setPartnerCommissions] = useState({ restaurants: [], stays: [] });
