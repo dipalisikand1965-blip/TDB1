@@ -142,23 +142,26 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (product, selectedSize, selectedFlavor, quantity = 1) => {
     const itemId = `${product.id}-${selectedSize}-${selectedFlavor}`;
-    const existingItem = cartItems.find(item => item.itemId === itemId);
-
-    if (existingItem) {
-      setCartItems(cartItems.map(item =>
-        item.itemId === itemId
-          ? { ...item, quantity: item.quantity + quantity }
-          : item
-      ));
-    } else {
-      setCartItems([...cartItems, {
-        itemId,
-        ...product,
-        selectedSize,
-        selectedFlavor,
-        quantity
-      }]);
-    }
+    
+    setCartItems(prevItems => {
+      const existingItem = prevItems.find(item => item.itemId === itemId);
+      
+      if (existingItem) {
+        return prevItems.map(item =>
+          item.itemId === itemId
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
+      } else {
+        return [...prevItems, {
+          itemId,
+          ...product,
+          selectedSize,
+          selectedFlavor,
+          quantity
+        }];
+      }
+    });
     setIsCartOpen(true);
   };
 
