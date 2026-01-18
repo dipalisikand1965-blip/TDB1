@@ -39,6 +39,7 @@ import Franchise from "./pages/Franchise";
 import Contact from "./pages/Contact";
 import PetProfile from "./pages/PetProfile";
 import MyPets from "./pages/MyPets";
+import PetSoulPage from "./pages/PetSoulPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MemberDashboard from "./pages/MemberDashboard";
