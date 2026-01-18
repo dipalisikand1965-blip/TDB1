@@ -129,12 +129,8 @@ async def extract_order_details(text: str) -> Dict[str, Any]:
         return {"raw_text": text, "parsed": False}
     
     try:
-        from emergentintegrations.llm.openai import LlmChat
-        
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            model="gpt-4o-mini"  # Use smaller model for extraction
-        )
+        from emergentintegrations.llm.openai import LlmChat, UserMessage
+        import uuid
         
         extraction_prompt = f"""
         Extract order details from this customer voice message. Return a JSON object with:
@@ -153,7 +149,13 @@ async def extract_order_details(text: str) -> Dict[str, Any]:
         Return ONLY valid JSON, no explanation.
         """
         
-        response = await chat.send_message(extraction_prompt)
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=str(uuid.uuid4()),
+            system_message="You are an order extraction assistant. Extract structured data from customer messages and return only valid JSON."
+        )
+        
+        response = await chat.send_message(UserMessage(text=extraction_prompt))
         
         # Parse JSON response
         try:
