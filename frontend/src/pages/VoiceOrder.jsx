@@ -157,9 +157,10 @@ export default function VoiceOrder() {
     setError('');
 
     try {
-      // Check audio size (max 10MB to avoid Cloudflare limits)
-      if (audioBlob.size > 10 * 1024 * 1024) {
-        setError('Audio file too large. Please record a shorter message (max 10MB).');
+      // Check audio size before upload
+      const sizeMB = audioBlob.size / (1024 * 1024);
+      if (sizeMB > MAX_FILE_SIZE_MB) {
+        setError(`Audio file too large (${sizeMB.toFixed(1)}MB). Please record a shorter message (max ${MAX_FILE_SIZE_MB}MB / ${MAX_RECORDING_SECONDS}s).`);
         setUploading(false);
         return;
       }
@@ -175,9 +176,9 @@ export default function VoiceOrder() {
       if (customerPhone) formData.append('customer_phone', customerPhone);
       if (petName) formData.append('pet_name', petName);
 
-      // Use AbortController with 60-second timeout (voice processing can take time)
+      // Use AbortController with 45-second timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000);
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
 
       const response = await fetch(`${API}/api/channels/voice/order`, {
         method: 'POST',
@@ -192,10 +193,10 @@ export default function VoiceOrder() {
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
         console.error('Non-JSON response:', text);
-        if (text.includes('cloudflare') || text.includes('Cloudflare')) {
-          setError('Request blocked by security. Please try uploading a smaller audio file.');
+        if (text.includes('cloudflare') || text.includes('Cloudflare') || text.includes('413')) {
+          setError(`File too large for upload. Please keep recordings under ${MAX_RECORDING_SECONDS} seconds.`);
         } else {
-          setError('Server error. Please try again.');
+          setError('Server error. Please try again with a shorter recording.');
         }
         setUploading(false);
         return;
