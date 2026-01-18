@@ -486,6 +486,59 @@ async def update_intake(request_id: str, updates: Dict[str, Any]):
     return {"success": True, "message": "Intake updated"}
 
 
+@channel_router.patch("/intakes/{request_id}/assign-pillar")
+async def assign_intake_to_pillar(request_id: str, pillar: str):
+    """Assign a channel intake to a specific pillar (admin)"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    valid_pillars = ["celebrate", "dine", "stay", "travel", "care", "shop", "general"]
+    if pillar not in valid_pillars:
+        raise HTTPException(status_code=400, detail=f"Invalid pillar. Must be one of: {valid_pillars}")
+    
+    # Update intake
+    result = await db.channel_intakes.update_one(
+        {"request_id": request_id},
+        {"$set": {
+            "pillar": pillar,
+            "assigned_pillar": pillar,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    # Also update linked service desk ticket if exists
+    intake = await db.channel_intakes.find_one({"request_id": request_id})
+    if intake and intake.get("ticket_id"):
+        await db.service_desk_tickets.update_one(
+            {"ticket_id": intake["ticket_id"]},
+            {"$set": {
+                "pillar": pillar,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        logger.info(f"Updated ticket {intake['ticket_id']} pillar to {pillar}")
+    
+    return {"success": True, "message": f"Intake assigned to {pillar} pillar"}
+
+
+@channel_router.get("/intakes/by-pillar/{pillar}")
+async def get_intakes_by_pillar(pillar: str, status: Optional[str] = None, limit: int = 50):
+    """Get channel intakes filtered by pillar (admin)"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    query = {"pillar": pillar}
+    if status:
+        query["status"] = status
+    
+    intakes = await db.channel_intakes.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    return {"intakes": intakes, "count": len(intakes), "pillar": pillar}
+
+
 @channel_router.get("/stats")
 async def get_channel_stats(days: int = 7):
     """Get channel intake statistics"""
