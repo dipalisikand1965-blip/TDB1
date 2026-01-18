@@ -155,6 +155,18 @@ const ServiceDesk = ({ authHeaders }) => {
   const [aiSummary, setAiSummary] = useState(null);
   const [aiActions, setAiActions] = useState([]);
   
+  // Customer History
+  const [customerHistory, setCustomerHistory] = useState(null);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  
+  // Canned Responses
+  const [cannedResponses, setCannedResponses] = useState([]);
+  const [showCannedResponses, setShowCannedResponses] = useState(false);
+  
+  // Ticket Merge
+  const [showMergeModal, setShowMergeModal] = useState(false);
+  const [merging, setMerging] = useState(false);
+  
   // SLA & Auto-assignment
   const [slaStats, setSlaStats] = useState(null);
   const [showSLAModal, setShowSLAModal] = useState(false);
@@ -167,6 +179,83 @@ const ServiceDesk = ({ authHeaders }) => {
   
   // Quick Filters
   const [quickFilter, setQuickFilter] = useState('all'); // all, my_tickets, unassigned, overdue, today
+
+  // Fetch canned responses
+  const fetchCannedResponses = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/tickets/canned-responses`, { headers: authHeaders });
+      if (response.ok) {
+        const data = await response.json();
+        setCannedResponses(data.responses || []);
+      }
+    } catch (err) {
+      console.error('Error fetching canned responses:', err);
+    }
+  }, [authHeaders]);
+
+  // Fetch customer history when ticket is selected
+  const fetchCustomerHistory = useCallback(async (identifier) => {
+    if (!identifier) return;
+    
+    setLoadingHistory(true);
+    try {
+      const response = await fetch(`${API_URL}/api/tickets/customer/${encodeURIComponent(identifier)}/full-history`, {
+        headers: authHeaders
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCustomerHistory(data);
+      }
+    } catch (err) {
+      console.error('Error fetching customer history:', err);
+    }
+    setLoadingHistory(false);
+  }, [authHeaders]);
+
+  // Merge tickets
+  const mergeTickets = async () => {
+    if (selectedTickets.size < 2) {
+      alert('Select at least 2 tickets to merge');
+      return;
+    }
+    
+    const ticketIds = Array.from(selectedTickets);
+    const primaryId = ticketIds[0];
+    const mergeIds = ticketIds.slice(1);
+    
+    if (!confirm(`Merge ${mergeIds.length} tickets into ${primaryId}? This cannot be undone.`)) {
+      return;
+    }
+    
+    setMerging(true);
+    try {
+      const response = await fetch(`${API_URL}/api/tickets/merge`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ primary_ticket_id: primaryId, merge_ticket_ids: mergeIds })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message);
+        clearSelection();
+        fetchTickets();
+      } else {
+        alert('Failed to merge tickets');
+      }
+    } catch (err) {
+      console.error('Error merging tickets:', err);
+      alert('Failed to merge tickets');
+    }
+    setMerging(false);
+    setShowMergeModal(false);
+  };
+
+  // Use canned response
+  const useCannedResponse = (content) => {
+    setReplyText(content);
+    setShowCannedResponses(false);
+  };
 
   // Fetch data
   const fetchTickets = useCallback(async () => {
