@@ -1265,11 +1265,15 @@ const BookingRequestModal = ({ property, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center" onClick={onClose}>
       <div 
-        className="w-full sm:max-w-2xl bg-white rounded-t-3xl sm:rounded-2xl overflow-hidden flex flex-col shadow-2xl"
-        style={{ height: '85vh', maxHeight: '85vh' }}
+        className="w-full sm:max-w-2xl bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col"
+        style={{ 
+          maxHeight: 'calc(100vh - 60px)',
+          height: 'auto'
+        }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="p-4 sm:p-6 border-b flex-shrink-0 bg-white">
+        {/* Header */}
+        <div className="p-4 sm:p-6 border-b bg-white rounded-t-3xl sm:rounded-t-2xl">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg sm:text-xl font-bold">Request Booking</h3>
