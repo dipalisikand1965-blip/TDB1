@@ -987,3 +987,219 @@ async def bulk_delete_tickets(data: dict):
         "deleted_count": result.deleted_count,
         "message": f"{result.deleted_count} tickets deleted"
     }
+
+
+# ============ AI-Powered Reply Drafting ============
+
+class AIReplyRequest(BaseModel):
+    ticket_id: str
+    reply_type: str = "professional"  # professional, friendly, empathetic, quick
+    additional_context: Optional[str] = None
+
+@router.post("/ai/draft-reply")
+async def ai_draft_reply(request: AIReplyRequest):
+    """
+    Generate AI-powered reply draft for a ticket using GPT
+    """
+    db = get_db()
+    
+    # Get the ticket
+    ticket = await db.tickets.find_one({"ticket_id": request.ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    # Build context from ticket
+    member = ticket.get("member", {})
+    messages = ticket.get("messages", [])
+    
+    # Get conversation history
+    conversation = "\n".join([
+        f"[{m.get('sender', 'unknown').upper()}] {m.get('content', '')[:500]}"
+        for m in messages[-5:]  # Last 5 messages
+    ])
+    
+    # Define tone based on reply_type
+    tone_instructions = {
+        "professional": "professional, courteous, and business-appropriate",
+        "friendly": "warm, friendly, and personable while remaining professional",
+        "empathetic": "deeply empathetic, understanding, and supportive",
+        "quick": "brief, to-the-point, and efficient"
+    }
+    
+    tone = tone_instructions.get(request.reply_type, tone_instructions["professional"])
+    
+    # Build the prompt
+    system_prompt = f"""You are a world-class pet concierge at The Doggy Company (TDB), India's premier pet lifestyle brand.
+Your role is to draft exceptional customer service replies that make members feel valued and cared for.
+
+BRAND VOICE:
+- Warm, premium, and caring
+- We call pet parents "Pet Parents" and their pets by name when known
+- We use terms like "fur baby", "pawsome", "woof" naturally
+- We are the "Pet Life Operating System" - we handle everything for their pets
+
+MEMBER CONTEXT:
+- Name: {member.get('name', 'Valued Member')}
+- Pet Name: {ticket.get('pet', {}).get('name', 'their pet')}
+- Category: {ticket.get('category', 'general')}
+- Urgency: {ticket.get('urgency', 'medium')}
+- Status: {ticket.get('status', 'open')}
+
+TONE FOR THIS REPLY: {tone}
+
+TICKET DESCRIPTION:
+{ticket.get('description', 'No description provided')[:1000]}
+
+CONVERSATION HISTORY:
+{conversation if conversation else 'No previous messages'}
+
+{f"ADDITIONAL CONTEXT: {request.additional_context}" if request.additional_context else ""}
+
+Generate a reply that:
+1. Addresses their specific concern
+2. Shows genuine care for them and their pet
+3. Provides clear next steps or solutions
+4. Ends with a warm sign-off
+5. Is ready to send (no placeholders)
+
+Reply (do not include subject line, just the message body):"""
+
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        
+        api_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not api_key:
+            raise HTTPException(status_code=500, detail="AI service not configured")
+        
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"reply-draft-{request.ticket_id}",
+            system_message=system_prompt
+        ).with_model("openai", "gpt-4o")
+        
+        user_message = UserMessage(text="Generate the reply now.")
+        response = await chat.send_message(user_message)
+        
+        # Also generate a shorter version
+        quick_chat = LlmChat(
+            api_key=api_key,
+            session_id=f"reply-quick-{request.ticket_id}",
+            system_message=f"Based on this customer service context, generate a very brief 1-2 sentence acknowledgment reply. Be warm but extremely concise.\n\nContext: {ticket.get('description', '')[:300]}"
+        ).with_model("openai", "gpt-4o")
+        
+        quick_response = await quick_chat.send_message(UserMessage(text="Generate brief reply."))
+        
+        return {
+            "success": True,
+            "draft": response,
+            "quick_draft": quick_response,
+            "tone": request.reply_type,
+            "ticket_id": request.ticket_id
+        }
+        
+    except Exception as e:
+        print(f"AI draft reply error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate AI reply: {str(e)}")
+
+@router.post("/ai/summarize")
+async def ai_summarize_ticket(ticket_id: str):
+    """
+    Generate AI summary of a ticket's conversation
+    """
+    db = get_db()
+    
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    messages = ticket.get("messages", [])
+    conversation = "\n".join([
+        f"[{m.get('sender', 'unknown')}] {m.get('content', '')}"
+        for m in messages
+    ])
+    
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        
+        api_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not api_key:
+            raise HTTPException(status_code=500, detail="AI service not configured")
+        
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"summarize-{ticket_id}",
+            system_message="You are a helpful assistant that summarizes customer service tickets. Be concise and highlight key points, issues, and actions taken."
+        ).with_model("openai", "gpt-4o")
+        
+        prompt = f"""Summarize this ticket in 2-3 bullet points:
+
+TICKET: {ticket.get('description', '')[:500]}
+
+CONVERSATION:
+{conversation[:2000]}
+
+Summary:"""
+        
+        response = await chat.send_message(UserMessage(text=prompt))
+        
+        return {
+            "success": True,
+            "summary": response,
+            "ticket_id": ticket_id
+        }
+        
+    except Exception as e:
+        print(f"AI summarize error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to summarize: {str(e)}")
+
+@router.post("/ai/suggest-actions")
+async def ai_suggest_actions(ticket_id: str):
+    """
+    AI suggests next best actions for a ticket
+    """
+    db = get_db()
+    
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        
+        api_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not api_key:
+            raise HTTPException(status_code=500, detail="AI service not configured")
+        
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"actions-{ticket_id}",
+            system_message="You are a customer service expert. Suggest 3-5 specific next actions for handling this ticket effectively. Be actionable and specific."
+        ).with_model("openai", "gpt-4o")
+        
+        prompt = f"""Based on this ticket, suggest the next best actions:
+
+Category: {ticket.get('category', 'general')}
+Urgency: {ticket.get('urgency', 'medium')}
+Status: {ticket.get('status', 'open')}
+Description: {ticket.get('description', '')[:500]}
+
+Suggest 3-5 specific next actions (return as JSON array of strings):"""
+        
+        response = await chat.send_message(UserMessage(text=prompt))
+        
+        # Try to parse as JSON, fallback to text
+        import json
+        try:
+            actions = json.loads(response)
+        except:
+            actions = [response]
+        
+        return {
+            "success": True,
+            "suggested_actions": actions,
+            "ticket_id": ticket_id
+        }
+        
+    except Exception as e:
+        print(f"AI suggest actions error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to suggest actions: {str(e)}")
