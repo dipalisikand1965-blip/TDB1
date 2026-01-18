@@ -4052,6 +4052,17 @@ Special Instructions: {order.get('specialInstructions', 'None')}"""
     except Exception as e:
         logger.error(f"Order notification failed: {e}")
     
+    # Send unified notification to customer (Email)
+    try:
+        notification_result = await notify_order_status_change(
+            order=order,
+            new_status="pending",
+            triggered_by="system"
+        )
+        logger.info(f"Customer notification sent for order {order.get('orderId')}: {notification_result}")
+    except Exception as e:
+        logger.error(f"Failed to send customer notification: {e}")
+    
     return {"message": "Order created", "orderId": order.get("orderId"), "id": order["id"], "ticket_id": order.get("orderId") if has_cake_items else None}
 
 
