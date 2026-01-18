@@ -717,6 +717,12 @@ from mis_reporting import (
     set_database as set_mis_db
 )
 
+# Import Universal Paw Rewards
+from paw_rewards import (
+    rewards_router,
+    set_database as set_rewards_db
+)
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
