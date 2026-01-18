@@ -1579,54 +1579,87 @@ const ServiceDesk = ({ authHeaders }) => {
         </div>
       )}
       
-      {/* Metrics Bar */}
-      <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-lg mb-4">
+      {/* Metrics Bar - Premium Glass Design */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-5 rounded-2xl mb-4 shadow-xl">
         <div className="flex items-center justify-between">
-          <div className="flex gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-amber-600">{stats?.total_open || 0}</div>
-              <div className="text-xs text-gray-600">Open Tickets</div>
+          <div className="flex gap-8">
+            {/* Open Tickets */}
+            <div className="text-center px-4 py-2 bg-white/10 rounded-xl backdrop-blur-sm">
+              <div className="text-3xl font-bold text-white">{stats?.total_open || 0}</div>
+              <div className="text-xs text-slate-300 font-medium">Open Tickets</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-500">{stats?.by_urgency?.critical || 0}</div>
-              <div className="text-xs text-gray-600">Critical</div>
+            {/* Critical */}
+            <div className="text-center px-4 py-2 bg-red-500/20 rounded-xl backdrop-blur-sm border border-red-500/30">
+              <div className="text-3xl font-bold text-red-400">{stats?.by_urgency?.critical || 0}</div>
+              <div className="text-xs text-red-300 font-medium">Critical</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-500">{stats?.by_urgency?.high || 0}</div>
-              <div className="text-xs text-gray-600">High Priority</div>
+            {/* High Priority */}
+            <div className="text-center px-4 py-2 bg-amber-500/20 rounded-xl backdrop-blur-sm border border-amber-500/30">
+              <div className="text-3xl font-bold text-amber-400">{stats?.by_urgency?.high || 0}</div>
+              <div className="text-xs text-amber-300 font-medium">High Priority</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-600">{stats?.overdue || 0}</div>
-              <div className="text-xs text-gray-600">Overdue</div>
+            {/* Overdue */}
+            <div className="text-center px-4 py-2 bg-yellow-500/20 rounded-xl backdrop-blur-sm border border-yellow-500/30">
+              <div className="text-3xl font-bold text-yellow-400">{stats?.overdue || 0}</div>
+              <div className="text-xs text-yellow-300 font-medium">Overdue</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-500">{stats?.recent_24h || 0}</div>
-              <div className="text-xs text-gray-600">Last 24h</div>
+            {/* Last 24h */}
+            <div className="text-center px-4 py-2 bg-blue-500/20 rounded-xl backdrop-blur-sm border border-blue-500/30">
+              <div className="text-3xl font-bold text-blue-400">{stats?.recent_24h || 0}</div>
+              <div className="text-xs text-blue-300 font-medium">Last 24h</div>
             </div>
             {slaStats && (
               <>
-                <div className="border-l pl-4 text-center">
-                  <div className="text-2xl font-bold text-purple-600">{slaStats.sla_breach_rate || 0}%</div>
-                  <div className="text-xs text-gray-600">SLA Breach Rate</div>
+                {/* SLA Breach */}
+                <div className="border-l border-white/20 pl-6 text-center px-4 py-2">
+                  <div className={`text-3xl font-bold ${slaStats.sla_breach_rate > 20 ? 'text-red-400' : 'text-emerald-400'}`}>
+                    {slaStats.sla_breach_rate || 0}%
+                  </div>
+                  <div className="text-xs text-slate-300 font-medium">SLA Breach Rate</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">{slaStats.avg_first_response_hours || '-'}h</div>
-                  <div className="text-xs text-gray-600">Avg Response</div>
+                {/* Avg Response */}
+                <div className="text-center px-4 py-2 bg-emerald-500/20 rounded-xl backdrop-blur-sm border border-emerald-500/30">
+                  <div className="text-3xl font-bold text-emerald-400">{slaStats.avg_first_response_hours || '-'}h</div>
+                  <div className="text-xs text-emerald-300 font-medium">Avg Response</div>
                 </div>
               </>
             )}
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={handleAutoAssignAll} disabled={autoAssigning} title="Auto-assign all unassigned tickets">
-              <Zap className={`w-4 h-4 mr-1 ${autoAssigning ? 'animate-pulse' : ''}`} /> Auto-Assign
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleAutoAssignAll} 
+              disabled={autoAssigning} 
+              title="Auto-assign all unassigned tickets"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              <Zap className={`w-4 h-4 mr-1 ${autoAssigning ? 'animate-pulse text-yellow-400' : ''}`} /> Auto-Assign
             </Button>
-            <Button variant="outline" size="sm" onClick={handleCheckEscalations} title="Check and escalate overdue tickets">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleCheckEscalations} 
+              title="Check and escalate overdue tickets"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
               <AlertCircle className="w-4 h-4 mr-1" /> Check SLA
             </Button>
-            <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleRefresh} 
+              disabled={refreshing}
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
               <RefreshCw className={`w-4 h-4 mr-1 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setShowCategoryManager(true)}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowCategoryManager(true)}
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
               <Tag className="w-4 h-4 mr-1" /> Categories
             </Button>
             <Button variant="outline" size="sm" onClick={() => setShowSettings(true)}>
