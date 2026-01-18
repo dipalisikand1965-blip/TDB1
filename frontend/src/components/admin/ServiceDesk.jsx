@@ -251,8 +251,8 @@ const ServiceDesk = ({ authHeaders }) => {
     setShowMergeModal(false);
   };
 
-  // Use canned response
-  const useCannedResponse = (content) => {
+  // Apply canned response to reply text
+  const applyCannedResponse = (content) => {
     setReplyText(content);
     setShowCannedResponses(false);
   };
