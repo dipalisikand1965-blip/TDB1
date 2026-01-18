@@ -1302,7 +1302,7 @@ const BookingRequestModal = ({ property, onClose }) => {
           </div>
         </div>
 
-        <div className="p-4 sm:p-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 250px)' }}>
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1" style={{ maxHeight: 'calc(90vh - 200px)' }}>
           {step === 1 && (
             <div className="space-y-4">
               <h4 className="font-semibold mb-3">Your Details</h4>
