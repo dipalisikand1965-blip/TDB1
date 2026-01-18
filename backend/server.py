@@ -884,13 +884,26 @@ class CollectionUpdate(BaseModel):
 # Fulfilment type constants
 FULFILMENT_TYPES = ["shipping", "store_pickup", "both"]
 
+class ShippingThreshold(BaseModel):
+    """Shipping threshold configuration"""
+    min_cart_value: float = 0
+    max_cart_value: float = 3000
+    shipping_fee: float = 150
+
 class AppSettings(BaseModel):
     """Application-wide settings stored in app_settings collection"""
     id: str = "global_settings"
     pickup_cities: List[str] = ["Mumbai", "Gurugram", "Bangalore"]  # Cities where store pickup is available
     pan_india_shipping: bool = True  # Whether pan-india shipping is enabled
     default_fulfilment_type: str = "shipping"  # Default for new products
-    bakery_pickup_only_categories: List[str] = ["cakes", "fresh_treats"]  # Categories that require pickup in specific cities
+    bakery_pickup_only_categories: List[str] = ["cakes", "fresh_treats", "celebration"]  # Categories that require pickup in specific cities
+    # Shipping thresholds (admin-editable)
+    shipping_thresholds: List[dict] = [
+        {"min_cart_value": 0, "max_cart_value": 3000, "shipping_fee": 150},
+        {"min_cart_value": 3000, "max_cart_value": 999999, "shipping_fee": 0}
+    ]
+    free_shipping_threshold: float = 3000  # Cart value above which shipping is free
+    default_shipping_fee: float = 150  # Default shipping fee
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class UpdateAppSettings(BaseModel):
@@ -898,6 +911,9 @@ class UpdateAppSettings(BaseModel):
     pan_india_shipping: Optional[bool] = None
     default_fulfilment_type: Optional[str] = None
     bakery_pickup_only_categories: Optional[List[str]] = None
+    shipping_thresholds: Optional[List[dict]] = None
+    free_shipping_threshold: Optional[float] = None
+    default_shipping_fee: Optional[float] = None
 
 class ProductFulfilmentUpdate(BaseModel):
     """Update product fulfillment settings"""
