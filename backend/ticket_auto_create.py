@@ -424,6 +424,63 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
             "is_internal": False
         })
     
+    elif event_type == "stay_booking":
+        ticket_doc.update({
+            "category": "stay",
+            "sub_category": "booking_request",
+            "urgency": "high",
+            "member": {
+                "name": event_data.get("name"),
+                "email": event_data.get("email"),
+                "phone": event_data.get("phone"),
+                "city": event_data.get("property_city"),
+                "country": "India"
+            },
+            "pet": {
+                "name": event_data.get("pet_name"),
+                "breed": event_data.get("pet_breed"),
+                "age": event_data.get("pet_age"),
+                "weight_kg": event_data.get("pet_weight_kg")
+            },
+            "description": f"""🏨 NEW STAY BOOKING REQUEST
+
+**Property:** {event_data.get('property_name')}
+**Location:** {event_data.get('property_city')}
+
+**Check-in:** {event_data.get('check_in_date')}
+**Check-out:** {event_data.get('check_out_date')}
+**Adults:** {event_data.get('adults', 1)}
+**Pets:** {event_data.get('pets', 1)}
+
+**Pet Details:**
+- Name: {event_data.get('pet_name')}
+- Breed: {event_data.get('pet_breed')}
+- Age: {event_data.get('pet_age')}
+- Weight: {event_data.get('pet_weight_kg')} kg
+
+**Bundle:** {event_data.get('bundle_name') or 'Not selected'}
+
+**Special Requests:** {event_data.get('special_requests') or 'None'}
+
+---
+*Auto-created from Stay booking request*""",
+            "source": "stay_booking",
+            "source_reference": event_data.get("booking_id"),
+            "linked_event_id": event_data.get("booking_id"),
+            "tags": ["auto-created", "stay", "booking", "concierge"]
+        })
+        
+        ticket_doc["messages"].append({
+            "id": str(uuid.uuid4()),
+            "type": "ticket_created",
+            "content": f"Stay booking request from {event_data.get('name')} at {event_data.get('property_name')} ({event_data.get('check_in_date')} - {event_data.get('check_out_date')})",
+            "sender": "system",
+            "sender_name": "System",
+            "channel": "auto",
+            "timestamp": now,
+            "is_internal": False
+        })
+    
     elif event_type == "email":
         ticket_doc.update({
             "category": "general",
