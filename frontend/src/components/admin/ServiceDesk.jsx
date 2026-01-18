@@ -1334,9 +1334,12 @@ const ServiceDesk = ({ authHeaders }) => {
           </DialogHeader>
           
           <Tabs value={activeSettingsTab} onValueChange={setActiveSettingsTab}>
-            <TabsList className="w-full grid grid-cols-5 mb-4">
+            <TabsList className="w-full grid grid-cols-6 mb-4">
               <TabsTrigger value="assignment" className="text-xs">
                 <Zap className="w-3 h-3 mr-1" /> Auto-Assign
+              </TabsTrigger>
+              <TabsTrigger value="escalation" className="text-xs">
+                <ArrowUp className="w-3 h-3 mr-1" /> Escalation
               </TabsTrigger>
               <TabsTrigger value="sla" className="text-xs">
                 <Clock className="w-3 h-3 mr-1" /> SLA Rules
