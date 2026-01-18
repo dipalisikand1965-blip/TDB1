@@ -79,6 +79,7 @@ async def transcribe_voice(audio_file: UploadFile) -> VoiceTranscription:
     
     try:
         from emergentintegrations.llm.openai import OpenAISpeechToText
+        import asyncio
         
         # Initialize Whisper
         stt = OpenAISpeechToText(api_key=EMERGENT_LLM_KEY)
@@ -89,15 +90,18 @@ async def transcribe_voice(audio_file: UploadFile) -> VoiceTranscription:
             tmp.write(content)
             tmp_path = tmp.name
         
-        # Transcribe with verbose output for segments
-        with open(tmp_path, "rb") as audio:
-            response = await stt.transcribe(
-                file=audio,
-                model="whisper-1",
-                response_format="verbose_json",
-                language="en",
-                prompt="This is a customer placing an order for dog treats, cakes, or services at The Doggy Company pet store."
-            )
+        # Transcribe (sync call - run in thread pool to not block)
+        def do_transcribe():
+            with open(tmp_path, "rb") as audio:
+                return stt.transcribe(
+                    file=audio,
+                    model="whisper-1",
+                    response_format="verbose_json",
+                    language="en",
+                    prompt="This is a customer placing an order for dog treats, cakes, or services at The Doggy Company pet store."
+                )
+        
+        response = await asyncio.get_event_loop().run_in_executor(None, do_transcribe)
         
         # Clean up temp file
         os.unlink(tmp_path)
