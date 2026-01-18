@@ -2445,6 +2445,8 @@ async def forgot_password(email: str = Body(..., embed=True)):
 @admin_router.post("/reset-password")
 async def reset_password(token: str = Body(...), new_password: str = Body(...)):
     """Reset password using token"""
+    global _admin_credentials_cache
+    
     # Find valid token
     reset_record = await db.admin_password_resets.find_one({
         "token": token,
