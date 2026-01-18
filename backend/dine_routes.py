@@ -776,6 +776,13 @@ async def admin_update_reservation_status(
     if status not in valid_statuses:
         raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
     
+    # Get reservation for notification
+    reservation = await db.reservations.find_one({"id": reservation_id})
+    if not reservation:
+        raise HTTPException(status_code=404, detail="Reservation not found")
+    
+    old_status = reservation.get("status")
+    
     result = await db.reservations.update_one(
         {"id": reservation_id},
         {
@@ -787,7 +794,40 @@ async def admin_update_reservation_status(
     )
     
     if result.modified_count == 0:
-        raise HTTPException(status_code=404, detail="Reservation not found")
+        raise HTTPException(status_code=404, detail="Reservation not found or status unchanged")
+    
+    # Send notification on status change
+    if status != old_status:
+        try:
+            from notification_engine import notify_booking_status_change
+            await notify_booking_status_change(
+                booking={
+                    "id": reservation_id,
+                    "guest_name": reservation.get("name"),
+                    "email": reservation.get("email"),
+                    "phone": reservation.get("phone"),
+                    "restaurant_name": reservation.get("restaurant_name"),
+                    "date": reservation.get("date"),
+                    "time": reservation.get("time"),
+                    "guests": reservation.get("guests"),
+                    "pets": reservation.get("pets")
+                },
+                new_status=status,
+                pillar="dine",
+                triggered_by="admin"
+            )
+            logger.info(f"Notification sent for reservation {reservation_id} status: {old_status} -> {status}")
+        except Exception as e:
+            logger.error(f"Failed to send reservation notification: {e}")
+        
+        # Update linked service desk ticket
+        try:
+            await update_ticket_from_event(db, "reservation", reservation_id, {
+                "new_status": status,
+                "pillar": "dine"
+            })
+        except Exception as e:
+            logger.error(f"Failed to update ticket for reservation: {e}")
     
     return {"message": f"Reservation status updated to {status}"}
 
