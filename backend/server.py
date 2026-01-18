@@ -4700,7 +4700,14 @@ async def send_abandoned_cart_email(to_email: str, name: str, items: list,
         return True
         
     except Exception as e:
-        logger.error(f"Failed to send abandoned cart email: {e}")
+        error_msg = str(e)
+        # Handle common Resend errors gracefully (don't spam logs in production)
+        if "verify a domain" in error_msg.lower() or "testing emails" in error_msg.lower():
+            logger.warning(f"Abandoned cart email skipped (domain not verified): {to_email}")
+        elif "rate limit" in error_msg.lower() or "too many requests" in error_msg.lower():
+            logger.warning(f"Abandoned cart email rate limited: {to_email}")
+        else:
+            logger.error(f"Failed to send abandoned cart email: {e}")
         return False
 
 
