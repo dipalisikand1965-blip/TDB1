@@ -177,7 +177,7 @@ async def restore_all():
                         'image': sp.get('images', [{}])[0].get('src') if sp.get('images') else None,
                         'images': [img.get('src') for img in sp.get('images', [])],
                         'category': sp.get('product_type', 'general'),
-                        'tags': sp.get('tags', '').split(', ') if sp.get('tags') else [],
+                        'tags': sp.get('tags', []) if isinstance(sp.get('tags'), list) else (sp.get('tags', '').split(', ') if sp.get('tags') else []),
                         'vendor': sp.get('vendor'),
                         'in_stock': sp.get('variants', [{}])[0].get('available', True),
                         'variants': sp.get('variants', []),
