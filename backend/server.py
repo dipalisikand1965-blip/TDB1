@@ -790,10 +790,11 @@ def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
     correct_password = secrets.compare_digest(credentials.password, expected_password)
     
     if not (correct_username and correct_password):
+        # Don't send WWW-Authenticate header - prevents browser popup
+        # Frontend handles auth via its own login form
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
-            headers={"WWW-Authenticate": "Basic"},
+            detail="Invalid credentials"
         )
     return credentials.username
 
