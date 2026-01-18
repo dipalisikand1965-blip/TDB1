@@ -489,7 +489,6 @@ async def create_booking_request(booking: BookingRequest):
     
     # Create admin notification
     try:
-        logger.info(f"About to insert notification. db type: {type(db)}, db name: {db.name if db else 'None'}")
         notif_doc = {
             "id": f"notif-{uuid.uuid4().hex[:8]}",
             "type": "stay_booking",
@@ -501,11 +500,10 @@ async def create_booking_request(booking: BookingRequest):
             "read": False,
             "created_at": now
         }
-        logger.info(f"Notification doc: {notif_doc}")
         notif_result = await db.admin_notifications.insert_one(notif_doc)
-        logger.info(f"Created notification for stay booking: {notif_result.inserted_id}, acknowledged: {notif_result.acknowledged}")
+        logger.info(f"Created notification for stay booking: {notif_result.inserted_id}")
     except Exception as e:
-        logger.error(f"Failed to create notification for stay booking: {e}", exc_info=True)
+        logger.error(f"Failed to create notification for stay booking: {e}")
     
     # Auto-create Service Desk ticket for Stay booking
     try:
