@@ -684,6 +684,73 @@ async def admin_delete_restaurant(
     return {"message": "Restaurant deleted"}
 
 
+@dine_router.post("/admin/dine/restaurants/{restaurant_id}/paw-reward")
+async def update_restaurant_paw_reward(
+    restaurant_id: str,
+    paw_reward: DinePawReward,
+    username: str = Depends(verify_admin)
+):
+    """Update Paw Reward for a restaurant"""
+    result = await db.restaurants.update_one(
+        {"id": restaurant_id},
+        {"$set": {
+            "paw_reward": paw_reward.model_dump(),
+            "birthdayPerks": paw_reward.enabled,  # Also update legacy field
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+    
+    return {"message": "Paw Reward updated", "paw_reward": paw_reward.model_dump()}
+
+
+@dine_router.post("/admin/dine/restaurants/assign-paw-rewards")
+async def assign_paw_rewards_to_restaurants(
+    restaurant_ids: List[str] = None,
+    all_restaurants: bool = False,
+    username: str = Depends(verify_admin)
+):
+    """Assign default Paw Rewards to multiple restaurants"""
+    default_reward = DinePawReward(
+        enabled=True,
+        reward_type="free_product",
+        reward_name="Birthday Cake Reward",
+        reward_description="Free TDB birthday cake when celebrating your dog's birthday here",
+        product_category="cakes",
+        product_collection="bow-treats",
+        max_value=500,
+        trigger_condition="birthday"
+    ).model_dump()
+    
+    if all_restaurants:
+        # Update all restaurants without paw_reward
+        result = await db.restaurants.update_many(
+            {"paw_reward": {"$exists": False}},
+            {"$set": {
+                "paw_reward": default_reward,
+                "birthdayPerks": True,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        updated = result.modified_count
+    elif restaurant_ids:
+        result = await db.restaurants.update_many(
+            {"id": {"$in": restaurant_ids}},
+            {"$set": {
+                "paw_reward": default_reward,
+                "birthdayPerks": True,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        updated = result.modified_count
+    else:
+        raise HTTPException(status_code=400, detail="Provide restaurant_ids or set all_restaurants=true")
+    
+    return {"message": f"Paw Rewards assigned to {updated} restaurants", "updated": updated}
+
+
 @dine_router.get("/admin/dine/reservations")
 async def admin_get_reservations(
     status: Optional[str] = None,
