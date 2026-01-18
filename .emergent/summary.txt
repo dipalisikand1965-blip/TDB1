@@ -1,177 +1,247 @@
-<analysis>**original_problem_statement**: The user is building **The Doggy Company**, a comprehensive Pet Life Operating System. The project began with a Universal Ticketing System and has since expanded to include a Multi-Pillar Product Classification System, Enhanced Campaign Collections, an advanced Partner/Vendor Onboarding Module, a Pricing & Commercial Hub, and Pillar-Based Reporting.
+<analysis>**original_problem_statement**: The user is building **The Doggy Company**, a comprehensive Pet Life Operating System. The project involves sequentially building out business Pillars (Celebrate, Stay, Dine, Care, Travel, etc.), each with its own products, services, and community features.
 
-The project involves sequentially building out business Pillars (Celebrate, Stay, Dine, Care, Travel), each with its own products, services, and community features. The most recent work focused on enhancing the Stay pillar and laying the architectural foundation for global expansion and advanced fulfillment logic.
+The core vision is to build a world-class, event-driven platform with a single, unified engine powering all pillars. This engine must handle requests from multiple channels (web, chat, WhatsApp, voice), and manage a universal cart that supports physical products, services, and reservations. Every order/request must trigger an identical workflow for ticketing, notifications, and real-time reporting.
 
 **PRODUCT REQUIREMENTS**:
--   **Multi-Pillar Product Classification**: Products must be assignable to multiple Pillars.
--   **Enhanced Partner Onboarding Module**: A self-service portal for vendors with a full backend admin approval workflow.
--   **Pricing, Shipping & Commercial Hub**: A central admin dashboard to manage product pricing, shipping rules, and pillar-specific commission models.
--   **Stay Pillar**: A comprehensive pillar for pet-friendly accommodations, including a curated partner network, public listings, associated products (bundles), social events, and a Paw Reward loyalty feature.
--   **Global Scale Foundation**: The product and location architecture must support global expansion, allowing for region-specific product availability.
--   **Advanced Fulfillment Logic**: The checkout process must support split-fulfillment, enabling Store Pickup for specific product types (e.g., Bakery) in designated cities, while handling Pan-India shipping for all other items.
--   **Future Pillars**: Sequentially build out the Dine, Care, and Travel pillars.
+-   **A. Pillar Standardization**: Common features like location data (address, Google Maps link) and a configurable Paw Rewards system should be standardized across all pillars (e.g., Dine, Stay). CSV import/export should be available for all primary data models (restaurants, properties, bundles).
+-   **B. One Engine, Multiple Pillars**: A single, common backend engine must power all pillars (DINE, STAY, TRAVEL, CARE, SHOP) with identical workflows for notifications, reporting, and service desk.
+-   **C. Unified Input Channels**: The system must treat requests from Web, Chat, WhatsApp, Email, Phone, and **Voice** identically, triggering the same backend workflow.
+-   **D. Automated Notifications & Service Desk**:
+    -   Every order/request/status change must automatically create a service desk ticket and trigger a notification.
+    -   The service desk must have a clear reply-to-guest feature via email/WhatsApp.
+-   **E. Real-Time MIS & Reporting**: All reports (revenue, conversions, channel performance, etc.) must update instantly.
+-   **F. World-Class Admin Experience**: The admin panel should be robust, including features like a Forgot Password flow with email reset.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack React/FastAPI/MongoDB application. In this session, the agent significantly built out the **Stay Pillar**, fixing a bug where products weren't displayed and then adding a complete admin management system for Stay Bundles (products) and Pawcation Socials (events) within . This included full CRUD functionality via modals.
-
-A new **Paw Reward** system was implemented, which automatically assigns a complimentary treat product to each Stay property booking. This feature is visible to users on property listings and is fully editable by an admin.
-
-The agent also created an order flow for Stay Bundles, integrating them into the main orders system, notifications, and pillar reports. Finally, the agent began laying the foundation for global expansion and advanced checkout fulfillment by analyzing the existing checkout flow and formulating an architectural plan.
+A full-stack React/FastAPI/MongoDB application. The previous session focused on verifying a custom cake image feature and then rapidly building several major foundational systems and user-requested features:
+1.  **Forgot/Reset Password System**: A complete, secure, full-stack implementation for admin password recovery via email was built.
+2.  **Voice Order Intake**: A new page () was created allowing users to record or upload audio files, which are transcribed into text orders using OpenAI Whisper on the backend.
+3.  **Live MIS Dashboard**: A new 📊 Live MIS tab was added to the admin panel, providing real-time analytics on revenue, orders, and service desk performance, powered by a new reporting engine.
+4.  **Pillar Standardization**:
+    *   A universal **Paw Rewards** backend module was created.
+    *   The **Dine** pillar was enhanced to include google maps links and location coordinates. The admin UI was updated to manage these.
+    *   **CSV Import/Export** was added for Stay Properties (import) and Dine/Stay Bundles (import/export).
+5.  **Email Delivery Fix**: A critical bug preventing email delivery was fixed by updating the  environment variable to a verified domain ().
+6.  **Shopify Sync Logging**: Enhanced logging was added to the Shopify sync process to help diagnose a recurring issue with 'Untitled' products.
+7.  **Unified Notification Engine**: A foundational backend module was created to handle event-driven notifications, and was integrated into the order creation and status update flows.
 
 **Last working item**:
--   **Last item agent was working**: The user requested a foundational architecture for global scaling and a sophisticated checkout system to handle different fulfillment types (Store Pickup vs. Home Delivery). The agent was in the analysis phase, having reviewed the existing  and backend order logic, and had just formulated a multi-step plan to implement this.
--   **Status**: IN PROGRESS
--   **Agent Testing Done**: N
--   **Which testing method agent to use?**: both. The backend model and API changes for regions and fulfillment types should be tested with  or . The complex frontend changes in  (conditional rendering, split fulfillment logic, Pan-India text input) will require the  after initial implementation and  verification.
--   **User Testing Done**: N
+-   Last item agent was working: The agent was verifying the newly created Admin UI for the Dine pillar, specifically to confirm the new fields for **location data (Google Maps link, etc.) and Paw Rewards** were present in the restaurant editor.
+-   Status: IN PROGRESS
+-   Agent Testing Done: N
+-   Which testing method agent to use? screenshot tool
+-   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1**: Implement Global Scale Foundation & Advanced Checkout Logic (P0, HIGHEST)
--   **Issue 2**: User-facing review submission is reportedly failing (P2, Recurring)
--   **Issue 3**: Shopify Sync creates 'Untitled' Products (P2, Recurring)
--   **Issue 4**: Refactor large components like  and  (P3)
+-   Issue 1: Dine reservation form is stuck and not moving to the next page. (P0, HIGHEST)
+-   Issue 2: Confirmed Dine reservations are not automatically creating notifications or service desk tickets. (P0)
+-   Issue 3: The time picker in the Dine reservation form is not working as expected (it shows the current time instead of allowing selection). (P1)
+-   Issue 4: The Service Desk reply-to-guest feature, while technically present, is not intuitive. The user cannot find how to reply to a guest via email. (P1)
+-   Issue 5: User-facing review submission is reportedly failing. (P2, Recurring)
+-   Issue 6: Shopify Sync creates 'Untitled' Products. (P2, Recurring)
 
 **Issues Detail**:
--   **Issue 1: Implement Global Scale Foundation & Advanced Checkout Logic**
-    -   **Attempted fixes**: The agent analyzed the current architecture and created a detailed implementation plan.
+-   **Issue 1: Dine reservation form is stuck**
+    -   **Attempted fixes**: Agent reviewed the frontend code () but did not find an obvious multi-step logic issue. The problem might be related to validation or the time picker bug.
     -   **Next debug checklist**:
-        1.  **Backend**: In  (or a new settings module), create a collection/model to store .
-        2.  **Backend**: Modify the product schema to include  and .
-        3.  **Backend**: Create a data migration script to update existing products with default values for the new fields.
-        4.  **Backend**: Update the order schema to store the selected .
-        5.  **Frontend**: Modify  to fetch cart contents and determine if it's a mixed-fulfillment cart.
-        6.  **Frontend**: Conditionally render Store Pickup vs. Home Delivery options based on cart contents and delivery city.
-        7.  **Frontend**: If Pan India delivery is selected, replace the city dropdown with a free-text input field.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical foundational task that will enable the business to scale globally and implement complex, real-world shipping and pickup logistics.
+        1.  Open the browser's developer console on the  page when trying to submit a reservation.
+        2.  Check for any JavaScript errors or failed network requests in the Network tab.
+        3.  Inspect the  function in  and add  statements to trace the form data and execution flow.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical bug blocking a core user flow for the Dine pillar.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Blocked on other issue**: Potentially blocked by Issue 3: Time picker issue.
+
+-   **Issue 2: Dine reservation status changes do not trigger notifications**
+    -   **Attempted fixes**: The agent added code to  in the  endpoint to call the notification engine. However, this has not been tested end-to-end.
+    -   **Next debug checklist**:
+        1.  In the admin panel, change the status of a Dine reservation.
+        2.  Check the backend logs for a notification event trigger.
+        3.  Check the  collection in the database to see if a log was created.
+        4.  Confirm if an email was sent or a service desk ticket was created/updated.
+    -   **Why fix this issue and what will be achieved with the fix?**: Fulfills a core requirement of the event-driven architecture where all status changes must notify the user and update relevant systems.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Both.
-    -   **Blocked on other issue**: None.
+    -   **Should Test frontend/backend/both after fix?**: Backend
 
--   **Issue 2: User-facing review submission is reportedly failing**
-    -   **Attempted fixes**: Agent tested the backend API, which worked correctly. The admin-side review manager was fixed, but the user-facing issue persists. Agent could not reproduce it.
+-   **Issue 3: Dining reservation time picker issue**
+    -   **Attempted fixes**: None. The agent noted the component uses a standard HTML  input.
+    -   **Next debug checklist**:
+        1.  Review the  component in .
+        2.  Check how the  state is being managed.
+        3.  Consider replacing the native time input with a more robust component from  if the issue persists across browsers.
+    -   **Why fix this issue and what will be achieved with the fix?**: Fixes a blocker for the Dine reservation flow.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Frontend
+
+-   **Issue 4: Service Desk reply UX is unclear**
+    -   **Attempted fixes**: The agent verified that the backend logic () and frontend components () for sending replies via different channels (internal, email, WhatsApp) exist.
+    -   **Next debug checklist**:
+        1.  Take a screenshot of the Service Desk view for a ticket that has a customer email associated with it.
+        2.  Verify if the Email channel button is enabled and clearly visible.
+        3.  Improve the UI to make the channel selection more prominent, perhaps with explicit labels like Post Internal Note, Send Email to Guest, etc.
+    -   **Why fix this issue and what will be achieved with the fix?**: Improves admin usability, which is a key user requirement.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Frontend
+
+-   **Issue 5: User-facing review submission is reportedly failing**
+    -   **Attempted fixes**: None in this session.
     -   **Next debug checklist**:
         1.  Ask the user for exact steps to reproduce and a screenshot of the browser's developer console when the error occurs.
-        2.  Inspect the  function in the relevant user-facing component (e.g., ).
+        2.  Inspect the  function in the relevant user-facing component.
     -   **Why fix this issue and what will be achieved with the fix?**: Fixes a core feature for user engagement and social proof.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: Y
-    -   **Should Test frontend/backend/both after fix?**: Frontend.
-    -   **Blocked on other issue**: None.
+    -   **Should Test frontend/backend/both after fix?**: Frontend
 
--   **Issue 3: Shopify Sync creates 'Untitled' Products**
-    -   **Attempted fixes**: A patch was added in  ( function) to assign a fallback name if the Shopify title is null or empty. This is a temporary fix.
+-   **Issue 6: Shopify Sync creates 'Untitled' Products**
+    -   **Attempted fixes**: Comprehensive logging was added to the sync functions in  to capture raw product data and identify the source of null titles. A new endpoint () was created to view these logs.
     -   **Next debug checklist**:
-        1.  Implement logging to capture the raw product data from the Shopify API when a sync occurs to identify the source of the null titles.
+        1.  Run a Shopify sync from the admin panel.
+        2.  Call the new problematic logs endpoint to see if any products were flagged.
     -   **Why fix this issue and what will be achieved with the fix?**: Prevents data corruption in the product catalog.
-    -   **Status**: NOT STARTED
+    -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: Y
-    -   **Should Test frontend/backend/both after fix?**: Backend.
-    -   **Blocked on other issue**: None.
+    -   **Should Test frontend/backend/both after fix?**: Backend
 
 **In progress Task List**:
--   **Task 1: Complete Global Foundation & Checkout Logic**
-    -   **Where to resume**: Begin backend implementation by creating a new model/collection for application-wide settings (like ) and then modify the product and order schemas.
-    -   **What will be achieved with this?**: The application will support region-specific products and a dynamic checkout flow that handles both store pickup and pan-India shipping based on the items in the user's cart.
+-   **Task 1: Verify Admin UI for Dine Pillar enhancements** (P0, HIGHEST)
+    -   **Where to resume**: Take a screenshot of the  page, navigate to , and edit a restaurant to confirm the new location fields and Paw Reward settings are visible and editable.
+    -   **What will be achieved with this?**: Confirms the successful UI implementation for standardizing the Dine pillar.
     -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: Both.
+    -   **Should Test frontend/backend/both after fix?**: Frontend (visual verification).
+    -   **Blocked on something**: None.
+
+-   **Task 2: Add Admin UI for CSV Import/Export of Bundles** (P2)
+    -   **Where to resume**: The backend routes are complete in  and . The frontend UI needs to be added in  and the equivalent for Stay bundles, likely within  or a similar admin component.
+    -   **What will be achieved with this?**: Allows admins to bulk-manage product bundles, improving operational efficiency.
+    -   **Status**: IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?**: Frontend.
     -   **Blocked on something**: None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks**:
-    -   **(P1)** Build out the **Dine** Pillar with the same structure (products, partners, admin, reports).
-    -   **(P2)** Build out the **Care** Pillar.
-    -   **(P3)** Implement Pet Profile Enhancements (a pillar-wise view in the admin panel).
+    -   **Build out Travel Pillar** (P1): Scope needs to be defined with the user.
+    -   **Build out Care Pillar** (P1): Scope includes partner network (groomers, vets), booking, and admin management.
+    -   **Pet Profile Enhancements** (P2): Create a pillar-wise view in the admin panel to track a pet's interactions across all services.
+    -   **Universal Membership & Pet Soul** (P2): User to provide vision.
 -   **Future Tasks**:
-    -   Build out the **Travel** Pillar.
-    -   Integrate Razorpay for payments.
-    -   Redesign the main landing page.
-    -   Implement a Paw Points Loyalty program and a guest CRM.
-    -   Build a user-facing dynamic Pet Profile page.
-    -   Create a bulk CSV import feature for products and partners.
+    -   **Landing Page Redesign**: To better represent the The Doggy Company brand.
+    -   **Unified Notification System**: Implement WhatsApp integration.
+    -   **Universal Cart**: Enhance the cart to support physical products, services, and reservations simultaneously.
+    -   **Payment Integration**: Integrate Razorpay.
+    -   **Build Remaining Pillars**: Enjoy, Fit, Paperwork, Advisory.
+    -   **Enterprise Features**: Multi-user backend, Advanced Data Management.
 
 **Completed work in this session**
--   **Stay Pillar Frontend Fix**: Resolved an issue where Stay Products and Socials were not displaying on the  by adding the missing JSX code.
--   **Full Stay Pillar Admin UI**: Built a complete, tabbed management interface within  for **Stay Bundles** (Products) and **Pawcation Socials** (Events), including modals for full CRUD (Create, Read, Update, Delete) operations.
--   **Paw Reward System**: Implemented a loyalty feature where a complimentary treat is included with every Stay property booking. This included backend logic, a Paw Reward badge on the public , and a full admin interface in  to manage rewards.
--   **Stay Pillar Integrations**: Successfully integrated the Stay pillar's new features (bundle orders, bookings, event registrations) with the application's core systems, including Orders, Notifications, Pillar Reports, and the Service Desk.
--   **Admin Data Seeding**: Added more dummy data for testimonials and insights, and fixed an authentication issue in the  component.
--   **Shopify Sync Patch**: Added a fallback to prevent 'Untitled' products from being created during Shopify syncs.
+-   **Admin Password Reset**: Built a full-stack Forgot Password flow with email-based token reset (, , ).
+-   **Voice Order System**: Implemented backend audio transcription with OpenAI Whisper () and a frontend UI for recording/uploading ().
+-   **Live MIS Dashboard**: Created a new backend reporting engine () and a real-time dashboard component () in the admin panel.
+-   **Pillar Standardization**:
+    -   Created a universal Paw Rewards system ().
+    -   Added location fields (Google Maps link, coordinates) to the Dine pillar (, ).
+    -   Added backend CSV import/export for Stay properties, Dine bundles, and Stay bundles.
+-   **Email Delivery Fix**: Corrected the  in  to a verified domain, resolving all email sending failures.
+-   **Unified Notification Engine**: Created the backend () and integrated it into order status updates for Dine reservations.
+-   **Shopify Sync Debugging**: Added enhanced logging and a dedicated admin endpoint to track problematic products during sync.
+-   **Admin UI Verification**: Confirmed that the Custom Cake reference image feature is working end-to-end in the admin panel.
 
 **Earlier issues found/mentioned but not fixed**
--   The recurring issues of **user-facing review submission** and the root cause of **Shopify Sync 'Untitled' Products** are still pending.
+-   **Issue 1: Dine reservation form is stuck**
+    -   **Debug checklist**: Check browser console for errors on the  page during submission. Add logs to  in .
+    -   **Why to solve**: Critical user flow is blocked.
+    -   **Should Test**: Both.
+-   **Issue 2: Dining reservation time picker issue**
+    -   **Debug checklist**: Review  in . Consider replacing the native time input.
+    -   **Why to solve**: Blocks the Dine reservation flow.
+    -   **Should Test**: Frontend.
+-   **Issue 3: Service Desk reply UX is unclear**
+    -   **Debug checklist**: Screenshot the service desk UI for a ticket with an associated email. Improve UI to make channel selection more obvious.
+    -   **Why to solve**: Improves admin usability.
+    -   **Should Test**: Frontend.
 
 **Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork**: Shopify Sync 'Untitled' Products.
--   **Recurrence count**: 5+
--   **Status**: NOT STARTED (a patch was applied, but the underlying issue is unresolved).
+-   **Issue recurrence in previous fork**: User-facing review submission failure & Shopify Sync creating 'Untitled' products.
+-   **Recurrence count**: 2+
+-   **Status**: IN PROGRESS (logging added for Shopify issue), NOT STARTED (for reviews).
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Modular Admin UI**: The  was expanded into a scalable, tabbed interface for managing different aspects of the Stay pillar (Properties, Products, Socials), serving as a pattern for future pillars.
--   **Component-Based CRUD**: Created reusable modal components (, , ) to handle all create/edit operations within the admin panel, keeping the main component cleaner.
--   **Full-Stack Feature Integration**: Built the Paw Reward system and the Stay Bundle Order Flow end-to-end, from backend models and APIs through to frontend UI, admin management, and integration with existing systems like orders and notifications.
--   **API-Driven Data Management**: Implemented admin-triggered API endpoints to seed data and assign rewards, simplifying data setup across different environments (preview vs. production).
+-   **Event-Driven Notifications**: A central  is triggered by business events (e.g., order status change) to send alerts.
+-   **Real-time Analytics Aggregation**: Using MongoDB aggregation pipelines in  to generate live statistics for the admin dashboard.
+-   **Audio-to-Text Transcription**: Using  library to interact with OpenAI Whisper for voice order processing in .
+-   **Secure Token-Based Password Reset**: Generating single-use tokens, storing them in the DB, and sending them via email for secure admin password recovery.
+-   **Centralized Business Logic**: Abstracting pillar-agnostic logic like Paw Rewards into its own reusable module ().
 
 **key DB schema**
--   ****: Modified to include .
--   **** (NEEDS MODIFICATION): Will be updated to include  (e.g., 'shipping', 'store_pickup', 'both') and .
--   **** (NEEDS MODIFICATION): Will be updated to include .
--   **** (PROPOSED NEW): To store global settings like .
+-   ****: Added , , , .
+-   ****: New collection to store tokens for the forgot password flow .
+-   ****: New collection for logging all outgoing notifications .
+-   ****: New collection to store pillar-specific reward configurations .
 
 **All files of reference**
--   : The primary file for the next task.
--   : Contains the product and order models that need to be modified.
--   : Was heavily modified and now contains the full admin UI for the Stay pillar. It's a reference for UI patterns but also needs refactoring.
--   : Contains the recently added order flow for Stay bundles.
+-   : Contains the buggy reservation form.
+-   : Contains the reply functionality that needs a UX review.
+-   : Contains the updated reservation status logic.
+-   : Contains the new UI for restaurant location and Paw Rewards.
+-   : Main server file with all new routers registered.
+-   : New unified notification module.
+-   : New voice/text intake module.
+-   : New analytics engine.
+-   : New universal rewards module.
 
 **Areas that need refactoring**:
--   : This component has grown to over 2,000 lines and is now responsible for managing properties, products, and social events. It should be broken down into smaller, dedicated components for each management tab and its corresponding modals.
--   : Continues to be a monolithic file. The new checkout and fulfillment logic would be an excellent candidate for extraction into a separate  module.
+-   : This component has grown significantly with the addition of the MIS dashboard and management of multiple active tabs. It's a strong candidate to be broken into smaller layout and view components.
+-   : Continues to be a monolith. The password reset logic and other auth-related functions could be extracted into an  file.
 
 **key api endpoints**
--   : (Admin) Create a new Stay Bundle.
--   : (Admin) Update an existing Stay Bundle.
--   : (Admin) Delete a Stay Bundle.
--   : (Admin) Create a new Social Event.
--   : (Admin) Update a Social Event.
--   : (User) Creates an order for a specific Stay Bundle, which now integrates with the main order system.
--   : (Admin) Automatically assigns a default Paw Reward to all Stay properties.
--   : (Admin) Updates the specific Paw Reward for a single property.
+-   : Initiates the password reset flow.
+-   : Completes the password reset.
+-   : Accepts an audio file for transcription into an order.
+-   : Gets real-time overview stats.
+-   : Gets detailed revenue breakdown.
+-   : Gets service desk performance metrics.
+-   : Gets the universal Paw Rewards configuration.
+-   : Bulk import restaurants.
+-   : Bulk import stay properties.
 
 **Critical Info for New Agent**
--   Your immediate priority is to implement the **Global Foundation and Advanced Checkout Logic** as per the user's detailed request. Start with the backend changes: create a settings model for pickup cities, and add  and  fields to the product schema. Then, overhaul  to support the new logic.
--   The user is highly strategic and focused on long-term scalability. Approach tasks with this in mind, building robust and extensible foundations.
--   Be aware of the distinction between the preview and production environments. Data seeding and configuration may need to be performed on production after deployment, as the databases are separate.
--   The  component is now extremely large. While functional, it is a significant piece of technical debt. Plan to refactor it into smaller components when time permits or as part of related tasks.
+-   **EMAIL IS FIXED**: The issue with emails not sending was due to an unverified domain in the  env var. It has been corrected to . All email features should now be tested.
+-   **USER IS BLOCKED ON DINE PILLAR**: The user's latest feedback indicates multiple critical bugs in the Dine reservation flow (form is stuck, time picker is broken, notifications aren't sent). Fixing these is the highest priority.
+-   **ADMIN PASSWORD RESET IS LIVE**: A full-stack password reset feature was built. The user needs to deploy and use this to regain access to their production admin account.
+-   **New Modules**: Several major backend systems were created (, , , ). You should familiarize yourself with these as they are core to the user's vision.
 
 **documents and test reports created in this job**
--   
--   
+-    (Updated with Notification System details).
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Asks about what else is needed for Dine/Travel and suggests mobile UI considerations for global scaling.
-2.  **Agent**: Proposes a detailed architectural foundation for global scale (location hierarchy, pillar-based categories, tags) and asks to start with region support.
-3.  **User**: Agrees and provides detailed requirements for an advanced checkout system with split-fulfillment (Store Pickup vs. Home Delivery) and Pan-India shipping.
-4.  **Agent**: Acknowledges the excellent strategic thinking and begins analyzing the codebase.
-5.  **User**: Confirms the production domain is .
-6.  **User**: Asks why products (bundles) aren't showing on production.
-7.  **Agent**: Discovers bundles are not seeded on production and asks for permission/credentials to seed them.
-8.  **User**: States that there is no admin tab for Stay Products and requests one be built with full functionality.
-9.  **Agent**: Builds the full Stay Products admin section with CRUD modals.
-10. **User**: Reports that the Add Bundle and Edit buttons are not working correctly.
+10. User asks for a post-deployment checklist. (Agent provided)
+9. User reports that the reference image is not appearing on production for a specific order. (Agent identified this as a prod data issue)
+8. User asks how to deploy to production. (Agent provided instructions)
+7. User provides deployment logs. (Agent analyzed and found no blocking errors, but identified email domain issue)
+6. User confirms Resend domain is verified. (Agent confirmed via screenshot)
+5. User asks for production admin password and a Forgot Password feature. (Agent implemented it)
+4. User approves the plan to deploy, then build Voice Orders and MIS. (Agent implemented both)
+3. User asks what to check after deployment. (Agent provided a checklist)
+2. User reports multiple new bugs via screenshots: Dine reservation form is stuck, notifications aren't being sent, time picker is broken, and Service Desk reply is not working as expected.
+1. User provides additional requirements for standardizing pillars: add location/address to Dine, add Paw Rewards to Dine, and add CSV import/export for bundles.
 
 **Project Health Check:**
 -   **Broken**:
-    -   The checkout flow lacks support for split-fulfillment and Pan-India text input for cities.
-    -   User-facing review submission is reportedly still failing for the user.
+    -   Dine reservation form is not proceeding to the next step.
+    -   Dine reservation time picker is not functioning correctly.
+    -   User-facing review submission is reportedly failing.
+    -   The root cause of the Shopify Sync 'Untitled' products is still unknown.
 -   **Mocked**:
     -   Partner e-signature is a simple checkbox.
-    -   Uploaded partner documents are not stored in a persistent cloud location like S3.
+    -   Uploaded partner documents are not stored in a persistent cloud location.
 
 **3rd Party Integrations**
 -   **Meilisearch**: Product search.
@@ -179,12 +249,13 @@ The agent also created an order flow for Stay Bundles, integrating them into the
 -   **Chatbase.co**: Mira AI chat widget.
 -   **Emergent-managed Google Auth**: Social login.
 -   **Shopify**: Product synchronization.
+-   **OpenAI Whisper**: Voice order transcription (via ).
 
 **Testing status**
--   **Testing agent used after significant changes**: YES (for the initial Stay Products display fix).
--   **Troubleshoot agent used after agent stuck in loop**: NO.
--   **Test files created**:  exists from a previous session.
--   **Known regressions**: None identified.
+-   **Testing agent used after significant changes**: NO
+-   **Troubleshoot agent used after agent stuck in loop**: NO
+-   **Test files created**: None.
+-   **Known regressions**: None identified, but the new user-reported bugs in the Dine pillar might be regressions.
 
 **Credentials to test flow:**
 -   **Admin Email 1**: 
@@ -193,6 +264,5 @@ The agent also created an order flow for Stay Bundles, integrating them into the
 -   **Admin Password 2**: 
 
 **What agent forgot to execute**
--   The root cause of the recurring Shopify Sync Untitled Products issue has not been fully investigated, only patched.
--   The recurring Review submission failure reported by the user has not been resolved as it couldn't be reproduced by the agent.
--   Necessary refactoring of large components (, , ) has been deferred.</analysis>
+-   The agent did not complete the verification of the Dine Manager UI changes for location and Paw Rewards.
+-   The agent has not yet reproduced or created a concrete fix plan for the critical bugs reported by the user in their last message (Dine reservation form, time picker, notification trigger). This should be the immediate next step.</analysis>
