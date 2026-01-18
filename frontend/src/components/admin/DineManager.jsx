@@ -59,6 +59,11 @@ const DineManager = ({ credentials }) => {
     area: '',
     city: '',
     address: '',
+    full_address: '',
+    pincode: '',
+    geo_lat: '',
+    geo_lng: '',
+    google_place_id: '',
     petMenuAvailable: 'no',
     petPolicy: 'outdoor',
     cuisine: [],
@@ -82,6 +87,15 @@ const DineManager = ({ credentials }) => {
     verified: false,
     country: 'India',
     state: '',
+    // Paw Reward
+    paw_reward: {
+      enabled: false,
+      reward_type: 'free_product',
+      reward_name: 'Birthday Cake Reward',
+      reward_description: 'Free TDB birthday cake when celebrating your dog\'s birthday here',
+      max_value: 500,
+      trigger_condition: 'birthday'
+    }
   };
 
   const [formData, setFormData] = useState(emptyRestaurant);
