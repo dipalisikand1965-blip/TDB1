@@ -129,21 +129,7 @@ const MyPets = () => {
       <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white flex items-center justify-center">
         <div className="text-center">
           <PawPrint className="w-12 h-12 text-purple-600 animate-bounce mx-auto" />
-          <p className="mt-4 text-gray-600">Checking your account...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Redirect handled by useEffect, show nothing while redirecting
-  if (!user) return null;
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white flex items-center justify-center">
-        <div className="text-center">
-          <PawPrint className="w-12 h-12 text-purple-600 animate-bounce mx-auto" />
-          <p className="mt-4 text-gray-600">Loading your furry family...</p>
+          <p className="mt-4 text-gray-600">Loading furry family...</p>
         </div>
       </div>
     );
