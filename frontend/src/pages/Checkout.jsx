@@ -1391,9 +1391,9 @@ _GST applicable on final invoice_
                         <span>-₹{loyaltyDiscount}</span>
                       </div>
                     )}
-                    {deliveryMethod === 'delivery' && subtotal < FREE_SHIPPING_THRESHOLD && !cartAnalysis.bakeryOnlyCart && (
+                    {deliveryMethod === 'delivery' && subtotal < appSettings.free_shipping_threshold && !cartAnalysis.bakeryOnlyCart && (
                       <p className="text-xs text-purple-600 bg-purple-50 p-2 rounded">
-                        Add ₹{FREE_SHIPPING_THRESHOLD - subtotal} more for FREE delivery!
+                        Add ₹{appSettings.free_shipping_threshold - subtotal} more for FREE delivery!
                       </p>
                     )}
                     <div className="flex justify-between font-bold text-lg pt-2 border-t">
