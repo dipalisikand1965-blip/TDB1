@@ -810,12 +810,18 @@ async def export_restaurants_csv(username: str = Depends(verify_admin)):
     # Create CSV in memory
     output = io.StringIO()
     
-    # Define CSV fields
+    # Define CSV fields (including new location and paw reward fields)
     fieldnames = [
-        'id', 'name', 'area', 'city', 'petMenuAvailable', 'petPolicy',
+        'id', 'name', 'area', 'city', 'state', 'country', 
+        'full_address', 'pincode', 'geo_lat', 'geo_lng', 'googleMapsLink', 'google_place_id',
+        'petMenuAvailable', 'petPolicy',
         'cuisine', 'tags', 'rating', 'reviewCount', 'priceRange', 'image',
         'petMenuItems', 'timings', 'phone', 'instagram', 'website',
-        'featured', 'verified', 'created_at', 'updated_at'
+        'zomatoLink', 'address', 'birthdayPerks', 'specialOffers',
+        'petMenuImage', 'conciergeRecommendation',
+        'featured', 'verified',
+        'paw_reward_enabled', 'paw_reward_type', 'paw_reward_max_value',
+        'created_at', 'updated_at'
     ]
     
     writer = csv.DictWriter(output, fieldnames=fieldnames, extrasaction='ignore')
@@ -830,6 +836,12 @@ async def export_restaurants_csv(username: str = Depends(verify_admin)):
             row['tags'] = '|'.join(row['tags'])
         if isinstance(row.get('petMenuItems'), list):
             row['petMenuItems'] = '|'.join(row['petMenuItems'])
+        # Extract paw_reward fields
+        paw_reward = row.get('paw_reward', {})
+        if paw_reward:
+            row['paw_reward_enabled'] = paw_reward.get('enabled', False)
+            row['paw_reward_type'] = paw_reward.get('reward_type', '')
+            row['paw_reward_max_value'] = paw_reward.get('max_value', 0)
         writer.writerow(row)
     
     output.seek(0)
