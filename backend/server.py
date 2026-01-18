@@ -4021,8 +4021,161 @@ DISPLAY_TAG_OPTIONS = [
     {"id": "exclusive", "label": "💎 Exclusive", "color": "cyan"}
 ]
 
-@api_router.get("/admin/products/tag-options")
-async def get_display_tag_options():
+# ============ Product Tags Management ============
+
+@api_router.get("/admin/product-tags")
+async def get_all_product_tags():
+    """Get all product tags (default + custom)"""
+    # Get custom tags from database
+    custom_tags = await db.product_tags.find({}).to_list(100)
+    
+    # Combine with defaults
+    all_tags = DISPLAY_TAG_OPTIONS.copy()
+    for tag in custom_tags:
+        if not any(t['id'] == tag['id'] for t in all_tags):
+            all_tags.append({
+                "id": tag['id'],
+                "label": tag['label'],
+                "color": tag.get('color', 'gray'),
+                "is_custom": True,
+                "created_at": tag.get('created_at')
+            })
+    
+    return {"tags": all_tags, "total": len(all_tags)}
+
+@api_router.post("/admin/product-tags")
+async def create_product_tag(tag_data: dict):
+    """Create a new custom product tag"""
+    tag_id = tag_data.get('id') or tag_data.get('label', '').lower().replace(' ', '-')
+    
+    # Check if exists
+    existing = await db.product_tags.find_one({"id": tag_id})
+    if existing or any(t['id'] == tag_id for t in DISPLAY_TAG_OPTIONS):
+        raise HTTPException(status_code=400, detail="Tag already exists")
+    
+    tag_doc = {
+        "id": tag_id,
+        "label": tag_data.get('label', tag_id),
+        "color": tag_data.get('color', 'gray'),
+        "emoji": tag_data.get('emoji', '🏷️'),
+        "is_custom": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.product_tags.insert_one(tag_doc)
+    del tag_doc['_id']
+    
+    return {"success": True, "tag": tag_doc}
+
+@api_router.put("/admin/product-tags/{tag_id}")
+async def update_product_tag(tag_id: str, tag_data: dict):
+    """Update a custom product tag"""
+    # Don't allow updating default tags
+    if any(t['id'] == tag_id for t in DISPLAY_TAG_OPTIONS):
+        raise HTTPException(status_code=400, detail="Cannot modify default tags")
+    
+    result = await db.product_tags.update_one(
+        {"id": tag_id},
+        {"$set": {
+            "label": tag_data.get('label'),
+            "color": tag_data.get('color'),
+            "emoji": tag_data.get('emoji'),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Tag not found")
+    
+    return {"success": True}
+
+@api_router.delete("/admin/product-tags/{tag_id}")
+async def delete_product_tag(tag_id: str):
+    """Delete a custom product tag"""
+    # Don't allow deleting default tags
+    if any(t['id'] == tag_id for t in DISPLAY_TAG_OPTIONS):
+        raise HTTPException(status_code=400, detail="Cannot delete default tags")
+    
+    # Remove tag from all products that have it
+    await db.products.update_many(
+        {"display_tags": tag_id},
+        {"$pull": {"display_tags": tag_id}}
+    )
+    
+    # Delete the tag
+    result = await db.product_tags.delete_one({"id": tag_id})
+    
+    return {"success": True, "deleted": result.deleted_count > 0}
+
+@api_router.get("/admin/products-by-tag/{tag_id}")
+async def get_products_by_tag(tag_id: str, limit: int = 50):
+    """Get all products with a specific tag"""
+    products = await db.products.find(
+        {"display_tags": tag_id},
+        {"_id": 0}
+    ).limit(limit).to_list(limit)
+    
+    return {"products": products, "total": len(products), "tag_id": tag_id}
+
+@api_router.post("/admin/products/bulk-tag")
+async def bulk_tag_products(data: dict):
+    """Add tags to multiple products at once"""
+    product_ids = data.get('product_ids', [])
+    tags_to_add = data.get('tags', [])
+    
+    if not product_ids or not tags_to_add:
+        raise HTTPException(status_code=400, detail="product_ids and tags are required")
+    
+    result = await db.products.update_many(
+        {"$or": [{"id": {"$in": product_ids}}, {"shopify_id": {"$in": product_ids}}]},
+        {"$addToSet": {"display_tags": {"$each": tags_to_add}}}
+    )
+    
+    return {"success": True, "modified_count": result.modified_count}
+
+@api_router.post("/admin/products/bulk-untag")
+async def bulk_untag_products(data: dict):
+    """Remove tags from multiple products at once"""
+    product_ids = data.get('product_ids', [])
+    tags_to_remove = data.get('tags', [])
+    
+    if not product_ids or not tags_to_remove:
+        raise HTTPException(status_code=400, detail="product_ids and tags are required")
+    
+    result = await db.products.update_many(
+        {"$or": [{"id": {"$in": product_ids}}, {"shopify_id": {"$in": product_ids}}]},
+        {"$pull": {"display_tags": {"$in": tags_to_remove}}}
+    )
+    
+    return {"success": True, "modified_count": result.modified_count}
+
+@api_router.get("/admin/products/all-pillars")
+async def get_all_pillar_products(limit: int = 100, pillar: str = None):
+    """Get products from all pillars for tag management"""
+    query = {}
+    if pillar:
+        query["pillar"] = pillar
+    
+    products = await db.products.find(
+        query,
+        {"_id": 0, "id": 1, "title": 1, "pillar": 1, "category": 1, "display_tags": 1, "images": 1, "price": 1}
+    ).limit(limit).to_list(limit)
+    
+    # Also get bundles
+    bundles = await db.dine_bundles.find(
+        {},
+        {"_id": 0, "id": 1, "name": 1, "display_tags": 1, "images": 1, "price": 1}
+    ).to_list(50)
+    
+    # Format bundles to match product structure
+    for bundle in bundles:
+        bundle["title"] = bundle.get("name")
+        bundle["pillar"] = "dine"
+        bundle["category"] = "bundle"
+    
+    all_items = products + bundles
+    
+    return {"products": all_items, "total": len(all_items)}
     """Get available display tag options"""
     return {"tags": DISPLAY_TAG_OPTIONS}
 
