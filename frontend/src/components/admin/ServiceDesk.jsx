@@ -1887,7 +1887,7 @@ const ServiceDesk = ({ authHeaders }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex gap-4 min-h-0">
+      <div className="flex-1 flex gap-4 min-h-0 overflow-hidden">
         {/* Filters Sidebar */}
         <div className="w-48 flex-shrink-0 space-y-4">
           <div>
