@@ -580,6 +580,7 @@ const StayManager = ({ getAuthHeader }) => {
               {/* CSV Export */}
               <Button 
                 variant="outline" 
+                data-testid="export-stay-properties-csv"
                 onClick={async () => {
                   try {
                     const response = await fetch(`${API_URL}/api/admin/stay/export-csv`, {
@@ -601,6 +602,23 @@ const StayManager = ({ getAuthHeader }) => {
               >
                 <Download className="w-4 h-4 mr-2" /> Export CSV
               </Button>
+
+              {/* CSV Import */}
+              <Button 
+                variant="outline"
+                onClick={() => propertyCsvRef.current?.click()}
+                disabled={importingProperties}
+                data-testid="import-stay-properties-csv"
+              >
+                <Upload className="w-4 h-4 mr-2" /> {importingProperties ? 'Importing...' : 'Import CSV'}
+              </Button>
+              <input
+                ref={propertyCsvRef}
+                type="file"
+                accept=".csv"
+                onChange={importPropertiesCsv}
+                className="hidden"
+              />
               
               <Button 
                 variant="outline" 
