@@ -176,6 +176,16 @@ function MainLayout() {
         
         {/* Life Pillars */}
         <Route path="/celebrate" element={<ProductListing category="cakes" />} />
+        <Route path="/celebrate/cakes" element={<ProductListing category="cakes" />} />
+        <Route path="/celebrate/birthday-cakes" element={<ProductListing category="Birthdays" />} />
+        <Route path="/celebrate/breed-cakes" element={<ProductListing category="breed" />} />
+        <Route path="/celebrate/pupcakes" element={<ProductListing category="Pupcakes" />} />
+        <Route path="/celebrate/treats" element={<ProductListing category="Treats" />} />
+        <Route path="/celebrate/desi" element={<ProductListing category="desi" />} />
+        <Route path="/celebrate/hampers" element={<ProductListing category="hampers" />} />
+        <Route path="/celebrate/cat" element={<ProductListing category="cat" />} />
+        <Route path="/celebrate/accessories" element={<ProductListing category="Accessories" />} />
+        <Route path="/celebrate/:category" element={<ProductListing />} />
         <Route path="/dine" element={<DinePage />} />
         <Route path="/stay" element={<StayPage />} />
         <Route path="/travel" element={<PillarPage />} />
