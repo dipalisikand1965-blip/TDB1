@@ -1290,6 +1290,9 @@ const ServiceDesk = ({ authHeaders }) => {
         fetchRules();
         fetchRolesAndUsers();
       }
+      if (activeSettingsTab === 'escalation') {
+        fetchEscalationRules();
+      }
     }, [activeSettingsTab]);
 
     const handleSaveAssignmentRule = async () => {
