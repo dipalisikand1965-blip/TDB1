@@ -89,7 +89,7 @@ const DinePage = () => {
         r.name?.toLowerCase().includes(query) ||
         r.area?.toLowerCase().includes(query) ||
         r.city?.toLowerCase().includes(query) ||
-        r.cuisine?.some(c => c.toLowerCase().includes(query))
+        (Array.isArray(r.cuisine) && r.cuisine.some(c => c?.toLowerCase?.().includes(query)))
       );
     }
 
