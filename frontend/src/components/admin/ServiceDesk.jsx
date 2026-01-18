@@ -26,17 +26,40 @@ const CATEGORY_ICONS = {
 
 // Source labels and colors
 const SOURCE_CONFIG = {
+  // Orders & Shop
   new_order: { label: 'Order', color: 'bg-green-100 text-green-700', icon: '🛒' },
   order: { label: 'Order', color: 'bg-green-100 text-green-700', icon: '🛒' },
-  mira_chat: { label: 'Mira Chat', color: 'bg-purple-100 text-purple-700', icon: '🤖' },
+  cake_order: { label: 'Cake Order', color: 'bg-pink-100 text-pink-700', icon: '🎂' },
+  custom_cake: { label: 'Custom Cake', color: 'bg-purple-100 text-purple-700', icon: '🎨' },
+  dine_bundle_order: { label: 'Dine Bundle', color: 'bg-orange-100 text-orange-700', icon: '🍽️' },
+  
+  // Reservations & Bookings
   new_reservation: { label: 'Reservation', color: 'bg-orange-100 text-orange-700', icon: '🍽️' },
   reservation: { label: 'Reservation', color: 'bg-orange-100 text-orange-700', icon: '🍽️' },
+  dine_reservation: { label: 'Dine Booking', color: 'bg-orange-100 text-orange-700', icon: '🍽️' },
+  stay_booking: { label: 'Stay Booking', color: 'bg-teal-100 text-teal-700', icon: '🏨' },
+  travel_booking: { label: 'Travel', color: 'bg-sky-100 text-sky-700', icon: '✈️' },
+  
+  // Social & Events
   buddy_visit: { label: 'Pet Buddy', color: 'bg-pink-100 text-pink-700', icon: '🐕' },
+  meetup_request: { label: 'Meetup', color: 'bg-rose-100 text-rose-700', icon: '💕' },
+  
+  // Communication Channels
+  mira_chat: { label: 'Mira Chat', color: 'bg-purple-100 text-purple-700', icon: '🤖' },
   email: { label: 'Email', color: 'bg-blue-100 text-blue-700', icon: '📧' },
-  internal: { label: 'Internal', color: 'bg-gray-100 text-gray-700', icon: '🏢' },
-  web: { label: 'Website', color: 'bg-cyan-100 text-cyan-700', icon: '🌐' },
+  whatsapp: { label: 'WhatsApp', color: 'bg-green-100 text-green-700', icon: '💬' },
   phone: { label: 'Phone', color: 'bg-amber-100 text-amber-700', icon: '📞' },
-  partner: { label: 'Partner', color: 'bg-indigo-100 text-indigo-700', icon: '🤝' }
+  web: { label: 'Website', color: 'bg-cyan-100 text-cyan-700', icon: '🌐' },
+  
+  // Care & Services
+  care_appointment: { label: 'Care', color: 'bg-red-100 text-red-700', icon: '💊' },
+  grooming: { label: 'Grooming', color: 'bg-violet-100 text-violet-700', icon: '✂️' },
+  vet_consult: { label: 'Vet Consult', color: 'bg-red-100 text-red-700', icon: '🩺' },
+  
+  // Internal & Partner
+  internal: { label: 'Internal', color: 'bg-gray-100 text-gray-700', icon: '🏢' },
+  partner: { label: 'Partner', color: 'bg-indigo-100 text-indigo-700', icon: '🤝' },
+  auto: { label: 'Auto', color: 'bg-slate-100 text-slate-700', icon: '⚡' }
 };
 
 // Status colors
