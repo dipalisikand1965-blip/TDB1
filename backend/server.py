@@ -2984,24 +2984,34 @@ async def update_app_settings(updates: UpdateAppSettings, username: str = Depend
 
 @api_router.get("/settings/public")
 async def get_public_settings():
-    """Get public settings (pickup cities, store locations) for checkout"""
+    """Get public settings (pickup cities, store locations, shipping thresholds) for checkout"""
     settings = await db.app_settings.find_one({"id": "global_settings"}, {"_id": 0})
+    default_settings = {
+        "pickup_cities": ["Mumbai", "Gurugram", "Bangalore"],
+        "pan_india_shipping": True,
+        "bakery_pickup_only_categories": ["cakes", "fresh_treats", "celebration"],
+        "store_locations": [
+            {"id": "mumbai", "city": "Mumbai", "address": "Shop 9, off Yari Road, Jeet Nagar, Versova, Andheri West, Mumbai 400061"},
+            {"id": "gurugram", "city": "Gurugram", "address": "Ground Floor, Wazirabad Rd, Wazirabad, Sector 52, Gurugram 122003"},
+            {"id": "bangalore", "city": "Bangalore", "address": "147, 8th Main Rd, 3rd Block, Koramangala, Bengaluru 560034"}
+        ],
+        "shipping_thresholds": [
+            {"min_cart_value": 0, "max_cart_value": 3000, "shipping_fee": 150},
+            {"min_cart_value": 3000, "max_cart_value": 999999, "shipping_fee": 0}
+        ],
+        "free_shipping_threshold": 3000,
+        "default_shipping_fee": 150
+    }
     if not settings:
-        return {
-            "pickup_cities": ["Mumbai", "Gurugram", "Bangalore"],
-            "pan_india_shipping": True,
-            "bakery_pickup_only_categories": ["cakes", "fresh_treats"],
-            "store_locations": [
-                {"id": "mumbai", "city": "Mumbai", "address": "Shop 9, off Yari Road, Jeet Nagar, Versova, Andheri West, Mumbai 400061"},
-                {"id": "gurugram", "city": "Gurugram", "address": "Ground Floor, Wazirabad Rd, Wazirabad, Sector 52, Gurugram 122003"},
-                {"id": "bangalore", "city": "Bangalore", "address": "147, 8th Main Rd, 3rd Block, Koramangala, Bengaluru 560034"}
-            ]
-        }
+        return default_settings
     return {
-        "pickup_cities": settings.get("pickup_cities", []),
+        "pickup_cities": settings.get("pickup_cities", default_settings["pickup_cities"]),
         "pan_india_shipping": settings.get("pan_india_shipping", True),
-        "bakery_pickup_only_categories": settings.get("bakery_pickup_only_categories", []),
-        "store_locations": settings.get("store_locations", [])
+        "bakery_pickup_only_categories": settings.get("bakery_pickup_only_categories", default_settings["bakery_pickup_only_categories"]),
+        "store_locations": settings.get("store_locations", default_settings["store_locations"]),
+        "shipping_thresholds": settings.get("shipping_thresholds", default_settings["shipping_thresholds"]),
+        "free_shipping_threshold": settings.get("free_shipping_threshold", 3000),
+        "default_shipping_fee": settings.get("default_shipping_fee", 150)
     }
 
 
