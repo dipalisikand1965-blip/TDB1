@@ -471,8 +471,33 @@ const Admin = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setFaqs(data.faqs || []);
+        const faqList = data.faqs || [];
+        setFaqs(faqList);
         setFaqCategories(data.categories || []);
+        
+        // Auto-seed from mockData if empty
+        if (faqList.length === 0 && mockFaqs && mockFaqs.length > 0) {
+          console.log('Seeding FAQs from mockData...');
+          for (const faq of mockFaqs) {
+            await fetch(`${API_URL}/api/admin/faqs`, {
+              method: 'POST',
+              headers: getAuthHeaders(),
+              body: JSON.stringify({
+                question: faq.question,
+                answer: faq.answer,
+                category: faq.category || 'General',
+                is_featured: true
+              })
+            });
+          }
+          // Refresh to show seeded data
+          const refreshed = await fetch(`${API_URL}/api/admin/faqs`, { headers: getAuthHeaders() });
+          if (refreshed.ok) {
+            const refreshedData = await refreshed.json();
+            setFaqs(refreshedData.faqs || []);
+            setFaqCategories(refreshedData.categories || []);
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to fetch FAQs:', error);
