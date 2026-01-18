@@ -2945,7 +2945,7 @@ const CategoryManager = ({ categories, setCategories, authHeaders }) => {
       });
       
       setCategories([...categories, categoryData]);
-      setNewCategory({ name: '', icon: '📁', description: '' });
+      setNewCategory({ name: '', icon: 'folder', description: '' });
     } catch (err) {
       console.error('Error adding category:', err);
     }
