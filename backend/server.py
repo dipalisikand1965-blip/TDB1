@@ -603,8 +603,16 @@ async def lifespan(app: FastAPI):
         replace_existing=True
     )
     
+    # Add escalation check (runs every 15 minutes)
+    scheduler.add_job(
+        run_escalation_check,
+        IntervalTrigger(minutes=15),
+        id="escalation_check",
+        replace_existing=True
+    )
+    
     scheduler.start()
-    logger.info("Schedulers started: celebration reminders (9AM IST), abandoned cart (30 min), feedback (15 min), daily reports (8AM IST)")
+    logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min)")
     
     yield
     
