@@ -269,6 +269,14 @@ const Navbar = () => {
                 🐾 Pet Soul
               </Link>
 
+              <Link
+                to="/voice-order"
+                className="px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600 transition-all shadow-sm flex items-center gap-1"
+                data-testid="voice-order-nav-btn"
+              >
+                🎙️ Voice Order
+              </Link>
+
               <button
                 onClick={openMiraAI}
                 className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-xs font-medium hover:from-purple-700 hover:to-pink-700 transition-all flex items-center gap-1 shadow-md hover:shadow-lg"
