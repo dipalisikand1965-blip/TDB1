@@ -551,8 +551,8 @@ async def report_policy_mismatch(report: PolicyMismatchReport):
     
     await db.policy_mismatch_reports.insert_one(report_doc)
     
-    # Create high-priority notification
-    await db.notifications.insert_one({
+    # Create high-priority admin notification
+    await db.admin_notifications.insert_one({
         "id": f"notif-{uuid.uuid4().hex[:8]}",
         "type": "policy_mismatch",
         "title": f"⚠️ Policy Mismatch Reported - {property.get('name')}",
