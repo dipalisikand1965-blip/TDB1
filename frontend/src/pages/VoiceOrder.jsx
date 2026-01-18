@@ -51,8 +51,25 @@ export default function VoiceOrder() {
   // Start recording
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          channelCount: 1,
+          sampleRate: 16000,  // Lower sample rate for smaller file
+          echoCancellation: true,
+          noiseSuppression: true
+        } 
+      });
+      streamRef.current = stream;
+      
+      // Use lower bitrate codec if available
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
+        ? 'audio/webm;codecs=opus' 
+        : 'audio/webm';
+      
+      mediaRecorderRef.current = new MediaRecorder(stream, {
+        mimeType,
+        audioBitsPerSecond: 32000  // 32kbps for smaller files
+      });
       chunksRef.current = [];
 
       mediaRecorderRef.current.ondataavailable = (e) => {
@@ -62,16 +79,31 @@ export default function VoiceOrder() {
       };
 
       mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const blob = new Blob(chunksRef.current, { type: mimeType });
+        
+        // Check file size
+        const sizeMB = blob.size / (1024 * 1024);
+        if (sizeMB > MAX_FILE_SIZE_MB) {
+          setError(`Recording too large (${sizeMB.toFixed(1)}MB). Please keep it under ${MAX_FILE_SIZE_MB}MB.`);
+          return;
+        }
+        
         setAudioBlob(blob);
         setAudioUrl(URL.createObjectURL(blob));
         stream.getTracks().forEach(track => track.stop());
       };
 
-      mediaRecorderRef.current.start();
+      mediaRecorderRef.current.start(1000); // Collect data every second
       setIsRecording(true);
+      setRecordingTime(0);
       setError('');
       setResult(null);
+      
+      // Start timer
+      timerRef.current = setInterval(() => {
+        setRecordingTime(t => t + 1);
+      }, 1000);
+      
     } catch (err) {
       setError('Could not access microphone. Please allow microphone access.');
       console.error('Microphone error:', err);
@@ -83,6 +115,10 @@ export default function VoiceOrder() {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     }
   };
 
