@@ -2035,6 +2035,16 @@ const Admin = () => {
                       <label className="text-sm font-medium">Usage Limit</label>
                       <Input type="number" value={editingDiscount.usage_limit || ''} onChange={(e) => setEditingDiscount({...editingDiscount, usage_limit: parseInt(e.target.value) || null})} placeholder="Leave empty for unlimited" />
                     </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium">Valid From</label>
+                        <Input type="date" value={editingDiscount.valid_from?.split('T')[0] || ''} onChange={(e) => setEditingDiscount({...editingDiscount, valid_from: e.target.value ? new Date(e.target.value).toISOString() : null})} />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Valid Until (Expiry)</label>
+                        <Input type="date" value={editingDiscount.valid_until?.split('T')[0] || ''} onChange={(e) => setEditingDiscount({...editingDiscount, valid_until: e.target.value ? new Date(e.target.value).toISOString() : null})} />
+                      </div>
+                    </div>
                     <div>
                       <label className="text-sm font-medium">Description</label>
                       <Input value={editingDiscount.description || ''} onChange={(e) => setEditingDiscount({...editingDiscount, description: e.target.value})} placeholder="e.g., 20% off for new customers" />
