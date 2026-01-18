@@ -1203,3 +1203,449 @@ Suggest 3-5 specific next actions (return as JSON array of strings):"""
     except Exception as e:
         print(f"AI suggest actions error: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to suggest actions: {str(e)}")
+
+
+# ============ Canned Responses / Templates ============
+
+DEFAULT_CANNED_RESPONSES = [
+    {
+        "id": "greeting",
+        "name": "Warm Greeting",
+        "category": "general",
+        "content": "Hello! 🐾 Thank you for reaching out to The Doggy Company. I'm here to help make your pet's life pawsome! How can I assist you today?"
+    },
+    {
+        "id": "acknowledge",
+        "name": "Acknowledge Request",
+        "category": "general", 
+        "content": "Thank you for your message! I've received your request and will look into this right away. You can expect an update within the next few hours."
+    },
+    {
+        "id": "booking-confirm",
+        "name": "Booking Confirmation",
+        "category": "booking",
+        "content": "Great news! 🎉 Your booking has been confirmed. Here are the details:\n\n[BOOKING_DETAILS]\n\nIf you have any questions or need to make changes, just let me know!"
+    },
+    {
+        "id": "follow-up",
+        "name": "Follow Up",
+        "category": "general",
+        "content": "Hi! I wanted to follow up on your recent inquiry. Is there anything else I can help you with? We're always here to make your pet's experience special! 💜"
+    },
+    {
+        "id": "resolution",
+        "name": "Issue Resolved",
+        "category": "resolution",
+        "content": "I'm happy to let you know that your concern has been resolved! 🎊\n\n[RESOLUTION_DETAILS]\n\nThank you for your patience. Please don't hesitate to reach out if you need anything else!"
+    },
+    {
+        "id": "apology",
+        "name": "Sincere Apology",
+        "category": "service-recovery",
+        "content": "I sincerely apologize for the inconvenience caused. This is not the experience we want for you and your fur baby. Let me make this right for you.\n\n[ACTION_TAKEN]\n\nAs a gesture of our commitment, [COMPENSATION]."
+    },
+    {
+        "id": "callback",
+        "name": "Callback Scheduled",
+        "category": "general",
+        "content": "I've scheduled a callback for you at [TIME]. Our concierge team will reach out to discuss this in detail. If the timing doesn't work, just let me know!"
+    },
+    {
+        "id": "celebration",
+        "name": "Birthday/Celebration",
+        "category": "celebrate",
+        "content": "How exciting! 🎂🎈 We can't wait to help celebrate [PET_NAME]'s special day! Our team will create a magical experience. Let me share the details..."
+    }
+]
+
+@router.get("/canned-responses")
+async def get_canned_responses():
+    """Get all canned responses (default + custom)"""
+    db = get_db()
+    
+    # Get custom responses
+    custom = await db.canned_responses.find({}).to_list(100)
+    
+    all_responses = DEFAULT_CANNED_RESPONSES.copy()
+    for resp in custom:
+        del resp['_id']
+        all_responses.append(resp)
+    
+    return {"responses": all_responses}
+
+@router.post("/canned-responses")
+async def create_canned_response(data: dict):
+    """Create a custom canned response"""
+    db = get_db()
+    
+    response_id = data.get('id') or f"custom-{uuid.uuid4().hex[:8]}"
+    
+    response_doc = {
+        "id": response_id,
+        "name": data.get('name', 'Custom Response'),
+        "category": data.get('category', 'general'),
+        "content": data.get('content', ''),
+        "is_custom": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.canned_responses.insert_one(response_doc)
+    del response_doc['_id']
+    
+    return {"success": True, "response": response_doc}
+
+@router.delete("/canned-responses/{response_id}")
+async def delete_canned_response(response_id: str):
+    """Delete a custom canned response"""
+    db = get_db()
+    
+    # Don't allow deleting defaults
+    if any(r['id'] == response_id for r in DEFAULT_CANNED_RESPONSES):
+        raise HTTPException(status_code=400, detail="Cannot delete default responses")
+    
+    result = await db.canned_responses.delete_one({"id": response_id})
+    return {"success": True, "deleted": result.deleted_count > 0}
+
+# ============ Ticket Merge ============
+
+@router.post("/merge")
+async def merge_tickets(data: dict):
+    """Merge multiple tickets into one primary ticket"""
+    db = get_db()
+    
+    primary_id = data.get('primary_ticket_id')
+    merge_ids = data.get('merge_ticket_ids', [])
+    
+    if not primary_id or not merge_ids:
+        raise HTTPException(status_code=400, detail="primary_ticket_id and merge_ticket_ids are required")
+    
+    # Get primary ticket
+    primary = await db.tickets.find_one({"ticket_id": primary_id})
+    if not primary:
+        raise HTTPException(status_code=404, detail="Primary ticket not found")
+    
+    # Get tickets to merge
+    to_merge = await db.tickets.find({"ticket_id": {"$in": merge_ids}}).to_list(100)
+    
+    # Combine messages from all tickets
+    all_messages = primary.get("messages", [])
+    merged_descriptions = [primary.get("description", "")]
+    
+    for ticket in to_merge:
+        # Add merge note
+        all_messages.append({
+            "id": str(uuid.uuid4()),
+            "type": "system",
+            "content": f"📎 Merged from ticket {ticket.get('ticket_id')}: {ticket.get('description', '')[:200]}",
+            "sender": "system",
+            "sender_name": "System",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "is_internal": True
+        })
+        
+        # Add all messages from merged ticket
+        for msg in ticket.get("messages", []):
+            msg["merged_from"] = ticket.get("ticket_id")
+            all_messages.append(msg)
+        
+        merged_descriptions.append(f"[From {ticket.get('ticket_id')}]: {ticket.get('description', '')}")
+    
+    # Sort messages by timestamp
+    all_messages.sort(key=lambda x: x.get("timestamp", ""))
+    
+    # Update primary ticket
+    now = datetime.now(timezone.utc).isoformat()
+    await db.tickets.update_one(
+        {"ticket_id": primary_id},
+        {
+            "$set": {
+                "messages": all_messages,
+                "merged_tickets": merge_ids,
+                "updated_at": now
+            },
+            "$push": {
+                "audit_trail": {
+                    "action": "tickets_merged",
+                    "merged_ids": merge_ids,
+                    "timestamp": now,
+                    "performed_by": "admin"
+                }
+            }
+        }
+    )
+    
+    # Mark merged tickets as closed with reference
+    await db.tickets.update_many(
+        {"ticket_id": {"$in": merge_ids}},
+        {
+            "$set": {
+                "status": "closed",
+                "merged_into": primary_id,
+                "closed_at": now,
+                "updated_at": now
+            }
+        }
+    )
+    
+    return {
+        "success": True,
+        "primary_ticket_id": primary_id,
+        "merged_count": len(to_merge),
+        "message": f"Successfully merged {len(to_merge)} tickets into {primary_id}"
+    }
+
+# ============ Customer Satisfaction Survey ============
+
+@router.post("/{ticket_id}/satisfaction")
+async def submit_satisfaction(ticket_id: str, data: dict):
+    """Submit customer satisfaction rating for a resolved ticket"""
+    db = get_db()
+    
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    rating = data.get('rating')  # 1-5 stars
+    feedback = data.get('feedback', '')
+    
+    if not rating or rating < 1 or rating > 5:
+        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    satisfaction_data = {
+        "rating": rating,
+        "feedback": feedback,
+        "submitted_at": now
+    }
+    
+    await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$set": {
+                "satisfaction": satisfaction_data,
+                "updated_at": now
+            },
+            "$push": {
+                "audit_trail": {
+                    "action": "satisfaction_submitted",
+                    "rating": rating,
+                    "timestamp": now
+                }
+            }
+        }
+    )
+    
+    # Also store in a separate collection for analytics
+    await db.satisfaction_surveys.insert_one({
+        "ticket_id": ticket_id,
+        "member_email": ticket.get("member", {}).get("email"),
+        "category": ticket.get("category"),
+        "assigned_to": ticket.get("assigned_to"),
+        **satisfaction_data
+    })
+    
+    return {"success": True, "message": "Thank you for your feedback!"}
+
+@router.get("/satisfaction/stats")
+async def get_satisfaction_stats():
+    """Get satisfaction survey statistics"""
+    db = get_db()
+    
+    pipeline = [
+        {"$group": {
+            "_id": None,
+            "total": {"$sum": 1},
+            "avg_rating": {"$avg": "$rating"},
+            "five_star": {"$sum": {"$cond": [{"$eq": ["$rating", 5]}, 1, 0]}},
+            "four_star": {"$sum": {"$cond": [{"$eq": ["$rating", 4]}, 1, 0]}},
+            "three_star": {"$sum": {"$cond": [{"$eq": ["$rating", 3]}, 1, 0]}},
+            "two_star": {"$sum": {"$cond": [{"$eq": ["$rating", 2]}, 1, 0]}},
+            "one_star": {"$sum": {"$cond": [{"$eq": ["$rating", 1]}, 1, 0]}}
+        }}
+    ]
+    
+    result = await db.satisfaction_surveys.aggregate(pipeline).to_list(1)
+    
+    if result:
+        stats = result[0]
+        del stats['_id']
+        stats['avg_rating'] = round(stats.get('avg_rating', 0), 2)
+    else:
+        stats = {"total": 0, "avg_rating": 0}
+    
+    return stats
+
+# ============ Audit Trail ============
+
+@router.post("/{ticket_id}/audit")
+async def add_audit_entry(ticket_id: str, data: dict):
+    """Add an audit trail entry to a ticket"""
+    db = get_db()
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    audit_entry = {
+        "action": data.get('action', 'update'),
+        "details": data.get('details', {}),
+        "performed_by": data.get('performed_by', 'system'),
+        "timestamp": now
+    }
+    
+    result = await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"audit_trail": audit_entry},
+            "$set": {"updated_at": now}
+        }
+    )
+    
+    return {"success": result.modified_count > 0}
+
+@router.get("/{ticket_id}/audit")
+async def get_audit_trail(ticket_id: str):
+    """Get full audit trail for a ticket"""
+    db = get_db()
+    
+    ticket = await db.tickets.find_one(
+        {"ticket_id": ticket_id},
+        {"audit_trail": 1, "messages": 1, "created_at": 1, "status": 1}
+    )
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    # Combine audit trail with message history for complete timeline
+    timeline = []
+    
+    # Add creation event
+    timeline.append({
+        "type": "created",
+        "timestamp": ticket.get("created_at"),
+        "description": "Ticket created"
+    })
+    
+    # Add audit entries
+    for entry in ticket.get("audit_trail", []):
+        timeline.append({
+            "type": "audit",
+            "action": entry.get("action"),
+            "timestamp": entry.get("timestamp"),
+            "performed_by": entry.get("performed_by"),
+            "details": entry.get("details")
+        })
+    
+    # Add message events
+    for msg in ticket.get("messages", []):
+        timeline.append({
+            "type": "message",
+            "message_type": msg.get("type"),
+            "timestamp": msg.get("timestamp"),
+            "sender": msg.get("sender_name") or msg.get("sender"),
+            "channel": msg.get("channel"),
+            "is_internal": msg.get("is_internal", False)
+        })
+    
+    # Sort by timestamp
+    timeline.sort(key=lambda x: x.get("timestamp", ""))
+    
+    return {"ticket_id": ticket_id, "timeline": timeline}
+
+# ============ Enhanced Customer History ============
+
+@router.get("/customer/{identifier}/full-history")
+async def get_customer_full_history(identifier: str):
+    """Get comprehensive customer history including tickets, orders, bookings"""
+    db = get_db()
+    
+    # Find all tickets for this customer
+    tickets = await db.tickets.find({
+        "$or": [
+            {"member.email": identifier},
+            {"member.phone": identifier},
+            {"customer_email": identifier},
+            {"customer_phone": identifier}
+        ]
+    }).sort("created_at", -1).to_list(50)
+    
+    # Find orders
+    orders = await db.orders.find({
+        "$or": [
+            {"email": identifier},
+            {"phone": identifier},
+            {"customer_email": identifier}
+        ]
+    }).sort("created_at", -1).to_list(20)
+    
+    # Find Stay bookings
+    stay_bookings = await db.stay_bookings.find({
+        "$or": [
+            {"guest_email": identifier},
+            {"guest_phone": identifier}
+        ]
+    }).sort("created_at", -1).to_list(20)
+    
+    # Find Dine reservations
+    dine_reservations = await db.dine_reservations.find({
+        "$or": [
+            {"customer_email": identifier},
+            {"customer_phone": identifier}
+        ]
+    }).sort("created_at", -1).to_list(20)
+    
+    # Calculate stats
+    total_tickets = len(tickets)
+    resolved_tickets = len([t for t in tickets if t.get("status") in ["resolved", "closed"]])
+    total_orders = len(orders)
+    total_bookings = len(stay_bookings) + len(dine_reservations)
+    
+    # Get satisfaction ratings
+    ratings = [t.get("satisfaction", {}).get("rating") for t in tickets if t.get("satisfaction")]
+    avg_satisfaction = sum(ratings) / len(ratings) if ratings else None
+    
+    # Serialize tickets
+    serialized_tickets = []
+    for t in tickets:
+        serialized_tickets.append({
+            "ticket_id": t.get("ticket_id"),
+            "category": t.get("category"),
+            "status": t.get("status"),
+            "urgency": t.get("urgency"),
+            "created_at": t.get("created_at"),
+            "resolved_at": t.get("resolved_at"),
+            "description": t.get("description", "")[:200],
+            "satisfaction": t.get("satisfaction")
+        })
+    
+    return {
+        "identifier": identifier,
+        "stats": {
+            "total_tickets": total_tickets,
+            "resolved_tickets": resolved_tickets,
+            "open_tickets": total_tickets - resolved_tickets,
+            "total_orders": total_orders,
+            "total_bookings": total_bookings,
+            "avg_satisfaction": round(avg_satisfaction, 1) if avg_satisfaction else None
+        },
+        "tickets": serialized_tickets,
+        "orders": [{
+            "id": o.get("id") or o.get("order_id"),
+            "total": o.get("total") or o.get("total_amount"),
+            "status": o.get("status"),
+            "created_at": o.get("created_at")
+        } for o in orders],
+        "stay_bookings": [{
+            "id": b.get("id") or b.get("booking_id"),
+            "property": b.get("property_name"),
+            "check_in": b.get("check_in_date"),
+            "status": b.get("status"),
+            "created_at": b.get("created_at")
+        } for b in stay_bookings],
+        "dine_reservations": [{
+            "id": r.get("id") or r.get("reservation_id"),
+            "restaurant": r.get("restaurant_name"),
+            "date": r.get("reservation_date"),
+            "status": r.get("status"),
+            "created_at": r.get("created_at")
+        } for r in dine_reservations]
+    }
