@@ -1392,7 +1392,65 @@ const ServiceDesk = ({ authHeaders }) => {
               <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-800">
                   <Users className="w-4 h-4 inline mr-1" />
-                  Manage team availability and workload. Unavailable concierges will not receive new auto-assignments.
+                  Manage team roles and escalation. Set roles to control ticket assignment and escalation paths.
+                </p>
+              </div>
+
+              {/* Add New Team Member */}
+              <div className="bg-slate-50 p-4 rounded-lg border space-y-3">
+                <h4 className="font-medium text-sm">Add Team Member</h4>
+                <div className="grid grid-cols-4 gap-3">
+                  <Input
+                    placeholder="Name"
+                    id="new-member-name"
+                  />
+                  <Input
+                    placeholder="Email"
+                    id="new-member-email"
+                  />
+                  <Select defaultValue="junior">
+                    <SelectTrigger id="new-member-role">
+                      <SelectValue placeholder="Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">👑 Admin</SelectItem>
+                      <SelectItem value="senior">⭐ Senior</SelectItem>
+                      <SelectItem value="junior">👤 Junior</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button 
+                    size="sm" 
+                    onClick={async () => {
+                      const name = document.getElementById('new-member-name').value;
+                      const email = document.getElementById('new-member-email').value;
+                      const roleSelect = document.getElementById('new-member-role');
+                      const role = roleSelect?.closest('[data-state]')?.querySelector('[data-value]')?.getAttribute('data-value') || 'junior';
+                      if (!name || !email) return;
+                      try {
+                        await fetch(`${API_URL}/api/tickets/agents`, {
+                          method: 'POST',
+                          headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ name, email, role })
+                        });
+                        fetchMetadata();
+                        document.getElementById('new-member-name').value = '';
+                        document.getElementById('new-member-email').value = '';
+                      } catch (err) {
+                        console.error('Error adding member:', err);
+                      }
+                    }}
+                    className="bg-amber-500 hover:bg-amber-600"
+                  >
+                    <Plus className="w-4 h-4 mr-1" /> Add
+                  </Button>
+                </div>
+              </div>
+
+              {/* Escalation Rules */}
+              <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
+                <h4 className="font-medium text-sm text-amber-800 mb-2">⚡ Escalation Path</h4>
+                <p className="text-xs text-amber-700">
+                  Critical/High priority tickets auto-escalate: Junior → Senior → Admin
                 </p>
               </div>
 
@@ -1401,11 +1459,20 @@ const ServiceDesk = ({ authHeaders }) => {
               ) : (
                 <div className="space-y-3">
                   {conciergeAvailability.map((member, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                    <div key={idx} className="flex items-center justify-between p-3 bg-white rounded-lg border shadow-sm">
                       <div className="flex items-center gap-3">
                         <div className={`w-3 h-3 rounded-full ${member.available ? 'bg-green-500' : 'bg-gray-400'}`} />
                         <div>
-                          <div className="font-medium">{member.name || member.concierge_id}</div>
+                          <div className="font-medium flex items-center gap-2">
+                            {member.name || member.concierge_id}
+                            <Badge variant="outline" className={
+                              member.role === 'admin' ? 'bg-purple-100 text-purple-700 border-purple-300' :
+                              member.role === 'senior' ? 'bg-amber-100 text-amber-700 border-amber-300' :
+                              'bg-slate-100 text-slate-700 border-slate-300'
+                            }>
+                              {member.role === 'admin' ? '👑 Admin' : member.role === 'senior' ? '⭐ Senior' : '👤 Junior'}
+                            </Badge>
+                          </div>
                           <div className="text-xs text-gray-500">
                             {member.current_tickets} / {member.max_tickets} tickets
                             {member.categories?.length > 0 && ` • Specializes: ${member.categories.join(', ')}`}
@@ -1413,8 +1480,32 @@ const ServiceDesk = ({ authHeaders }) => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
+                        <Select 
+                          defaultValue={member.role || 'junior'}
+                          onValueChange={async (newRole) => {
+                            try {
+                              await fetch(`${API_URL}/api/tickets/agents/${member.concierge_id}`, {
+                                method: 'PUT',
+                                headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ role: newRole })
+                              });
+                              fetchMetadata();
+                            } catch (err) {
+                              console.error('Error updating role:', err);
+                            }
+                          }}
+                        >
+                          <SelectTrigger className="w-28 h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="admin">👑 Admin</SelectItem>
+                            <SelectItem value="senior">⭐ Senior</SelectItem>
+                            <SelectItem value="junior">👤 Junior</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <Badge variant={member.available ? 'default' : 'secondary'} className={member.available ? 'bg-green-100 text-green-700' : ''}>
-                          {member.available ? 'Available' : 'Unavailable'}
+                          {member.available ? 'Available' : 'Away'}
                         </Badge>
                         <Button
                           variant="outline"
@@ -1427,7 +1518,7 @@ const ServiceDesk = ({ authHeaders }) => {
                     </div>
                   ))}
                   {conciergeAvailability.length === 0 && (
-                    <p className="text-sm text-gray-500 text-center py-4">No team members configured yet.</p>
+                    <p className="text-sm text-gray-500 text-center py-4">No team members configured. Add your first team member above.</p>
                   )}
                 </div>
               )}
