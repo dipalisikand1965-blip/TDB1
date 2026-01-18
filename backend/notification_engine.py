@@ -608,7 +608,7 @@ async def get_notification_logs(
     reference_id: str = None
 ):
     """Get notification logs"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     query = {}
