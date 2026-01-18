@@ -5959,21 +5959,32 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
                 {"$set": {"product_ids": p_ids}}
             )
 
-        # Save sync log
-        await db.sync_logs.insert_one({
+        # Save sync log with problematic products info
+        sync_log = {
             "type": "shopify",
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "total_fetched": len(shopify_products),
             "added": added,
             "updated": updated,
-            "status": "success"
-        })
+            "problematic_products": problematic_products,
+            "problematic_count": len(problematic_products),
+            "status": "success" if not problematic_products else "success_with_warnings"
+        }
+        await db.sync_logs.insert_one(sync_log)
+        
+        # Log summary of issues
+        if problematic_products:
+            logger.warning(f"[SHOPIFY SYNC] Completed with {len(problematic_products)} problematic products:")
+            for pp in problematic_products:
+                logger.warning(f"  - ID: {pp['shopify_id']}, Title: '{pp['raw_title']}', Handle: '{pp['handle']}'")
         
         return {
             "message": "Shopify sync completed",
             "total_fetched": len(shopify_products),
             "added": added,
-            "updated": updated
+            "updated": updated,
+            "problematic_products": problematic_products,
+            "problematic_count": len(problematic_products)
         }
         
     except Exception as e:
