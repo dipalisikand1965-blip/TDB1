@@ -705,6 +705,18 @@ from notification_engine import (
     NotificationRecipient
 )
 
+# Import Multi-Channel Intake engine
+from channel_intake import (
+    channel_router,
+    set_database as set_channel_db
+)
+
+# Import MIS & Reporting engine
+from mis_reporting import (
+    mis_router,
+    set_database as set_mis_db
+)
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
