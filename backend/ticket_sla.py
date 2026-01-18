@@ -530,39 +530,60 @@ async def check_and_escalate(background_tasks: BackgroundTasks):
     }
 
 async def send_escalation_notification(ticket: dict, reason: str, emails: List[str]):
-    """Send escalation notification email"""
+    """Send escalation notification email and create admin notification"""
+    db = get_db()
     resend_client = get_resend()
-    if not resend_client:
-        return
     
     member = ticket.get("member", {})
     ticket_id = ticket.get("ticket_id")
     
+    # Create admin notification (bell icon)
     try:
-        resend_client.Emails.send({
-            "from": SENDER_EMAIL,
-            "to": emails,
-            "subject": f"⚠️ ESCALATION: {ticket_id} - {reason}",
-            "html": f"""
-                <div style="border-left: 4px solid #ef4444; padding-left: 15px;">
-                    <h2 style="color: #ef4444;">Ticket Escalation Alert</h2>
-                    <p><strong>Ticket ID:</strong> {ticket_id}</p>
-                    <p><strong>Reason:</strong> {reason}</p>
-                    <hr>
-                    <p><strong>Member:</strong> {member.get('name', 'Unknown')}</p>
-                    <p><strong>Category:</strong> {ticket.get('category', 'N/A')}</p>
-                    <p><strong>Urgency:</strong> {ticket.get('urgency', 'N/A').upper()}</p>
-                    <p><strong>Assigned To:</strong> {ticket.get('assigned_to', 'UNASSIGNED')}</p>
-                    <p><strong>Status:</strong> {ticket.get('status', 'unknown')}</p>
-                    <hr>
-                    <p><strong>Description:</strong></p>
-                    <p style="background:#fff3cd;padding:15px;border-radius:8px;">{ticket.get('description', '')[:300]}...</p>
-                    <p><a href="https://thedoggycompany.in/admin" style="background:#9333ea;color:white;padding:10px 20px;border-radius:5px;text-decoration:none;">View in Service Desk →</a></p>
-                </div>
-            """
+        await db.admin_notifications.insert_one({
+            "type": "sla_escalation",
+            "title": f"🚨 ESCALATION: {ticket_id} - {reason}",
+            "message": f"Ticket from {member.get('name', 'Unknown')} requires immediate attention. Category: {ticket.get('category', 'N/A')}, Urgency: {ticket.get('urgency', 'N/A').upper()}",
+            "read": False,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+            "urgency": "critical"
         })
     except Exception as e:
-        print(f"Failed to send escalation notification: {e}")
+        print(f"Failed to create escalation admin notification: {e}")
+    
+    # Send email notification
+    if resend_client:
+        try:
+            resend_client.Emails.send({
+                "from": SENDER_EMAIL,
+                "to": emails,
+                "subject": f"🚨 ESCALATION: {ticket_id} - {reason}",
+                "html": f"""
+                    <div style="border-left: 4px solid #ef4444; padding-left: 15px; font-family: Arial, sans-serif;">
+                        <h2 style="color: #ef4444;">⚠️ Ticket Escalation Alert</h2>
+                        <div style="background: #fef2f2; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                            <p style="margin:0;"><strong>Ticket ID:</strong> {ticket_id}</p>
+                            <p style="margin:5px 0;"><strong>Reason:</strong> {reason}</p>
+                        </div>
+                        <hr style="border: none; border-top: 1px solid #e5e7eb;">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <tr><td style="padding:5px 0;"><strong>Member:</strong></td><td>{member.get('name', 'Unknown')}</td></tr>
+                            <tr><td style="padding:5px 0;"><strong>Email:</strong></td><td>{member.get('email', 'N/A')}</td></tr>
+                            <tr><td style="padding:5px 0;"><strong>Phone:</strong></td><td>{member.get('phone', 'N/A')}</td></tr>
+                            <tr><td style="padding:5px 0;"><strong>Category:</strong></td><td>{ticket.get('category', 'N/A')}</td></tr>
+                            <tr><td style="padding:5px 0;"><strong>Urgency:</strong></td><td style="color:{'#ef4444' if ticket.get('urgency') in ['critical', 'high'] else '#f59e0b'};font-weight:bold;">{ticket.get('urgency', 'N/A').upper()}</td></tr>
+                            <tr><td style="padding:5px 0;"><strong>Assigned To:</strong></td><td>{ticket.get('assigned_to') or '⚠️ UNASSIGNED'}</td></tr>
+                            <tr><td style="padding:5px 0;"><strong>Status:</strong></td><td>{ticket.get('status', 'unknown')}</td></tr>
+                        </table>
+                        <hr style="border: none; border-top: 1px solid #e5e7eb;">
+                        <p><strong>Description:</strong></p>
+                        <p style="background:#fff3cd;padding:15px;border-radius:8px;">{ticket.get('description', '')[:500]}...</p>
+                        <p style="margin-top:20px;"><a href="https://thedoggycompany.in/admin" style="background:#9333ea;color:white;padding:12px 24px;border-radius:5px;text-decoration:none;font-weight:bold;">Open Service Desk →</a></p>
+                    </div>
+                """
+            })
+        except Exception as e:
+            print(f"Failed to send escalation email: {e}")
 
 # ============== RULES MANAGEMENT ==============
 
