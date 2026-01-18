@@ -336,6 +336,58 @@ Pet Menu, Off-leash area, Pet sitter, Grooming, Vet on call, Trails, Beach acces
 4. ✅ **Reviews Tab Auth Error**: Fixed ReviewsManager.jsx to use getAuthHeader() correctly instead of wrapping in extra object
 5. ✅ **Admin Dummy Data**: Added 5 testimonials, 5 blog posts, and 4 reviews for testing
 
+## New Features (Jan 18, 2026)
+
+### Unified Notification Engine ✅ (FOUNDATION)
+**Vision**: One engine, multiple channels (Email, WhatsApp), all pillars
+
+**Core Architecture:**
+- Central notification dispatcher supporting Email (via Resend) and WhatsApp (pending setup)
+- Event-driven notifications triggered automatically on status changes
+- Supports all pillars: Celebrate, Dine, Stay, Travel, Care
+- Customer notifications + Admin notifications
+
+**Supported Event Types (16 total):**
+| Event Type | Pillar | Customer Message | Admin Alert |
+|------------|--------|------------------|-------------|
+| order_placed | Celebrate | ✅ | ✅ |
+| order_confirmed | Celebrate | ✅ | ✅ |
+| order_preparing | Celebrate | ✅ | - |
+| order_ready | Celebrate | ✅ | ✅ |
+| order_shipped | Celebrate | ✅ | - |
+| order_delivered | Celebrate | ✅ | ✅ |
+| reservation_request | Dine | ✅ | ✅ |
+| reservation_confirmed | Dine | ✅ | ✅ |
+| booking_request | Stay | ✅ | ✅ |
+| booking_confirmed | Stay | ✅ | ✅ |
+| travel_request | Travel | ✅ | ✅ |
+| appointment_request | Care | ✅ | ✅ |
+| appointment_confirmed | Care | ✅ | ✅ |
+| ticket_created | General | ✅ | ✅ |
+| ticket_updated | General | ✅ | - |
+| ticket_resolved | General | ✅ | ✅ |
+
+**API Endpoints:**
+- `POST /api/notifications/send` - Manually trigger notification (admin)
+- `GET /api/notifications/logs` - Get notification logs
+- `GET /api/notifications/event-types` - List all event types
+- `GET /api/notifications/stats` - Notification statistics
+
+**Integration Points:**
+- `create_order` → Triggers `order_placed` notification automatically
+- `update_order` → Triggers status change notifications (confirmed, preparing, etc.)
+- Helper functions: `notify_order_status_change()`, `notify_booking_status_change()`, `notify_ticket_update()`
+
+**Files:**
+- `/app/backend/notification_engine.py` - Core notification engine
+
+### Shopify Sync Enhanced Logging ✅
+- Detailed logging for problematic products (untitled, missing data)
+- Sync logs now include `problematic_products` array and `problematic_count`
+- New endpoints:
+  - `GET /api/admin/sync/logs` - Sync history with issues
+  - `GET /api/admin/sync/problematic-products` - Find products with issues
+
 ## New Feature (Jan 17, 2026)
 ### Trip Planner 🎯
 A personalized trip recommendation engine that suggests:
