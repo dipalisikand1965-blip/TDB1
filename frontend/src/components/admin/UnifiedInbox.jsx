@@ -45,7 +45,12 @@ import {
   PartyPopper,
   FileText
 } from 'lucide-react';
-import { API_URL, getAuthHeader } from '../../utils/api';
+import { API_URL } from '../../utils/api';
+
+// Helper to create Basic Auth header
+const getAuthHeader = (credentials) => {
+  return 'Basic ' + btoa(`${credentials.username}:${credentials.password}`);
+};
 
 // Channel icons and colors
 const CHANNELS = {
