@@ -5705,6 +5705,13 @@ async def get_my_pets(current_user: dict = Depends(get_current_user)):
     return {"pets": pets}
 
 
+@api_router.get("/pets/public")
+async def get_public_pets(limit: int = 100, skip: int = 0):
+    """Get all pets (public view for Pet Soul page without login)"""
+    pets = await db.pets.find({}, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
+    return {"pets": pets}
+
+
 async def list_pet_profiles(
     owner_email: Optional[str] = None,
     owner_phone: Optional[str] = None,
