@@ -18,7 +18,8 @@ import {
   Inbox, ArrowUp, ArrowDown, MoreVertical, Edit, Trash2, Eye, Star, Zap,
   Download, ShoppingBag, Bot, Utensils, Hotel, CheckSquare, Square, 
   UserPlus, XCircle, Archive, History, ChevronDown, Sparkles, Wand2,
-  Brain, Lightbulb, Copy, ThumbsUp, ThumbsDown
+  Brain, Lightbulb, Copy, ThumbsUp, ThumbsDown, Maximize2, Minimize2,
+  Bookmark, BookmarkPlus, Layout, PanelLeft, Activity, TrendingUp
 } from 'lucide-react';
 
 // Category icons mapping
@@ -27,6 +28,25 @@ const CATEGORY_ICONS = {
   club: '👑', care: '💊', shop: '🛒', work: '💼', fit: '🏃',
   exclusive: '⭐', emergency: '🚨', advisory: '📋', paperwork: '📄', referrals: '🤝'
 };
+
+// Default saved views (like Zoho's starred views)
+const DEFAULT_VIEWS = [
+  { id: 'all', name: 'All Tickets', icon: '📋', filter: {} },
+  { id: 'my_tickets', name: 'My Tickets', icon: '👤', filter: { assigned_to: 'me' } },
+  { id: 'unassigned', name: 'Unassigned', icon: '📭', filter: { assigned_to: null } },
+  { id: 'critical', name: 'Critical & High', icon: '🔴', filter: { urgency: ['critical', 'high'] } },
+  { id: 'overdue', name: 'Overdue', icon: '⏰', filter: { overdue: true } },
+  { id: 'today', name: "Today's Tickets", icon: '📅', filter: { today: true } },
+];
+
+// Pillar-specific views
+const PILLAR_VIEWS = [
+  { id: 'stay', name: 'Stay', icon: '🏨', filter: { category: 'stay' } },
+  { id: 'dine', name: 'Dine', icon: '🍽️', filter: { category: 'dine' } },
+  { id: 'celebrate', name: 'Celebrate', icon: '🎂', filter: { category: 'celebrate' } },
+  { id: 'care', name: 'Care', icon: '💊', filter: { category: 'care' } },
+  { id: 'grooming', name: 'Grooming', icon: '✂️', filter: { category: 'grooming' } },
+];
 
 // Source labels and colors
 const SOURCE_CONFIG = {
