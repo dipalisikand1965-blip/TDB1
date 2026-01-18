@@ -571,61 +571,44 @@ A personalized trip recommendation engine that suggests:
 
 ## Latest Updates (Jan 18, 2026)
 
-### Bug Fix: Cart Add-on Issue ✅
-**Fixed: Main product not added when selecting add-ons**
-- Root cause: React state update batching issue - two consecutive `addToCart` calls used stale state
-- Fix: Changed `setCartItems` to use functional update pattern `setCartItems(prev => ...)`
-- Now both main product and Party Box add-on are correctly added to cart
+### Admin Panel Enhancements ✅
 
-**File Modified:** `/app/frontend/src/context/CartContext.js`
+**1. Discount Code Validity Setting**
+- Added "Valid From" and "Valid Until (Expiry)" date pickers to discount code modal
+- Expiry date shown in discount list with color coding (green=active, red=expired)
+- Files: `Admin.jsx`
 
-### Checkout Page: Bakery Delivery Options ✅
-**Home Delivery now available for bakery items (cakes, treats)**
-- Removed forced "Store Pickup" for bakery-only carts
-- Added delivery/pickup toggle for ALL cart types
-- Home Delivery is now the default (99% customers prefer shipping)
-- Store Pickup remains available in Mumbai, Gurugram, Bangalore
-- Added info note about fresh bakery packaging for delivery
+**2. Abandoned Carts - Send Reminders Fixed**
+- Added checkbox selection for individual carts (only for carts with email)
+- "Select All (X with email)" checkbox at top
+- Individual "Send" button per cart
+- "Send to X Selected" bulk action button
+- New backend endpoints: `/api/admin/abandoned-carts/{id}/send-reminder`, `/api/admin/abandoned-carts/send-reminders`
+- Files: `Admin.jsx`, `server.py`
 
-**File Modified:** `/app/frontend/src/pages/Checkout.jsx`
+**3. Testimonials Management**
+- Auto-seeds from mockData if database is empty (6 testimonials)
+- Full CRUD: Create, Read, Update, Delete
+- Features: name, pet name, location, rating, avatar, featured flag
+- Files: `Admin.jsx`
 
-### Checkout Page City Enhancement ✅
-**"Others" city option for Pan-India shopping:**
-- Added "Others (Type your city)" option in checkout city dropdown
-- When selected, a text input appears for entering custom city name
-- Validation ensures custom city is required when "Others" is selected
-- Works alongside existing Pan-India shipping toggle
-- Allows shopping from any city in India without requiring Pan-India mode
+**4. FAQ Management - Pillar-wise Categories**
+- Auto-seeds from mockData if database is empty
+- Category dropdown with organized optgroups:
+  - **General**: General, Orders & Delivery, Products & Ingredients, Customization, Payments & Refunds
+  - **Pillars**: 🎂 Celebrate, 🍽️ Dine, 🏨 Stay, ✈️ Travel, 💊 Care, 🛍️ Shop
+  - **Features**: Mira AI, Membership, Autoship, Pet Soul
+- Full CRUD functionality
+- Files: `Admin.jsx`
 
-**File Modified:** `/app/frontend/src/pages/Checkout.jsx`
-
-### Pillar Bundles Tab in Pricing Hub ✅
-**Centralized bundle/package pricing across all pillars:**
-- New "Pillar Bundles" tab added to Pricing, Shipping & Commercial Hub
-- Shows bundles/packages organized by pillar (Celebrate, Dine, Stay, Travel, Care)
-- Each pillar tab shows bundle count and list with pricing, status, edit actions
-
-**File Modified:** `/app/frontend/src/components/PricingHub.jsx`
-
-### Autoship Enhancement ✅  
-**Complete subscription calculator with date range and tiered pricing**
-- **Frequency Selection**: Weekly, bi-weekly, monthly, or 6-weekly options
-- **Date Range**: Customer selects start date and end date
-- **Auto-calculation**: System calculates total number of deliveries
-- **Tiered Discounts Applied**:
-  - 1st delivery: 20% off
-  - 2nd delivery: 25% off
-  - 3rd delivery: 30% off
-  - 4th delivery: 35% off
-  - 5th delivery: 40% off
-  - 6th delivery: 45% off
-  - 7th+ deliveries: 50% off
-- **Total Price**: Shows full subscription cost with all discounts applied
-- **Cart Display**: Shows delivery count, date range, total cost, and savings
-
-**Files Modified:**
-- `/app/frontend/src/components/ProductCard.jsx` - Added AutoshipCalculator component
-- `/app/frontend/src/components/CartSidebar.jsx` - Enhanced autoship item display
+**5. Blog/Insights - Category Management**
+- New "Manage Categories" button
+- Category modal showing existing categories with Edit buttons
+- Add new category form with Name and Description
+- Dynamic category dropdown in post editor (fetches from DB)
+- Category filter badges showing post count per category
+- Backend endpoints: `/api/admin/blog-categories` (GET, POST), `/api/admin/blog-categories/{id}` (PUT, DELETE)
+- Files: `Admin.jsx`, `server.py`
 
 ---
 
