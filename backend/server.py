@@ -7848,6 +7848,7 @@ app.include_router(ticket_router)
 app.include_router(ticket_messaging_router)
 app.include_router(ticket_sla_router)
 app.include_router(role_router)  # Role management
+app.include_router(escalation_router)  # Escalation rules
 app.include_router(pillar_router)
 app.include_router(pillar_public_router)
 app.include_router(enhanced_collection_router)
