@@ -339,6 +339,46 @@ const ServiceDesk = ({ authHeaders }) => {
     }
   };
 
+  // Upload attachment to ticket
+  const handleUploadAttachment = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedTicket) return;
+    
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size must be less than 10MB');
+      return;
+    }
+    
+    setUploadingAttachment(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const res = await fetch(`${API_URL}/api/tickets/${selectedTicket.ticket_id}/attachments`, {
+        method: 'POST',
+        headers: { 'Authorization': authHeaders.Authorization },
+        body: formData
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        // Refresh ticket details
+        fetchTicketDetails(selectedTicket.ticket_id);
+        alert(`Uploaded: ${data.filename}`);
+      } else {
+        const err = await res.json();
+        alert(`Upload failed: ${err.detail}`);
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('Failed to upload attachment');
+    }
+    
+    setUploadingAttachment(false);
+    e.target.value = '';
+  };
+
   // Individual Ticket Actions
   const handleMarkSpam = async (ticketId) => {
     if (!confirm('Mark this ticket as spam?')) return;
