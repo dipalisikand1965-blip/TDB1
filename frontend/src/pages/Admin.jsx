@@ -1752,6 +1752,26 @@ const Admin = () => {
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-bold text-gray-900">📝 Insights & Blog ({blogPosts.length})</h3>
               <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={async () => {
+                    if (confirm('Seed sample blog posts? This will add 6 articles if none exist.')) {
+                      try {
+                        const response = await fetch(`${API_URL}/api/admin/blog-posts/seed`, {
+                          method: 'POST',
+                          headers: getAuthHeaders()
+                        });
+                        const data = await response.json();
+                        alert(data.message || 'Seeded!');
+                        fetchBlogPosts();
+                      } catch (err) {
+                        alert('Failed to seed posts');
+                      }
+                    }
+                  }}
+                >
+                  🌱 Seed Posts
+                </Button>
                 <Button variant="outline" onClick={() => {
                   setEditingCategory({ id: `new-${Date.now()}`, name: '', description: '', order: blogCategories.length + 1 });
                   setShowCategoryModal(true);
