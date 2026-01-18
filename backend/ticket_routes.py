@@ -10,6 +10,9 @@ from datetime import datetime, timezone
 from bson import ObjectId
 import uuid
 import os
+import asyncio
+from dotenv import load_dotenv
+load_dotenv()
 
 router = APIRouter(prefix="/api/tickets", tags=["tickets"])
 
