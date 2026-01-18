@@ -4774,6 +4774,12 @@ async def update_order(order_id: str, updates: dict, username: str = Depends(ver
     """Update order status"""
     updates["updated_at"] = datetime.now(timezone.utc).isoformat()
     
+    # Get current order to check status change
+    current_order = await db.orders.find_one(
+        {"$or": [{"id": order_id}, {"orderId": order_id}]},
+        {"_id": 0}
+    )
+    
     result = await db.orders.update_one(
         {"$or": [{"id": order_id}, {"orderId": order_id}]},
         {"$set": updates}
@@ -4781,6 +4787,24 @@ async def update_order(order_id: str, updates: dict, username: str = Depends(ver
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Send notification if status changed
+    new_status = updates.get("status")
+    if new_status and current_order:
+        old_status = current_order.get("status")
+        if new_status != old_status:
+            try:
+                # Merge updates into order for notification
+                updated_order = {**current_order, **updates}
+                notification_result = await notify_order_status_change(
+                    order=updated_order,
+                    new_status=new_status,
+                    triggered_by="admin"
+                )
+                logger.info(f"Status change notification sent for order {order_id}: {old_status} -> {new_status}")
+            except Exception as e:
+                logger.error(f"Failed to send status change notification: {e}")
+    
     return {"message": "Order updated"}
 
 
