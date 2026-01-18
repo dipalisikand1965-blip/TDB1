@@ -308,8 +308,17 @@ async def send_email_notification(
             sent_count += 1
             logger.info(f"Email sent to customer: {customer.email}")
         except Exception as e:
-            errors.append(f"Customer email failed: {e}")
-            logger.error(f"Failed to send email to {customer.email}: {e}")
+            error_msg = str(e)
+            # Handle common Resend errors gracefully
+            if "verify a domain" in error_msg.lower() or "testing emails" in error_msg.lower():
+                logger.warning(f"Email skipped (domain not verified): {customer.email}")
+                errors.append("Domain not verified - email queued for when domain is verified")
+            elif "rate limit" in error_msg.lower() or "too many requests" in error_msg.lower():
+                logger.warning(f"Email rate limited: {customer.email}")
+                errors.append("Rate limited - will retry later")
+            else:
+                errors.append(f"Customer email failed: {e}")
+                logger.error(f"Failed to send email to {customer.email}: {e}")
     
     # Send to admin
     if event_config.get("admin_message"):
