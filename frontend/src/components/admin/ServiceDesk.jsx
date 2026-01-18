@@ -208,6 +208,11 @@ const ServiceDesk = ({ authHeaders }) => {
   // Bulk Actions
   const [selectedTickets, setSelectedTickets] = useState(new Set());
   const [showBulkActions, setShowBulkActions] = useState(false);
+
+  // Roles & Users Management
+  const [roles, setRoles] = useState([]);
+  const [teamUsers, setTeamUsers] = useState([]);
+  const [loadingRolesUsers, setLoadingRolesUsers] = useState(false);
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
   
   // Quick Filters
