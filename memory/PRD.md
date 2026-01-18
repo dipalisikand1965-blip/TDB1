@@ -5,6 +5,28 @@
 
 **Vision**: ONE ENGINE powering ALL pillars with common services.
 
+---
+
+## 🚨 CRITICAL FIX - Data Restoration (Jan 18, 2026)
+
+### Issue
+After deployment to a new environment, all products, bundles, restaurants, and stay properties appeared to be missing. This was NOT data loss - it was a fresh database environment that needed seeding.
+
+### Resolution
+✅ Created comprehensive `seed_all_data.py` script that seeds:
+- 16 Products (cakes, treats, meals, accessories)
+- 6 Categories
+- 5 Dine Bundles
+- 5 Restaurants
+- 32 Stay Properties (pet-friendly hotels across India)
+- 3 Celebrate Bundles
+- 5 Blog Posts
+
+### Also Fixed
+✅ React Hook naming error in `ServiceDesk.jsx` - renamed `useCannedResponse` to `applyCannedResponse` (functions starting with 'use' are interpreted as hooks by React)
+
+---
+
 ## ONE ENGINE Architecture ✅ (Updated Jan 18, 2026)
 
 ```
