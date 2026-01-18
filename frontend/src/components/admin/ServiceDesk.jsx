@@ -1866,23 +1866,26 @@ const ServiceDesk = ({ authHeaders }) => {
 
           {/* Select All Row (when no selection) */}
           {selectedTickets.size === 0 && displayTickets.length > 0 && (
-            <div className="bg-gray-50 border-b px-3 py-1.5 flex items-center gap-2">
+            <div className="bg-slate-50 border-b px-4 py-2 flex items-center gap-2">
               <Checkbox 
                 checked={false}
                 onCheckedChange={toggleSelectAll}
               />
-              <span className="text-xs text-gray-500">Select all</span>
+              <span className="text-xs text-slate-500">Select all</span>
             </div>
           )}
 
-          {/* Ticket List */}
-          <div className="flex-1 overflow-y-auto">
+          {/* Ticket List - Premium Cards */}
+          <div className="flex-1 overflow-y-auto bg-slate-50/50">
             {displayTickets.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">
-                <Inbox className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                <p>No tickets found</p>
+              <div className="p-12 text-center text-slate-500">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
+                  <Inbox className="w-8 h-8 text-slate-400" />
+                </div>
+                <p className="font-medium text-slate-600">No tickets found</p>
+                <p className="text-sm text-slate-400 mt-1">All caught up!</p>
                 {quickFilter !== 'all' && (
-                  <Button variant="link" size="sm" onClick={() => setQuickFilter('all')}>
+                  <Button variant="link" size="sm" onClick={() => setQuickFilter('all')} className="mt-2">
                     Show all tickets
                   </Button>
                 )}
@@ -1891,23 +1894,28 @@ const ServiceDesk = ({ authHeaders }) => {
               displayTickets.map(ticket => (
                 <div
                   key={ticket.id}
-                  className={`p-3 border-b cursor-pointer hover:bg-gray-50 transition-colors ${
-                    selectedTicket?.id === ticket.id ? 'bg-amber-50 border-l-2 border-l-amber-500' : ''
-                  } ${selectedTickets.has(ticket.ticket_id) ? 'bg-amber-25 ring-1 ring-amber-200' : ''}`}
+                  className={`mx-2 my-2 p-3 rounded-xl cursor-pointer transition-all duration-200 border ${
+                    selectedTicket?.id === ticket.id 
+                      ? 'bg-white shadow-lg border-amber-300 ring-2 ring-amber-200' 
+                      : selectedTickets.has(ticket.ticket_id)
+                        ? 'bg-amber-50/50 border-amber-200 shadow-sm'
+                        : 'bg-white hover:shadow-md border-slate-200 hover:border-amber-200'
+                  }`}
                 >
-                  <div className="flex items-start gap-2">
+                  <div className="flex items-start gap-3">
                     {/* Checkbox */}
                     <div className="pt-0.5" onClick={(e) => e.stopPropagation()}>
                       <Checkbox 
                         checked={selectedTickets.has(ticket.ticket_id)}
                         onCheckedChange={() => toggleTicketSelection(ticket.ticket_id)}
+                        className="data-[state=checked]:bg-amber-500 data-[state=checked]:border-amber-500"
                       />
                     </div>
                     
                     {/* Ticket Content */}
                     <div className="flex-1 min-w-0" onClick={() => fetchTicketDetails(ticket.ticket_id)}>
-                      <div className="flex items-start justify-between mb-1">
-                        <span className="text-xs font-mono text-gray-500">{ticket.ticket_id}</span>
+                      <div className="flex items-start justify-between mb-1.5">
+                        <span className="text-xs font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">{ticket.ticket_id}</span>
                         <div className="flex items-center gap-1 flex-wrap justify-end">
                           {ticket.source && SOURCE_CONFIG[ticket.source] && (
                             <Badge className={`text-xs ${SOURCE_CONFIG[ticket.source].color}`}>
