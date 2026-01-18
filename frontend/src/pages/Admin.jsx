@@ -2699,14 +2699,47 @@ const Admin = () => {
                 </div>
               </div>
 
+              {/* Reference Images Section (Order Level) */}
+              {selectedOrderDetails.reference_images && selectedOrderDetails.reference_images.length > 0 && (
+                <div className="bg-purple-50 p-4 rounded-lg border-2 border-purple-300">
+                  <h4 className="font-bold text-purple-800 text-sm mb-3 flex items-center gap-2">
+                    📷 REFERENCE IMAGES FOR KITCHEN ({selectedOrderDetails.reference_images.length})
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {selectedOrderDetails.reference_images.map((img, idx) => (
+                      <div key={idx} className="relative">
+                        <img 
+                          src={img.url} 
+                          alt={`Reference ${idx + 1}`}
+                          className="w-full h-32 object-cover rounded-lg border-2 border-purple-400 cursor-pointer hover:opacity-80"
+                          onClick={() => window.open(img.url, '_blank')}
+                        />
+                        <p className="text-xs text-purple-700 mt-1 truncate">{img.item_name}</p>
+                        {img.pet_name && <p className="text-xs text-gray-500">Pet: {img.pet_name}</p>}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-purple-600 mt-2 italic">⚠️ Click image to view full size. Kitchen must follow these designs.</p>
+                </div>
+              )}
+
               {/* Items */}
               <div>
                 <h4 className="font-semibold border-b pb-2 mb-2">Order Items</h4>
                 <div className="space-y-3">
                   {selectedOrderDetails.items?.map((item, idx) => (
                     <div key={idx} className="flex gap-4 p-3 bg-gray-50 rounded-lg">
-                      {item.customDetails?.referenceImage && (
-                        <img src={item.customDetails.referenceImage} className="w-16 h-16 object-cover rounded" />
+                      {/* Reference Image with prominent display */}
+                      {(item.customDetails?.referenceImage || item.reference_image) && (
+                        <div className="relative">
+                          <img 
+                            src={item.customDetails?.referenceImage || item.reference_image} 
+                            className="w-20 h-20 object-cover rounded-lg border-2 border-purple-500 cursor-pointer hover:opacity-80" 
+                            alt="Reference"
+                            onClick={() => window.open(item.customDetails?.referenceImage || item.reference_image, '_blank')}
+                          />
+                          <span className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full">📷</span>
+                        </div>
                       )}
                       <div className="flex-1">
                         <div className="flex justify-between">
@@ -2720,8 +2753,10 @@ const Admin = () => {
                         </p>
                         {item.customDetails && (
                           <div className="mt-2 text-xs bg-white p-2 rounded border">
-                            <p><strong>Custom Text:</strong> {item.customDetails.customText}</p>
-                            <p><strong>Shape:</strong> {item.customDetails.shape} | <strong>Flavor:</strong> {item.customDetails.flavor}</p>
+                            {item.customDetails.petName && <p><strong>Pet Name (ON CAKE):</strong> {item.customDetails.petName}</p>}
+                            {item.customDetails.customText && <p><strong>Custom Text:</strong> {item.customDetails.customText}</p>}
+                            {item.customDetails.shape && <p><strong>Shape:</strong> {item.customDetails.shape}</p>}
+                            {item.customDetails.flavor && <p><strong>Flavor:</strong> {item.customDetails.flavor}</p>}
                           </div>
                         )}
                       </div>
