@@ -62,10 +62,26 @@ const CartSidebar = () => {
                         {item.selectedSize} | {item.selectedFlavor}
                       </p>
                       {item.isAutoship && (
-                        <p className="text-xs text-purple-600 mt-1 flex items-center gap-1">
-                          <RefreshCw className="w-3 h-3" />
-                          Every {item.autoshipFrequency || 4} weeks
-                        </p>
+                        <div className="mt-1 space-y-1">
+                          <p className="text-xs text-purple-600 flex items-center gap-1">
+                            <RefreshCw className="w-3 h-3" />
+                            Every {item.autoshipFrequency || 4} weeks
+                          </p>
+                          {item.autoshipDetails && (
+                            <div className="text-xs bg-purple-50 p-2 rounded border border-purple-100">
+                              <p className="text-purple-700">
+                                <span className="font-semibold">{item.autoshipDetails.numDeliveries} deliveries</span>
+                                {item.autoshipDetails.startDate && item.autoshipDetails.endDate && (
+                                  <span className="text-purple-500"> ({new Date(item.autoshipDetails.startDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })} - {new Date(item.autoshipDetails.endDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })})</span>
+                                )}
+                              </p>
+                              <p className="text-green-600 font-semibold">
+                                Total: ₹{item.autoshipDetails.totalPrice} 
+                                <span className="text-green-500 font-normal"> (Save ₹{item.autoshipDetails.savings})</span>
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       )}
                       {item.customDetails && (
                         <div className="mt-2 text-xs text-gray-500 space-y-1 bg-white p-2 rounded border border-gray-100">
