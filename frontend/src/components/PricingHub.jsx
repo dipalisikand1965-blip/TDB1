@@ -724,9 +724,189 @@ const PricingHub = ({ getAuthHeader }) => {
         </TabsContent>
 
         {/* Shipping Tab */}
-        <TabsContent value="shipping" className="space-y-4">
+        <TabsContent value="shipping" className="space-y-6">
+          {/* GLOBAL CHECKOUT SHIPPING SETTINGS */}
+          <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Truck className="w-5 h-5 text-blue-600" />
+              Checkout Shipping Settings
+              <Badge className="bg-blue-100 text-blue-700">Global</Badge>
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              These settings control shipping fees displayed at checkout for all customers.
+            </p>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Free Shipping Threshold */}
+              <div>
+                <Label className="text-sm font-medium">Free Shipping Threshold (₹)</Label>
+                <p className="text-xs text-gray-500 mb-2">Cart value above which shipping is FREE</p>
+                <Input
+                  type="number"
+                  value={appSettings.free_shipping_threshold}
+                  onChange={(e) => setAppSettings({
+                    ...appSettings,
+                    free_shipping_threshold: parseFloat(e.target.value) || 0
+                  })}
+                  className="bg-white"
+                />
+              </div>
+              
+              {/* Default Shipping Fee */}
+              <div>
+                <Label className="text-sm font-medium">Default Shipping Fee (₹)</Label>
+                <p className="text-xs text-gray-500 mb-2">Standard fee for orders below threshold</p>
+                <Input
+                  type="number"
+                  value={appSettings.default_shipping_fee}
+                  onChange={(e) => setAppSettings({
+                    ...appSettings,
+                    default_shipping_fee: parseFloat(e.target.value) || 0
+                  })}
+                  className="bg-white"
+                />
+              </div>
+            </div>
+            
+            {/* Shipping Thresholds Table */}
+            <div className="mt-6">
+              <Label className="text-sm font-medium mb-2 block">Shipping Fee Tiers</Label>
+              <p className="text-xs text-gray-500 mb-3">Configure different shipping fees based on cart value</p>
+              
+              <div className="bg-white rounded-lg border overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="p-3 text-left">Min Cart Value (₹)</th>
+                      <th className="p-3 text-left">Max Cart Value (₹)</th>
+                      <th className="p-3 text-left">Shipping Fee (₹)</th>
+                      <th className="p-3 text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(appSettings.shipping_thresholds || []).map((threshold, idx) => (
+                      <tr key={idx} className="border-t">
+                        <td className="p-3">
+                          <Input
+                            type="number"
+                            value={threshold.min_cart_value}
+                            onChange={(e) => {
+                              const newThresholds = [...appSettings.shipping_thresholds];
+                              newThresholds[idx].min_cart_value = parseFloat(e.target.value) || 0;
+                              setAppSettings({ ...appSettings, shipping_thresholds: newThresholds });
+                            }}
+                            className="w-28"
+                          />
+                        </td>
+                        <td className="p-3">
+                          <Input
+                            type="number"
+                            value={threshold.max_cart_value}
+                            onChange={(e) => {
+                              const newThresholds = [...appSettings.shipping_thresholds];
+                              newThresholds[idx].max_cart_value = parseFloat(e.target.value) || 0;
+                              setAppSettings({ ...appSettings, shipping_thresholds: newThresholds });
+                            }}
+                            className="w-28"
+                          />
+                        </td>
+                        <td className="p-3">
+                          <Input
+                            type="number"
+                            value={threshold.shipping_fee}
+                            onChange={(e) => {
+                              const newThresholds = [...appSettings.shipping_thresholds];
+                              newThresholds[idx].shipping_fee = parseFloat(e.target.value) || 0;
+                              setAppSettings({ ...appSettings, shipping_thresholds: newThresholds });
+                            }}
+                            className="w-28"
+                          />
+                        </td>
+                        <td className="p-3 text-center">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() => {
+                              const newThresholds = appSettings.shipping_thresholds.filter((_, i) => i !== idx);
+                              setAppSettings({ ...appSettings, shipping_thresholds: newThresholds });
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              <div className="flex gap-2 mt-3">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const newThresholds = [
+                      ...appSettings.shipping_thresholds,
+                      { min_cart_value: 0, max_cart_value: 1000, shipping_fee: 100 }
+                    ];
+                    setAppSettings({ ...appSettings, shipping_thresholds: newThresholds });
+                  }}
+                >
+                  <Plus className="w-4 h-4 mr-1" /> Add Tier
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={saveAppSettings}
+                  disabled={savingSettings}
+                >
+                  {savingSettings ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Save className="w-4 h-4 mr-1" />}
+                  Save Settings
+                </Button>
+              </div>
+            </div>
+            
+            {/* Pickup Cities */}
+            <div className="mt-6 pt-4 border-t">
+              <Label className="text-sm font-medium mb-2 block">Store Pickup Cities</Label>
+              <p className="text-xs text-gray-500 mb-2">Cities where customers can choose store pickup for bakery items</p>
+              <div className="flex flex-wrap gap-2">
+                {(appSettings.pickup_cities || []).map((city, idx) => (
+                  <Badge key={idx} variant="secondary" className="px-3 py-1 flex items-center gap-1">
+                    {city}
+                    <X
+                      className="w-3 h-3 cursor-pointer hover:text-red-500"
+                      onClick={() => {
+                        const newCities = appSettings.pickup_cities.filter((_, i) => i !== idx);
+                        setAppSettings({ ...appSettings, pickup_cities: newCities });
+                      }}
+                    />
+                  </Badge>
+                ))}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7"
+                  onClick={() => {
+                    const city = prompt('Enter city name:');
+                    if (city && city.trim()) {
+                      setAppSettings({
+                        ...appSettings,
+                        pickup_cities: [...(appSettings.pickup_cities || []), city.trim()]
+                      });
+                    }
+                  }}
+                >
+                  <Plus className="w-3 h-3 mr-1" /> Add City
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          {/* EXISTING SHIPPING RULES */}
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Shipping Rules</h3>
+            <h3 className="text-lg font-semibold">Product Shipping Rules</h3>
             <Button onClick={() => { setEditingRule({ name: '', rule_type: 'flat', base_amount: 0, gst_percent: 18, is_active: true }); setShowRuleModal(true); }}>
               <Plus className="w-4 h-4 mr-2" /> Add Rule
             </Button>
