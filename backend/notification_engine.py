@@ -546,7 +546,7 @@ def generate_admin_email_content(event: NotificationEvent, event_config: Dict) -
 
 async def log_notification(event: NotificationEvent, results: Dict):
     """Log notification to database"""
-    if not db:
+    if db is None:
         return
     
     for channel, result in results.get("channels", {}).items():
