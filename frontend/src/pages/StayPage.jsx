@@ -1263,10 +1263,10 @@ const BookingRequestModal = ({ property, onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]" onClick={onClose}>
       {/* Bottom sheet modal */}
       <div 
-        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl flex flex-col z-[61]"
+        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl flex flex-col z-[9999]"
         style={{ height: '70vh', maxHeight: '700px' }}
         onClick={e => e.stopPropagation()}
       >
