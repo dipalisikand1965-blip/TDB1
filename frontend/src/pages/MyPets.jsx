@@ -85,7 +85,6 @@ const MyPets = () => {
             setUpcomingCelebrations(data.celebrations || []);
           }
         }
-        }
       } catch (error) {
         console.error('Failed to fetch data:', error);
       } finally {
@@ -93,10 +92,8 @@ const MyPets = () => {
       }
     };
     
-    if (user) {
-      fetchData();
-    }
-  }, [token, user]);
+    fetchData();
+  }, [token]);
 
   const filteredPets = pets.filter(pet => 
     pet.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -109,9 +106,9 @@ const MyPets = () => {
     try {
       const res = await fetch(`${API_URL}/api/pets/${petId}`, { 
         method: 'DELETE',
-        headers: {
+        headers: token ? {
           'Authorization': `Bearer ${token}`
-        }
+        } : {}
       });
       if (res.ok) {
         setPets(pets.filter(p => p.id !== petId));
@@ -126,8 +123,8 @@ const MyPets = () => {
     return personas[persona] || { name: 'Unknown', emoji: '🐕' };
   };
 
-  // Show loading while checking auth
-  if (authLoading) {
+  // Show loading while fetching data
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white flex items-center justify-center">
         <div className="text-center">
