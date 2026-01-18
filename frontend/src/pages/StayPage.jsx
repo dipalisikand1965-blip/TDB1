@@ -1575,6 +1575,7 @@ const BookingRequestModal = ({ property, onClose }) => {
               Submit Request
             </Button>
           )}
+          </div>
         </div>
       </div>
     </div>
