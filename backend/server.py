@@ -2348,12 +2348,197 @@ async def upload_cake_reference(file: UploadFile = File(...)):
 
 # ==================== ADMIN ROUTES ====================
 
+# Admin email for password reset
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "dipali@clubconcierge.in")
+
 @admin_router.post("/login")
 async def admin_login(request: AdminLoginRequest):
     """Verify admin login"""
-    if request.username == ADMIN_USERNAME and request.password == ADMIN_PASSWORD:
+    # Check database credentials first, then fall back to env
+    expected_username = _admin_credentials_cache.get("username") or ADMIN_USERNAME
+    expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
+    
+    if request.username == expected_username and request.password == expected_password:
         return {"success": True, "message": "Login successful"}
     raise HTTPException(status_code=401, detail="Invalid credentials")
+
+
+@admin_router.post("/forgot-password")
+async def forgot_password(email: str = Body(..., embed=True)):
+    """Send password reset email to admin"""
+    if email.lower() != ADMIN_EMAIL.lower():
+        # Don't reveal if email exists or not for security
+        return {"success": True, "message": "If this email is registered, you will receive a reset link"}
+    
+    # Generate reset token (valid for 1 hour)
+    import secrets
+    reset_token = secrets.token_urlsafe(32)
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
+    
+    # Store reset token in database
+    await db.admin_password_resets.delete_many({"email": email.lower()})  # Remove old tokens
+    await db.admin_password_resets.insert_one({
+        "email": email.lower(),
+        "token": reset_token,
+        "expires_at": expires_at.isoformat(),
+        "used": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    # Send reset email
+    try:
+        frontend_url = os.environ.get("FRONTEND_URL", "https://thedoggycompany.in")
+        reset_link = f"{frontend_url}/admin/reset-password?token={reset_token}"
+        
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: 'Segoe UI', sans-serif; background: #f8f4f0; margin: 0; padding: 20px; }}
+                .container {{ max-width: 500px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }}
+                .header {{ background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%); padding: 30px; text-align: center; }}
+                .header h1 {{ color: white; margin: 0; font-size: 24px; }}
+                .content {{ padding: 30px; text-align: center; }}
+                .btn {{ display: inline-block; background: #e91e63; color: white; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-weight: bold; margin: 20px 0; }}
+                .warning {{ background: #fff3e0; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 14px; color: #e65100; }}
+                .footer {{ text-align: center; padding: 20px; background: #f8f4f0; color: #666; font-size: 12px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🐾 Password Reset</h1>
+                </div>
+                <div class="content">
+                    <p>Hi Admin,</p>
+                    <p>We received a request to reset your password for The Doggy Company Admin Panel.</p>
+                    <a href="{reset_link}" class="btn">Reset My Password</a>
+                    <div class="warning">
+                        ⏰ This link expires in <strong>1 hour</strong>.<br>
+                        If you didn't request this, please ignore this email.
+                    </div>
+                </div>
+                <div class="footer">
+                    <p>The Doggy Company - Your Pet's Life Operating System</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        resend.Emails.send({
+            "from": SENDER_EMAIL,
+            "to": [ADMIN_EMAIL],
+            "subject": "🔐 Password Reset - The Doggy Company Admin",
+            "html": html_content
+        })
+        logger.info(f"Password reset email sent to {ADMIN_EMAIL}")
+        
+    except Exception as e:
+        logger.error(f"Failed to send password reset email: {e}")
+        # Still return success to not reveal email existence
+    
+    return {"success": True, "message": "If this email is registered, you will receive a reset link"}
+
+
+@admin_router.post("/reset-password")
+async def reset_password(token: str = Body(...), new_password: str = Body(...)):
+    """Reset password using token"""
+    # Find valid token
+    reset_record = await db.admin_password_resets.find_one({
+        "token": token,
+        "used": False
+    })
+    
+    if not reset_record:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset link")
+    
+    # Check if expired
+    expires_at = datetime.fromisoformat(reset_record["expires_at"].replace('Z', '+00:00'))
+    if datetime.now(timezone.utc) > expires_at:
+        raise HTTPException(status_code=400, detail="Reset link has expired. Please request a new one.")
+    
+    # Validate password
+    if len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Update password in admin_config
+    await db.admin_config.update_one(
+        {},
+        {"$set": {
+            "username": _admin_credentials_cache.get("username") or ADMIN_USERNAME,
+            "password": new_password,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    
+    # Mark token as used
+    await db.admin_password_resets.update_one(
+        {"token": token},
+        {"$set": {"used": True, "used_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    # Update cache
+    global _admin_credentials_cache
+    _admin_credentials_cache["password"] = new_password
+    _admin_credentials_cache["loaded"] = True
+    
+    # Send confirmation email
+    try:
+        resend.Emails.send({
+            "from": SENDER_EMAIL,
+            "to": [ADMIN_EMAIL],
+            "subject": "✅ Password Changed - The Doggy Company Admin",
+            "html": f"""
+            <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #e91e63;">🔐 Password Changed Successfully</h2>
+                <p>Your admin password for The Doggy Company has been updated.</p>
+                <p>If you did not make this change, please contact support immediately.</p>
+                <p style="color: #666; font-size: 12px; margin-top: 30px;">Time: {datetime.now(timezone.utc).strftime('%d %b %Y, %I:%M %p UTC')}</p>
+            </div>
+            """
+        })
+    except Exception as e:
+        logger.error(f"Failed to send password change confirmation: {e}")
+    
+    logger.info("Admin password reset successfully")
+    return {"success": True, "message": "Password reset successfully. You can now login with your new password."}
+
+
+@admin_router.post("/change-password")
+async def change_password(
+    current_password: str = Body(...),
+    new_password: str = Body(...),
+    username: str = Depends(verify_admin)
+):
+    """Change password (for logged-in admin)"""
+    expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
+    
+    if current_password != expected_password:
+        raise HTTPException(status_code=401, detail="Current password is incorrect")
+    
+    if len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
+    
+    # Update password
+    await db.admin_config.update_one(
+        {},
+        {"$set": {
+            "username": _admin_credentials_cache.get("username") or ADMIN_USERNAME,
+            "password": new_password,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    
+    # Update cache
+    global _admin_credentials_cache
+    _admin_credentials_cache["password"] = new_password
+    
+    logger.info("Admin password changed successfully")
+    return {"success": True, "message": "Password changed successfully"}
 
 
 @admin_router.get("/dashboard")
