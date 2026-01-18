@@ -1792,6 +1792,84 @@ const ServiceDesk = ({ authHeaders }) => {
                   </Select>
                 </Card>
 
+                {/* Activity Timeline */}
+                <Card className="p-3">
+                  <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+                    <History className="w-4 h-4" /> Activity Timeline
+                  </h4>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {/* Created */}
+                    <div className="flex items-start gap-2 text-xs">
+                      <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">Ticket created</span>
+                        <span className="text-gray-500 ml-2">
+                          {selectedTicket.source && SOURCE_CONFIG[selectedTicket.source] 
+                            ? `via ${SOURCE_CONFIG[selectedTicket.source].label}` 
+                            : ''}
+                        </span>
+                        <div className="text-gray-400">{new Date(selectedTicket.created_at).toLocaleString()}</div>
+                      </div>
+                    </div>
+                    
+                    {/* First Response */}
+                    {selectedTicket.first_response_at && (
+                      <div className="flex items-start gap-2 text-xs">
+                        <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
+                        <div>
+                          <span className="font-medium">First response</span>
+                          <div className="text-gray-400">{new Date(selectedTicket.first_response_at).toLocaleString()}</div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Assigned */}
+                    {selectedTicket.assigned_to && (
+                      <div className="flex items-start gap-2 text-xs">
+                        <div className="w-2 h-2 rounded-full bg-purple-500 mt-1.5 flex-shrink-0" />
+                        <div>
+                          <span className="font-medium">Assigned to {selectedTicket.assigned_to}</span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* SLA Due */}
+                    {selectedTicket.sla_due_at && (
+                      <div className="flex items-start gap-2 text-xs">
+                        <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${new Date(selectedTicket.sla_due_at) < new Date() ? 'bg-red-500' : 'bg-amber-500'}`} />
+                        <div>
+                          <span className="font-medium">
+                            {new Date(selectedTicket.sla_due_at) < new Date() ? '⚠️ SLA Breached' : 'SLA Due'}
+                          </span>
+                          <div className="text-gray-400">{new Date(selectedTicket.sla_due_at).toLocaleString()}</div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Resolved */}
+                    {selectedTicket.resolved_at && (
+                      <div className="flex items-start gap-2 text-xs">
+                        <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0" />
+                        <div>
+                          <span className="font-medium">Resolved</span>
+                          <div className="text-gray-400">{new Date(selectedTicket.resolved_at).toLocaleString()}</div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Closed */}
+                    {selectedTicket.closed_at && (
+                      <div className="flex items-start gap-2 text-xs">
+                        <div className="w-2 h-2 rounded-full bg-gray-500 mt-1.5 flex-shrink-0" />
+                        <div>
+                          <span className="font-medium">Closed</span>
+                          <div className="text-gray-400">{new Date(selectedTicket.closed_at).toLocaleString()}</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+
                 {/* Conversation */}
                 <div className="space-y-3">
                   <h4 className="text-sm font-medium flex items-center gap-2">
