@@ -1292,6 +1292,11 @@ const Admin = () => {
           />
         )}
 
+        {/* Live MIS Dashboard */}
+        {activeTab === 'mis' && (
+          <MISDashboard authHeaders={getAuthHeaders()} />
+        )}
+
         {/* Orders Tab */}
         {activeTab === 'orders' && (
           <OrdersTab 
