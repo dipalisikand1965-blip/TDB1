@@ -2163,7 +2163,7 @@ const ServiceDesk = ({ authHeaders }) => {
                     <div onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-slate-100">
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-slate-100" data-testid={`ticket-actions-${ticket.ticket_id}`}>
                             <MoreVertical className="w-4 h-4 text-slate-400" />
                           </Button>
                         </DropdownMenuTrigger>
