@@ -5328,7 +5328,7 @@ async def send_individual_cart_reminder(cart_id: str, username: str = Depends(ve
         else:
             reminder_type = "final"
         
-        success = await send_abandoned_cart_email(
+        result = await send_abandoned_cart_email(
             to_email=cart["email"],
             name=cart.get("name", "Pet Parent"),
             items=cart.get("items", []),
@@ -5337,7 +5337,7 @@ async def send_individual_cart_reminder(cart_id: str, username: str = Depends(ve
             cart_id=cart_id
         )
         
-        if success:
+        if result["success"]:
             # Update cart with reminder info
             await db.abandoned_carts.update_one(
                 {"$or": [{"id": cart_id}, {"session_id": cart_id}]},
