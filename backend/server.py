@@ -3689,10 +3689,18 @@ async def get_public_products(
         else:
             query = pan_india_query
     elif category:
+        # Search in both category field AND tags array (case-insensitive)
+        category_regex = {"$regex": f"^{category}$", "$options": "i"}
+        category_query = {
+            "$or": [
+                {"category": category_regex},
+                {"tags": category_regex}
+            ]
+        }
         if query:
-            query = {"$and": [query, {"category": category}]}
+            query = {"$and": [query, category_query]}
         else:
-            query["category"] = category
+            query = category_query
     
     products = await db.products.find(query, {"_id": 0}).to_list(500)
     return {"products": products}
