@@ -2515,6 +2515,8 @@ async def change_password(
     username: str = Depends(verify_admin)
 ):
     """Change password (for logged-in admin)"""
+    global _admin_credentials_cache
+    
     expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
     
     if current_password != expected_password:
