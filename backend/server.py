@@ -534,6 +534,10 @@ async def lifespan(app: FastAPI):
     logger.info("Loading admin credentials from database...")
     await load_admin_credentials_from_db()
     
+    # Initialize role database connection
+    set_role_db(db)
+    logger.info("Role management initialized")
+    
     # Initialize search service in background (non-blocking)
     # This prevents slow Meilisearch connection from blocking app startup
     async def init_search_background():
