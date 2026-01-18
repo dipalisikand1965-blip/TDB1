@@ -1662,10 +1662,19 @@ const ServiceDesk = ({ authHeaders }) => {
             >
               <Tag className="w-4 h-4 mr-1" /> Categories
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setShowSettings(true)}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowSettings(true)}
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
               <Settings className="w-4 h-4 mr-1" /> Settings
             </Button>
-            <Button size="sm" onClick={() => setShowNewTicket(true)}>
+            <Button 
+              size="sm" 
+              onClick={() => setShowNewTicket(true)}
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg shadow-amber-500/25"
+            >
               <Plus className="w-4 h-4 mr-1" /> New Ticket
             </Button>
           </div>
@@ -1677,12 +1686,12 @@ const ServiceDesk = ({ authHeaders }) => {
         {/* Filters Sidebar */}
         <div className="w-48 flex-shrink-0 space-y-4">
           <div>
-            <Label className="text-xs text-gray-500 mb-1 block">Search</Label>
+            <Label className="text-xs text-slate-500 mb-1.5 block font-medium">Search</Label>
             <div className="relative">
-              <Search className="absolute left-2 top-2.5 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-2.5 top-2.5 w-4 h-4 text-slate-400" />
               <Input
-                className="pl-8 h-9"
-                placeholder="Search..."
+                className="pl-9 h-9 rounded-lg border-slate-200 focus:border-amber-400 focus:ring-amber-400"
+                placeholder="Search tickets..."
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
               />
