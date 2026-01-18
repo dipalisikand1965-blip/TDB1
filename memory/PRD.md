@@ -648,8 +648,10 @@ A personalized trip recommendation engine that suggests:
 ---
 
 ## Changelog (Jan 18, 2026 - Latest Session)
+- ✅ **COMPREHENSIVE TESTING COMPLETE** - All 12 feature areas pass (100% frontend pass rate)
 - ✅ **Built Unified Inbox Dashboard** - Central command center in admin for all channel intakes with pillar assignment
 - ✅ **ONE ENGINE Architecture Documented** - Updated PRD with complete architecture vision (Membership → Pet Soul → Pillars)
+- ✅ **Fixed Voice Order Network Error** - Updated segment parsing to handle dict format from Whisper API
 - ✅ **Fixed Dine Reservation Form Crash** - Added Array.isArray check for cuisine filter in DinePage.jsx
 - ✅ **Fixed Dine/Stay Status Notifications** - Status changes now trigger notification engine and update service desk tickets
 - ✅ **Fixed Add Bundle Form Error** - Changed SelectItem value from empty string to 'any' in DineManager.jsx
@@ -658,7 +660,10 @@ A personalized trip recommendation engine that suggests:
 - ✅ **Pillar Detection for Voice Orders** - Auto-detects pillar from message content (celebrate, dine, stay, travel, care)
 - ✅ **Removed Duplicate Routes** - Cleaned up duplicate status update routes in dine_routes.py
 - ✅ **Pet Soul Public Access** - Removed login requirement from /my-pets page, added /api/pets/public endpoint
-- ✅ **Fixed Voice Order AI Extraction** - Updated to use LlmChat with correct UserMessage format
+- ✅ **Fixed Category Filtering** - Products API now searches both `category` and `tags` fields
+- ✅ **Added Celebrate Routes** - Added routes for /celebrate/birthday-cakes, /pupcakes, /treats, etc.
+- ✅ **City Filter Verified** - New city (Jaipur) appears automatically in Dine filter
+- ✅ **CSV Import/Export for Bundles** - Added buttons to both Dine and Stay managers
 
 ---
 
