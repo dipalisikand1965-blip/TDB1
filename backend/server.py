@@ -3611,6 +3611,24 @@ async def delete_blog_post(post_id: str, username: str = Depends(verify_admin)):
     return {"message": "Blog post deleted"}
 
 
+@admin_router.post("/blog-posts/seed")
+async def seed_blog_posts(force: bool = False, username: str = Depends(verify_admin)):
+    """Manually seed blog posts"""
+    existing_count = await db.blog_posts.count_documents({})
+    
+    if existing_count > 0 and not force:
+        return {"message": f"Blog posts already exist ({existing_count}). Use force=true to reseed.", "seeded": 0}
+    
+    if force:
+        await db.blog_posts.delete_many({})
+    
+    # Call the auto-seed function
+    await auto_seed_blog_posts()
+    
+    new_count = await db.blog_posts.count_documents({})
+    return {"message": f"Seeded {new_count} blog posts", "seeded": new_count}
+
+
 # Blog Categories
 @admin_router.get("/blog-categories")
 async def get_blog_categories(username: str = Depends(verify_admin)):
