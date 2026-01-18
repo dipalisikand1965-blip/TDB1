@@ -487,8 +487,8 @@ async def create_booking_request(booking: BookingRequest):
         except Exception as e:
             logger.error(f"Failed to send stay booking email: {e}")
     
-    # Create notification
-    await db.notifications.insert_one({
+    # Create admin notification
+    await db.admin_notifications.insert_one({
         "id": f"notif-{uuid.uuid4().hex[:8]}",
         "type": "stay_booking",
         "title": f"🏨 New Stay Booking - {property.get('name')}",
