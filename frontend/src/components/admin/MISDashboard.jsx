@@ -28,6 +28,11 @@ export default function MISDashboard({ authHeaders }) {
   const [lastUpdated, setLastUpdated] = useState(null);
 
   const fetchData = async () => {
+    if (!authHeaders?.Authorization) {
+      console.log('MIS Dashboard: No auth headers yet');
+      return;
+    }
+    
     setLoading(true);
     try {
       const [dashRes, revRes, chanRes, sdRes, pillarRes] = await Promise.all([
@@ -39,10 +44,19 @@ export default function MISDashboard({ authHeaders }) {
       ]);
 
       if (dashRes.ok) setDashboard(await dashRes.json());
+      else console.error('Dashboard fetch failed:', dashRes.status);
+      
       if (revRes.ok) setRevenue(await revRes.json());
+      else console.error('Revenue fetch failed:', revRes.status);
+      
       if (chanRes.ok) setChannels(await chanRes.json());
+      else console.error('Channels fetch failed:', chanRes.status);
+      
       if (sdRes.ok) setServiceDesk(await sdRes.json());
+      else console.error('Service desk fetch failed:', sdRes.status);
+      
       if (pillarRes.ok) setPillars(await pillarRes.json());
+      else console.error('Pillars fetch failed:', pillarRes.status);
       
       setLastUpdated(new Date());
     } catch (error) {
