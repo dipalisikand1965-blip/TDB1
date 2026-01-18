@@ -552,44 +552,81 @@ async def admin_update_reservation_status(
     if not reservation:
         raise HTTPException(status_code=404, detail="Reservation not found")
     
+    old_status = reservation.get("status")
+    
     await db.reservations.update_one(
         {"id": reservation_id},
         {"$set": {"status": status, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
     
-    # Send email notification to customer on status change
-    if RESEND_API_KEY and reservation.get("email") and status in ["confirmed", "cancelled"]:
-        try:
-            if status == "confirmed":
-                subject = f"✅ Reservation Confirmed - {reservation.get('restaurant_name')}"
-                message = f"Great news! Your reservation at {reservation.get('restaurant_name')} on {reservation.get('date')} at {reservation.get('time')} has been confirmed."
-            else:
-                subject = f"❌ Reservation Cancelled - {reservation.get('restaurant_name')}"
-                message = f"We're sorry, but your reservation at {reservation.get('restaurant_name')} on {reservation.get('date')} has been cancelled. Please contact us for assistance."
-            
-            resend.Emails.send({
-                "from": f"The Doggy Company <{SENDER_EMAIL}>",
-                "to": [reservation.get("email")],
-                "subject": subject,
-                "html": f"""
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <div style="background: {'#16a34a' if status == 'confirmed' else '#dc2626'}; padding: 30px; text-align: center;">
-                        <h1 style="color: white; margin: 0;">{'✅' if status == 'confirmed' else '❌'} Reservation {status.title()}</h1>
-                    </div>
-                    <div style="padding: 30px;">
-                        <p style="color: #4b5563;">{message}</p>
-                        <div style="background: #f9fafb; padding: 20px; border-radius: 10px; margin: 20px 0;">
-                            <p><strong>Restaurant:</strong> {reservation.get('restaurant_name')}</p>
-                            <p><strong>Date:</strong> {reservation.get('date')}</p>
-                            <p><strong>Time:</strong> {reservation.get('time')}</p>
-                            <p><strong>Guests:</strong> {reservation.get('guests')} | <strong>Pets:</strong> {reservation.get('pets')}</p>
+    # Send notification on status change
+    if status != old_status:
+        # Send email notification to customer
+        if RESEND_API_KEY and reservation.get("email") and status in ["confirmed", "cancelled"]:
+            try:
+                if status == "confirmed":
+                    subject = f"✅ Reservation Confirmed - {reservation.get('restaurant_name')}"
+                    message = f"Great news! Your reservation at {reservation.get('restaurant_name')} on {reservation.get('date')} at {reservation.get('time')} has been confirmed."
+                else:
+                    subject = f"❌ Reservation Cancelled - {reservation.get('restaurant_name')}"
+                    message = f"We're sorry, but your reservation at {reservation.get('restaurant_name')} on {reservation.get('date')} has been cancelled. Please contact us for assistance."
+                
+                resend.Emails.send({
+                    "from": f"The Doggy Company <{SENDER_EMAIL}>",
+                    "to": [reservation.get("email")],
+                    "subject": subject,
+                    "html": f"""
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <div style="background: {'#16a34a' if status == 'confirmed' else '#dc2626'}; padding: 30px; text-align: center;">
+                            <h1 style="color: white; margin: 0;">{'✅' if status == 'confirmed' else '❌'} Reservation {status.title()}</h1>
+                        </div>
+                        <div style="padding: 30px;">
+                            <p style="color: #4b5563;">{message}</p>
+                            <div style="background: #f9fafb; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                                <p><strong>Restaurant:</strong> {reservation.get('restaurant_name')}</p>
+                                <p><strong>Date:</strong> {reservation.get('date')}</p>
+                                <p><strong>Time:</strong> {reservation.get('time')}</p>
+                                <p><strong>Guests:</strong> {reservation.get('guests')} | <strong>Pets:</strong> {reservation.get('pets')}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                """
+                    """
+                })
+                logger.info(f"Reservation status update email sent to {reservation.get('email')}")
+            except Exception as e:
+                logger.error(f"Failed to send status update email: {e}")
+        
+        # Also trigger notification engine for logging
+        try:
+            from notification_engine import notify_booking_status_change
+            await notify_booking_status_change(
+                booking={
+                    "id": reservation_id,
+                    "guest_name": reservation.get("name"),
+                    "email": reservation.get("email"),
+                    "phone": reservation.get("phone"),
+                    "restaurant_name": reservation.get("restaurant_name"),
+                    "date": reservation.get("date"),
+                    "time": reservation.get("time"),
+                    "guests": reservation.get("guests"),
+                    "pets": reservation.get("pets")
+                },
+                new_status=status,
+                pillar="dine",
+                triggered_by="admin"
+            )
+            logger.info(f"Notification engine triggered for reservation {reservation_id}: {old_status} -> {status}")
+        except Exception as e:
+            logger.error(f"Failed to trigger notification engine: {e}")
+        
+        # Update linked service desk ticket
+        try:
+            await update_ticket_from_event(db, "reservation", reservation_id, {
+                "new_status": status,
+                "pillar": "dine"
             })
         except Exception as e:
-            logger.error(f"Failed to send status update email: {e}")
+            logger.error(f"Failed to update ticket for reservation: {e}")
     
     return {"message": f"Reservation status updated to {status}"}
 
