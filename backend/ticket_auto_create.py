@@ -24,12 +24,26 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
         ticket_id: The created ticket ID
     """
     
-    # Generate ticket ID
-    today = datetime.now(timezone.utc).strftime("%Y%m%d")
-    count = await db.tickets.count_documents({"ticket_id": {"$regex": f"^TKT-{today}"}})
-    ticket_id = f"TKT-{today}-{str(count + 1).zfill(3)}"
-    
     now = datetime.now(timezone.utc).isoformat()
+    
+    # For cake orders: Ticket ID = Order ID (critical requirement)
+    if event_type == "cake_order" and event_data.get("order_id"):
+        ticket_id = event_data.get("order_id")
+        # Check if ticket already exists with this ID
+        existing = await db.tickets.find_one({"ticket_id": ticket_id})
+        if existing:
+            # Update existing ticket instead of creating new
+            return ticket_id
+    elif event_type == "dine_bundle_order" and event_data.get("order_id"):
+        ticket_id = event_data.get("order_id")
+        existing = await db.tickets.find_one({"ticket_id": ticket_id})
+        if existing:
+            return ticket_id
+    else:
+        # Generate standard ticket ID for other events
+        today = datetime.now(timezone.utc).strftime("%Y%m%d")
+        count = await db.tickets.count_documents({"ticket_id": {"$regex": f"^TKT-{today}"}})
+        ticket_id = f"TKT-{today}-{str(count + 1).zfill(3)}"
     
     # Default ticket structure
     ticket_doc = {
@@ -56,7 +70,9 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
         "resolved_at": None,
         "closed_at": None,
         "auto_created_from": event_type,
-        "linked_event_id": None
+        "linked_event_id": None,
+        "reference_images": [],  # For storing cake reference images
+        "order_id": event_data.get("order_id")  # Link to order
     }
     
     # Configure based on event type
