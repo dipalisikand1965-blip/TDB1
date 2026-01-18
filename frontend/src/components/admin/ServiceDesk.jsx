@@ -17,7 +17,8 @@ import {
   ChevronRight, Settings, BarChart3, Users, Tag, Paperclip, ExternalLink,
   Inbox, ArrowUp, ArrowDown, MoreVertical, Edit, Trash2, Eye, Star, Zap,
   Download, ShoppingBag, Bot, Utensils, Hotel, CheckSquare, Square, 
-  UserPlus, XCircle, Archive, History, ChevronDown
+  UserPlus, XCircle, Archive, History, ChevronDown, Sparkles, Wand2,
+  Brain, Lightbulb, Copy, ThumbsUp, ThumbsDown
 } from 'lucide-react';
 
 // Category icons mapping
