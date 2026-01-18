@@ -1021,7 +1021,7 @@ const ServiceDesk = ({ authHeaders }) => {
                     <Select value={newAssignmentRule.category} onValueChange={(v) => setNewAssignmentRule({ ...newAssignmentRule, category: v })}>
                       <SelectTrigger className="text-sm"><SelectValue placeholder="Any category" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Any Category</SelectItem>
+                        <SelectItem value="all">Any Category</SelectItem>
                         {categories.map(c => (
                           <SelectItem key={c.id} value={c.id}>{c.icon} {c.name}</SelectItem>
                         ))}
@@ -1125,7 +1125,7 @@ const ServiceDesk = ({ authHeaders }) => {
                     <Select value={newSlaRule.category} onValueChange={(v) => setNewSlaRule({ ...newSlaRule, category: v })}>
                       <SelectTrigger className="text-sm"><SelectValue placeholder="Any" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Any Category</SelectItem>
+                        <SelectItem value="all">Any Category</SelectItem>
                         {categories.map(c => (
                           <SelectItem key={c.id} value={c.id}>{c.icon} {c.name}</SelectItem>
                         ))}
