@@ -301,6 +301,7 @@ const ProductDetailModal = ({ product, onClose }) => {
   // Extract options from product (e.g., Base, Flavour, Weight)
   const productOptions = product.options || [];
   const variants = product.variants || [];
+  const { user, token } = useAuth();
   
   // Build option values dynamically from variants
   const getOptionValues = (optionName, optionIndex) => {
