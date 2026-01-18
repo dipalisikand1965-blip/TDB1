@@ -2419,15 +2419,21 @@ const ServiceDesk = ({ authHeaders }) => {
                               : "Type your reply..."
                       }
                       className="resize-none bg-white"
-                      rows={2}
+                      rows={3}
                     />
                     <div className="flex flex-col gap-1">
                       <Button 
                         onClick={handleReply} 
                         disabled={sendingReply || !replyText.trim()} 
-                        className={`flex-1 ${!isInternalNote && sendChannel === 'email' ? 'bg-blue-600 hover:bg-blue-700' : !isInternalNote && sendChannel === 'whatsapp' ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                        data-testid="send-reply-btn"
+                        className={`flex-1 min-h-[60px] ${!isInternalNote && sendChannel === 'email' ? 'bg-blue-600 hover:bg-blue-700' : !isInternalNote && sendChannel === 'whatsapp' ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                        title={replyText.trim() ? 'Send Reply' : 'Type a message first'}
                       >
-                        {sendingReply ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                        {sendingReply ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <Send className="w-5 h-5" />
+                        )}
                       </Button>
                     </div>
                   </div>
