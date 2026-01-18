@@ -218,7 +218,7 @@ export default function VoiceOrder() {
       if (err.name === 'AbortError') {
         setError('Request timed out. Voice processing takes a moment - please try again.');
       } else if (err.name === 'TypeError') {
-        setError('Connection failed. Please check your internet connection.');
+        setError('Connection failed. Please try a shorter recording or check your internet.');
       } else {
         setError(`Error: ${err.message || 'Network error. Please try again.'}`);
       }
@@ -233,6 +233,18 @@ export default function VoiceOrder() {
     setAudioUrl(null);
     setResult(null);
     setError('');
+    setRecordingTime(0);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  // Format time display
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
