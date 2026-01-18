@@ -215,6 +215,39 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
             delivery_info = f"""**Delivery Address:** {event_data.get('delivery_address', 'Not provided')}
 **City:** {event_data.get('city', 'Not specified')}"""
         
+        # Extract reference images from order items
+        reference_images = []
+        for item in event_data.get('items', []):
+            if item.get('customDetails', {}).get('referenceImage'):
+                reference_images.append({
+                    "url": item['customDetails']['referenceImage'],
+                    "item_name": item.get('name', 'Cake'),
+                    "uploaded_at": now
+                })
+            if item.get('reference_image'):
+                reference_images.append({
+                    "url": item['reference_image'],
+                    "item_name": item.get('name', 'Cake'),
+                    "uploaded_at": now
+                })
+        
+        # Build items list with reference image indicators
+        items_list = []
+        for item in event_data.get('items', []):
+            item_line = f"  - {item.get('name', 'Item')} x{item.get('quantity', 1)} - ₹{item.get('price', 0)}"
+            if item.get('customDetails', {}).get('petName'):
+                item_line += f" (Pet: {item['customDetails']['petName']})"
+            if item.get('customDetails', {}).get('referenceImage') or item.get('reference_image'):
+                item_line += " 📷"
+            items_list.append(item_line)
+        
+        # Reference images section
+        ref_images_text = ""
+        if reference_images:
+            ref_images_text = f"\n\n**Reference Images:** {len(reference_images)} image(s) attached ⬇️"
+            for idx, img in enumerate(reference_images, 1):
+                ref_images_text += f"\n  [{idx}] {img['item_name']}: {img['url']}"
+        
         ticket_doc.update({
             "category": "celebrate",
             "sub_category": "cake_order",
@@ -228,12 +261,13 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
             },
             "description": f"""🎂 CAKE ORDER
 
-**Order ID:** {event_data.get('order_id', 'Unknown')}
+**Order ID / Ticket ID:** {event_data.get('order_id', 'Unknown')}
 **Customer:** {event_data.get('customer_name')}
+**Phone:** {event_data.get('customer_phone', 'Not provided')}
 **City:** {event_data.get('city', 'Not specified')}
 
 **Items:**
-{chr(10).join([f"  - {item.get('name', 'Item')} x{item.get('quantity', 1)} - ₹{item.get('price', 0)}" for item in event_data.get('items', [])])}
+{chr(10).join(items_list)}
 
 **Total:** ₹{event_data.get('total', 0)}
 
@@ -242,19 +276,21 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
 {delivery_info}
 
 **Special Instructions:** {event_data.get('special_instructions') or 'None'}
+{ref_images_text}
 
 ---
-*Auto-created from cake order*""",
+*Order ID = Ticket ID for easy tracking*""",
             "source": "cake_order",
             "source_reference": event_data.get("order_id"),
             "linked_event_id": event_data.get("order_id"),
+            "reference_images": reference_images,
             "tags": ["auto-created", "celebrate", "cake", "order", event_data.get("city", "").lower().replace(" ", "-")] if event_data.get("city") else ["auto-created", "celebrate", "cake", "order"]
         })
         
         ticket_doc["messages"].append({
             "id": str(uuid.uuid4()),
             "type": "ticket_created",
-            "content": f"Cake order #{event_data.get('order_id')} placed by {event_data.get('customer_name')}",
+            "content": f"Cake order #{event_data.get('order_id')} placed by {event_data.get('customer_name')}" + (f" with {len(reference_images)} reference image(s)" if reference_images else ""),
             "sender": "system",
             "sender_name": "System",
             "channel": "auto",
