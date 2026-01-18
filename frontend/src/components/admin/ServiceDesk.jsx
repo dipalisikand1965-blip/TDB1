@@ -288,6 +288,53 @@ const ServiceDesk = ({ authHeaders }) => {
     }
   };
 
+  // Fetch Escalation Rules
+  const fetchEscalationRules = async () => {
+    setLoadingEscalation(true);
+    try {
+      const res = await fetch(`${API_URL}/api/escalation`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setEscalationRules(data.rules || []);
+      }
+    } catch (err) {
+      console.error('Error fetching escalation rules:', err);
+    }
+    setLoadingEscalation(false);
+  };
+
+  // Toggle escalation rule
+  const handleToggleEscalationRule = async (ruleId) => {
+    try {
+      const res = await fetch(`${API_URL}/api/escalation/${ruleId}/toggle`, {
+        method: 'POST',
+        headers: authHeaders
+      });
+      if (res.ok) {
+        fetchEscalationRules();
+      }
+    } catch (err) {
+      console.error('Error toggling rule:', err);
+    }
+  };
+
+  // Manual escalation check
+  const handleRunEscalationCheck = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/escalation/run-check`, {
+        method: 'POST',
+        headers: authHeaders
+      });
+      if (res.ok) {
+        const data = await res.json();
+        alert(`Escalation check complete: ${data.escalated} tickets escalated`);
+        fetchTickets();
+      }
+    } catch (err) {
+      console.error('Error running escalation check:', err);
+    }
+  };
+
   // Individual Ticket Actions
   const handleMarkSpam = async (ticketId) => {
     if (!confirm('Mark this ticket as spam?')) return;
