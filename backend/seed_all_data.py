@@ -13,7 +13,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from stay_seeder import INDIA_PET_FRIENDLY_HOTELS
 
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-DB_NAME = os.environ.get('DB_NAME', 'doggy_company')
+DB_NAME = os.environ.get('DB_NAME', 'test_database')
 
 
 # ============= PRODUCTS DATA =============
