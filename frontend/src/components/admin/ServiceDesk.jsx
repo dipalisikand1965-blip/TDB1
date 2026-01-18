@@ -2286,8 +2286,8 @@ const ServiceDesk = ({ authHeaders }) => {
                 <h3 className="font-medium">{selectedTicket.member?.name}</h3>
               </div>
 
-              {/* Content */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {/* Content - Scrollable Area */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
                 {/* Member Info */}
                 <Card className="p-3">
                   <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
