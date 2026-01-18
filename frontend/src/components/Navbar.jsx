@@ -378,8 +378,17 @@ const Navbar = () => {
                   to="/my-pets"
                   onClick={() => setIsMenuOpen(false)}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium"
+                  data-testid="mobile-pet-soul-link"
                 >
                   🐾 Pet Soul
+                </Link>
+                <Link
+                  to="/voice-order"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 text-white font-medium"
+                  data-testid="mobile-voice-order-link"
+                >
+                  🎙️ Voice Order
                 </Link>
                 <button
                   onClick={() => { openMiraAI(); setIsMenuOpen(false); }}
