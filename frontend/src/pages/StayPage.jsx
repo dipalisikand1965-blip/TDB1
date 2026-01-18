@@ -1546,7 +1546,7 @@ const BookingRequestModal = ({ property, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t flex gap-3">
+        <div className="p-6 border-t flex gap-3 bg-white sticky bottom-0">
           {step > 1 && (
             <Button variant="outline" onClick={() => setStep(step - 1)}>
               Back
@@ -1555,11 +1555,11 @@ const BookingRequestModal = ({ property, onClose }) => {
           <div className="flex-1" />
           {step < 3 ? (
             <Button 
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-700 text-white"
               onClick={() => setStep(step + 1)}
               disabled={step === 1 && (!formData.guest_name || !formData.guest_email || !formData.guest_phone)}
             >
-              Next
+              Next →
             </Button>
           ) : (
             <Button 
