@@ -11,150 +11,167 @@
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack React/FastAPI/MongoDB application. The current session was highly productive. The agent first implemented a batch of user-requested features and bug fixes, including:
--   **Checkout Enhancements**: Added an Others option for cities and fixed bakery item delivery logic to default to Home Delivery.
--   **Cart/Product Fixes**: Resolved a critical bug where adding a product with an add-on failed. Implemented an advanced autoship calculator with date ranges and tiered discounts.
--   **Admin Panel Overhaul**: Added management features for Blog Categories, FAQ Pillar Categories, Discount Code validity, and Testimonial seeding. A new UI for sending Abandoned Cart reminders was also built.
--   **Pricing Hub**: Added a Pillar Bundles tab to organize bundles by pillar.
--   **Pet Soul Foundation**: After the user provided a detailed vision, the agent began implementing the Pet Soul by creating the backend API foundation () and the initial frontend components (, ).
+A full-stack React/FastAPI/MongoDB application. The previous session was an intensive debugging and stabilization sprint, where the agent worked closely with the user to resolve numerous issues on both the preview and deployed environments.
 
-The agent also successfully guided the user through deploying these features to their live domain, , and verified their functionality.
+Key achievements include:
+-   **Deployment Support**: Guided the user through complex deployment scenarios involving custom domains and replacing existing deployments.
+-   **Pillar Forms Fixed**: Resolved multiple UI and backend bugs in the Stay and Dine pillar forms, including a mobile layout issue making the Stay modal unusable and a non-functional time picker in Dine.
+-   **Backend Services Stabilized**: Fixed critical bugs preventing the creation of Service Desk tickets and notifications for Stay bookings. Diagnosed and fixed issues with abandoned cart reminders and implemented a blog post seeding mechanism.
+-   **Mira AI Overhaul**: Replaced the external Chatbase  with a new, fully local, API-driven chat component () powered by the Emergent LLM Key.
+-   **Strategic Planning**: Collaborated with the user to define a definitive, sequential build plan, prioritizing the completion of the core Unified Engine before enhancing individual pillars.
 
 **Last working item**:
--   Last item agent was working: The agent was in the initial phase of building the complex Pet Soul enhancement feature, as per the user's detailed new specification. The backend API routes and question bank schema were created, and the shell for the frontend progressive questionnaire was set up. The user then reported issues on the live site, which the agent correctly identified as stemming from an older deployment, as the new Pet Soul code had not yet been deployed.
--   Status: IN PROGRESS
--   Agent Testing Done: N
--   Which testing method agent to use? Frontend testing agent to verify the new Pet Soul questionnaire flow on  and .
+-   Last item agent was working: The agent was addressing a user report that the **Stay pillar booking form was too broad on mobile and not creating Service Desk tickets or notifications.**
+-   Status: USER VERIFICATION PENDING
+-   Agent Testing Done: Y
+-   Which testing method agent to use? Frontend testing agent to verify the Stay pillar's booking flow on a mobile viewport, from opening the modal to form submission, and then backend testing agent to confirm the corresponding ticket and notification are created.
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Pet Soul feature implementation is incomplete. (P0, HIGHEST)
--   Issue 2: Shopify Sync creates 'Untitled' Products. (P1, Recurring)
--   Issue 3: Cart clears on navigation during automated testing. (P2, Testing environment issue, workaround exists)
+-   Issue 1: Shopify Sync creates 'Untitled' Products. (P1, Recurring)
 
 **Issues Detail**:
--   **Issue 1: Pet Soul feature implementation is incomplete.**
-    -   **Attempted fixes**: Backend routes created (), and frontend component shells created (, ) with a new route (). A link was added to .
-    -   **Next debug checklist**:
-        1.  Flesh out the  component to fetch questions from the  endpoint.
-        2.  Implement the one question at a time UI flow.
-        3.  Implement the logic to post answers to .
-        4.  Create and display the Soul Score and folder progress rings based on backend data.
-        5.  Ensure the Build Soul button on  correctly navigates to the questionnaire for the selected pet.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is the core of the user's vision for the platform. Completing it will create the Pet Soul, a key differentiator that enables deep personalization.
-    -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Both
-    -   **Blocked on other issue**: None
-
--   **Issue 2: Shopify Sync creates 'Untitled' Products**
-    -   **Attempted fixes**: Logging was added in a previous session, and an endpoint () was created to help diagnose the issue. No work was done on this in the current session.
-    -   **Next debug checklist**: Run a sync, check the problematic logs endpoint, and analyze the raw Shopify data to find the root cause of the null titles.
+-   **Issue 1: Shopify Sync creates 'Untitled' Products**
+    -   **Attempted fixes**: No work was done on this in the current session. An endpoint () exists for diagnosis.
+    -   **Next debug checklist**: Run a Shopify sync, check the problematic logs endpoint, and analyze the raw Shopify data to find the root cause of the null titles.
     -   **Why fix this issue and what will be achieved with the fix?**: Fixes a critical data integrity problem that pollutes the product catalog.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Backend
     -   **Blocked on other issue**: None
 
--   **Issue 3: Cart clears on navigation during automated testing.**
-    -   **Attempted fixes**: The agent identified this as a limitation of the testing tool's browser context, not a user-facing bug, as the application correctly uses . The agent used workarounds to test features.
-    -   **Next debug checklist**: This is a non-critical testing environment issue. Continue using workarounds.
-    -   **Why fix this issue and what will be achieved with the fix?**: Would make end-to-end testing flows smoother.
-    -   **Status**: NOT STARTED
-    -   **Is recurring issue?**: Y
-    -   **Should Test frontend/backend/both after fix?**: N/A
-    -   **Blocked on other issue**: None
-
 **In progress Task List**:
--   **Task 1: Complete Pet Soul Implementation (Phase 1)** (P0, HIGHEST)
-    -   **Where to resume**: Resume work on . The backend foundation () and component shells are ready. The immediate next step is to build the dynamic, one-question-at-a-time UI to fetch questions, post answers, and update the pet's soul data and score.
-    -   **What will be achieved with this?**: A working, progressive questionnaire for the Pet Soul, which is a major part of the user's core vision.
-    -   **Status**: IN PROGRESS
+-   **Task 1: Complete Service Desk to 100%** (P0, HIGHEST)
+    -   **Where to resume**: The agent has performed a comprehensive audit of the Service Desk, creating a 40-point checklist. The next step is to begin implementing the features marked as  or  from this audit. The highest priorities are ensuring auto-ticketing for all remaining pillars (Travel, Care, Services) and implementing Bulk Actions (select, assign, change status/priority).
+    -   **What will be achieved with this?**: This fulfills the first step of the user-approved Engine First strategy, creating a robust, centralized system for handling all customer requests before building out more pillar features.
+    -   **Status**: NOT STARTED
     -   **Should Test frontend/backend/both after fix?**: Both
     -   **Blocked on something**: None
 
 **Upcoming and Future Tasks**
-### **PHASE 1: STABILIZE & COMPLETE FOUNDATION**
-*   **Complete Pet Soul V1**: Finish the progressive questionnaire, scoring engine, and folder structure.
-*   **Shopify Sync 'Untitled' products**: Find and fix the root cause of this recurring bug.
+Based on the user-approved sequential plan (one green at a time):
 
-### **PHASE 2: PET SOUL ENHANCEMENT**
-*   **Progressive Onboarding & Passive Data Collection**: Integrate the Pet Soul with pillar workflows (Dine, Stay, Travel) to auto-populate forms and save new information back to the soul.
-*   **Health Vault**: Build the UI and backend for storing vaccination, deworming, and other medical records and reminders.
-*   **Voice Input & Pillar History**: Enable updating the Pet Soul via Mira and show a history of all pillar interactions.
-*   **Admin Management**: Build the admin UI for managing Pet Soul questions and weights.
+**Upcoming Tasks (P0)**:
+-   **PHASE 1: UNIFIED ENGINE (100% COMPLETION)**
+    -   **Task 1.1: Service Desk**: Complete all 40 checklist items (auto-ticketing for all pillars, bulk actions, SLA escalation, audit trail, etc.).
+    -   **Task 1.2: Notification Engine**: Standardize templates, add user preferences, and a notification center.
+    -   **Task 1.3: Unified Inbox**: Implement conversation threading, enhanced customer context sidebar.
+    -   **Task 1.4: Pet Soul Integration Hooks**: Ensure every pillar can auto-populate from and save data back to the Pet Soul.
+-   **PHASE 2: PET SOUL (100% COMPLETION)**
+    -   Complete the progressive questionnaire UI in .
+    -   Build the 8-folder dashboard with progress rings and scoring.
+    -   Implement the auto-learning hooks defined in the engine phase.
 
-### **PHASE 3: MEMBERSHIP LAYER**
-*   Implement Membership Tiers, gate Paw Rewards, and create a Member Dashboard.
-
-### **PHASE 4 & BEYOND: PILLAR MASTERY & UNIFIED SYSTEMS**
-*   Enhance existing pillars, unify the Reviews System, and integrate WhatsApp & Razorpay.
+**Future Tasks (P1 and beyond)**:
+-   **PHASE 3: PILLARS (100% Completion, One by One)**
+    -   Complete **Celebrate**, **Dine**, **Stay**, and **Shop** pillars to 100%.
+    -   Build out **Travel**, **Care**, and **Services** pillars from scratch using the Unified Engine.
+-   **PHASE 4: MEMBERSHIP LAYER (100% Completion)**: Implement tiers, points, and a member dashboard.
+-   **PHASE 5: INTEGRATIONS**: WhatsApp Business, Razorpay, Google Calendar.
+-   **PHASE 6: TECHNICAL DEBT & REFACTORING**: Split  and .
 
 **Completed work in this session**
--   **Checkout and Cart Overhaul**:
-    -   Added Others city option and fixed bakery delivery logic in .
-    -   Fixed the cart add-on bug by using a functional state update in .
-    -   Implemented a full-featured autoship calculator in  and updated .
--   **Admin Panel Enhancements (in )**:
-    -   Implemented management for Blog Categories, pillar-wise FAQ categories, Discount Code validity, and Abandoned Cart reminders (with new backend APIs in ).
-    -   Added auto-seeding for Testimonials and FAQs from  on first load.
--   **Pricing Hub Upgrade**: Added a Pillar Bundles tab in .
--   **Pet Soul Foundation**:
-    -   Created backend API and schema in .
-    -   Created frontend components  and .
--   **Deployment and Verification**: Guided the user to deploy the application and verified all new features on the live domain.
+-   **Stay Pillar Overhaul**:
+    -   Fixed mobile modal UI being too broad and cutting off buttons ().
+    -   Fixed notifications not being sent by correcting the DB collection to  ().
+    -   Fixed Service Desk tickets not being created by correcting model attributes ( and ).
+-   **Mira AI Replacement**:
+    -   Replaced the external Chatbase  with a new, custom, local API-powered chat component ().
+    -   Installed  dependency.
+-   **Backend Stability Fixes**:
+    -   **Abandoned Cart Reminders**: Fixed function calls missing parameters and added detailed error propagation from the Resend API ().
+    -   **Blog Post Seeding**: Implemented an auto-seed on startup and a manual  endpoint ().
+-   **Dine Pillar Fix**: Replaced text time input with a 30-minute interval dropdown ().
+-   **Voice Order Stability**: Improved frontend fetch logic with a 60-second timeout and  to handle network flakiness ().
+-   **Admin & MIS Dashboard**: Fixed the MIS dashboard not loading by adding a missing  dependency ().
+-   **UI/UX Fixes**: Added the Voice Order link to the mobile navigation menu ().
+-   **Deployment & Strategy**: Provided extensive guidance on deployment and collaborated with the user to establish a clear, sequential development roadmap.
+
+**Earlier issues found/mentioned but not fixed**
+-   **Issue 1: Shopify Sync creates 'Untitled' Products**
+    -   **Debug checklist**: Run a sync, check the logs at , and analyze the raw Shopify data for payloads with null titles.
+    -   **Why to solve this issue and what will be achieved with this?**: Fixes a critical data integrity problem in the product catalog.
+    -   **Should Test frontend/backend/both after fix?**: Backend
+    -   **Is recurring issue?**: Y
+
+**Known issue recurrence from previous fork**
+-   **Issue recurrence in previous fork**: Shopify Sync creating 'Untitled' products.
+-   **Recurrence count**: 2+
+-   **Status**: NOT STARTED
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Progressive Profiling**: The core concept for the Pet Soul, where data is collected incrementally through user interactions across different pillars. This is central to the user's vision.
--   **Functional State Updates (React)**: The fix for the cart add-on bug ( in ) is a critical pattern for handling rapid, sequential state updates.
--   **API-Driven Admin Panel**: The admin panel was significantly enhanced to be data-driven, with features like dynamic category management for blogs and pillar-based categories for FAQs, all powered by new backend APIs.
--   **Frontend-Triggered Seeding**: Logic was added to  to seed initial data for Testimonials and FAQs from  if the database is empty, improving the immediate usability of the admin panel.
+-   **Database Schema Debugging**: The critical realization that a feature was failing because it was writing to  while the frontend read from . Similarly, identifying that the active database was  not .
+-   **Local LLM Implementation**: The process of replacing an external  (Chatbase) with a custom React component () that communicates with a local FastAPI endpoint (), which in turn uses the  library and the .
+-   **Mobile-First CSS**: Multiple advanced CSS techniques were attempted to fix the Stay modal on mobile, including , , responsive height units (, ), and  properties, demonstrating a deep debugging process for responsive UI.
+-   **Robust API Error Handling**: Adding  with timeouts to frontend  calls () and improving backend error propagation for third-party services like Resend.
+
+**key DB schema**
+-   **admin_notifications**:  - The correct collection for all admin-facing notifications.
+-   **service_desk_tickets**:  - The core collection for the Service Desk.
 
 **All files of reference**
--   : **Crucial.** New backend for the Pet Soul feature.
--    & : **Crucial.** New frontend for the Pet Soul questionnaire.
--   : Heavily modified to add new management features.
--   : Location of the city and bakery delivery fixes.
--   : Location of the autoship calculator implementation.
--   : Location of the critical cart bug fix.
+-   : Contains many core routes and bug fixes from this session.
+-   : Contains the heavily modified mobile-responsive booking modal.
+-   : The new local AI chat component.
+-   : Contains the fixed logic for Stay booking notifications and tickets.
+-   : The frontend for the Service Desk, which is the next major focus.
+-   : The backend API for the Service Desk.
 
 **Areas that need refactoring**:
--   : This file remains monolithic. The numerous admin endpoints for blogs, abandoned carts, etc., should be extracted into a dedicated .
--   : This component has become extremely large and difficult to maintain. The logic for each tab (Blog, FAQs, Discounts, etc.) should be broken out into its own component within .
+-   : Still monolithic. Should be broken down into dedicated route files per feature (e.g., ).
+-   : This component is very large. The logic for each tab (Service Desk, MIS, etc.) should be its own component. The agent has noted this in the long-term plan.
+
+**key api endpoints**
+-   : Creates a Stay booking, now correctly triggers a Service Desk ticket and an admin notification.
+-   : New endpoint to seed 6 sample blog posts. Can be forced with .
+-   : Fetches all notifications for the admin panel.
+-   : Local endpoint powering the new  component.
+-   : Fetches all service desk tickets.
 
 **Critical Info for New Agent**
--   **Pet Soul is the Top Priority**: The user has provided an extremely detailed and passionate vision for the Pet Soul. This is not just another feature; it's the core intelligence of their platform. You must adhere to this vision closely, including the 8 folders, progressive questioning, scoring, and pillar integration.
--   **Resume Implementation**: Your immediate task is to continue building the Pet Soul feature. The backend foundation is laid; you need to build the frontend questionnaire UI in  to be dynamic and interactive.
--   **Deployment Awareness**: The user is anxious about forking and deployments. Be very clear when features are ready for preview vs. when they are deployed. The work on Pet Soul is **not yet deployed**. You must finish and test it in the preview environment before guiding the user to deploy again.
--   **Propose Refactoring**: After the Pet Soul V1 is complete, you should strongly recommend refactoring  and  to improve maintainability.
+-   **Follow the Plan**: The user has explicitly approved a sequential development plan: **1. Unified Engine -> 2. Pet Soul -> 3. Pillars**. Do not deviate. Your immediate task is **Phase 1.1: Complete the Service Desk to 100%**.
+-   **100% Completion is Key**: The user's motto is No amber, no partial, only ✅ GREEN. Each task must be fully completed and verified before moving to the next. Use the detailed Definition of DONE checklists provided in the plan.
+-   **Service Desk Audit is Ready**: A detailed 40-point audit of the Service Desk has already been completed. Your first job is to start implementing the missing features from that list.
+-   **User is an Active Tester**: The user frequently tests the application on their devices and provides detailed feedback with screenshots. Expect a collaborative, iterative process.
+
+**documents and test reports created in this job**
+-   /app/memory/PRD.md (contains the user-approved exhaustive plan)
 
 **Last 10 User Messages and any pending HUMAN messages**
-10. User confirms they want to proceed with the requested list of admin panel features.
-9.  User asks for guidance on how to replace a deployed app on the platform.
-8.  User confirms they want to replace the  deployment.
-7.  Agent confirms all features are ready for deployment after a quick audit.
-6.  User provides the live URL after deploying; agent begins verification.
-5.  User asks the agent to also verify the features built earlier in the session.
-4.  Agent confirms all features are working correctly on the live URL.
-3.  User confirms they have linked their custom domain  and redeployed.
-2.  User asks if there is enough space to work on the Pet Soul features without forking, expressing anxiety about the process.
-1.  **Pending**: User provided an extremely detailed, multi-page specification for the Pet Soul enhancement, outlining the core folders, scoring mechanism, progressive learning, admin requirements, and overall vision. The agent has started implementation.
+10. User reports the Stay form is too broad on mobile and isn't creating tickets or notifications. (PENDING VERIFICATION)
+9.  User agrees with the Engine First approach and wants each component completed to 100%. (ADDRESSED, PLAN CREATED)
+8.  User asks for clarification on whether to build the engine or pillars first. (ADDRESSED)
+7.  User asks for the exhaustive plan forward. (ADDRESSED)
+6.  User provides a screenshot of the broken Stay booking modal on mobile. (ADDRESSED)
+5.  User asks for the URL to seed blog articles. (ADDRESSED)
+4.  User provides screenshots of multiple new bugs after testing (Abandoned Cart, Blog Posts). (ADDRESSED)
+3.  User reports the Voice Order feature still shows a network error and that Mira AI (Chatbase) might be the issue. (ADDRESSED)
+2.  User provides a series of screenshots and messages related to deployment confusion, trying to link their domain to the latest code. (ADDRESSED)
+1.  User asks to get the latest code deployed to their live URL. (ADDRESSED)
 
 **Project Health Check:**
 -   **Broken**:
-    -   The root cause of the Shopify Sync 'Untitled' products bug is still unknown.
+    -   The Shopify Sync continues to create 'Untitled' products.
 -   **Mocked**:
-    -   Testimonials and FAQs are initially seeded from a frontend mock file () if the database is empty. This should eventually be managed entirely via the admin panel.
+    -   None. Blog post data is now seeded from the backend.
+
+**3rd Party Integrations**
+-   **OpenAI Whisper**: Used for voice transcription in the Voice Order feature, via . Uses Emergent LLM Key.
+-   **Resend**: Used for sending transactional emails (e.g., abandoned cart reminders). Requires a user-provided API key and verified domain.
+-   **Chatbase**: Was used for Mira AI, but has now been **removed and replaced** with a local implementation.
 
 **Testing status**
 -   Testing agent used after significant changes: NO
 -   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created: None
+-   Test files created: []
 -   Known regressions: None
 
 **Credentials to test flow:**
 -   **Admin Email**: 
--   **Admin Password**: </analysis>
+-   **Admin Password**: 
+
+**What agent forgot to execute**
+The agent did not deploy the final set of fixes made in the session. The next step should be to confirm with the user if they are ready to deploy all the bug fixes before starting on the new Service Desk work.</analysis>
