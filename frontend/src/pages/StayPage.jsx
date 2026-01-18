@@ -1263,13 +1263,13 @@ const BookingRequestModal = ({ property, onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <Card className="max-w-2xl w-full max-h-[90vh] overflow-hidden" onClick={e => e.stopPropagation()}>
-        <div className="p-6 border-b">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
+      <Card className="w-full sm:max-w-2xl h-[85vh] sm:h-auto sm:max-h-[85vh] rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+        <div className="p-4 sm:p-6 border-b flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-bold">Request Booking</h3>
-              <p className="text-sm text-gray-500">{property.name}</p>
+              <h3 className="text-lg sm:text-xl font-bold">Request Booking</h3>
+              <p className="text-xs sm:text-sm text-gray-500">{property.name}</p>
             </div>
             <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="w-5 h-5" />
@@ -1280,7 +1280,7 @@ const BookingRequestModal = ({ property, onClose }) => {
           <div className="flex items-center justify-center gap-2 mt-4">
             {[1, 2, 3].map(s => (
               <div key={s} className={`flex items-center ${s < 3 ? 'flex-1' : ''}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium ${
                   step >= s ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-500'
                 }`}>
                   {s}
@@ -1289,14 +1289,14 @@ const BookingRequestModal = ({ property, onClose }) => {
               </div>
             ))}
           </div>
-          <div className="flex justify-between mt-2 text-xs text-gray-500">
+          <div className="flex justify-between text-xs text-gray-500 mt-2 px-2">
             <span>Guest Details</span>
             <span>Pet Profile</span>
             <span>Stay Details</span>
           </div>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[60vh]">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1">
           {step === 1 && (
             <div className="space-y-4">
               <h4 className="font-semibold mb-3">Your Details</h4>
