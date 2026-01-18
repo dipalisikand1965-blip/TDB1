@@ -500,6 +500,30 @@ async def create_booking_request(booking: BookingRequest):
         "created_at": now
     })
     
+    # Auto-create Service Desk ticket for Stay booking
+    try:
+        ticket_id = await create_ticket_from_event(db, "stay_booking", {
+            "booking_id": booking_doc["id"],
+            "name": booking.guest_name,
+            "email": booking.guest_email,
+            "phone": booking.guest_phone,
+            "property_name": property.get("name"),
+            "property_city": property.get("city"),
+            "check_in_date": booking.check_in_date,
+            "check_out_date": booking.check_out_date,
+            "adults": booking.adults,
+            "pets": booking.pets,
+            "pet_name": booking.pet_name,
+            "pet_breed": booking.pet_breed,
+            "pet_age": booking.pet_age,
+            "pet_weight_kg": booking.pet_weight_kg,
+            "special_requests": booking.special_requests,
+            "bundle_name": booking.bundle_name
+        })
+        logger.info(f"Auto-created ticket {ticket_id} for stay booking {booking_doc['id']}")
+    except Exception as e:
+        logger.error(f"Failed to auto-create ticket for stay booking: {e}")
+    
     return {
         "success": True,
         "booking_id": booking_doc["id"],
