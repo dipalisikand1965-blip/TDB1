@@ -114,6 +114,308 @@ const PartnerCommissionRow = ({ partner, partnerType, defaultCommission, getAuth
   );
 };
 
+// Pillar Bundles Section Component
+const PillarBundlesSection = ({ getAuthHeader, formatCurrency }) => {
+  const [activePillar, setActivePillar] = useState('celebrate');
+  const [bundles, setBundles] = useState({ celebrate: [], dine: [], stay: [], travel: [], care: [] });
+  const [loading, setLoading] = useState(true);
+  const [editingBundle, setEditingBundle] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  // Fetch bundles for all pillars
+  const fetchAllBundles = async () => {
+    setLoading(true);
+    try {
+      // Fetch Celebrate bundles (products with bundle_type)
+      const celebrateRes = await fetch(`${API_URL}/api/admin/pricing/products?pillar=celebrate&limit=50`, { headers: getAuthHeader() });
+      const celebrateData = await celebrateRes.json();
+      const celebrateBundles = (celebrateData.products || []).filter(p => p.bundle_type || p.tags?.includes('bundle'));
+
+      // Fetch Dine bundles
+      let dineBundles = [];
+      try {
+        const dineRes = await fetch(`${API_URL}/api/admin/dine/bundles`, { headers: getAuthHeader() });
+        if (dineRes.ok) {
+          const dineData = await dineRes.json();
+          dineBundles = dineData.bundles || [];
+        }
+      } catch (e) { console.log('Dine bundles not available'); }
+
+      // Fetch Stay bundles/socials
+      let stayBundles = [];
+      try {
+        const stayRes = await fetch(`${API_URL}/api/admin/stay/socials`, { headers: getAuthHeader() });
+        if (stayRes.ok) {
+          const stayData = await stayRes.json();
+          stayBundles = stayData.events || stayData.socials || [];
+        }
+      } catch (e) { console.log('Stay bundles not available'); }
+
+      // Fetch products for Travel and Care pillars (bundles)
+      const travelRes = await fetch(`${API_URL}/api/admin/pricing/products?pillar=travel&limit=50`, { headers: getAuthHeader() });
+      const travelData = await travelRes.json();
+      const travelBundles = (travelData.products || []).filter(p => p.bundle_type || p.tags?.includes('bundle'));
+
+      const careRes = await fetch(`${API_URL}/api/admin/pricing/products?pillar=care&limit=50`, { headers: getAuthHeader() });
+      const careData = await careRes.json();
+      const careBundles = (careData.products || []).filter(p => p.bundle_type || p.tags?.includes('bundle'));
+
+      setBundles({
+        celebrate: celebrateBundles,
+        dine: dineBundles,
+        stay: stayBundles,
+        travel: travelBundles,
+        care: careBundles
+      });
+    } catch (err) {
+      console.error('Error fetching bundles:', err);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchAllBundles();
+  }, []);
+
+  const updateBundlePricing = async (bundle, pillar) => {
+    setSaving(true);
+    try {
+      let endpoint = '';
+      let method = 'PATCH';
+      let body = {};
+
+      if (pillar === 'dine') {
+        endpoint = `${API_URL}/api/admin/dine/bundles/${bundle.id}`;
+        body = { price: bundle.price, discounted_price: bundle.discounted_price };
+      } else if (pillar === 'stay') {
+        endpoint = `${API_URL}/api/admin/stay/socials/${bundle.id}`;
+        body = { price: bundle.price };
+      } else {
+        // Celebrate, Travel, Care - use product pricing endpoint
+        endpoint = `${API_URL}/api/admin/pricing/products/${bundle.id}`;
+        body = { selling_price: bundle.price, margin_percent: bundle.margin_percent };
+      }
+
+      await fetch(endpoint, {
+        method,
+        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      setEditingBundle(null);
+      fetchAllBundles();
+    } catch (err) {
+      console.error('Error updating bundle:', err);
+    }
+    setSaving(false);
+  };
+
+  const pillarConfig = {
+    celebrate: { icon: '🎂', color: 'bg-pink-100 text-pink-700', label: 'Celebrate' },
+    dine: { icon: '🍽️', color: 'bg-orange-100 text-orange-700', label: 'Dine' },
+    stay: { icon: '🏨', color: 'bg-green-100 text-green-700', label: 'Stay' },
+    travel: { icon: '✈️', color: 'bg-blue-100 text-blue-700', label: 'Travel' },
+    care: { icon: '💊', color: 'bg-purple-100 text-purple-700', label: 'Care' }
+  };
+
+  const currentBundles = bundles[activePillar] || [];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-lg font-semibold">Pillar Bundles & Packages</h3>
+          <p className="text-sm text-gray-500">Manage pricing for bundles and packages across all pillars</p>
+        </div>
+        <Button variant="outline" onClick={fetchAllBundles}>
+          <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+        </Button>
+      </div>
+
+      {/* Pillar Tabs */}
+      <div className="flex gap-2 flex-wrap">
+        {Object.entries(pillarConfig).map(([key, config]) => (
+          <button
+            key={key}
+            onClick={() => setActivePillar(key)}
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+              activePillar === key 
+                ? `${config.color} font-semibold ring-2 ring-offset-2 ring-purple-500`
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            <span>{config.icon}</span>
+            <span>{config.label}</span>
+            <Badge variant="secondary" className="ml-1">{bundles[key]?.length || 0}</Badge>
+          </button>
+        ))}
+      </div>
+
+      {/* Bundles Table */}
+      <Card className="overflow-hidden">
+        <div className={`px-4 py-3 border-b ${pillarConfig[activePillar].color}`}>
+          <span className="font-semibold flex items-center gap-2">
+            {pillarConfig[activePillar].icon} {pillarConfig[activePillar].label} Bundles & Packages
+          </span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="p-3 text-left">Bundle / Package</th>
+                <th className="p-3 text-left">Type</th>
+                <th className="p-3 text-right">Price (₹)</th>
+                <th className="p-3 text-right">Discounted (₹)</th>
+                <th className="p-3 text-center">Status</th>
+                <th className="p-3 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center">
+                    <Loader2 className="w-6 h-6 animate-spin mx-auto text-purple-600" />
+                  </td>
+                </tr>
+              ) : currentBundles.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center text-gray-500">
+                    <Package className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                    <p>No bundles found for {pillarConfig[activePillar].label}</p>
+                    <p className="text-xs mt-1">Create bundles in the {pillarConfig[activePillar].label} Manager</p>
+                  </td>
+                </tr>
+              ) : (
+                currentBundles.map((bundle) => {
+                  const isEditing = editingBundle?.id === bundle.id;
+                  const bundlePrice = bundle.price || bundle.pricing?.selling_price || 0;
+                  const discountedPrice = bundle.discounted_price || bundle.sale_price || bundlePrice;
+
+                  return (
+                    <tr key={bundle.id} className="border-b hover:bg-gray-50">
+                      <td className="p-3">
+                        <div className="flex items-center gap-3">
+                          {(bundle.image || bundle.images?.[0]) && (
+                            <img 
+                              src={bundle.image || bundle.images?.[0]} 
+                              alt="" 
+                              className="w-10 h-10 rounded object-cover" 
+                            />
+                          )}
+                          <div>
+                            <p className="font-medium">{bundle.name || bundle.title}</p>
+                            <p className="text-xs text-gray-400">{bundle.id}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <Badge variant="outline">
+                          {bundle.bundle_type || bundle.category || bundle.type || 'Package'}
+                        </Badge>
+                      </td>
+                      <td className="p-3 text-right">
+                        {isEditing ? (
+                          <Input
+                            type="number"
+                            value={editingBundle.price}
+                            onChange={(e) => setEditingBundle({
+                              ...editingBundle,
+                              price: parseFloat(e.target.value) || 0
+                            })}
+                            className="w-24 text-right"
+                          />
+                        ) : (
+                          formatCurrency(bundlePrice)
+                        )}
+                      </td>
+                      <td className="p-3 text-right">
+                        {isEditing ? (
+                          <Input
+                            type="number"
+                            value={editingBundle.discounted_price || editingBundle.price}
+                            onChange={(e) => setEditingBundle({
+                              ...editingBundle,
+                              discounted_price: parseFloat(e.target.value) || 0
+                            })}
+                            className="w-24 text-right"
+                          />
+                        ) : (
+                          <span className={discountedPrice < bundlePrice ? 'text-green-600 font-medium' : ''}>
+                            {formatCurrency(discountedPrice)}
+                            {discountedPrice < bundlePrice && (
+                              <span className="text-xs ml-1">
+                                ({Math.round((1 - discountedPrice/bundlePrice) * 100)}% off)
+                              </span>
+                            )}
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-3 text-center">
+                        <Badge className={bundle.active !== false ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}>
+                          {bundle.active !== false ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </td>
+                      <td className="p-3 text-center">
+                        {isEditing ? (
+                          <div className="flex items-center justify-center gap-1">
+                            <Button
+                              size="sm"
+                              onClick={() => updateBundlePricing(editingBundle, activePillar)}
+                              disabled={saving}
+                            >
+                              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => setEditingBundle(null)}>
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setEditingBundle({ 
+                              ...bundle, 
+                              price: bundlePrice,
+                              discounted_price: discountedPrice
+                            })}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="p-4 border-t bg-gray-50">
+          <p className="text-sm text-gray-500">
+            Total: {currentBundles.length} bundles in {pillarConfig[activePillar].label}
+          </p>
+        </div>
+      </Card>
+
+      {/* Quick Tips */}
+      <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+        <div className="flex items-start gap-3">
+          <Sparkles className="w-5 h-5 text-purple-600 flex-shrink-0 mt-1" />
+          <div>
+            <p className="font-medium text-purple-900">Bundle Management Tips</p>
+            <ul className="text-sm text-purple-700 mt-2 space-y-1">
+              <li>• <strong>Celebrate:</strong> Manage bundles in Celebrate Manager or mark products as bundles</li>
+              <li>• <strong>Dine:</strong> Create bundles in Dine Manager (Meal Packages, Special Menus)</li>
+              <li>• <strong>Stay:</strong> Social events & pawcation packages in Stay Manager</li>
+              <li>• <strong>Travel & Care:</strong> Coming soon - bundles will appear here when created</li>
+            </ul>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
 const PricingHub = ({ getAuthHeader }) => {
   const [activeTab, setActiveTab] = useState('products');
   const [loading, setLoading] = useState(true);
