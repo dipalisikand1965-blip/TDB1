@@ -406,31 +406,104 @@ A personalized trip recommendation engine that suggests:
 
 ---
 
-## What's Left for Tomorrow
+## MASTER REQUIREMENTS (Jan 17, 2026)
 
-### P0 - High Priority
-1. **Travel Pillar Build-Out** (scoping needed)
-   - Pet travel services (pet taxis, airlines)
-   - Travel accessories/products
-   - Similar structure to Stay (properties → products → socials)
+### A. STORE PICKUP + DELIVERY LOGIC
+- **3 Cities**: Pickup OR Delivery choice for bakery items
+- **Shipping Rules** (admin-editable):
+  - ₹150 for cart < ₹3,000
+  - FREE for cart ≥ ₹3,000
+- **Custom Cake Orders**: Reference image MUST be visible in order, invoice, service desk ticket
+- **Non-bakery items**: Home Delivery only (Pan India), no pickup option
 
-2. **Pet Profile Enhancements**
-   - Pillar-wise view in admin panel
-   - Full "operating system" view for each pet
-   - Track pet's interactions across pillars
+### B. ONE ENGINE, MULTIPLE PILLARS
+- Single unified backend for ALL pillars (Dine, Stay, Travel, Care, Shop)
+- Same notifications, reporting, service desk workflow
+- Every interaction passes through same core system
 
-### P1 - Medium Priority
-3. **Care Pillar Development** (groomers, vets, trainers)
-4. Razorpay Payment Integration
-5. Push Notifications & Email Alerts enhancement
+### C. UNIFIED INPUT CHANNELS
+- Web/App click
+- Chat (Mira)
+- WhatsApp
+- Email
+- Phone (agent entry)
+- **Voice Order** (transcription → structured request)
+- ALL channels trigger identical backend workflow
 
-### P2 - Lower Priority  
-6. **Enjoy Pillar** (activities, parks, events)
-7. **Fit Pillar** (fitness, walks, exercise)
-8. **Paperwork Pillar** (documents, insurance, vaccinations)
-9. **Advisory Pillar** (consultations, behavior)
-10. Landing Page Redesign
-11. Component Refactoring (Admin.jsx, StayManager.jsx, server.py)
+### D. NOTIFICATIONS & SERVICE DESK
+- Auto ticket creation (Ticket # = Order #)
+- Customer acknowledgement (Email/WhatsApp)
+- Real-time status updates:
+  - Received → In Progress → Confirmed → Preparing → Completed
+  - Cancelled/Rescheduled if applicable
+
+### E. REAL-TIME MIS & REPORTING
+- Requests by channel (web/chat/WhatsApp/voice/phone/email)
+- Orders confirmed & conversions
+- Revenue by product, by city
+- Pickup vs Delivery split
+- Response time & SLA adherence
+- Repeat usage per customer/dog
+- Partner performance
+
+### F. COMMON TRIGGERS (All Pillars)
+- Same notification logic
+- Same ticketing logic
+- Same reporting logic
+- Same status workflow
+- Same admin controls
+
+### G. WORLD-CLASS ARCHITECTURE
+1. **Single Core Engine** - One spine, many arms
+2. **Universal Cart** - Products, Services, Reservations, Bundles in one cart
+3. **Event-Driven** - Instant triggers, no batch processing
+4. **Modular Pillars** - Plug into same checkout, ticketing, notifications
+5. **Smart Fulfilment** - Auto-decide pickup/delivery, SLA, partner assignment
+
+---
+
+## Implementation Phases
+
+### Phase 1: Core Engine Foundation (NEXT)
+- [ ] Admin-editable shipping thresholds
+- [ ] Pickup vs Delivery for bakery (3 cities)
+- [ ] Custom Cake image in orders/tickets
+- [ ] Ticket # = Order # alignment
+
+### Phase 2: Unified Notification System
+- [ ] Auto service desk ticket on every order
+- [ ] Customer Email/WhatsApp acknowledgement
+- [ ] Real-time status updates (event-driven)
+
+### Phase 3: Multi-Channel Intake
+- [ ] Unified request handler
+- [ ] Voice order transcription (Whisper)
+- [ ] Same workflow for all channels
+
+### Phase 4: Real-Time MIS
+- [ ] Channel analytics
+- [ ] Revenue dashboards
+- [ ] SLA tracking
+
+### Phase 5: Universal Cart
+- [ ] 4 item types in one cart
+- [ ] Cross-pillar bundles
+
+---
+
+## Future Pillars
+
+| Pillar | Description | Status |
+|--------|-------------|--------|
+| Celebrate | Birthdays, events | ✅ Live |
+| Stay | Pet-friendly hotels | ✅ Live |
+| Dine | Restaurants, meals | ✅ Live |
+| Care | Groomers, vets, trainers | 🔜 Phase 2 |
+| Travel | Pet transport, travel | 🔜 Phase 2 |
+| Enjoy | Activities, parks | 📅 Future |
+| Fit | Fitness, walks | 📅 Future |
+| Paperwork | Documents, insurance | 📅 Future |
+| Advisory | Consultations | 📅 Future |
 
 ---
 
