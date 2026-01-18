@@ -2918,7 +2918,7 @@ const ServiceDesk = ({ authHeaders }) => {
 
 // Category Manager Component
 const CategoryManager = ({ categories, setCategories, authHeaders }) => {
-  const [newCategory, setNewCategory] = useState({ name: '', icon: '📁', description: '' });
+  const [newCategory, setNewCategory] = useState({ name: '', icon: 'folder', description: '' });
   const [newSubCategory, setNewSubCategory] = useState({ parentId: '', name: '' });
   const [subCategories, setSubCategories] = useState({});
   const [saving, setSaving] = useState(false);
