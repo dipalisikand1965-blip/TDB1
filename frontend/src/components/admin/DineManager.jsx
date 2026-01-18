@@ -1742,13 +1742,31 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                 <p className="text-2xl font-bold text-orange-600">{bundleStats.featured || 0}</p>
               </Card>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button variant="outline" onClick={fetchBundles}>
                 <RefreshCw className="w-4 h-4 mr-2" /> Refresh
               </Button>
               <Button variant="outline" onClick={seedBundles}>
                 <Sparkles className="w-4 h-4 mr-2" /> Seed Sample Bundles
               </Button>
+              <Button variant="outline" onClick={exportBundlesCsv} data-testid="export-bundles-csv">
+                <Download className="w-4 h-4 mr-2" /> Export CSV
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => bundleCsvInputRef.current?.click()}
+                disabled={importingBundles}
+                data-testid="import-bundles-csv"
+              >
+                <Upload className="w-4 h-4 mr-2" /> {importingBundles ? 'Importing...' : 'Import CSV'}
+              </Button>
+              <input
+                ref={bundleCsvInputRef}
+                type="file"
+                accept=".csv"
+                onChange={importBundlesCsv}
+                className="hidden"
+              />
               <Button className="bg-green-500 hover:bg-green-600" onClick={() => setIsAddingBundle(true)}>
                 <Plus className="w-4 h-4 mr-2" /> Add Bundle
               </Button>
