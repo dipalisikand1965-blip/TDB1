@@ -1180,74 +1180,10 @@ _GST applicable on final invoice_
                       )}
                     </div>
                   )}
-                    <div className="flex gap-4 mb-6">
-                      <button
-                        type="button"
-                        onClick={() => setDeliveryMethod('delivery')}
-                        className={`flex-1 p-4 border rounded-xl flex flex-col items-center gap-2 transition-all ${
-                          deliveryMethod === 'delivery'
-                            ? 'border-purple-600 bg-purple-50 text-purple-700'
-                            : 'border-gray-200 hover:bg-gray-50'
-                        }`}
-                        data-testid="delivery-method-delivery"
-                      >
-                        <Truck className="w-6 h-6" />
-                        <span className="font-semibold">Home Delivery</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDeliveryMethod('pickup')}
-                        className={`flex-1 p-4 border rounded-xl flex flex-col items-center gap-2 transition-all ${
-                          deliveryMethod === 'pickup'
-                            ? 'border-purple-600 bg-purple-50 text-purple-700'
-                            : 'border-gray-200 hover:bg-gray-50'
-                        }`}
-                        data-testid="delivery-method-pickup"
-                      >
-                        <Store className="w-6 h-6" />
-                        <span className="font-semibold">Store Pickup</span>
-                      </button>
-                    </div>
-                  )}
 
-                  {/* Pure pickup mode - show store locations */}
-                  {deliveryMethod === 'pickup' && !cartAnalysis.isMixedCart && !cartAnalysis.hasBakeryItems && (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                      <Label>Select Pickup Store *</Label>
-                      <div className="grid gap-3">
-                        {appSettings.store_locations.map((loc) => (
-                          <div 
-                            key={loc.id}
-                            className={`p-4 border rounded-xl cursor-pointer flex items-center gap-3 transition-all ${
-                              pickupLocation === loc.id 
-                                ? 'border-purple-600 bg-purple-50' 
-                                : 'border-gray-200 hover:border-purple-300'
-                            }`}
-                            onClick={() => {
-                              setPickupLocation(loc.id);
-                              setFormData(prev => ({ ...prev, city: loc.city }));
-                            }}
-                          >
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                              pickupLocation === loc.id ? 'border-purple-600' : 'border-gray-300'
-                            }`}>
-                              {pickupLocation === loc.id && <div className="w-2.5 h-2.5 rounded-full bg-purple-600" />}
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-900">{loc.city}</p>
-                              <p className="text-sm text-gray-500">{loc.address}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      {formErrors.pickupLocation && <p className="text-red-500 text-xs">{formErrors.pickupLocation}</p>}
-                      
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm flex gap-2">
-                        <Sparkles className="w-5 h-5 text-green-600" />
-                        <p className="text-green-800">Store pickup is always <strong>FREE</strong>! No shipping charges.</p>
-                      </div>
-                    </div>
-                  )}
+                  {/* Show delivery address fields when delivery is selected */}
+                  {deliveryMethod === 'delivery' && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">}
 
                   {/* Delivery address form (for delivery method or mixed carts) */}
                   {(deliveryMethod === 'delivery' || cartAnalysis.isMixedCart) && (
