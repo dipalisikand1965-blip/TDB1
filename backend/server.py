@@ -538,6 +538,10 @@ async def lifespan(app: FastAPI):
     set_role_db(db)
     logger.info("Role management initialized")
     
+    # Initialize escalation database connection
+    set_escalation_db(db)
+    logger.info("Escalation engine initialized")
+    
     # Initialize search service in background (non-blocking)
     # This prevents slow Meilisearch connection from blocking app startup
     async def init_search_background():
