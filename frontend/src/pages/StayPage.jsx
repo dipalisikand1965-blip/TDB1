@@ -1267,12 +1267,12 @@ const BookingRequestModal = ({ property, onClose }) => {
       {/* Bottom sheet modal */}
       <div 
         className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl"
-        style={{ height: '80vh' }}
+        style={{ height: '75vh' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
         <div className="p-4 border-b bg-white rounded-t-3xl">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2">
             <div>
               <h3 className="text-lg font-bold">Request Booking</h3>
               <p className="text-xs text-gray-500">{property.name}</p>
