@@ -2063,7 +2063,9 @@ const Admin = () => {
 
         {/* Service Desk Tab */}
         {activeTab === 'servicedesk' && (
-          <ServiceDesk authHeaders={getAuthHeaders()} />
+          <div className="h-[calc(100vh-220px)]">
+            <ServiceDesk authHeaders={getAuthHeaders()} />
+          </div>
         )}
 
         {/* Pet Profiles Tab */}
