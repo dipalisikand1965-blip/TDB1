@@ -4235,13 +4235,20 @@ async def get_all_pillar_products(limit: int = 100, pillar: str = None):
     
     products = await db.products.find(
         query,
-        {"_id": 0, "id": 1, "title": 1, "pillar": 1, "category": 1, "display_tags": 1, "images": 1, "price": 1}
+        {"_id": 0, "id": 1, "title": 1, "name": 1, "pillar": 1, "category": 1, "display_tags": 1, "images": 1, "image": 1, "price": 1}
     ).limit(limit).to_list(limit)
+    
+    # Ensure name/title consistency
+    for p in products:
+        if not p.get("title") and p.get("name"):
+            p["title"] = p["name"]
+        if not p.get("name") and p.get("title"):
+            p["name"] = p["title"]
     
     # Also get bundles
     bundles = await db.dine_bundles.find(
         {},
-        {"_id": 0, "id": 1, "name": 1, "display_tags": 1, "images": 1, "price": 1}
+        {"_id": 0, "id": 1, "name": 1, "display_tags": 1, "images": 1, "image": 1, "price": 1}
     ).to_list(50)
     
     # Format bundles to match product structure
@@ -4250,7 +4257,20 @@ async def get_all_pillar_products(limit: int = 100, pillar: str = None):
         bundle["pillar"] = "dine"
         bundle["category"] = "bundle"
     
-    all_items = products + bundles
+    # Get celebrate bundles too
+    celebrate_bundles = await db.celebrate_bundles.find(
+        {},
+        {"_id": 0, "id": 1, "name": 1, "display_tags": 1, "images": 1, "image": 1, "price": 1, "bundle_price": 1}
+    ).to_list(50)
+    
+    for bundle in celebrate_bundles:
+        bundle["title"] = bundle.get("name")
+        bundle["pillar"] = "celebrate"
+        bundle["category"] = "bundle"
+        if not bundle.get("price"):
+            bundle["price"] = bundle.get("bundle_price")
+    
+    all_items = products + bundles + celebrate_bundles
     
     return {"products": all_items, "total": len(all_items)}
 
