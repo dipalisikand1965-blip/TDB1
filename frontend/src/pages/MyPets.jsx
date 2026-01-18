@@ -316,6 +316,41 @@ const MyPets = () => {
                         </Button>
                       </Link>
                     </div>
+                    
+                    {/* Soul Score & Build Soul Button */}
+                    <div className="mt-3 pt-3 border-t">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-10 h-10">
+                            <svg className="transform -rotate-90 w-10 h-10">
+                              <circle cx="20" cy="20" r="16" fill="none" stroke="#E5E7EB" strokeWidth="4" />
+                              <circle 
+                                cx="20" cy="20" r="16" fill="none" stroke="#8B5CF6" strokeWidth="4"
+                                strokeDasharray={100.53} 
+                                strokeDashoffset={100.53 - ((pet.overall_score || 0) / 100) * 100.53}
+                                strokeLinecap="round"
+                              />
+                            </svg>
+                            <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-purple-600">
+                              {Math.round(pet.overall_score || 0)}%
+                            </span>
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold text-gray-700">Soul Score</p>
+                            <p className="text-xs text-gray-400">
+                              {(pet.overall_score || 0) < 30 ? 'Just started' : 
+                               (pet.overall_score || 0) < 70 ? 'Getting to know' : 'Well known'}
+                            </p>
+                          </div>
+                        </div>
+                        <Link to={`/pet-soul/${pet.id}`}>
+                          <Button size="sm" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs">
+                            <Sparkles className="w-3 h-3 mr-1" />
+                            {(pet.overall_score || 0) < 100 ? 'Build Soul' : 'View Soul'}
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
                   </div>
                 </Card>
               );
