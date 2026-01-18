@@ -527,6 +527,10 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
     global sync_task
     
+    # Load admin credentials from database FIRST
+    logger.info("Loading admin credentials from database...")
+    await load_admin_credentials_from_db()
+    
     # Initialize search service in background (non-blocking)
     # This prevents slow Meilisearch connection from blocking app startup
     async def init_search_background():
