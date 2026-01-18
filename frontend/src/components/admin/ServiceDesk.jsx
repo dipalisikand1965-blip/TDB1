@@ -5,16 +5,19 @@ import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
+import { Checkbox } from '../ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '../ui/dropdown-menu';
 import { API_URL } from '../../utils/api';
 import {
   Search, Plus, RefreshCw, Filter, X, Send, Clock, User, Phone, Mail,
   MapPin, Calendar, AlertCircle, CheckCircle, Loader2, MessageSquare,
   ChevronRight, Settings, BarChart3, Users, Tag, Paperclip, ExternalLink,
   Inbox, ArrowUp, ArrowDown, MoreVertical, Edit, Trash2, Eye, Star, Zap,
-  Download, ShoppingBag, Bot, Utensils, Hotel
+  Download, ShoppingBag, Bot, Utensils, Hotel, CheckSquare, Square, 
+  UserPlus, XCircle, Archive, History, ChevronDown
 } from 'lucide-react';
 
 // Category icons mapping
