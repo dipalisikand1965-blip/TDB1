@@ -1554,6 +1554,31 @@ const ServiceDesk = ({ authHeaders }) => {
 
   return (
     <div className="h-full flex flex-col">
+      {/* SLA Breach Alert Banner */}
+      {(stats?.overdue > 0 || (slaStats?.sla_breach_rate > 20)) && (
+        <div className="bg-red-50 border-l-4 border-red-500 p-3 mb-4 rounded-r-lg flex items-center justify-between animate-pulse">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-red-500" />
+            <div>
+              <span className="font-medium text-red-800">
+                {stats?.overdue > 0 
+                  ? `⚠️ ${stats.overdue} ticket${stats.overdue > 1 ? 's' : ''} overdue!` 
+                  : `⚠️ SLA Breach Rate at ${slaStats?.sla_breach_rate}%`}
+              </span>
+              <span className="text-red-600 text-sm ml-2">Immediate attention required</span>
+            </div>
+          </div>
+          <Button 
+            size="sm" 
+            variant="destructive" 
+            onClick={() => setQuickFilter('overdue')}
+            className="bg-red-600 hover:bg-red-700"
+          >
+            View Overdue
+          </Button>
+        </div>
+      )}
+      
       {/* Metrics Bar */}
       <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-lg mb-4">
         <div className="flex items-center justify-between">
