@@ -129,11 +129,11 @@ async def extract_order_details(text: str) -> Dict[str, Any]:
         return {"raw_text": text, "parsed": False}
     
     try:
-        from emergentintegrations.llm.openai import OpenAIChat, OpenAIModels
+        from emergentintegrations.llm.openai import LlmChat
         
-        chat = OpenAIChat(
+        chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
-            model=OpenAIModels.GPT_4O_MINI  # Use smaller model for extraction
+            model="gpt-4o-mini"  # Use smaller model for extraction
         )
         
         extraction_prompt = f"""
