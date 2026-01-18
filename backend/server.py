@@ -5400,7 +5400,7 @@ async def send_bulk_cart_reminders(cart_ids: dict, username: str = Depends(verif
             else:
                 reminder_type = "final"
             
-            success = await send_abandoned_cart_email(
+            result = await send_abandoned_cart_email(
                 to_email=cart["email"],
                 name=cart.get("name", "Pet Parent"),
                 items=cart.get("items", []),
@@ -5409,7 +5409,7 @@ async def send_bulk_cart_reminders(cart_ids: dict, username: str = Depends(verif
                 cart_id=cart_id
             )
             
-            if success:
+            if result["success"]:
                 await db.abandoned_carts.update_one(
                     {"$or": [{"id": cart_id}, {"session_id": cart_id}]},
                     {
