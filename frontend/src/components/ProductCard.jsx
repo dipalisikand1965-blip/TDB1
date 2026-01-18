@@ -624,7 +624,7 @@ const ProductDetailModal = ({ product, onClose }) => {
                       type="radio" 
                       name="purchaseType" 
                       checked={cartInput.purchaseType === 'onetime'}
-                      onChange={() => setCartInput({...cartInput, purchaseType: 'onetime', autoshipFrequency: ''})}
+                      onChange={() => setCartInput({...cartInput, purchaseType: 'onetime', autoshipFrequency: '', autoshipStartDate: null, autoshipEndDate: null})}
                       className="w-4 h-4 text-purple-600"
                     />
                     <div>
@@ -639,7 +639,18 @@ const ProductDetailModal = ({ product, onClose }) => {
                       type="radio" 
                       name="purchaseType" 
                       checked={cartInput.purchaseType === 'autoship'}
-                      onChange={() => setCartInput({...cartInput, purchaseType: 'autoship', autoshipFrequency: '4'})}
+                      onChange={() => {
+                        const today = new Date();
+                        const sixMonthsLater = new Date(today);
+                        sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
+                        setCartInput({
+                          ...cartInput, 
+                          purchaseType: 'autoship', 
+                          autoshipFrequency: '4',
+                          autoshipStartDate: today.toISOString().split('T')[0],
+                          autoshipEndDate: sixMonthsLater.toISOString().split('T')[0]
+                        });
+                      }}
                       className="w-4 h-4 text-purple-600 mt-1"
                     />
                     <div className="flex-1">
@@ -647,42 +658,15 @@ const ProductDetailModal = ({ product, onClose }) => {
                         <span className="text-sm font-semibold text-gray-900">Autoship & Save</span>
                         <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Recommended</span>
                       </div>
-                      <p className="text-xs text-gray-500 mt-0.5">Auto-deliver on your schedule</p>
+                      <p className="text-xs text-gray-500 mt-0.5">Auto-deliver on your schedule, save up to 50%!</p>
                       
                       {cartInput.purchaseType === 'autoship' && (
-                        <div className="mt-3 space-y-3">
-                          {/* Frequency selector */}
-                          <div>
-                            <label className="text-xs font-medium text-gray-700 mb-1 block">Delivery Frequency</label>
-                            <select 
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
-                              value={cartInput.autoshipFrequency || '4'}
-                              onChange={(e) => setCartInput({...cartInput, autoshipFrequency: e.target.value})}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <option value="2">Every 2 weeks</option>
-                              <option value="4">Every 4 weeks</option>
-                              <option value="6">Every 6 weeks</option>
-                            </select>
-                          </div>
-                          
-                          {/* Benefits info */}
-                          <div className="bg-blue-50 rounded-lg p-3 text-xs">
-                            <p className="font-semibold text-blue-900 mb-2">🎁 Your Autoship Savings:</p>
-                            <ul className="space-y-1 text-blue-800">
-                              <li>• <strong>25% off</strong> your first Autoship order (max ₹300)</li>
-                              <li>• <strong>40% off</strong> on 4th & 5th deliveries</li>
-                              <li>• <strong>50% off</strong> on 6th & 7th deliveries</li>
-                            </ul>
-                            <p className="mt-2 text-blue-700 italic">
-                              Every dog deserves at least 7 celebrations a year — one for each dog year! 🐕
-                            </p>
-                          </div>
-                          
-                          <p className="text-xs text-gray-500">
-                            ✓ Skip, pause, or cancel anytime • ✓ Free to join
-                          </p>
-                        </div>
+                        <AutoshipCalculator 
+                          cartInput={cartInput} 
+                          setCartInput={setCartInput} 
+                          currentPrice={currentPrice}
+                          product={product}
+                        />
                       )}
                     </div>
                   </label>
