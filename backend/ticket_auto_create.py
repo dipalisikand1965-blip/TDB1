@@ -520,6 +520,168 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
             "is_internal": False
         })
     
+    elif event_type == "travel_booking":
+        ticket_doc.update({
+            "category": "travel",
+            "sub_category": "travel_request",
+            "urgency": "high",
+            "member": {
+                "name": event_data.get("name"),
+                "email": event_data.get("email"),
+                "phone": event_data.get("phone"),
+                "city": event_data.get("origin_city"),
+                "country": "India"
+            },
+            "pet": {
+                "name": event_data.get("pet_name"),
+                "breed": event_data.get("pet_breed"),
+                "weight_kg": event_data.get("pet_weight_kg")
+            },
+            "description": f"""✈️ NEW TRAVEL REQUEST
+
+**Travel Type:** {event_data.get('travel_type', 'Domestic').upper()}
+**From:** {event_data.get('origin_city', 'Not specified')}
+**To:** {event_data.get('destination_city', 'Not specified')}
+
+**Travel Date:** {event_data.get('travel_date', 'Not specified')}
+**Return Date:** {event_data.get('return_date', 'N/A')}
+
+**Pet Details:**
+- Name: {event_data.get('pet_name')}
+- Breed: {event_data.get('pet_breed')}
+- Weight: {event_data.get('pet_weight_kg')} kg
+
+**Service Requested:** {event_data.get('service_type', 'Full assistance')}
+**Special Requirements:** {event_data.get('special_requirements') or 'None'}
+
+---
+*Auto-created from Travel booking request*""",
+            "source": "travel_booking",
+            "source_reference": event_data.get("booking_id"),
+            "linked_event_id": event_data.get("booking_id"),
+            "tags": ["auto-created", "travel", "booking", "concierge"]
+        })
+        
+        ticket_doc["messages"].append({
+            "id": str(uuid.uuid4()),
+            "type": "ticket_created",
+            "content": f"Travel request from {event_data.get('name')} - {event_data.get('origin_city')} to {event_data.get('destination_city')} on {event_data.get('travel_date')}",
+            "sender": "system",
+            "sender_name": "System",
+            "channel": "auto",
+            "timestamp": now,
+            "is_internal": False
+        })
+    
+    elif event_type == "care_appointment":
+        service_type = event_data.get('service_type', 'General Care')
+        urgency = "critical" if event_data.get('is_emergency') else ("high" if service_type.lower() in ['vet', 'emergency', 'medical'] else "medium")
+        
+        ticket_doc.update({
+            "category": "care",
+            "sub_category": event_data.get('service_type', 'general').lower().replace(' ', '_'),
+            "urgency": urgency,
+            "member": {
+                "name": event_data.get("name"),
+                "email": event_data.get("email"),
+                "phone": event_data.get("phone"),
+                "city": event_data.get("city"),
+                "country": "India"
+            },
+            "pet": {
+                "name": event_data.get("pet_name"),
+                "breed": event_data.get("pet_breed"),
+                "age": event_data.get("pet_age"),
+                "weight_kg": event_data.get("pet_weight_kg")
+            },
+            "description": f"""💊 NEW CARE REQUEST
+
+**Service Type:** {service_type.upper()}
+{'🚨 **EMERGENCY CASE**' if event_data.get('is_emergency') else ''}
+
+**Pet Details:**
+- Name: {event_data.get('pet_name')}
+- Breed: {event_data.get('pet_breed')}
+- Age: {event_data.get('pet_age')}
+- Weight: {event_data.get('pet_weight_kg')} kg
+
+**Preferred Date:** {event_data.get('preferred_date', 'ASAP')}
+**Preferred Time:** {event_data.get('preferred_time', 'Flexible')}
+**Location:** {event_data.get('location_preference', 'Clinic visit')}
+
+**Symptoms/Concerns:** {event_data.get('symptoms') or event_data.get('concerns') or 'Not specified'}
+**Additional Notes:** {event_data.get('notes') or 'None'}
+
+---
+*Auto-created from Care appointment request*""",
+            "source": "care_appointment",
+            "source_reference": event_data.get("appointment_id"),
+            "linked_event_id": event_data.get("appointment_id"),
+            "tags": ["auto-created", "care", service_type.lower().replace(' ', '-')] + (["emergency"] if event_data.get('is_emergency') else [])
+        })
+        
+        ticket_doc["messages"].append({
+            "id": str(uuid.uuid4()),
+            "type": "ticket_created",
+            "content": f"{'🚨 EMERGENCY ' if event_data.get('is_emergency') else ''}{service_type} request for {event_data.get('pet_name')} - {event_data.get('symptoms') or event_data.get('concerns') or 'General care'}",
+            "sender": "system",
+            "sender_name": "System",
+            "channel": "auto",
+            "timestamp": now,
+            "is_internal": False
+        })
+    
+    elif event_type == "grooming_appointment":
+        ticket_doc.update({
+            "category": "care",
+            "sub_category": "grooming",
+            "urgency": "medium",
+            "member": {
+                "name": event_data.get("name"),
+                "email": event_data.get("email"),
+                "phone": event_data.get("phone"),
+                "city": event_data.get("city"),
+                "country": "India"
+            },
+            "pet": {
+                "name": event_data.get("pet_name"),
+                "breed": event_data.get("pet_breed"),
+                "weight_kg": event_data.get("pet_weight_kg")
+            },
+            "description": f"""✂️ NEW GROOMING APPOINTMENT
+
+**Service:** {event_data.get('service_type', 'Full Grooming')}
+
+**Pet Details:**
+- Name: {event_data.get('pet_name')}
+- Breed: {event_data.get('pet_breed')}
+- Coat Type: {event_data.get('coat_type', 'Not specified')}
+
+**Preferred Date:** {event_data.get('preferred_date')}
+**Preferred Time:** {event_data.get('preferred_time', 'Flexible')}
+**Location:** {event_data.get('location', 'Salon visit')}
+
+**Special Instructions:** {event_data.get('special_instructions') or 'None'}
+
+---
+*Auto-created from Grooming appointment*""",
+            "source": "grooming",
+            "source_reference": event_data.get("appointment_id"),
+            "linked_event_id": event_data.get("appointment_id"),
+            "tags": ["auto-created", "care", "grooming"]
+        })
+        
+        ticket_doc["messages"].append({
+            "id": str(uuid.uuid4()),
+            "type": "ticket_created",
+            "content": f"Grooming appointment for {event_data.get('pet_name')} on {event_data.get('preferred_date')}",
+            "sender": "system",
+            "sender_name": "System",
+            "channel": "auto",
+            "timestamp": now,
+            "is_internal": False
+        })
+    
     # Insert the ticket
     print(f"[TICKET DEBUG] About to insert ticket: {ticket_doc.get('ticket_id')}")
     try:
