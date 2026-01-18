@@ -30,7 +30,8 @@ export default function ForgotPassword() {
         setError(data.detail || 'Failed to send reset email');
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      console.error('Forgot password error:', err);
+      setError('Network error. Please try again. ' + (err.message || ''));
     } finally {
       setLoading(false);
     }
