@@ -219,6 +219,10 @@ const ServiceDesk = ({ authHeaders }) => {
   const [loadingEscalation, setLoadingEscalation] = useState(false);
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
   
+  // Attachments
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const attachmentInputRef = React.useRef(null);
+  
   // Quick Filters
   const [quickFilter, setQuickFilter] = useState('all'); // all, my_tickets, unassigned, overdue, today
 
