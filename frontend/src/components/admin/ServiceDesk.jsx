@@ -2247,8 +2247,8 @@ const ServiceDesk = ({ authHeaders }) => {
           </div>
         </div>
 
-        {/* Ticket Detail - with bottom padding for footer */}
-        <div className="flex-1 border rounded-xl overflow-hidden flex flex-col bg-white shadow-lg pb-20">
+        {/* Ticket Detail Panel */}
+        <div className="flex-1 border rounded-xl overflow-hidden flex flex-col bg-white shadow-lg">
           {ticketLoading ? (
             <div className="flex-1 flex items-center justify-center">
               <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
