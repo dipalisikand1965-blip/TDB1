@@ -350,6 +350,153 @@ const ServiceDesk = ({ authHeaders }) => {
     }
   };
 
+  // ============== BULK ACTIONS ==============
+  
+  const toggleTicketSelection = (ticketId) => {
+    setSelectedTickets(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(ticketId)) {
+        newSet.delete(ticketId);
+      } else {
+        newSet.add(ticketId);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedTickets.size === tickets.length) {
+      setSelectedTickets(new Set());
+    } else {
+      setSelectedTickets(new Set(tickets.map(t => t.ticket_id)));
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedTickets(new Set());
+  };
+
+  const handleBulkAssign = async (assigneeId) => {
+    if (selectedTickets.size === 0) return;
+    
+    setBulkActionLoading(true);
+    try {
+      const promises = Array.from(selectedTickets).map(ticketId => {
+        const formData = new FormData();
+        formData.append('assignee', assigneeId);
+        return fetch(`${API_URL}/api/tickets/${ticketId}/assign`, {
+          method: 'POST',
+          headers: authHeaders,
+          body: formData
+        });
+      });
+      
+      await Promise.all(promises);
+      alert(`${selectedTickets.size} tickets assigned successfully`);
+      clearSelection();
+      fetchTickets();
+      fetchStats();
+    } catch (err) {
+      console.error('Error bulk assigning:', err);
+      alert('Failed to assign some tickets');
+    }
+    setBulkActionLoading(false);
+  };
+
+  const handleBulkStatusChange = async (newStatus, resolutionNote = null) => {
+    if (selectedTickets.size === 0) return;
+    
+    // For resolving, require a note
+    if (newStatus === 'resolved' && !resolutionNote) {
+      resolutionNote = prompt('Enter resolution note for all selected tickets:');
+      if (!resolutionNote) return;
+    }
+    
+    setBulkActionLoading(true);
+    try {
+      const promises = Array.from(selectedTickets).map(ticketId => 
+        fetch(`${API_URL}/api/tickets/${ticketId}`, {
+          method: 'PATCH',
+          headers: { ...authHeaders, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            status: newStatus,
+            ...(resolutionNote && { resolution_note: resolutionNote })
+          })
+        })
+      );
+      
+      await Promise.all(promises);
+      alert(`${selectedTickets.size} tickets updated to "${newStatus}"`);
+      clearSelection();
+      fetchTickets();
+      fetchStats();
+    } catch (err) {
+      console.error('Error bulk status change:', err);
+      alert('Failed to update some tickets');
+    }
+    setBulkActionLoading(false);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedTickets.size === 0) return;
+    
+    if (!confirm(`Are you sure you want to delete ${selectedTickets.size} tickets? This cannot be undone.`)) {
+      return;
+    }
+    
+    setBulkActionLoading(true);
+    try {
+      const promises = Array.from(selectedTickets).map(ticketId => 
+        fetch(`${API_URL}/api/tickets/${ticketId}`, {
+          method: 'DELETE',
+          headers: authHeaders
+        })
+      );
+      
+      await Promise.all(promises);
+      alert(`${selectedTickets.size} tickets deleted`);
+      clearSelection();
+      setSelectedTicket(null);
+      fetchTickets();
+      fetchStats();
+    } catch (err) {
+      console.error('Error bulk deleting:', err);
+      alert('Failed to delete some tickets');
+    }
+    setBulkActionLoading(false);
+  };
+
+  // Quick filter logic
+  const getFilteredTickets = () => {
+    let filtered = tickets;
+    
+    switch (quickFilter) {
+      case 'my_tickets':
+        filtered = tickets.filter(t => t.assigned_to === 'aditya'); // TODO: Get current user
+        break;
+      case 'unassigned':
+        filtered = tickets.filter(t => !t.assigned_to);
+        break;
+      case 'overdue':
+        const now = new Date();
+        filtered = tickets.filter(t => t.sla_due_at && new Date(t.sla_due_at) < now && !['resolved', 'closed'].includes(t.status));
+        break;
+      case 'today':
+        const today = new Date().toISOString().split('T')[0];
+        filtered = tickets.filter(t => t.created_at?.startsWith(today));
+        break;
+      case 'critical':
+        filtered = tickets.filter(t => t.urgency === 'critical' || t.urgency === 'high');
+        break;
+      default:
+        break;
+    }
+    
+    return filtered;
+  };
+
+  const displayTickets = getFilteredTickets();
+
   // CSV Export function
   const exportTicketsCSV = () => {
     const headers = ['ticket_id', 'member_name', 'member_email', 'member_phone', 'category', 'source', 'status', 'urgency', 'description', 'assigned_to', 'created_at', 'updated_at'];
