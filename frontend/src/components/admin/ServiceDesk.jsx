@@ -1775,6 +1775,19 @@ const ServiceDesk = ({ authHeaders }) => {
                     </DropdownMenuContent>
                   </DropdownMenu>
 
+                  {/* Merge Button */}
+                  {selectedTickets.size >= 2 && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="h-7 text-xs text-purple-600 hover:bg-purple-50" 
+                      onClick={() => setShowMergeModal(true)}
+                      disabled={bulkActionLoading || merging}
+                    >
+                      📎 Merge
+                    </Button>
+                  )}
+
                   {/* Bulk Delete */}
                   <Button 
                     variant="outline" 
