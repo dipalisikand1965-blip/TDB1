@@ -1283,26 +1283,24 @@ const BookingRequestModal = ({ property, onClose }) => {
           </div>
 
           {/* Step Indicator */}
-          <div className="flex items-center justify-center gap-2 mt-4">
-            {[1, 2, 3].map(s => (
-              <div key={s} className={`flex items-center ${s < 3 ? 'flex-1' : ''}`}>
-                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium ${
-                  step >= s ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-500'
+          <div className="flex items-center justify-between text-xs">
+            {['Guest Details', 'Pet Profile', 'Stay Details'].map((label, idx) => (
+              <div key={idx} className={`flex items-center ${idx < 2 ? 'flex-1' : ''}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
+                  step > idx ? 'bg-green-600 text-white' : step === idx + 1 ? 'bg-green-600 text-white' : 'bg-gray-200'
                 }`}>
-                  {s}
+                  {idx + 1}
                 </div>
-                {s < 3 && <div className={`flex-1 h-1 mx-2 ${step > s ? 'bg-green-600' : 'bg-gray-200'}`} />}
+                <span className="ml-1 hidden sm:inline">{label}</span>
+                {idx < 2 && <div className={`flex-1 h-0.5 mx-1 ${step > idx + 1 ? 'bg-green-600' : 'bg-gray-200'}`} />}
               </div>
             ))}
           </div>
-          <div className="flex justify-between text-xs text-gray-500 mt-2 px-2">
-            <span>Guest Details</span>
-            <span>Pet Profile</span>
-            <span>Stay Details</span>
-          </div>
         </div>
 
-        <div className="p-4 sm:p-6 overflow-y-auto flex-1" style={{ maxHeight: 'calc(90vh - 200px)' }}>
+        {/* Scrollable Content */}
+        <div className="overflow-y-auto" style={{ maxHeight: 'calc(85vh - 180px)' }}>
+          <div className="p-4">
           {step === 1 && (
             <div className="space-y-4">
               <h4 className="font-semibold mb-3">Your Details</h4>
