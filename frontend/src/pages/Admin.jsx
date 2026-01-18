@@ -1983,6 +1983,11 @@ const Admin = () => {
                         Used {code.times_used || 0} times
                         {code.usage_limit && ` / ${code.usage_limit} limit`}
                         {code.min_order > 0 && ` • Min order: ₹${code.min_order}`}
+                        {code.valid_until && (
+                          <span className={new Date(code.valid_until) < new Date() ? 'text-red-500' : 'text-green-600'}>
+                            {' '}• Expires: {new Date(code.valid_until).toLocaleDateString()}
+                          </span>
+                        )}
                       </p>
                     </div>
                     <div className="flex gap-2">
