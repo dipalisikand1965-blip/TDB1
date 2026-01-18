@@ -509,6 +509,37 @@ const ProductDetailModal = ({ product, onClose }) => {
       .filter(Boolean)
       .join(' / ');
     
+    // Calculate autoship details if applicable
+    let autoshipDetails = null;
+    if (cartInput.purchaseType === 'autoship' && cartInput.autoshipStartDate && cartInput.autoshipEndDate) {
+      const start = new Date(cartInput.autoshipStartDate);
+      const end = new Date(cartInput.autoshipEndDate);
+      const frequencyWeeks = parseInt(cartInput.autoshipFrequency);
+      const frequencyDays = frequencyWeeks * 7;
+      const diffTime = end.getTime() - start.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const numDeliveries = diffDays > 0 ? Math.floor(diffDays / frequencyDays) + 1 : 0;
+      
+      // Calculate total with tiered discounts
+      let total = 0;
+      for (let i = 0; i < numDeliveries; i++) {
+        const deliveryNum = i + 1;
+        const discountRates = [0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50];
+        const discount = deliveryNum <= 7 ? discountRates[deliveryNum - 1] : 0.50;
+        total += currentPrice * (1 - discount);
+      }
+      
+      autoshipDetails = {
+        startDate: cartInput.autoshipStartDate,
+        endDate: cartInput.autoshipEndDate,
+        frequency: cartInput.autoshipFrequency,
+        numDeliveries,
+        totalPrice: Math.round(total),
+        regularTotal: currentPrice * numDeliveries,
+        savings: Math.round(currentPrice * numDeliveries - total)
+      };
+    }
+    
     const cartItem = {
       ...product,
       price: currentPrice,
@@ -517,6 +548,7 @@ const ProductDetailModal = ({ product, onClose }) => {
       purchaseType: cartInput.purchaseType,
       autoshipFrequency: cartInput.purchaseType === 'autoship' ? cartInput.autoshipFrequency : null,
       isAutoship: cartInput.purchaseType === 'autoship',
+      autoshipDetails: autoshipDetails,
       customDetails: { ...cartInput }
     };
     addToCart(cartItem, variantDescription, 'Selected');
@@ -532,9 +564,10 @@ const ProductDetailModal = ({ product, onClose }) => {
       }, 'Standard', 'Standard');
     }
     
-    const autoshipMsg = cartInput.purchaseType === 'autoship' 
-      ? ` (Autoship every ${cartInput.autoshipFrequency} weeks)` 
-      : '';
+    let autoshipMsg = '';
+    if (cartInput.purchaseType === 'autoship' && autoshipDetails) {
+      autoshipMsg = ` (Autoship: ${autoshipDetails.numDeliveries} deliveries, save ₹${autoshipDetails.savings})`;
+    }
     
     toast({
       title: 'Added to cart! 🎉',
