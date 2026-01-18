@@ -184,6 +184,44 @@ const PricingHub = ({ getAuthHeader }) => {
     }
   };
 
+  // Fetch global app settings for checkout shipping thresholds
+  const fetchAppSettings = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/settings`, { headers: getAuthHeader() });
+      const data = await res.json();
+      setAppSettings({
+        free_shipping_threshold: data.free_shipping_threshold || 3000,
+        default_shipping_fee: data.default_shipping_fee || 150,
+        shipping_thresholds: data.shipping_thresholds || [
+          { min_cart_value: 0, max_cart_value: 3000, shipping_fee: 150 },
+          { min_cart_value: 3000, max_cart_value: 999999, shipping_fee: 0 }
+        ],
+        pickup_cities: data.pickup_cities || ['Mumbai', 'Gurugram', 'Bangalore'],
+        bakery_pickup_only_categories: data.bakery_pickup_only_categories || ['cakes', 'fresh_treats', 'celebration']
+      });
+    } catch (err) {
+      console.error('Error fetching app settings:', err);
+    }
+  };
+
+  // Save global app settings
+  const saveAppSettings = async () => {
+    setSavingSettings(true);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/settings`, {
+        method: 'PUT',
+        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(appSettings)
+      });
+      if (res.ok) {
+        alert('Shipping settings saved successfully!');
+      }
+    } catch (err) {
+      console.error('Error saving app settings:', err);
+    }
+    setSavingSettings(false);
+  };
+
   const fetchCommissions = async () => {
     try {
       const res = await fetch(`${API_URL}/api/admin/pricing/commissions`, { headers: getAuthHeader() });
@@ -220,6 +258,7 @@ const PricingHub = ({ getAuthHeader }) => {
     fetchCommissions();
     fetchPartnerCommissions();
     fetchStats();
+    fetchAppSettings();
   }, [fetchProducts]);
 
   // Update product pricing
