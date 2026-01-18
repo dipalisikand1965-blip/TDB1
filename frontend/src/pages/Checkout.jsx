@@ -1181,10 +1181,6 @@ _GST applicable on final invoice_
                     </div>
                   )}
 
-                  {/* Show delivery address fields when delivery is selected */}
-                  {deliveryMethod === 'delivery' && (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">}
-
                   {/* Delivery address form (for delivery method or mixed carts) */}
                   {(deliveryMethod === 'delivery' || cartAnalysis.isMixedCart) && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
