@@ -1170,6 +1170,7 @@ const Admin = () => {
           <span className="text-xs text-gray-500 px-2 py-1 font-semibold uppercase">Core Tools</span>
           {[
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+            { id: 'inbox', label: '📥 Unified Inbox', icon: Inbox },
             { id: 'mis', label: '📊 Live MIS', icon: BarChart3 },
             { id: 'orders', label: 'Orders', icon: Package },
             { id: 'fulfilment', label: '📦 Fulfilment', icon: Truck },
