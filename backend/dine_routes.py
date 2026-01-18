@@ -2356,3 +2356,115 @@ async def seed_dine_bundles(username: str = Depends(verify_admin)):
         await db.dine_bundles.insert_one(bundle)
     
     return {"message": "Dine bundles seeded successfully", "seeded": len(sample_bundles)}
+
+
+# --- Dine Bundles CSV Export/Import ---
+
+@dine_router.get("/admin/dine/bundles/export-csv")
+async def export_dine_bundles_csv(username: str = Depends(verify_admin)):
+    """Export all dine bundles as CSV"""
+    bundles = await db.dine_bundles.find({}, {"_id": 0}).to_list(1000)
+    
+    if not bundles:
+        raise HTTPException(status_code=404, detail="No bundles to export")
+    
+    output = io.StringIO()
+    
+    fieldnames = [
+        'id', 'name', 'description', 'image', 'bundle_price', 'original_price',
+        'discount_percent', 'category', 'items', 'for_occasion', 'tags',
+        'featured', 'active', 'created_at', 'updated_at'
+    ]
+    
+    writer = csv.DictWriter(output, fieldnames=fieldnames, extrasaction='ignore')
+    writer.writeheader()
+    
+    for bundle in bundles:
+        row = {**bundle}
+        if isinstance(row.get('items'), list):
+            row['items'] = '|'.join(row['items'])
+        if isinstance(row.get('tags'), list):
+            row['tags'] = '|'.join(row['tags'])
+        writer.writerow(row)
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename=dine_bundles_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        }
+    )
+
+
+@dine_router.post("/admin/dine/bundles/import-csv")
+async def import_dine_bundles_csv(
+    file: UploadFile = File(...),
+    username: str = Depends(verify_admin)
+):
+    """Import dine bundles from CSV"""
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="Please upload a CSV file")
+    
+    try:
+        content = await file.read()
+        content_str = content.decode('utf-8')
+        reader = csv.DictReader(io.StringIO(content_str))
+        
+        imported = 0
+        updated = 0
+        errors = []
+        
+        for row_num, row in enumerate(reader, start=2):
+            try:
+                name = row.get('name', '').strip()
+                if not name:
+                    errors.append(f"Row {row_num}: Missing name")
+                    continue
+                
+                bundle_data = {
+                    "name": name,
+                    "description": row.get('description', ''),
+                    "image": row.get('image', ''),
+                    "bundle_price": float(row.get('bundle_price', 0)) if row.get('bundle_price') else 0,
+                    "original_price": float(row.get('original_price', 0)) if row.get('original_price') else 0,
+                    "discount_percent": int(row.get('discount_percent', 0)) if row.get('discount_percent') else 0,
+                    "category": row.get('category', 'general'),
+                    "for_occasion": row.get('for_occasion', ''),
+                    "featured": str(row.get('featured', '')).lower() in ['true', '1', 'yes'],
+                    "active": str(row.get('active', 'true')).lower() in ['true', '1', 'yes'],
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+                
+                # Handle list fields
+                if row.get('items'):
+                    bundle_data['items'] = [x.strip() for x in row['items'].split('|') if x.strip()]
+                if row.get('tags'):
+                    bundle_data['tags'] = [x.strip() for x in row['tags'].split('|') if x.strip()]
+                
+                # Check existing
+                existing = await db.dine_bundles.find_one({"name": name})
+                
+                if existing:
+                    await db.dine_bundles.update_one({"_id": existing["_id"]}, {"$set": bundle_data})
+                    updated += 1
+                else:
+                    bundle_data["id"] = f"dine-bundle-{uuid.uuid4().hex[:8]}"
+                    bundle_data["created_at"] = datetime.now(timezone.utc).isoformat()
+                    await db.dine_bundles.insert_one(bundle_data)
+                    imported += 1
+                    
+            except Exception as e:
+                errors.append(f"Row {row_num}: {str(e)}")
+        
+        return {
+            "message": f"Import completed: {imported} new, {updated} updated",
+            "imported": imported,
+            "updated": updated,
+            "errors": errors[:20] if errors else []
+        }
+        
+    except Exception as e:
+        logger.error(f"CSV import error: {e}")
+        raise HTTPException(status_code=500, detail=f"Import failed: {str(e)}")
