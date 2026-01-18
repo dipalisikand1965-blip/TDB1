@@ -2159,6 +2159,52 @@ const ServiceDesk = ({ authHeaders }) => {
                       />
                     </div>
                     
+                    {/* Ticket Actions Menu */}
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-slate-100">
+                            <MoreVertical className="w-4 h-4 text-slate-400" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-48">
+                          <DropdownMenuItem onClick={() => fetchTicketDetails(ticket.ticket_id)}>
+                            <Eye className="w-4 h-4 mr-2" /> View
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => fetchTicketDetails(ticket.ticket_id)}>
+                            <Edit className="w-4 h-4 mr-2" /> Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleFollowTicket(ticket.ticket_id)}>
+                            <BellRing className="w-4 h-4 mr-2" /> Follow
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleMarkUnread(ticket.ticket_id)}>
+                            <Mail className="w-4 h-4 mr-2" /> Mark as Unread
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleCloneTicket(ticket)}>
+                            <Copy className="w-4 h-4 mr-2" /> Clone
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => {
+                            toggleTicketSelection(ticket.ticket_id);
+                            setShowMergeModal(true);
+                          }}>
+                            <GitMerge className="w-4 h-4 mr-2" /> Merge
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleFileIssue(ticket)}>
+                            <FileWarning className="w-4 h-4 mr-2" /> File an Issue
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleMarkSpam(ticket.ticket_id)} className="text-orange-600">
+                            <MailX className="w-4 h-4 mr-2" /> Mark Spam
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDeleteTicket(ticket.ticket_id)} className="text-red-600">
+                            <Trash2 className="w-4 h-4 mr-2" /> Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    
                     {/* Ticket Content */}
                     <div className="flex-1 min-w-0" onClick={() => fetchTicketDetails(ticket.ticket_id)}>
                       <div className="flex items-start justify-between mb-1.5">
