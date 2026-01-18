@@ -1,10 +1,14 @@
-import React, { useState, useRef } from 'react';
-import { Mic, MicOff, Upload, Send, Loader2, CheckCircle, XCircle, Volume2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Mic, MicOff, Upload, Send, Loader2, CheckCircle, XCircle, Volume2, Clock } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 
 const API = process.env.REACT_APP_BACKEND_URL;
+
+// Limits for voice recording
+const MAX_RECORDING_SECONDS = 30;
+const MAX_FILE_SIZE_MB = 5;
 
 export default function VoiceOrder() {
   const [isRecording, setIsRecording] = useState(false);
@@ -13,6 +17,7 @@ export default function VoiceOrder() {
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [recordingTime, setRecordingTime] = useState(0);
   
   // Customer info
   const [customerName, setCustomerName] = useState('');
@@ -23,6 +28,25 @@ export default function VoiceOrder() {
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
   const fileInputRef = useRef(null);
+  const timerRef = useRef(null);
+  const streamRef = useRef(null);
+
+  // Auto-stop recording when max time reached
+  useEffect(() => {
+    if (isRecording && recordingTime >= MAX_RECORDING_SECONDS) {
+      stopRecording();
+    }
+  }, [recordingTime, isRecording]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
 
   // Start recording
   const startRecording = async () => {
