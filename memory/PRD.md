@@ -571,6 +571,24 @@ A personalized trip recommendation engine that suggests:
 
 ## Latest Updates (Jan 18, 2026)
 
+### Bug Fix: Cart Add-on Issue ✅
+**Fixed: Main product not added when selecting add-ons**
+- Root cause: React state update batching issue - two consecutive `addToCart` calls used stale state
+- Fix: Changed `setCartItems` to use functional update pattern `setCartItems(prev => ...)`
+- Now both main product and Party Box add-on are correctly added to cart
+
+**File Modified:** `/app/frontend/src/context/CartContext.js`
+
+### Checkout Page: Bakery Delivery Options ✅
+**Home Delivery now available for bakery items (cakes, treats)**
+- Removed forced "Store Pickup" for bakery-only carts
+- Added delivery/pickup toggle for ALL cart types
+- Home Delivery is now the default (99% customers prefer shipping)
+- Store Pickup remains available in Mumbai, Gurugram, Bangalore
+- Added info note about fresh bakery packaging for delivery
+
+**File Modified:** `/app/frontend/src/pages/Checkout.jsx`
+
 ### Checkout Page City Enhancement ✅
 **"Others" city option for Pan-India shopping:**
 - Added "Others (Type your city)" option in checkout city dropdown
@@ -579,31 +597,35 @@ A personalized trip recommendation engine that suggests:
 - Works alongside existing Pan-India shipping toggle
 - Allows shopping from any city in India without requiring Pan-India mode
 
-**Files Modified:**
-- `/app/frontend/src/pages/Checkout.jsx`
+**File Modified:** `/app/frontend/src/pages/Checkout.jsx`
 
 ### Pillar Bundles Tab in Pricing Hub ✅
 **Centralized bundle/package pricing across all pillars:**
 - New "Pillar Bundles" tab added to Pricing, Shipping & Commercial Hub
 - Shows bundles/packages organized by pillar (Celebrate, Dine, Stay, Travel, Care)
-- Each pillar tab shows bundle count and list with:
-  - Bundle name and image
-  - Type (party_package, dining_kit, etc.)
-  - Price and discounted price
-  - Active/Inactive status
-  - Edit action
-- Fetches data from respective pillar bundle APIs
-- Bundle Management Tips section with guidance for each pillar
+- Each pillar tab shows bundle count and list with pricing, status, edit actions
+
+**File Modified:** `/app/frontend/src/components/PricingHub.jsx`
+
+### Autoship Enhancement ✅  
+**Complete subscription calculator with date range and tiered pricing**
+- **Frequency Selection**: Weekly, bi-weekly, monthly, or 6-weekly options
+- **Date Range**: Customer selects start date and end date
+- **Auto-calculation**: System calculates total number of deliveries
+- **Tiered Discounts Applied**:
+  - 1st delivery: 20% off
+  - 2nd delivery: 25% off
+  - 3rd delivery: 30% off
+  - 4th delivery: 35% off
+  - 5th delivery: 40% off
+  - 6th delivery: 45% off
+  - 7th+ deliveries: 50% off
+- **Total Price**: Shows full subscription cost with all discounts applied
+- **Cart Display**: Shows delivery count, date range, total cost, and savings
 
 **Files Modified:**
-- `/app/frontend/src/components/PricingHub.jsx`
-
-**Pillar Bundle Sources:**
-- Celebrate: Products marked as bundles
-- Dine: `/api/admin/dine/bundles` (5 bundles available)
-- Stay: `/api/admin/stay/socials` (events/packages)
-- Travel: Products marked as bundles (future)
-- Care: Products marked as bundles (future)
+- `/app/frontend/src/components/ProductCard.jsx` - Added AutoshipCalculator component
+- `/app/frontend/src/components/CartSidebar.jsx` - Enhanced autoship item display
 
 ---
 
