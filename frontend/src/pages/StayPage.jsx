@@ -1266,15 +1266,15 @@ const BookingRequestModal = ({ property, onClose }) => {
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" onClick={onClose}>
       {/* Bottom sheet modal */}
       <div 
-        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl"
-        style={{ height: '75vh' }}
+        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl flex flex-col"
+        style={{ height: '65vh' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-4 border-b bg-white rounded-t-3xl">
+        <div className="p-3 border-b bg-white rounded-t-3xl flex-shrink-0">
           <div className="flex items-center justify-between mb-2">
             <div>
-              <h3 className="text-lg font-bold">Request Booking</h3>
+              <h3 className="text-base font-bold">Request Booking</h3>
               <p className="text-xs text-gray-500">{property.name}</p>
             </div>
             <Button variant="ghost" size="icon" onClick={onClose}>
