@@ -5358,7 +5358,7 @@ async def send_individual_cart_reminder(cart_id: str, username: str = Depends(ve
             
             return {"message": f"Reminder sent to {cart['email']}", "success": True}
         else:
-            raise HTTPException(status_code=500, detail="Failed to send email")
+            raise HTTPException(status_code=500, detail=result.get("error", "Failed to send email"))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error sending reminder: {str(e)}")
 
