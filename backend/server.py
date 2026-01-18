@@ -712,6 +712,9 @@ from ticket_auto_create import create_ticket_from_event, update_ticket_from_even
 # Import role management
 from role_routes import router as role_router, set_database as set_role_db
 
+# Import escalation engine
+from escalation_routes import router as escalation_router, set_database as set_escalation_db, run_escalation_check
+
 # Import notification engine
 from notification_engine import (
     notification_router,
