@@ -2004,107 +2004,206 @@ const ServiceDesk = ({ authHeaders }) => {
                 </div>
               </div>
 
-              {/* Reply Box */}
-              <div className="border-t p-3">
-                {/* Reply Type Selector - More Prominent */}
-                <div className="flex items-center gap-3 mb-3 p-2 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Reply type:</span>
-                  <div className="flex gap-2 flex-1">
-                    <Button 
-                      size="sm" 
-                      variant={isInternalNote ? 'default' : 'outline'}
-                      onClick={() => {
-                        setIsInternalNote(true);
-                        setSendChannel('internal');
-                      }}
-                      className={`h-8 px-3 text-xs ${isInternalNote ? 'bg-gray-600' : ''}`}
-                    >
-                      💬 Internal Note
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant={!isInternalNote && sendChannel === 'email' ? 'default' : 'outline'}
-                      onClick={() => {
-                        setIsInternalNote(false);
-                        setSendChannel('email');
-                      }}
-                      className={`h-8 px-3 text-xs ${!isInternalNote && sendChannel === 'email' ? 'bg-blue-600' : ''}`}
-                      disabled={!(selectedTicket?.member?.email || selectedTicket?.customer_email)}
-                      title={(selectedTicket?.member?.email || selectedTicket?.customer_email) ? `Send email to ${selectedTicket?.member?.email || selectedTicket?.customer_email}` : 'No email address available'}
-                    >
-                      <Mail className="w-3 h-3 mr-1" /> Email Guest
-                      {(selectedTicket?.member?.email || selectedTicket?.customer_email) && (
-                        <span className="ml-1 text-[10px] opacity-75 max-w-20 truncate">
-                          ({(selectedTicket?.member?.email || selectedTicket?.customer_email).split('@')[0]}...)
-                        </span>
-                      )}
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant={!isInternalNote && sendChannel === 'whatsapp' ? 'default' : 'outline'}
-                      onClick={() => {
-                        setIsInternalNote(false);
-                        setSendChannel('whatsapp');
-                      }}
-                      className={`h-8 px-3 text-xs ${!isInternalNote && sendChannel === 'whatsapp' ? 'bg-green-600' : ''}`}
-                      disabled={!(selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone)}
-                      title={(selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone) ? `Send WhatsApp to ${selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone}` : 'No phone number available'}
-                    >
-                      📱 WhatsApp Guest
-                    </Button>
-                  </div>
-                  
-                  {/* SLA Info */}
-                  {selectedTicket?.sla_due_at && (
-                    <div className="flex items-center gap-1 text-xs">
-                      <Clock className="w-3 h-3" />
-                      <span className={`${new Date(selectedTicket.sla_due_at) < new Date() ? 'text-red-600 font-bold' : 'text-gray-500'}`}>
-                        SLA: {new Date(selectedTicket.sla_due_at).toLocaleString()}
-                      </span>
+              {/* Reply Box with AI Assistant */}
+              <div className="border-t bg-gradient-to-r from-gray-50 to-purple-50/30">
+                {/* AI Assistant Panel */}
+                {showAiPanel && aiDraft && (
+                  <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-purple-600" />
+                        <span className="text-sm font-semibold text-purple-800">AI Draft ({aiTone})</span>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => setShowAiPanel(false)}>
+                        <X className="w-4 h-4" />
+                      </Button>
                     </div>
-                  )}
-                </div>
-                
-                {/* Channel indicator banner */}
-                {!isInternalNote && sendChannel !== 'internal' && (
-                  <div className={`mb-2 p-2 rounded text-xs ${sendChannel === 'email' ? 'bg-blue-50 text-blue-700' : 'bg-green-50 text-green-700'}`}>
-                    {sendChannel === 'email' ? (
-                      <>📧 This message will be sent as an <strong>email</strong> to: <strong>{selectedTicket?.member?.email || selectedTicket?.customer_email}</strong></>
-                    ) : (
-                      <>📱 This message will be sent via <strong>WhatsApp</strong> to: <strong>{selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone}</strong></>
-                    )}
+                    <div className="space-y-2">
+                      <div className="bg-white rounded-lg p-3 border border-purple-200 text-sm max-h-32 overflow-y-auto">
+                        {aiDraft.draft}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          size="sm" 
+                          className="bg-purple-600 hover:bg-purple-700 text-white"
+                          onClick={() => useAiDraft(aiDraft.draft)}
+                        >
+                          <Copy className="w-3 h-3 mr-1" /> Use This Draft
+                        </Button>
+                        {aiDraft.quick_draft && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => useAiDraft(aiDraft.quick_draft)}
+                          >
+                            Use Quick Version
+                          </Button>
+                        )}
+                        <div className="flex-1" />
+                        <Button size="sm" variant="ghost" className="text-green-600">
+                          <ThumbsUp className="w-3 h-3" />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="text-red-600">
+                          <ThumbsDown className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 )}
-                
-                <div className="flex gap-2">
-                  <Textarea
-                    value={replyText}
-                    onChange={(e) => setReplyText(e.target.value)}
-                    placeholder={
-                      isInternalNote 
-                        ? "Add internal note (only visible to team)..." 
-                        : sendChannel === 'email'
-                          ? "Type your email reply to the guest..."
-                          : sendChannel === 'whatsapp'
-                            ? "Type your WhatsApp message to the guest..."
-                            : "Type your reply..."
-                    }
-                    className="resize-none"
-                    rows={2}
-                  />
-                  <div className="flex flex-col gap-1">
-                    <Button 
-                      onClick={handleReply} 
-                      disabled={sendingReply || !replyText.trim()} 
-                      className={`flex-1 ${!isInternalNote && sendChannel === 'email' ? 'bg-blue-600 hover:bg-blue-700' : !isInternalNote && sendChannel === 'whatsapp' ? 'bg-green-600 hover:bg-green-700' : ''}`}
-                    >
-                      {sendingReply ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                    </Button>
-                    {sendChannel !== 'internal' && !isInternalNote && (
-                      <span className="text-xs text-center text-gray-400">
-                        {sendChannel === 'email' ? '📧' : '📱'}
-                      </span>
-                    )}
+
+                <div className="p-3">
+                  {/* Reply Type Selector with AI Button */}
+                  <div className="flex items-center gap-3 mb-3 p-2 bg-white/80 rounded-lg border">
+                    <span className="text-sm font-medium text-gray-700">Reply:</span>
+                    <div className="flex gap-2 flex-1">
+                      <Button 
+                        size="sm" 
+                        variant={isInternalNote ? 'default' : 'outline'}
+                        onClick={() => {
+                          setIsInternalNote(true);
+                          setSendChannel('internal');
+                        }}
+                        className={`h-8 px-3 text-xs ${isInternalNote ? 'bg-gray-600' : ''}`}
+                      >
+                        💬 Internal
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant={!isInternalNote && sendChannel === 'email' ? 'default' : 'outline'}
+                        onClick={() => {
+                          setIsInternalNote(false);
+                          setSendChannel('email');
+                        }}
+                        className={`h-8 px-3 text-xs ${!isInternalNote && sendChannel === 'email' ? 'bg-blue-600' : ''}`}
+                        disabled={!(selectedTicket?.member?.email || selectedTicket?.customer_email)}
+                      >
+                        <Mail className="w-3 h-3 mr-1" /> Email
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant={!isInternalNote && sendChannel === 'whatsapp' ? 'default' : 'outline'}
+                        onClick={() => {
+                          setIsInternalNote(false);
+                          setSendChannel('whatsapp');
+                        }}
+                        className={`h-8 px-3 text-xs ${!isInternalNote && sendChannel === 'whatsapp' ? 'bg-green-600' : ''}`}
+                        disabled={!(selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone)}
+                      >
+                        📱 WhatsApp
+                      </Button>
+                    </div>
+                    
+                    {/* AI Draft Button */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button 
+                          size="sm" 
+                          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-8 px-3"
+                          disabled={aiLoading}
+                        >
+                          {aiLoading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <>
+                              <Sparkles className="w-3 h-3 mr-1" /> AI Draft
+                            </>
+                          )}
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem onClick={() => { setAiTone('professional'); generateAiDraft('professional'); }}>
+                          <Wand2 className="w-4 h-4 mr-2 text-blue-600" /> Professional
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setAiTone('friendly'); generateAiDraft('friendly'); }}>
+                          <span className="mr-2">😊</span> Friendly & Warm
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setAiTone('empathetic'); generateAiDraft('empathetic'); }}>
+                          <span className="mr-2">💝</span> Empathetic
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setAiTone('quick'); generateAiDraft('quick'); }}>
+                          <Zap className="w-4 h-4 mr-2 text-amber-500" /> Quick Response
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={getAiSummary}>
+                          <Brain className="w-4 h-4 mr-2 text-purple-600" /> Summarize Ticket
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={getAiActions}>
+                          <Lightbulb className="w-4 h-4 mr-2 text-yellow-600" /> Suggest Actions
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+                  {/* AI Summary Display */}
+                  {aiSummary && (
+                    <div className="mb-3 p-2 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Brain className="w-4 h-4 text-purple-600" />
+                        <span className="text-xs font-semibold text-purple-800">AI Summary</span>
+                        <Button variant="ghost" size="sm" className="ml-auto h-5 w-5 p-0" onClick={() => setAiSummary(null)}>
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      <p className="text-xs text-purple-700">{aiSummary}</p>
+                    </div>
+                  )}
+
+                  {/* AI Suggested Actions */}
+                  {aiActions.length > 0 && (
+                    <div className="mb-3 p-2 bg-amber-50 rounded-lg border border-amber-200">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Lightbulb className="w-4 h-4 text-amber-600" />
+                        <span className="text-xs font-semibold text-amber-800">Suggested Actions</span>
+                        <Button variant="ghost" size="sm" className="ml-auto h-5 w-5 p-0" onClick={() => setAiActions([])}>
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      <ul className="text-xs text-amber-700 space-y-1">
+                        {(Array.isArray(aiActions) ? aiActions : [aiActions]).slice(0, 4).map((action, idx) => (
+                          <li key={idx} className="flex items-start gap-1">
+                            <span className="text-amber-500">•</span> {action}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {/* Channel indicator banner */}
+                  {!isInternalNote && sendChannel !== 'internal' && (
+                    <div className={`mb-2 p-2 rounded text-xs ${sendChannel === 'email' ? 'bg-blue-50 text-blue-700' : 'bg-green-50 text-green-700'}`}>
+                      {sendChannel === 'email' ? (
+                        <>📧 Sending email to: <strong>{selectedTicket?.member?.email || selectedTicket?.customer_email}</strong></>
+                      ) : (
+                        <>📱 Sending WhatsApp to: <strong>{selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone}</strong></>
+                      )}
+                    </div>
+                  )}
+                  
+                  <div className="flex gap-2">
+                    <Textarea
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      placeholder={
+                        isInternalNote 
+                          ? "Add internal note (only visible to team)..." 
+                          : sendChannel === 'email'
+                            ? "Type your email reply... or use AI Draft ✨"
+                            : sendChannel === 'whatsapp'
+                              ? "Type your WhatsApp message..."
+                              : "Type your reply..."
+                      }
+                      className="resize-none bg-white"
+                      rows={2}
+                    />
+                    <div className="flex flex-col gap-1">
+                      <Button 
+                        onClick={handleReply} 
+                        disabled={sendingReply || !replyText.trim()} 
+                        className={`flex-1 ${!isInternalNote && sendChannel === 'email' ? 'bg-blue-600 hover:bg-blue-700' : !isInternalNote && sendChannel === 'whatsapp' ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                      >
+                        {sendingReply ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
