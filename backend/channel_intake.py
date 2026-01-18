@@ -585,12 +585,58 @@ async def get_channel_stats(days: int = 7):
     status_stats = await db.channel_intakes.aggregate(status_pipeline).to_list(100)
     type_stats = await db.channel_intakes.aggregate(type_pipeline).to_list(100)
     
+    # By pillar
+    pillar_pipeline = [
+        {"$match": {"created_at": {"$gte": since.isoformat()}}},
+        {"$group": {"_id": "$pillar", "count": {"$sum": 1}}}
+    ]
+    pillar_stats = await db.channel_intakes.aggregate(pillar_pipeline).to_list(100)
+    
     total = sum(s["count"] for s in channel_stats)
     
     return {
         "period_days": days,
         "total_intakes": total,
-        "by_channel": {s["_id"]: s["count"] for s in channel_stats},
-        "by_status": {s["_id"]: s["count"] for s in status_stats},
-        "by_type": {s["_id"]: s["count"] for s in type_stats}
+        "by_channel": {s["_id"]: s["count"] for s in channel_stats if s["_id"]},
+        "by_status": {s["_id"]: s["count"] for s in status_stats if s["_id"]},
+        "by_type": {s["_id"]: s["count"] for s in type_stats if s["_id"]},
+        "by_pillar": {s["_id"]: s["count"] for s in pillar_stats if s["_id"]}
+    }
+
+
+@channel_router.get("/intakes/stats")
+async def get_intake_stats():
+    """Get channel intake statistics for unified inbox dashboard"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    # Total counts
+    total = await db.channel_intakes.count_documents({})
+    pending = await db.channel_intakes.count_documents({"status": "pending"})
+    processing = await db.channel_intakes.count_documents({"status": "processing"})
+    
+    # By channel (all time)
+    channel_pipeline = [
+        {"$group": {"_id": "$channel", "count": {"$sum": 1}}}
+    ]
+    channel_stats = await db.channel_intakes.aggregate(channel_pipeline).to_list(100)
+    
+    # By pillar (all time)
+    pillar_pipeline = [
+        {"$group": {"_id": "$pillar", "count": {"$sum": 1}}}
+    ]
+    pillar_stats = await db.channel_intakes.aggregate(pillar_pipeline).to_list(100)
+    
+    # Recent (last 24h)
+    from datetime import timedelta
+    yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+    recent = await db.channel_intakes.count_documents({"created_at": {"$gte": yesterday.isoformat()}})
+    
+    return {
+        "total": total,
+        "pending": pending,
+        "processing": processing,
+        "recent_24h": recent,
+        "by_channel": {s["_id"]: s["count"] for s in channel_stats if s["_id"]},
+        "by_pillar": {s["_id"]: s["count"] for s in pillar_stats if s["_id"]}
     }
