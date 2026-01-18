@@ -1490,58 +1490,201 @@ const ServiceDesk = ({ authHeaders }) => {
         </div>
 
         {/* Ticket List */}
-        <div className="w-80 flex-shrink-0 border rounded-lg overflow-hidden flex flex-col">
-          <div className="bg-gray-50 px-3 py-2 border-b flex items-center justify-between">
-            <span className="text-sm font-medium">Tickets ({tickets.length})</span>
-            <div className="flex items-center gap-1">
-              <Button variant="ghost" size="sm" onClick={exportTicketsCSV} title="Export to CSV">
-                <Download className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => { fetchTickets(); fetchStats(); }}>
-                <RefreshCw className="w-4 h-4" />
-              </Button>
+        <div className="w-96 flex-shrink-0 border rounded-lg overflow-hidden flex flex-col">
+          {/* Header with Quick Filters */}
+          <div className="bg-gray-50 px-3 py-2 border-b">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">Tickets ({displayTickets.length})</span>
+              <div className="flex items-center gap-1">
+                <Button variant="ghost" size="sm" onClick={exportTicketsCSV} title="Export to CSV">
+                  <Download className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => { fetchTickets(); fetchStats(); }}>
+                  <RefreshCw className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+            
+            {/* Quick Filter Tabs */}
+            <div className="flex gap-1 overflow-x-auto pb-1">
+              {[
+                { id: 'all', label: 'All', count: tickets.length },
+                { id: 'unassigned', label: 'Unassigned', count: tickets.filter(t => !t.assigned_to).length },
+                { id: 'critical', label: '🔴 Critical', count: tickets.filter(t => t.urgency === 'critical' || t.urgency === 'high').length },
+                { id: 'today', label: 'Today', count: tickets.filter(t => t.created_at?.startsWith(new Date().toISOString().split('T')[0])).length },
+              ].map(tab => (
+                <Button
+                  key={tab.id}
+                  variant={quickFilter === tab.id ? 'default' : 'ghost'}
+                  size="sm"
+                  className={`h-7 px-2 text-xs whitespace-nowrap ${quickFilter === tab.id ? 'bg-amber-500 hover:bg-amber-600' : ''}`}
+                  onClick={() => setQuickFilter(tab.id)}
+                >
+                  {tab.label} {tab.count > 0 && <span className="ml-1 opacity-70">({tab.count})</span>}
+                </Button>
+              ))}
             </div>
           </div>
+
+          {/* Bulk Action Bar - Shows when tickets are selected */}
+          {selectedTickets.size > 0 && (
+            <div className="bg-amber-50 border-b border-amber-200 px-3 py-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Checkbox 
+                    checked={selectedTickets.size === displayTickets.length && displayTickets.length > 0}
+                    onCheckedChange={toggleSelectAll}
+                  />
+                  <span className="text-sm font-medium text-amber-800">
+                    {selectedTickets.size} selected
+                  </span>
+                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={clearSelection}>
+                    <X className="w-3 h-3 mr-1" /> Clear
+                  </Button>
+                </div>
+                
+                <div className="flex items-center gap-1">
+                  {/* Bulk Assign Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-7 text-xs" disabled={bulkActionLoading}>
+                        <UserPlus className="w-3 h-3 mr-1" /> Assign
+                        <ChevronDown className="w-3 h-3 ml-1" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      {concierges.map(c => (
+                        <DropdownMenuItem key={c.id} onClick={() => handleBulkAssign(c.id)}>
+                          {c.name}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  {/* Bulk Status Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-7 text-xs" disabled={bulkActionLoading}>
+                        <CheckSquare className="w-3 h-3 mr-1" /> Status
+                        <ChevronDown className="w-3 h-3 ml-1" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange('in_progress')}>
+                        <span className="w-2 h-2 rounded-full bg-yellow-400 mr-2" /> In Progress
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange('waiting_on_member')}>
+                        <span className="w-2 h-2 rounded-full bg-orange-400 mr-2" /> Waiting on Member
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange('resolved')}>
+                        <span className="w-2 h-2 rounded-full bg-green-400 mr-2" /> Resolved
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange('closed')}>
+                        <span className="w-2 h-2 rounded-full bg-gray-400 mr-2" /> Closed
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange('escalated')} className="text-red-600">
+                        <span className="w-2 h-2 rounded-full bg-red-400 mr-2" /> Escalate
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  {/* Bulk Delete */}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-7 text-xs text-red-600 hover:bg-red-50" 
+                    onClick={handleBulkDelete}
+                    disabled={bulkActionLoading}
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+              
+              {bulkActionLoading && (
+                <div className="flex items-center gap-2 mt-2 text-xs text-amber-700">
+                  <Loader2 className="w-3 h-3 animate-spin" /> Processing...
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Select All Row (when no selection) */}
+          {selectedTickets.size === 0 && displayTickets.length > 0 && (
+            <div className="bg-gray-50 border-b px-3 py-1.5 flex items-center gap-2">
+              <Checkbox 
+                checked={false}
+                onCheckedChange={toggleSelectAll}
+              />
+              <span className="text-xs text-gray-500">Select all</span>
+            </div>
+          )}
+
+          {/* Ticket List */}
           <div className="flex-1 overflow-y-auto">
-            {tickets.length === 0 ? (
+            {displayTickets.length === 0 ? (
               <div className="p-8 text-center text-gray-500">
                 <Inbox className="w-12 h-12 mx-auto mb-2 text-gray-300" />
                 <p>No tickets found</p>
+                {quickFilter !== 'all' && (
+                  <Button variant="link" size="sm" onClick={() => setQuickFilter('all')}>
+                    Show all tickets
+                  </Button>
+                )}
               </div>
             ) : (
-              tickets.map(ticket => (
+              displayTickets.map(ticket => (
                 <div
                   key={ticket.id}
                   className={`p-3 border-b cursor-pointer hover:bg-gray-50 transition-colors ${
                     selectedTicket?.id === ticket.id ? 'bg-amber-50 border-l-2 border-l-amber-500' : ''
-                  }`}
-                  onClick={() => fetchTicketDetails(ticket.ticket_id)}
+                  } ${selectedTickets.has(ticket.ticket_id) ? 'bg-amber-25 ring-1 ring-amber-200' : ''}`}
                 >
-                  <div className="flex items-start justify-between mb-1">
-                    <span className="text-xs font-mono text-gray-500">{ticket.ticket_id}</span>
-                    <div className="flex items-center gap-1">
-                      {ticket.source && SOURCE_CONFIG[ticket.source] && (
-                        <Badge className={`text-xs ${SOURCE_CONFIG[ticket.source].color}`}>
-                          {SOURCE_CONFIG[ticket.source].icon} {SOURCE_CONFIG[ticket.source].label}
-                        </Badge>
-                      )}
-                      <Badge className={`text-xs ${URGENCY_COLORS[ticket.urgency]}`}>
-                        {ticket.urgency}
-                      </Badge>
+                  <div className="flex items-start gap-2">
+                    {/* Checkbox */}
+                    <div className="pt-0.5" onClick={(e) => e.stopPropagation()}>
+                      <Checkbox 
+                        checked={selectedTickets.has(ticket.ticket_id)}
+                        onCheckedChange={() => toggleTicketSelection(ticket.ticket_id)}
+                      />
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-lg">{CATEGORY_ICONS[ticket.category]}</span>
-                    <span className="font-medium text-sm truncate">{ticket.member?.name}</span>
-                  </div>
-                  <p className="text-xs text-gray-600 line-clamp-2">{ticket.description}</p>
-                  <div className="flex items-center justify-between mt-2">
-                    <Badge className={`text-xs ${STATUS_COLORS[ticket.status]}`}>
-                      {ticket.status?.replace('_', ' ')}
-                    </Badge>
-                    <span className="text-xs text-gray-400">
-                      {new Date(ticket.created_at).toLocaleDateString()}
-                    </span>
+                    
+                    {/* Ticket Content */}
+                    <div className="flex-1 min-w-0" onClick={() => fetchTicketDetails(ticket.ticket_id)}>
+                      <div className="flex items-start justify-between mb-1">
+                        <span className="text-xs font-mono text-gray-500">{ticket.ticket_id}</span>
+                        <div className="flex items-center gap-1 flex-wrap justify-end">
+                          {ticket.source && SOURCE_CONFIG[ticket.source] && (
+                            <Badge className={`text-xs ${SOURCE_CONFIG[ticket.source].color}`}>
+                              {SOURCE_CONFIG[ticket.source].icon}
+                            </Badge>
+                          )}
+                          <Badge className={`text-xs ${URGENCY_COLORS[ticket.urgency]}`}>
+                            {ticket.urgency === 'critical' ? '🔴' : ticket.urgency === 'high' ? '🟠' : ticket.urgency === 'medium' ? '🟡' : '⚪'}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-lg">{CATEGORY_ICONS[ticket.category]}</span>
+                        <span className="font-medium text-sm truncate">{ticket.member?.name || 'Unknown'}</span>
+                      </div>
+                      <p className="text-xs text-gray-600 line-clamp-2">{ticket.description?.substring(0, 100)}</p>
+                      <div className="flex items-center justify-between mt-2">
+                        <Badge className={`text-xs ${STATUS_COLORS[ticket.status]}`}>
+                          {ticket.status?.replace(/_/g, ' ')}
+                        </Badge>
+                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                          {ticket.assigned_to && (
+                            <span className="flex items-center gap-1">
+                              <User className="w-3 h-3" />
+                              {ticket.assigned_to.split('@')[0]}
+                            </span>
+                          )}
+                          <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))
