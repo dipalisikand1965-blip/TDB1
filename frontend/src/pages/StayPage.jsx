@@ -1547,10 +1547,11 @@ const BookingRequestModal = ({ property, onClose }) => {
               </div>
             </div>
           )}
+          </div>
         </div>
 
-        {/* Footer */}
-        <div className="p-4 sm:p-6 border-t flex gap-3 bg-white flex-shrink-0">
+        {/* Footer - Fixed at Bottom */}
+        <div className="p-4 border-t flex gap-3 bg-white">
           {step > 1 && (
             <Button variant="outline" onClick={() => setStep(step - 1)} className="text-sm">
               Back
@@ -1575,7 +1576,6 @@ const BookingRequestModal = ({ property, onClose }) => {
               Submit Request
             </Button>
           )}
-          </div>
         </div>
       </div>
     </div>
