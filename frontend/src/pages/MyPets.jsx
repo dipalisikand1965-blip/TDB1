@@ -71,8 +71,8 @@ const MyPets = () => {
             setUpcomingCelebrations(data.celebrations || []);
           }
         } else {
-          // Public view - fetch all pets
-          const petsRes = await fetch(`${API_URL}/api/pets?limit=100`);
+          // Public view - fetch all pets (no auth required)
+          const petsRes = await fetch(`${API_URL}/api/pets/public?limit=100`);
           if (petsRes.ok) {
             const data = await petsRes.json();
             setPets(data.pets || []);
