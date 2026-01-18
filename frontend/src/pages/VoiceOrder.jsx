@@ -320,6 +320,27 @@ export default function VoiceOrder() {
                       : 'Press the microphone button and tell us your order'}
                   </p>
                   
+                  {/* Timer Display */}
+                  {isRecording && (
+                    <div className="mb-4 flex items-center justify-center gap-2">
+                      <Clock className="w-5 h-5 text-red-500 animate-pulse" />
+                      <span className="text-2xl font-mono font-bold text-red-600">
+                        {formatTime(recordingTime)}
+                      </span>
+                      <span className="text-sm text-gray-500">/ {formatTime(MAX_RECORDING_SECONDS)}</span>
+                    </div>
+                  )}
+                  
+                  {/* Progress Bar */}
+                  {isRecording && (
+                    <div className="w-full max-w-xs mx-auto mb-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-pink-500 to-red-500 transition-all duration-1000"
+                        style={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }}
+                      />
+                    </div>
+                  )}
+                  
                   {/* Record Button */}
                   <button
                     onClick={isRecording ? stopRecording : startRecording}
