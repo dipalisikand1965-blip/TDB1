@@ -798,6 +798,71 @@ def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
     return credentials.username
 
 
+# ==================== ADMIN CREDENTIAL MANAGEMENT ====================
+
+class AdminCredentialReset(BaseModel):
+    """Model for resetting admin credentials"""
+    reset_token: str
+    new_username: str
+    new_password: str
+
+@app.post("/api/admin/reset-credentials")
+async def reset_admin_credentials(data: AdminCredentialReset):
+    """
+    Reset admin credentials using a secret token.
+    This allows recovery when locked out of admin panel.
+    
+    Usage: POST /api/admin/reset-credentials
+    Body: {"reset_token": "your-secret-token", "new_username": "admin", "new_password": "newpass"}
+    """
+    # Verify reset token
+    if not secrets.compare_digest(data.reset_token, ADMIN_RESET_TOKEN):
+        raise HTTPException(status_code=403, detail="Invalid reset token")
+    
+    # Validate new credentials
+    if len(data.new_username) < 3:
+        raise HTTPException(status_code=400, detail="Username must be at least 3 characters")
+    if len(data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Update credentials in database
+    await db.admin_config.update_one(
+        {"type": "credentials"},
+        {
+            "$set": {
+                "username": data.new_username,
+                "password": data.new_password,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        },
+        upsert=True
+    )
+    
+    # Update cache immediately
+    global _admin_credentials_cache
+    _admin_credentials_cache["username"] = data.new_username
+    _admin_credentials_cache["password"] = data.new_password
+    _admin_credentials_cache["loaded"] = True
+    
+    logger.info(f"Admin credentials reset for user: {data.new_username}")
+    
+    return {
+        "success": True,
+        "message": f"Admin credentials updated. You can now log in as '{data.new_username}'",
+        "username": data.new_username
+    }
+
+@app.get("/api/admin/credential-status")
+async def check_credential_status():
+    """Check if admin credentials are configured (no auth required)"""
+    has_db_creds = await db.admin_config.find_one({"type": "credentials"}) is not None
+    return {
+        "has_database_credentials": has_db_creds,
+        "using_env_fallback": not has_db_creds,
+        "cache_loaded": _admin_credentials_cache.get("loaded", False)
+    }
+
+
 # ==================== MODELS ====================
 
 class StatusCheck(BaseModel):
