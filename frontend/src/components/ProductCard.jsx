@@ -158,6 +158,8 @@ const ProductDetailModal = ({ product, onClose }) => {
     age: '',
     purchaseType: 'onetime',
     autoshipFrequency: '',
+    autoshipStartDate: null,
+    autoshipEndDate: null,
     addPartyBox: false,
     // Bundle selections
     selectedCake: '',
