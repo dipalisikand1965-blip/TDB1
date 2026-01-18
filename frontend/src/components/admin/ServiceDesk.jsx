@@ -540,7 +540,7 @@ const ServiceDesk = ({ authHeaders }) => {
     setAiLoading(false);
   };
 
-  const useAiDraft = (draft) => {
+  const applyAiDraft = (draft) => {
     setReplyText(draft);
     setShowAiPanel(false);
   };
