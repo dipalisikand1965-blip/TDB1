@@ -13,6 +13,182 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { format } from 'date-fns';
 import { API_URL } from '../utils/api';
 
+// Autoship tier discount rates
+const AUTOSHIP_DISCOUNT_TIERS = [
+  { delivery: 1, discount: 0.20, label: '1st delivery: 20% off' },
+  { delivery: 2, discount: 0.25, label: '2nd delivery: 25% off' },
+  { delivery: 3, discount: 0.30, label: '3rd delivery: 30% off' },
+  { delivery: 4, discount: 0.35, label: '4th delivery: 35% off' },
+  { delivery: 5, discount: 0.40, label: '5th delivery: 40% off' },
+  { delivery: 6, discount: 0.45, label: '6th delivery: 45% off' },
+  { delivery: 7, discount: 0.50, label: '7th+ delivery: 50% off' },
+];
+
+// Autoship Calculator Component
+const AutoshipCalculator = ({ cartInput, setCartInput, currentPrice, product }) => {
+  // Calculate number of deliveries based on date range and frequency
+  const calculateDeliveries = () => {
+    if (!cartInput.autoshipStartDate || !cartInput.autoshipEndDate || !cartInput.autoshipFrequency) {
+      return 0;
+    }
+    const start = new Date(cartInput.autoshipStartDate);
+    const end = new Date(cartInput.autoshipEndDate);
+    const frequencyWeeks = parseInt(cartInput.autoshipFrequency);
+    const frequencyDays = frequencyWeeks * 7;
+    
+    const diffTime = end.getTime() - start.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays <= 0) return 0;
+    return Math.floor(diffDays / frequencyDays) + 1; // +1 for the first delivery
+  };
+
+  // Calculate total price with tiered discounts
+  const calculateTotalWithDiscounts = () => {
+    const numDeliveries = calculateDeliveries();
+    if (numDeliveries <= 0) return { total: 0, savings: 0, breakdown: [] };
+    
+    let total = 0;
+    let savings = 0;
+    const breakdown = [];
+    
+    for (let i = 0; i < numDeliveries; i++) {
+      const deliveryNum = i + 1;
+      // Find the applicable discount tier
+      const tier = AUTOSHIP_DISCOUNT_TIERS.find(t => t.delivery === deliveryNum) 
+        || AUTOSHIP_DISCOUNT_TIERS[AUTOSHIP_DISCOUNT_TIERS.length - 1]; // Use 50% for 7+
+      
+      const originalPrice = currentPrice;
+      const discountedPrice = originalPrice * (1 - tier.discount);
+      const savingsForDelivery = originalPrice - discountedPrice;
+      
+      total += discountedPrice;
+      savings += savingsForDelivery;
+      breakdown.push({
+        delivery: deliveryNum,
+        originalPrice,
+        discountedPrice: Math.round(discountedPrice),
+        discount: tier.discount * 100,
+        label: tier.label
+      });
+    }
+    
+    return { 
+      total: Math.round(total), 
+      savings: Math.round(savings), 
+      breakdown,
+      numDeliveries
+    };
+  };
+
+  const { total, savings, breakdown, numDeliveries } = calculateTotalWithDiscounts();
+
+  return (
+    <div className="mt-3 space-y-3" onClick={(e) => e.stopPropagation()}>
+      {/* Frequency selector */}
+      <div>
+        <label className="text-xs font-medium text-gray-700 mb-1 block">Delivery Frequency</label>
+        <select 
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+          value={cartInput.autoshipFrequency || '4'}
+          onChange={(e) => setCartInput({...cartInput, autoshipFrequency: e.target.value})}
+        >
+          <option value="1">Every week</option>
+          <option value="2">Every 2 weeks</option>
+          <option value="4">Every 4 weeks (Monthly)</option>
+          <option value="6">Every 6 weeks</option>
+        </select>
+      </div>
+      
+      {/* Date Range Selection */}
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="text-xs font-medium text-gray-700 mb-1 block">Start Date</label>
+          <input 
+            type="date" 
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+            value={cartInput.autoshipStartDate || ''}
+            min={new Date().toISOString().split('T')[0]}
+            onChange={(e) => setCartInput({...cartInput, autoshipStartDate: e.target.value})}
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium text-gray-700 mb-1 block">End Date</label>
+          <input 
+            type="date" 
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+            value={cartInput.autoshipEndDate || ''}
+            min={cartInput.autoshipStartDate || new Date().toISOString().split('T')[0]}
+            onChange={(e) => setCartInput({...cartInput, autoshipEndDate: e.target.value})}
+          />
+        </div>
+      </div>
+      
+      {/* Autoship Summary */}
+      {numDeliveries > 0 && (
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 border border-green-200">
+          <p className="font-semibold text-green-900 mb-2 flex items-center gap-2">
+            <Sparkles className="w-4 h-4" />
+            Your Autoship Plan
+          </p>
+          
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Number of deliveries:</span>
+              <span className="font-semibold text-green-800">{numDeliveries} deliveries</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Regular price:</span>
+              <span className="text-gray-500 line-through">₹{currentPrice * numDeliveries}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Your total:</span>
+              <span className="font-bold text-green-700 text-lg">₹{total}</span>
+            </div>
+            <div className="flex justify-between pt-1 border-t border-green-200">
+              <span className="text-green-700 font-medium">You save:</span>
+              <span className="font-bold text-green-600">₹{savings} 🎉</span>
+            </div>
+          </div>
+          
+          {/* Discount breakdown tooltip */}
+          <details className="mt-2">
+            <summary className="text-xs text-green-700 cursor-pointer hover:text-green-900">
+              View discount breakdown →
+            </summary>
+            <div className="mt-2 space-y-1 text-xs bg-white rounded p-2 border border-green-100">
+              {breakdown.map((item, idx) => (
+                <div key={idx} className="flex justify-between text-gray-600">
+                  <span>Delivery {item.delivery} ({item.discount}% off):</span>
+                  <span>₹{item.discountedPrice}</span>
+                </div>
+              ))}
+            </div>
+          </details>
+        </div>
+      )}
+      
+      {/* Benefits info */}
+      <div className="bg-blue-50 rounded-lg p-3 text-xs">
+        <p className="font-semibold text-blue-900 mb-2">🎁 Autoship Discount Tiers:</p>
+        <ul className="space-y-1 text-blue-800">
+          <li>• <strong>1st delivery:</strong> 20% off</li>
+          <li>• <strong>2nd delivery:</strong> 25% off</li>
+          <li>• <strong>3rd-5th:</strong> 30-40% off</li>
+          <li>• <strong>6th+ deliveries:</strong> Up to 50% off!</li>
+        </ul>
+        <p className="mt-2 text-blue-700 italic">
+          Every dog deserves regular treats! 🐕
+        </p>
+      </div>
+      
+      <p className="text-xs text-gray-500">
+        ✓ Skip, pause, or cancel anytime • ✓ Free to join
+      </p>
+    </div>
+  );
+};
+
 const ProductCard = ({ product }) => {
   const [showModal, setShowModal] = useState(false);
   const { user, token } = useAuth();
