@@ -2483,7 +2483,6 @@ async def reset_password(token: str = Body(...), new_password: str = Body(...)):
     )
     
     # Update cache
-    global _admin_credentials_cache
     _admin_credentials_cache["password"] = new_password
     _admin_credentials_cache["loaded"] = True
     
