@@ -488,17 +488,21 @@ async def create_booking_request(booking: BookingRequest):
             logger.error(f"Failed to send stay booking email: {e}")
     
     # Create admin notification
-    await db.admin_notifications.insert_one({
-        "id": f"notif-{uuid.uuid4().hex[:8]}",
-        "type": "stay_booking",
-        "title": f"🏨 New Stay Booking - {property.get('name')}",
-        "message": f"{booking.guest_name} requested stay for {booking.check_in_date} ({booking.pet_name})",
-        "category": "stay",
-        "related_id": booking_doc["id"],
-        "link_to": "/admin?tab=stay&subtab=bookings",
-        "read": False,
-        "created_at": now
-    })
+    try:
+        notif_result = await db.admin_notifications.insert_one({
+            "id": f"notif-{uuid.uuid4().hex[:8]}",
+            "type": "stay_booking",
+            "title": f"🏨 New Stay Booking - {property.get('name')}",
+            "message": f"{booking.guest_name} requested stay for {booking.check_in_date} ({booking.pet_name})",
+            "category": "stay",
+            "related_id": booking_doc["id"],
+            "link_to": "/admin?tab=stay&subtab=bookings",
+            "read": False,
+            "created_at": now
+        })
+        logger.info(f"Created notification for stay booking: {notif_result.inserted_id}")
+    except Exception as e:
+        logger.error(f"Failed to create notification for stay booking: {e}")
     
     # Auto-create Service Desk ticket for Stay booking
     try:
