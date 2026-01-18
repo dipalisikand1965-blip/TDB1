@@ -298,6 +298,7 @@ const CategoryManager = ({ categories, setCategories, authHeaders }) => {
     </div>
   );
 };
+
 const ServiceDesk = ({ authHeaders }) => {
   // State
   const [tickets, setTickets] = useState([]);
