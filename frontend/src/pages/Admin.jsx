@@ -571,6 +571,14 @@ const Admin = () => {
         const data = await response.json();
         setBlogPosts(data.posts || []);
       }
+      // Also fetch categories
+      const catResponse = await fetch(`${API_URL}/api/admin/blog-categories`, {
+        headers: getAuthHeaders()
+      });
+      if (catResponse.ok) {
+        const catData = await catResponse.json();
+        setBlogCategories(catData.categories || []);
+      }
     } catch (error) {
       console.error('Failed to fetch blog posts:', error);
     }
@@ -593,6 +601,45 @@ const Admin = () => {
       }
     } catch (error) {
       console.error('Failed to save blog post:', error);
+    }
+  };
+
+  // Save Blog Category
+  const saveBlogCategory = async (data) => {
+    try {
+      const isEdit = data.id && !data.id.startsWith('new-');
+      const url = isEdit ? `${API_URL}/api/admin/blog-categories/${data.id}` : `${API_URL}/api/admin/blog-categories`;
+      const response = await fetch(url, {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+      });
+      if (response.ok) {
+        fetchBlogPosts(); // Refresh categories too
+        setShowCategoryModal(false);
+        setEditingCategory(null);
+      }
+    } catch (error) {
+      console.error('Failed to save category:', error);
+    }
+  };
+
+  // Delete Blog Category
+  const deleteBlogCategory = async (id) => {
+    if (!window.confirm('Delete this category?')) return;
+    try {
+      const response = await fetch(`${API_URL}/api/admin/blog-categories/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        fetchBlogPosts();
+      } else {
+        const err = await response.json();
+        alert(err.detail || 'Failed to delete category');
+      }
+    } catch (error) {
+      console.error('Failed to delete category:', error);
     }
   };
 
