@@ -587,17 +587,44 @@ A personalized trip recommendation engine that suggests:
   - `care`: groom, vet, doctor, training, spa
 - Tickets can be reassigned to different pillars by admin
 - OpenAI Whisper integration for voice transcription
+- **AI Order Extraction**: GPT-4o-mini extracts pet name, items, delivery preference from messages
 
 **API Endpoints**:
 - `POST /api/channels/voice/order` - Upload audio for transcription
 - `POST /api/channels/text/order` - Submit text order
 - `GET /api/channels/intakes` - List all intakes (with pillar filter)
+- `GET /api/channels/intakes/stats` - Get intake statistics
 - `PATCH /api/channels/intakes/{id}/assign-pillar` - Reassign intake to pillar
 - `GET /api/channels/intakes/by-pillar/{pillar}` - Get intakes for specific pillar
 
 **Files**:
 - `/app/backend/channel_intake.py` - Core intake processing module
 - `/app/frontend/src/pages/VoiceOrder.jsx` - Voice order UI
+
+---
+
+## Unified Inbox Dashboard ✅ (NEW - Jan 18, 2026)
+**Purpose**: Central command center for all incoming requests across channels and pillars
+
+**Location**: Admin Panel → Core Tools → 📥 Unified Inbox
+
+**Features**:
+- **Stats Overview**: Total requests, by channel breakdown
+- **Pillar Distribution**: Visual badges showing requests per pillar
+- **Filters**: Channel (Voice, Web, Email, WhatsApp, Phone), Pillar, Status
+- **Search**: By customer name, email, or message content
+- **Request List**: Shows customer info, message preview, channel, pillar, status, linked ticket
+- **Detail Panel**:
+  - Customer info (name, email, phone, pet name)
+  - Full message content
+  - **AI Extracted Data**: Pet name, items, custom cake flag (when AI parses order)
+  - **Pillar Assignment Dropdown**: Reassign to any pillar
+  - **Status Buttons**: Pending, Processing, Completed, Cancelled
+  - **Linked Ticket**: Auto-created service desk ticket reference
+- **Auto-Ticket Creation**: Every intake automatically creates a service desk ticket with pillar assignment
+
+**Files**:
+- `/app/frontend/src/components/admin/UnifiedInbox.jsx` - Inbox dashboard component
 
 ---
 
