@@ -478,8 +478,9 @@ const PricingHub = ({ getAuthHeader }) => {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-5 w-full max-w-3xl">
+        <TabsList className="grid grid-cols-6 w-full max-w-4xl">
           <TabsTrigger value="products">Product Pricing</TabsTrigger>
+          <TabsTrigger value="bundles">Pillar Bundles</TabsTrigger>
           <TabsTrigger value="shipping">Shipping Rules</TabsTrigger>
           <TabsTrigger value="commissions">Pillar Commissions</TabsTrigger>
           <TabsTrigger value="partners">Partner Rates</TabsTrigger>
