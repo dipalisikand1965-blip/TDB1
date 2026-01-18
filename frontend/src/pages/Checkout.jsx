@@ -459,6 +459,7 @@ _GST applicable on final invoice_
   };
 
   // Calculate delivery fee based on fulfilment type
+  // Calculate delivery fee based on admin-configurable thresholds
   const calculateDeliveryFee = () => {
     const subtotal = getCartTotal();
     
@@ -467,13 +468,27 @@ _GST applicable on final invoice_
       return 0;
     }
     
-    // Free shipping threshold
-    if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+    // Use admin-configured shipping thresholds
+    const thresholds = appSettings.shipping_thresholds || [];
+    const freeThreshold = appSettings.free_shipping_threshold || DEFAULT_FREE_SHIPPING_THRESHOLD;
+    const defaultFee = appSettings.default_shipping_fee || DEFAULT_SHIPPING_FEE;
+    
+    // Check if above free shipping threshold
+    if (subtotal >= freeThreshold) {
       return 0;
     }
     
-    // Mixed cart or delivery - standard fee
-    return SHIPPING_FEE;
+    // Find applicable shipping fee from thresholds
+    const applicableThreshold = thresholds.find(
+      t => subtotal >= t.min_cart_value && subtotal < t.max_cart_value
+    );
+    
+    if (applicableThreshold) {
+      return applicableThreshold.shipping_fee;
+    }
+    
+    // Fallback to default fee
+    return defaultFee;
   };
 
   const handleSubmit = async (e) => {
