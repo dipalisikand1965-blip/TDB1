@@ -7208,6 +7208,9 @@ set_channel_db(db)
 # Set MIS reporting database
 set_mis_db(db)
 
+# Set Paw Rewards database
+set_rewards_db(db)
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
