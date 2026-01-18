@@ -1301,6 +1301,11 @@ const Admin = () => {
           <MISDashboard authHeaders={getAuthHeaders()} />
         )}
 
+        {/* Unified Inbox */}
+        {activeTab === 'inbox' && (
+          <UnifiedInbox credentials={{ username, password }} />
+        )}
+
         {/* Orders Tab */}
         {activeTab === 'orders' && (
           <OrdersTab 
