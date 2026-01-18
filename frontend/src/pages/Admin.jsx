@@ -20,6 +20,7 @@ import StayManager from '../components/StayManager';
 import DataMigration from '../components/DataMigration';
 import { DashboardTab, OrdersTab, MembersTab, ChatsTab, DineManager, ServiceDesk, ProductTagsManager } from '../components/admin';
 import NotificationBell from '../components/admin/NotificationBell';
+import UnifiedInbox from '../components/admin/UnifiedInbox';
 import { API_URL } from '../utils/api';
 import {
   Lock,
