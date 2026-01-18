@@ -1299,8 +1299,8 @@ const BookingRequestModal = ({ property, onClose }) => {
         </div>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto px-4" style={{ height: 'calc(75vh - 180px)' }}>
-          <div>
+        <div className="overflow-y-auto px-3 flex-1">
+          <div className="py-2">
             {step === 1 && (
             <div className="space-y-4">
               <h4 className="font-semibold mb-3">Your Details</h4>
