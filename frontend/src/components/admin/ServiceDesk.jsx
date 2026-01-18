@@ -1178,7 +1178,7 @@ const ServiceDesk = ({ authHeaders }) => {
               <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-800">
                   <Users className="w-4 h-4 inline mr-1" />
-                  Manage team availability and workload. Unavailable concierges won't receive new auto-assignments.
+                  Manage team availability and workload. Unavailable concierges will not receive new auto-assignments.
                 </p>
               </div>
 
