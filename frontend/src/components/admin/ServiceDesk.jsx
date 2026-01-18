@@ -1728,53 +1728,55 @@ const ServiceDesk = ({ authHeaders }) => {
           </div>
         </div>
 
-        {/* Ticket List */}
-        <div className="w-96 flex-shrink-0 border rounded-lg overflow-hidden flex flex-col">
+        {/* Ticket List - Premium Styling */}
+        <div className="w-96 flex-shrink-0 border rounded-xl overflow-hidden flex flex-col bg-white shadow-lg">
           {/* Header with Quick Filters */}
-          <div className="bg-gray-50 px-3 py-2 border-b">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">Tickets ({displayTickets.length})</span>
+          <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-4 py-3 border-b">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-semibold text-slate-700">Tickets ({displayTickets.length})</span>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="sm" onClick={exportTicketsCSV} title="Export to CSV">
+                <Button variant="ghost" size="sm" onClick={exportTicketsCSV} title="Export to CSV" className="hover:bg-white/50">
                   <Download className="w-4 h-4" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => { fetchTickets(); fetchStats(); }}>
+                <Button variant="ghost" size="sm" onClick={() => { fetchTickets(); fetchStats(); }} className="hover:bg-white/50">
                   <RefreshCw className="w-4 h-4" />
                 </Button>
               </div>
             </div>
             
-            {/* Quick Filter Tabs */}
-            <div className="flex gap-1 overflow-x-auto pb-1">
+            {/* Quick Filter Tabs - Premium Pills */}
+            <div className="flex gap-2 overflow-x-auto pb-1">
               {[
                 { id: 'all', label: 'All', count: tickets.length },
                 { id: 'unassigned', label: 'Unassigned', count: tickets.filter(t => !t.assigned_to).length },
                 { id: 'critical', label: '🔴 Critical', count: tickets.filter(t => t.urgency === 'critical' || t.urgency === 'high').length },
                 { id: 'today', label: 'Today', count: tickets.filter(t => t.created_at?.startsWith(new Date().toISOString().split('T')[0])).length },
               ].map(tab => (
-                <Button
+                <button
                   key={tab.id}
-                  variant={quickFilter === tab.id ? 'default' : 'ghost'}
-                  size="sm"
-                  className={`h-7 px-2 text-xs whitespace-nowrap ${quickFilter === tab.id ? 'bg-amber-500 hover:bg-amber-600' : ''}`}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-200 whitespace-nowrap ${
+                    quickFilter === tab.id 
+                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md shadow-amber-200' 
+                      : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+                  }`}
                   onClick={() => setQuickFilter(tab.id)}
                 >
-                  {tab.label} {tab.count > 0 && <span className="ml-1 opacity-70">({tab.count})</span>}
-                </Button>
+                  {tab.label} {tab.count > 0 && <span className="ml-1 opacity-80">({tab.count})</span>}
+                </button>
               ))}
             </div>
           </div>
 
           {/* Bulk Action Bar - Shows when tickets are selected */}
           {selectedTickets.size > 0 && (
-            <div className="bg-amber-50 border-b border-amber-200 px-3 py-2">
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-200 px-4 py-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Checkbox 
                     checked={selectedTickets.size === displayTickets.length && displayTickets.length > 0}
                     onCheckedChange={toggleSelectAll}
                   />
-                  <span className="text-sm font-medium text-amber-800">
+                  <span className="text-sm font-semibold text-amber-800">
                     {selectedTickets.size} selected
                   </span>
                   <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={clearSelection}>
