@@ -3,7 +3,84 @@
 ## Overview
 **The Doggy Company** is a comprehensive "Pet Life Operating System" - a multi-pillar platform offering pet products, dining experiences, stays, and services.
 
-## Core Architecture
+**Vision**: ONE ENGINE powering ALL pillars with common services.
+
+## ONE ENGINE Architecture ✅ (Updated Jan 18, 2026)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    👤 MEMBERSHIP LAYER                   │
+│  ┌──────────────┐    ┌──────────────────────────────┐  │
+│  │    GUEST     │    │          MEMBER              │  │
+│  │  • Browse    │ →  │  • All Guest features        │  │
+│  │  • Shop      │    │  • 🎁 Paw Rewards unlocked   │  │
+│  │  • Cart      │    │  • 🐾 Pet Soul access        │  │
+│  └──────────────┘    │  • 💎 Loyalty points         │  │
+│                      │  • 🎂 Birthday perks         │  │
+│                      │  • ⭐ Review & earn          │  │
+│                      └──────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│                   🐾 PET SOUL LAYER                      │
+│     (Profile, Personality, Celebrations, History)        │
+│        Captures data from ALL pillar interactions        │
+└─────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│                    ONE ENGINE                            │
+│  ┌─────────┬─────────┬─────────┬─────────┬──────────┐  │
+│  │CELEBRATE│  DINE   │  STAY   │  CARE   │ TRAVEL   │  │
+│  │  🎂     │  🍽️     │  🏨     │  💊     │  ✈️      │  │
+│  └─────────┴─────────┴─────────┴─────────┴──────────┘  │
+│                                                          │
+│  Common: Tickets, Notifications, Rewards, Reviews, Cart  │
+│  Unified Inbox, MIS Dashboard, Mira AI                   │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Common Services (Cross-Pillar)
+| Service | Status | Description |
+|---------|--------|-------------|
+| 📥 **Unified Inbox** | ✅ NEW | All channel intakes (Voice, Web, WhatsApp) |
+| 🎫 **Service Desk** | ✅ | Tickets, SLA, messaging |
+| 📢 **Notifications** | ✅ | Email (Resend), planned: WhatsApp |
+| 🎁 **Paw Rewards** | ✅ | Universal rewards across pillars |
+| ⭐ **Reviews** | ✅ | Pillar-tagged reviews |
+| 💎 **Loyalty** | ✅ | Points, tiers |
+| 🐾 **Pet Soul** | ✅ | Profiles, celebrations, history |
+| 🤖 **Mira AI** | ✅ | Concierge assistant |
+| 🛒 **Universal Cart** | ✅ | Products, services, reservations |
+| 📊 **MIS Dashboard** | ✅ | Real-time analytics |
+
+### Pillars
+| Pillar | Status | Description |
+|--------|--------|-------------|
+| 🎂 **CELEBRATE** | ✅ ACTIVE | Cakes, Treats, Gifts |
+| 🍽️ **DINE** | ✅ ACTIVE | Restaurants, Reservations, Meetups |
+| 🏨 **STAY** | ✅ ACTIVE | Hotels, Resorts, Pawcations |
+| ✈️ **TRAVEL** | 🔮 FUTURE | Transport, Relocation |
+| 💊 **CARE** | 🔮 FUTURE | Vets, Groomers, Training |
+| 🏃 **FIT** | 🔮 FUTURE | Activities, Fitness |
+| 💼 **WORK** | 🔮 FUTURE | Pet at Work services |
+| 🎉 **ENJOY** | 🔮 FUTURE | Events, Entertainment |
+| 📋 **ADVISORY** | 🔮 FUTURE | Pet parenting guidance |
+
+### Pet Soul - 8 Core Folders (Inspired by Human Concierge Soul)
+| Folder | Dog Equivalent |
+|--------|----------------|
+| Identity & Essence | Breed, personality, quirks, temperament |
+| Family & Inner Circle | Owner, household, dog friends, walker |
+| Rhythm & Lifestyle | Daily routine, energy, sleep patterns |
+| Home Comforts | Favorite spots, toys, comfort items |
+| Travel Philosophy | Car behavior, carrier, travel anxiety |
+| Taste & Indulgence | Food preferences, treats, allergies |
+| Health & Care Map | Vet history, medications, grooming |
+| Dreams & Long Horizon | Goals, bucket list experiences |
+
+## Core Technical Architecture
 - **Frontend**: React with Tailwind CSS, Shadcn UI components
 - **Backend**: FastAPI (Python)
 - **Database**: MongoDB
