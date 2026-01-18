@@ -66,22 +66,22 @@ const SOURCE_CONFIG = {
   auto: { label: 'Auto', color: 'bg-slate-100 text-slate-700', icon: '⚡' }
 };
 
-// Status colors
+// Premium Status colors with gradients
 const STATUS_COLORS = {
-  new: 'bg-blue-100 text-blue-800',
-  in_progress: 'bg-yellow-100 text-yellow-800',
-  waiting_on_member: 'bg-orange-100 text-orange-800',
-  escalated: 'bg-red-100 text-red-800',
-  resolved: 'bg-green-100 text-green-800',
-  closed: 'bg-gray-100 text-gray-800'
+  new: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-blue-200',
+  in_progress: 'bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-amber-200',
+  waiting_on_member: 'bg-gradient-to-r from-orange-400 to-orange-500 text-white shadow-orange-200',
+  escalated: 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-red-200',
+  resolved: 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-emerald-200',
+  closed: 'bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-gray-200'
 };
 
-// Urgency colors
+// Urgency colors - premium style
 const URGENCY_COLORS = {
-  low: 'bg-gray-100 text-gray-600',
-  medium: 'bg-blue-100 text-blue-600',
-  high: 'bg-orange-100 text-orange-600',
-  critical: 'bg-red-100 text-red-600'
+  low: 'bg-slate-100 text-slate-600 border border-slate-200',
+  medium: 'bg-sky-50 text-sky-700 border border-sky-200',
+  high: 'bg-amber-50 text-amber-700 border border-amber-300 font-medium',
+  critical: 'bg-red-50 text-red-700 border border-red-300 font-semibold animate-pulse'
 };
 
 // Default statuses (fallback)
