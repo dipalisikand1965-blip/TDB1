@@ -2026,7 +2026,7 @@ const ServiceDesk = ({ authHeaders }) => {
                         <Button 
                           size="sm" 
                           className="bg-purple-600 hover:bg-purple-700 text-white"
-                          onClick={() => useAiDraft(aiDraft.draft)}
+                          onClick={() => applyAiDraft(aiDraft.draft)}
                         >
                           <Copy className="w-3 h-3 mr-1" /> Use This Draft
                         </Button>
@@ -2034,7 +2034,7 @@ const ServiceDesk = ({ authHeaders }) => {
                           <Button 
                             size="sm" 
                             variant="outline"
-                            onClick={() => useAiDraft(aiDraft.quick_draft)}
+                            onClick={() => applyAiDraft(aiDraft.quick_draft)}
                           >
                             Use Quick Version
                           </Button>
