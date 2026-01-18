@@ -2945,7 +2945,7 @@ async def bulk_import_products(products: List[dict], username: str = Depends(ver
 
 @admin_router.get("/settings")
 async def get_app_settings(username: str = Depends(verify_admin)):
-    """Get global application settings including pickup cities"""
+    """Get global application settings including pickup cities and shipping thresholds"""
     settings = await db.app_settings.find_one({"id": "global_settings"}, {"_id": 0})
     if not settings:
         # Return default settings
@@ -2954,12 +2954,18 @@ async def get_app_settings(username: str = Depends(verify_admin)):
             "pickup_cities": ["Mumbai", "Gurugram", "Bangalore"],
             "pan_india_shipping": True,
             "default_fulfilment_type": "shipping",
-            "bakery_pickup_only_categories": ["cakes", "fresh_treats"],
+            "bakery_pickup_only_categories": ["cakes", "fresh_treats", "celebration"],
             "store_locations": [
                 {"id": "mumbai", "city": "Mumbai", "address": "Shop 9, off Yari Road, Jeet Nagar, Versova, Andheri West, Mumbai 400061"},
                 {"id": "gurugram", "city": "Gurugram", "address": "Ground Floor, Wazirabad Rd, Wazirabad, Sector 52, Gurugram 122003"},
                 {"id": "bangalore", "city": "Bangalore", "address": "147, 8th Main Rd, 3rd Block, Koramangala, Bengaluru 560034"}
             ],
+            "shipping_thresholds": [
+                {"min_cart_value": 0, "max_cart_value": 3000, "shipping_fee": 150},
+                {"min_cart_value": 3000, "max_cart_value": 999999, "shipping_fee": 0}
+            ],
+            "free_shipping_threshold": 3000,
+            "default_shipping_fee": 150,
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
         await db.app_settings.insert_one(default_settings)
