@@ -2103,76 +2103,106 @@ const ServiceDesk = ({ authHeaders }) => {
                 <Card className="p-3">
                   <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
                     <History className="w-4 h-4" /> Activity Timeline
+                    {loadingAudit && <Loader2 className="w-3 h-3 animate-spin ml-auto" />}
                   </h4>
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {/* Created */}
-                    <div className="flex items-start gap-2 text-xs">
-                      <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0" />
-                      <div>
-                        <span className="font-medium">Ticket created</span>
-                        <span className="text-gray-500 ml-2">
-                          {selectedTicket.source && SOURCE_CONFIG[selectedTicket.source] 
-                            ? `via ${SOURCE_CONFIG[selectedTicket.source].label}` 
-                            : ''}
-                        </span>
-                        <div className="text-gray-400">{new Date(selectedTicket.created_at).toLocaleString()}</div>
-                      </div>
-                    </div>
-                    
-                    {/* First Response */}
-                    {selectedTicket.first_response_at && (
-                      <div className="flex items-start gap-2 text-xs">
-                        <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
-                        <div>
-                          <span className="font-medium">First response</span>
-                          <div className="text-gray-400">{new Date(selectedTicket.first_response_at).toLocaleString()}</div>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {/* Audit Trail from API */}
+                    {auditTrail.length > 0 ? (
+                      auditTrail.slice(0, 15).map((entry, idx) => (
+                        <div key={entry.id || idx} className="flex items-start gap-2 text-xs">
+                          <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
+                            entry.type === 'status_change' ? 'bg-blue-500' :
+                            entry.type === 'assignment' ? 'bg-purple-500' :
+                            entry.type === 'message' ? 'bg-green-500' :
+                            entry.type === 'sla_breach' ? 'bg-red-500' :
+                            entry.type === 'created' ? 'bg-emerald-500' :
+                            'bg-gray-400'
+                          }`} />
+                          <div className="flex-1">
+                            <span className="font-medium">
+                              {entry.type === 'status_change' ? `Status → ${entry.new_value || entry.action}` :
+                               entry.type === 'assignment' ? `Assigned to ${entry.new_value || entry.user}` :
+                               entry.type === 'message' ? `${entry.sender === 'member' ? 'Customer' : 'Agent'} replied` :
+                               entry.type === 'sla_breach' ? '⚠️ SLA Breached' :
+                               entry.type === 'created' ? 'Ticket created' :
+                               entry.action || entry.type}
+                            </span>
+                            {entry.user && entry.type !== 'assignment' && (
+                              <span className="text-gray-500 ml-1">by {entry.user}</span>
+                            )}
+                            <div className="text-gray-400">
+                              {entry.timestamp ? new Date(entry.timestamp).toLocaleString() : ''}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    
-                    {/* Assigned */}
-                    {selectedTicket.assigned_to && (
-                      <div className="flex items-start gap-2 text-xs">
-                        <div className="w-2 h-2 rounded-full bg-purple-500 mt-1.5 flex-shrink-0" />
-                        <div>
-                          <span className="font-medium">Assigned to {selectedTicket.assigned_to}</span>
+                      ))
+                    ) : (
+                      <>
+                        {/* Fallback: Show basic timeline from ticket data */}
+                        <div className="flex items-start gap-2 text-xs">
+                          <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0" />
+                          <div>
+                            <span className="font-medium">Ticket created</span>
+                            <span className="text-gray-500 ml-2">
+                              {selectedTicket.source && SOURCE_CONFIG[selectedTicket.source] 
+                                ? `via ${SOURCE_CONFIG[selectedTicket.source].label}` 
+                                : ''}
+                            </span>
+                            <div className="text-gray-400">{new Date(selectedTicket.created_at).toLocaleString()}</div>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    
-                    {/* SLA Due */}
-                    {selectedTicket.sla_due_at && (
-                      <div className="flex items-start gap-2 text-xs">
-                        <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${new Date(selectedTicket.sla_due_at) < new Date() ? 'bg-red-500' : 'bg-amber-500'}`} />
-                        <div>
-                          <span className="font-medium">
-                            {new Date(selectedTicket.sla_due_at) < new Date() ? '⚠️ SLA Breached' : 'SLA Due'}
-                          </span>
-                          <div className="text-gray-400">{new Date(selectedTicket.sla_due_at).toLocaleString()}</div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Resolved */}
-                    {selectedTicket.resolved_at && (
-                      <div className="flex items-start gap-2 text-xs">
-                        <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0" />
-                        <div>
-                          <span className="font-medium">Resolved</span>
-                          <div className="text-gray-400">{new Date(selectedTicket.resolved_at).toLocaleString()}</div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Closed */}
-                    {selectedTicket.closed_at && (
-                      <div className="flex items-start gap-2 text-xs">
-                        <div className="w-2 h-2 rounded-full bg-gray-500 mt-1.5 flex-shrink-0" />
-                        <div>
-                          <span className="font-medium">Closed</span>
-                          <div className="text-gray-400">{new Date(selectedTicket.closed_at).toLocaleString()}</div>
-                        </div>
-                      </div>
+                        
+                        {selectedTicket.first_response_at && (
+                          <div className="flex items-start gap-2 text-xs">
+                            <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
+                            <div>
+                              <span className="font-medium">First response</span>
+                              <div className="text-gray-400">{new Date(selectedTicket.first_response_at).toLocaleString()}</div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {selectedTicket.assigned_to && (
+                          <div className="flex items-start gap-2 text-xs">
+                            <div className="w-2 h-2 rounded-full bg-purple-500 mt-1.5 flex-shrink-0" />
+                            <div>
+                              <span className="font-medium">Assigned to {selectedTicket.assigned_to}</span>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {selectedTicket.sla_due_at && (
+                          <div className="flex items-start gap-2 text-xs">
+                            <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${new Date(selectedTicket.sla_due_at) < new Date() ? 'bg-red-500' : 'bg-amber-500'}`} />
+                            <div>
+                              <span className="font-medium">
+                                {new Date(selectedTicket.sla_due_at) < new Date() ? '⚠️ SLA Breached' : 'SLA Due'}
+                              </span>
+                              <div className="text-gray-400">{new Date(selectedTicket.sla_due_at).toLocaleString()}</div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {selectedTicket.resolved_at && (
+                          <div className="flex items-start gap-2 text-xs">
+                            <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0" />
+                            <div>
+                              <span className="font-medium">Resolved</span>
+                              <div className="text-gray-400">{new Date(selectedTicket.resolved_at).toLocaleString()}</div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {selectedTicket.closed_at && (
+                          <div className="flex items-start gap-2 text-xs">
+                            <div className="w-2 h-2 rounded-full bg-gray-500 mt-1.5 flex-shrink-0" />
+                            <div>
+                              <span className="font-medium">Closed</span>
+                              <div className="text-gray-400">{new Date(selectedTicket.closed_at).toLocaleString()}</div>
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </Card>
