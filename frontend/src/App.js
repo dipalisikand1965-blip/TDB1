@@ -153,6 +153,7 @@ function MainLayout() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/forgot-password" element={<ForgotPassword />} />
         <Route path="/admin/reset-password" element={<ResetPassword />} />
+        <Route path="/voice-order" element={<VoiceOrder />} />
         
         {/* Pet Profile */}
         <Route path="/pet-profile" element={<PetProfile />} />
