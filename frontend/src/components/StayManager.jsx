@@ -42,6 +42,8 @@ const StayManager = ({ getAuthHeader }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [productStats, setProductStats] = useState({ bundles: 0, socials: 0, orders: 0 });
+  const [importingBundles, setImportingBundles] = useState(false);
+  const bundleCsvRef = useRef(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
