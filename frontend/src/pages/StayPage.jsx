@@ -1550,8 +1550,8 @@ const BookingRequestModal = ({ property, onClose }) => {
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="p-3 border-t bg-white flex gap-3 flex-shrink-0">
+        {/* Footer - Extra padding for Emergent badge */}
+        <div className="p-3 pb-16 border-t bg-white flex gap-3 flex-shrink-0">
           {step > 1 && (
             <Button variant="outline" onClick={() => setStep(step - 1)} className="text-sm h-9">
               Back
