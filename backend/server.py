@@ -110,6 +110,7 @@ from stay_social_routes import (
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 
 
 ROOT_DIR = Path(__file__).parent
