@@ -342,17 +342,37 @@ const ServiceDesk = ({ authHeaders }) => {
     loadData();
   }, [fetchMetadata, fetchStats, fetchTickets, fetchCannedResponses]);
 
-  // Fetch customer history when ticket is selected
+  // Fetch audit trail for selected ticket
+  const fetchAuditTrail = useCallback(async (ticketId) => {
+    setLoadingAudit(true);
+    try {
+      const response = await fetch(`${API_URL}/api/tickets/${ticketId}/audit`, {
+        headers: authHeaders
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAuditTrail(data.timeline || []);
+      }
+    } catch (err) {
+      console.error('Error fetching audit trail:', err);
+    }
+    setLoadingAudit(false);
+  }, [authHeaders]);
+
+  // Fetch customer history and audit trail when ticket is selected
   useEffect(() => {
     if (selectedTicket) {
       const identifier = selectedTicket.member?.email || selectedTicket.member?.phone || selectedTicket.customer_email;
       if (identifier) {
         fetchCustomerHistory(identifier);
       }
+      // Fetch audit trail
+      fetchAuditTrail(selectedTicket.ticket_id);
     } else {
       setCustomerHistory(null);
+      setAuditTrail([]);
     }
-  }, [selectedTicket, fetchCustomerHistory]);
+  }, [selectedTicket, fetchCustomerHistory, fetchAuditTrail]);
 
   // Handlers
   const handleReply = async () => {
