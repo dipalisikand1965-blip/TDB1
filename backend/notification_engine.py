@@ -374,7 +374,7 @@ def generate_email_content(event: NotificationEvent, event_config: Dict) -> tupl
     customer_message = event_config.get("customer_message", "")
     
     # Dynamic subject
-    subject = f"🐕 {customer_message[:50]}" if customer_message else f"Update from The Doggy Company"
+    subject = f"🐕 {customer_message[:50]}" if customer_message else "Update from The Doggy Company"
     
     # Get event-specific data
     data = event.data
@@ -529,7 +529,7 @@ def generate_admin_email_content(event: NotificationEvent, event_config: Dict) -
                 html += f"<tr><th>{key.replace('_', ' ').title()}</th><td>{value}</td></tr>"
         html += "</table>"
     
-    html += f"""
+    html += """
                 <div class="action">
                     <a href="#" class="btn">View in Admin Panel</a>
                 </div>
