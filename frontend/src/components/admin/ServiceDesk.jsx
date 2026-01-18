@@ -218,6 +218,72 @@ const ServiceDesk = ({ authHeaders }) => {
   // Quick Filters
   const [quickFilter, setQuickFilter] = useState('all'); // all, my_tickets, unassigned, overdue, today
 
+  // Fetch Roles and Team Users
+  const fetchRolesAndUsers = async () => {
+    setLoadingRolesUsers(true);
+    try {
+      const [rolesRes, usersRes] = await Promise.all([
+        fetch(`${API_URL}/api/roles`, { headers: authHeaders }),
+        fetch(`${API_URL}/api/roles/users/all`, { headers: authHeaders })
+      ]);
+      
+      if (rolesRes.ok) {
+        const data = await rolesRes.json();
+        setRoles(data.roles || []);
+      }
+      if (usersRes.ok) {
+        const data = await usersRes.json();
+        setTeamUsers(data.users || []);
+      }
+    } catch (err) {
+      console.error('Error fetching roles/users:', err);
+    }
+    setLoadingRolesUsers(false);
+  };
+
+  // Create new team member/agent
+  const handleCreateAgent = async (agentData) => {
+    try {
+      const res = await fetch(`${API_URL}/api/roles/users/create`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify(agentData)
+      });
+      if (res.ok) {
+        alert('Agent created successfully');
+        fetchRolesAndUsers();
+        return true;
+      } else {
+        const err = await res.json();
+        alert(`Error: ${err.detail}`);
+        return false;
+      }
+    } catch (err) {
+      console.error('Error creating agent:', err);
+      alert('Failed to create agent');
+      return false;
+    }
+  };
+
+  // Assign role to user
+  const handleAssignRole = async (userId, roleId) => {
+    try {
+      const res = await fetch(`${API_URL}/api/roles/users/assign`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, role_id: roleId })
+      });
+      if (res.ok) {
+        fetchRolesAndUsers();
+      } else {
+        const err = await res.json();
+        alert(`Error: ${err.detail}`);
+      }
+    } catch (err) {
+      console.error('Error assigning role:', err);
+    }
+  };
+
   // Individual Ticket Actions
   const handleMarkSpam = async (ticketId) => {
     if (!confirm('Mark this ticket as spam?')) return;
