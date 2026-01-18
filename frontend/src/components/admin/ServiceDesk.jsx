@@ -147,6 +147,14 @@ const ServiceDesk = ({ authHeaders }) => {
   const [sendingReply, setSendingReply] = useState(false);
   const [sendChannel, setSendChannel] = useState('internal'); // internal, email, whatsapp
   
+  // AI Assistant
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiDraft, setAiDraft] = useState(null);
+  const [aiTone, setAiTone] = useState('professional');
+  const [showAiPanel, setShowAiPanel] = useState(false);
+  const [aiSummary, setAiSummary] = useState(null);
+  const [aiActions, setAiActions] = useState([]);
+  
   // SLA & Auto-assignment
   const [slaStats, setSlaStats] = useState(null);
   const [showSLAModal, setShowSLAModal] = useState(false);
