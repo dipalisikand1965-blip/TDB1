@@ -190,6 +190,8 @@ const Admin = () => {
   // Abandoned Carts
   const [abandonedCarts, setAbandonedCarts] = useState([]);
   const [abandonedStats, setAbandonedStats] = useState({});
+  const [selectedAbandonedCarts, setSelectedAbandonedCarts] = useState([]);
+  const [sendingReminder, setSendingReminder] = useState(null);
 
   // Franchise Inquiries
   const [franchiseInquiries, setFranchiseInquiries] = useState([]);
