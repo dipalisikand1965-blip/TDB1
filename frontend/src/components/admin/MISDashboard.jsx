@@ -52,11 +52,13 @@ export default function MISDashboard({ authHeaders }) {
   };
 
   useEffect(() => {
-    fetchData();
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
-  }, []);
+    if (authHeaders?.Authorization) {
+      fetchData();
+      // Auto-refresh every 30 seconds
+      const interval = setInterval(fetchData, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [authHeaders]);
 
   const channelIcons = {
     web: Globe,
