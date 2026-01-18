@@ -26,8 +26,9 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
     
     now = datetime.now(timezone.utc).isoformat()
     
-    # For cake orders: Ticket ID = Order ID (critical requirement)
+    # Generate ticket ID based on event type
     if event_type == "cake_order" and event_data.get("order_id"):
+        # For cake orders: Ticket ID = Order ID (critical requirement)
         ticket_id = event_data.get("order_id")
         # Check if ticket already exists with this ID
         existing = await db.tickets.find_one({"ticket_id": ticket_id})
@@ -35,6 +36,7 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
             # Update existing ticket instead of creating new
             return ticket_id
     elif event_type == "dine_bundle_order" and event_data.get("order_id"):
+        # For dine bundle orders: Ticket ID = Order ID
         ticket_id = event_data.get("order_id")
         existing = await db.tickets.find_one({"ticket_id": ticket_id})
         if existing:
