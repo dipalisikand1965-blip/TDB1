@@ -51,12 +51,18 @@ const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   
-  // App Settings State
+  // App Settings State (includes admin-editable shipping thresholds)
   const [appSettings, setAppSettings] = useState({
     pickup_cities: DEFAULT_PICKUP_CITIES,
     store_locations: DEFAULT_STORE_LOCATIONS,
     bakery_pickup_only_categories: DEFAULT_BAKERY_CATEGORIES,
-    pan_india_shipping: true
+    pan_india_shipping: true,
+    shipping_thresholds: [
+      { min_cart_value: 0, max_cart_value: 3000, shipping_fee: 150 },
+      { min_cart_value: 3000, max_cart_value: 999999, shipping_fee: 0 }
+    ],
+    free_shipping_threshold: DEFAULT_FREE_SHIPPING_THRESHOLD,
+    default_shipping_fee: DEFAULT_SHIPPING_FEE
   });
   const [isLoadingSettings, setIsLoadingSettings] = useState(true);
   
