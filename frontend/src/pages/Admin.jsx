@@ -521,7 +521,35 @@ const Admin = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setTestimonials(data.testimonials || []);
+        const testimonialList = data.testimonials || [];
+        setTestimonials(testimonialList);
+        
+        // Auto-seed from mockData if empty
+        if (testimonialList.length === 0 && mockTestimonials && mockTestimonials.length > 0) {
+          console.log('Seeding testimonials from mockData...');
+          for (const testimonial of mockTestimonials.slice(0, 6)) {
+            await fetch(`${API_URL}/api/admin/testimonials`, {
+              method: 'POST',
+              headers: getAuthHeaders(),
+              body: JSON.stringify({
+                name: testimonial.name,
+                pet_name: testimonial.petName || testimonial.pet_name,
+                location: testimonial.location || 'India',
+                text: testimonial.text,
+                rating: testimonial.rating || 5,
+                avatar: testimonial.avatar,
+                is_featured: true,
+                is_approved: true
+              })
+            });
+          }
+          // Refresh to show seeded data
+          const refreshed = await fetch(`${API_URL}/api/admin/testimonials`, { headers: getAuthHeaders() });
+          if (refreshed.ok) {
+            const refreshedData = await refreshed.json();
+            setTestimonials(refreshedData.testimonials || []);
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to fetch testimonials:', error);
