@@ -642,8 +642,12 @@ const ServiceDesk = ({ authHeaders }) => {
   };
 
   const applyAiDraft = (draft) => {
+    // Set the reply text with the AI draft
     setReplyText(draft);
+    // Close the AI panel
     setShowAiPanel(false);
+    // Clear the draft to allow generating new one
+    setAiDraft(null);
   };
 
   const getAiSummary = async () => {
