@@ -3936,12 +3936,70 @@ async def get_my_orders(current_user: dict = Depends(get_current_user)):
 
 @api_router.post("/orders")
 async def create_order(order: dict):
-    """Create a new order"""
+    """Create a new order with reference images and auto-create service desk ticket"""
     order["id"] = str(uuid.uuid4())
     order["created_at"] = datetime.now(timezone.utc).isoformat()
     order["updated_at"] = datetime.now(timezone.utc).isoformat()
     
+    # Extract reference images from items (for cakes)
+    reference_images = []
+    has_cake_items = False
+    for item in order.get("items", []):
+        category = (item.get("category") or "").lower()
+        name = (item.get("name") or "").lower()
+        
+        # Check if it's a cake/bakery item
+        if "cake" in name or "cake" in category or category in ["celebration", "cakes", "custom"]:
+            has_cake_items = True
+        
+        # Extract reference images
+        custom_details = item.get("customDetails", {})
+        if custom_details.get("referenceImage"):
+            reference_images.append({
+                "url": custom_details["referenceImage"],
+                "item_name": item.get("name", "Cake"),
+                "pet_name": custom_details.get("petName"),
+                "uploaded_at": order["created_at"]
+            })
+        if item.get("reference_image"):
+            reference_images.append({
+                "url": item["reference_image"],
+                "item_name": item.get("name", "Cake"),
+                "uploaded_at": order["created_at"]
+            })
+    
+    # Store reference images in order
+    if reference_images:
+        order["reference_images"] = reference_images
+    
     await db.orders.insert_one(order)
+    
+    # Create service desk ticket for cake orders (Ticket ID = Order ID)
+    if has_cake_items:
+        try:
+            from ticket_auto_create import create_ticket_from_event
+            await create_ticket_from_event(
+                db=db,
+                event_type="cake_order",
+                event_data={
+                    "order_id": order.get("orderId"),
+                    "customer_name": order.get("customer", {}).get("parentName"),
+                    "customer_email": order.get("customer", {}).get("email"),
+                    "customer_phone": order.get("customer", {}).get("phone") or order.get("customer", {}).get("whatsappNumber"),
+                    "city": order.get("delivery", {}).get("city"),
+                    "items": order.get("items", []),
+                    "total": order.get("total"),
+                    "delivery_method": order.get("delivery", {}).get("method", "delivery"),
+                    "delivery_address": order.get("delivery", {}).get("address"),
+                    "pickup_location": order.get("delivery", {}).get("pickupLocation"),
+                    "delivery_date": order.get("delivery", {}).get("date"),
+                    "special_instructions": order.get("specialInstructions"),
+                    "reference_images": reference_images
+                }
+            )
+            logger.info(f"Created service desk ticket for order {order.get('orderId')}")
+        except Exception as e:
+            logger.error(f"Failed to create service desk ticket: {e}")
     
     # Send notification
     try:
@@ -3965,8 +4023,8 @@ Special Instructions: {order.get('specialInstructions', 'None')}"""
         # Create admin notification
         await create_admin_notification(
             notification_type="order",
-            title=f"🛒 New Order #{order.get('orderId', '')[:8]}",
-            message=f"{order.get('customer', {}).get('parentName', 'Customer')} ordered {len(order.get('items', []))} item(s) - ₹{order.get('total', 0)}",
+            title=f"🛒 New Order #{order.get('orderId', '')[:8]}" + (" 📷" if reference_images else ""),
+            message=f"{order.get('customer', {}).get('parentName', 'Customer')} ordered {len(order.get('items', []))} item(s) - ₹{order.get('total', 0)}" + (f" ({len(reference_images)} ref images)" if reference_images else ""),
             category="celebrate",
             related_id=order["id"],
             link_to="/admin?tab=orders",
@@ -3975,13 +4033,14 @@ Special Instructions: {order.get('specialInstructions', 'None')}"""
                 "order_id": order.get('orderId'),
                 "customer_name": order.get('customer', {}).get('parentName'),
                 "total": order.get('total'),
-                "items_count": len(order.get('items', []))
+                "items_count": len(order.get('items', [])),
+                "has_reference_images": len(reference_images) > 0
             }
         )
     except Exception as e:
         logger.error(f"Order notification failed: {e}")
     
-    return {"message": "Order created", "orderId": order.get("orderId"), "id": order["id"]}
+    return {"message": "Order created", "orderId": order.get("orderId"), "id": order["id"], "ticket_id": order.get("orderId") if has_cake_items else None}
 
 
 @api_router.get("/orders/{order_id}")
