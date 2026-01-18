@@ -7406,6 +7406,7 @@ set_mis_db(db)
 
 # Set Paw Rewards database
 set_rewards_db(db)
+set_pet_soul_db(db)
 
 # Include routers
 app.include_router(api_router)
@@ -7444,6 +7445,8 @@ app.include_router(notification_router)
 app.include_router(channel_router)
 app.include_router(mis_router)
 app.include_router(rewards_router)
+app.include_router(pet_soul_router, prefix="/api")
+app.include_router(pet_soul_admin_router, prefix="/api/admin")
 
 @app.on_event("startup")
 async def startup_load_admin_credentials():
