@@ -299,6 +299,20 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
         })
     
     elif event_type == "custom_cake":
+        # Handle reference images for custom cake
+        reference_images = []
+        ref_image = event_data.get('reference_image')
+        if ref_image:
+            reference_images.append({
+                "url": ref_image,
+                "item_name": "Custom Cake Design",
+                "uploaded_at": now
+            })
+        
+        ref_image_text = ""
+        if ref_image:
+            ref_image_text = f"\n\n**📷 REFERENCE IMAGE (IMPORTANT):**\n{ref_image}\n\n⚠️ KITCHEN MUST REFER TO THIS IMAGE FOR DESIGN"
+        
         ticket_doc.update({
             "category": "celebrate",
             "sub_category": "custom_cake",
@@ -312,7 +326,9 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
             },
             "description": f"""🎨 CUSTOM CAKE REQUEST
 
+**Request ID:** {event_data.get('request_id', 'Unknown')}
 **Customer:** {event_data.get('name')}
+**Phone:** {event_data.get('phone', 'Not provided')}
 **Pet's Name:** {event_data.get('pet_name', 'Not specified')}
 
 **Cake Details:**
@@ -325,16 +341,27 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
 **Budget:** ₹{event_data.get('budget', 'Not specified')}
 
 **Special Requests:** {event_data.get('special_requests') or 'None'}
-
-**Reference Image:** {event_data.get('reference_image') or 'Not provided'}
+{ref_image_text}
 
 ---
-*Auto-created from custom cake request*""",
+*Custom cake - Quote required*""",
             "source": "custom_cake",
             "source_reference": event_data.get("request_id"),
             "linked_event_id": event_data.get("request_id"),
+            "reference_images": reference_images,
             "tags": ["auto-created", "celebrate", "custom-cake", "requires-quote"]
         })
+        
+        # Add attachment if image provided
+        if ref_image:
+            ticket_doc["attachments"].append({
+                "id": str(uuid.uuid4()),
+                "type": "image",
+                "url": ref_image,
+                "filename": "reference_image.jpg",
+                "uploaded_at": now,
+                "uploaded_by": "customer"
+            })
         
         ticket_doc["messages"].append({
             "id": str(uuid.uuid4()),
