@@ -1696,14 +1696,41 @@ const Admin = () => {
         {activeTab === 'insights' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-900">Insights & Blog ({blogPosts.length})</h3>
-              <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => {
-                setEditingPost({ id: `new-${Date.now()}`, title: '', excerpt: '', content: '', category: 'Tips', status: 'draft', is_featured: false });
-                setShowPostModal(true);
-              }}>
-                <Plus className="w-4 h-4 mr-2" />New Post
-              </Button>
+              <h3 className="text-xl font-bold text-gray-900">📝 Insights & Blog ({blogPosts.length})</h3>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => {
+                  setEditingCategory({ id: `new-${Date.now()}`, name: '', description: '', order: blogCategories.length + 1 });
+                  setShowCategoryModal(true);
+                }}>
+                  <Layers className="w-4 h-4 mr-2" />Manage Categories
+                </Button>
+                <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => {
+                  setEditingPost({ id: `new-${Date.now()}`, title: '', excerpt: '', content: '', category: blogCategories[0]?.name || 'Tips', status: 'draft', is_featured: false });
+                  setShowPostModal(true);
+                }}>
+                  <Plus className="w-4 h-4 mr-2" />New Post
+                </Button>
+              </div>
             </div>
+            
+            {/* Categories Overview */}
+            {blogCategories.length > 0 && (
+              <div className="flex gap-2 flex-wrap">
+                {blogCategories.map(cat => (
+                  <Badge 
+                    key={cat.id} 
+                    variant="outline" 
+                    className="cursor-pointer hover:bg-purple-50"
+                    onClick={() => {
+                      setEditingCategory(cat);
+                      setShowCategoryModal(true);
+                    }}
+                  >
+                    {cat.name} ({blogPosts.filter(p => p.category === cat.name).length})
+                  </Badge>
+                ))}
+              </div>
+            )}
             
             <Card className="p-6">
               <div className="grid md:grid-cols-2 gap-6">
@@ -1721,7 +1748,7 @@ const Admin = () => {
                     {post.excerpt && <p className="text-sm text-gray-600 mb-2 line-clamp-2">{post.excerpt}</p>}
                     <div className="flex items-center gap-4 text-sm text-gray-500">
                       <span className="flex items-center gap-1"><Eye className="w-4 h-4" />{post.views || 0} views</span>
-                      <span>{post.category}</span>
+                      <Badge variant="outline" className="text-xs">{post.category}</Badge>
                     </div>
                     <div className="flex gap-2 mt-4">
                       <Button variant="outline" size="sm" onClick={() => { setEditingPost(post); setShowPostModal(true); }}>
@@ -1750,11 +1777,19 @@ const Admin = () => {
                       <div>
                         <label className="text-sm font-medium">Category</label>
                         <select className="w-full border rounded-md p-2" value={editingPost.category || 'Tips'} onChange={(e) => setEditingPost({...editingPost, category: e.target.value})}>
-                          <option value="Tips">Tips</option>
-                          <option value="News">News</option>
-                          <option value="Recipes">Recipes</option>
-                          <option value="Stories">Stories</option>
-                          <option value="Health">Health</option>
+                          {blogCategories.length > 0 ? (
+                            blogCategories.map(cat => (
+                              <option key={cat.id} value={cat.name}>{cat.name}</option>
+                            ))
+                          ) : (
+                            <>
+                              <option value="Tips">Tips</option>
+                              <option value="News">News</option>
+                              <option value="Recipes">Recipes</option>
+                              <option value="Stories">Stories</option>
+                              <option value="Health">Health</option>
+                            </>
+                          )}
                         </select>
                       </div>
                       <div>
