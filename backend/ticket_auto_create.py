@@ -25,16 +25,20 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
     """
     
     now = datetime.now(timezone.utc).isoformat()
+    ticket_id = None  # Initialize to ensure it's defined
     
     # Generate ticket ID based on event type
     if event_type == "cake_order" and event_data.get("order_id"):
         # For cake orders: Ticket ID = Order ID (critical requirement)
         ticket_id = event_data.get("order_id")
+        print(f"[TICKET DEBUG] Cake order - setting ticket_id to: {ticket_id}")
         # Check if ticket already exists with this ID
         existing = await db.tickets.find_one({"ticket_id": ticket_id})
         if existing:
+            print(f"[TICKET DEBUG] Existing ticket found, returning: {ticket_id}")
             # Update existing ticket instead of creating new
             return ticket_id
+        print(f"[TICKET DEBUG] No existing ticket, will create new with ID: {ticket_id}")
     elif event_type == "dine_bundle_order" and event_data.get("order_id"):
         # For dine bundle orders: Ticket ID = Order ID
         ticket_id = event_data.get("order_id")
@@ -46,6 +50,8 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
         today = datetime.now(timezone.utc).strftime("%Y%m%d")
         count = await db.tickets.count_documents({"ticket_id": {"$regex": f"^TKT-{today}"}})
         ticket_id = f"TKT-{today}-{str(count + 1).zfill(3)}"
+    
+    print(f"[TICKET DEBUG] Creating ticket with ID: {ticket_id} for event_type: {event_type}")
     
     # Default ticket structure
     ticket_doc = {
