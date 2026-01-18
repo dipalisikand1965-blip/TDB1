@@ -17,8 +17,10 @@ import { API_URL } from '../utils/api';
 
 const WHATSAPP_NUMBER = process.env.REACT_APP_WHATSAPP_NUMBER || '919663185747';
 const BUSINESS_EMAIL = process.env.REACT_APP_BUSINESS_EMAIL || 'woof@thedoggybakery.in';
-const FREE_SHIPPING_THRESHOLD = 3000;
-const SHIPPING_FEE = 150;
+
+// Default values (will be overridden by API settings)
+const DEFAULT_FREE_SHIPPING_THRESHOLD = 3000;
+const DEFAULT_SHIPPING_FEE = 150;
 
 // Default store locations (will be fetched from API)
 const DEFAULT_STORE_LOCATIONS = [
@@ -30,8 +32,8 @@ const DEFAULT_STORE_LOCATIONS = [
 // Default pickup cities
 const DEFAULT_PICKUP_CITIES = ['Mumbai', 'Gurugram', 'Bangalore'];
 
-// Categories that require store pickup
-const DEFAULT_BAKERY_CATEGORIES = ['cakes', 'fresh_treats'];
+// Categories that require store pickup in 3 cities
+const DEFAULT_BAKERY_CATEGORIES = ['cakes', 'fresh_treats', 'celebration'];
 
 const addOns = [
   { id: 'ao-1', name: 'Birthday Bandana', price: 299, image: 'https://thedoggybakery.com/cdn/shop/products/WhatsAppImage2022-05-13at3.24.11PM.jpg?v=1655357921&width=100' },
