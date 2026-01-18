@@ -814,6 +814,71 @@ const Admin = () => {
     }
   };
 
+  // Send reminder to selected abandoned carts
+  const sendRemindersToSelected = async () => {
+    if (selectedAbandonedCarts.length === 0) {
+      alert('Please select at least one cart to send reminders');
+      return;
+    }
+    try {
+      const response = await fetch(`${API_URL}/api/admin/abandoned-carts/send-reminders`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ cart_ids: selectedAbandonedCarts })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Sent ${data.reminders_sent} reminder${data.reminders_sent !== 1 ? 's' : ''}`);
+        setSelectedAbandonedCarts([]);
+        fetchAbandonedCarts();
+      }
+    } catch (error) {
+      console.error('Failed to send reminders:', error);
+      alert('Failed to send reminders');
+    }
+  };
+
+  // Send reminder to individual cart
+  const sendReminderToCart = async (cartId, email) => {
+    setSendingReminder(cartId);
+    try {
+      const response = await fetch(`${API_URL}/api/admin/abandoned-carts/${cartId}/send-reminder`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        alert(`Reminder sent to ${email}`);
+        fetchAbandonedCarts();
+      } else {
+        const err = await response.json();
+        alert(err.detail || 'Failed to send reminder');
+      }
+    } catch (error) {
+      console.error('Failed to send reminder:', error);
+      alert('Failed to send reminder');
+    } finally {
+      setSendingReminder(null);
+    }
+  };
+
+  // Toggle cart selection
+  const toggleCartSelection = (cartId) => {
+    setSelectedAbandonedCarts(prev => 
+      prev.includes(cartId) 
+        ? prev.filter(id => id !== cartId)
+        : [...prev, cartId]
+    );
+  };
+
+  // Select all carts
+  const toggleSelectAllCarts = () => {
+    if (selectedAbandonedCarts.length === abandonedCarts.filter(c => c.email).length) {
+      setSelectedAbandonedCarts([]);
+    } else {
+      setSelectedAbandonedCarts(abandonedCarts.filter(c => c.email).map(c => c.id));
+    }
+  };
+
   const updateOrderStatus = async (orderId, status) => {
     try {
       const response = await fetch(`${API_URL}/api/admin/orders/${orderId}`, {
