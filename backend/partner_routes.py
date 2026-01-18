@@ -4,7 +4,7 @@ Handles partner/vendor onboarding for The Doggy Company
 Partners can include: restaurants, stay providers, groomers, vets, etc.
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, Field
 from typing import List, Optional
