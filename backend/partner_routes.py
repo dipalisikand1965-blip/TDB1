@@ -368,9 +368,52 @@ async def export_partners_csv(username: str = Depends(lambda: verify_admin)):
     applications = await db.partner_applications.find({}, {"_id": 0}).to_list(10000)
     return {"applications": applications, "total": len(applications)}
 
+@admin_router.post("/import-csv")
+async def import_partners_csv_file(
+    file: UploadFile = File(...),
+    username: str = Depends(lambda: verify_admin)
+):
+    """Import partner applications from CSV file"""
+    import csv
+    import io
+    
+    content = await file.read()
+    text = content.decode('utf-8')
+    reader = csv.DictReader(io.StringIO(text))
+    
+    imported = 0
+    for row in reader:
+        email = row.get("email") or row.get("Email")
+        if not email:
+            continue
+            
+        existing = await db.partner_applications.find_one({"email": email})
+        if existing:
+            continue
+            
+        now = datetime.now(timezone.utc).isoformat()
+        application_doc = {
+            "id": f"partner-{uuid.uuid4().hex[:12]}",
+            "business_name": row.get("business_name") or row.get("Business Name") or "Unknown",
+            "contact_name": row.get("contact_name") or row.get("Contact Name") or "",
+            "email": email,
+            "phone": row.get("phone") or row.get("Phone") or "",
+            "partner_type": row.get("partner_type") or row.get("Type") or "other",
+            "city": row.get("city") or row.get("City") or "",
+            "address": row.get("address") or row.get("Address") or "",
+            "description": row.get("description") or row.get("Description") or "",
+            "status": row.get("status") or row.get("Status") or "pending",
+            "created_at": now,
+            "updated_at": now
+        }
+        await db.partner_applications.insert_one(application_doc)
+        imported += 1
+    
+    return {"imported": imported, "message": f"Successfully imported {imported} partner applications"}
+
 @admin_router.post("/import/csv")
 async def import_partners_csv(data: dict, username: str = Depends(lambda: verify_admin)):
-    """Import partner applications from CSV data"""
+    """Import partner applications from CSV data (JSON format)"""
     applications = data.get("applications", [])
     imported = 0
     
