@@ -338,6 +338,67 @@ Pet Menu, Off-leash area, Pet sitter, Grooming, Vet on call, Trails, Beach acces
 
 ## New Features (Jan 18, 2026)
 
+### Multi-Channel Intake Engine (Voice Orders) ✅
+**Unified request handler for all channels:**
+
+**Supported Channels:**
+- Web (forms, checkout)
+- Chat (Mira AI)
+- WhatsApp
+- Email
+- Phone
+- **Voice** (NEW - with Whisper transcription)
+
+**Voice Order Flow:**
+1. Customer records/uploads voice message (mp3, wav, m4a, etc.)
+2. OpenAI Whisper transcribes audio to text
+3. AI extracts order details (items, quantities, delivery preference)
+4. Creates unified intake record
+5. Triggers notification workflow
+
+**API Endpoints:**
+- `POST /api/channels/voice/order` - Voice order with audio file
+- `POST /api/channels/text/order` - Text-based order from any channel
+- `POST /api/channels/inquiry` - General inquiries
+- `GET /api/channels/intakes` - View all intakes (admin)
+- `GET /api/channels/stats` - Channel statistics
+
+**Files:**
+- `/app/backend/channel_intake.py`
+
+### Real-Time MIS & Reporting Dashboard ✅
+**Live analytics across all pillars:**
+
+**Dashboard Metrics:**
+- Today's Revenue & Orders
+- Weekly Revenue & Orders
+- Average Order Value
+- Items Sold
+- Pending Tickets
+- Service Desk Performance (resolution rate, by status, by category)
+- Channel Performance (conversions, CVR)
+- Pillar Performance (Celebrate, Dine, Stay, Travel, Care)
+
+**API Endpoints:**
+- `GET /api/mis/dashboard` - Real-time dashboard
+- `GET /api/mis/revenue/summary` - Revenue metrics
+- `GET /api/mis/revenue/by-day` - Daily breakdown
+- `GET /api/mis/revenue/by-category` - Category breakdown
+- `GET /api/mis/channels/performance` - Channel metrics
+- `GET /api/mis/pillars/summary` - Pillar analytics
+- `GET /api/mis/service-desk/metrics` - Service desk KPIs
+- `GET /api/mis/conversions/funnel` - Conversion funnel
+- `GET /api/mis/export/{report_type}` - Export data
+
+**Frontend:**
+- New "📊 Live MIS" tab in Admin panel
+- Auto-refresh every 30 seconds
+- Color-coded metric cards
+
+**Files:**
+- `/app/backend/mis_reporting.py`
+- `/app/frontend/src/components/admin/MISDashboard.jsx`
+
 ### Complete Admin Password Reset System ✅
 **World-class forgot password flow implemented:**
 
