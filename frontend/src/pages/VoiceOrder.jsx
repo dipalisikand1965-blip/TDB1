@@ -359,7 +359,9 @@ export default function VoiceOrder() {
                   </button>
                   
                   <p className="text-sm text-gray-500 mt-4">
-                    {isRecording ? 'Click to stop recording' : 'Or upload an audio file'}
+                    {isRecording 
+                      ? `Recording will auto-stop at ${MAX_RECORDING_SECONDS}s` 
+                      : `Max ${MAX_RECORDING_SECONDS} seconds • Or upload an audio file (max ${MAX_FILE_SIZE_MB}MB)`}
                   </p>
                   
                   {/* File Upload */}
