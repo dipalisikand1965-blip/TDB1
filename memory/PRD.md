@@ -648,6 +648,8 @@ A personalized trip recommendation engine that suggests:
 ---
 
 ## Changelog (Jan 18, 2026 - Latest Session)
+- ✅ **Built Unified Inbox Dashboard** - Central command center in admin for all channel intakes with pillar assignment
+- ✅ **ONE ENGINE Architecture Documented** - Updated PRD with complete architecture vision (Membership → Pet Soul → Pillars)
 - ✅ **Fixed Dine Reservation Form Crash** - Added Array.isArray check for cuisine filter in DinePage.jsx
 - ✅ **Fixed Dine/Stay Status Notifications** - Status changes now trigger notification engine and update service desk tickets
 - ✅ **Fixed Add Bundle Form Error** - Changed SelectItem value from empty string to 'any' in DineManager.jsx
@@ -655,6 +657,8 @@ A personalized trip recommendation engine that suggests:
 - ✅ **Voice Order Ticket Integration** - Voice/channel intakes now auto-create service desk tickets with pillar detection
 - ✅ **Pillar Detection for Voice Orders** - Auto-detects pillar from message content (celebrate, dine, stay, travel, care)
 - ✅ **Removed Duplicate Routes** - Cleaned up duplicate status update routes in dine_routes.py
+- ✅ **Pet Soul Public Access** - Removed login requirement from /my-pets page, added /api/pets/public endpoint
+- ✅ **Fixed Voice Order AI Extraction** - Updated to use LlmChat with correct UserMessage format
 
 ---
 
