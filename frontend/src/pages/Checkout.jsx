@@ -323,6 +323,9 @@ const Checkout = () => {
       // City validation
       if (isPanIndiaDelivery) {
         if (!formData.customCity.trim()) errors.customCity = 'City name is required for Pan-India delivery';
+      } else if (formData.city === 'Others') {
+        // User selected "Others" - must provide custom city
+        if (!formData.customCity.trim()) errors.customCity = 'Please enter your city name';
       } else {
         if (!formData.city.trim()) errors.city = 'City is required';
       }
