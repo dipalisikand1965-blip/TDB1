@@ -172,8 +172,11 @@ const Admin = () => {
   
   // Blog Posts
   const [blogPosts, setBlogPosts] = useState([]);
+  const [blogCategories, setBlogCategories] = useState([]);
   const [editingPost, setEditingPost] = useState(null);
   const [showPostModal, setShowPostModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
   
   // Pet Profiles
   const [petProfiles, setPetProfiles] = useState([]);
