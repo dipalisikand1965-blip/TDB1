@@ -237,6 +237,14 @@ class RestaurantPartialUpdate(BaseModel):
     birthdayPerks: Optional[bool] = None
     country: Optional[str] = None
     state: Optional[str] = None
+    # NEW: Location details
+    full_address: Optional[str] = None
+    pincode: Optional[str] = None
+    geo_lat: Optional[float] = None
+    geo_lng: Optional[float] = None
+    google_place_id: Optional[str] = None
+    # NEW: Paw Reward
+    paw_reward: Optional[DinePawReward] = None
 
 
 # ==================== PUBLIC ROUTES ====================
