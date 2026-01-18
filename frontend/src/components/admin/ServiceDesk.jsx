@@ -1519,59 +1519,57 @@ const ServiceDesk = ({ authHeaders }) => {
 
               {/* Reply Box */}
               <div className="border-t p-3">
-                <div className="flex items-center gap-3 mb-2">
-                  <label className="flex items-center gap-1 text-sm cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={isInternalNote}
-                      onChange={(e) => {
-                        setIsInternalNote(e.target.checked);
-                        if (e.target.checked) setSendChannel('internal');
+                {/* Reply Type Selector - More Prominent */}
+                <div className="flex items-center gap-3 mb-3 p-2 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">Reply type:</span>
+                  <div className="flex gap-2 flex-1">
+                    <Button 
+                      size="sm" 
+                      variant={isInternalNote ? 'default' : 'outline'}
+                      onClick={() => {
+                        setIsInternalNote(true);
+                        setSendChannel('internal');
                       }}
-                      className="rounded"
-                    />
-                    Internal Note
-                  </label>
-                  
-                  {!isInternalNote && (
-                    <div className="flex items-center gap-2 border-l pl-3">
-                      <span className="text-xs text-gray-500">Send via:</span>
-                      <div className="flex gap-1">
-                        <Button 
-                          size="sm" 
-                          variant={sendChannel === 'internal' ? 'default' : 'outline'}
-                          onClick={() => setSendChannel('internal')}
-                          className="h-7 px-2 text-xs"
-                        >
-                          💬 Internal
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant={sendChannel === 'email' ? 'default' : 'outline'}
-                          onClick={() => setSendChannel('email')}
-                          className="h-7 px-2 text-xs"
-                          disabled={!selectedTicket?.member?.email}
-                          title={selectedTicket?.member?.email ? 'Send via Email' : 'No email address'}
-                        >
-                          <Mail className="w-3 h-3 mr-1" /> Email
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant={sendChannel === 'whatsapp' ? 'default' : 'outline'}
-                          onClick={() => setSendChannel('whatsapp')}
-                          className="h-7 px-2 text-xs"
-                          disabled={!selectedTicket?.member?.phone && !selectedTicket?.member?.whatsapp}
-                          title={selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp ? 'Send via WhatsApp' : 'No phone number'}
-                        >
-                          📱 WhatsApp
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+                      className={`h-8 px-3 text-xs ${isInternalNote ? 'bg-gray-600' : ''}`}
+                    >
+                      💬 Internal Note
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant={!isInternalNote && sendChannel === 'email' ? 'default' : 'outline'}
+                      onClick={() => {
+                        setIsInternalNote(false);
+                        setSendChannel('email');
+                      }}
+                      className={`h-8 px-3 text-xs ${!isInternalNote && sendChannel === 'email' ? 'bg-blue-600' : ''}`}
+                      disabled={!(selectedTicket?.member?.email || selectedTicket?.customer_email)}
+                      title={(selectedTicket?.member?.email || selectedTicket?.customer_email) ? `Send email to ${selectedTicket?.member?.email || selectedTicket?.customer_email}` : 'No email address available'}
+                    >
+                      <Mail className="w-3 h-3 mr-1" /> Email Guest
+                      {(selectedTicket?.member?.email || selectedTicket?.customer_email) && (
+                        <span className="ml-1 text-[10px] opacity-75 max-w-20 truncate">
+                          ({(selectedTicket?.member?.email || selectedTicket?.customer_email).split('@')[0]}...)
+                        </span>
+                      )}
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant={!isInternalNote && sendChannel === 'whatsapp' ? 'default' : 'outline'}
+                      onClick={() => {
+                        setIsInternalNote(false);
+                        setSendChannel('whatsapp');
+                      }}
+                      className={`h-8 px-3 text-xs ${!isInternalNote && sendChannel === 'whatsapp' ? 'bg-green-600' : ''}`}
+                      disabled={!(selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone)}
+                      title={(selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone) ? `Send WhatsApp to ${selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone}` : 'No phone number available'}
+                    >
+                      📱 WhatsApp Guest
+                    </Button>
+                  </div>
                   
                   {/* SLA Info */}
                   {selectedTicket?.sla_due_at && (
-                    <div className="ml-auto flex items-center gap-1 text-xs">
+                    <div className="flex items-center gap-1 text-xs">
                       <Clock className="w-3 h-3" />
                       <span className={`${new Date(selectedTicket.sla_due_at) < new Date() ? 'text-red-600 font-bold' : 'text-gray-500'}`}>
                         SLA: {new Date(selectedTicket.sla_due_at).toLocaleString()}
@@ -1579,24 +1577,40 @@ const ServiceDesk = ({ authHeaders }) => {
                     </div>
                   )}
                 </div>
+                
+                {/* Channel indicator banner */}
+                {!isInternalNote && sendChannel !== 'internal' && (
+                  <div className={`mb-2 p-2 rounded text-xs ${sendChannel === 'email' ? 'bg-blue-50 text-blue-700' : 'bg-green-50 text-green-700'}`}>
+                    {sendChannel === 'email' ? (
+                      <>📧 This message will be sent as an <strong>email</strong> to: <strong>{selectedTicket?.member?.email || selectedTicket?.customer_email}</strong></>
+                    ) : (
+                      <>📱 This message will be sent via <strong>WhatsApp</strong> to: <strong>{selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone}</strong></>
+                    )}
+                  </div>
+                )}
+                
                 <div className="flex gap-2">
                   <Textarea
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     placeholder={
                       isInternalNote 
-                        ? "Add internal note..." 
+                        ? "Add internal note (only visible to team)..." 
                         : sendChannel === 'email'
-                          ? "Type your email reply..."
+                          ? "Type your email reply to the guest..."
                           : sendChannel === 'whatsapp'
-                            ? "Type your WhatsApp message..."
+                            ? "Type your WhatsApp message to the guest..."
                             : "Type your reply..."
                     }
                     className="resize-none"
                     rows={2}
                   />
                   <div className="flex flex-col gap-1">
-                    <Button onClick={handleReply} disabled={sendingReply || !replyText.trim()} className="flex-1">
+                    <Button 
+                      onClick={handleReply} 
+                      disabled={sendingReply || !replyText.trim()} 
+                      className={`flex-1 ${!isInternalNote && sendChannel === 'email' ? 'bg-blue-600 hover:bg-blue-700' : !isInternalNote && sendChannel === 'whatsapp' ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                    >
                       {sendingReply ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                     </Button>
                     {sendChannel !== 'internal' && !isInternalNote && (
