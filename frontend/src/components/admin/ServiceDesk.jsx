@@ -509,6 +509,82 @@ const ServiceDesk = ({ authHeaders }) => {
 
   const displayTickets = getFilteredTickets();
 
+  // ============== AI ASSISTANT FUNCTIONS ==============
+  
+  const generateAiDraft = async (tone = 'professional') => {
+    if (!selectedTicket) return;
+    
+    setAiLoading(true);
+    setAiDraft(null);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/tickets/ai/draft-reply`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticket_id: selectedTicket.ticket_id,
+          reply_type: tone
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAiDraft(data);
+        setShowAiPanel(true);
+      } else {
+        console.error('AI draft failed');
+      }
+    } catch (err) {
+      console.error('AI draft error:', err);
+    }
+    setAiLoading(false);
+  };
+
+  const useAiDraft = (draft) => {
+    setReplyText(draft);
+    setShowAiPanel(false);
+  };
+
+  const getAiSummary = async () => {
+    if (!selectedTicket) return;
+    
+    setAiLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/tickets/ai/summarize?ticket_id=${selectedTicket.ticket_id}`, {
+        method: 'POST',
+        headers: authHeaders
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAiSummary(data.summary);
+      }
+    } catch (err) {
+      console.error('AI summary error:', err);
+    }
+    setAiLoading(false);
+  };
+
+  const getAiActions = async () => {
+    if (!selectedTicket) return;
+    
+    setAiLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/tickets/ai/suggest-actions?ticket_id=${selectedTicket.ticket_id}`, {
+        method: 'POST',
+        headers: authHeaders
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAiActions(data.suggested_actions || []);
+      }
+    } catch (err) {
+      console.error('AI actions error:', err);
+    }
+    setAiLoading(false);
+  };
+
   // CSV Export function
   const exportTicketsCSV = () => {
     const headers = ['ticket_id', 'member_name', 'member_email', 'member_phone', 'category', 'source', 'status', 'urgency', 'description', 'assigned_to', 'created_at', 'updated_at'];
