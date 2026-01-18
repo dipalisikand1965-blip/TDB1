@@ -179,8 +179,10 @@ async def get_all_reward_configs():
     if not configs:
         # Initialize with defaults
         for pillar, config in DEFAULT_PILLAR_REWARDS.items():
-            await db.paw_reward_configs.insert_one(config)
-        configs = list(DEFAULT_PILLAR_REWARDS.values())
+            config_copy = {**config}  # Create copy to avoid modification
+            await db.paw_reward_configs.insert_one(config_copy)
+        # Re-fetch without _id
+        configs = await db.paw_reward_configs.find({}, {"_id": 0}).to_list(100)
     
     return {"configs": {c["pillar"]: c for c in configs}}
 
