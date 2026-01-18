@@ -658,6 +658,24 @@ const StayManager = ({ getAuthHeader }) => {
                 >
                   <Upload className="w-4 h-4 mr-2" /> Seed Products
                 </Button>
+                <Button variant="outline" onClick={exportBundlesCsv} data-testid="export-stay-bundles-csv">
+                  <Download className="w-4 h-4 mr-2" /> Export CSV
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => bundleCsvRef.current?.click()}
+                  disabled={importingBundles}
+                  data-testid="import-stay-bundles-csv"
+                >
+                  <Upload className="w-4 h-4 mr-2" /> {importingBundles ? 'Importing...' : 'Import CSV'}
+                </Button>
+                <input
+                  ref={bundleCsvRef}
+                  type="file"
+                  accept=".csv"
+                  onChange={importBundlesCsv}
+                  className="hidden"
+                />
                 <Button 
                   className="bg-amber-500 hover:bg-amber-600"
                   onClick={() => { setSelectedProduct(null); setShowProductModal(true); }}
