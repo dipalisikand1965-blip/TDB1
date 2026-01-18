@@ -1568,6 +1568,103 @@ async def admin_export_csv(username: str = Depends(verify_admin)):
     )
 
 
+# --- CSV Import ---
+
+@stay_admin_router.post("/import-csv")
+async def admin_import_csv(
+    file: UploadFile = File(...),
+    username: str = Depends(verify_admin)
+):
+    """Import properties from CSV file"""
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="Please upload a CSV file")
+    
+    try:
+        content = await file.read()
+        content_str = content.decode('utf-8')
+        
+        reader = csv.DictReader(io.StringIO(content_str))
+        
+        imported = 0
+        updated = 0
+        errors = []
+        
+        for row_num, row in enumerate(reader, start=2):
+            try:
+                # Required fields
+                name = row.get('name', '').strip()
+                city = row.get('city', '').strip()
+                
+                if not name or not city:
+                    errors.append(f"Row {row_num}: Missing name or city")
+                    continue
+                
+                # Process property data
+                property_data = {
+                    "name": name,
+                    "city": city,
+                    "property_type": row.get('property_type', 'pet_hotel'),
+                    "full_address": row.get('full_address', ''),
+                    "pincode": row.get('pincode', ''),
+                    "contact_phone": row.get('contact_phone', ''),
+                    "contact_email": row.get('contact_email', ''),
+                    "price_per_night": float(row.get('price_per_night', 0)) if row.get('price_per_night') else 0,
+                    "rating": float(row.get('rating', 0)) if row.get('rating') else 0,
+                    "image": row.get('image', ''),
+                    "description": row.get('description', ''),
+                    "status": row.get('status', 'live'),
+                    "featured": str(row.get('featured', '')).lower() in ['true', '1', 'yes'],
+                    "verified": str(row.get('verified', '')).lower() in ['true', '1', 'yes'],
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+                
+                # Handle list fields
+                for list_field in ['amenities', 'house_rules', 'pet_types_allowed']:
+                    if row.get(list_field):
+                        property_data[list_field] = [x.strip() for x in row[list_field].split('|') if x.strip()]
+                
+                # Handle paw_reward
+                if row.get('paw_reward_enabled'):
+                    property_data['paw_reward'] = {
+                        "enabled": str(row.get('paw_reward_enabled', '')).lower() in ['true', '1', 'yes'],
+                        "reward_name": row.get('paw_reward_name', 'Paw Reward'),
+                        "max_value": float(row.get('paw_reward_max_value', 600)) if row.get('paw_reward_max_value') else 600
+                    }
+                
+                # Check if property exists (by name and city)
+                existing = await db.stay_properties.find_one({
+                    "name": name,
+                    "city": city
+                })
+                
+                if existing:
+                    await db.stay_properties.update_one(
+                        {"_id": existing["_id"]},
+                        {"$set": property_data}
+                    )
+                    updated += 1
+                else:
+                    import secrets
+                    property_data["id"] = f"stay-{secrets.token_hex(8)}"
+                    property_data["created_at"] = datetime.now(timezone.utc).isoformat()
+                    await db.stay_properties.insert_one(property_data)
+                    imported += 1
+                    
+            except Exception as e:
+                errors.append(f"Row {row_num}: {str(e)}")
+        
+        return {
+            "message": f"Import completed: {imported} new, {updated} updated",
+            "imported": imported,
+            "updated": updated,
+            "errors": errors[:20] if errors else []
+        }
+        
+    except Exception as e:
+        logger.error(f"CSV import error: {e}")
+        raise HTTPException(status_code=500, detail=f"Import failed: {str(e)}")
+
+
 # --- Dashboard Stats ---
 
 @stay_admin_router.get("/stats")
