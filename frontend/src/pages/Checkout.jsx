@@ -1034,18 +1034,16 @@ _GST applicable on final invoice_
                 </div>
               </Card>
 
-              {/* Store Pickup Section (for bakery items or bakery-only carts) */}
-              {(cartAnalysis.hasBakeryItems || cartAnalysis.isMixedCart) && (
+              {/* Store Pickup Section (only when pickup is selected for bakery-only carts) */}
+              {cartAnalysis.bakeryOnlyCart && deliveryMethod === 'pickup' && (
                 <Card className="p-6">
                   <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <Store className="w-5 h-5 text-purple-600" />
-                    {cartAnalysis.isMixedCart ? 'Bakery Items Pickup Location *' : 'Pickup Location *'}
+                    Pickup Location *
                   </h2>
                   
                   <p className="text-sm text-gray-600 mb-4">
-                    {cartAnalysis.isMixedCart 
-                      ? 'Select where to pick up your fresh cakes and bakery items:'
-                      : 'Select your nearest store for pickup:'}
+                    Select your nearest store for pickup (Available in Mumbai, Gurugram & Bangalore):
                   </p>
                   
                   <div className="grid gap-3">
@@ -1059,9 +1057,7 @@ _GST applicable on final invoice_
                         }`}
                         onClick={() => {
                           setPickupLocation(loc.id);
-                          if (!cartAnalysis.isMixedCart) {
-                            setFormData(prev => ({ ...prev, city: loc.city }));
-                          }
+                          setFormData(prev => ({ ...prev, city: loc.city }));
                         }}
                         data-testid={`pickup-location-${loc.id}`}
                       >
@@ -1079,25 +1075,111 @@ _GST applicable on final invoice_
                   </div>
                   {formErrors.pickupLocation && <p className="text-red-500 text-xs mt-2">{formErrors.pickupLocation}</p>}
                   
-                  {!cartAnalysis.isMixedCart && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-4 text-sm flex gap-2">
-                      <Sparkles className="w-5 h-5 text-green-600" />
-                      <p className="text-green-800">Store pickup is always <strong>FREE</strong>! No shipping charges.</p>
-                    </div>
-                  )}
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-4 text-sm flex gap-2">
+                    <Sparkles className="w-5 h-5 text-green-600" />
+                    <p className="text-green-800">Store pickup is always <strong>FREE</strong>! No shipping charges.</p>
+                  </div>
                 </Card>
               )}
 
-              {/* Delivery Address Section (for shippable items or mixed carts) */}
-              {(cartAnalysis.hasShippableItems || cartAnalysis.isMixedCart) && !cartAnalysis.bakeryOnlyCart && (
+              {/* Mixed Cart - Bakery Pickup + Delivery Address */}
+              {cartAnalysis.isMixedCart && (
+                <Card className="p-6">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Store className="w-5 h-5 text-purple-600" />
+                    Bakery Items Pickup Location *
+                  </h2>
+                  
+                  <p className="text-sm text-gray-600 mb-4">
+                    Select where to pick up your fresh cakes and bakery items:
+                  </p>
+                  
+                  <div className="grid gap-3">
+                    {appSettings.store_locations.map((loc) => (
+                      <div 
+                        key={loc.id}
+                        className={`p-4 border rounded-xl cursor-pointer flex items-center gap-3 transition-all ${
+                          pickupLocation === loc.id 
+                            ? 'border-purple-600 bg-purple-50' 
+                            : 'border-gray-200 hover:border-purple-300'
+                        }`}
+                        onClick={() => {
+                          setPickupLocation(loc.id);
+                        }}
+                        data-testid={`pickup-location-${loc.id}`}
+                      >
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          pickupLocation === loc.id ? 'border-purple-600' : 'border-gray-300'
+                        }`}>
+                          {pickupLocation === loc.id && <div className="w-2.5 h-2.5 rounded-full bg-purple-600" />}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{loc.city}</p>
+                          <p className="text-sm text-gray-500">{loc.address}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {formErrors.pickupLocation && <p className="text-red-500 text-xs mt-2">{formErrors.pickupLocation}</p>}
+                </Card>
+              )}
+
+              {/* Delivery Address Section - Show for ALL cart types when delivery is selected */}
+              {(deliveryMethod === 'delivery' || cartAnalysis.isMixedCart) && (
                 <Card className="p-6">
                   <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <Truck className="w-5 h-5 text-purple-600" />
                     {cartAnalysis.isMixedCart ? 'Delivery Address (For Shippable Items) *' : 'Delivery Address *'}
                   </h2>
 
-                  {/* Delivery Method Toggle (only for non-bakery or mixed carts) */}
-                  {!cartAnalysis.isMixedCart && cartAnalysis.shippableOnlyCart && (
+                  {/* Delivery Method Toggle - Show for bakery-only and shippable-only carts */}
+                  {!cartAnalysis.isMixedCart && (
+                    <div className="mb-6">
+                      <p className="text-sm text-gray-600 mb-3">How would you like to receive your order?</p>
+                      <div className="flex gap-4">
+                        <button
+                          type="button"
+                          onClick={() => setDeliveryMethod('delivery')}
+                          className={`flex-1 p-4 border rounded-xl flex flex-col items-center gap-2 transition-all ${
+                            deliveryMethod === 'delivery'
+                              ? 'border-purple-600 bg-purple-50 text-purple-700'
+                              : 'border-gray-200 hover:bg-gray-50'
+                          }`}
+                          data-testid="delivery-method-delivery"
+                        >
+                          <Truck className="w-6 h-6" />
+                          <span className="font-semibold">Home Delivery</span>
+                          <span className="text-xs text-gray-500">Ships to any city</span>
+                        </button>
+                        {/* Only show pickup option if user is in a pickup city */}
+                        <button
+                          type="button"
+                          onClick={() => setDeliveryMethod('pickup')}
+                          className={`flex-1 p-4 border rounded-xl flex flex-col items-center gap-2 transition-all ${
+                            deliveryMethod === 'pickup'
+                              ? 'border-purple-600 bg-purple-50 text-purple-700'
+                              : 'border-gray-200 hover:bg-gray-50'
+                          }`}
+                          data-testid="delivery-method-pickup"
+                        >
+                          <Store className="w-6 h-6" />
+                          <span className="font-semibold">Store Pickup</span>
+                          <span className="text-xs text-gray-500">Mumbai, Gurugram, Bangalore</span>
+                        </button>
+                      </div>
+                      
+                      {/* Info about fresh bakery items */}
+                      {cartAnalysis.hasBakeryItems && deliveryMethod === 'delivery' && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mt-4 text-sm flex gap-2">
+                          <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                          <div className="text-amber-800">
+                            <p className="font-medium">Fresh Bakery Items</p>
+                            <p className="text-xs mt-1">Your cakes and fresh treats will be carefully packaged and shipped to ensure freshness. Delivery typically takes 2-4 days.</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                     <div className="flex gap-4 mb-6">
                       <button
                         type="button"
