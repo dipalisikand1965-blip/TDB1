@@ -168,6 +168,11 @@ async def send_outbound_message(message: OutboundMessage, background_tasks: Back
         raise HTTPException(status_code=404, detail="Ticket not found")
     
     member = ticket.get("member", {})
+    # Fallback to root-level customer fields if member fields are empty
+    member_email = member.get("email") or ticket.get("customer_email")
+    member_phone = member.get("phone") or member.get("whatsapp") or ticket.get("customer_phone")
+    member_name = member.get("name") or ticket.get("customer_name") or "Valued Customer"
+    
     now = datetime.now(timezone.utc).isoformat()
     
     result = {"success": False, "channel": message.channel}
@@ -175,14 +180,14 @@ async def send_outbound_message(message: OutboundMessage, background_tasks: Back
     if message.channel == "email":
         # Send via Resend with Reply-To tracking
         resend_client = get_resend()
-        if resend_client and member.get("email"):
+        if resend_client and member_email:
             try:
                 # Create trackable Reply-To address
                 reply_to = generate_reply_email_id(message.ticket_id)
                 
                 email_result = resend_client.Emails.send({
                     "from": SENDER_EMAIL,
-                    "to": member["email"],
+                    "to": member_email,
                     "reply_to": reply_to,
                     "subject": f"Re: Ticket {message.ticket_id} - The Doggy Company",
                     "html": f"""
