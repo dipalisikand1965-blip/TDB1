@@ -159,6 +159,10 @@ const ServiceDesk = ({ authHeaders }) => {
   const [customerHistory, setCustomerHistory] = useState(null);
   const [loadingHistory, setLoadingHistory] = useState(false);
   
+  // Activity Timeline / Audit Trail
+  const [auditTrail, setAuditTrail] = useState([]);
+  const [loadingAudit, setLoadingAudit] = useState(false);
+  
   // Canned Responses
   const [cannedResponses, setCannedResponses] = useState([]);
   const [showCannedResponses, setShowCannedResponses] = useState(false);
