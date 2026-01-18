@@ -154,6 +154,39 @@ const StayManager = ({ getAuthHeader }) => {
       event.target.value = '';
     }
   };
+
+  // Import Stay Properties from CSV
+  const importPropertiesCsv = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setImportingProperties(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(`${API_URL}/api/admin/stay/import-csv`, {
+        method: 'POST',
+        headers: getAuthHeader(),
+        body: formData
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Imported ${result.imported} properties, ${result.updated || 0} updated, ${result.errors || 0} errors`);
+        fetchData();
+      } else {
+        const error = await response.json();
+        alert(`Import failed: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error importing properties:', error);
+      alert('Error importing properties');
+    } finally {
+      setImportingProperties(false);
+      event.target.value = '';
+    }
+  };
   
   // Seed Stay Products
   const handleSeedProducts = async () => {
