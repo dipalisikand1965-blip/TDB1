@@ -1887,12 +1887,12 @@ const BundleModal = ({ bundle, onSave, onClose }) => {
           <div>
             <label className="text-sm font-medium">For Occasion</label>
             <Select 
-              value={formData.for_occasion || ''}
-              onValueChange={(value) => setFormData({ ...formData, for_occasion: value })}
+              value={formData.for_occasion || 'any'}
+              onValueChange={(value) => setFormData({ ...formData, for_occasion: value === 'any' ? '' : value })}
             >
               <SelectTrigger><SelectValue placeholder="Select occasion" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Any</SelectItem>
+                <SelectItem value="any">Any Occasion</SelectItem>
                 <SelectItem value="birthday">Birthday</SelectItem>
                 <SelectItem value="anniversary">Anniversary</SelectItem>
                 <SelectItem value="casual">Casual</SelectItem>
