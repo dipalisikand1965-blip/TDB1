@@ -56,6 +56,7 @@ import PartnerOnboarding from "./pages/PartnerOnboarding";
 import StayPage from "./pages/StayPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import VoiceOrder from "./pages/VoiceOrder";
 
 function App() {
   return (
