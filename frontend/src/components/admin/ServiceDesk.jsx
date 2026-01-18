@@ -2905,11 +2905,9 @@ const ServiceDesk = ({ authHeaders }) => {
           <DialogHeader>
             <DialogTitle>Manage Categories & Sub-categories</DialogTitle>
           </DialogHeader>
-          <CategoryManager 
-            categories={categories} 
-            setCategories={setCategories}
-            authHeaders={authHeaders}
-          />
+          <div className="p-4">
+            <p className="text-sm text-gray-500">Category management coming soon...</p>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
