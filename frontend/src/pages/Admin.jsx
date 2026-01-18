@@ -2081,9 +2081,9 @@ const Admin = () => {
           <StayManager getAuthHeader={getAuthHeaders} />
         )}
 
-        {/* Service Desk Tab */}
+        {/* Service Desk Tab - Full Page Mode */}
         {activeTab === 'servicedesk' && (
-          <div className="h-[calc(100vh-220px)]">
+          <div className="fixed inset-0 top-[140px] bg-slate-50 z-40 overflow-hidden">
             <ServiceDesk authHeaders={getAuthHeaders()} />
           </div>
         )}
