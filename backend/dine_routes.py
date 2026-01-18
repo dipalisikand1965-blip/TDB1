@@ -90,6 +90,34 @@ def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
 
 # ==================== MODELS ====================
 
+class DinePawReward(BaseModel):
+    """Dine-specific Paw Reward"""
+    enabled: bool = True
+    reward_type: str = "free_product"  # free_product, discount
+    reward_name: str = "Birthday Cake Reward"
+    reward_description: str = "Free TDB birthday cake when celebrating your dog's birthday here"
+    product_id: Optional[str] = None  # Specific product ID
+    product_category: str = "cakes"  # Default to cakes
+    product_collection: str = "bow-treats"  # Small bow treats
+    max_value: float = 500
+    trigger_condition: str = "birthday"  # birthday, first_visit, any_visit
+    custom_message: Optional[str] = None
+
+
+class RestaurantLocation(BaseModel):
+    """Restaurant Location Details"""
+    full_address: Optional[str] = None
+    area: Optional[str] = None
+    city: str = ""
+    state: Optional[str] = None
+    country: str = "India"
+    pincode: Optional[str] = None
+    geo_lat: Optional[float] = None
+    geo_lng: Optional[float] = None
+    google_maps_link: Optional[str] = None
+    google_place_id: Optional[str] = None
+
+
 class RestaurantCreate(BaseModel):
     name: str
     area: str
@@ -119,6 +147,14 @@ class RestaurantCreate(BaseModel):
     birthdayPerks: bool = False  # Offers birthday perks for pets
     country: str = "India"
     state: Optional[str] = None
+    # NEW: Location details (like Stay)
+    full_address: Optional[str] = None
+    pincode: Optional[str] = None
+    geo_lat: Optional[float] = None
+    geo_lng: Optional[float] = None
+    google_place_id: Optional[str] = None
+    # NEW: Paw Reward
+    paw_reward: Optional[DinePawReward] = None
 
 
 class ReservationRequest(BaseModel):
