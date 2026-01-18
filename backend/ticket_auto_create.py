@@ -464,7 +464,13 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
         })
     
     # Insert the ticket
-    await db.tickets.insert_one(ticket_doc)
+    print(f"[TICKET DEBUG] About to insert ticket: {ticket_doc.get('ticket_id')}")
+    try:
+        result = await db.tickets.insert_one(ticket_doc)
+        print(f"[TICKET DEBUG] Insert result: {result.inserted_id}")
+    except Exception as e:
+        print(f"[TICKET DEBUG] Insert ERROR: {e}")
+        raise
     
     # Return ticket ID (without _id field issues)
     return ticket_id
