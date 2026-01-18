@@ -724,6 +724,11 @@ const PricingHub = ({ getAuthHeader }) => {
           </Card>
         </TabsContent>
 
+        {/* Pillar Bundles Tab */}
+        <TabsContent value="bundles" className="space-y-6">
+          <PillarBundlesSection getAuthHeader={getAuthHeader} formatCurrency={formatCurrency} />
+        </TabsContent>
+
         {/* Shipping Tab */}
         <TabsContent value="shipping" className="space-y-6">
           {/* GLOBAL CHECKOUT SHIPPING SETTINGS */}
