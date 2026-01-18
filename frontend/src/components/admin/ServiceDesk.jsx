@@ -2207,6 +2207,34 @@ const ServiceDesk = ({ authHeaders }) => {
                       </Button>
                     </div>
                     
+                    {/* Canned Responses Button */}
+                    <DropdownMenu open={showCannedResponses} onOpenChange={setShowCannedResponses}>
+                      <DropdownMenuTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 px-3"
+                        >
+                          📝 Templates
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-72 max-h-80 overflow-y-auto">
+                        {cannedResponses.map(resp => (
+                          <DropdownMenuItem 
+                            key={resp.id} 
+                            onClick={() => useCannedResponse(resp.content)}
+                            className="flex flex-col items-start py-2"
+                          >
+                            <span className="font-medium text-sm">{resp.name}</span>
+                            <span className="text-xs text-gray-500 line-clamp-1">{resp.content.substring(0, 50)}...</span>
+                          </DropdownMenuItem>
+                        ))}
+                        {cannedResponses.length === 0 && (
+                          <div className="p-4 text-center text-sm text-gray-500">No templates available</div>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    
                     {/* AI Draft Button */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
