@@ -623,11 +623,15 @@ async def update_ticket(ticket_id: str, update: TicketUpdate):
     
     # Track if status changed to resolved
     was_resolved = False
+    old_status = ticket.get("status")
+    old_assignee = ticket.get("assigned_to")
+    
+    # Prepare audit entries
+    audit_entries = []
+    now = datetime.now(timezone.utc).isoformat()
     
     # Handle status changes
     if "status" in update_doc:
-        now = datetime.now(timezone.utc).isoformat()
-        
         if update_doc["status"] == "resolved":
             update_doc["resolved_at"] = now
             if not update_doc.get("resolution_note") and not ticket.get("resolution_note"):
@@ -639,10 +643,37 @@ async def update_ticket(ticket_id: str, update: TicketUpdate):
         
         if update_doc["status"] == "closed":
             update_doc["closed_at"] = now
+        
+        # Add status change to audit trail
+        if update_doc["status"] != old_status:
+            audit_entries.append({
+                "type": "status_change",
+                "action": f"Status changed from {old_status} to {update_doc['status']}",
+                "old_value": old_status,
+                "new_value": update_doc["status"],
+                "user": username,
+                "timestamp": now
+            })
+    
+    # Track assignment changes
+    if "assigned_to" in update_doc and update_doc["assigned_to"] != old_assignee:
+        audit_entries.append({
+            "type": "assignment",
+            "action": f"Assigned to {update_doc['assigned_to']}",
+            "old_value": old_assignee,
+            "new_value": update_doc["assigned_to"],
+            "user": username,
+            "timestamp": now
+        })
+    
+    # Build update operation
+    update_op = {"$set": update_doc}
+    if audit_entries:
+        update_op["$push"] = {"audit_trail": {"$each": audit_entries}}
     
     await db.tickets.update_one(
         {"_id": ticket["_id"]},
-        {"$set": update_doc}
+        update_op
     )
     
     updated = await db.tickets.find_one({"_id": ticket["_id"]})
