@@ -112,10 +112,17 @@ async def transcribe_voice(audio_file: UploadFile) -> VoiceTranscription:
             text = getattr(response, 'text', str(response))
             language = getattr(response, 'language', 'en')
             duration = getattr(response, 'duration', None)
-            segments = [
-                {"start": s.start, "end": s.end, "text": s.text}
-                for s in getattr(response, 'segments', [])
-            ] if hasattr(response, 'segments') else None
+            raw_segments = getattr(response, 'segments', [])
+            if raw_segments:
+                segments = []
+                for s in raw_segments:
+                    # Handle both dict and object formats
+                    if isinstance(s, dict):
+                        segments.append({"start": s.get('start'), "end": s.get('end'), "text": s.get('text')})
+                    else:
+                        segments.append({"start": getattr(s, 'start', None), "end": getattr(s, 'end', None), "text": getattr(s, 'text', '')})
+            else:
+                segments = None
         
         transcription = VoiceTranscription(
             text=text,
