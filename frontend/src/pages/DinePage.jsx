@@ -1366,12 +1366,26 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
             </div>
             <div>
               <label className="text-sm font-medium text-gray-700">Time</label>
-              <Input 
-                type="time"
+              <select 
                 value={formData.time}
                 onChange={(e) => setFormData({...formData, time: e.target.value})}
                 required
-              />
+                className="w-full h-10 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="">Select time</option>
+                {/* Generate 30-min intervals for 24 hours */}
+                {Array.from({length: 48}, (_, i) => {
+                  const hour = Math.floor(i / 2);
+                  const minute = i % 2 === 0 ? '00' : '30';
+                  const time24 = `${hour.toString().padStart(2, '0')}:${minute}`;
+                  const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                  const ampm = hour < 12 ? 'AM' : 'PM';
+                  const displayTime = `${displayHour}:${minute} ${ampm}`;
+                  return (
+                    <option key={time24} value={time24}>{displayTime}</option>
+                  );
+                })}
+              </select>
             </div>
           </div>
 
