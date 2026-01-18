@@ -545,7 +545,7 @@ async def get_concierges():
     
     if not concierges:
         concierges = [
-            {"id": "aditya", "name": "Aditya", "email": "aditya@thedoggycompany.in", "role": "senior"},
+            {"id": "aditya", "name": "Aditya", "email": "aditya@thedoggycompany.in", "role": "admin"},
             {"id": "concierge1", "name": "Concierge 1", "email": "concierge1@thedoggycompany.in", "role": "junior"},
         ]
     else:
@@ -553,6 +553,58 @@ async def get_concierges():
             c["id"] = str(c.pop("_id"))
     
     return {"concierges": concierges}
+
+# Alias endpoint for agents
+@router.get("/agents")
+async def get_agents():
+    """Get list of agents (alias for concierges)"""
+    return await get_concierges()
+
+@router.post("/agents")
+async def add_agent(
+    name: str = Form(...),
+    email: str = Form(...),
+    role: str = Form("junior")
+):
+    """Add a new agent"""
+    return await add_concierge(name=name, email=email, role=role)
+
+@router.put("/agents/{agent_id}")
+async def update_agent(
+    agent_id: str,
+    role: Optional[str] = None,
+    name: Optional[str] = None,
+    email: Optional[str] = None
+):
+    """Update agent role or details"""
+    db = get_db()
+    
+    update_doc = {}
+    if role:
+        update_doc["role"] = role
+    if name:
+        update_doc["name"] = name
+    if email:
+        update_doc["email"] = email
+    
+    if not update_doc:
+        return {"success": False, "message": "No fields to update"}
+    
+    update_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    try:
+        result = await db.concierges.update_one(
+            {"_id": ObjectId(agent_id)},
+            {"$set": update_doc}
+        )
+    except:
+        # Try by concierge_id string
+        result = await db.concierges.update_one(
+            {"concierge_id": agent_id},
+            {"$set": update_doc}
+        )
+    
+    return {"success": True, "message": "Agent updated"}
 
 @router.post("/concierges")
 async def add_concierge(
