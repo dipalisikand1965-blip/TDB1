@@ -729,13 +729,13 @@ const ProductDetailModal = ({ product, onClose }) => {
             </div>
           </div>
         {/* Reviews Section */}
-        <div className="border-t bg-gray-50 p-6">
+        <div className="border-t bg-gray-50 p-6" data-testid="reviews-section">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="font-bold text-gray-900 flex items-center gap-2">
                     <MessageSquare className="w-5 h-5 text-purple-600" />
                     Customer Reviews ({reviews.length})
                 </h3>
-                <Button variant="outline" size="sm" onClick={() => setShowReviewForm(!showReviewForm)}>
+                <Button variant="outline" size="sm" onClick={() => setShowReviewForm(!showReviewForm)} data-testid="write-review-btn">
                     {showReviewForm ? 'Cancel' : 'Write a Review'}
                 </Button>
             </div>
