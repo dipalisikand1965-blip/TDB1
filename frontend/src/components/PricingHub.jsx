@@ -238,6 +238,7 @@ const PillarBundlesSection = ({ getAuthHeader, formatCurrency }) => {
           <button
             key={key}
             onClick={() => setActivePillar(key)}
+            data-testid={`pillar-bundle-${key}`}
             className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
               activePillar === key 
                 ? `${config.color} font-semibold ring-2 ring-offset-2 ring-purple-500`
