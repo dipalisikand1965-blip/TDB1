@@ -557,7 +557,10 @@ _GST applicable on final invoice_
           quantity: item.quantity,
           price: item.price,
           customDetails: item.customDetails,
-          category: item.category
+          category: item.category,
+          image: item.image,
+          // Include reference image if present
+          reference_image: item.customDetails?.referenceImage || item.referenceImage || null
         })),
         specialInstructions: formData.specialInstructions,
         isGift: formData.isGift,
@@ -585,11 +588,18 @@ _GST applicable on final invoice_
         } : null
       };
       
-      await fetch(`${API_URL}/api/orders`, {
+      const orderResponse = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderPayload)
       });
+      
+      const orderResult = await orderResponse.json();
+      
+      // Log if service desk ticket was created
+      if (orderResult.ticket_id) {
+        console.log(`Service Desk Ticket created: ${orderResult.ticket_id} (same as Order ID)`);
+      }
 
       // Record discount code usage if applied
       if (appliedDiscount?.code) {
