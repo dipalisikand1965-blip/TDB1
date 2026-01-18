@@ -2331,6 +2331,16 @@ async def request_custom_cake(
             "reference_image": file_path
         })
         logger.info(f"Auto-created ticket {ticket_id} for custom cake request {request_data['id']}")
+        
+        # Create admin notification
+        await db.admin_notifications.insert_one({
+            "type": "custom_cake",
+            "title": f"🎨 New Custom Cake Design Request - {name}",
+            "message": f"Reference image uploaded. Notes: {notes[:100] if notes else 'No notes provided'}",
+            "read": False,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "link": f"/admin?tab=servicedesk&ticket={ticket_id}"
+        })
     except Exception as e:
         logger.error(f"Failed to auto-create ticket for custom cake: {e}")
     
