@@ -705,6 +705,9 @@ from ticket_messaging import router as ticket_messaging_router
 from ticket_sla import router as ticket_sla_router
 from ticket_auto_create import create_ticket_from_event, update_ticket_from_event
 
+# Import role management
+from role_routes import router as role_router, set_database as set_role_db
+
 # Import notification engine
 from notification_engine import (
     notification_router,
