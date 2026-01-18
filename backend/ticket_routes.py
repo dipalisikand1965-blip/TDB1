@@ -796,3 +796,191 @@ async def get_member_ticket_history(identifier: str):
     tickets = await cursor.to_list(length=50)
     
     return {"tickets": [serialize_ticket(t) for t in tickets]}
+
+
+# ============ Manual Ticket Creation for All Pillars ============
+
+class ServiceRequest(BaseModel):
+    """Model for creating service request tickets (Travel, Care, etc.)"""
+    event_type: str  # travel_booking, care_appointment, grooming_appointment, etc.
+    name: str
+    email: str
+    phone: Optional[str] = None
+    city: Optional[str] = None
+    
+    # Pet details
+    pet_name: Optional[str] = None
+    pet_breed: Optional[str] = None
+    pet_age: Optional[str] = None
+    pet_weight_kg: Optional[float] = None
+    
+    # Service specific fields
+    service_type: Optional[str] = None
+    preferred_date: Optional[str] = None
+    preferred_time: Optional[str] = None
+    
+    # Travel specific
+    origin_city: Optional[str] = None
+    destination_city: Optional[str] = None
+    travel_date: Optional[str] = None
+    return_date: Optional[str] = None
+    travel_type: Optional[str] = None  # Domestic, International
+    
+    # Care specific
+    is_emergency: Optional[bool] = False
+    symptoms: Optional[str] = None
+    concerns: Optional[str] = None
+    
+    # General
+    special_requirements: Optional[str] = None
+    notes: Optional[str] = None
+
+@router.post("/service-request")
+async def create_service_request(request: ServiceRequest):
+    """
+    Create a service request ticket for any pillar (Travel, Care, Grooming, etc.)
+    This endpoint can be called from frontend forms or external integrations.
+    """
+    from ticket_auto_create import create_ticket_from_event
+    db = get_db()
+    
+    # Generate a unique request ID
+    request_id = f"{request.event_type.split('_')[0]}-req-{uuid.uuid4().hex[:12]}"
+    
+    # Build event data based on event type
+    event_data = {
+        "booking_id" if "booking" in request.event_type else "appointment_id": request_id,
+        "name": request.name,
+        "email": request.email,
+        "phone": request.phone,
+        "city": request.city,
+        "pet_name": request.pet_name,
+        "pet_breed": request.pet_breed,
+        "pet_age": request.pet_age,
+        "pet_weight_kg": request.pet_weight_kg,
+        "service_type": request.service_type,
+        "preferred_date": request.preferred_date,
+        "preferred_time": request.preferred_time,
+        "notes": request.notes,
+        "special_requirements": request.special_requirements,
+    }
+    
+    # Add travel-specific fields
+    if request.event_type == "travel_booking":
+        event_data.update({
+            "origin_city": request.origin_city,
+            "destination_city": request.destination_city,
+            "travel_date": request.travel_date,
+            "return_date": request.return_date,
+            "travel_type": request.travel_type or "Domestic",
+        })
+    
+    # Add care-specific fields
+    if request.event_type in ["care_appointment", "grooming_appointment"]:
+        event_data.update({
+            "is_emergency": request.is_emergency,
+            "symptoms": request.symptoms,
+            "concerns": request.concerns,
+            "location_preference": request.city,
+        })
+    
+    try:
+        ticket_id = await create_ticket_from_event(db, request.event_type, event_data)
+        
+        # Also create an admin notification
+        await db.admin_notifications.insert_one({
+            "type": request.event_type,
+            "title": f"New {request.event_type.replace('_', ' ').title()} from {request.name}",
+            "message": f"Service request received. Pet: {request.pet_name or 'N/A'}",
+            "read": False,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "link": f"/admin/service-desk?ticket={ticket_id}"
+        })
+        
+        return {
+            "success": True, 
+            "request_id": request_id,
+            "ticket_id": ticket_id,
+            "message": "Your request has been received! Our concierge will contact you shortly."
+        }
+    except Exception as e:
+        print(f"Error creating service request: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create service request: {str(e)}")
+
+@router.post("/bulk/assign")
+async def bulk_assign_tickets(data: dict):
+    """Bulk assign multiple tickets to a concierge"""
+    db = get_db()
+    
+    ticket_ids = data.get("ticket_ids", [])
+    assignee = data.get("assignee")
+    
+    if not ticket_ids or not assignee:
+        raise HTTPException(status_code=400, detail="ticket_ids and assignee are required")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.tickets.update_many(
+        {"ticket_id": {"$in": ticket_ids}},
+        {"$set": {"assigned_to": assignee, "updated_at": now}}
+    )
+    
+    return {
+        "success": True,
+        "modified_count": result.modified_count,
+        "message": f"{result.modified_count} tickets assigned to {assignee}"
+    }
+
+@router.post("/bulk/status")
+async def bulk_update_status(data: dict):
+    """Bulk update status of multiple tickets"""
+    db = get_db()
+    
+    ticket_ids = data.get("ticket_ids", [])
+    new_status = data.get("status")
+    resolution_note = data.get("resolution_note")
+    
+    if not ticket_ids or not new_status:
+        raise HTTPException(status_code=400, detail="ticket_ids and status are required")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    update_doc = {"status": new_status, "updated_at": now}
+    
+    if new_status == "resolved":
+        update_doc["resolved_at"] = now
+        if resolution_note:
+            update_doc["resolution_note"] = resolution_note
+    elif new_status == "closed":
+        update_doc["closed_at"] = now
+    
+    result = await db.tickets.update_many(
+        {"ticket_id": {"$in": ticket_ids}},
+        {"$set": update_doc}
+    )
+    
+    return {
+        "success": True,
+        "modified_count": result.modified_count,
+        "message": f"{result.modified_count} tickets updated to {new_status}"
+    }
+
+@router.delete("/bulk/delete")
+async def bulk_delete_tickets(data: dict):
+    """Bulk delete multiple tickets"""
+    db = get_db()
+    
+    ticket_ids = data.get("ticket_ids", [])
+    
+    if not ticket_ids:
+        raise HTTPException(status_code=400, detail="ticket_ids is required")
+    
+    result = await db.tickets.delete_many(
+        {"ticket_id": {"$in": ticket_ids}}
+    )
+    
+    return {
+        "success": True,
+        "deleted_count": result.deleted_count,
+        "message": f"{result.deleted_count} tickets deleted"
+    }
