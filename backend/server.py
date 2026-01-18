@@ -6988,6 +6988,7 @@ app.include_router(stay_admin_router)
 app.include_router(stay_products_router)
 app.include_router(stay_social_router)
 app.include_router(stay_social_admin_router)
+app.include_router(notification_router)
 
 @app.on_event("startup")
 async def startup_load_admin_credentials():
