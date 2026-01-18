@@ -7766,7 +7766,9 @@ app.include_router(pet_soul_admin_router, prefix="/api/admin")
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
+    logger.info("Starting admin credentials load...")
     await load_admin_credentials_from_db()
+    logger.info("Admin credentials load complete")
     
     # Auto-seed blog posts if none exist
     await auto_seed_blog_posts()
