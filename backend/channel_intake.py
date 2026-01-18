@@ -285,7 +285,17 @@ async def process_intake(request: ChannelRequest) -> IntakeResponse:
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "updated_at": datetime.now(timezone.utc).isoformat()
             }
-            await db.service_desk_tickets.insert_one(ticket_doc)
+            await db.tickets.insert_one(ticket_doc)
+            
+            # Also create admin notification
+            await db.admin_notifications.insert_one({
+                "type": f"channel_intake_{request.channel}",
+                "title": f"📥 New {request.channel.title()} Order - {customer_name}",
+                "message": f"{request.message[:100]}..." if len(request.message) > 100 else request.message,
+                "read": False,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "link": f"/admin?tab=servicedesk&ticket={ticket_id}"
+            })
             
             # Update intake with ticket ID
             await db.channel_intakes.update_one(
