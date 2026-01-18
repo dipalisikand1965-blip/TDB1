@@ -332,11 +332,23 @@ const ServiceDesk = ({ authHeaders }) => {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([fetchMetadata(), fetchStats(), fetchTickets()]);
+      await Promise.all([fetchMetadata(), fetchStats(), fetchTickets(), fetchCannedResponses()]);
       setLoading(false);
     };
     loadData();
-  }, [fetchMetadata, fetchStats, fetchTickets]);
+  }, [fetchMetadata, fetchStats, fetchTickets, fetchCannedResponses]);
+
+  // Fetch customer history when ticket is selected
+  useEffect(() => {
+    if (selectedTicket) {
+      const identifier = selectedTicket.member?.email || selectedTicket.member?.phone || selectedTicket.customer_email;
+      if (identifier) {
+        fetchCustomerHistory(identifier);
+      }
+    } else {
+      setCustomerHistory(null);
+    }
+  }, [selectedTicket, fetchCustomerHistory]);
 
   // Handlers
   const handleReply = async () => {
