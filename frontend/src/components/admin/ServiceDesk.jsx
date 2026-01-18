@@ -147,6 +147,14 @@ const ServiceDesk = ({ authHeaders }) => {
   const [ticketLoading, setTicketLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   
+  // Zoho-like features
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [activeView, setActiveView] = useState('all');
+  const [savedViews, setSavedViews] = useState(DEFAULT_VIEWS);
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [activeTopTab, setActiveTopTab] = useState('tickets');
+  const [starredViews, setStarredViews] = useState(['all', 'critical', 'today']);
+  
   // Filters
   const [filters, setFilters] = useState({
     status: '',
