@@ -511,14 +511,14 @@ async def create_booking_request(booking: BookingRequest):
             "property_city": property.get("city"),
             "check_in_date": booking.check_in_date,
             "check_out_date": booking.check_out_date,
-            "adults": booking.adults,
-            "pets": booking.pets,
+            "adults": booking.num_adults,
+            "pets": booking.num_pets,
             "pet_name": booking.pet_name,
             "pet_breed": booking.pet_breed,
             "pet_age": booking.pet_age,
             "pet_weight_kg": booking.pet_weight_kg,
             "special_requests": booking.special_requests,
-            "bundle_name": booking.bundle_name
+            "bundle_name": getattr(booking, 'bundle_name', None)
         })
         logger.info(f"Auto-created ticket {ticket_id} for stay booking {booking_doc['id']}")
     except Exception as e:
