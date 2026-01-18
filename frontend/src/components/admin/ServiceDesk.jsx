@@ -148,6 +148,14 @@ const ServiceDesk = ({ authHeaders }) => {
   const [showSLAModal, setShowSLAModal] = useState(false);
   const [autoAssigning, setAutoAssigning] = useState(false);
 
+  // Bulk Actions
+  const [selectedTickets, setSelectedTickets] = useState(new Set());
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  const [bulkActionLoading, setBulkActionLoading] = useState(false);
+  
+  // Quick Filters
+  const [quickFilter, setQuickFilter] = useState('all'); // all, my_tickets, unassigned, overdue, today
+
   // Fetch data
   const fetchTickets = useCallback(async () => {
     try {
