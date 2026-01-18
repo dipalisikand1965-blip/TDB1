@@ -762,12 +762,16 @@ async def load_admin_credentials_from_db():
     global _admin_credentials_cache
     try:
         admin_config = await db.admin_config.find_one({"type": "credentials"})
+        logger.info(f"Loading admin credentials from DB: {admin_config is not None}")
         if admin_config:
             _admin_credentials_cache["username"] = admin_config.get("username")
             _admin_credentials_cache["password"] = admin_config.get("password")
             _admin_credentials_cache["loaded"] = True
+            logger.info(f"Admin credentials loaded: {_admin_credentials_cache['username']}")
+        else:
+            logger.info("No admin credentials in DB, using .env defaults")
     except Exception as e:
-        print(f"Error loading admin credentials: {e}")
+        logger.error(f"Error loading admin credentials: {e}")
 
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
     """Verify admin credentials - checks cached db credentials first, then falls back to .env"""
