@@ -115,10 +115,17 @@ export default function VoiceOrder() {
       if (customerPhone) formData.append('customer_phone', customerPhone);
       if (petName) formData.append('pet_name', petName);
 
+      // Use AbortController with 60-second timeout (voice processing can take time)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+
       const response = await fetch(`${API}/api/channels/voice/order`, {
         method: 'POST',
-        body: formData
+        body: formData,
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       // Handle non-JSON responses (like Cloudflare errors)
       const contentType = response.headers.get('content-type');
@@ -147,10 +154,10 @@ export default function VoiceOrder() {
     } catch (err) {
       console.error('Submit error:', err);
       // More specific error messages
-      if (err.name === 'TypeError' && err.message.includes('fetch')) {
-        setError('Connection failed. Please check your internet and try again.');
-      } else if (err.name === 'AbortError') {
-        setError('Request timed out. Please try a shorter recording.');
+      if (err.name === 'AbortError') {
+        setError('Request timed out. Voice processing takes a moment - please try again.');
+      } else if (err.name === 'TypeError') {
+        setError('Connection failed. Please check your internet connection.');
       } else {
         setError(`Error: ${err.message || 'Network error. Please try again.'}`);
       }
