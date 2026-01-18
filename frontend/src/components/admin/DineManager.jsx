@@ -49,10 +49,12 @@ const DineManager = ({ credentials }) => {
   const [bundleStats, setBundleStats] = useState({});
   const [editingBundle, setEditingBundle] = useState(null);
   const [isAddingBundle, setIsAddingBundle] = useState(false);
+  const [importingBundles, setImportingBundles] = useState(false);
   
   const fileInputRef = useRef(null);
   const petMenuInputRef = useRef(null);
   const csvInputRef = useRef(null);
+  const bundleCsvInputRef = useRef(null);
 
   const emptyRestaurant = {
     name: '',
