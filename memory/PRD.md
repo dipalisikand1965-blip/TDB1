@@ -338,6 +338,29 @@ Pet Menu, Off-leash area, Pet sitter, Grooming, Vet on call, Trails, Beach acces
 
 ## New Features (Jan 18, 2026)
 
+### Complete Admin Password Reset System ✅
+**World-class forgot password flow implemented:**
+
+**Pages:**
+- `/admin/forgot-password` - Request reset email
+- `/admin/reset-password?token=xxx` - Set new password
+
+**API Endpoints:**
+- `POST /api/admin/forgot-password` - Sends reset email
+- `POST /api/admin/reset-password` - Validates token & sets new password  
+- `POST /api/admin/change-password` - Change password when logged in
+
+**Security Features:**
+- 1-hour token expiration
+- Single-use tokens
+- Confirmation email on password change
+- Password validation (min 6 chars)
+- Admin email: dipali@clubconcierge.in
+
+**Files:**
+- `/app/frontend/src/pages/ForgotPassword.jsx`
+- `/app/frontend/src/pages/ResetPassword.jsx`
+
 ### Unified Notification Engine ✅ (FOUNDATION)
 **Vision**: One engine, multiple channels (Email, WhatsApp), all pillars
 
