@@ -384,10 +384,14 @@ async def voice_order(
             detail=f"Invalid audio format. Supported: {', '.join(allowed_types)}"
         )
     
-    # Check file size (25MB limit)
+    # Check file size (5MB limit for Cloudflare compatibility)
     content = await audio.read()
-    if len(content) > 25 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="Audio file too large. Maximum 25MB.")
+    max_size_mb = 5
+    if len(content) > max_size_mb * 1024 * 1024:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Audio file too large ({len(content) / (1024*1024):.1f}MB). Maximum {max_size_mb}MB - try a shorter recording (max 30 seconds)."
+        )
     
     # Reset file position for transcription
     await audio.seek(0)
