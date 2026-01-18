@@ -187,12 +187,13 @@ const Checkout = () => {
   }, [cartItems, appSettings.bakery_pickup_only_categories]);
 
   // Auto-set delivery method based on cart analysis
+  // Note: Bakery items can be delivered OR picked up - delivery is default (99% customers prefer shipping)
+  // Only auto-set when cart analysis changes, not to override user choice
   useEffect(() => {
-    if (cartAnalysis.bakeryOnlyCart) {
-      setDeliveryMethod('pickup');
-      setIsPanIndiaDelivery(false);
-    }
-  }, [cartAnalysis.bakeryOnlyCart]);
+    // Only set default if user hasn't made a selection yet (initial load)
+    // We don't force pickup for bakery items anymore - delivery is the default
+    // Pickup is available in Mumbai, Gurugram, Bangalore for those who prefer it
+  }, []);
 
   // Auto-populate from Cart Items (PDP Data)
   useEffect(() => {
