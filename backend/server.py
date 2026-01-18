@@ -6017,6 +6017,50 @@ async def get_sync_status(username: str = Depends(verify_admin)):
     }
 
 
+@admin_router.get("/sync/logs")
+async def get_sync_logs(limit: int = 10, username: str = Depends(verify_admin)):
+    """Get sync logs history with problematic products details"""
+    logs = await db.sync_logs.find(
+        {"type": "shopify"},
+        {"_id": 0}
+    ).sort("timestamp", -1).limit(limit).to_list(limit)
+    
+    # Summary stats
+    total_syncs = await db.sync_logs.count_documents({"type": "shopify"})
+    syncs_with_issues = await db.sync_logs.count_documents({
+        "type": "shopify", 
+        "problematic_count": {"$gt": 0}
+    })
+    
+    return {
+        "logs": logs,
+        "total_syncs": total_syncs,
+        "syncs_with_issues": syncs_with_issues
+    }
+
+
+@admin_router.get("/sync/problematic-products")
+async def get_problematic_products(username: str = Depends(verify_admin)):
+    """Get products that may have issues (untitled, missing data, etc.)"""
+    problematic = await db.products.find({
+        "$or": [
+            {"name": {"$regex": "^Product ", "$options": "i"}},
+            {"name": ""},
+            {"name": None},
+            {"name": {"$regex": "untitled", "$options": "i"}},
+            {"image": ""},
+            {"image": None},
+            {"price": 0},
+            {"price": None}
+        ]
+    }, {"_id": 0, "id": 1, "name": 1, "shopify_id": 1, "shopify_handle": 1, "category": 1, "image": 1, "price": 1}).to_list(100)
+    
+    return {
+        "count": len(problematic),
+        "products": problematic
+    }
+
+
 # ==================== CSV IMPORT ROUTES ====================
 
 @admin_router.post("/products/import-csv")
