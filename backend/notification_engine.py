@@ -633,7 +633,7 @@ async def get_event_types():
 @notification_router.get("/stats")
 async def get_notification_stats(days: int = 7):
     """Get notification statistics"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     since = datetime.now(timezone.utc) - timedelta(days=days)
