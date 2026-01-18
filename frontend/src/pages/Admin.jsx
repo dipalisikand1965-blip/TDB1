@@ -2182,32 +2182,88 @@ const Admin = () => {
             </div>
             
             <Card className="p-6">
+              {/* Selection header */}
+              {abandonedCarts.filter(c => c.email).length > 0 && (
+                <div className="flex items-center justify-between mb-4 pb-4 border-b">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={selectedAbandonedCarts.length === abandonedCarts.filter(c => c.email).length && abandonedCarts.filter(c => c.email).length > 0}
+                      onChange={toggleSelectAllCarts}
+                      className="w-4 h-4 rounded border-gray-300"
+                    />
+                    <span className="text-sm font-medium">Select All ({abandonedCarts.filter(c => c.email).length} with email)</span>
+                  </label>
+                  {selectedAbandonedCarts.length > 0 && (
+                    <Button size="sm" className="bg-purple-600 hover:bg-purple-700" onClick={sendRemindersToSelected}>
+                      <Mail className="w-4 h-4 mr-2" />
+                      Send to {selectedAbandonedCarts.length} Selected
+                    </Button>
+                  )}
+                </div>
+              )}
+              
               <div className="space-y-4">
                 {abandonedCarts.length === 0 ? (
                   <p className="text-gray-500 text-center py-8">No abandoned carts yet</p>
                 ) : abandonedCarts.map((cart) => (
-                  <div key={cart.id} className="p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <p className="font-medium">{cart.email || 'Unknown email'}</p>
-                        <p className="text-sm text-gray-500">{cart.name || 'Guest'}</p>
+                  <div key={cart.id} className={`p-4 rounded-lg border-2 transition-all ${selectedAbandonedCarts.includes(cart.id) ? 'border-purple-500 bg-purple-50' : 'border-transparent bg-gray-50'}`}>
+                    <div className="flex items-start gap-3">
+                      {/* Checkbox */}
+                      {cart.email && (
+                        <input 
+                          type="checkbox" 
+                          checked={selectedAbandonedCarts.includes(cart.id)}
+                          onChange={() => toggleCartSelection(cart.id)}
+                          className="mt-1 w-4 h-4 rounded border-gray-300"
+                        />
+                      )}
+                      
+                      {/* Cart Info */}
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <p className="font-medium">{cart.email || <span className="text-gray-400 italic">No email</span>}</p>
+                            <p className="text-sm text-gray-500">{cart.name || 'Guest'}</p>
+                          </div>
+                          <div className="text-right">
+                            <Badge variant={cart.status === 'converted' ? 'success' : cart.status === 'active' ? 'warning' : 'secondary'}>
+                              {cart.status}
+                            </Badge>
+                            <p className="text-lg font-bold text-purple-600 mt-1">₹{cart.subtotal?.toLocaleString()}</p>
+                          </div>
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          <p>{cart.items?.length || 0} items • Updated: {new Date(cart.updated_at).toLocaleString()}</p>
+                          <p className="text-xs text-gray-400">Reminders sent: {cart.reminders_sent || 0}</p>
+                        </div>
+                        {cart.items && cart.items.length > 0 && (
+                          <div className="mt-2 text-xs text-gray-500">
+                            Items: {cart.items.map(i => i.name).join(', ')}
+                          </div>
+                        )}
                       </div>
-                      <div className="text-right">
-                        <Badge variant={cart.status === 'converted' ? 'success' : cart.status === 'active' ? 'warning' : 'secondary'}>
-                          {cart.status}
-                        </Badge>
-                        <p className="text-lg font-bold text-purple-600 mt-1">₹{cart.subtotal?.toLocaleString()}</p>
-                      </div>
+                      
+                      {/* Individual Send Button */}
+                      {cart.email && cart.status !== 'converted' && (
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => sendReminderToCart(cart.id, cart.email)}
+                          disabled={sendingReminder === cart.id}
+                          className="flex-shrink-0"
+                        >
+                          {sendingReminder === cart.id ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <>
+                              <Mail className="w-4 h-4 mr-1" />
+                              Send
+                            </>
+                          )}
+                        </Button>
+                      )}
                     </div>
-                    <div className="text-sm text-gray-600">
-                      <p>{cart.items?.length || 0} items • Updated: {new Date(cart.updated_at).toLocaleString()}</p>
-                      <p className="text-xs text-gray-400">Reminders sent: {cart.reminders_sent || 0}</p>
-                    </div>
-                    {cart.items && cart.items.length > 0 && (
-                      <div className="mt-2 text-xs text-gray-500">
-                        Items: {cart.items.map(i => i.name).join(', ')}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
