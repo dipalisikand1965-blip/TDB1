@@ -5457,20 +5457,18 @@ async def check_abandoned_carts():
 
 async def send_abandoned_cart_email(to_email: str, name: str, items: list, 
                                      subtotal: float, reminder_config: dict, cart_id: str) -> bool:
-    """Send abandoned cart recovery email. Returns dict with success status and error message."""
+    """Send abandoned cart recovery email using admin-configured settings. Returns True if successful."""
     try:
         # Check if Resend is configured
         if not RESEND_API_KEY:
-            return {"success": False, "error": "Email service not configured (RESEND_API_KEY missing)"}
+            logger.warning("Email service not configured (RESEND_API_KEY missing)")
+            return False
         
-        # Subject lines based on reminder type
-        subjects = {
-            "first": "🛒 You left something behind at The Doggy Bakery!",
-            "second": "🐾 Your pup is still waiting! Complete your order",
-            "final": "🎁 Final reminder + 10% OFF your cart!"
-        }
-        
-        subject = subjects.get(reminder_type, subjects["first"])
+        # Get config values
+        subject = reminder_config.get("subject", "🛒 You left something behind!")
+        include_discount = reminder_config.get("include_discount", False)
+        discount_code = reminder_config.get("discount_code", "COMEBACK10")
+        discount_percent = reminder_config.get("discount_percent", 10)
         
         # Build items HTML
         items_html = ""
@@ -5495,23 +5493,21 @@ async def send_abandoned_cart_email(to_email: str, name: str, items: list,
             </tr>
             '''
         
-        # Discount code for final reminder
+        # Discount section if enabled
         discount_section = ""
-        if reminder_type == "final":
-            discount_section = '''
+        if include_discount:
+            discount_section = f'''
             <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 20px; border-radius: 12px; margin: 20px 0; text-align: center;">
                 <p style="margin: 0; font-size: 18px; font-weight: bold; color: #92400e;">🎉 Special Offer Just For You!</p>
-                <p style="margin: 10px 0 0 0; font-size: 24px; font-weight: bold; color: #78350f;">Use code: <span style="background: #fff; padding: 5px 15px; border-radius: 8px; border: 2px dashed #f59e0b;">COMEBACK10</span></p>
-                <p style="margin: 10px 0 0 0; color: #92400e;">Get 10% off your order - expires in 24 hours!</p>
+                <p style="margin: 10px 0 0 0; font-size: 24px; font-weight: bold; color: #78350f;">Use code: <span style="background: #fff; padding: 5px 15px; border-radius: 8px; border: 2px dashed #f59e0b;">{discount_code}</span></p>
+                <p style="margin: 10px 0 0 0; color: #92400e;">Get {discount_percent}% off your order - expires in 24 hours!</p>
             </div>
             '''
         
-        # Urgency messages based on type
-        urgency_messages = {
-            "first": "Your carefully selected treats are waiting! Don't let them slip away.",
-            "second": "Your furry friend deserves these goodies! We're holding your cart for you.",
-            "final": "This is your last chance to grab these treats with a special discount!"
-        }
+        # Urgency message
+        urgency_message = "Your carefully selected treats are waiting! Don't let them slip away."
+        if include_discount:
+            urgency_message = "This is your last chance to grab these treats with a special discount!"
         
         html_content = f'''
         <!DOCTYPE html>
