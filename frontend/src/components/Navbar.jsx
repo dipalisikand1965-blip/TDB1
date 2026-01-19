@@ -89,10 +89,16 @@ const Navbar = () => {
       name: 'Travel', 
       icon: Plane,
       color: 'from-blue-500 to-cyan-500',
-      description: 'Pet-friendly adventures',
+      description: 'Pet travel concierge',
       path: '/travel',
-      isActive: false,
-      subItems: []
+      isActive: true,
+      subItems: [
+        { name: '🚗 Cab / Road Travel', path: '/travel?type=cab' },
+        { name: '🚆 Train / Bus Travel', path: '/travel?type=train' },
+        { name: '✈️ Flight (Domestic)', path: '/travel?type=flight' },
+        { name: '🚚 Pet Relocation', path: '/travel?type=relocation' },
+        { name: '📦 Travel Products', path: '/travel#products' },
+      ]
     },
     { 
       id: 'care',
