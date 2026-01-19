@@ -12,7 +12,7 @@ import {
   ShoppingBag, PawPrint, Star, User, LogOut, Package, 
   MapPin, Settings, Lock, Bell, Shield, Phone, Mail,
   RefreshCw, Calendar, Pause, Play, X, MessageSquare, Edit2, Trash2, Loader2,
-  UtensilsCrossed, Users, Clock
+  UtensilsCrossed, Users, Clock, Stethoscope, Sparkles
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../hooks/use-toast';
