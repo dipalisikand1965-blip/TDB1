@@ -14,6 +14,9 @@ logger = logging.getLogger(__name__)
 
 pet_vault_router = APIRouter(prefix="/pet-vault", tags=["Pet Vault"])
 
+# Admin router for pet vault
+pet_vault_admin_router = APIRouter(tags=["Pet Vault Admin"])
+
 # Database reference (will be set from server.py)
 db = None
 
