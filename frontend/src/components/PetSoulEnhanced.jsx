@@ -783,6 +783,33 @@ const PetSoulEnhanced = ({ petId, onComplete }) => {
           </p>
         </div>
         
+        {/* Rewards Preview - NEW GAMIFICATION */}
+        <Card className="p-5 mb-8 bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 border-amber-200">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">
+              <Star className="w-6 h-6 text-white fill-white" />
+            </div>
+            <div>
+              <h3 className="font-bold text-amber-900">Earn Soul Points & Unlock Rewards!</h3>
+              <p className="text-sm text-amber-700">Complete the journey to become a Soul Master</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {GAMIFICATION.milestones.map((m, idx) => (
+              <div key={idx} className="p-2 bg-white/60 rounded-lg text-center border border-amber-200/50">
+                <span className="text-xl">{m.name.split(' ')[1]}</span>
+                <p className="text-xs font-medium text-gray-700">{m.name.split(' ')[0]}</p>
+                <p className="text-[10px] text-amber-600">{m.points} pts</p>
+              </div>
+            ))}
+          </div>
+          
+          <p className="text-xs text-center text-amber-600 mt-3">
+            🎁 Unlock discounts, free treats, and VIP status as you progress!
+          </p>
+        </Card>
+        
         {/* Benefits Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           <Card className="p-4 bg-gradient-to-br from-purple-50 to-white border-purple-100 hover:shadow-md transition-shadow">
