@@ -616,8 +616,17 @@ async def lifespan(app: FastAPI):
         replace_existing=True
     )
     
+    # Add health reminder check (runs daily at 9 AM IST = 3:30 AM UTC)
+    from pet_vault_routes import check_health_reminders
+    scheduler.add_job(
+        check_health_reminders,
+        CronTrigger(hour=3, minute=30),
+        id="health_reminders",
+        replace_existing=True
+    )
+    
     scheduler.start()
-    logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min)")
+    logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min), health reminders (daily 9 AM)")
     
     yield
     
