@@ -478,7 +478,7 @@ const CareManager = ({ getAuthHeader }) => {
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Status</SelectItem>
+                  <SelectItem value="all">All Status</SelectItem>
                   {Object.entries(STATUS_BADGES).map(([key, val]) => (
                     <SelectItem key={key} value={key}>{val.label}</SelectItem>
                   ))}
@@ -489,7 +489,7 @@ const CareManager = ({ getAuthHeader }) => {
                   <SelectValue placeholder="Care Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="grooming">Grooming</SelectItem>
                   <SelectItem value="walks">Walks & Sitting</SelectItem>
                   <SelectItem value="training">Training</SelectItem>
@@ -504,7 +504,7 @@ const CareManager = ({ getAuthHeader }) => {
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Priority</SelectItem>
+                  <SelectItem value="all">All Priority</SelectItem>
                   <SelectItem value="urgent">Urgent</SelectItem>
                   <SelectItem value="high">High</SelectItem>
                   <SelectItem value="normal">Normal</SelectItem>
