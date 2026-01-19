@@ -8104,6 +8104,7 @@ app.include_router(notification_router)
 app.include_router(channel_router)
 app.include_router(mis_router)
 app.include_router(rewards_router)
+app.include_router(travel_router)  # Travel Pillar
 app.include_router(pet_soul_router, prefix="/api")
 app.include_router(pet_soul_admin_router, prefix="/api/admin")
 app.include_router(pet_vault_router, prefix="/api")
