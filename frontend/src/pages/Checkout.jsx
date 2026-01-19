@@ -1273,6 +1273,68 @@ _GST applicable on final invoice_
                     </p>
                   </div>
                 )}
+                
+                {/* Breed-Specific Product Recommendations */}
+                {breedProducts.length > 0 && (
+                  <div className="mt-4 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <PawPrint className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-blue-900">Perfect for {formData.petBreed}! 🐕</h3>
+                        <p className="text-xs text-blue-600">Products specially made for this breed</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                      {breedProducts.slice(0, 4).map((product, idx) => (
+                        <div 
+                          key={product.id || idx}
+                          className="bg-white rounded-lg p-2 flex items-center gap-2 cursor-pointer hover:shadow-md transition-shadow"
+                          onClick={() => {
+                            // Add to cart or navigate
+                            navigate(`/cakes?product=${product.id}`);
+                          }}
+                        >
+                          <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                            {(product.image || product.images?.[0]) ? (
+                              <img 
+                                src={product.image || product.images[0]} 
+                                alt={product.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                <Package className="w-5 h-5" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-medium text-gray-900 line-clamp-1">{product.name}</p>
+                            <p className="text-xs text-blue-600">₹{product.price}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="w-full mt-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 text-xs"
+                      onClick={() => navigate(`/cakes?breed=${encodeURIComponent(formData.petBreed)}`)}
+                    >
+                      View all products for {formData.petBreed}
+                    </Button>
+                  </div>
+                )}
+                
+                {loadingBreedProducts && formData.petBreed && (
+                  <div className="mt-4 flex items-center gap-2 text-sm text-blue-600">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Finding products for {formData.petBreed}...</span>
+                  </div>
+                )}
               </Card>
 
               {/* Store Pickup Section (only when pickup is selected for bakery-only carts) */}
