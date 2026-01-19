@@ -4329,6 +4329,82 @@ async def update_product_display_tags(product_id: str, tags: List[str]):
     
     return {"success": True, "tags": tags}
 
+
+# ==================== BREED TAGS FOR PRODUCTS ====================
+
+# Common dog breeds for tagging
+BREED_TAG_OPTIONS = [
+    "Labrador", "Golden Retriever", "German Shepherd", "Beagle", "Poodle",
+    "Bulldog", "French Bulldog", "Rottweiler", "Yorkshire Terrier", "Boxer",
+    "Dachshund", "Siberian Husky", "Doberman", "Great Dane", "Shih Tzu",
+    "Miniature Schnauzer", "Shiba Inu", "Pomeranian", "Boston Terrier", "Corgi",
+    "Australian Shepherd", "Cocker Spaniel", "Pug", "Maltese", "Chihuahua",
+    "Border Collie", "Bernese Mountain Dog", "Samoyed", "Akita", "Lhasa Apso",
+    "Bichon Frise", "Cavalier King Charles Spaniel", "Jack Russell Terrier",
+    "Indie", "Mixed Breed", "Small Breed", "Medium Breed", "Large Breed", "Giant Breed"
+]
+
+@api_router.get("/admin/breed-tags/options")
+async def get_breed_tag_options():
+    """Get available breed tag options"""
+    return {"breeds": BREED_TAG_OPTIONS}
+
+
+@api_router.put("/admin/products/{product_id}/breed-tags")
+async def update_product_breed_tags(product_id: str, breed_tags: List[str]):
+    """Update breed tags for a product"""
+    result = await db.products.update_one(
+        {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+        {"$set": {"breed_tags": breed_tags, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"success": True, "breed_tags": breed_tags}
+
+
+@api_router.post("/admin/products/bulk-breed-tags")
+async def bulk_update_breed_tags(data: dict):
+    """Bulk update breed tags for multiple products"""
+    product_ids = data.get("product_ids", [])
+    breed_tags = data.get("breed_tags", [])
+    action = data.get("action", "add")  # "add", "remove", or "set"
+    
+    if not product_ids:
+        raise HTTPException(status_code=400, detail="No product IDs provided")
+    
+    updated_count = 0
+    for product_id in product_ids:
+        if action == "set":
+            update = {"$set": {"breed_tags": breed_tags}}
+        elif action == "add":
+            update = {"$addToSet": {"breed_tags": {"$each": breed_tags}}}
+        elif action == "remove":
+            update = {"$pull": {"breed_tags": {"$in": breed_tags}}}
+        else:
+            continue
+            
+        result = await db.products.update_one(
+            {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+            {**update, "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        if result.modified_count > 0:
+            updated_count += 1
+    
+    return {"success": True, "updated_count": updated_count}
+
+
+@api_router.get("/admin/products/by-breed/{breed}")
+async def get_products_by_breed(breed: str, limit: int = 50):
+    """Get all products tagged with a specific breed"""
+    products = await db.products.find(
+        {"breed_tags": {"$regex": breed, "$options": "i"}},
+        {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1, "breed_tags": 1, "category": 1}
+    ).limit(limit).to_list(limit)
+    
+    return {"breed": breed, "products": products, "count": len(products)}
+
 @api_router.put("/admin/products/{product_id}/bundle-config")
 async def update_product_bundle_config(product_id: str, bundle_config: dict):
     """Update bundle configuration for a product"""
