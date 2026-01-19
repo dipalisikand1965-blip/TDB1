@@ -198,7 +198,7 @@ function MainLayout() {
         <Route path="/celebrate/:category" element={<ProductListing />} />
         <Route path="/dine" element={<DinePage />} />
         <Route path="/stay" element={<StayPage />} />
-        <Route path="/travel" element={<PillarPage />} />
+        <Route path="/travel" element={<TravelPage />} />
         <Route path="/care" element={<PillarPage />} />
         <Route path="/pillar/:pillarId" element={<PillarPage />} />
         
