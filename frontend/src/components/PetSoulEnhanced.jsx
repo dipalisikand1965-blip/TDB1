@@ -11,6 +11,7 @@ import {
   Clock, Shield
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
+import BreedAutocomplete from './BreedAutocomplete';
 
 // Folder icon mapping
 const FOLDER_ICONS = {
