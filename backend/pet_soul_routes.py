@@ -753,7 +753,7 @@ async def admin_get_questions():
     }
 
 
-@pet_soul_admin_router.get("/admin/insights-summary")
+@pet_soul_admin_router.get("/insights-summary")
 async def admin_insights_summary():
     """Admin: Get aggregated insights across all pets"""
     pets = await db.pets.find({"insights": {"$exists": True}}, {"insights": 1}).to_list(10000)
