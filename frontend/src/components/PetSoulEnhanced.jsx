@@ -414,8 +414,9 @@ const PetSoulEnhanced = ({ petId, onComplete }) => {
             setAnswers(pData.pet.doggy_soul_answers || {});
             setCurrentQuestion(pData.next_question);
             
-            // Determine starting step
-            if (!pData.pet.identity || !pData.pet.identity.name) {
+            // Determine starting step - check both identity.name and top-level name
+            const petName = pData.pet.identity?.name || pData.pet.name;
+            if (!petName) {
               setStep('identity');
             } else if (pData.scores.overall < 100) {
               setStep('questions');
