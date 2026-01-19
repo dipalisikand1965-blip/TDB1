@@ -8301,6 +8301,26 @@ class AgentPasswordChange(BaseModel):
     new_password: str
 
 
+@app.put("/api/admin/agents/{agent_id}/password")
+async def reset_agent_password(agent_id: str, password_data: AgentPasswordChange, credentials: HTTPBasicCredentials = Depends(security)):
+    """Reset agent password (admin only)"""
+    verify_admin(credentials)
+    
+    # Hash the new password
+    password_hash = pwd_context.hash(password_data.new_password)
+    
+    # Update password
+    result = await db.agents.update_one(
+        {"$or": [{"id": agent_id}, {"username": agent_id.lower()}]},
+        {"$set": {"password_hash": password_hash, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    
+    return {"success": True, "message": "Password updated successfully"}
+
+
 @app.get("/api/admin/agents")
 async def list_agents(credentials: HTTPBasicCredentials = Depends(security)):
     """List all agents"""
