@@ -12,9 +12,30 @@
 ### What Was Built
 ✅ **Complete Travel Pillar Admin System** in `TravelManager.jsx`:
 - **Requests Tab**: View/manage travel requests with status filters (submitted, reviewing, coordinating, confirmed, completed, cancelled)
+- **Partners Tab**: Full partner management for cab services, airlines, train services, relocation companies
 - **Products Tab**: CRUD for travel products (crates, carriers, harnesses, calming treats) with CSV import/export
 - **Bundles Tab**: CRUD for travel bundles (Cab Kit, Train Kit, Flight Kit, Relocation Pack) with CSV import/export  
 - **Settings Tab**: Paw Rewards & Birthday Perks configuration
+
+✅ **Travel Partner Management** (NEW - Jan 19):
+- Partner CRUD API endpoints in `travel_routes.py`
+- Partner types: Pet Cab Service, Airline Partner, Train/Bus Service, Relocation Company, Cargo/Freight
+- Partner fields: contact info, cities covered, commission %, rating, pet policy, special features, verification status
+
+✅ **Abandoned Cart Settings UI** (NEW - Jan 19):
+- Settings modal in Admin → Abandoned Carts tab
+- Toggle auto send reminders
+- Configure 3-level email sequence with timing (1h, 24h, 72h)
+- Per-reminder discount code and percentage options
+
+✅ **Pet Soul / My Pets Navigation** (FIXED - Jan 19):
+- Shows "🐾 Pet Soul" for guests (links to /pet-soul public page)
+- Shows "🐾 My Pets" for logged-in users (links to /my-pets private page)
+- Works in both desktop and mobile navigation
+
+✅ **Member Dashboard Pillar Tabs** (FIXED - Jan 19):
+- Added Celebrations, Stay, Travel tabs alongside existing tabs
+- Each tab shows relevant stats and history for that pillar
 
 ✅ **Backend Endpoints** in `travel_routes.py`:
 - `POST /api/travel/admin/seed-products` - Seeds 10 default products + 5 bundles
