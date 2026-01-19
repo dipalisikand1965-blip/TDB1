@@ -8192,6 +8192,264 @@ async def get_password_info(credentials: HTTPBasicCredentials = Depends(security
         "username": credentials.username
     }
 
+
+# ==================== AGENT MANAGEMENT SYSTEM ====================
+
+# Password hashing for agents
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Available permissions for agents
+AGENT_PERMISSIONS = [
+    "notifications",
+    "orders", 
+    "service_desk",
+    "unified_inbox",
+    "fulfilment"
+]
+
+class AgentCreate(BaseModel):
+    username: str
+    password: str
+    name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    permissions: List[str] = ["service_desk", "unified_inbox"]
+    
+class AgentUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    permissions: Optional[List[str]] = None
+    is_active: Optional[bool] = None
+
+class AgentPasswordChange(BaseModel):
+    new_password: str
+
+
+@api_router.get("/admin/agents")
+async def list_agents(credentials: HTTPBasicCredentials = Depends(security)):
+    """List all agents"""
+    verify_admin(credentials)
+    
+    agents = await db.agents.find({}, {"_id": 0, "password_hash": 0}).to_list(1000)
+    return {"agents": agents, "count": len(agents)}
+
+
+@api_router.post("/admin/agents")
+async def create_agent(agent: AgentCreate, credentials: HTTPBasicCredentials = Depends(security)):
+    """Create a new agent"""
+    verify_admin(credentials)
+    
+    # Check if username already exists
+    existing = await db.agents.find_one({"username": agent.username.lower()})
+    if existing:
+        raise HTTPException(status_code=400, detail="Username already exists")
+    
+    # Validate permissions
+    invalid_perms = [p for p in agent.permissions if p not in AGENT_PERMISSIONS]
+    if invalid_perms:
+        raise HTTPException(status_code=400, detail=f"Invalid permissions: {invalid_perms}")
+    
+    # Create agent document
+    agent_doc = {
+        "id": str(uuid.uuid4()),
+        "username": agent.username.lower(),
+        "password_hash": pwd_context.hash(agent.password),
+        "name": agent.name,
+        "email": agent.email,
+        "phone": agent.phone,
+        "permissions": agent.permissions,
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "last_login": None,
+        "login_count": 0
+    }
+    
+    await db.agents.insert_one(agent_doc)
+    
+    # Remove sensitive data before returning
+    del agent_doc["password_hash"]
+    del agent_doc["_id"] if "_id" in agent_doc else None
+    
+    return {"success": True, "agent": agent_doc}
+
+
+@api_router.get("/admin/agents/{agent_id}")
+async def get_agent(agent_id: str, credentials: HTTPBasicCredentials = Depends(security)):
+    """Get agent details"""
+    verify_admin(credentials)
+    
+    agent = await db.agents.find_one(
+        {"$or": [{"id": agent_id}, {"username": agent_id.lower()}]},
+        {"_id": 0, "password_hash": 0}
+    )
+    
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    
+    return {"agent": agent}
+
+
+@api_router.put("/admin/agents/{agent_id}")
+async def update_agent(agent_id: str, updates: AgentUpdate, credentials: HTTPBasicCredentials = Depends(security)):
+    """Update agent details"""
+    verify_admin(credentials)
+    
+    # Build update document
+    update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    
+    if updates.name is not None:
+        update_doc["name"] = updates.name
+    if updates.email is not None:
+        update_doc["email"] = updates.email
+    if updates.phone is not None:
+        update_doc["phone"] = updates.phone
+    if updates.is_active is not None:
+        update_doc["is_active"] = updates.is_active
+    if updates.permissions is not None:
+        # Validate permissions
+        invalid_perms = [p for p in updates.permissions if p not in AGENT_PERMISSIONS]
+        if invalid_perms:
+            raise HTTPException(status_code=400, detail=f"Invalid permissions: {invalid_perms}")
+        update_doc["permissions"] = updates.permissions
+    
+    result = await db.agents.update_one(
+        {"$or": [{"id": agent_id}, {"username": agent_id.lower()}]},
+        {"$set": update_doc}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    
+    # Get updated agent
+    agent = await db.agents.find_one(
+        {"$or": [{"id": agent_id}, {"username": agent_id.lower()}]},
+        {"_id": 0, "password_hash": 0}
+    )
+    
+    return {"success": True, "agent": agent}
+
+
+@api_router.put("/admin/agents/{agent_id}/password")
+async def change_agent_password(agent_id: str, data: AgentPasswordChange, credentials: HTTPBasicCredentials = Depends(security)):
+    """Change agent password (admin only)"""
+    verify_admin(credentials)
+    
+    if len(data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    result = await db.agents.update_one(
+        {"$or": [{"id": agent_id}, {"username": agent_id.lower()}]},
+        {"$set": {
+            "password_hash": pwd_context.hash(data.new_password),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    
+    return {"success": True, "message": "Password changed successfully"}
+
+
+@api_router.delete("/admin/agents/{agent_id}")
+async def delete_agent(agent_id: str, credentials: HTTPBasicCredentials = Depends(security)):
+    """Delete an agent"""
+    verify_admin(credentials)
+    
+    result = await db.agents.delete_one(
+        {"$or": [{"id": agent_id}, {"username": agent_id.lower()}]}
+    )
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    
+    return {"success": True, "message": "Agent deleted"}
+
+
+@api_router.get("/admin/agents/permissions/options")
+async def get_permission_options():
+    """Get available permission options for agents"""
+    return {
+        "permissions": [
+            {"id": "notifications", "name": "Notifications", "icon": "🔔", "description": "View and manage notifications"},
+            {"id": "orders", "name": "Orders", "icon": "📦", "description": "View and manage orders"},
+            {"id": "service_desk", "name": "Service Desk", "icon": "🎫", "description": "Handle customer tickets"},
+            {"id": "unified_inbox", "name": "Unified Inbox", "icon": "📥", "description": "View all customer requests"},
+            {"id": "fulfilment", "name": "Fulfilment", "icon": "🚚", "description": "Manage order fulfilment"}
+        ]
+    }
+
+
+# ==================== AGENT LOGIN (Separate from Admin) ====================
+
+class AgentLoginRequest(BaseModel):
+    username: str
+    password: str
+
+@api_router.post("/agent/login")
+async def agent_login(request: AgentLoginRequest):
+    """
+    Agent login endpoint - separate from admin login.
+    Returns agent info and permissions if successful.
+    """
+    # Find agent by username
+    agent = await db.agents.find_one({"username": request.username.lower()})
+    
+    if not agent:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    # Verify password
+    if not pwd_context.verify(request.password, agent.get("password_hash", "")):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    # Check if agent is active
+    if not agent.get("is_active", True):
+        raise HTTPException(status_code=403, detail="Account is disabled. Contact your administrator.")
+    
+    # Update login stats
+    await db.agents.update_one(
+        {"id": agent["id"]},
+        {
+            "$set": {"last_login": datetime.now(timezone.utc).isoformat()},
+            "$inc": {"login_count": 1}
+        }
+    )
+    
+    # Return agent info (without password)
+    return {
+        "success": True,
+        "agent": {
+            "id": agent["id"],
+            "username": agent["username"],
+            "name": agent["name"],
+            "email": agent.get("email"),
+            "phone": agent.get("phone"),
+            "permissions": agent.get("permissions", []),
+            "is_active": agent.get("is_active", True)
+        }
+    }
+
+
+@api_router.post("/agent/verify")
+async def verify_agent_session(data: dict):
+    """Verify if an agent session is still valid"""
+    agent_id = data.get("agent_id")
+    
+    if not agent_id:
+        raise HTTPException(status_code=400, detail="Agent ID required")
+    
+    agent = await db.agents.find_one(
+        {"id": agent_id},
+        {"_id": 0, "password_hash": 0}
+    )
+    
+    if not agent or not agent.get("is_active", True):
+        raise HTTPException(status_code=401, detail="Session invalid")
+    
+    return {"valid": True, "agent": agent}
+
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
