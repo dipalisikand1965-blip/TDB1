@@ -4346,8 +4346,50 @@ BREED_TAG_OPTIONS = [
 
 @api_router.get("/admin/breed-tags/options")
 async def get_breed_tag_options():
-    """Get available breed tag options"""
-    return {"breeds": BREED_TAG_OPTIONS}
+    """Get available breed tag options (combines default + custom from DB)"""
+    # Get custom breeds from DB
+    custom_breeds_doc = await db.app_settings.find_one({"key": "custom_breeds"})
+    custom_breeds = custom_breeds_doc.get("breeds", []) if custom_breeds_doc else []
+    
+    # Combine default + custom breeds and sort
+    all_breeds = sorted(set(BREED_TAG_OPTIONS + custom_breeds))
+    return {"breeds": all_breeds}
+
+@api_router.post("/admin/breed-tags/add")
+async def add_custom_breed(data: dict):
+    """Add a new custom breed to the available options"""
+    breed = data.get("breed", "").strip()
+    
+    if not breed:
+        raise HTTPException(status_code=400, detail="Breed name is required")
+    
+    # Format breed name properly (Title Case)
+    breed = " ".join(word.capitalize() for word in breed.split())
+    
+    # Check if it already exists in default options
+    if breed in BREED_TAG_OPTIONS:
+        raise HTTPException(status_code=400, detail="Breed already exists in default options")
+    
+    # Get existing custom breeds
+    custom_breeds_doc = await db.app_settings.find_one({"key": "custom_breeds"})
+    custom_breeds = custom_breeds_doc.get("breeds", []) if custom_breeds_doc else []
+    
+    # Check if already in custom breeds
+    if breed in custom_breeds:
+        raise HTTPException(status_code=400, detail="Breed already exists")
+    
+    # Add new breed
+    custom_breeds.append(breed)
+    custom_breeds.sort()
+    
+    # Upsert to DB
+    await db.app_settings.update_one(
+        {"key": "custom_breeds"},
+        {"$set": {"breeds": custom_breeds, "updated_at": datetime.now(timezone.utc).isoformat()}},
+        upsert=True
+    )
+    
+    return {"success": True, "breed": breed, "total_breeds": len(BREED_TAG_OPTIONS) + len(custom_breeds)}
 
 
 @api_router.put("/admin/products/{product_id}/breed-tags")
