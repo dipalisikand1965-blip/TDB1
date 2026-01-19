@@ -14,6 +14,7 @@ import {
   Crown, AlertCircle, Tag, Star, Loader2, X, Store, Package, Info
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
+import BreedAutocomplete from '../components/BreedAutocomplete';
 
 const WHATSAPP_NUMBER = process.env.REACT_APP_WHATSAPP_NUMBER || '919663185747';
 const BUSINESS_EMAIL = process.env.REACT_APP_BUSINESS_EMAIL || 'woof@thedoggybakery.in';
