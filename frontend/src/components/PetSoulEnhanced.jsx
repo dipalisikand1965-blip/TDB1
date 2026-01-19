@@ -904,20 +904,63 @@ const PetSoulEnhanced = ({ petId, onComplete }) => {
   }
   
   if (step === 'complete') {
+    const achievedMilestones = GAMIFICATION.milestones.filter(m => (progress?.overall || 100) >= m.percent);
+    const highestMilestone = achievedMilestones[achievedMilestones.length - 1];
+    
     return (
       <div className="py-8 px-4 max-w-xl mx-auto text-center">
-        <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <Sparkles className="w-12 h-12 text-green-600" />
+        <Confetti active={showConfetti} />
+        
+        {/* Celebration Header */}
+        <div className="relative mb-6">
+          <div className="w-24 h-24 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto shadow-lg">
+            <Crown className="w-12 h-12 text-white" />
+          </div>
+          <div className="absolute -top-2 -right-2 left-0 right-0 flex justify-center">
+            <span className="text-4xl animate-bounce">🎉</span>
+          </div>
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Doggy Soul Complete! 🎉</h2>
-        <p className="text-gray-600 mb-8">
-          We now know {pet?.identity?.name || 'your pet'} so much better. This helps us personalize every experience.
+        
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent mb-2">
+          {highestMilestone?.name || 'Soul Master 👑'}
+        </h2>
+        <p className="text-lg text-gray-600 mb-6">
+          {pet?.identity?.name || 'Your pet'}'s Soul is complete!
         </p>
-        <div className="flex justify-center mb-8">
-          <ScoreRing score={progress?.overall || 100} size={120} strokeWidth={10} />
+        
+        {/* Points Earned */}
+        <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl p-6 mb-6 border border-amber-200">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <Star className="w-8 h-8 text-amber-500 fill-amber-500" />
+            <span className="text-4xl font-bold text-amber-700">{soulPoints || calculatePoints(100)}</span>
+          </div>
+          <p className="text-amber-600 font-medium">Soul Points Earned!</p>
         </div>
-        <Button onClick={onComplete} className="bg-purple-600 hover:bg-purple-700">
+        
+        {/* Rewards Unlocked */}
+        <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 text-left">
+          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <Gift className="w-5 h-5 text-purple-600" />
+            Rewards Unlocked
+          </h3>
+          <div className="space-y-2">
+            {achievedMilestones.map((m, idx) => (
+              <div key={idx} className="flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 text-green-500" />
+                <span className="text-gray-700">{m.reward}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Score Ring */}
+        <div className="flex justify-center mb-6">
+          <ScoreRing score={progress?.overall || 100} size={100} strokeWidth={8} color="#8B5CF6" />
+        </div>
+        
+        <Button onClick={onComplete} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-8 py-3">
           View Full Profile
+          <ChevronRight className="w-5 h-5 ml-2" />
         </Button>
       </div>
     );
@@ -926,13 +969,64 @@ const PetSoulEnhanced = ({ petId, onComplete }) => {
   // Questions step
   return (
     <div className="py-8 px-4">
-      {/* Progress Header */}
+      <Confetti active={showConfetti} />
+      <RewardsModal 
+        isOpen={showRewardsModal} 
+        onClose={() => setShowRewardsModal(false)}
+        currentProgress={progress?.overall || 0}
+        totalPoints={soulPoints}
+      />
+      
+      {/* Gamified Progress Header */}
       <div className="max-w-xl mx-auto mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-500">Building {pet?.identity?.name || 'pet'}'s soul</span>
-          <span className="text-sm font-semibold text-purple-600">{Math.round(progress?.overall || 0)}% complete</span>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-500">Building {pet?.identity?.name || 'pet'}'s soul</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <PointsDisplay points={soulPoints} newPoints={newPointsEarned} />
+            <button 
+              onClick={() => setShowRewardsModal(true)}
+              className="p-2 rounded-full bg-purple-100 hover:bg-purple-200 transition-colors"
+            >
+              <Trophy className="w-4 h-4 text-purple-600" />
+            </button>
+          </div>
         </div>
-        <Progress value={progress?.overall || 0} className="h-2" />
+        
+        {/* Progress Bar with Milestones */}
+        <div className="relative">
+          <Progress value={progress?.overall || 0} className="h-3 bg-gray-100" />
+          <div className="absolute top-0 left-0 right-0 h-3 flex justify-between pointer-events-none">
+            {GAMIFICATION.milestones.map((m) => (
+              <div 
+                key={m.percent}
+                className="relative"
+                style={{ left: `${m.percent}%`, position: 'absolute', transform: 'translateX(-50%)' }}
+              >
+                <div className={`w-4 h-4 rounded-full border-2 ${
+                  (progress?.overall || 0) >= m.percent 
+                    ? 'bg-purple-600 border-purple-600' 
+                    : 'bg-white border-gray-300'
+                } -mt-0.5`}>
+                  {(progress?.overall || 0) >= m.percent && (
+                    <Check className="w-3 h-3 text-white" style={{ marginTop: '-1px', marginLeft: '1px' }} />
+                  )}
+                </div>
+                <span className="absolute top-5 left-1/2 -translate-x-1/2 text-[10px] text-gray-400 whitespace-nowrap">
+                  {m.percent}%
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="flex justify-between mt-6 text-xs">
+          <span className="text-gray-400">🐾 Explorer</span>
+          <span className="text-gray-400">🌟 Adventurer</span>
+          <span className="text-gray-400">🏆 Champion</span>
+          <span className="text-gray-400">👑 Master</span>
+        </div>
       </div>
       
       {/* Current Question */}
