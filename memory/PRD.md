@@ -1,7 +1,7 @@
 # The Doggy Company - Pet Life Operating System
 
 ## Original Problem Statement
-Build a world-class, event-driven platform with a single engine powering multiple business "Pillars" (Celebrate, Stay, Dine, Travel, etc.). Key components include the **"Pet Soul"** (a deep, evolving pet profile), a **"Unified Inbox"** for all customer requests, a **"Membership"** layer, and a robust Admin/Agent experience.
+Build a world-class, event-driven platform with a single engine powering multiple business "Pillars" (Celebrate, Stay, Dine, Travel, Care, etc.). Key components include the **"Pet Soul"** (a deep, evolving pet profile), a **"Unified Inbox"** for all customer requests, a **"Membership"** layer, and a robust Admin/Agent experience.
 
 ## Core Strategy
 **Data Flywheel**: Every interaction enriches the "Pet Soul," making the platform proactively intelligent.
@@ -60,23 +60,31 @@ Build a world-class, event-driven platform with a single engine powering multipl
 **Dine Pillar** ✅
 - Restaurant listings with filters
 - Menu browsing
-- Voice ordering feature (requires production deployment for full function)
+- Voice ordering feature
 
 **Stay Pillar** ✅
 - Pet-friendly accommodation search
 - Booking system
 - My Bookings for users
 
-**Travel Pillar** ✅ (January 19, 2026)
-- Brilliant single-flow design with wizard modal
+**Travel Pillar** ✅
+- Single-flow design with wizard modal
 - 4 travel types: Cab, Train, Flight, Relocation
-- 12 seeded products + 5 bundles
+- 12 products + 5 bundles
 - Full admin management (Products, Bundles, Partners, Settings)
-- CSV import/export for products
-- Service flow → Service Desk + Unified Inbox + Pet Soul updates
+- CSV import/export
+
+**Care Pillar** ✅ (January 19, 2026)
+- Profile-first pet wellbeing layer
+- 7 care types: Grooming, Walks & Sitting, Training, Vet Coordination, Emergency, Special Needs, Routine
+- Beautiful frontend with wizard modal
+- Admin CareManager with 5 tabs (Requests, Partners, Products, Bundles, Settings)
+- 12 products + 5 bundles seeded
+- CSV import/export
+- Service Desk + Unified Inbox + Pet Soul integration
 
 **Celebrations Pillar** ✅
-- Basic structure in place
+- Custom cakes, treats, birthday celebrations
 
 #### Service Desk
 - Ticket management
@@ -88,7 +96,7 @@ Build a world-class, event-driven platform with a single engine powering multipl
 - Dashboard with metrics
 - User management
 - Product management (Shopify sync)
-- Travel Manager (5 tabs)
+- Travel Manager, Care Manager
 - Abandoned cart settings UI
 
 ---
@@ -128,10 +136,9 @@ Build a world-class, event-driven platform with a single engine powering multipl
 2. Deployment readiness checklist
 
 ### Future/Backlog
-1. Care Pillar
+1. Additional pillars (as needed)
 2. WhatsApp integration
 3. Google Calendar integration
-4. International flights support
 
 ---
 
@@ -153,13 +160,32 @@ Build a world-class, event-driven platform with a single engine powering multipl
 - `users` - User accounts
 - `pets` - Pet profiles with soul data
 - `travel_requests` - Travel booking requests
-- `travel_partners` - Partner companies
-- `products` - All products including travel items
+- `care_requests` - Care service requests
+- `travel_partners` - Travel partner companies
+- `care_partners` - Care service providers (groomers, walkers, trainers)
+- `products` - All products including travel and care items
 - `product_bundles` - Bundled offerings
 - `tickets` - Service desk tickets
 - `channel_intakes` - Unified inbox entries
 - `memberships` - (To be created)
 - `app_settings` - Global configuration
+
+---
+
+## Key Files Reference
+
+### Backend
+- `/app/backend/server.py` - Main FastAPI server
+- `/app/backend/travel_routes.py` - Travel pillar APIs
+- `/app/backend/care_routes.py` - Care pillar APIs (NEW)
+- `/app/backend/membership_routes.py` - Membership APIs (WIP)
+
+### Frontend
+- `/app/frontend/src/pages/TravelPage.jsx` - Travel pillar page
+- `/app/frontend/src/pages/CarePage.jsx` - Care pillar page (NEW)
+- `/app/frontend/src/components/admin/TravelManager.jsx` - Travel admin
+- `/app/frontend/src/components/admin/CareManager.jsx` - Care admin (NEW)
+- `/app/frontend/src/pages/Admin.jsx` - Main admin panel
 
 ---
 
@@ -172,4 +198,4 @@ Build a world-class, event-driven platform with a single engine powering multipl
 ---
 
 ## Last Updated
-January 19, 2026 - Travel Page redesign complete
+January 19, 2026 - Care Pillar full build complete
