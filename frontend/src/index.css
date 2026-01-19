@@ -115,7 +115,14 @@ code {
 }
 
 /* Hide Emergent badge */
-#emergent-badge {
+#emergent-badge,
+[id="emergent-badge"],
+a[href*="emergent"] {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
 }
 
