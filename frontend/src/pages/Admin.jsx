@@ -1486,6 +1486,11 @@ const Admin = () => {
           <CelebrationsCalendar />
         )}
 
+        {/* Breed Tags Manager */}
+        {activeTab === 'breed-tags' && (
+          <BreedTagsManager />
+        )}
+
         {/* Orders Tab */}
         {activeTab === 'orders' && (
           <OrdersTab 
