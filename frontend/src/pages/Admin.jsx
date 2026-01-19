@@ -1353,6 +1353,7 @@ const Admin = () => {
             { id: 'pets', label: '🐾 Pet Profiles', icon: PawPrint },
             { id: 'celebrations', label: '🎉 Celebrations', icon: Calendar },
             { id: 'servicedesk', label: '🎫 Service Desk', icon: Ticket },
+            { id: 'agents', label: '👤 Agents', icon: Users },
             { id: 'loyalty', label: '⭐ Loyalty', icon: Star },
             { id: 'reports', label: '📊 Reports', icon: BarChart3 },
             { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
