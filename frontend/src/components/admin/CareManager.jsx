@@ -359,9 +359,9 @@ const CareManager = ({ getAuthHeader }) => {
 
   // Filter requests
   const filteredRequests = requests.filter(r => {
-    if (statusFilter && r.status !== statusFilter) return false;
-    if (typeFilter && r.care_type !== typeFilter) return false;
-    if (priorityFilter && r.priority !== priorityFilter) return false;
+    if (statusFilter && statusFilter !== 'all' && r.status !== statusFilter) return false;
+    if (typeFilter && typeFilter !== 'all' && r.care_type !== typeFilter) return false;
+    if (priorityFilter && priorityFilter !== 'all' && r.priority !== priorityFilter) return false;
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       return (
