@@ -936,3 +936,254 @@ async def learn_from_order(db, order_data: dict):
     except Exception as e:
         logger.error(f"Auto-learn from order failed: {e}", exc_info=True)
         return {"learned": False, "error": str(e)}
+
+
+# ============================================
+# CELEBRATIONS CALENDAR API
+# ============================================
+
+# 2026 Indian Festival Dates
+FESTIVAL_DATES_2026 = {
+    "Diwali": "2026-10-20",
+    "Holi": "2026-03-17",
+    "Christmas": "2026-12-25",
+    "New Year": "2026-01-01",
+    "Valentine's Day": "2026-02-14",
+    "Raksha Bandhan": "2026-08-12",
+    "Ganesh Chaturthi": "2026-09-08",
+    "Navratri": "2026-10-01",
+    "Dussehra": "2026-10-10",
+    "Eid": "2026-06-28",
+    "Easter": "2026-04-05",
+    "Independence Day": "2026-08-15"
+}
+
+@pet_soul_admin_router.get("/celebrations-calendar")
+async def get_celebrations_calendar(
+    days_ahead: int = Query(90, ge=1, le=365),
+    include_festivals: bool = True
+):
+    """
+    Get upcoming pet celebrations calendar for admin dashboard.
+    Shows birthdays, gotcha days, and selected festival celebrations.
+    """
+    from datetime import timedelta
+    
+    today = datetime.now()
+    end_date = today + timedelta(days=days_ahead)
+    
+    upcoming = []
+    
+    # Get all pets with their celebrations and birth dates
+    pets = await db.pets.find(
+        {},
+        {
+            "_id": 0, 
+            "id": 1,
+            "name": 1, 
+            "birth_date": 1,
+            "identity.birth_date": 1,
+            "gotcha_date": 1,
+            "identity.gotcha_date": 1,
+            "breed": 1,
+            "identity.breed": 1,
+            "celebrations": 1,
+            "doggy_soul_answers.celebration_preferences": 1,
+            "owner_name": 1,
+            "owner_email": 1,
+            "owner_phone": 1
+        }
+    ).to_list(10000)
+    
+    for pet in pets:
+        pet_name = pet.get("name") or pet.get("identity", {}).get("name", "Unknown")
+        pet_id = pet.get("id")
+        breed = pet.get("breed") or pet.get("identity", {}).get("breed", "")
+        owner = {
+            "name": pet.get("owner_name"),
+            "email": pet.get("owner_email"),
+            "phone": pet.get("owner_phone")
+        }
+        
+        # Check birthday
+        birth_date_str = pet.get("birth_date") or pet.get("identity", {}).get("birth_date")
+        if birth_date_str:
+            try:
+                # Handle different date formats
+                if len(birth_date_str) == 5:  # MM-DD format
+                    this_year_bday = datetime.strptime(f"{today.year}-{birth_date_str}", "%Y-%m-%d")
+                else:
+                    bday = datetime.strptime(birth_date_str[:10], "%Y-%m-%d")
+                    this_year_bday = bday.replace(year=today.year)
+                
+                # If birthday has passed this year, check next year
+                if this_year_bday < today:
+                    this_year_bday = this_year_bday.replace(year=today.year + 1)
+                
+                if today <= this_year_bday <= end_date:
+                    # Calculate age
+                    if len(birth_date_str) > 5:
+                        birth_year = int(birth_date_str[:4])
+                        age = this_year_bday.year - birth_year
+                    else:
+                        age = None
+                    
+                    upcoming.append({
+                        "type": "birthday",
+                        "pet_id": pet_id,
+                        "pet_name": pet_name,
+                        "breed": breed,
+                        "date": this_year_bday.strftime("%Y-%m-%d"),
+                        "days_until": (this_year_bday - today).days,
+                        "age": age,
+                        "icon": "🎂",
+                        "owner": owner,
+                        "suggestion": f"Birthday cake for {pet_name}" + (f" turning {age}!" if age else "!")
+                    })
+            except:
+                pass
+        
+        # Check gotcha day (adoption anniversary)
+        gotcha_date_str = pet.get("gotcha_date") or pet.get("identity", {}).get("gotcha_date")
+        if gotcha_date_str:
+            try:
+                if len(gotcha_date_str) == 5:
+                    this_year_gotcha = datetime.strptime(f"{today.year}-{gotcha_date_str}", "%Y-%m-%d")
+                else:
+                    gotcha = datetime.strptime(gotcha_date_str[:10], "%Y-%m-%d")
+                    this_year_gotcha = gotcha.replace(year=today.year)
+                
+                if this_year_gotcha < today:
+                    this_year_gotcha = this_year_gotcha.replace(year=today.year + 1)
+                
+                if today <= this_year_gotcha <= end_date:
+                    years = this_year_gotcha.year - int(gotcha_date_str[:4]) if len(gotcha_date_str) > 5 else None
+                    upcoming.append({
+                        "type": "gotcha_day",
+                        "pet_id": pet_id,
+                        "pet_name": pet_name,
+                        "breed": breed,
+                        "date": this_year_gotcha.strftime("%Y-%m-%d"),
+                        "days_until": (this_year_gotcha - today).days,
+                        "years": years,
+                        "icon": "🏠",
+                        "owner": owner,
+                        "suggestion": f"{pet_name}'s adoption anniversary" + (f" - {years} year{'s' if years != 1 else ''} home!" if years else "!")
+                    })
+            except:
+                pass
+        
+        # Check custom celebrations from Pet Soul answers
+        celebration_prefs = pet.get("doggy_soul_answers", {}).get("celebration_preferences", [])
+        custom_celebrations = pet.get("celebrations", [])
+        
+        # Add festival celebrations based on preferences
+        if include_festivals and celebration_prefs:
+            for festival in celebration_prefs:
+                festival_date_str = FESTIVAL_DATES_2026.get(festival)
+                if festival_date_str:
+                    try:
+                        festival_date = datetime.strptime(festival_date_str, "%Y-%m-%d")
+                        if today <= festival_date <= end_date:
+                            upcoming.append({
+                                "type": "festival",
+                                "festival": festival,
+                                "pet_id": pet_id,
+                                "pet_name": pet_name,
+                                "breed": breed,
+                                "date": festival_date_str,
+                                "days_until": (festival_date - today).days,
+                                "icon": "🎉",
+                                "owner": owner,
+                                "suggestion": f"{festival} celebration treat for {pet_name}"
+                            })
+                    except:
+                        pass
+    
+    # Sort by date
+    upcoming.sort(key=lambda x: x.get("date", "9999-99-99"))
+    
+    # Group by date for calendar view
+    calendar_view = {}
+    for event in upcoming:
+        date = event["date"]
+        if date not in calendar_view:
+            calendar_view[date] = []
+        calendar_view[date].append(event)
+    
+    return {
+        "upcoming_events": upcoming[:100],  # Limit to 100 events
+        "calendar_view": calendar_view,
+        "total_events": len(upcoming),
+        "date_range": {
+            "start": today.strftime("%Y-%m-%d"),
+            "end": end_date.strftime("%Y-%m-%d"),
+            "days": days_ahead
+        },
+        "festival_dates": FESTIVAL_DATES_2026 if include_festivals else {}
+    }
+
+
+@pet_soul_admin_router.get("/products-by-breed/{breed}")
+async def get_products_by_breed(breed: str, limit: int = Query(10, ge=1, le=50)):
+    """
+    Get products tagged with a specific breed.
+    Used for breed-specific recommendations on checkout.
+    """
+    # Search products with breed in name, tags, or description
+    breed_lower = breed.lower()
+    
+    products = await db.products.find({
+        "$or": [
+            {"name": {"$regex": breed, "$options": "i"}},
+            {"tags": {"$regex": breed, "$options": "i"}},
+            {"breed_tags": {"$regex": breed, "$options": "i"}},
+            {"description": {"$regex": breed, "$options": "i"}}
+        ]
+    }, {"_id": 0}).limit(limit).to_list(limit)
+    
+    return {
+        "breed": breed,
+        "products": products,
+        "count": len(products)
+    }
+
+
+# ============================================
+# PUBLIC BREED PRODUCTS API
+# ============================================
+
+@pet_soul_router.get("/breed-products/{breed}")
+async def get_breed_products(breed: str, limit: int = Query(6, ge=1, le=20)):
+    """
+    Public API: Get products recommended for a specific breed.
+    Used on checkout page for breed-specific recommendations.
+    """
+    breed_lower = breed.lower()
+    
+    # Search products with breed in name, tags, or breed_tags
+    products = await db.products.find({
+        "$or": [
+            {"name": {"$regex": breed, "$options": "i"}},
+            {"tags": {"$regex": breed, "$options": "i"}},
+            {"breed_tags": {"$regex": breed, "$options": "i"}},
+            {"category": {"$regex": breed, "$options": "i"}}
+        ]
+    }, {
+        "_id": 0,
+        "id": 1,
+        "name": 1,
+        "price": 1,
+        "image": 1,
+        "images": 1,
+        "category": 1,
+        "tags": 1,
+        "breed_tags": 1
+    }).limit(limit).to_list(limit)
+    
+    return {
+        "breed": breed,
+        "products": products,
+        "count": len(products),
+        "message": f"Perfect for {breed}s!" if products else None
+    }
