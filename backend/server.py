@@ -775,6 +775,9 @@ from paw_rewards import (
 # Import Travel Pillar
 from travel_routes import router as travel_router
 
+# Import Care Pillar
+from care_routes import router as care_router
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
