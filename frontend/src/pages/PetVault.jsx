@@ -19,6 +19,12 @@ const PetVault = () => {
   const [summary, setSummary] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   
+  // Full data for tabs
+  const [vaccines, setVaccines] = useState([]);
+  const [medications, setMedications] = useState([]);
+  const [visits, setVisits] = useState([]);
+  const [vets, setVets] = useState([]);
+  
   // Modal states
   const [showAddVaccine, setShowAddVaccine] = useState(false);
   const [showAddMedication, setShowAddMedication] = useState(false);
@@ -27,7 +33,7 @@ const PetVault = () => {
   const [showAddWeight, setShowAddWeight] = useState(false);
   
   // Form states
-  const [vaccineForm, setVaccineForm] = useState({ vaccine_name: '', date_given: '', next_due_date: '', vet_name: '', notes: '' });
+  const [vaccineForm, setVaccineForm] = useState({ vaccine_name: '', date_given: '', next_due_date: '', vet_name: '', notes: '', reminder_enabled: true });
   const [medForm, setMedForm] = useState({ medication_name: '', dosage: '', frequency: '', start_date: '', reason: '' });
   const [vetForm, setVetForm] = useState({ name: '', clinic_name: '', phone: '', address: '', is_primary: false });
   const [visitForm, setVisitForm] = useState({ visit_date: '', vet_name: '', reason: '', diagnosis: '', treatment: '', cost: '' });
@@ -35,9 +41,13 @@ const PetVault = () => {
   
   const [saving, setSaving] = useState(false);
 
-  // Fetch summary on mount
+  // Fetch all data on mount
   useEffect(() => {
     fetchSummary();
+    fetchVaccines();
+    fetchMedications();
+    fetchVisits();
+    fetchVets();
   }, [petId]);
 
   const fetchSummary = async () => {
