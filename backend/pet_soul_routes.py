@@ -791,3 +791,148 @@ async def admin_insights_summary():
             summary["reactive_dogs"] += 1
     
     return summary
+
+
+# ============================================
+# AUTO-LEARNING ENGINE
+# ============================================
+
+async def learn_from_order(db, order_data: dict):
+    """
+    Auto-learn pet preferences from orders.
+    Called after order creation to update Pet Soul profile.
+    """
+    try:
+        pet_info = order_data.get("pet", {})
+        pet_name = pet_info.get("name")
+        customer_email = order_data.get("customer", {}).get("email")
+        
+        if not pet_name and not customer_email:
+            return {"learned": False, "reason": "No pet or customer info"}
+        
+        # Find the pet in database
+        query = {}
+        if pet_name:
+            query["name"] = {"$regex": f"^{pet_name}$", "$options": "i"}
+        
+        pet = await db.pets.find_one(query)
+        
+        if not pet:
+            # Try finding by owner email
+            if customer_email:
+                pet = await db.pets.find_one({"owner_email": customer_email})
+        
+        if not pet:
+            return {"learned": False, "reason": "Pet not found in database"}
+        
+        pet_id = pet.get("id")
+        learned_items = []
+        
+        # Extract learnings from order items
+        items = order_data.get("items", [])
+        updates = {}
+        
+        for item in items:
+            item_name = (item.get("name") or "").lower()
+            category = (item.get("category") or "").lower()
+            tags = [t.lower() for t in item.get("tags", [])]
+            custom_details = item.get("customDetails", {})
+            
+            # Learn treat preferences
+            if "treat" in item_name or "treat" in category or "treats" in tags:
+                if "favorite_treats" not in updates:
+                    updates["favorite_treats"] = []
+                updates["favorite_treats"].append(item.get("name"))
+                learned_items.append(f"Favorite treat: {item.get('name')}")
+            
+            # Learn cake preferences (for birthdays/celebrations)
+            if "cake" in item_name or "cake" in category:
+                updates["loves_celebrations"] = True
+                
+                # Extract flavor preferences from cake name
+                if "peanut" in item_name:
+                    updates["taste_peanut_butter"] = True
+                if "banana" in item_name:
+                    updates["taste_banana"] = True
+                if "carrot" in item_name:
+                    updates["taste_carrot"] = True
+                    
+                learned_items.append(f"Celebration item ordered: {item.get('name')}")
+            
+            # Learn dietary info from custom details
+            if custom_details.get("allergies"):
+                allergies = custom_details["allergies"]
+                if isinstance(allergies, str):
+                    allergies = [a.strip() for a in allergies.split(",")]
+                updates["food_allergies"] = allergies
+                learned_items.append(f"Allergies noted: {allergies}")
+            
+            # Learn from product tags
+            if "grain-free" in tags:
+                updates["prefers_grain_free"] = True
+                learned_items.append("Prefers grain-free products")
+            
+            if "veg" in tags or "vegetarian" in tags:
+                updates["diet_type"] = "vegetarian"
+                learned_items.append("Vegetarian diet")
+        
+        if not updates:
+            return {"learned": False, "reason": "No learnable info in order", "pet_id": pet_id}
+        
+        # Update Pet Soul answers
+        existing_answers = pet.get("doggy_soul_answers", {})
+        
+        # Merge favorite treats
+        if "favorite_treats" in updates:
+            existing_treats = existing_answers.get("favorite_treats", [])
+            if isinstance(existing_treats, str):
+                existing_treats = [existing_treats]
+            new_treats = list(set(existing_treats + updates["favorite_treats"]))
+            updates["favorite_treats"] = new_treats[:5]  # Keep top 5
+        
+        # Merge allergies
+        if "food_allergies" in updates:
+            existing_allergies = existing_answers.get("food_allergies", [])
+            if isinstance(existing_allergies, str):
+                existing_allergies = [existing_allergies]
+            new_allergies = list(set(existing_allergies + updates["food_allergies"]))
+            updates["food_allergies"] = new_allergies
+        
+        # Prepare the update
+        soul_updates = {f"doggy_soul_answers.{k}": v for k, v in updates.items()}
+        soul_updates["doggy_soul_answers.last_auto_updated"] = datetime.now(timezone.utc).isoformat()
+        soul_updates["doggy_soul_answers.auto_learned_from"] = order_data.get("orderId", "order")
+        
+        # Update the pet
+        await db.pets.update_one(
+            {"id": pet_id},
+            {"$set": soul_updates}
+        )
+        
+        # Add to pillar_interactions
+        await db.pets.update_one(
+            {"id": pet_id},
+            {"$push": {
+                "pillar_interactions": {
+                    "pillar": "celebrate",
+                    "type": "order",
+                    "order_id": order_data.get("orderId"),
+                    "items": [item.get("name") for item in items],
+                    "total": order_data.get("total"),
+                    "learned": updates,
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
+            }}
+        )
+        
+        return {
+            "learned": True,
+            "pet_id": pet_id,
+            "pet_name": pet.get("name"),
+            "updates": updates,
+            "learned_items": learned_items
+        }
+        
+    except Exception as e:
+        logger.error(f"Auto-learn from order failed: {e}", exc_info=True)
+        return {"learned": False, "error": str(e)}
