@@ -201,6 +201,14 @@ const BreedTagsManager = () => {
         </div>
         
         <div className="flex items-center gap-3">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowAddBreedModal(true)}
+            className="border-green-300 text-green-700 hover:bg-green-50"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Breed
+          </Button>
           {selectedProducts.size > 0 && (
             <Button 
               onClick={() => setShowBulkModal(true)}
