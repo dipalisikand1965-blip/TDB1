@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { X, Sparkles, Minimize2, Maximize2, Send, Loader2, User, Bot } from 'lucide-react';
 import { Button } from './ui/button';
 import ReactMarkdown from 'react-markdown';
@@ -15,6 +16,12 @@ const generateSessionId = () => {
 };
 
 const MiraAI = () => {
+  const location = useLocation();
+  
+  // Hide MiraAI on admin and agent pages
+  const hiddenPaths = ['/admin', '/agent', '/login'];
+  const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path));
+  
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState([
