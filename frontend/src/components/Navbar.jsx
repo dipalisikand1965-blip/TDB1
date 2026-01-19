@@ -381,17 +381,15 @@ const Navbar = () => {
 
               {/* Mobile Actions */}
               <div className="pt-4 border-t border-gray-200 space-y-2">
-                {/* Pet Soul - Only show for authenticated users */}
-                {user && (
-                  <Link
-                    to="/pet-soul"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium"
-                    data-testid="mobile-pet-soul-link"
-                  >
-                    🐾 My Pets
-                  </Link>
-                )}
+                {/* Pet Soul (public) / My Pets (logged in) */}
+                <Link
+                  to={user ? "/my-pets" : "/pet-soul"}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium"
+                  data-testid="mobile-pet-soul-link"
+                >
+                  {user ? "🐾 My Pets" : "🐾 Pet Soul"}
+                </Link>
                 <Link
                   to="/voice-order"
                   onClick={() => setIsMenuOpen(false)}
