@@ -4,7 +4,8 @@ import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
-import { ServiceDesk, UnifiedInbox } from '../components/admin';
+import { ServiceDesk } from '../components/admin';
+import UnifiedInbox from '../components/admin/UnifiedInbox';
 import { API_URL } from '../utils/api';
 import { 
   LogOut, User, Headphones, Shield, Eye, EyeOff,
