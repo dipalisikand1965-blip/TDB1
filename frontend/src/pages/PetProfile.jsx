@@ -12,6 +12,7 @@ import {
   Moon, Mountain, Sofa, Users, Utensils, Zap, Smile
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 
 
 // Persona icons mapping
