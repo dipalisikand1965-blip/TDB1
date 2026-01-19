@@ -1,123 +1,122 @@
 <analysis>**original_problem_statement**: The user is building **The Doggy Company**, a Pet Life Operating System. The vision is a world-class, event-driven platform with a single engine powering multiple business Pillars (Celebrate, Stay, etc.). Key components include the **Pet Soul** (a deep, evolving pet profile), a **Unified Inbox** for all customer requests, and a **Membership** layer.
 
+Recently, the user requested a high-level strategy to make the application flows seamless and world-class. The agreed-upon strategy is to create a **Data Flywheel** where every pillar and interaction both reads from and writes new information to the central Pet Soul, making the platform proactively intelligent.
+
 **PRODUCT REQUIREMENTS**:
 -   **A. One Engine, Multiple Pillars**: A single backend engine for all pillars with identical workflows.
 -   **B. Unified Input & Inbox**: Treat requests from all channels identically, managed through a central admin inbox.
 -   **C. Pet Soul**: Create a comprehensive, multi-faceted profile for each pet that learns from every interaction. This is the core differentiator.
 -   **D. Membership Layer**: Implement a guest vs. member system with rewards.
 -   **E. Automated Notifications & Service Desk**: Every event must trigger tickets and notifications.
--   **F. World-Class Admin Experience**: Build robust, intuitive admin tools, specifically a better than Zendesk/Salesforce Service Desk.
+-   **F. World-Class Admin Experience**: Build robust, intuitive admin tools.
+-   **G. Data Flywheel**: Implement an intelligence layer connecting all features to the Pet Soul.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a stable React/FastAPI/MongoDB stack. In this session, the agent resolved a critical data loss panic by clarifying the preview vs. production environments and executing a comprehensive data restoration process, successfully syncing **460 products from Shopify** and seeding other data. A major frontend crash caused by a corrupted  file was fixed by reverting to a last-known-good version.
+The application is a stable React/FastAPI/MongoDB stack. The **Service Desk** is functionally complete. The **Pet Soul** feature is well-developed, with a full backend API and a frontend questionnaire that includes an onboarding flow, progress tracking, and logic to handle new and returning users.
 
-Following the stabilization, the agent made significant progress on the user's vision for a world-class service desk, reaching ~75% completion. Key features implemented include:
-- A full-page layout for the Service Desk, fixing all UI overlap issues.
-- A complete **User Roles & Permissions** system (backend and frontend).
-- A complete **Escalation Rules** system (backend and frontend), with a background job that runs every 15 minutes.
-- Re-implementation of the **Ticket Actions Menu** (Merge, Edit, Clone, etc.) and the **Stay CSV Import** button, which were lost during the file revert.
-
-The user has agreed on a clear strategic path: get the Service Desk to 80% completion, then pivot to building the core Pet Soul and Membership features.
+In this session, the agent implemented several key features:
+-   **Pet Vault**: A comprehensive health records system was built from scratch, including a backend API, frontend UI, and a daily scheduled reminder engine for vaccines (via Email and WhatsApp).
+-   **Auto-Remember Checkout**: The checkout form now saves and pre-fills customer details from  to streamline repeat purchases.
+-   **Member Dashboard Enhancement**: The user's pet list now includes direct links to each pet's Pet Soul and Pet Vault.
+-   **World-Class Strategy Implementation**: Began executing a new strategic plan by adding the UI for Soul Insights on the checkout page and Magic Prompts in the Service Desk.
+-   **Bug Fixes**: Removed the Made with Emergent badge, fixed an issue where the customer's name was not captured from voice orders, and attempted a fix for a shaking modal in the Service Desk settings.
 
 **Last working item**:
--   Last item agent was working: Implementing a file attachment feature in the Service Desk. The backend endpoints to handle uploads have been created in . The agent was in the process of adding the frontend UI to the reply box in , including state variables (, ) and an upload handler function, but was interrupted.
+-   Last item agent was working: Implementing the first two quick wins from the new World-Class Pet Platform Strategy:
+    1.  **Soul Insights on Checkout**: Added UI card to  to show key Pet Soul data (like allergies) when a pet's name is entered.
+    2.  **Service Desk Magic Prompts**: Added a Smart Suggestions UI banner to the ticket detail view in  to provide agents with proactive conversation starters based on the pet's profile.
 -   Status: IN PROGRESS
 -   Agent Testing Done: N
--   Which testing method agent to use? Frontend testing agent to verify the entire upload flow: clicking the button, selecting a file, seeing the upload progress, and confirming the file appears on the ticket.
+-   Which testing method agent to use? Frontend testing agent.
+    - Test Case 1: On the checkout page, enter a pet name that has a populated Pet Soul profile and verify the Soul Insights card appears with correct data (e.g., allergies, preferences).
+    - Test Case 2: In the Service Desk, open a ticket for a pet with a populated Pet Soul profile and verify the Magic Prompts banner appears with relevant suggestions (e.g., upcoming birthday).
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Finish Attachment Upload UI (P0)
--   Issue 2: Service Desk footer UI may still have issues (P0)
--   Issue 3: Unable to press Send button after AI fills the reply form (P0)
--   Issue 4: Voice Order feature is broken on production (Connection failed) (P1)
--   Issue 5: Auto-reminders for abandoned carts are only sent to Gmail addresses (P1)
--   Issue 6: Untitled products appear on the Product Tag page (P1)
--   Issue 7: Shopify Sync creating 'Untitled' Products (Recurring Root Cause) (P2)
--   Issue 8: Unified Inbox needs verification to ensure all notifications are captured (P2)
+-   Issue 1: Finish World-Class Quick Wins (P0)
+-   Issue 2: Service Desk settings modal shaking/flashing (P0)
+-   Issue 3: Voice Order feature is broken on production (Connection failed) (P1)
+-   Issue 4: Auto-reminders are only sent to Gmail addresses (P1)
+-   Issue 5: Shopify Sync creating 'Untitled' Products (Recurring Root Cause) (P2)
 
 **Issues Detail**:
--   **Issue 1: Finish Attachment Upload UI**
-    -   **Attempted fixes**: Backend endpoints and state variables in  have been created.
+-   **Issue 1: Finish World-Class Quick Wins**
+    -   **Attempted fixes**: The UI components for checkout insights and service desk prompts have been added to the respective files.
     -   **Next debug checklist**:
-        1.  In , add the file input/button element to the reply box UI.
-        2.  Wire the  event to the  function.
-        3.  Implement UI to display file upload progress and the list of attached files.
-        4.  Ensure the  array in the  function is correctly populated.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a core Service Desk feature, allowing agents and customers to share documents, images, and other files.
+        1.  In , ensure the  correctly fetches Pet Soul data when  changes. Wire the fetched data to the newly added Soul Insights card UI.
+        2.  In , create the logic to generate Smart Suggestions based on the  state (e.g., check for upcoming birthdays, allergies, recent orders). Display these suggestions in the new banner.
+        3.  Begin implementation of the Smart Reorder widget on the Member Dashboard.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is the first step in executing the user's approved strategy to make the platform more intelligent and seamless, a top priority for the user.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Should Test frontend/backend/both after fix?**: Frontend
 
--   **Issue 2: Service Desk footer UI may still have issues**
-    -   **Attempted fixes**: The agent refactored the Service Desk into a full-page view and adjusted padding/overflow properties, which should have resolved this.
+-   **Issue 2: Service Desk settings modal shaking/flashing**
+    -   **Attempted fixes**: Agent memoized the modal component, added a min-height to prevent layout shifts during loading, and fixed the z-index of the dialog content in .
     -   **Next debug checklist**:
-        1.  Take a screenshot of the Service Desk with a ticket open.
-        2.  Scroll to the bottom of the ticket detail panel.
-        3.  Verify that the reply box and Send button are fully visible and not overlapped by any other element.
-    -   **Why fix this issue and what will be achieved with the fix?**: A non-overlapping UI is critical for agent usability.
+        1.  Navigate to the  page and open the Service Desk.
+        2.  Click the Settings button to open the modal.
+        3.  Click through the different tabs (Auto-Assign, Escalation, SLA, etc.).
+        4.  Verify that the modal no longer shakes, flashes, or disappears when switching tabs or when data is loading.
+    -   **Why fix this issue and what will be achieved with the fix?**: It's a significant UI bug that degrades the world-class admin experience.
     -   **Status**: USER VERIFICATION PENDING
     -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Frontend
 
--   **Issue 3: Unable to press Send button after AI fills the reply form**
-    -   **Attempted fixes**: None in this session. The  logic () seems correct but may have a state update issue.
-    -   **Next debug checklist**:
-        1.  Open a ticket and generate an AI Draft.
-        2.  Click Use This Draft.
-        3.  Check the browser's React DevTools to see if the  state is updated.
-        4.  Inspect the Send button to see if its  attribute becomes .
-    -   **Why fix this issue and what will be achieved with the fix?**: The AI draft feature is useless if the agent can't send the drafted reply.
-    -   **Status**: NOT STARTED
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Frontend
-
--   All other issues in the list have **Status: NOT STARTED**.
+-   The remaining issues (Voice Order on Prod, Email delivery, Shopify Sync) have a status of **NOT STARTED**.
 
 **In progress Task List**:
--   **Task 1: Complete Attachment Upload Feature**
-    -   **Where to resume**: . The UI part of the feature (the button and file list display) needs to be added to the reply box area.
-    -   **What will be achieved with this?**: Agents can attach files to tickets.
+-   **Task 1: Implement World-Class Pet Platform Strategy**
+    -   **Where to resume**:
+        -   : Wire up data to the Soul Insights card.
+        -   : Implement logic for the Smart Suggestions banner.
+        -   : Start building the Smart Reorder widget.
+    -   **What will be achieved with this?**: The platform will start to feel more interconnected and proactively helpful, a key strategic goal.
     -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Should Test frontend/backend/both after fix?**: Frontend
     -   **Blocked on something**: None
 
 **Upcoming and Future Tasks**
 
-**Upcoming Tasks (Service Desk to 80%)**:
--   **(P0) Separate Agent Portal**: Create a new route (e.g., ) that shows **only** the Service Desk, hiding the rest of the admin panel for non-admin roles, as agreed with the user.
--   **(P1) SLA Breach Alerts Enhancement**: Build out the notification part of the SLA system so that managers are alerted when an SLA is about to be breached.
+**Upcoming Tasks**:
+-   **(P0) Smart Reorder Widget**: Implement the widget on the Member Dashboard as part of the World-Class strategy.
+-   **(P0) Separate Agent Portal**: Create a new route (e.g., ) that shows **only** the Service Desk for non-admin roles.
+-   **(P1) SLA Breach Alerts Enhancement**: Build out the notification part of the SLA system.
+-   **(P1) Pet Vault**: Build out the health records section (vaccines, medications, vet info).
 
-**Future Tasks (Post-Service Desk)**:
--   **(P0) PHASE 2: PET SOUL V1**: This is the next major priority.
-    -   Implement the 8-folders questionnaire UI for customers to fill out.
-    -   Build the auto-learning engine so pet profiles are updated based on orders and interactions.
-    -   Integrate Pet Soul data into the Service Desk view.
--   **(P1) PHASE 3: MEMBERSHIP V1**:
-    -   Implement logic for earning and redeeming loyalty points.
-    -   Build a Member Dashboard.
--   **(P2) PHASE 4 & BEYOND**:
-    -   Build out the remaining 7 Pillars (Travel, Care, etc.).
-    -   Integrate WhatsApp, Razorpay, Google Calendar.
-    -   Refactor  and .
+**Future Tasks**:
+-   **(P0) Membership V1**: Implement logic for earning and redeeming loyalty points and build a Member Dashboard.
+-   **(P1) Remaining Pillars**: Build out the forms and flows for Travel, Care, etc.
+-   **(P2) Integrations**: WhatsApp, Razorpay, Google Calendar.
+-   **(P2) Refactoring**: Break down the monolithic  and  components.
 
 **Completed work in this session**
--   **Critical Data Restoration**: Successfully restored the preview environment by syncing **460 products from Shopify** and seeding data for restaurants, stays, and blogs.
--   **Frontend Crash Resolved**: Reverted the corrupted  to a working state, making the admin panel functional again.
--   **Service Desk to ~75% Completion**:
-    -   **Full-Page Layout**: Implemented a full-screen mode for the Service Desk, resolving UI overlap issues.
-    -   **User Roles & Permissions**: Built the complete backend and frontend for creating roles and managing agent access.
-    -   **Escalation Rules**: Built the backend and frontend for defining and automatically executing ticket escalation logic.
-    -   **Ticket Actions & UI Fixes**: Restored the ticket action menu (Merge, Edit, etc.) and the Settings button.
--   **Stay Manager CSV Import**: Added the Import CSV button to the Stay management page.
--   **Backend Stability**: Fixed a server crash by adding missing imports to .
--   **Created Vision Documents**: Aligned with the user on project status by creating  and other status reports.
+-   **Pet Soul Enhancements**:
+    -   Fixed a bug preventing pre-filling of data for existing pets.
+    -   Created a comprehensive welcome/onboarding page.
+    -   Verified and confirmed the questionnaire flow is fully functional.
+-   **Service Desk - Pet Soul Integration**:
+    -   Integrated a Pet Soul card into the ticket detail view that displays key insights.
+-   **Auto-Learning Engine**:
+    -   Implemented and verified a system where placing an order automatically updates the pet's Soul profile with new preferences and allergies.
+-   **Pet Vault (Health Records)**:
+    -   Built a complete backend API and frontend UI for managing a pet's health records (vaccines, medications, vets, etc.).
+    -   Created a backend scheduler for sending vaccine reminders via Email and WhatsApp.
+-   **Auto-Remember Customer Details**:
+    -   Implemented a remember me feature on the checkout page using .
+-   **Member Dashboard & Pet Linking**:
+    -   Added links on the member dashboard for each pet to go directly to their Pet Soul or Pet Vault.
+-   **Bug Fixes**:
+    -   Removed the Made with Emergent badge.
+    -   Fixed an issue where the customer's name from a voice order was not appearing on the service desk ticket.
+    -   Attempted a fix for a shaking settings modal in the Service Desk.
 
 **Earlier issues found/mentioned but not fixed**
--   **Shopify Sync creating 'Untitled' Products**: The root cause of products being created without a  or  during Shopify sync has still not been investigated.
--   **Resend Emails to Non-Gmail**: The issue of emails failing to deliver to non-Gmail addresses, likely a domain verification problem with Resend, remains unresolved.
+-   **Voice Order on Production**: User reported Connection failed on their live site. This was not investigated.
+-   **Resend Emails to Non-Gmail**: An issue from a previous session where emails fail to deliver to non-Gmail addresses remains unresolved.
+-   **Shopify Sync creating 'Untitled' Products**: A recurring root-cause was not investigated.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork**: Shopify Sync creates Untitled Products
@@ -128,82 +127,80 @@ The user has agreed on a clear strategic path: get the Service Desk to 80% compl
 
 
 **Key Technical Concepts**
--   **Data Restoration from Multiple Sources**: Successfully recovered a large dataset by combining a direct Shopify API sync with data from local mock files and CSVs.
--   **Git for File Recovery**: Used  to recover a last-known-good version of a corrupted file, demonstrating a crucial recovery technique.
--   **Modular Backend Architecture**: Continued building out the API by creating new, dedicated route files (, ) for major features.
--   **Background Scheduling (APScheduler)**: Implemented a recurring background job within FastAPI's  event to automatically check escalation rules every 15 minutes.
--   **Complex React UI/State**: Managed the monolithic  component by adding significant new functionality (Roles, Escalations) with corresponding state, effects, and API calls within a multi-tabbed modal.
+-   **Strategic Feature Development**: Pivoted from single features to implementing a cohesive, user-approved World-Class strategy focused on data-driven intelligence.
+-   **Full-Stack Feature Creation**: Built the Pet Vault feature from scratch, including a new backend API (), a new frontend page (), and integration into existing pages.
+-   **Background Job Scheduling**: Implemented a daily scheduled job using  to check for and send health reminders.
+-   **Local Storage for UX**: Used  to implement the remember me feature on the checkout page, improving user experience for returning customers.
+-   **Complex UI State Management**: Dealt with highly complex components like  and , adding new features while attempting to fix state-related UI bugs (like the modal shaking).
 
 **key DB schema**
--   **roles**:  - Stores role definitions and their permission hierarchy.
--   **escalation_rules**:  - Defines rules for automatic ticket escalation.
--   **admin_users**:  field is now linked to the  collection.
--   **tickets**:  field (a list of file paths/IDs) will be used by the new attachment feature.
+-   **pets**: A new  object has been added to the pet document.
+    -   : 
+-   **orders**: Placing an order now triggers an update to the  array.
 
 **All files of reference**
--   : Core component for all Service Desk work. Currently being modified for attachments.
--   : Contains all logic for user roles and permissions.
--   : Contains all logic for ticket escalation.
--   : Main server file, includes new routers and scheduled jobs.
--   : The user-facing document outlining the grand vision and status.
+-    (Implementing Soul Insights)
+-    (Implementing Magic Prompts, verifying modal fix)
+-    (Implementing Smart Reorder)
+-    (Reference for health reminder logic)
+-    (Reference for health UI)
+-    (Reference for Pet Soul UI/logic)
 
 **Areas that need refactoring**:
--   **ServiceDesk.jsx**: This file is now over 3,500 lines. It is critically unmanageable and must be broken down into smaller components (e.g., , , , ) to ensure future maintainability.
--   **server.py**: Continues to be the central hub. While new routes are modular, the main file itself is still growing and could be further broken down.
+-   **ServiceDesk.jsx**: This file is now over 3500 lines and is critically unmanageable. The attempted fix for the modal shaking highlights the fragility of this component. It must be broken down.
+-   **Checkout.jsx**: This component is also growing in complexity with the addition of auto-remember logic and Pet Soul insights. It should be refactored into smaller, more manageable child components.
+-   **server.py**: Continues to be a central hub. While new routes are modular, the main file itself is still growing.
 
 **key api endpoints**
--   : Uploads a file attachment for a specific ticket.
--   : Lists all defined user roles.
--   : Assigns a role to a specific user.
--   : Lists all defined escalation rules.
--   : Manually triggers the escalation rule check.
--   : Manually triggers a full product sync from Shopify.
+-   : Adds a new vaccine record for a pet.
+-   : Retrieves a summary of a pet's health vault.
+-   : Manually triggers the health reminder check.
+-   : Now correctly creates a ticket with a  object containing the customer's name.
 
 **Critical Info for New Agent**
--   **Production Data is NOT Your Responsibility**: The user has repeatedly confused the preview environment with their live production site (). You **must not** attempt to fix production data loss. Instruct the user to contact **Emergent Support** for any production database issues, as they have access to backups. Your scope is the preview environment only.
--   **Follow the 80/20 Plan**: The user has explicitly agreed to a strategic plan: finish the most critical Service Desk features (Attachments, Agent Portal), and then immediately pivot to building the **Pet Soul**. Do not get sidetracked with minor Service Desk enhancements.
--   **ServiceDesk.jsx is Fragile**: This file is a >3500-line monolith that was recently recovered from a corrupted state. Be extremely cautious when editing it. The long-term goal is to refactor it, but the immediate goal is to ship features without breaking it again.
--   **Separate Agent Portal is a Priority**: The user has approved the idea of a separate  route that shows only the Service Desk. This is a key upcoming task to provide secure access for their team.
+-   **The World-Class Strategy is the top priority**. The user is very excited about this direction. Focus on completing the Quick Wins outlined in the plan: Soul Insights on Checkout, Service Desk Magic Prompts, and the Smart Reorder widget.
+-   **Verify the Service Desk modal fix**. The user reported a shaking/flashing bug when clicking tabs in the settings modal. An attempted fix was made, but it is crucial to test this thoroughly to confirm it's resolved.
+-   **The user is anxious about deployment**. They had a bad experience with data loss in the past. If deployment comes up, reassure them that code changes are separate from production data, and advise them to contact Emergent Support for any production-related concerns or backups. Do not touch production data.
+-   **The codebase is large and complex**. Before editing files like  or , carefully review the existing structure. The agent in this session was successful because they explored the code before implementing changes.
 
 **documents and test reports created in this job**
--   /app/COMPLETE_ARCHITECTURE.md
--   /app/STATUS_REPORT.md
--   /app/VISION_STATUS.md
+-   /app/TOMORROW_SUMMARY.md
 
 **Last 10 User Messages and any pending HUMAN messages**
-10. **Request**: Asked for a summary of everything that was done and a RAG status report. (COMPLETED)
-9.  **Clarification**: Asked for clarification on the status of core vision items like Pillars, Pet Soul, and Membership. (COMPLETED)
-8.  **Bug Report & Request**: Pointed out a UI overlap issue with the Service Desk footer and asked for a detailed architecture/task breakdown for the Service Desk and Pet Soul. (COMPLETED)
-7.  **Clarification**: Asked where to see the  file. (COMPLETED)
-6.  **Strategic Question**: Asked whether to finish one thing (Service Desk) completely before moving to the next. (COMPLETED)
-5.  **Agreement**: Agreed with the agent's recommendation to get the Service Desk to 80% and then start on Pet Soul. (ACKNOWLEDGED)
-4.  **Clarification**: Asked how a separate Service Desk portal for agents with limited access would work. (COMPLETED)
-3.  **Agreement**: Agreed with the agent's proposed architecture (Option A) for a separate agent portal and instructed to proceed. (ACKNOWLEDGED)
-2.  **Question**: Asked about the current status of the Service Desk and if attachments can be added to tickets. (IN PROGRESS)
-1.  **Interruption/Correction**: User sent Srry that was wrong Please continue here and hi where are we after an accidental message. (COMPLETED)
+-   **10. love all your ideas : Please put it as must do and lets go**: Explicit approval to start implementing the World-Class strategy. (IN PROGRESS)
+-   **9. You are the worlds best tech strategist for this : what should i do to make the flows seamless and world class**: Request that led to the new strategy. (COMPLETED)
+-   **8. ...link CUSTOMER with Pet in customer profile...Also...service desk...pop up starts shaking flasging**: Two requests: link pets in member dashboard (DONE) and fix a service desk UI bug (ATTEMPTED FIX, PENDING VERIFICATION).
+-   **7. ...we need to have date of vaccin...and the reminder set...**: Request to enhance Pet Vault with dates and reminders. (COMPLETED)
+-   **6. yes this is cocming up fine**: Positive feedback on the initial Pet Vault implementation. (ACKNOWLEDGED)
+-   **5. lets build the auto remember and then start on pet vault**: Set the priority for building Auto-Remember and then Pet Vault. (COMPLETED)
+-   **4. so my question s are...**: Asked for a status check on several features like Celebrations and Health Records. (COMPLETED)
+-   **3. no no our work what is the status**: Clarified that they wanted a RAG status on the agent's work, not a new feature. (COMPLETED)
+-   **2. Pet red yellow green**: A confusing request, later clarified. (RESOLVED)
+-   **1. great what is next now**: General prompt asking for the next steps. (COMPLETED)
 
 **Project Health Check:**
--   **Broken**: None. The application is stable and functional in the preview environment.
--   **Mocked**: Portions of the data seeding process rely on a  file for products, in addition to the live Shopify sync.
+-   **Broken**: The user reported the **Voice Order feature is broken on production** (Connection failed). This has not been investigated.
+-   **Mocked**: None.
 
 **3rd Party Integrations**
--   **OpenAI GPT-4**: Powers the AI Reply Draft feature in the Service Desk. Uses Emergent LLM Key.
--   **OpenAI Whisper**: Used for voice transcription in the Voice Order feature. Uses Emergent LLM Key.
--   **Resend**: Used for transactional emails. A suspected domain verification issue is preventing delivery to non-Gmail addresses (unresolved). Requires user API key.
--   **Shopify**: Critical data source for products. Sync is initiated via an API call.
+-   **OpenAI GPT-4**: Powers AI Reply Draft feature in Service Desk. Uses Emergent LLM Key.
+-   **OpenAI Whisper**: Used for voice transcription in Voice Order feature. Uses Emergent LLM Key.
+-   **Resend**: Used for transactional emails, including the new vaccine reminders. A suspected domain verification issue is preventing delivery to non-Gmail addresses (unresolved). Requires user API key.
+-   **Shopify**: Critical data source for products.
+-   **WhatsApp**: A  function exists in  for health reminders, but relies on a configured  and .
 
 **Testing status**
 -   Testing agent used after significant changes: NO
 -   Troubleshoot agent used after agent stuck in loop: NO
 -   Test files created: None
--   Known regressions: The Zoho-style UI refactor from the previous session was reverted because it was broken. This is a known loss of (broken) functionality.
+-   Known regressions: None in this session.
 
 **Credentials to test flow:**
 -   **Admin Username**: 
 -   **Admin Password**: 
 
 **What agent forgot to execute**
--   The agent did not complete the frontend implementation for the **file attachment upload UI** in . The backend is ready, but the user-facing button and logic are missing.
--   The root cause investigation for the recurring Shopify Sync creates Untitled Products issue was not performed.
--   The investigation into the Resend emails only sent to Gmail issue was not performed.
--   Verification of several features mentioned in the original handoff (Real-Time MIS Dashboard, Pricing Hub, Unified Inbox) was not done.</analysis>
+-   The agent did not start the investigation into the recurring Shopify Sync creates Untitled Products issue.
+-   The agent did not investigate the Resend emails only sent to Gmail issue.
+-   The agent did not investigate the user's report that the Voice Order is broken on production.
+-   The agent did not fully test and verify the fix for the Service Desk settings modal shaking.</analysis>
