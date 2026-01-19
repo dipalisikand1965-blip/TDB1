@@ -749,6 +749,45 @@ See `/app/TOMORROW_SUMMARY.md` for full detailed plan
 
 ---
 
+## Changelog (Jan 19, 2026 - Session 2 - Privacy & UX Fixes)
+
+### Privacy Fixes ✅
+1. **"My Pets" Link Hidden for Non-Authenticated Users**
+   - Desktop navbar: "My Pets" button now only shows when user is logged in
+   - Mobile menu: Same conditional rendering applied
+   - Files: `/app/frontend/src/components/Navbar.jsx`
+
+2. **"/my-pets" Route Protected**
+   - Non-authenticated users attempting to access `/my-pets` are redirected to login
+   - Login page shows "Login to manage your pet's profile" message
+   - After login, users return to the page they were trying to access
+   - Files: `/app/frontend/src/pages/MyPets.jsx`
+
+3. **Pet Soul Onboarding Recognizes Authenticated Users**
+   - If logged in, uses user's email and name automatically
+   - Shows existing pets when authenticated user has pets
+   - Asks "Do you want to add another pet?" for returning customers
+   - Files: `/app/frontend/src/pages/PetProfile.jsx`
+
+### Bug Fixes ✅
+4. **Voice Order API URL Fixed**
+   - Changed from hardcoded `process.env.REACT_APP_BACKEND_URL` to `API_URL` from utils
+   - This ensures production compatibility with relative paths
+   - Files: `/app/frontend/src/pages/VoiceOrder.jsx`
+
+### Production Issues (User Reported - Requires Deployment)
+The following issues were reported on the user's production site (`thedoggycompany.in`):
+- **Voice Order "Connection failed"** - Fixed in code, needs deployment
+- **Agent Portal "Connection error"** - Fixed in code, needs deployment
+- **Email notifications only reaching Gmail** - Likely Resend domain verification issue (not code related)
+
+**Note**: The Agent Portal and Voice Order are working correctly on the preview environment. The "Connection error" on production is because the new code hasn't been deployed. User should:
+1. Use "Save to Github" feature
+2. Deploy to production
+3. For email issue: Check Resend dashboard for domain verification status (SPF/DKIM records)
+
+---
+
 ## Changelog (Jan 19, 2026 - Latest Session)
 
 ### Data Flywheel Implementation ✅
