@@ -8269,7 +8269,8 @@ async def create_agent(agent: AgentCreate, credentials: HTTPBasicCredentials = D
     
     # Remove sensitive data before returning
     del agent_doc["password_hash"]
-    del agent_doc["_id"] if "_id" in agent_doc else None
+    if "_id" in agent_doc:
+        del agent_doc["_id"]
     
     return {"success": True, "agent": agent_doc}
 
