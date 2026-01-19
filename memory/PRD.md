@@ -1,1107 +1,175 @@
-# The Doggy Company - Product Requirements Document
+# The Doggy Company - Pet Life Operating System
 
-## Overview
-**The Doggy Company** is a comprehensive "Pet Life Operating System" - a multi-pillar platform offering pet products, dining experiences, stays, travel, and services.
+## Original Problem Statement
+Build a world-class, event-driven platform with a single engine powering multiple business "Pillars" (Celebrate, Stay, Dine, Travel, etc.). Key components include the **"Pet Soul"** (a deep, evolving pet profile), a **"Unified Inbox"** for all customer requests, a **"Membership"** layer, and a robust Admin/Agent experience.
 
-**Vision**: ONE ENGINE powering ALL pillars with common services.
-
----
-
-## 🚀 Travel Pillar Implementation (Jan 19, 2026)
-
-### What Was Built
-✅ **Complete Travel Pillar Admin System** in `TravelManager.jsx`:
-- **Requests Tab**: View/manage travel requests with status filters (submitted, reviewing, coordinating, confirmed, completed, cancelled)
-- **Partners Tab**: Full partner management for cab services, airlines, train services, relocation companies
-- **Products Tab**: CRUD for travel products (crates, carriers, harnesses, calming treats) with CSV import/export
-- **Bundles Tab**: CRUD for travel bundles (Cab Kit, Train Kit, Flight Kit, Relocation Pack) with CSV import/export  
-- **Settings Tab**: Paw Rewards & Birthday Perks configuration
-
-✅ **Travel Partner Management** (NEW - Jan 19):
-- Partner CRUD API endpoints in `travel_routes.py`
-- Partner types: Pet Cab Service, Airline Partner, Train/Bus Service, Relocation Company, Cargo/Freight
-- Partner fields: contact info, cities covered, commission %, rating, pet policy, special features, verification status
-
-✅ **Abandoned Cart Settings UI** (NEW - Jan 19):
-- Settings modal in Admin → Abandoned Carts tab
-- Toggle auto send reminders
-- Configure 3-level email sequence with timing (1h, 24h, 72h)
-- Per-reminder discount code and percentage options
-
-✅ **Pet Soul / My Pets Navigation** (FIXED - Jan 19):
-- Shows "🐾 Pet Soul" for guests (links to /pet-soul public page)
-- Shows "🐾 My Pets" for logged-in users (links to /my-pets private page)
-- Works in both desktop and mobile navigation
-
-✅ **Member Dashboard Pillar Tabs** (FIXED - Jan 19):
-- Added Celebrations, Stay, Travel tabs alongside existing tabs
-- Each tab shows relevant stats and history for that pillar
-
-✅ **Backend Endpoints** in `travel_routes.py`:
-- `POST /api/travel/admin/seed-products` - Seeds 10 default products + 5 bundles
-- `GET/POST/PUT/DELETE /api/travel/admin/products` - Full product CRUD
-- `POST /api/travel/admin/products/import` - CSV import
-- `GET /api/travel/admin/products/export` - CSV export
-- Similar endpoints for bundles
-- `GET /api/travel/admin/settings` / `PUT /api/travel/admin/settings`
-
-✅ **Frontend Fixes**:
-- Fixed time picker to use 30-minute intervals (12:00 AM, 12:30 AM, 1:00 AM, etc.)
-- Added Celebrations, Stay, Travel tabs to Member Dashboard
-- Activated Travel dropdown in Navbar with sub-items (Cab, Train, Flight, Relocation)
-
-✅ **Integration**:
-- Every travel request creates: Service Desk ticket, Unified Inbox entry, Pet Soul update
-- Full pillar tags support for travel amenities
-
-### Files Changed/Created
-- `/app/frontend/src/components/admin/TravelManager.jsx` - Complete admin UI
-- `/app/frontend/src/pages/TravelPage.jsx` - Fixed time picker
-- `/app/frontend/src/pages/MemberDashboard.jsx` - Added pillar tabs
-- `/app/frontend/src/pages/Admin.jsx` - Added Travel tab
-- `/app/frontend/src/components/Navbar.jsx` - Activated Travel pillar
-- `/app/backend/travel_routes.py` - Extended with product/bundle CRUD
-- `/app/backend/stay_routes.py` - Added my-bookings endpoint
+## Core Strategy
+**Data Flywheel**: Every interaction enriches the "Pet Soul," making the platform proactively intelligent.
 
 ---
 
-## 🚨 CRITICAL FIX - Data Restoration (Jan 18, 2026)
+## Product Requirements
 
-### Issue
-After deployment to a new environment, all products, bundles, restaurants, and stay properties appeared to be missing. This was NOT data loss - it was a fresh database environment that needed seeding.
+### A. One Engine, Multiple Pillars
+- Single backend for all pillars (Dine, Stay, Travel, Celebrate, Care)
 
-### Resolution
-✅ Created comprehensive `seed_all_data.py` script that seeds:
-- 16 Products (cakes, treats, meals, accessories)
-- 6 Categories
-- 5 Dine Bundles
-- 5 Restaurants
-- 32 Stay Properties (pet-friendly hotels across India)
-- 3 Celebrate Bundles
-- 5 Blog Posts
+### B. Unified Input & Inbox
+- Central admin inbox for all customer requests across pillars
 
-### Also Fixed
-✅ React Hook naming error in `ServiceDesk.jsx` - renamed `useCannedResponse` to `applyCannedResponse` (functions starting with 'use' are interpreted as hooks by React)
+### C. Pet Soul
+- Comprehensive, learning profile for each pet
+- Progressive profiling from all interactions
+
+### D. Membership Layer
+- Guest vs. member system with rewards
+- Pricing: ₹999/yr or ₹99/mo
+- B2B discount codes for wholesale partners
+
+### E. Automated Notifications & Service Desk
+- Event-driven tickets and notifications
+- SLA tracking and breach alerts
+
+### F. World-Class Admin Experience
+- Robust, intuitive admin tools
+- Agent-specific portal with permissions
+
+### G. Data Flywheel
+- Intelligence layer connecting all features to Pet Soul
+
+### H. Gamify Pet Soul
+- Reward users for completing their Pet Soul profile
 
 ---
 
-## ONE ENGINE Architecture ✅ (Updated Jan 18, 2026)
+## What's Been Implemented
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    👤 MEMBERSHIP LAYER                   │
-│  ┌──────────────┐    ┌──────────────────────────────┐  │
-│  │    GUEST     │    │          MEMBER              │  │
-│  │  • Browse    │ →  │  • All Guest features        │  │
-│  │  • Shop      │    │  • 🎁 Paw Rewards unlocked   │  │
-│  │  • Cart      │    │  • 🐾 Pet Soul access        │  │
-│  └──────────────┘    │  • 💎 Loyalty points         │  │
-│                      │  • 🎂 Birthday perks         │  │
-│                      │  • ⭐ Review & earn          │  │
-│                      └──────────────────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────┐
-│                   🐾 PET SOUL LAYER                      │
-│     (Profile, Personality, Celebrations, History)        │
-│        Captures data from ALL pillar interactions        │
-└─────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────┐
-│                    ONE ENGINE                            │
-│  ┌─────────┬─────────┬─────────┬─────────┬──────────┐  │
-│  │CELEBRATE│  DINE   │  STAY   │  CARE   │ TRAVEL   │  │
-│  │  🎂     │  🍽️     │  🏨     │  💊     │  ✈️      │  │
-│  └─────────┴─────────┴─────────┴─────────┴──────────┘  │
-│                                                          │
-│  Common: Tickets, Notifications, Rewards, Reviews, Cart  │
-│  Unified Inbox, MIS Dashboard, Mira AI                   │
-└─────────────────────────────────────────────────────────┘
-```
+### ✅ Completed Features
 
-## Service Desk - Phase 1 Complete ✅ (Jan 18, 2026)
+#### Core Infrastructure
+- FastAPI backend + React frontend + MongoDB
+- Authentication (JWT-based)
+- Role-based access (Admin, Agent, User)
 
-### Features Implemented:
-| Feature | Status | Description |
-|---------|--------|-------------|
-| 🎯 **Quick Filters** | ✅ | All, Unassigned, Critical, Today tabs |
-| ✅ **Bulk Selection** | ✅ | Checkboxes on each ticket, Select All |
-| 👥 **Bulk Assign** | ✅ | Assign multiple tickets to a concierge |
-| 📊 **Bulk Status** | ✅ | Change status of multiple tickets |
-| 🗑️ **Bulk Delete** | ✅ | Delete multiple tickets at once |
-| 📜 **Activity Timeline** | ✅ | Shows ticket lifecycle (created, assigned, SLA, resolved) |
-| ✈️ **Travel Tickets** | ✅ | Auto-ticketing for travel bookings |
-| 💊 **Care Tickets** | ✅ | Auto-ticketing for care appointments |
-| ✂️ **Grooming Tickets** | ✅ | Auto-ticketing for grooming appointments |
-| 🏷️ **Source Badges** | ✅ | 30+ source types with icons and colors |
-| 💬 **Reply Box** | ✅ | Internal Note, Email Guest, WhatsApp Guest |
+#### Pet Soul System
+- Complete pet profiles with progressive profiling
+- Travel preferences auto-captured from requests
+- Health, preferences, behavior tracking
 
-### API Endpoints Added:
-- `POST /api/tickets/service-request` - Create tickets for any pillar (Travel, Care, Grooming)
-- `POST /api/tickets/bulk/assign` - Bulk assign tickets
-- `POST /api/tickets/bulk/status` - Bulk update ticket status
-- `DELETE /api/tickets/bulk/delete` - Bulk delete tickets
+#### Business Pillars
 
-### Common Services (Cross-Pillar)
-| Service | Status | Description |
-|---------|--------|-------------|
-| 📥 **Unified Inbox** | ✅ NEW | All channel intakes (Voice, Web, WhatsApp) |
-| 🎫 **Service Desk** | ✅ ENHANCED | Tickets, SLA, messaging, bulk actions, timeline |
-| 📢 **Notifications** | ✅ | Email (Resend), planned: WhatsApp |
-| 🎁 **Paw Rewards** | ✅ | Universal rewards across pillars |
-| ⭐ **Reviews** | ✅ | Pillar-tagged reviews |
-| 💎 **Loyalty** | ✅ | Points, tiers |
-| 🐾 **Pet Soul** | ✅ | Profiles, celebrations, history |
-| 🤖 **Mira AI** | ✅ | Concierge assistant |
-| 🛒 **Universal Cart** | ✅ | Products, services, reservations |
-| 📊 **MIS Dashboard** | ✅ | Real-time analytics |
+**Dine Pillar** ✅
+- Restaurant listings with filters
+- Menu browsing
+- Voice ordering feature (requires production deployment for full function)
 
-### Pillars
-| Pillar | Status | Description |
-|--------|--------|-------------|
-| 🎂 **CELEBRATE** | ✅ ACTIVE | Cakes, Treats, Gifts |
-| 🍽️ **DINE** | ✅ ACTIVE | Restaurants, Reservations, Meetups |
-| 🏨 **STAY** | ✅ ACTIVE | Hotels, Resorts, Pawcations |
-| ✈️ **TRAVEL** | 🔮 FUTURE | Transport, Relocation |
-| 💊 **CARE** | 🔮 FUTURE | Vets, Groomers, Training |
-| 🏃 **FIT** | 🔮 FUTURE | Activities, Fitness |
-| 💼 **WORK** | 🔮 FUTURE | Pet at Work services |
-| 🎉 **ENJOY** | 🔮 FUTURE | Events, Entertainment |
-| 📋 **ADVISORY** | 🔮 FUTURE | Pet parenting guidance |
+**Stay Pillar** ✅
+- Pet-friendly accommodation search
+- Booking system
+- My Bookings for users
 
-### Pet Soul - 8 Core Folders (Inspired by Human Concierge Soul)
-| Folder | Dog Equivalent |
-|--------|----------------|
-| Identity & Essence | Breed, personality, quirks, temperament |
-| Family & Inner Circle | Owner, household, dog friends, walker |
-| Rhythm & Lifestyle | Daily routine, energy, sleep patterns |
-| Home Comforts | Favorite spots, toys, comfort items |
-| Travel Philosophy | Car behavior, carrier, travel anxiety |
-| Taste & Indulgence | Food preferences, treats, allergies |
-| Health & Care Map | Vet history, medications, grooming |
-| Dreams & Long Horizon | Goals, bucket list experiences |
+**Travel Pillar** ✅ (January 19, 2026)
+- Brilliant single-flow design with wizard modal
+- 4 travel types: Cab, Train, Flight, Relocation
+- 12 seeded products + 5 bundles
+- Full admin management (Products, Bundles, Partners, Settings)
+- CSV import/export for products
+- Service flow → Service Desk + Unified Inbox + Pet Soul updates
 
-## Core Technical Architecture
-- **Frontend**: React with Tailwind CSS, Shadcn UI components
-- **Backend**: FastAPI (Python)
+**Celebrations Pillar** ✅
+- Basic structure in place
+
+#### Service Desk
+- Ticket management
+- Multi-channel intake
+- AI reply drafts (OpenAI GPT-4)
+- SLA tracking
+
+#### Admin Panel
+- Dashboard with metrics
+- User management
+- Product management (Shopify sync)
+- Travel Manager (5 tabs)
+- Abandoned cart settings UI
+
+---
+
+## In Progress
+
+### 🔄 Membership Pillar V1
+- Backend file created: `membership_routes.py`
+- Razorpay SDK installed
+- Test keys configured
+- **Next**: Implement payment endpoints, frontend purchase page, onboarding flow
+
+---
+
+## Known Issues
+
+| Issue | Status | Priority |
+|-------|--------|----------|
+| Voice Order broken on production | BLOCKED (needs deployment) | P1 |
+| Shopify Sync creating 'Untitled' Products | NOT STARTED | P2 |
+| Auto-reminders only to Gmail | BLOCKED (Resend domain config) | P1 |
+| Service Desk modal shaking | USER VERIFICATION PENDING | P0 |
+
+---
+
+## Upcoming Tasks
+
+### P0 - Critical
+1. Complete Membership Pillar V1
+
+### P1 - High Priority
+1. Admin Panel reorganization (Common vs Pillar-specific)
+2. SLA Breach Alerts enhancement
+
+### P2 - Medium Priority
+1. Component refactoring (Admin.jsx, ServiceDesk.jsx, server.py)
+2. Deployment readiness checklist
+
+### Future/Backlog
+1. Care Pillar
+2. WhatsApp integration
+3. Google Calendar integration
+4. International flights support
+
+---
+
+## Tech Stack
+
+- **Frontend**: React 18, TailwindCSS, Shadcn/UI
+- **Backend**: FastAPI, Python 3.11
 - **Database**: MongoDB
-- **Email**: Resend (woof@thedoggybakery.in)
+- **Integrations**: 
+  - OpenAI GPT-4 (AI replies, voice transcription)
+  - Resend (emails)
+  - Shopify (product sync)
+  - Razorpay (payments - in progress)
 
 ---
 
-## Implemented Features
+## Key Collections
 
-### Enhanced Autoship System ✅ (NEW - Jan 17, 2026)
-- **Default Discount Tiers**: Admin-configurable discount tiers
-  - 1st Order: 10% off
-  - 2nd - 4th Orders: 15% off
-  - 5th Order Onwards: 30% off
-- **Product-Specific Overrides**: Set custom autoship discounts per product
-- **Special Offers**: Mark products as "Special" with custom labels and expiry dates
-- **Admin UI**: New "Autoship" tab in Pricing Hub (CONFIG section)
-- **API Endpoints**:
-  - `GET /api/admin/pricing/autoship/settings` - Get all settings
-  - `PUT /api/admin/pricing/autoship/tiers` - Update default tiers
-  - `POST /api/admin/pricing/autoship/product-override` - Add/update product override
-  - `DELETE /api/admin/pricing/autoship/product-override/{product_id}` - Remove override
-  - `GET /api/admin/pricing/autoship/products` - List products for override UI
-
-### Admin Login Password Visibility Toggle ✅ (NEW - Jan 17, 2026)
-- Eye icon added to admin login form password field
-- Click to toggle between showing/hiding password
-
-### Stay Pillar - Pet-Friendly Hotel Booking ✅ (NEW - Jan 17, 2026)
-**Vision**: "Your dog's second home — everywhere."
-
-**Public Features** (`/stay`):
-- 32 curated pet-friendly hotels across India (Goa, Rajasthan, Kerala, Himachal, Uttarakhand, Maharashtra, Karnataka, Tamil Nadu, Haryana, Andaman, Puducherry)
-- Property cards with images, Paw Ratings, pet fees, badges
-- **🎁 Paw Reward badges on all properties** - "Complimentary treat with every booking"
-- Filters: City, Property Type, Min Rating, Vibe Tags (Beach, Mountain, Luxury, Quiet, etc.)
-- Property details modal with 4 tabs: Overview, Pet Policy, Paw Rating, Amenities
-- **Paw Reward section in property details** showing complimentary product image, name, and value
-- 3-step booking request wizard (Guest Details → Pet Profile → Stay Details)
-- Request-based booking model (concierge handles)
-
-**Paw Reward System** ✅ (NEW - Jan 17, 2026):
-- Every booking includes a complimentary treat (up to ₹600)
-- Badge displays on property cards: "🎁 Paw Reward"
-- Property detail modal shows the specific reward product with image
-- Auto-assigned to properties initially, fully customizable in admin
-- **Admin Features**:
-  - "Assign Paw Rewards" bulk action button
-  - Per-property Paw Reward editing modal
-  - Select from eligible products (treats under ₹600)
-  - Custom message configuration
-  - Enable/disable per property
-- **API Endpoints**:
-  - `GET /api/stay/paw-rewards/eligible-products` - List treats under ₹600
-  - `POST /api/admin/stay/properties/{id}/paw-reward` - Update property's Paw Reward
-  - `POST /api/admin/stay/properties/assign-paw-rewards` - Bulk assign to all properties
-
-**Pillar Tags System** ✅ (NEW - Jan 17, 2026):
-- Pillar-wise tags (Stay, Dine, Travel, Care)
-- Categories: Rewards, Amenities, Features, Policies
-- 17 default tags seeded including:
-  - Stay: Paw Reward, Pet Menu, Off-Leash Area, Pet Sitter, Grooming, Vet on Call, Walking Trails, Beach Access, Pet Pool
-  - Dine: Paw Treat Included, Dog Menu, Outdoor Seating, Water Bowls
-  - Travel: Pet Kit Included, Climate Control
-  - Care: First Visit Discount, Certified Trainer
-- **API Endpoints**:
-  - `GET /api/stay/tags` - Get all tags (filter by pillar/category)
-  - `POST /api/admin/stay/tags` - Create tag
-  - `PUT /api/admin/stay/tags/{id}` - Update tag
-  - `DELETE /api/admin/stay/tags/{id}` - Delete tag
-  - `POST /api/admin/stay/tags/seed` - Seed default tags
-
-**Stay Essentials (Products/Bundles)** ✅ (FIXED - Jan 17, 2026):
-- 8 curated travel bundles displayed in "Stay Essentials" section
-- Bundle types: Weekend Getaway Kit, Beach Pawcation Pack, Mountain Adventure Bundle, Road Trip Essentials, First Stay Starter Pack, Calm Traveler Kit, Luxury Stay Collection, Hygiene Hero Kit
-- Discount badges showing % OFF (15-26% discounts)
-- "Featured" badges for promoted bundles
-- Bundle detail modal showing included items and pricing
-- Add to Cart functionality
-- API: `GET /api/stay/products/bundles` - with category and featured filters
-
-**Pawcation Socials (Events)** ✅ (FIXED - Jan 17, 2026):
-- 3 sample events: Sunset Beach Pawty, Mountain Trail Pack Walk, Pawcation Photo Walk
-- Event types: sunset_social, trail_pack, photo_walk
-- FREE badge for complimentary events
-- Event detail modal with registration form
-- Registration creates notification for host
-- API: `GET /api/stay/social/events` - returns events with property info
-
-**Paw Rating System** (5 categories, 0-5 scale):
-- 🐾 Comfort (beds, bowls, space)
-- 🛡️ Safety (cleaning, hygiene, policies)
-- 🚪 Freedom (areas dogs can access)
-- 💗 Care (grooming, vet support)
-- 🎉 Joy (play zones, activities)
-- Overall = Average of 5 categories
-
-**Property Badges**:
-Pet Menu, Off-leash area, Pet sitter, Grooming, Vet on call, Trails, Beach access
-
-**Admin Console** (5-Tab Structure):
-1. **Properties Tab**: CRUD operations, status management (Draft/Onboarding/Live/Paused/Suspended), search/filter
-2. **Bookings Tab**: View/manage booking requests, status updates (Pending/Contacted/Confirmed/Cancelled/Completed)
-3. **Issues Tab**: Policy mismatch reports, trust controls
-4. **Reports Tab**: By property type, by city breakdowns
-
-**API Endpoints**:
-- `GET /api/stay/properties` - Public property listing with filters
-- `GET /api/stay/properties/{id}` - Single property details
-- `GET /api/stay/products/bundles` - Stay product bundles with filters
-- `GET /api/stay/social/events` - Pawcation social events
-- `POST /api/stay/social/events/{id}/register` - Event registration
-- `POST /api/stay/booking-request` - Create booking request
-- `POST /api/stay/report-mismatch` - Report policy mismatch
-- `GET/POST/PUT/DELETE /api/admin/stay/properties/*` - Admin CRUD
-- `GET/PUT /api/admin/stay/bookings/*` - Booking management
-- `GET/PUT /api/admin/stay/mismatch-reports/*` - Issue management
-- `GET /api/admin/stay/stats` - Dashboard statistics
-- `POST /api/admin/stay/seed` - Seed initial 32 hotels
-- `POST /api/admin/stay/seed-bundles` - Seed 8 product bundles
-
-### 1. Multi-Pillar Product Classification System ✅
-- Products assignable to multiple Pillars (Celebrate, Dine, Stay, Travel, Care)
-- Categories within each pillar
-- Admin UI for pillar/category management
-
-### 2. Enhanced Campaign Collections ✅
-- Admin tool to create curated campaign pages (Valentine's Day, Diwali, etc.)
-- Multi-section layouts with different styles (grid, carousel, featured)
-- Dynamic navbar integration based on collection settings
-- Public collection pages at `/collections/{slug}`
-
-### 3. Admin Notification Center ✅
-- Real-time notification bell in admin header
-- Notifications for orders, reservations, partner applications, etc.
-
-### 4. Service Desk ✅
-- Ticket management system
-- **NEW**: Source labels (🛒 Order, 🤖 Mira Chat, 🍽️ Reservation, 🐕 Pet Buddy)
-- **NEW**: CSV export functionality
-- Auto-ticket creation from Mira AI chats
-
-### 4. Multi-Admin System with Email Password Reset ✅ (NEW - Jan 17, 2026)
-- Multiple admin users supported (email/password based)
-- Created initial admin: **dipali@clubconcierge.in** (password: DoggyAdmin2026!)
-- Email-based password reset workflow
-- Admin management (add/remove admins)
-- Legacy username/password login still supported
-
-### 5. Partner Onboarding Module ✅ (UPDATED - Jan 17, 2026)
-- **5-Step Registration Form**:
-  1. Business Type - **Pet Hotel & Pet Boarding now separate options**
-  2. Business Details - **Added "Additional Cities" for multi-city presence**
-  3. Pet-Friendly Features & Services
-  4. Documents - **GST, PAN, Company Turnover now MANDATORY**
-  5. Agreement - **Date auto-filled to current date (read-only)**
-- **NEW**: Concierge Notes in admin for internal tracking
-- **NEW**: Document Verification (GST ✓/✗, PAN ✓/✗)
-- **NEW**: Approval Workflow with email notifications:
-  - Approve - sends congratulations email
-  - Reject - sends rejection email with reason
-  - Request Info - sends email asking for more details
-- **NEW**: Action history tracking per application
-- Admin approval workflow
-
-### 6. Pricing, Shipping & Commercial Hub ✅ (NEW - Jan 17, 2026)
-- **Product Pricing Tab**: Cost, Margin %, Selling Price, GST for all products
-- **Shipping Rules Tab**: Flat rate, per-KG, location-based, free above amount
-- **Pillar Commissions Tab**: Default rates per pillar
-  - Celebrate: Margin-based (products)
-  - Dine: 10% commission
-  - Stay: 12% commission
-  - Travel: 15% commission
-  - Care: 10% commission
-- **Partner Rates Tab**: Individual restaurant/hotel commission overrides
-- Bulk edit, CSV import/export
-
-### 7. Pillar-Based Reports ✅ (NEW - Jan 17, 2026)
-- **Summary View**: All pillars at a glance with totals
-- **Celebrate Report**: Revenue, orders, top products, GST collected, city breakdown
-- **Dine Report**: Reservations, buddy visits, top restaurants, commission earned
-- **Stay Report**: Bookings, revenue, nights (ready for when Stay pillar launches)
-- **Pillar Comparison**: Profit breakdown, activity comparison, insights
-
-### 8. Partner Reports ✅ (NEW - Jan 17, 2026)
-- Total applications, pending/approved/rejected counts
-- Approval rate metrics
-- Applications by business category (Restaurant, Hotel, Groomer, etc.)
-- Applications by city
-- Recent applications table with status
-- Daily application trend
-
-### 9. Mira AI Reports ✅ (UPDATED - Jan 17, 2026)
-- Total conversations and messages
-- **NEW**: Real-time Conversion Tracking:
-  - Conversion rate (chats → orders)
-  - Revenue generated from Mira AI chats
-  - Conversions by service type
-- Average messages per conversation
-- Response rate metrics
-- Conversations by service type (Birthday, Vet, Grooming, etc.)
-- Conversation status breakdown (Active, Resolved, Converted, Abandoned)
-- Conversations by city
-- User messages vs AI responses
-- Chats with pet info captured
-- Recent conversations list with previews
-- AI insights summary
-
-### 10. Data Migration Tool ✅ (NEW - Jan 17, 2026)
-- Export all data (products, restaurants, pillars, categories, collections) as JSON
-- Import data from JSON file to any environment
-- Seed core data (pillars & categories) for fresh deployments
-- Solves preview vs production database sync issues
-
-### 11. Product CSV Management ✅
-- Import/export products via CSV
-- Bulk operations support
-
-### 9. Restaurant Auto-Population ✅
-- Web scraper for pet-friendly restaurants
-- 36 restaurants in Bangalore
-
-### 10. Dine Pillar ✅
-- Restaurant listings
-- Table reservations
-- Pet Buddy visits with email notifications
+- `users` - User accounts
+- `pets` - Pet profiles with soul data
+- `travel_requests` - Travel booking requests
+- `travel_partners` - Partner companies
+- `products` - All products including travel items
+- `product_bundles` - Bundled offerings
+- `tickets` - Service desk tickets
+- `channel_intakes` - Unified inbox entries
+- `memberships` - (To be created)
+- `app_settings` - Global configuration
 
 ---
 
-## Email Configuration
-- **Sender**: woof@thedoggybakery.in
-- **Provider**: Resend
-- **Templates**: Visit confirmations, meetup requests, order notifications
+## Credentials
+
+- **Admin**: aditya / lola4304
+- **Agent**: sarah / agent123
+- **Test User**: testuser@example.com / password
 
 ---
 
-## Database Collections
-- `products`, `product_pricing`, `product_placements`
-- `pillars`, `categories`
-- `enhanced_collections`
-- `restaurants`, `reservations`, `buddy_visits`
-- `partner_applications`
-- `shipping_rules`, `pillar_commissions`
-- `tickets`, `notifications`
-- `orders`, `users`, `reviews`
-
----
-
-## API Endpoints (Key)
-- `/api/admin/pricing/*` - Pricing Hub
-- `/api/admin/reports/pillars/*` - Pillar Reports (including partners and mira)
-- `/api/admin/migration/*` - Data Migration Tool
-- `/api/admin/enhanced-collections/*` - Campaign Collections
-- `/api/campaign/collections/*` - Public collections
-- `/api/partners/*` - Partner onboarding
-- `/api/dine/*` - Restaurant & visits
-
----
-
-## UI/UX Updates (Jan 17, 2026)
-- **Page Title**: Changed from "Doggy Bakery" to "The Doggy Company | Pet Life Operating System"
-- **Footer Phone Numbers**: Added +91 prefix (+91 9739982582, +91 9663185747)
-- **Scroll to Top**: Footer links now scroll to top of page on navigation
-- **Partner Form**: Pet Hotel & Pet Boarding split into separate options
-- **Partner Documents**: GST, PAN, Company Turnover now mandatory
-- **Agreement Date**: Auto-fills with current date (read-only)
-
----
-
-## Global Scale Foundation & Advanced Checkout ✅ (NEW - Jan 17, 2026)
-
-### Core Features
-- **App Settings System**: Global configuration for pickup cities, store locations, and fulfillment rules
-- **Split-Fulfillment Checkout**: Handles mixed carts with bakery items (store pickup) and shippable items (delivery)
-- **Pan-India Shipping Toggle**: Dynamic switch between city dropdown and free-text input for nationwide delivery
-- **Product Fulfillment Types**: Products tagged as `shipping`, `store_pickup`, or `both`
-
-### Backend APIs
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/settings/public` | Public settings (pickup cities, stores, pan-india flag) |
-| `GET /api/admin/settings` | Admin-only full settings view |
-| `PUT /api/admin/settings` | Update app settings |
-| `PUT /api/admin/products/{id}/fulfilment` | Update product fulfillment type |
-| `POST /api/admin/products/bulk-fulfilment` | Bulk update products |
-| `POST /api/admin/products/migrate-fulfilment-defaults` | Migrate existing products |
-
-### Checkout Behaviors
-1. **Bakery-Only Cart** → "Store Pickup Required" alert, pickup location selection, FREE pickup
-2. **Shippable-Only Cart** → Home Delivery/Store Pickup toggle, Pan-India option
-3. **Mixed Cart** → "Split Fulfilment" alert, both pickup and delivery sections
-
-### Data Migration
-- 128 bakery products set to `store_pickup` (cakes, fresh treats)
-- 264 other products set to `shipping` (Pan-India)
-
----
-
-## Upcoming Tasks (Priority Order)
-
-### P0 - High Priority
-1. **Dine Pillar Development**
-   - Restaurant partners with pet-friendly features
-   - Reservation system
-   - Admin management
-
-2. **Pet Profile Enhancements**
-   - Pillar-wise view in admin panel
-   - Full "operating system" view for each pet
-   - Track pet's interactions across pillars
-
-### P1 - Medium Priority
-3. **Care Pillar Development** (groomers, vets, trainers)
-4. Razorpay Payment Integration
-5. Push Notifications & Email Alerts enhancement
-
-### P2 - Lower Priority
-6. Travel Pillar Development
-7. Landing Page Redesign
-8. Admin.jsx Refactoring (currently 2300+ lines)
-9. server.py Modularization
-10. StayManager.jsx Refactoring (2000+ lines)
-
----
-
-## Bug Fixes (Jan 17, 2026)
-1. ✅ **Stay Products Not Displaying**: Fixed missing JSX rendering in StayPage.jsx for bundles and socials sections
-2. ✅ **Email Domain Verification**: Updated SENDER_EMAIL to woof@thedoggybakery.in (user verified domain)
-3. ✅ **Shopify 'Untitled' Products**: Added fallback name handling using handle or ID when title is null/empty
-4. ✅ **Reviews Tab Auth Error**: Fixed ReviewsManager.jsx to use getAuthHeader() correctly instead of wrapping in extra object
-5. ✅ **Admin Dummy Data**: Added 5 testimonials, 5 blog posts, and 4 reviews for testing
-
-## New Features (Jan 18, 2026)
-
-### Multi-Channel Intake Engine (Voice Orders) ✅
-**Unified request handler for all channels:**
-
-**Supported Channels:**
-- Web (forms, checkout)
-- Chat (Mira AI)
-- WhatsApp
-- Email
-- Phone
-- **Voice** (NEW - with Whisper transcription)
-
-**Voice Order Flow:**
-1. Customer records/uploads voice message (mp3, wav, m4a, etc.)
-2. OpenAI Whisper transcribes audio to text
-3. AI extracts order details (items, quantities, delivery preference)
-4. Creates unified intake record
-5. Triggers notification workflow
-
-**API Endpoints:**
-- `POST /api/channels/voice/order` - Voice order with audio file
-- `POST /api/channels/text/order` - Text-based order from any channel
-- `POST /api/channels/inquiry` - General inquiries
-- `GET /api/channels/intakes` - View all intakes (admin)
-- `GET /api/channels/stats` - Channel statistics
-
-**Files:**
-- `/app/backend/channel_intake.py`
-
-### Real-Time MIS & Reporting Dashboard ✅
-**Live analytics across all pillars:**
-
-**Dashboard Metrics:**
-- Today's Revenue & Orders
-- Weekly Revenue & Orders
-- Average Order Value
-- Items Sold
-- Pending Tickets
-- Service Desk Performance (resolution rate, by status, by category)
-- Channel Performance (conversions, CVR)
-- Pillar Performance (Celebrate, Dine, Stay, Travel, Care)
-
-**API Endpoints:**
-- `GET /api/mis/dashboard` - Real-time dashboard
-- `GET /api/mis/revenue/summary` - Revenue metrics
-- `GET /api/mis/revenue/by-day` - Daily breakdown
-- `GET /api/mis/revenue/by-category` - Category breakdown
-- `GET /api/mis/channels/performance` - Channel metrics
-- `GET /api/mis/pillars/summary` - Pillar analytics
-- `GET /api/mis/service-desk/metrics` - Service desk KPIs
-- `GET /api/mis/conversions/funnel` - Conversion funnel
-- `GET /api/mis/export/{report_type}` - Export data
-
-**Frontend:**
-- New "📊 Live MIS" tab in Admin panel
-- Auto-refresh every 30 seconds
-- Color-coded metric cards
-
-**Files:**
-- `/app/backend/mis_reporting.py`
-- `/app/frontend/src/components/admin/MISDashboard.jsx`
-
-### Complete Admin Password Reset System ✅
-**World-class forgot password flow implemented:**
-
-**Pages:**
-- `/admin/forgot-password` - Request reset email
-- `/admin/reset-password?token=xxx` - Set new password
-
-**API Endpoints:**
-- `POST /api/admin/forgot-password` - Sends reset email
-- `POST /api/admin/reset-password` - Validates token & sets new password  
-- `POST /api/admin/change-password` - Change password when logged in
-
-**Security Features:**
-- 1-hour token expiration
-- Single-use tokens
-- Confirmation email on password change
-- Password validation (min 6 chars)
-- Admin email: dipali@clubconcierge.in
-
-**Files:**
-- `/app/frontend/src/pages/ForgotPassword.jsx`
-- `/app/frontend/src/pages/ResetPassword.jsx`
-
-### Unified Notification Engine ✅ (FOUNDATION)
-**Vision**: One engine, multiple channels (Email, WhatsApp), all pillars
-
-**Core Architecture:**
-- Central notification dispatcher supporting Email (via Resend) and WhatsApp (pending setup)
-- Event-driven notifications triggered automatically on status changes
-- Supports all pillars: Celebrate, Dine, Stay, Travel, Care
-- Customer notifications + Admin notifications
-
-**Supported Event Types (16 total):**
-| Event Type | Pillar | Customer Message | Admin Alert |
-|------------|--------|------------------|-------------|
-| order_placed | Celebrate | ✅ | ✅ |
-| order_confirmed | Celebrate | ✅ | ✅ |
-| order_preparing | Celebrate | ✅ | - |
-| order_ready | Celebrate | ✅ | ✅ |
-| order_shipped | Celebrate | ✅ | - |
-| order_delivered | Celebrate | ✅ | ✅ |
-| reservation_request | Dine | ✅ | ✅ |
-| reservation_confirmed | Dine | ✅ | ✅ |
-| booking_request | Stay | ✅ | ✅ |
-| booking_confirmed | Stay | ✅ | ✅ |
-| travel_request | Travel | ✅ | ✅ |
-| appointment_request | Care | ✅ | ✅ |
-| appointment_confirmed | Care | ✅ | ✅ |
-| ticket_created | General | ✅ | ✅ |
-| ticket_updated | General | ✅ | - |
-| ticket_resolved | General | ✅ | ✅ |
-
-**API Endpoints:**
-- `POST /api/notifications/send` - Manually trigger notification (admin)
-- `GET /api/notifications/logs` - Get notification logs
-- `GET /api/notifications/event-types` - List all event types
-- `GET /api/notifications/stats` - Notification statistics
-
-**Integration Points:**
-- `create_order` → Triggers `order_placed` notification automatically
-- `update_order` → Triggers status change notifications (confirmed, preparing, etc.)
-- Helper functions: `notify_order_status_change()`, `notify_booking_status_change()`, `notify_ticket_update()`
-
-**Files:**
-- `/app/backend/notification_engine.py` - Core notification engine
-
-### Shopify Sync Enhanced Logging ✅
-- Detailed logging for problematic products (untitled, missing data)
-- Sync logs now include `problematic_products` array and `problematic_count`
-- New endpoints:
-  - `GET /api/admin/sync/logs` - Sync history with issues
-  - `GET /api/admin/sync/problematic-products` - Find products with issues
-
-## New Feature (Jan 17, 2026)
-### Trip Planner 🎯
-A personalized trip recommendation engine that suggests:
-- **Stay properties** matching destination and trip type (beach, mountain, forest, road trip, weekend, luxury)
-- **Product bundles** suitable for the trip type
-- **Upcoming social events** at or near the destination
-- **Personalized tips** based on trip type and pet name
-
-**API Endpoints:**
-- `POST /api/stay/trip-planner` - Generate trip recommendations
-- `GET /api/stay/trip-planner/options` - Get available cities and trip types
-
-**Frontend:** "Plan Your Pawcation" button in hero section opens Trip Planner modal with form and results view.
-
----
-
-## Session Summary (Jan 18, 2026 - Evening)
-
-### Quick Fixes Pending:
-1. Remove "Made with Emergent" badge (visible bottom-right all pages)
-2. Remove Mira Chats tab from Admin Panel
-3. Optional: Remove Chatbase widget (green chat bubble)
-
-### Next Session Focus: PET SOUL
-- Backend 100% complete (`pet_soul_routes.py`)
-- Frontend 80% complete (`PetSoulEnhanced.jsx`)
-- Need: Testing, Service Desk integration, Auto-learning engine
-
-### Reference Document:
-See `/app/TOMORROW_SUMMARY.md` for full detailed plan
-
----
-
-## Known Issues
-
----
-
-## Latest Updates (Jan 18, 2026)
-
-### Admin Panel Enhancements ✅
-
-**1. Discount Code Validity Setting**
-- Added "Valid From" and "Valid Until (Expiry)" date pickers to discount code modal
-- Expiry date shown in discount list with color coding (green=active, red=expired)
-- Files: `Admin.jsx`
-
-**2. Abandoned Carts - Send Reminders Fixed**
-- Added checkbox selection for individual carts (only for carts with email)
-- "Select All (X with email)" checkbox at top
-- Individual "Send" button per cart
-- "Send to X Selected" bulk action button
-- New backend endpoints: `/api/admin/abandoned-carts/{id}/send-reminder`, `/api/admin/abandoned-carts/send-reminders`
-- Files: `Admin.jsx`, `server.py`
-
-**3. Testimonials Management**
-- Auto-seeds from mockData if database is empty (6 testimonials)
-- Full CRUD: Create, Read, Update, Delete
-- Features: name, pet name, location, rating, avatar, featured flag
-- Files: `Admin.jsx`
-
-**4. FAQ Management - Pillar-wise Categories**
-- Auto-seeds from mockData if database is empty
-- Category dropdown with organized optgroups:
-  - **General**: General, Orders & Delivery, Products & Ingredients, Customization, Payments & Refunds
-  - **Pillars**: 🎂 Celebrate, 🍽️ Dine, 🏨 Stay, ✈️ Travel, 💊 Care, 🛍️ Shop
-  - **Features**: Mira AI, Membership, Autoship, Pet Soul
-- Full CRUD functionality
-- Files: `Admin.jsx`
-
-**5. Blog/Insights - Category Management**
-- New "Manage Categories" button
-- Category modal showing existing categories with Edit buttons
-- Add new category form with Name and Description
-- Dynamic category dropdown in post editor (fetches from DB)
-- Category filter badges showing post count per category
-- Backend endpoints: `/api/admin/blog-categories` (GET, POST), `/api/admin/blog-categories/{id}` (PUT, DELETE)
-- Files: `Admin.jsx`, `server.py`
-
----
-
-## Voice Order & Channel Intake System ✅ (NEW - Jan 18, 2026)
-**Purpose**: Unified intake for orders via voice, text, WhatsApp, email, phone
-
-**Features**:
-- Voice Order page at `/voice-order` with audio recording and upload
-- Text order intake via API
-- Auto-creates service desk ticket for every intake
-- **Pillar Detection**: Automatically assigns pillar based on message keywords:
-  - `celebrate`: cake, treat, bakery, birthday, celebration
-  - `dine`: restaurant, reservation, table, lunch, dinner
-  - `stay`: hotel, resort, booking, vacation, pawcation
-  - `travel`: flight, transport, relocate
-  - `care`: groom, vet, doctor, training, spa
-- Tickets can be reassigned to different pillars by admin
-- OpenAI Whisper integration for voice transcription
-- **AI Order Extraction**: GPT-4o-mini extracts pet name, items, delivery preference from messages
-
-**API Endpoints**:
-- `POST /api/channels/voice/order` - Upload audio for transcription
-- `POST /api/channels/text/order` - Submit text order
-- `GET /api/channels/intakes` - List all intakes (with pillar filter)
-- `GET /api/channels/intakes/stats` - Get intake statistics
-- `PATCH /api/channels/intakes/{id}/assign-pillar` - Reassign intake to pillar
-- `GET /api/channels/intakes/by-pillar/{pillar}` - Get intakes for specific pillar
-
-**Files**:
-- `/app/backend/channel_intake.py` - Core intake processing module
-- `/app/frontend/src/pages/VoiceOrder.jsx` - Voice order UI
-
----
-
-## Unified Inbox Dashboard ✅ (NEW - Jan 18, 2026)
-**Purpose**: Central command center for all incoming requests across channels and pillars
-
-**Location**: Admin Panel → Core Tools → 📥 Unified Inbox
-
-**Features**:
-- **Stats Overview**: Total requests, by channel breakdown
-- **Pillar Distribution**: Visual badges showing requests per pillar
-- **Filters**: Channel (Voice, Web, Email, WhatsApp, Phone), Pillar, Status
-- **Search**: By customer name, email, or message content
-- **Request List**: Shows customer info, message preview, channel, pillar, status, linked ticket
-- **Detail Panel**:
-  - Customer info (name, email, phone, pet name)
-  - Full message content
-  - **AI Extracted Data**: Pet name, items, custom cake flag (when AI parses order)
-  - **Pillar Assignment Dropdown**: Reassign to any pillar
-  - **Status Buttons**: Pending, Processing, Completed, Cancelled
-  - **Linked Ticket**: Auto-created service desk ticket reference
-- **Auto-Ticket Creation**: Every intake automatically creates a service desk ticket with pillar assignment
-
-**Files**:
-- `/app/frontend/src/components/admin/UnifiedInbox.jsx` - Inbox dashboard component
-
----
-
-## Third-Party Integrations
-- **Resend**: Transactional emails
-- **Meilisearch**: Product search (optional)
-- **Chatbase.co**: Mira AI chat widget
-- **Google Auth**: Social login (Emergent-managed)
-- **Shopify**: Manual product sync
-
----
-
-## Admin Credentials (Test)
-- Username: `aditya`
-- Password: `doggy2026`
-
----
-
-*Last Updated: January 19, 2026*
-
----
-
-## Changelog (Jan 19, 2026 - Session 2 - Privacy & UX Fixes)
-
-### Privacy Fixes ✅
-1. **"My Pets" Link Hidden for Non-Authenticated Users**
-   - Desktop navbar: "My Pets" button now only shows when user is logged in
-   - Mobile menu: Same conditional rendering applied
-   - Files: `/app/frontend/src/components/Navbar.jsx`
-
-2. **"/my-pets" Route Protected**
-   - Non-authenticated users attempting to access `/my-pets` are redirected to login
-   - Login page shows "Login to manage your pet's profile" message
-   - After login, users return to the page they were trying to access
-   - Files: `/app/frontend/src/pages/MyPets.jsx`
-
-3. **Pet Soul Onboarding Recognizes Authenticated Users**
-   - If logged in, uses user's email and name automatically
-   - Shows existing pets when authenticated user has pets
-   - Asks "Do you want to add another pet?" for returning customers
-   - Files: `/app/frontend/src/pages/PetProfile.jsx`
-
-### Bug Fixes ✅
-4. **Voice Order API URL Fixed**
-   - Changed from hardcoded `process.env.REACT_APP_BACKEND_URL` to `API_URL` from utils
-   - This ensures production compatibility with relative paths
-   - Files: `/app/frontend/src/pages/VoiceOrder.jsx`
-
-### Production Issues (User Reported - Requires Deployment)
-The following issues were reported on the user's production site (`thedoggycompany.in`):
-- **Voice Order "Connection failed"** - Fixed in code, needs deployment
-- **Agent Portal "Connection error"** - Fixed in code, needs deployment
-- **Email notifications only reaching Gmail** - Likely Resend domain verification issue (not code related)
-
-**Note**: The Agent Portal and Voice Order are working correctly on the preview environment. The "Connection error" on production is because the new code hasn't been deployed. User should:
-1. Use "Save to Github" feature
-2. Deploy to production
-3. For email issue: Check Resend dashboard for domain verification status (SPF/DKIM records)
-
----
-
-## Changelog (Jan 19, 2026 - Latest Session)
-
-### Data Flywheel Implementation ✅
-- ✅ **BREED AUTOCOMPLETE** - Smart spelling suggestions for dog breeds as users type
-  - Handles common misspellings: "shizu" → "Shih Tzu", "lab" → "Labrador Retriever", "chiwawa" → "Chihuahua"
-  - 100+ breeds with aliases/misspellings in `/app/frontend/src/data/dogBreeds.js`
-  - Reusable component: `/app/frontend/src/components/BreedAutocomplete.jsx`
-  - Integrated in Checkout and Pet Soul questionnaire
-- ✅ **SOUL INSIGHTS ON CHECKOUT** - Pet profile data displayed when ordering
-  - Shows allergies, favorite treats, diet type, birthday countdown
-  - Soul Score percentage displayed
-  - Auto-fetches Pet Soul profile when pet name matches
-- ✅ **SERVICE DESK MAGIC PROMPTS** - Proactive suggestions for agents
-  - Birthday reminders ("Mojo's birthday is in 10 days!")
-  - Allergy alerts with specific items
-  - Favorite treats for upselling opportunities
-  - Loyal customer recognition (3+ orders)
-  - Low Soul Score prompts to encourage profile building
-- ✅ **SMART REORDER WIDGET** - Quick reorder on Member Dashboard
-  - Analyzes past orders to show top 3 most frequently ordered products
-  - Days since last order indicator
-  - One-click reorder buttons
-- ✅ **PET CELEBRATIONS CALENDAR** - Admin dashboard widget for proactive outreach
-  - Shows upcoming birthdays, gotcha days, and festival celebrations
-  - Stats cards: Birthdays count, Gotcha Days count, Festivals count, This Week count
-  - WhatsApp and Email contact buttons for each event
-  - Search by pet name, breed, or owner
-  - Filters: Time range (30/60/90 days, 6 months, year), Festivals toggle
-  - 2026 Indian festival dates included (Diwali, Holi, Christmas, etc.)
-  - API: `GET /api/admin/pet-soul/celebrations-calendar`
-- ✅ **BREED-BASED PRODUCT RECOMMENDATIONS** - On checkout page
-  - When user enters a breed, shows products tagged with that breed
-  - "Perfect for {Breed}!" section with product cards
-  - API: `GET /api/pet-soul/breed-products/{breed}`
-  - Tested: "Labrador" shows 3 breed-specific products
-- ✅ **FESTIVAL CELEBRATION PREFERENCES** - New question in Pet Soul questionnaire
-  - Question: "Which celebrations would you like to celebrate with your pet?"
-  - Options: Birthday, Gotcha Day, Diwali, Holi, Christmas, New Year, Valentine's Day, Raksha Bandhan, Independence Day, Easter, Eid
-  - Used by Celebrations Calendar to show personalized festival reminders
-
-### P0 Features Completed ✅
-- ✅ **AGENT PORTAL** (`/agent`) - Dedicated access for non-admin roles
-  - Standalone route at `/agent` with clean login page
-  - Purple gradient background with headphones branding
-  - **Permission-based feature access**:
-    - 🔔 Notifications
-    - 📦 Orders (with stats and order list)
-    - 🎫 Service Desk (full functionality)
-    - 📥 Unified Inbox
-    - 🚚 Fulfilment
-  - Only shows features the agent has permission for
-  - Separate login endpoint: `POST /api/agent/login`
-  - Session stored in localStorage with 24h expiry
-  - Mobile-responsive with hamburger menu
-  - File: `/app/frontend/src/pages/AgentPortal.jsx`
-- ✅ **AGENT MANAGEMENT** - Admin tool for creating/managing agent accounts
-  - Location: Admin Panel > Core Tools > 👤 Agents
-  - **Create Agent**: Username, password, name, email, phone, permissions
-  - **Edit Agent**: Update details, change permissions, enable/disable
-  - **Change Password**: Admin can reset agent passwords
-  - **Delete Agent**: Remove agent accounts
-  - **Stats**: Total agents, active, disabled, logged in today
-  - **Permissions**: notifications, orders, service_desk, unified_inbox, fulfilment
-  - APIs: `/api/admin/agents` (CRUD), `/api/agent/login`, `/api/agent/verify`
-  - File: `/app/frontend/src/components/admin/AgentManagement.jsx`
-- ✅ **BREED TAGS MANAGER** - Admin tool for product tagging
-  - Location: Admin Panel > Operations > 🐕 Breed Tags
-  - Stats: Total Products, Tagged Products, Untagged Products, Selected
-  - Search bar and breed filter dropdown (39 breeds)
-  - Product table with image, name, category, price, breed tags, actions
-  - Individual Edit button for each product
-  - Bulk selection with "Tag X Products" button
-  - Bulk modal with Add/Remove/Set actions
-  - APIs: `/api/admin/breed-tags/options`, `/api/admin/products/{id}/breed-tags`, `/api/admin/products/bulk-breed-tags`
-  - File: `/app/frontend/src/components/admin/BreedTagsManager.jsx`
-- ✅ **SETTINGS MODAL FIX VERIFIED** - Service Desk settings modal stable
-  - No more shaking/flashing when switching tabs
-  - Added `onInteractOutside={(e) => e.preventDefault()}`
-
----
-
-## Changelog (Jan 18, 2026 - Previous Session)
-- ✅ **COMPREHENSIVE TESTING COMPLETE** - All 12 feature areas pass (100% frontend pass rate)
-- ✅ **Built Unified Inbox Dashboard** - Central command center in admin for all channel intakes with pillar assignment
-- ✅ **ONE ENGINE Architecture Documented** - Updated PRD with complete architecture vision (Membership → Pet Soul → Pillars)
-- ✅ **Fixed Voice Order Network Error** - Updated segment parsing to handle dict format from Whisper API
-- ✅ **Fixed Dine Reservation Form Crash** - Added Array.isArray check for cuisine filter in DinePage.jsx
-- ✅ **Fixed Dine/Stay Status Notifications** - Status changes now trigger notification engine and update service desk tickets
-- ✅ **Fixed Add Bundle Form Error** - Changed SelectItem value from empty string to 'any' in DineManager.jsx
-- ✅ **Improved Service Desk Reply UX** - Added clear "Email Guest" and "WhatsApp Guest" buttons with recipient preview
-- ✅ **Voice Order Ticket Integration** - Voice/channel intakes now auto-create service desk tickets with pillar detection
-- ✅ **Pillar Detection for Voice Orders** - Auto-detects pillar from message content (celebrate, dine, stay, travel, care)
-- ✅ **Removed Duplicate Routes** - Cleaned up duplicate status update routes in dine_routes.py
-- ✅ **Pet Soul Public Access** - Removed login requirement from /my-pets page, added /api/pets/public endpoint
-- ✅ **Fixed Category Filtering** - Products API now searches both `category` and `tags` fields
-- ✅ **Added Celebrate Routes** - Added routes for /celebrate/birthday-cakes, /pupcakes, /treats, etc.
-- ✅ **City Filter Verified** - New city (Jaipur) appears automatically in Dine filter
-- ✅ **CSV Import/Export for Bundles** - Added buttons to both Dine and Stay managers
-
----
-
-## Changelog (Jan 17, 2026 - Previous Session)
-- ✅ Implemented Global Scale Foundation with App Settings API
-- ✅ Built Advanced Checkout with Split-Fulfillment Logic
-- ✅ Added Pan-India Shipping toggle for nationwide delivery
-- ✅ Migrated 392 products with fulfillment_type field
-- ✅ Created comprehensive test suite (19 tests, 100% pass rate)
-- ✅ **Fixed Stay Bundles Add to Cart** - Integrated with CartContext for real cart functionality
-- ✅ **Dine Pillar Products Enhancement** - Added full bundles/products capability
-  - Backend: New `dine_bundles` collection with full CRUD APIs
-  - Frontend: "Dine Essentials" section on DinePage with Add to Cart
-  - Admin: New "Dine Bundles" tab in DineManager with full management UI
-  - 5 sample bundles seeded: Birthday Package, Dining Kit, Treats Box, Anniversary Special, Gift Card
-- ✅ **Fixed DineManager cuisine rendering bug** - Array type check for cuisine field
-
----
-
-## System Integration Status (Jan 17, 2026)
-| Component | Status | Notes |
-|-----------|--------|-------|
-| Orders | ✅ Working | All pillars flow to central orders |
-| Notifications | ✅ Working | Admin notifications for new orders |
-| Service Desk | ✅ Working | Auto-ticket creation from events |
-| Pillar Reports | ✅ Working | Stay, Dine reports available |
-| Cart System | ✅ Working | Universal cart across pillars |
-| Checkout | ✅ Enhanced | Split-fulfillment, Pan-India support |
-
----
-
-## MASTER REQUIREMENTS (Jan 17, 2026)
-
-### A. STORE PICKUP + DELIVERY LOGIC
-- **3 Cities**: Pickup OR Delivery choice for bakery items
-- **Shipping Rules** (admin-editable):
-  - ₹150 for cart < ₹3,000
-  - FREE for cart ≥ ₹3,000
-- **Custom Cake Orders**: Reference image MUST be visible in order, invoice, service desk ticket
-- **Non-bakery items**: Home Delivery only (Pan India), no pickup option
-
-### B. ONE ENGINE, MULTIPLE PILLARS
-- Single unified backend for ALL pillars (Dine, Stay, Travel, Care, Shop)
-- Same notifications, reporting, service desk workflow
-- Every interaction passes through same core system
-
-### C. UNIFIED INPUT CHANNELS
-- Web/App click
-- Chat (Mira)
-- WhatsApp
-- Email
-- Phone (agent entry)
-- **Voice Order** (transcription → structured request)
-- ALL channels trigger identical backend workflow
-
-### D. NOTIFICATIONS & SERVICE DESK
-- Auto ticket creation (Ticket # = Order #)
-- Customer acknowledgement (Email/WhatsApp)
-- Real-time status updates:
-  - Received → In Progress → Confirmed → Preparing → Completed
-  - Cancelled/Rescheduled if applicable
-
-### E. REAL-TIME MIS & REPORTING
-- Requests by channel (web/chat/WhatsApp/voice/phone/email)
-- Orders confirmed & conversions
-- Revenue by product, by city
-- Pickup vs Delivery split
-- Response time & SLA adherence
-- Repeat usage per customer/dog
-- Partner performance
-
-### F. COMMON TRIGGERS (All Pillars)
-- Same notification logic
-- Same ticketing logic
-- Same reporting logic
-- Same status workflow
-- Same admin controls
-
-### G. WORLD-CLASS ARCHITECTURE
-1. **Single Core Engine** - One spine, many arms
-2. **Universal Cart** - Products, Services, Reservations, Bundles in one cart
-3. **Event-Driven** - Instant triggers, no batch processing
-4. **Modular Pillars** - Plug into same checkout, ticketing, notifications
-5. **Smart Fulfilment** - Auto-decide pickup/delivery, SLA, partner assignment
-
----
-
-## Implementation Phases
-
-### Phase 1: Core Engine Foundation (NEXT)
-- [ ] Admin-editable shipping thresholds
-- [ ] Pickup vs Delivery for bakery (3 cities)
-- [ ] Custom Cake image in orders/tickets
-- [ ] Ticket # = Order # alignment
-
-### Phase 2: Unified Notification System
-- [ ] Auto service desk ticket on every order
-- [ ] Customer Email/WhatsApp acknowledgement
-- [ ] Real-time status updates (event-driven)
-
-### Phase 3: Multi-Channel Intake
-- [ ] Unified request handler
-- [ ] Voice order transcription (Whisper)
-- [ ] Same workflow for all channels
-
-### Phase 4: Real-Time MIS
-- [ ] Channel analytics
-- [ ] Revenue dashboards
-- [ ] SLA tracking
-
-### Phase 5: Universal Cart
-- [ ] 4 item types in one cart
-- [ ] Cross-pillar bundles
-
----
-
-## Future Pillars
-
-| Pillar | Description | Status |
-|--------|-------------|--------|
-| Celebrate | Birthdays, events | ✅ Live |
-| Stay | Pet-friendly hotels | ✅ Live |
-| Dine | Restaurants, meals | ✅ Live |
-| Care | Groomers, vets, trainers | 🔜 Phase 2 |
-| Travel | Pet transport, travel | 🔜 Phase 2 |
-| Enjoy | Activities, parks | 📅 Future |
-| Fit | Fitness, walks | 📅 Future |
-| Paperwork | Documents, insurance | 📅 Future |
-| Advisory | Consultations | 📅 Future |
-
----
-
-## Future Vision: Pet Life Operating System
-
-### Universal Membership System
-- Member management dashboard
-- Tiered membership benefits across all pillars
-- Paw Points loyalty integration
-
-### Enterprise Features
-- Data management & backup
-- Multi-user backend (roles/permissions)
-- Franchise management system
-
-### Additional Pillars Planned
-| Pillar | Description | Status |
-|--------|-------------|--------|
-| Celebrate | Birthdays, events | ✅ Live |
-| Stay | Pet-friendly hotels | ✅ Live |
-| Dine | Restaurants, meals | ✅ Live |
-| Care | Groomers, vets, trainers | 🔜 Planned |
-| Travel | Pet transport, travel services | 🔜 Planned |
-| Enjoy | Activities, parks, events | 🔜 Planned |
-| Fit | Fitness, walks, exercise | 🔜 Planned |
-| Paperwork | Documents, insurance | 🔜 Planned |
-| Advisory | Consultations, behavior | 🔜 Planned |
-
----
-
-## Known Issues
-
+## Last Updated
+January 19, 2026 - Travel Page redesign complete
