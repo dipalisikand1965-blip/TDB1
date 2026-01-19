@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, MessageCircle, Store, Truck } from 'lucide-react';
 
 const WHATSAPP_NUMBER = '919663185747';
@@ -28,22 +28,30 @@ const STORES = [
 ];
 
 const Footer = () => {
+  const location = useLocation();
+  
+  // Hide floating button on admin and agent pages
+  const hiddenPaths = ['/admin', '/agent', '/login'];
+  const shouldHideFloat = hiddenPaths.some(path => location.pathname.startsWith(path));
+  
   return (
     <footer className="bg-gray-900 text-gray-300">
-      {/* Floating WhatsApp Button */}
-      <a
-        href={WHATSAPP_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 left-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
-        data-testid="whatsapp-float-btn"
-        aria-label="Contact on WhatsApp"
-      >
-        <MessageCircle className="w-6 h-6" />
-        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
-          Chat with us
-        </span>
-      </a>
+      {/* Floating WhatsApp Button - Hidden on admin/agent pages */}
+      {!shouldHideFloat && (
+        <a
+          href={WHATSAPP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-6 left-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
+          data-testid="whatsapp-float-btn"
+          aria-label="Contact on WhatsApp"
+        >
+          <MessageCircle className="w-6 h-6" />
+          <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
+            Chat with us
+          </span>
+        </a>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
