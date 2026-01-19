@@ -2454,6 +2454,9 @@ const Admin = () => {
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-bold text-gray-900">🛒 Abandoned Carts ({abandonedCarts.length})</h3>
               <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setShowAbandonedCartSettingsModal(true)}>
+                  <Settings className="w-4 h-4 mr-2" />Settings
+                </Button>
                 <Button variant="outline" onClick={fetchAbandonedCarts}>
                   <RefreshCw className="w-4 h-4 mr-2" />Refresh
                 </Button>
@@ -2462,6 +2465,24 @@ const Admin = () => {
                 </Button>
               </div>
             </div>
+            
+            {/* Settings Quick View */}
+            <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className={`w-3 h-3 rounded-full ${abandonedCartSettings.enabled ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <span className="font-medium">Auto Reminders: {abandonedCartSettings.enabled ? 'Enabled' : 'Disabled'}</span>
+                  <span className="text-gray-500">|</span>
+                  <span className="text-sm text-gray-600">
+                    {abandonedCartSettings.reminders.length} reminder{abandonedCartSettings.reminders.length !== 1 ? 's' : ''} configured
+                    ({abandonedCartSettings.reminders.map(r => `${r.delay_hours}h`).join(', ')})
+                  </span>
+                </div>
+                <Button size="sm" variant="outline" onClick={() => setShowAbandonedCartSettingsModal(true)}>
+                  Configure
+                </Button>
+              </div>
+            </Card>
             
             {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
