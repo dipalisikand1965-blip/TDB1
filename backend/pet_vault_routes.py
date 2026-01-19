@@ -606,44 +606,256 @@ async def create_health_reminder(pet_id: str, reminder_type: str, item_id: str, 
 
 # Background job to check and send health reminders (called from scheduler)
 async def check_health_reminders():
-    """Check for due health reminders and send notifications"""
+    """Check for due health reminders and send notifications via Email & WhatsApp"""
     if db is None:
         return
     
     try:
         today = datetime.now(timezone.utc).date()
         
-        # Find reminders due in next 7 days
-        reminders = await db.health_reminders.find({
-            "status": "pending"
-        }).to_list(1000)
+        # Get all pets with vault data
+        pets_with_reminders = await db.pets.find({
+            "vault.vaccines": {"$exists": True, "$ne": []}
+        }, {"_id": 0, "id": 1, "name": 1, "owner_email": 1, "owner_phone": 1, "vault": 1}).to_list(10000)
         
-        for reminder in reminders:
-            try:
-                due_date = datetime.fromisoformat(reminder["due_date"].replace("Z", "+00:00")).date()
-                days_until = (due_date - today).days
+        sent_count = 0
+        
+        for pet in pets_with_reminders:
+            pet_id = pet.get("id")
+            pet_name = pet.get("name", "Your pet")
+            owner_email = pet.get("owner_email")
+            owner_phone = pet.get("owner_phone")
+            
+            vaccines = pet.get("vault", {}).get("vaccines", [])
+            
+            for vax in vaccines:
+                if not vax.get("reminder_enabled") or not vax.get("next_due_date"):
+                    continue
                 
-                # Send reminder 7 days before, 3 days before, and on the day
-                if days_until in [7, 3, 0]:
-                    # Create notification
-                    await db.admin_notifications.insert_one({
-                        "type": "health_reminder",
-                        "title": f"🏥 Health Reminder: {reminder['pet_name']}",
-                        "message": f"{reminder['item_name']} is due in {days_until} days" if days_until > 0 else f"{reminder['item_name']} is due today!",
-                        "read": False,
-                        "created_at": datetime.now(timezone.utc).isoformat(),
-                        "metadata": reminder
-                    })
+                try:
+                    due_date = datetime.fromisoformat(vax["next_due_date"].replace("Z", "+00:00")).date()
+                    days_until = (due_date - today).days
                     
-                    # Send email reminder (if email exists)
-                    if reminder.get("owner_email"):
-                        # Will integrate with notification engine
-                        pass
-                    
-                    logger.info(f"Sent health reminder for {reminder['pet_name']}: {reminder['item_name']}")
-                    
-            except Exception as e:
-                logger.error(f"Error processing reminder {reminder.get('id')}: {e}")
-                
+                    # Send reminders: 7 days before AND on the day
+                    if days_until in [7, 0]:
+                        reminder_key = f"{pet_id}_{vax['id']}_{days_until}_{today.isoformat()}"
+                        
+                        # Check if already sent today
+                        already_sent = await db.health_reminder_logs.find_one({"key": reminder_key})
+                        if already_sent:
+                            continue
+                        
+                        vaccine_name = vax.get("vaccine_name", "Vaccine")
+                        
+                        # Determine message
+                        if days_until == 7:
+                            subject = f"🐕 Vaccine Reminder: {pet_name}'s {vaccine_name} due in 7 days"
+                            message = f"Hi! Just a friendly reminder that {pet_name}'s {vaccine_name} vaccination is due on {due_date.strftime('%B %d, %Y')} (7 days from now). Please schedule an appointment with your vet."
+                        else:
+                            subject = f"🐕 Vaccine Due Today: {pet_name}'s {vaccine_name}"
+                            message = f"Hi! Today is the day! {pet_name}'s {vaccine_name} vaccination is due today ({due_date.strftime('%B %d, %Y')}). Please visit your vet today."
+                        
+                        # Send Email
+                        email_sent = False
+                        if owner_email:
+                            try:
+                                email_sent = await send_health_reminder_email(
+                                    to_email=owner_email,
+                                    subject=subject,
+                                    pet_name=pet_name,
+                                    vaccine_name=vaccine_name,
+                                    due_date=due_date,
+                                    days_until=days_until
+                                )
+                            except Exception as e:
+                                logger.error(f"Failed to send reminder email: {e}")
+                        
+                        # Send WhatsApp
+                        whatsapp_sent = False
+                        if owner_phone:
+                            try:
+                                whatsapp_sent = await send_health_reminder_whatsapp(
+                                    phone=owner_phone,
+                                    message=message
+                                )
+                            except Exception as e:
+                                logger.error(f"Failed to send WhatsApp reminder: {e}")
+                        
+                        # Log the reminder sent
+                        await db.health_reminder_logs.insert_one({
+                            "key": reminder_key,
+                            "pet_id": pet_id,
+                            "pet_name": pet_name,
+                            "vaccine_id": vax["id"],
+                            "vaccine_name": vaccine_name,
+                            "due_date": vax["next_due_date"],
+                            "days_until": days_until,
+                            "email_sent": email_sent,
+                            "whatsapp_sent": whatsapp_sent,
+                            "sent_at": datetime.now(timezone.utc).isoformat()
+                        })
+                        
+                        # Also create admin notification
+                        await db.admin_notifications.insert_one({
+                            "type": "health_reminder_sent",
+                            "title": f"🏥 Reminder Sent: {pet_name}",
+                            "message": f"{vaccine_name} reminder sent (due in {days_until} days). Email: {'✓' if email_sent else '✗'}, WhatsApp: {'✓' if whatsapp_sent else '✗'}",
+                            "read": False,
+                            "created_at": datetime.now(timezone.utc).isoformat(),
+                            "metadata": {
+                                "pet_id": pet_id,
+                                "vaccine_name": vaccine_name,
+                                "owner_email": owner_email,
+                                "owner_phone": owner_phone
+                            }
+                        })
+                        
+                        sent_count += 1
+                        logger.info(f"Sent health reminder for {pet_name}: {vaccine_name} (due in {days_until} days)")
+                        
+                except Exception as e:
+                    logger.error(f"Error processing vaccine reminder: {e}")
+        
+        logger.info(f"Health reminder check complete. Sent {sent_count} reminders.")
+        return {"sent": sent_count}
+        
     except Exception as e:
         logger.error(f"Health reminder check failed: {e}")
+        return {"error": str(e)}
+
+
+async def send_health_reminder_email(to_email: str, subject: str, pet_name: str, vaccine_name: str, due_date, days_until: int) -> bool:
+    """Send health reminder email via Resend"""
+    import os
+    import httpx
+    
+    RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
+    if not RESEND_API_KEY:
+        logger.warning("RESEND_API_KEY not configured")
+        return False
+    
+    # Format the date
+    date_str = due_date.strftime('%B %d, %Y') if hasattr(due_date, 'strftime') else str(due_date)
+    
+    # Build HTML email
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{ font-family: 'Segoe UI', sans-serif; background: #f8f4f0; margin: 0; padding: 20px; }}
+            .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; }}
+            .header {{ background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%); padding: 30px; text-align: center; }}
+            .header h1 {{ color: white; margin: 0; font-size: 24px; }}
+            .content {{ padding: 30px; }}
+            .alert-box {{ background: {'#fef3cd' if days_until == 7 else '#f8d7da'}; border-left: 4px solid {'#ffc107' if days_until == 7 else '#dc3545'}; padding: 15px; margin: 20px 0; border-radius: 4px; }}
+            .footer {{ text-align: center; padding: 20px; color: #666; font-size: 12px; }}
+            .button {{ display: inline-block; background: #7c3aed; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin-top: 20px; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🐾 Health Reminder</h1>
+            </div>
+            <div class="content">
+                <h2>Hi there!</h2>
+                
+                <div class="alert-box">
+                    <strong>{'⏰ Upcoming' if days_until == 7 else '🚨 Due Today'}:</strong>
+                    <br><br>
+                    <strong>{pet_name}</strong>'s <strong>{vaccine_name}</strong> vaccination is 
+                    {'due in 7 days' if days_until == 7 else 'due TODAY'}!
+                    <br><br>
+                    📅 Due Date: <strong>{date_str}</strong>
+                </div>
+                
+                <p>Please schedule an appointment with your veterinarian to keep {pet_name} protected and healthy.</p>
+                
+                <p>You can manage all of {pet_name}'s health records in their Pet Vault.</p>
+                
+                <center>
+                    <a href="https://thedoggycompany.in/my-pets" class="button">
+                        View Pet Vault →
+                    </a>
+                </center>
+            </div>
+            <div class="footer">
+                <p>🐕 The Doggy Company</p>
+                <p>Your one-stop shop for everything pets</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://api.resend.com/emails",
+                headers={
+                    "Authorization": f"Bearer {RESEND_API_KEY}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "from": "The Doggy Company <hello@thedoggycompany.in>",
+                    "to": [to_email],
+                    "subject": subject,
+                    "html": html_content
+                }
+            )
+            
+            if response.status_code in [200, 201]:
+                logger.info(f"Health reminder email sent to {to_email}")
+                return True
+            else:
+                logger.error(f"Resend API error: {response.status_code} - {response.text}")
+                return False
+                
+    except Exception as e:
+        logger.error(f"Email send error: {e}")
+        return False
+
+
+async def send_health_reminder_whatsapp(phone: str, message: str) -> bool:
+    """Send health reminder via WhatsApp (using configured provider)"""
+    import os
+    import httpx
+    
+    WHATSAPP_API_URL = os.environ.get("WHATSAPP_API_URL")
+    WHATSAPP_API_KEY = os.environ.get("WHATSAPP_API_KEY")
+    
+    if not WHATSAPP_API_URL or not WHATSAPP_API_KEY:
+        logger.warning("WhatsApp API not configured")
+        return False
+    
+    # Clean phone number (remove +, spaces)
+    clean_phone = phone.replace("+", "").replace(" ", "").replace("-", "")
+    if not clean_phone.startswith("91"):
+        clean_phone = "91" + clean_phone
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                WHATSAPP_API_URL,
+                headers={
+                    "Authorization": f"Bearer {WHATSAPP_API_KEY}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "to": clean_phone,
+                    "message": message,
+                    "type": "text"
+                }
+            )
+            
+            if response.status_code in [200, 201]:
+                logger.info(f"WhatsApp reminder sent to {clean_phone}")
+                return True
+            else:
+                logger.error(f"WhatsApp API error: {response.status_code}")
+                return False
+                
+    except Exception as e:
+        logger.error(f"WhatsApp send error: {e}")
+        return False
