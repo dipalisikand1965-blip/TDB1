@@ -564,6 +564,41 @@ const PetSoulEnhanced = ({ petId, onComplete }) => {
   const [answers, setAnswers] = useState({});
   const [history, setHistory] = useState([]);
   
+  // Gamification state
+  const [soulPoints, setSoulPoints] = useState(0);
+  const [newPointsEarned, setNewPointsEarned] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showRewardsModal, setShowRewardsModal] = useState(false);
+  const [lastMilestone, setLastMilestone] = useState(0);
+  
+  // Calculate total points based on progress
+  const calculatePoints = (progressScore) => {
+    const answeredCount = Math.floor((progressScore / 100) * 50); // Assuming ~50 total questions
+    let points = answeredCount * GAMIFICATION.pointsPerAnswer;
+    
+    // Add milestone bonuses
+    GAMIFICATION.milestones.forEach(m => {
+      if (progressScore >= m.percent) {
+        points += GAMIFICATION.bonusPerFolder;
+      }
+    });
+    
+    return points;
+  };
+  
+  // Check for milestone achievement
+  const checkMilestone = (newProgress) => {
+    const currentMilestoneIndex = GAMIFICATION.milestones.findIndex(m => m.percent > lastMilestone && newProgress >= m.percent);
+    if (currentMilestoneIndex !== -1) {
+      const milestone = GAMIFICATION.milestones[currentMilestoneIndex];
+      setLastMilestone(milestone.percent);
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3000);
+      return milestone;
+    }
+    return null;
+  };
+  
   // Fetch data on mount
   useEffect(() => {
     const fetchData = async () => {
