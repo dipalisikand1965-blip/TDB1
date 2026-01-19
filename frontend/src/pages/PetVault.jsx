@@ -671,6 +671,26 @@ const PetVault = () => {
                   placeholder="Dr. Smith"
                 />
               </div>
+              
+              {/* Reminder Toggle */}
+              <div className="bg-blue-50 rounded-lg p-4">
+                <label className="flex items-center justify-between cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <Bell className="w-5 h-5 text-blue-600" />
+                    <div>
+                      <span className="font-medium text-gray-900">Set Reminder</span>
+                      <p className="text-xs text-gray-500">Get notified 7 days before & on due date</p>
+                    </div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={vaccineForm.reminder_enabled}
+                    onChange={(e) => setVaccineForm({...vaccineForm, reminder_enabled: e.target.checked})}
+                    className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500"
+                  />
+                </label>
+              </div>
+              
               <div className="flex gap-2 pt-4">
                 <Button type="button" variant="outline" className="flex-1" onClick={() => setShowAddVaccine(false)}>Cancel</Button>
                 <Button type="submit" className="flex-1" disabled={saving}>
