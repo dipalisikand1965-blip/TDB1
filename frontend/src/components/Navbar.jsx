@@ -97,7 +97,7 @@ const Navbar = () => {
         { name: '🚆 Train / Bus Travel', path: '/travel?type=train' },
         { name: '✈️ Flight (Domestic)', path: '/travel?type=flight' },
         { name: '🚚 Pet Relocation', path: '/travel?type=relocation' },
-        { name: '📦 Travel Products', path: '/travel#products' },
+        { name: '📦 Travel Products', path: '/admin?tab=travel', adminOnly: true },
       ]
     },
     { 
