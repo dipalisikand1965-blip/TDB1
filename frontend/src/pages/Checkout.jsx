@@ -200,6 +200,32 @@ const Checkout = () => {
     return () => clearTimeout(timeoutId);
   }, [formData.petName]);
 
+  // Fetch breed-specific product recommendations
+  useEffect(() => {
+    const fetchBreedProducts = async () => {
+      if (!formData.petBreed || formData.petBreed.length < 2) {
+        setBreedProducts([]);
+        return;
+      }
+      
+      setLoadingBreedProducts(true);
+      try {
+        const res = await fetch(`${API_URL}/api/pet-soul/breed-products/${encodeURIComponent(formData.petBreed)}?limit=4`);
+        if (res.ok) {
+          const data = await res.json();
+          setBreedProducts(data.products || []);
+        }
+      } catch (err) {
+        console.error('Error fetching breed products:', err);
+      }
+      setLoadingBreedProducts(false);
+    };
+    
+    // Debounce the fetch
+    const timeoutId = setTimeout(fetchBreedProducts, 600);
+    return () => clearTimeout(timeoutId);
+  }, [formData.petBreed]);
+
   // Fetch app settings on mount
   useEffect(() => {
     const fetchSettings = async () => {
