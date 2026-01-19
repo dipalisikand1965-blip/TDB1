@@ -354,10 +354,19 @@ const BreedTagsManager = () => {
 const ProductRow = ({ product, isSelected, onToggle, breedOptions, onUpdateTags }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tags, setTags] = useState(product.breed_tags || []);
+  const [showAllBreeds, setShowAllBreeds] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const handleSave = () => {
-    onUpdateTags(tags);
-    setIsEditing(false);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await onUpdateTags(tags);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Save failed:', error);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const toggleTag = (breed) => {
@@ -367,6 +376,16 @@ const ProductRow = ({ product, isSelected, onToggle, breedOptions, onUpdateTags 
         : [...prev, breed]
     );
   };
+
+  // Reset tags when product changes or editing starts
+  const handleStartEdit = () => {
+    setTags(product.breed_tags || []);
+    setShowAllBreeds(false);
+    setIsEditing(true);
+  };
+
+  const displayBreeds = showAllBreeds ? breedOptions : breedOptions.slice(0, 10);
+  const remainingCount = breedOptions.length - 10;
 
   return (
     <tr className={isSelected ? 'bg-purple-50' : 'hover:bg-gray-50'}>
@@ -393,24 +412,35 @@ const ProductRow = ({ product, isSelected, onToggle, breedOptions, onUpdateTags 
       <td className="p-3 text-gray-600">₹{product.price}</td>
       <td className="p-3">
         {isEditing ? (
-          <div className="flex flex-wrap gap-1 max-w-xs">
-            {breedOptions.slice(0, 10).map(breed => (
+          <div className="flex flex-wrap gap-1 max-w-md">
+            {displayBreeds.map(breed => (
               <Badge 
                 key={breed}
                 variant={tags.includes(breed) ? 'default' : 'outline'}
-                className={`text-xs cursor-pointer ${tags.includes(breed) ? 'bg-purple-600' : ''}`}
+                className={`text-xs cursor-pointer transition-colors ${tags.includes(breed) ? 'bg-purple-600 hover:bg-purple-700' : 'hover:bg-gray-100'}`}
                 onClick={() => toggleTag(breed)}
               >
                 {breed}
               </Badge>
             ))}
-            <Badge 
-              variant="outline" 
-              className="text-xs cursor-pointer text-purple-600"
-              onClick={() => {}}
-            >
-              +{breedOptions.length - 10} more
-            </Badge>
+            {!showAllBreeds && remainingCount > 0 && (
+              <Badge 
+                variant="outline" 
+                className="text-xs cursor-pointer text-purple-600 hover:bg-purple-50"
+                onClick={() => setShowAllBreeds(true)}
+              >
+                +{remainingCount} more
+              </Badge>
+            )}
+            {showAllBreeds && (
+              <Badge 
+                variant="outline" 
+                className="text-xs cursor-pointer text-gray-500 hover:bg-gray-100"
+                onClick={() => setShowAllBreeds(false)}
+              >
+                Show less
+              </Badge>
+            )}
           </div>
         ) : (
           <div className="flex flex-wrap gap-1">
@@ -434,15 +464,15 @@ const ProductRow = ({ product, isSelected, onToggle, breedOptions, onUpdateTags 
       <td className="p-3">
         {isEditing ? (
           <div className="flex gap-1">
-            <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)}>
+            <Button size="sm" variant="ghost" onClick={() => { setIsEditing(false); setShowAllBreeds(false); }}>
               <X className="w-4 h-4" />
             </Button>
-            <Button size="sm" onClick={handleSave} className="bg-green-600 hover:bg-green-700">
-              <Save className="w-4 h-4" />
+            <Button size="sm" onClick={handleSave} disabled={saving} className="bg-green-600 hover:bg-green-700">
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             </Button>
           </div>
         ) : (
-          <Button size="sm" variant="ghost" onClick={() => setIsEditing(true)}>
+          <Button size="sm" variant="ghost" onClick={handleStartEdit}>
             <Tag className="w-4 h-4 mr-1" />
             Edit
           </Button>
