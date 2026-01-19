@@ -537,6 +537,136 @@ const PetSoulEnhanced = ({ petId, onComplete }) => {
     );
   }
   
+  // Welcome/Onboarding Screen
+  if (step === 'welcome') {
+    const petName = pet?.name || pet?.identity?.name || 'your furry friend';
+    return (
+      <div className="py-8 px-4 max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          {/* Animated paw prints */}
+          <div className="flex justify-center gap-2 mb-6">
+            <span className="text-4xl animate-bounce" style={{ animationDelay: '0ms' }}>🐾</span>
+            <span className="text-4xl animate-bounce" style={{ animationDelay: '150ms' }}>🐾</span>
+            <span className="text-4xl animate-bounce" style={{ animationDelay: '300ms' }}>🐾</span>
+          </div>
+          
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent mb-4">
+            Welcome to Pet Soul
+          </h1>
+          
+          <p className="text-lg text-gray-600 max-w-md mx-auto">
+            Help us understand {petName} better so we can provide the most personalized experience
+          </p>
+        </div>
+        
+        {/* Benefits Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <Card className="p-4 bg-gradient-to-br from-purple-50 to-white border-purple-100 hover:shadow-md transition-shadow">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-xl shrink-0">
+                🎯
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">Personalized Recommendations</h3>
+                <p className="text-sm text-gray-600">Get treats, food, and products tailored to your pet's unique preferences</p>
+              </div>
+            </div>
+          </Card>
+          
+          <Card className="p-4 bg-gradient-to-br from-pink-50 to-white border-pink-100 hover:shadow-md transition-shadow">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center text-xl shrink-0">
+                🎂
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">Perfect Celebrations</h3>
+                <p className="text-sm text-gray-600">We'll know exactly what makes your pet happy on their special days</p>
+              </div>
+            </div>
+          </Card>
+          
+          <Card className="p-4 bg-gradient-to-br from-blue-50 to-white border-blue-100 hover:shadow-md transition-shadow">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-xl shrink-0">
+                🏨
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">Better Stays & Experiences</h3>
+                <p className="text-sm text-gray-600">Our team will know their comfort needs, anxieties, and routines</p>
+              </div>
+            </div>
+          </Card>
+          
+          <Card className="p-4 bg-gradient-to-br from-green-50 to-white border-green-100 hover:shadow-md transition-shadow">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-xl shrink-0">
+                💚
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">We Remember Everything</h3>
+                <p className="text-sm text-gray-600">Allergies, preferences, quirks - we'll never forget what matters</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+        
+        {/* What to Expect */}
+        <Card className="p-6 mb-8 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-amber-600" />
+            What to Expect
+          </h3>
+          <div className="space-y-2">
+            <div className="flex items-center gap-3 text-sm text-gray-700">
+              <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center text-xs font-bold text-amber-700">8</div>
+              <span>Categories covering everything about your pet's life</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-gray-700">
+              <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center text-xs font-bold text-amber-700">~5</div>
+              <span>Minutes to complete (answer at your own pace)</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-gray-700">
+              <Check className="w-5 h-5 text-green-500" />
+              <span>Skip any question - come back anytime to complete</span>
+            </div>
+          </div>
+        </Card>
+        
+        {/* 8 Folders Preview */}
+        <div className="mb-8">
+          <h3 className="text-sm font-medium text-gray-500 mb-3 text-center">We'll Learn About</h3>
+          <div className="flex flex-wrap justify-center gap-2">
+            {Object.entries(FOLDER_ICONS).map(([key, icon]) => (
+              <div 
+                key={key}
+                className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm flex items-center gap-1.5 hover:bg-gray-50"
+              >
+                <span>{icon}</span>
+                <span className="text-gray-600 capitalize">{key.replace(/_/g, ' ')}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* CTA Button */}
+        <div className="text-center">
+          <Button
+            onClick={() => setStep('identity')}
+            className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all"
+          >
+            <Heart className="w-5 h-5 mr-2" />
+            Let's Build {petName}'s Soul
+            <ChevronRight className="w-5 h-5 ml-2" />
+          </Button>
+          
+          <p className="text-xs text-gray-400 mt-4">
+            Your answers help us serve {petName} better across all our services
+          </p>
+        </div>
+      </div>
+    );
+  }
+  
   if (step === 'identity') {
     return (
       <div className="py-8 px-4">
