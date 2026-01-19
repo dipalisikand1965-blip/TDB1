@@ -130,6 +130,11 @@ const MiraAI = () => {
     setTimeout(() => sendMessage(), 100);
   };
 
+  // Don't render on hidden paths (admin, agent, login)
+  if (shouldHide) {
+    return null;
+  }
+
   if (!isOpen) {
     return (
       <button
@@ -143,11 +148,6 @@ const MiraAI = () => {
         </span>
       </button>
     );
-  }
-
-  // Don't render on hidden paths
-  if (shouldHide) {
-    return null;
   }
 
   return (
