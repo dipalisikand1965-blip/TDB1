@@ -118,6 +118,7 @@ DOGGY_SOUL_QUESTIONS = {
             {"id": "main_wish", "question": "What do you want most for your dog?", "type": "multi_select", "options": ["Good health", "More training", "More travel experiences", "More social time with other dogs"], "weight": 2},
             {"id": "help_needed", "question": "Would you like help with:", "type": "multi_select", "options": ["Behaviour training", "Travel planning", "Grooming routines", "Diet planning"], "weight": 2},
             {"id": "dream_life", "question": "In one sentence, what kind of life do you want your dog to have?", "type": "text", "weight": 3},
+            {"id": "celebration_preferences", "question": "Which celebrations would you like to celebrate with your pet?", "type": "multi_select", "options": ["Birthday", "Gotcha Day (Adoption Anniversary)", "Diwali", "Holi", "Christmas", "New Year", "Valentine's Day", "Raksha Bandhan", "Independence Day", "Easter", "Eid"], "weight": 3},
         ]
     }
 }
