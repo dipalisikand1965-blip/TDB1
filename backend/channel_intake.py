@@ -262,6 +262,17 @@ async def process_intake(request: ChannelRequest) -> IntakeResponse:
                 "customer_name": customer_name,
                 "customer_email": customer_email,
                 "customer_phone": request.customer_phone,
+                # Add member object for Service Desk display
+                "member": {
+                    "name": customer_name,
+                    "email": customer_email,
+                    "phone": request.customer_phone
+                },
+                # Add pet object if pet name provided
+                "pet": {
+                    "name": request.pet_name or extracted_data.get("pet_name"),
+                    "breed": extracted_data.get("pet_breed")
+                } if (request.pet_name or extracted_data.get("pet_name")) else None,
                 "source": f"channel_intake_{request.channel}",
                 "source_id": request_id,
                 "pillar": detected_pillar,
