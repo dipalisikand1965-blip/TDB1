@@ -119,6 +119,21 @@ const MyPets = () => {
     return personas[persona] || { name: 'Unknown', emoji: '🐕' };
   };
 
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <PawPrint className="w-12 h-12 text-purple-600 animate-bounce mx-auto" />
+          <p className="mt-4 text-gray-600">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not authenticated after loading, the useEffect will redirect
+  if (!user) return null;
+
   // Show loading while fetching data
   if (loading) {
     return (
