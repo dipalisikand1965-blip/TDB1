@@ -788,6 +788,26 @@ See `/app/TOMORROW_SUMMARY.md` for full detailed plan
   - Question: "Which celebrations would you like to celebrate with your pet?"
   - Options: Birthday, Gotcha Day, Diwali, Holi, Christmas, New Year, Valentine's Day, Raksha Bandhan, Independence Day, Easter, Eid
   - Used by Celebrations Calendar to show personalized festival reminders
+
+### P0 Features Completed ✅
+- ✅ **AGENT PORTAL** (`/agent`) - Dedicated Service Desk for non-admin roles
+  - Standalone route at `/agent` with clean login page
+  - Purple gradient background with headphones branding
+  - Shows ONLY Service Desk after login (no Products, Orders, etc.)
+  - User info badge shows name + role (Agent/Admin)
+  - Session stored in localStorage with 24h expiry
+  - Logout functionality clears session and returns to login
+  - File: `/app/frontend/src/pages/AgentPortal.jsx`
+- ✅ **BREED TAGS MANAGER** - Admin tool for product tagging
+  - Location: Admin Panel > Operations > 🐕 Breed Tags
+  - Stats: Total Products, Tagged Products, Untagged Products, Selected
+  - Search bar and breed filter dropdown (39 breeds)
+  - Product table with image, name, category, price, breed tags, actions
+  - Individual Edit button for each product
+  - Bulk selection with "Tag X Products" button
+  - Bulk modal with Add/Remove/Set actions
+  - APIs: `/api/admin/breed-tags/options`, `/api/admin/products/{id}/breed-tags`, `/api/admin/products/bulk-breed-tags`
+  - File: `/app/frontend/src/components/admin/BreedTagsManager.jsx`
 - ✅ **SETTINGS MODAL FIX VERIFIED** - Service Desk settings modal stable
   - No more shaking/flashing when switching tabs
   - Added `onInteractOutside={(e) => e.preventDefault()}`
