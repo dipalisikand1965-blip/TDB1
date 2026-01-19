@@ -7905,6 +7905,7 @@ app.include_router(rewards_router)
 app.include_router(pet_soul_router, prefix="/api")
 app.include_router(pet_soul_admin_router, prefix="/api/admin")
 app.include_router(pet_vault_router, prefix="/api")
+app.include_router(pet_vault_admin_router, prefix="/api/admin/pet-vault")
 
 @app.on_event("startup")
 async def startup_load_admin_credentials():
