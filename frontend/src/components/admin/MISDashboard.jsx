@@ -15,8 +15,7 @@ import {
   Mail
 } from 'lucide-react';
 import { Button } from '../ui/button';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { API_URL } from '../../utils/api';
 
 export default function MISDashboard({ authHeaders }) {
   const [dashboard, setDashboard] = useState(null);
