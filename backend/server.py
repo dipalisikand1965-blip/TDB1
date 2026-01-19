@@ -5347,26 +5347,44 @@ async def mark_cart_converted(session_id: str, order_id: str):
 
 
 async def check_abandoned_carts():
-    """Check for abandoned carts and send recovery emails"""
+    """Check for abandoned carts and send recovery emails based on admin-configured timing"""
     try:
         logger.info("Checking abandoned carts...")
         now = datetime.now(timezone.utc)
         
-        # Find carts that:
-        # - Have items
-        # - Have email
-        # - Status is active
-        # - Updated more than 1 hour ago
-        one_hour_ago = (now - timedelta(hours=1)).isoformat()
-        twenty_four_hours_ago = (now - timedelta(hours=24)).isoformat()
-        seventy_two_hours_ago = (now - timedelta(hours=72)).isoformat()
+        # Get admin settings for reminder timing
+        settings = await db.app_settings.find_one({"id": "global_settings"})
         
-        # Get abandoned carts eligible for reminders
+        # Check if abandoned cart reminders are enabled
+        if settings and not settings.get("abandoned_cart_enabled", True):
+            logger.info("Abandoned cart reminders are disabled in settings")
+            return 0
+        
+        # Get reminder configuration (with defaults)
+        reminder_config = settings.get("abandoned_cart_reminders") if settings else None
+        if not reminder_config:
+            reminder_config = [
+                {"reminder_num": 1, "delay_hours": 1, "subject": "🛒 You left something behind!", "include_discount": False},
+                {"reminder_num": 2, "delay_hours": 24, "subject": "🐾 Your pup is still waiting!", "include_discount": False},
+                {"reminder_num": 3, "delay_hours": 72, "subject": "🎁 Final reminder + 10% OFF!", "include_discount": True, "discount_code": "COMEBACK10", "discount_percent": 10}
+            ]
+        
+        # Build time thresholds from config
+        time_thresholds = {}
+        for reminder in reminder_config:
+            delay_hours = reminder.get("delay_hours", 1)
+            time_thresholds[reminder["reminder_num"]] = {
+                "cutoff": (now - timedelta(hours=delay_hours)).isoformat(),
+                "config": reminder
+            }
+        
+        # Get abandoned carts eligible for reminders (at least 1 hour old)
+        min_cutoff = (now - timedelta(hours=1)).isoformat()
         abandoned_carts = await db.abandoned_carts.find({
             "status": "active",
-            "email": {"$exists": True, "$ne": None},
+            "email": {"$exists": True, "$ne": None, "$ne": ""},
             "items": {"$exists": True, "$ne": []},
-            "updated_at": {"$lt": one_hour_ago}
+            "updated_at": {"$lt": min_cutoff}
         }).to_list(100)
         
         reminders_sent = 0
@@ -5380,27 +5398,31 @@ async def check_abandoned_carts():
             reminders_already_sent = cart.get("reminders_sent", 0)
             updated_at = cart.get("updated_at", "")
             
-            # Determine which reminder to send based on timing
-            reminder_type = None
+            # Find which reminder to send next
+            next_reminder_num = reminders_already_sent + 1
             
-            if reminders_already_sent == 0 and updated_at < one_hour_ago:
-                reminder_type = "first"  # 1 hour reminder
-            elif reminders_already_sent == 1 and updated_at < twenty_four_hours_ago:
-                reminder_type = "second"  # 24 hour reminder
-            elif reminders_already_sent == 2 and updated_at < seventy_two_hours_ago:
-                reminder_type = "final"  # 72 hour final reminder with discount
+            if next_reminder_num not in time_thresholds:
+                continue  # All reminders sent
             
-            if reminder_type and RESEND_API_KEY:
-                # Rate limit: wait 1 second between emails to avoid Resend rate limits
+            threshold = time_thresholds[next_reminder_num]
+            
+            # Check if enough time has passed
+            if updated_at >= threshold["cutoff"]:
+                continue  # Not old enough for this reminder
+            
+            reminder_config_item = threshold["config"]
+            
+            if RESEND_API_KEY:
+                # Rate limit: wait 1 second between emails
                 if reminders_sent > 0:
                     await asyncio.sleep(1.0)
-                    
+                
                 success = await send_abandoned_cart_email(
                     to_email=email,
                     name=name,
                     items=items,
                     subtotal=subtotal,
-                    reminder_type=reminder_type,
+                    reminder_config=reminder_config_item,
                     cart_id=cart.get("id", cart_id)
                 )
                 
@@ -5410,7 +5432,7 @@ async def check_abandoned_carts():
                         {"_id": cart["_id"]},
                         {
                             "$inc": {"reminders_sent": 1},
-                            "$set": {f"reminder_{reminder_type}_sent_at": now.isoformat()}
+                            "$set": {f"reminder_{next_reminder_num}_sent_at": now.isoformat()}
                         }
                     )
                     
@@ -5418,7 +5440,8 @@ async def check_abandoned_carts():
                     await db.abandoned_cart_reminders.insert_one({
                         "cart_id": cart.get("id", cart_id),
                         "email": email,
-                        "reminder_type": reminder_type,
+                        "reminder_num": next_reminder_num,
+                        "delay_hours": reminder_config_item.get("delay_hours"),
                         "items_count": len(items),
                         "subtotal": subtotal,
                         "sent_at": now.isoformat()
@@ -5428,12 +5451,12 @@ async def check_abandoned_carts():
         return reminders_sent
         
     except Exception as e:
-        logger.error(f"Error checking abandoned carts: {e}")
+        logger.error(f"Error checking abandoned carts: {e}", exc_info=True)
         return 0
 
 
 async def send_abandoned_cart_email(to_email: str, name: str, items: list, 
-                                     subtotal: float, reminder_type: str, cart_id: str) -> dict:
+                                     subtotal: float, reminder_config: dict, cart_id: str) -> bool:
     """Send abandoned cart recovery email. Returns dict with success status and error message."""
     try:
         # Check if Resend is configured
