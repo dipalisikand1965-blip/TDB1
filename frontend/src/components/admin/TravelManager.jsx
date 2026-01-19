@@ -87,12 +87,13 @@ const TravelManager = ({ getAuthHeader }) => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [requestsRes, productsRes, bundlesRes, statsRes, settingsRes] = await Promise.all([
+      const [requestsRes, productsRes, bundlesRes, statsRes, settingsRes, partnersRes] = await Promise.all([
         axios.get(`${API_URL}/api/travel/requests`, getAuthHeader()),
         axios.get(`${API_URL}/api/travel/products`),
         axios.get(`${API_URL}/api/travel/bundles`),
         axios.get(`${API_URL}/api/travel/stats`),
-        axios.get(`${API_URL}/api/travel/admin/settings`, getAuthHeader())
+        axios.get(`${API_URL}/api/travel/admin/settings`, getAuthHeader()),
+        axios.get(`${API_URL}/api/travel/admin/partners`, getAuthHeader()).catch(() => ({ data: { partners: [] } }))
       ]);
       
       setRequests(requestsRes.data.requests || []);
@@ -100,6 +101,7 @@ const TravelManager = ({ getAuthHeader }) => {
       setBundles(bundlesRes.data.bundles || []);
       setStats(statsRes.data || {});
       setSettings(settingsRes.data || {});
+      setPartners(partnersRes.data.partners || []);
     } catch (error) {
       console.error('Error fetching travel data:', error);
       toast({ title: 'Error', description: 'Failed to load travel data', variant: 'destructive' });
