@@ -11,7 +11,7 @@ import { toast } from '../hooks/use-toast';
 import { 
   ArrowLeft, CreditCard, Truck, MapPin, Phone, MessageCircle, 
   CheckCircle, User, Mail, PawPrint, Calendar, Gift, Sparkles,
-  Crown, AlertCircle, Tag, Star, Loader2, X, Store, Package, Info
+  Crown, AlertCircle, Tag, Star, Loader2, X, Store, Package, Info, Plus
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import BreedAutocomplete from '../components/BreedAutocomplete';
