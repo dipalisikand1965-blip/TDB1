@@ -8388,7 +8388,7 @@ class AgentLoginRequest(BaseModel):
     username: str
     password: str
 
-@api_router.post("/agent/login")
+@app.post("/api/agent/login")
 async def agent_login(request: AgentLoginRequest):
     """
     Agent login endpoint - separate from admin login.
