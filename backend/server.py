@@ -5599,7 +5599,27 @@ async def send_abandoned_cart_email(to_email: str, name: str, items: list,
             return False
         else:
             logger.error(f"Failed to send abandoned cart email: {e}")
-            return {"success": False, "error": f"Email sending failed: {error_msg}"}
+            return False
+
+
+# Manual trigger for abandoned cart reminders (admin endpoint)
+@admin_router.post("/abandoned-carts/send-reminders")
+async def trigger_abandoned_cart_reminders(username: str = Depends(verify_admin)):
+    """Manually trigger abandoned cart reminder emails"""
+    try:
+        reminders_sent = await check_abandoned_carts()
+        return {
+            "success": True,
+            "reminders_sent": reminders_sent,
+            "message": f"Sent {reminders_sent} abandoned cart reminder(s)"
+        }
+    except Exception as e:
+        logger.error(f"Manual abandoned cart trigger failed: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "message": "Failed to send reminders"
+        }
 
 
 # Add abandoned cart checker to scheduler
