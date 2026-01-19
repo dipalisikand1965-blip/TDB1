@@ -1053,6 +1053,13 @@ class AppSettings(BaseModel):
     ]
     free_shipping_threshold: float = 3000  # Cart value above which shipping is free
     default_shipping_fee: float = 150  # Default shipping fee
+    # Abandoned Cart Reminder Settings
+    abandoned_cart_enabled: bool = True
+    abandoned_cart_reminders: List[dict] = [
+        {"reminder_num": 1, "delay_hours": 1, "subject": "🛒 You left something behind!", "include_discount": False},
+        {"reminder_num": 2, "delay_hours": 24, "subject": "🐾 Your pup is still waiting!", "include_discount": False},
+        {"reminder_num": 3, "delay_hours": 72, "subject": "🎁 Final reminder + 10% OFF!", "include_discount": True, "discount_code": "COMEBACK10", "discount_percent": 10}
+    ]
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class UpdateAppSettings(BaseModel):
@@ -1063,6 +1070,8 @@ class UpdateAppSettings(BaseModel):
     shipping_thresholds: Optional[List[dict]] = None
     free_shipping_threshold: Optional[float] = None
     default_shipping_fee: Optional[float] = None
+    abandoned_cart_enabled: Optional[bool] = None
+    abandoned_cart_reminders: Optional[List[dict]] = None
 
 class ProductFulfilmentUpdate(BaseModel):
     """Update product fulfillment settings"""
