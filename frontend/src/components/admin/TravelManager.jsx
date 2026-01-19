@@ -62,7 +62,6 @@ const TravelManager = ({ getAuthHeader }) => {
     commission_percent: '', rating: 5, is_verified: false, is_active: true,
     pet_policy: '', special_features: ''
   });
-  });
 
   const travelTypes = {
     cab: { name: 'Cab / Road Travel', icon: Car, color: 'bg-green-500' },
