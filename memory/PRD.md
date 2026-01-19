@@ -745,11 +745,37 @@ See `/app/TOMORROW_SUMMARY.md` for full detailed plan
 
 ---
 
-*Last Updated: January 18, 2026*
+*Last Updated: January 19, 2026*
 
 ---
 
-## Changelog (Jan 18, 2026 - Latest Session)
+## Changelog (Jan 19, 2026 - Latest Session)
+- ✅ **BREED AUTOCOMPLETE** - Smart spelling suggestions for dog breeds as users type
+  - Handles common misspellings: "shizu" → "Shih Tzu", "lab" → "Labrador Retriever", "chiwawa" → "Chihuahua"
+  - 100+ breeds with aliases/misspellings in `/app/frontend/src/data/dogBreeds.js`
+  - Reusable component: `/app/frontend/src/components/BreedAutocomplete.jsx`
+  - Integrated in Checkout and Pet Soul questionnaire
+- ✅ **SOUL INSIGHTS ON CHECKOUT** - Pet profile data displayed when ordering
+  - Shows allergies, favorite treats, diet type, birthday countdown
+  - Soul Score percentage displayed
+  - Auto-fetches Pet Soul profile when pet name matches
+- ✅ **SERVICE DESK MAGIC PROMPTS** - Proactive suggestions for agents
+  - Birthday reminders ("Mojo's birthday is in 10 days!")
+  - Allergy alerts with specific items
+  - Favorite treats for upselling opportunities
+  - Loyal customer recognition (3+ orders)
+  - Low Soul Score prompts to encourage profile building
+- ✅ **SMART REORDER WIDGET** - Quick reorder on Member Dashboard
+  - Analyzes past orders to show top 3 most frequently ordered products
+  - Days since last order indicator
+  - One-click reorder buttons
+- ✅ **SETTINGS MODAL FIX VERIFIED** - Service Desk settings modal stable
+  - No more shaking/flashing when switching tabs
+  - Added `onInteractOutside={(e) => e.preventDefault()}`
+
+---
+
+## Changelog (Jan 18, 2026 - Previous Session)
 - ✅ **COMPREHENSIVE TESTING COMPLETE** - All 12 feature areas pass (100% frontend pass rate)
 - ✅ **Built Unified Inbox Dashboard** - Central command center in admin for all channel intakes with pillar assignment
 - ✅ **ONE ENGINE Architecture Documented** - Updated PRD with complete architecture vision (Membership → Pet Soul → Pillars)
