@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import {
   Syringe, Pill, Stethoscope, UserCircle, FileText, 
   Scale, Calendar, Plus, AlertCircle, CheckCircle,
-  Phone, MapPin, ChevronLeft, Loader2, Trash2, Edit
+  Phone, MapPin, ChevronLeft, Loader2, Trash2, Edit, Bell
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 
