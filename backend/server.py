@@ -8432,7 +8432,7 @@ async def agent_login(request: AgentLoginRequest):
     }
 
 
-@api_router.post("/agent/verify")
+@app.post("/api/agent/verify")
 async def verify_agent_session(data: dict):
     """Verify if an agent session is still valid"""
     agent_id = data.get("agent_id")
