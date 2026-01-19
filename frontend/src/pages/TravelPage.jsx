@@ -528,6 +528,15 @@ const TravelPage = () => {
     fetchTravelProducts();
   }, [user, token]);
 
+  // Scroll to products section if URL has #products hash
+  useEffect(() => {
+    if (window.location.hash === '#products') {
+      setTimeout(() => {
+        document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
+      }, 500);
+    }
+  }, []);
+
   const fetchUserPets = async () => {
     try {
       const response = await fetch(`${API_URL}/api/pets/my-pets`, {
