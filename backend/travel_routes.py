@@ -751,6 +751,136 @@ async def import_travel_bundles(bundles: List[Dict[str, Any]]):
             )
             imported += 1
             
+
+
+# Travel Partner Models
+class TravelPartnerCreate(BaseModel):
+    name: str
+    type: str  # cab_service, airline, train_service, relocation, cargo
+    description: Optional[str] = None
+    logo: Optional[str] = None
+    contact_name: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    website: Optional[str] = None
+    cities: List[str] = []
+    services: List[str] = []
+    commission_percent: float = 0
+    rating: float = 5.0
+    is_verified: bool = False
+    is_active: bool = True
+    pet_policy: Optional[str] = None
+    special_features: Optional[str] = None
+
+
+# Travel Partners CRUD
+@router.get("/admin/partners")
+async def get_travel_partners(
+    partner_type: Optional[str] = None,
+    is_active: Optional[bool] = None,
+    city: Optional[str] = None
+):
+    """Get all travel partners"""
+    db = get_db()
+    
+    query = {}
+    if partner_type:
+        query["type"] = partner_type
+    if is_active is not None:
+        query["is_active"] = is_active
+    if city:
+        query["cities"] = {"$in": [city]}
+    
+    partners = await db.travel_partners.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    
+    # Count by type
+    type_stats = {}
+    for partner in partners:
+        ptype = partner.get("type", "other")
+        type_stats[ptype] = type_stats.get(ptype, 0) + 1
+    
+    return {
+        "partners": partners,
+        "total": len(partners),
+        "by_type": type_stats
+    }
+
+
+@router.post("/admin/partners")
+async def create_travel_partner(partner: TravelPartnerCreate):
+    """Create a new travel partner"""
+    db = get_db()
+    logger = get_logger()
+    
+    partner_id = f"partner-{uuid.uuid4().hex[:8]}"
+    
+    partner_doc = {
+        "id": partner_id,
+        **partner.dict(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.travel_partners.insert_one(partner_doc)
+    logger.info(f"Travel partner created: {partner_id} - {partner.name}")
+    
+    return {"success": True, "partner_id": partner_id, "partner": {k: v for k, v in partner_doc.items() if k != "_id"}}
+
+
+@router.put("/admin/partners/{partner_id}")
+async def update_travel_partner(partner_id: str, partner: TravelPartnerCreate):
+    """Update a travel partner"""
+    db = get_db()
+    logger = get_logger()
+    
+    update_doc = {
+        **partner.dict(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    result = await db.travel_partners.update_one(
+        {"id": partner_id},
+        {"$set": update_doc}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Partner not found")
+    
+    logger.info(f"Travel partner updated: {partner_id}")
+    return {"success": True, "message": "Partner updated"}
+
+
+@router.delete("/admin/partners/{partner_id}")
+async def delete_travel_partner(partner_id: str):
+    """Delete a travel partner"""
+    db = get_db()
+    logger = get_logger()
+    
+    result = await db.travel_partners.delete_one({"id": partner_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Partner not found")
+    
+    logger.info(f"Travel partner deleted: {partner_id}")
+    return {"success": True, "message": "Partner deleted"}
+
+
+@router.get("/partners/by-type/{partner_type}")
+async def get_partners_by_type(partner_type: str, city: Optional[str] = None):
+    """Get active partners by type (for frontend booking)"""
+    db = get_db()
+    
+    query = {"type": partner_type, "is_active": True}
+    if city:
+        query["cities"] = {"$in": [city]}
+    
+    partners = await db.travel_partners.find(
+        query,
+        {"_id": 0, "id": 1, "name": 1, "rating": 1, "cities": 1, "is_verified": 1, "pet_policy": 1, "special_features": 1}
+    ).sort("rating", -1).to_list(50)
+    
+    return {"partners": partners, "total": len(partners)}
+
         except Exception as e:
             errors.append({"row": idx + 1, "error": str(e)})
     
