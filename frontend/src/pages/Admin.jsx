@@ -1441,6 +1441,7 @@ const Admin = () => {
             { id: 'dine', label: '🍽️ Dine', icon: Package },
             { id: 'stay', label: '🏨 Stay', icon: Building },
             { id: 'travel', label: '✈️ Travel', icon: Truck },
+            { id: 'care', label: '💝 Care', icon: Heart },
             { id: 'insights', label: '📝 Blog', icon: FileText },
             { id: 'testimonials', label: 'Testimonials', icon: Star },
             { id: 'faqs', label: 'FAQs', icon: HelpCircle },
