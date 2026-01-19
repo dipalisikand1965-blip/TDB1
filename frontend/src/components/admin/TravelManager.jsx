@@ -1318,6 +1318,177 @@ const TravelManager = ({ getAuthHeader }) => {
           </Card>
         </div>
       )}
+
+      {/* Partner Modal */}
+      {showPartnerModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4 p-6">
+            <h3 className="text-lg font-semibold mb-4">
+              {editingPartner ? 'Edit Partner' : 'Add Travel Partner'}
+            </h3>
+            <form onSubmit={handlePartnerSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Partner Name *</Label>
+                  <Input
+                    value={partnerForm.name}
+                    onChange={(e) => setPartnerForm({...partnerForm, name: e.target.value})}
+                    placeholder="e.g., PetCab India"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label>Partner Type *</Label>
+                  <select
+                    value={partnerForm.type}
+                    onChange={(e) => setPartnerForm({...partnerForm, type: e.target.value})}
+                    className="w-full h-10 px-3 border rounded-md"
+                    required
+                  >
+                    <option value="cab_service">Pet Cab Service</option>
+                    <option value="airline">Airline Partner</option>
+                    <option value="train_service">Train/Bus Service</option>
+                    <option value="relocation">Relocation Company</option>
+                    <option value="cargo">Cargo/Freight</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <Label>Description</Label>
+                <Textarea
+                  value={partnerForm.description}
+                  onChange={(e) => setPartnerForm({...partnerForm, description: e.target.value})}
+                  placeholder="Brief description of the partner and their services..."
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label>Contact Name</Label>
+                  <Input
+                    value={partnerForm.contact_name}
+                    onChange={(e) => setPartnerForm({...partnerForm, contact_name: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label>Contact Email</Label>
+                  <Input
+                    type="email"
+                    value={partnerForm.contact_email}
+                    onChange={(e) => setPartnerForm({...partnerForm, contact_email: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label>Contact Phone</Label>
+                  <Input
+                    value={partnerForm.contact_phone}
+                    onChange={(e) => setPartnerForm({...partnerForm, contact_phone: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Website</Label>
+                  <Input
+                    type="url"
+                    value={partnerForm.website}
+                    onChange={(e) => setPartnerForm({...partnerForm, website: e.target.value})}
+                    placeholder="https://..."
+                  />
+                </div>
+                <div>
+                  <Label>Logo URL</Label>
+                  <Input
+                    value={partnerForm.logo}
+                    onChange={(e) => setPartnerForm({...partnerForm, logo: e.target.value})}
+                    placeholder="https://..."
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label>Cities Covered (comma-separated)</Label>
+                <Input
+                  value={partnerForm.cities}
+                  onChange={(e) => setPartnerForm({...partnerForm, cities: e.target.value})}
+                  placeholder="Mumbai, Delhi, Bangalore, Pune"
+                />
+              </div>
+
+              <div>
+                <Label>Pet Policy</Label>
+                <Textarea
+                  value={partnerForm.pet_policy}
+                  onChange={(e) => setPartnerForm({...partnerForm, pet_policy: e.target.value})}
+                  placeholder="What breeds/sizes they accept, any restrictions..."
+                />
+              </div>
+
+              <div>
+                <Label>Special Features</Label>
+                <Textarea
+                  value={partnerForm.special_features}
+                  onChange={(e) => setPartnerForm({...partnerForm, special_features: e.target.value})}
+                  placeholder="AC vehicles, trained handlers, crate included..."
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Commission %</Label>
+                  <Input
+                    type="number"
+                    value={partnerForm.commission_percent}
+                    onChange={(e) => setPartnerForm({...partnerForm, commission_percent: e.target.value})}
+                    placeholder="e.g., 10"
+                  />
+                </div>
+                <div>
+                  <Label>Rating (1-5)</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="5"
+                    step="0.1"
+                    value={partnerForm.rating}
+                    onChange={(e) => setPartnerForm({...partnerForm, rating: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-6">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={partnerForm.is_active}
+                    onChange={(e) => setPartnerForm({...partnerForm, is_active: e.target.checked})}
+                  />
+                  Active
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={partnerForm.is_verified}
+                    onChange={(e) => setPartnerForm({...partnerForm, is_verified: e.target.checked})}
+                  />
+                  Verified Partner
+                </label>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button type="submit" className="flex-1">
+                  {editingPartner ? 'Update Partner' : 'Add Partner'}
+                </Button>
+                <Button type="button" variant="outline" onClick={() => setShowPartnerModal(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
