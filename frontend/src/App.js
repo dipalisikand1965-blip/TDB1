@@ -56,6 +56,7 @@ import DinePage from "./pages/DinePage";
 import CollectionPage from "./pages/CollectionPage";
 import PartnerOnboarding from "./pages/PartnerOnboarding";
 import StayPage from "./pages/StayPage";
+import TravelPage from "./pages/TravelPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VoiceOrder from "./pages/VoiceOrder";
