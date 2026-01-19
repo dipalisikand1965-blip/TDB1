@@ -64,6 +64,78 @@ const PetVault = () => {
     setLoading(false);
   };
 
+  const fetchVaccines = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/pet-vault/${petId}/vaccines`);
+      if (res.ok) {
+        const data = await res.json();
+        setVaccines(data.vaccines || []);
+      }
+    } catch (err) {
+      console.error('Error fetching vaccines:', err);
+    }
+  };
+
+  const fetchMedications = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/pet-vault/${petId}/medications`);
+      if (res.ok) {
+        const data = await res.json();
+        setMedications(data.medications || []);
+      }
+    } catch (err) {
+      console.error('Error fetching medications:', err);
+    }
+  };
+
+  const fetchVisits = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/pet-vault/${petId}/visits`);
+      if (res.ok) {
+        const data = await res.json();
+        setVisits(data.visits || []);
+      }
+    } catch (err) {
+      console.error('Error fetching visits:', err);
+    }
+  };
+
+  const fetchVets = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/pet-vault/${petId}/vets`);
+      if (res.ok) {
+        const data = await res.json();
+        setVets(data.vets || []);
+      }
+    } catch (err) {
+      console.error('Error fetching vets:', err);
+    }
+  };
+
+  // Helper to format dates
+  const formatDate = (dateStr) => {
+    if (!dateStr) return 'N/A';
+    try {
+      return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  // Helper to calculate days until
+  const getDaysUntil = (dateStr) => {
+    if (!dateStr) return null;
+    try {
+      const due = new Date(dateStr);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      due.setHours(0, 0, 0, 0);
+      return Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+    } catch {
+      return null;
+    }
+  };
+
   // Add handlers
   const handleAddVaccine = async (e) => {
     e.preventDefault();
@@ -72,7 +144,7 @@ const PetVault = () => {
       const res = await fetch(`${API_URL}/api/pet-vault/${petId}/vaccines`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...vaccineForm, reminder_enabled: true })
+        body: JSON.stringify({ ...vaccineForm, reminder_enabled: vaccineForm.reminder_enabled })
       });
       if (res.ok) {
         setShowAddVaccine(false);
