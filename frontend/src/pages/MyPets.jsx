@@ -343,12 +343,20 @@ const MyPets = () => {
                             </p>
                           </div>
                         </div>
-                        <Link to={`/pet-soul/${pet.id}`}>
-                          <Button size="sm" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs">
-                            <Sparkles className="w-3 h-3 mr-1" />
-                            {(pet.overall_score || 0) < 100 ? 'Build Soul' : 'View Soul'}
-                          </Button>
-                        </Link>
+                        <div className="flex gap-2">
+                          <Link to={`/pet-vault/${pet.id}`}>
+                            <Button size="sm" variant="outline" className="text-xs border-green-300 text-green-700 hover:bg-green-50">
+                              <Stethoscope className="w-3 h-3 mr-1" />
+                              Health
+                            </Button>
+                          </Link>
+                          <Link to={`/pet-soul/${pet.id}`}>
+                            <Button size="sm" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs">
+                              <Sparkles className="w-3 h-3 mr-1" />
+                              {(pet.overall_score || 0) < 100 ? 'Build Soul' : 'View Soul'}
+                            </Button>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
