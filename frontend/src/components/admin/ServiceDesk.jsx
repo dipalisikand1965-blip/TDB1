@@ -2690,6 +2690,75 @@ const ServiceDesk = ({ authHeaders }) => {
 
               {/* Content - Scrollable Area */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+                {/* Smart Suggestions - Magic Prompts */}
+                {petSoulData && (
+                  <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-3 shadow-sm">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-lg">💡</span>
+                      <span className="font-semibold text-amber-800 text-sm">Smart Suggestions</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      {/* Birthday Coming Up */}
+                      {petSoulData.pet?.birth_date && (() => {
+                        const bday = new Date(petSoulData.pet.birth_date);
+                        const today = new Date();
+                        bday.setFullYear(today.getFullYear());
+                        if (bday < today) bday.setFullYear(today.getFullYear() + 1);
+                        const daysUntil = Math.ceil((bday - today) / (1000 * 60 * 60 * 24));
+                        if (daysUntil <= 30 && daysUntil > 0) {
+                          return (
+                            <div className="flex items-center gap-2 text-sm text-amber-700 bg-white/60 rounded-lg px-3 py-2">
+                              <span>🎂</span>
+                              <span><strong>{petSoulData.pet.name}'s birthday is in {daysUntil} days!</strong> Mention cake options?</span>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+                      
+                      {/* Allergies Warning */}
+                      {petSoulData.insights?.key_flags?.has_allergies && (
+                        <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50/80 rounded-lg px-3 py-2">
+                          <AlertCircle className="w-4 h-4" />
+                          <span><strong>Allergy alert:</strong> {petSoulData.pet?.name} is allergic to {petSoulData.insights.key_flags.allergy_list?.join(', ')}. Confirm order is safe.</span>
+                        </div>
+                      )}
+                      
+                      {/* High Anxiety */}
+                      {petSoulData.insights?.key_flags?.anxiety_level === 'high' && selectedTicket.category === 'stay' && (
+                        <div className="flex items-center gap-2 text-sm text-orange-700 bg-orange-50/80 rounded-lg px-3 py-2">
+                          <AlertCircle className="w-4 h-4" />
+                          <span><strong>Note:</strong> {petSoulData.pet?.name} has high separation anxiety. Suggest calming add-ons for stay.</span>
+                        </div>
+                      )}
+                      
+                      {/* Favorite Treats for upsell */}
+                      {petSoulData.pet?.doggy_soul_answers?.favorite_treats && (
+                        <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50/80 rounded-lg px-3 py-2">
+                          <span>❤️</span>
+                          <span><strong>{petSoulData.pet?.name} loves:</strong> {Array.isArray(petSoulData.pet.doggy_soul_answers.favorite_treats) ? petSoulData.pet.doggy_soul_answers.favorite_treats.join(', ') : petSoulData.pet.doggy_soul_answers.favorite_treats}. Suggest as add-on?</span>
+                        </div>
+                      )}
+                      
+                      {/* Repeat Customer */}
+                      {customerHistory && customerHistory.stats?.total_orders > 3 && (
+                        <div className="flex items-center gap-2 text-sm text-purple-700 bg-purple-50/80 rounded-lg px-3 py-2">
+                          <span>⭐</span>
+                          <span><strong>Loyal customer!</strong> {customerHistory.stats.total_orders} orders. Consider a special thank you.</span>
+                        </div>
+                      )}
+                      
+                      {/* Low Soul Score */}
+                      {petSoulData.scores?.overall < 30 && (
+                        <div className="flex items-center gap-2 text-sm text-blue-700 bg-blue-50/80 rounded-lg px-3 py-2">
+                          <span>📝</span>
+                          <span>Ask a few questions about {petSoulData.pet?.name} to build their profile (Soul: {Math.round(petSoulData.scores.overall)}%)</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Member Info */}
                 <Card className="p-3">
                   <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
