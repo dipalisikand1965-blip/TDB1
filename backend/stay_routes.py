@@ -947,54 +947,6 @@ async def seed_default_tags(username: str = Depends(verify_admin)):
     seeded = 0
     
     for tag in default_tags:
-
-
-@stay_router.get("/my-bookings")
-async def get_my_bookings(email: str, limit: int = 20):
-    """Get stay bookings for a specific user"""
-    if not email:
-        raise HTTPException(status_code=400, detail="Email is required")
-    
-    now = datetime.now(timezone.utc)
-    
-    # Fetch all bookings for this user
-    bookings = await db.stay_bookings.find(
-        {"$or": [
-            {"guest_email": email},
-            {"customer.email": email},
-            {"email": email}
-        ]},
-        {"_id": 0}
-    ).sort("created_at", -1).limit(limit).to_list(limit)
-    
-    # Categorize into upcoming and past
-    upcoming = []
-    past = []
-    
-    for booking in bookings:
-        check_in = booking.get("check_in") or booking.get("check_in_date")
-        if check_in:
-            try:
-                check_in_date = datetime.fromisoformat(check_in.replace('Z', '+00:00')) if isinstance(check_in, str) else check_in
-                if check_in_date.tzinfo is None:
-                    check_in_date = check_in_date.replace(tzinfo=timezone.utc)
-                
-                if check_in_date >= now and booking.get("status") not in ["cancelled", "completed"]:
-                    upcoming.append(booking)
-                else:
-                    past.append(booking)
-            except:
-                past.append(booking)
-        else:
-            past.append(booking)
-    
-    return {
-        "bookings": bookings,
-        "upcoming": upcoming,
-        "past": past,
-        "total": len(bookings)
-    }
-
         existing = await db.pillar_tags.find_one({"id": tag["id"]})
         if not existing:
             tag["created_at"] = now
