@@ -762,13 +762,15 @@ const TravelPage = () => {
             </Card>
 
             {/* Travel Products & Bundles */}
-            {(travelProducts.length > 0 || travelBundles.length > 0) && (
-              <TravelProducts 
-                products={travelProducts} 
-                bundles={travelBundles}
-                onAddToCart={handleAddToCart} 
-              />
-            )}
+            <div id="products">
+              {(travelProducts.length > 0 || travelBundles.length > 0) && (
+                <TravelProducts 
+                  products={travelProducts} 
+                  bundles={travelBundles}
+                  onAddToCart={handleAddToCart} 
+                />
+              )}
+            </div>
           </div>
         )}
 
