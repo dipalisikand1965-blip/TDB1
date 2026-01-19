@@ -26,6 +26,9 @@ const MemberDashboard = () => {
   const [reviews, setReviews] = useState([]);
   const [reviewableProducts, setReviewableProducts] = useState([]);
   const [diningHistory, setDiningHistory] = useState({ reservations: { items: [] }, visits: { items: [] }, meetups: { items: [] } });
+  const [stayHistory, setStayHistory] = useState({ bookings: [], upcoming: [], past: [] });
+  const [travelHistory, setTravelHistory] = useState({ requests: [], upcoming: [], past: [] });
+  const [celebrationOrders, setCelebrationOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reviewLoading, setReviewLoading] = useState(false);
   const navigate = useNavigate();
