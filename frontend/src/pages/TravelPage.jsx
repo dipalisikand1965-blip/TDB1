@@ -516,6 +516,7 @@ const TravelPage = () => {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [travelProducts, setTravelProducts] = useState([]);
+  const [travelBundles, setTravelBundles] = useState([]);
   const [requestResult, setRequestResult] = useState(null);
   const [freeformQuery, setFreeformQuery] = useState('');
   
