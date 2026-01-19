@@ -17,6 +17,7 @@ import EnhancedCollectionManager from '../components/EnhancedCollectionManager';
 import PartnerManager from '../components/PartnerManager';
 import PricingHub from '../components/PricingHub';
 import StayManager from '../components/StayManager';
+import TravelManager from '../components/admin/TravelManager';
 import DataMigration from '../components/DataMigration';
 import { DashboardTab, OrdersTab, MembersTab, ChatsTab, DineManager, ServiceDesk, ProductTagsManager } from '../components/admin';
 import NotificationBell from '../components/admin/NotificationBell';
