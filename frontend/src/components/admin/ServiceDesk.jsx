@@ -2797,6 +2797,107 @@ const ServiceDesk = ({ authHeaders }) => {
                   )}
                 </Card>
 
+                {/* Pet Soul Card - NEW! */}
+                {(selectedTicket.pet?.name || petSoulData) && (
+                  <Card className="p-3 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+                    <h4 className="text-sm font-medium mb-2 flex items-center gap-2 text-purple-800">
+                      <span className="text-lg">🐾</span> Pet Soul
+                      {loadingPetSoul && <Loader2 className="w-3 h-3 animate-spin ml-auto" />}
+                    </h4>
+                    
+                    {/* Basic Pet Info from Ticket */}
+                    {selectedTicket.pet && (
+                      <div className="bg-white/80 rounded-lg p-2 mb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-xl">
+                            🐕
+                          </div>
+                          <div>
+                            <div className="font-medium text-purple-900">{selectedTicket.pet.name}</div>
+                            <div className="text-xs text-gray-500">
+                              {selectedTicket.pet.breed}{selectedTicket.pet.weight_kg ? ` • ${selectedTicket.pet.weight_kg}kg` : ''}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Pet Soul Data */}
+                    {petSoulData ? (
+                      <div className="space-y-2">
+                        {/* Soul Score */}
+                        <div className="flex items-center justify-between bg-white/80 rounded p-2">
+                          <span className="text-xs font-medium text-gray-600">Soul Score</span>
+                          <div className="flex items-center gap-2">
+                            <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all"
+                                style={{ width: `${petSoulData.scores?.overall || 0}%` }}
+                              />
+                            </div>
+                            <span className="text-xs font-bold text-purple-600">
+                              {Math.round(petSoulData.scores?.overall || 0)}%
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {/* Key Insights */}
+                        {petSoulData.insights?.key_flags && (
+                          <div className="space-y-1">
+                            {petSoulData.insights.key_flags.has_allergies && (
+                              <div className="flex items-center gap-1 text-xs bg-red-50 text-red-700 rounded px-2 py-1">
+                                <AlertCircle className="w-3 h-3" />
+                                <span>Allergies: {petSoulData.insights.key_flags.allergy_list?.join(', ')}</span>
+                              </div>
+                            )}
+                            {petSoulData.insights.key_flags.anxiety_level !== 'none' && (
+                              <div className="flex items-center gap-1 text-xs bg-yellow-50 text-yellow-700 rounded px-2 py-1">
+                                <AlertCircle className="w-3 h-3" />
+                                <span>Anxiety: {petSoulData.insights.key_flags.anxiety_level}</span>
+                              </div>
+                            )}
+                            {petSoulData.insights.key_flags.has_sensitive_stomach && (
+                              <div className="flex items-center gap-1 text-xs bg-orange-50 text-orange-700 rounded px-2 py-1">
+                                <AlertCircle className="w-3 h-3" />
+                                <span>Sensitive stomach</span>
+                              </div>
+                            )}
+                            {petSoulData.insights.key_flags.is_crate_trained && (
+                              <div className="flex items-center gap-1 text-xs bg-green-50 text-green-700 rounded px-2 py-1">
+                                <CheckCircle className="w-3 h-3" />
+                                <span>Crate trained</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Quick Stats */}
+                        {petSoulData.pet?.doggy_soul_answers && Object.keys(petSoulData.pet.doggy_soul_answers).length > 0 && (
+                          <div className="text-xs text-gray-500 text-center">
+                            {Object.keys(petSoulData.pet.doggy_soul_answers).length} questions answered
+                          </div>
+                        )}
+                        
+                        {/* View Full Profile Link */}
+                        {petSoulData.pet?.id && (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full h-7 text-xs text-purple-600 border-purple-200 hover:bg-purple-50"
+                            onClick={() => window.open(`/pet-soul/${petSoulData.pet.id}`, '_blank')}
+                          >
+                            <ExternalLink className="w-3 h-3 mr-1" /> View Full Pet Soul
+                          </Button>
+                        )}
+                      </div>
+                    ) : !loadingPetSoul && (
+                      <div className="text-xs text-gray-500 text-center py-2">
+                        No Pet Soul profile found
+                      </div>
+                    )}
+                  </Card>
+                )}
+
                 {/* Assignment */}
                 <Card className="p-3">
                   <h4 className="text-sm font-medium mb-2 flex items-center justify-between">
