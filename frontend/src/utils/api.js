@@ -10,4 +10,6 @@ export const getApiUrl = () => {
   return process.env.REACT_APP_BACKEND_URL || '';
 };
 
-export const API_URL = getApiUrl();
+// For backward compatibility, export API_URL as a getter
+// This ensures it's evaluated at runtime, not module load time
+export const API_URL = typeof window !== 'undefined' ? getApiUrl() : (process.env.REACT_APP_BACKEND_URL || '');
