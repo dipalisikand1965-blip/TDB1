@@ -392,6 +392,52 @@ const BreedTagsManager = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Add Breed Modal */}
+      <Dialog open={showAddBreedModal} onOpenChange={setShowAddBreedModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <PawPrint className="w-5 h-5 text-green-600" />
+              Add New Breed
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <Label className="text-sm font-medium mb-2 block">Breed Name</Label>
+            <Input
+              value={newBreedName}
+              onChange={(e) => setNewBreedName(e.target.value)}
+              placeholder="e.g. Cockapoo, Goldendoodle..."
+              onKeyPress={(e) => e.key === 'Enter' && handleAddBreed()}
+            />
+            <p className="text-xs text-gray-500 mt-2">
+              Enter the breed name and it will be added to the available breeds list for tagging products.
+            </p>
+            
+            {/* Show existing breeds count */}
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">
+                <strong>{breedOptions.length}</strong> breeds currently available
+              </p>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setShowAddBreedModal(false); setNewBreedName(''); }}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAddBreed}
+              disabled={addingBreed || !newBreedName.trim()}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {addingBreed ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+              Add Breed
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
