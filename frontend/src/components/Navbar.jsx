@@ -217,7 +217,9 @@ const Navbar = () => {
                           <div className="font-semibold">{pillar.name}</div>
                           <div className="text-xs opacity-90">{pillar.description}</div>
                         </div>
-                        {pillar.subItems.map((item) => (
+                        {pillar.subItems
+                          .filter(item => !item.adminOnly || user?.role === 'admin')
+                          .map((item) => (
                           <Link
                             key={item.path}
                             to={item.path}
@@ -227,10 +229,13 @@ const Navbar = () => {
                                 ? 'bg-purple-50 text-purple-600 font-medium'
                                 : item.highlight
                                   ? 'text-orange-600 font-medium hover:bg-orange-50'
-                                  : 'text-gray-700 hover:bg-gray-50'
+                                  : item.adminOnly
+                                    ? 'text-blue-600 font-medium hover:bg-blue-50'
+                                    : 'text-gray-700 hover:bg-gray-50'
                             }`}
                           >
                             {item.name}
+                            {item.adminOnly && <span className="ml-2 text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded">Admin</span>}
                           </Link>
                         ))}
                       </div>
