@@ -86,6 +86,10 @@ const Checkout = () => {
   const [petSoulInsights, setPetSoulInsights] = useState(null);
   const [loadingPetSoul, setLoadingPetSoul] = useState(false);
   
+  // Breed-specific product recommendations
+  const [breedProducts, setBreedProducts] = useState([]);
+  const [loadingBreedProducts, setLoadingBreedProducts] = useState(false);
+  
   const [formData, setFormData] = useState({
     // Pet Parent Details
     parentName: '',
