@@ -1029,6 +1029,29 @@ _GST applicable on final invoice_
                     {formErrors.whatsappNumber && <p className="text-red-500 text-xs mt-1">{formErrors.whatsappNumber}</p>}
                   </div>
                 </div>
+                
+                {/* Remember Me Checkbox */}
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                        data-testid="remember-me-checkbox"
+                      />
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                        Remember my details for next time
+                      </span>
+                      <p className="text-xs text-gray-500">
+                        Save your info for faster checkout on future orders
+                      </p>
+                    </div>
+                  </label>
+                </div>
               </Card>
 
               {/* Pet Details */}
