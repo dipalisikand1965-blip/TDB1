@@ -7851,6 +7851,7 @@ set_mis_db(db)
 # Set Paw Rewards database
 set_rewards_db(db)
 set_pet_soul_db(db)
+set_pet_vault_db(db)
 
 # Include routers
 app.include_router(api_router)
