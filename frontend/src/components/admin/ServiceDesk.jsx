@@ -218,6 +218,10 @@ const ServiceDesk = ({ authHeaders }) => {
   const [escalationRules, setEscalationRules] = useState([]);
   const [loadingEscalation, setLoadingEscalation] = useState(false);
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
+
+  // Pet Soul Integration
+  const [petSoulData, setPetSoulData] = useState(null);
+  const [loadingPetSoul, setLoadingPetSoul] = useState(false);
   
   // Attachments
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
