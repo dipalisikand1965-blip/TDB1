@@ -761,9 +761,13 @@ const TravelPage = () => {
               </div>
             </Card>
 
-            {/* Travel Products */}
-            {travelProducts.length > 0 && (
-              <TravelProducts products={travelProducts} onAddToCart={handleAddToCart} />
+            {/* Travel Products & Bundles */}
+            {(travelProducts.length > 0 || travelBundles.length > 0) && (
+              <TravelProducts 
+                products={travelProducts} 
+                bundles={travelBundles}
+                onAddToCart={handleAddToCart} 
+              />
             )}
           </div>
         )}
