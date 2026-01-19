@@ -145,6 +145,11 @@ const MiraAI = () => {
     );
   }
 
+  // Don't render on hidden paths
+  if (shouldHide) {
+    return null;
+  }
+
   return (
     <div 
       className={`fixed z-50 bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 flex flex-col ${
