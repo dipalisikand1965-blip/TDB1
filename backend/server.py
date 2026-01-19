@@ -8275,7 +8275,7 @@ async def create_agent(agent: AgentCreate, credentials: HTTPBasicCredentials = D
     return {"success": True, "agent": agent_doc}
 
 
-@api_router.get("/admin/agents/{agent_id}")
+@app.get("/api/admin/agents/{agent_id}")
 async def get_agent(agent_id: str, credentials: HTTPBasicCredentials = Depends(security)):
     """Get agent details"""
     verify_admin(credentials)
