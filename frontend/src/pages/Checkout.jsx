@@ -79,6 +79,7 @@ const Checkout = () => {
   const [pointsToRedeem, setPointsToRedeem] = useState(0);
   const [loyaltyDiscount, setLoyaltyDiscount] = useState(0);
   const [isLoadingLoyalty, setIsLoadingLoyalty] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true); // Default to true for convenience
   
   const [formData, setFormData] = useState({
     // Pet Parent Details
@@ -109,6 +110,33 @@ const Checkout = () => {
     // Offers
     couponCode: ''
   });
+
+  // Load saved customer data from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedCustomer = localStorage.getItem('tdc_customer_details');
+      if (savedCustomer) {
+        const parsed = JSON.parse(savedCustomer);
+        setFormData(prev => ({
+          ...prev,
+          parentName: parsed.parentName || prev.parentName,
+          email: parsed.email || prev.email,
+          phone: parsed.phone || prev.phone,
+          whatsappNumber: parsed.whatsappNumber || prev.whatsappNumber,
+          address: parsed.address || prev.address,
+          landmark: parsed.landmark || prev.landmark,
+          city: parsed.city || prev.city,
+          pincode: parsed.pincode || prev.pincode,
+          petName: parsed.petName || prev.petName,
+          petBreed: parsed.petBreed || prev.petBreed,
+        }));
+        // Check if user had opted to remember
+        setRememberMe(parsed.rememberMe !== false);
+      }
+    } catch (err) {
+      console.error('Error loading saved customer details:', err);
+    }
+  }, []);
 
   // Fetch app settings on mount
   useEffect(() => {
