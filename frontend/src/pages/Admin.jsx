@@ -815,9 +815,51 @@ const Admin = () => {
         setAbandonedCarts(data.carts || []);
         setAbandonedStats(data.stats || {});
       }
+      
+      // Also fetch settings
+      const settingsRes = await fetch(`${API_URL}/api/admin/app-settings`, {
+        headers: getAuthHeaders()
+      });
+      if (settingsRes.ok) {
+        const settingsData = await settingsRes.json();
+        if (settingsData.settings) {
+          setAbandonedCartSettings({
+            enabled: settingsData.settings.abandoned_cart_enabled !== false,
+            reminders: settingsData.settings.abandoned_cart_reminders || abandonedCartSettings.reminders
+          });
+        }
+      }
     } catch (error) {
       console.error('Failed to fetch abandoned carts:', error);
     }
+  };
+
+  const saveAbandonedCartSettings = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/app-settings`, {
+        method: 'PUT',
+        headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          abandoned_cart_enabled: abandonedCartSettings.enabled,
+          abandoned_cart_reminders: abandonedCartSettings.reminders
+        })
+      });
+      if (response.ok) {
+        toast({ title: "Settings saved", description: "Abandoned cart settings updated successfully" });
+        setShowAbandonedCartSettingsModal(false);
+      } else {
+        toast({ title: "Error", description: "Failed to save settings", variant: "destructive" });
+      }
+    } catch (error) {
+      console.error('Failed to save abandoned cart settings:', error);
+      toast({ title: "Error", description: "Failed to save settings", variant: "destructive" });
+    }
+  };
+
+  const updateReminderSetting = (index, field, value) => {
+    const newReminders = [...abandonedCartSettings.reminders];
+    newReminders[index] = { ...newReminders[index], [field]: value };
+    setAbandonedCartSettings({ ...abandonedCartSettings, reminders: newReminders });
   };
 
   // Fetch Franchise Inquiries
