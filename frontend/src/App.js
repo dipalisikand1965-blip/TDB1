@@ -98,6 +98,9 @@ function AppRouter() {
       <Route path="/mira-landing-embed" element={<MiraLandingEmbed />} />
       <Route path="/concierge-embed" element={<MiraConciergeEmbed />} />
       
+      {/* Agent Portal - Standalone Service Desk for agents */}
+      <Route path="/agent" element={<AgentPortal />} />
+      
       {/* Main app routes - WITH navbar */}
       <Route path="/*" element={<MainLayout />} />
     </Routes>
