@@ -3,23 +3,43 @@ Universal Ticketing System / Service Desk
 Handles all concierge requests across multiple channels
 """
 
-from fastapi import APIRouter, HTTPException, Query, Form, UploadFile, File
+from fastapi import APIRouter, HTTPException, Query, Form, UploadFile, File, Depends, Header
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 from bson import ObjectId
 import uuid
 import os
+import secrets
 import asyncio
 from dotenv import load_dotenv
 load_dotenv()
 
 router = APIRouter(prefix="/api/tickets", tags=["tickets"])
 
+# Security for admin verification
+security = HTTPBasic()
+
 # Get MongoDB connection from server.py
 def get_db():
     from server import db
     return db
+
+# Admin credentials verification
+def verify_token(credentials: HTTPBasicCredentials = Depends(security)):
+    """Verify admin credentials for ticket operations"""
+    from server import ADMIN_USERNAME, ADMIN_PASSWORD, _admin_credentials_cache
+    
+    expected_username = _admin_credentials_cache.get("username") or ADMIN_USERNAME
+    expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
+    
+    correct_username = secrets.compare_digest(credentials.username, expected_username)
+    correct_password = secrets.compare_digest(credentials.password, expected_password)
+    
+    if not (correct_username and correct_password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return credentials.username
 
 # Get Resend for email notifications
 def get_resend():
