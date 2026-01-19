@@ -11,7 +11,7 @@ import {
   Plane, Car, Train, Truck, Package, Gift, Settings, RefreshCw, Upload, Download,
   Plus, Edit2, Trash2, Search, Filter, Eye, Calendar, Clock, MapPin, User, Phone, Mail,
   PawPrint, AlertTriangle, CheckCircle, XCircle, Loader2, ChevronDown, ChevronUp,
-  TrendingUp, DollarSign, Star, Bell, FileText
+  TrendingUp, DollarSign, Star, Bell, FileText, Building2, Globe, Shield, Award
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../../hooks/use-toast';
@@ -22,6 +22,7 @@ const TravelManager = ({ getAuthHeader }) => {
   const [requests, setRequests] = useState([]);
   const [products, setProducts] = useState([]);
   const [bundles, setBundles] = useState([]);
+  const [partners, setPartners] = useState([]);
   const [stats, setStats] = useState({});
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
@@ -31,10 +32,13 @@ const TravelManager = ({ getAuthHeader }) => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showProductModal, setShowProductModal] = useState(false);
   const [showBundleModal, setShowBundleModal] = useState(false);
+  const [showPartnerModal, setShowPartnerModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingBundle, setEditingBundle] = useState(null);
+  const [editingPartner, setEditingPartner] = useState(null);
   const fileInputRef = useRef(null);
   const bundleFileInputRef = useRef(null);
+  const partnerFileInputRef = useRef(null);
 
   // Product form state
   const [productForm, setProductForm] = useState({
@@ -48,6 +52,16 @@ const TravelManager = ({ getAuthHeader }) => {
     name: '', description: '', price: '', original_price: '', image: '',
     travel_type: 'cab', items: [], is_recommended: true,
     paw_reward_points: 0, is_birthday_perk: false, birthday_discount_percent: ''
+  });
+
+  // Partner form state
+  const [partnerForm, setPartnerForm] = useState({
+    name: '', type: 'cab_service', description: '', logo: '',
+    contact_name: '', contact_email: '', contact_phone: '',
+    website: '', cities: '', services: [],
+    commission_percent: '', rating: 5, is_verified: false, is_active: true,
+    pet_policy: '', special_features: ''
+  });
   });
 
   const travelTypes = {
