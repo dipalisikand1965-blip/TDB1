@@ -266,11 +266,24 @@ const TravelRequestForm = ({ travelType, pet, onSubmit, onBack, loading }) => {
         </div>
         <div>
           <Label>Preferred Time</Label>
-          <Input
-            type="time"
+          <select
             value={formData.travel_time}
             onChange={(e) => setFormData({...formData, travel_time: e.target.value})}
-          />
+            className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+          >
+            <option value="">Select time</option>
+            {Array.from({ length: 48 }, (_, i) => {
+              const hours = Math.floor(i / 2);
+              const minutes = i % 2 === 0 ? '00' : '30';
+              const time24 = `${hours.toString().padStart(2, '0')}:${minutes}`;
+              const period = hours < 12 ? 'AM' : 'PM';
+              const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+              const displayTime = `${displayHours}:${minutes} ${period}`;
+              return (
+                <option key={time24} value={time24}>{displayTime}</option>
+              );
+            })}
+          </select>
         </div>
         <div className="flex items-end">
           <label className="flex items-center gap-2 cursor-pointer">
