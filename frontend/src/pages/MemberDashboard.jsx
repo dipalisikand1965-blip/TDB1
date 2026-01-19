@@ -78,9 +78,40 @@ const MemberDashboard = () => {
         } catch (e) {
           console.error('Failed to fetch dining history:', e);
         }
+        
+        // Fetch stay history
+        try {
+          const stayRes = await axios.get(`${API_URL}/api/stay/my-bookings?email=${user.email || ''}`, config);
+          setStayHistory(stayRes.data || { bookings: [], upcoming: [], past: [] });
+        } catch (e) {
+          console.error('Failed to fetch stay history:', e);
+        }
+        
+        // Fetch travel history
+        try {
+          const travelRes = await axios.get(`${API_URL}/api/travel/my-requests?user_email=${user.email || ''}`, config);
+          const requests = travelRes.data.requests || [];
+          const now = new Date();
+          const upcoming = requests.filter(r => new Date(r.journey?.travel_date) >= now && r.status !== 'cancelled');
+          const past = requests.filter(r => new Date(r.journey?.travel_date) < now || r.status === 'cancelled' || r.status === 'completed');
+          setTravelHistory({ requests, upcoming, past });
+        } catch (e) {
+          console.error('Failed to fetch travel history:', e);
+        }
 
         const userOrders = ordersRes.data.orders || [];
         setOrders(userOrders);
+        
+        // Filter celebration orders (cakes, treats, etc.)
+        const celebrations = userOrders.filter(o => 
+          o.items?.some(i => 
+            i.category?.toLowerCase().includes('cake') || 
+            i.category?.toLowerCase().includes('treat') ||
+            i.category?.toLowerCase().includes('celebrate')
+          )
+        );
+        setCelebrationOrders(celebrations);
+        
         setPets(petsRes.data.pets || []);
         setAutoships(autoshipRes.data.subscriptions || []);
         setReviews(reviewsRes.data.reviews || []);
