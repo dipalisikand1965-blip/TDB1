@@ -649,7 +649,7 @@ async def get_ticket(ticket_id: str):
     return {"ticket": serialize_ticket(ticket)}
 
 @router.patch("/{ticket_id}")
-async def update_ticket(ticket_id: str, update: TicketUpdate):
+async def update_ticket(ticket_id: str, update: TicketUpdate, username: str = Depends(verify_token)):
     """Update a ticket"""
     db = get_db()
     
