@@ -400,35 +400,105 @@ const TravelRequestForm = ({ travelType, pet, onSubmit, onBack, loading }) => {
 };
 
 // Travel Products Section
-const TravelProducts = ({ products, onAddToCart }) => (
-  <div className="mt-8">
-    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-      <Package className="w-5 h-5 text-purple-600" />
-      Travel Essentials
-    </h3>
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {products.map((product) => (
-        <Card key={product.id} className="p-3 hover:shadow-md transition-shadow">
-          <div className="aspect-square bg-gray-100 rounded-lg mb-2 overflow-hidden">
-            {product.image ? (
-              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <Package className="w-8 h-8 text-gray-400" />
+const TravelProducts = ({ products, bundles, onAddToCart }) => (
+  <div className="space-y-8">
+    {/* Travel Bundles Section */}
+    {bundles && bundles.length > 0 && (
+      <div>
+        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <Package className="w-6 h-6 text-blue-600" />
+          Travel Kits & Bundles
+          <Badge className="bg-green-100 text-green-700 ml-2">Save up to 30%</Badge>
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {bundles.map((bundle) => (
+            <Card key={bundle.id} className="overflow-hidden hover:shadow-lg transition-all border-2 border-transparent hover:border-blue-200">
+              <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                {bundle.image ? (
+                  <img src={bundle.image} alt={bundle.name} className="w-full h-full object-cover" />
+                ) : (
+                  <Package className="w-16 h-16 text-blue-400" />
+                )}
               </div>
-            )}
-          </div>
-          <h4 className="font-medium text-sm text-gray-900 line-clamp-2">{product.name}</h4>
-          <p className="text-purple-600 font-semibold mt-1">₹{product.price}</p>
-          <Button 
-            size="sm" 
-            className="w-full mt-2"
-            onClick={() => onAddToCart(product)}
-          >
-            Add to Cart
-          </Button>
-        </Card>
-      ))}
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="bg-blue-100 text-blue-700 text-xs">{bundle.travel_type}</Badge>
+                  {bundle.is_recommended && (
+                    <Badge className="bg-yellow-100 text-yellow-700 text-xs">⭐ Recommended</Badge>
+                  )}
+                </div>
+                <h4 className="font-bold text-gray-900">{bundle.name}</h4>
+                <p className="text-sm text-gray-500 mt-1 line-clamp-2">{bundle.description}</p>
+                <div className="flex items-center gap-2 mt-3">
+                  <span className="text-xl font-bold text-green-600">₹{bundle.price}</span>
+                  {bundle.original_price && (
+                    <>
+                      <span className="text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
+                      <Badge className="bg-red-100 text-red-700 text-xs">
+                        {Math.round((1 - bundle.price / bundle.original_price) * 100)}% OFF
+                      </Badge>
+                    </>
+                  )}
+                </div>
+                {bundle.paw_reward_points > 0 && (
+                  <p className="text-xs text-purple-600 mt-1">🐾 Earn {bundle.paw_reward_points} Paw Points</p>
+                )}
+                <Button 
+                  className="w-full mt-3 bg-blue-600 hover:bg-blue-700"
+                  onClick={() => onAddToCart(bundle)}
+                >
+                  Add Bundle to Cart
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {/* Individual Products Section */}
+    <div>
+      <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <Package className="w-6 h-6 text-purple-600" />
+        Travel Essentials
+      </h3>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {products.map((product) => (
+          <Card key={product.id} className="overflow-hidden hover:shadow-md transition-shadow group">
+            <div className="aspect-square bg-gray-100 overflow-hidden">
+              {product.image ? (
+                <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                  <Package className="w-12 h-12 text-gray-300" />
+                </div>
+              )}
+            </div>
+            <div className="p-3">
+              <h4 className="font-medium text-sm text-gray-900 line-clamp-2 min-h-[2.5rem]">{product.name}</h4>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-lg font-bold text-purple-600">₹{product.price}</span>
+                {product.compare_price && (
+                  <span className="text-xs text-gray-400 line-through">₹{product.compare_price}</span>
+                )}
+              </div>
+              {product.paw_reward_points > 0 && (
+                <p className="text-xs text-purple-500 mt-1">🐾 {product.paw_reward_points} pts</p>
+              )}
+              {product.is_birthday_perk && (
+                <Badge className="bg-pink-100 text-pink-600 text-xs mt-1">🎂 Birthday Perk</Badge>
+              )}
+              <Button 
+                size="sm" 
+                className="w-full mt-2"
+                onClick={() => onAddToCart(product)}
+              >
+                Add to Cart
+              </Button>
+            </div>
+          </Card>
+        ))}
+      </div>
     </div>
   </div>
 );
