@@ -59,6 +59,7 @@ import StayPage from "./pages/StayPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VoiceOrder from "./pages/VoiceOrder";
+import AgentPortal from "./pages/AgentPortal";
 
 function App() {
   return (
