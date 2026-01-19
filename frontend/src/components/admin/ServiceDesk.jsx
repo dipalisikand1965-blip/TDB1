@@ -1492,29 +1492,29 @@ const ServiceDesk = ({ authHeaders }) => {
 
     return (
       <Dialog open={showSettings} onOpenChange={setShowSettings}>
-        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto" onInteractOutside={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>Service Desk Settings</DialogTitle>
           </DialogHeader>
           
-          <Tabs value={activeSettingsTab} onValueChange={setActiveSettingsTab}>
+          <Tabs value={activeSettingsTab} onValueChange={setActiveSettingsTab} className="mt-2">
             <TabsList className="w-full grid grid-cols-6 mb-4">
-              <TabsTrigger value="assignment" className="text-xs">
+              <TabsTrigger value="assignment" className="text-xs px-1">
                 <Zap className="w-3 h-3 mr-1" /> Auto-Assign
               </TabsTrigger>
-              <TabsTrigger value="escalation" className="text-xs">
+              <TabsTrigger value="escalation" className="text-xs px-1">
                 <ArrowUp className="w-3 h-3 mr-1" /> Escalation
               </TabsTrigger>
-              <TabsTrigger value="sla" className="text-xs">
+              <TabsTrigger value="sla" className="text-xs px-1">
                 <Clock className="w-3 h-3 mr-1" /> SLA Rules
               </TabsTrigger>
-              <TabsTrigger value="team" className="text-xs">
+              <TabsTrigger value="team" className="text-xs px-1">
                 <Users className="w-3 h-3 mr-1" /> Team
               </TabsTrigger>
-              <TabsTrigger value="email" className="text-xs">
+              <TabsTrigger value="email" className="text-xs px-1">
                 <Mail className="w-3 h-3 mr-1" /> Email
               </TabsTrigger>
-              <TabsTrigger value="whatsapp" className="text-xs">
+              <TabsTrigger value="whatsapp" className="text-xs px-1">
                 <MessageSquare className="w-3 h-3 mr-1" /> WhatsApp
               </TabsTrigger>
             </TabsList>
