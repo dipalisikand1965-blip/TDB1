@@ -573,6 +573,29 @@ async def get_health_summary(pet_id: str):
 
 
 # ============================================
+# ADMIN ENDPOINTS
+# ============================================
+
+@pet_vault_admin_router.post("/health-reminders/check")
+async def trigger_health_reminder_check():
+    """Manually trigger the health reminder check (admin only)"""
+    result = await check_health_reminders()
+    return {"message": "Health reminder check completed", "result": result}
+
+@pet_vault_admin_router.get("/health-reminders/logs")
+async def get_reminder_logs(limit: int = 50):
+    """Get recent health reminder logs"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    logs = await db.health_reminder_logs.find(
+        {}, {"_id": 0}
+    ).sort("sent_at", -1).limit(limit).to_list(limit)
+    
+    return {"logs": logs, "total": len(logs)}
+
+
+# ============================================
 # HEALTH REMINDERS (Internal)
 # ============================================
 
