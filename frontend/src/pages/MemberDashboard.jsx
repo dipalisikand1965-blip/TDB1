@@ -318,6 +318,109 @@ const MemberDashboard = () => {
               </Card>
             </div>
 
+            {/* Smart Reorder Widget */}
+            {orders.length > 0 && (() => {
+              // Analyze past orders to suggest reorder
+              const productFrequency = {};
+              orders.forEach(order => {
+                order.items?.forEach(item => {
+                  if (!productFrequency[item.id]) {
+                    productFrequency[item.id] = { 
+                      ...item, 
+                      count: 0, 
+                      lastOrdered: order.created_at,
+                      totalQuantity: 0
+                    };
+                  }
+                  productFrequency[item.id].count += 1;
+                  productFrequency[item.id].totalQuantity += item.quantity || 1;
+                  if (new Date(order.created_at) > new Date(productFrequency[item.id].lastOrdered)) {
+                    productFrequency[item.id].lastOrdered = order.created_at;
+                  }
+                });
+              });
+              
+              // Get top 3 most ordered products
+              const topProducts = Object.values(productFrequency)
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 3);
+              
+              if (topProducts.length === 0) return null;
+              
+              // Calculate days since last order
+              const lastOrderDate = new Date(orders[0]?.created_at);
+              const daysSinceLastOrder = Math.floor((new Date() - lastOrderDate) / (1000 * 60 * 60 * 24));
+              
+              return (
+                <Card className="p-5 mt-6 bg-gradient-to-r from-purple-50 via-pink-50 to-orange-50 border-purple-200 shadow-sm">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-purple-100 rounded-xl">
+                      <Sparkles className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-purple-900">Quick Reorder</h3>
+                      <p className="text-xs text-purple-600">
+                        {daysSinceLastOrder > 14 
+                          ? `It's been ${daysSinceLastOrder} days since your last order!`
+                          : `Based on your favorites`}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid gap-3">
+                    {topProducts.map((product, idx) => (
+                      <div 
+                        key={product.id || idx}
+                        className="flex items-center justify-between bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                            {product.image ? (
+                              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                <Package className="w-5 h-5" />
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900 text-sm line-clamp-1">{product.name}</p>
+                            <p className="text-xs text-gray-500">
+                              Ordered {product.count}x • ₹{product.price}
+                            </p>
+                          </div>
+                        </div>
+                        <Button 
+                          size="sm"
+                          className="bg-purple-600 hover:bg-purple-700 text-white h-8 px-3"
+                          onClick={() => {
+                            // Add to cart logic - navigate to product or add directly
+                            toast({ 
+                              title: '🛒 Added to Cart',
+                              description: `${product.name} has been added to your cart!`
+                            });
+                            // In real implementation, would use cart context
+                            navigate('/cakes');
+                          }}
+                        >
+                          <RefreshCw className="w-3 h-3 mr-1" />
+                          Reorder
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <Button 
+                    variant="ghost" 
+                    className="w-full mt-3 text-purple-600 hover:text-purple-700 hover:bg-purple-100"
+                    onClick={() => navigate('/cakes')}
+                  >
+                    Browse All Products
+                  </Button>
+                </Card>
+              );
+            })()}
+
             <h3 className="text-xl font-bold mt-10 mb-4 text-gray-900">Recent Activity</h3>
             {orders.length > 0 ? (
               <div className="space-y-4">
