@@ -750,6 +750,8 @@ See `/app/TOMORROW_SUMMARY.md` for full detailed plan
 ---
 
 ## Changelog (Jan 19, 2026 - Latest Session)
+
+### Data Flywheel Implementation ✅
 - ✅ **BREED AUTOCOMPLETE** - Smart spelling suggestions for dog breeds as users type
   - Handles common misspellings: "shizu" → "Shih Tzu", "lab" → "Labrador Retriever", "chiwawa" → "Chihuahua"
   - 100+ breeds with aliases/misspellings in `/app/frontend/src/data/dogBreeds.js`
@@ -769,6 +771,23 @@ See `/app/TOMORROW_SUMMARY.md` for full detailed plan
   - Analyzes past orders to show top 3 most frequently ordered products
   - Days since last order indicator
   - One-click reorder buttons
+- ✅ **PET CELEBRATIONS CALENDAR** - Admin dashboard widget for proactive outreach
+  - Shows upcoming birthdays, gotcha days, and festival celebrations
+  - Stats cards: Birthdays count, Gotcha Days count, Festivals count, This Week count
+  - WhatsApp and Email contact buttons for each event
+  - Search by pet name, breed, or owner
+  - Filters: Time range (30/60/90 days, 6 months, year), Festivals toggle
+  - 2026 Indian festival dates included (Diwali, Holi, Christmas, etc.)
+  - API: `GET /api/admin/pet-soul/celebrations-calendar`
+- ✅ **BREED-BASED PRODUCT RECOMMENDATIONS** - On checkout page
+  - When user enters a breed, shows products tagged with that breed
+  - "Perfect for {Breed}!" section with product cards
+  - API: `GET /api/pet-soul/breed-products/{breed}`
+  - Tested: "Labrador" shows 3 breed-specific products
+- ✅ **FESTIVAL CELEBRATION PREFERENCES** - New question in Pet Soul questionnaire
+  - Question: "Which celebrations would you like to celebrate with your pet?"
+  - Options: Birthday, Gotcha Day, Diwali, Holi, Christmas, New Year, Valentine's Day, Raksha Bandhan, Independence Day, Easter, Eid
+  - Used by Celebrations Calendar to show personalized festival reminders
 - ✅ **SETTINGS MODAL FIX VERIFIED** - Service Desk settings modal stable
   - No more shaking/flashing when switching tabs
   - Added `onInteractOutside={(e) => e.preventDefault()}`
