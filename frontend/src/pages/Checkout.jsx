@@ -1291,13 +1291,12 @@ _GST applicable on final invoice_
                       {breedProducts.slice(0, 4).map((product, idx) => (
                         <div 
                           key={product.id || idx}
-                          className="bg-white rounded-lg p-2 flex items-center gap-2 cursor-pointer hover:shadow-md transition-shadow"
-                          onClick={() => {
-                            // Add to cart or navigate
-                            navigate(`/cakes?product=${product.id}`);
-                          }}
+                          className="bg-white rounded-lg p-2 flex items-center gap-2 hover:shadow-md transition-shadow"
                         >
-                          <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                          <div 
+                            className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer"
+                            onClick={() => navigate(`/cakes?product=${product.id}`)}
+                          >
                             {(product.image || product.images?.[0]) ? (
                               <img 
                                 src={product.image || product.images[0]} 
@@ -1311,8 +1310,35 @@ _GST applicable on final invoice_
                             )}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium text-gray-900 line-clamp-1">{product.name}</p>
-                            <p className="text-xs text-blue-600">₹{product.price}</p>
+                            <p 
+                              className="text-xs font-medium text-gray-900 line-clamp-1 cursor-pointer hover:text-blue-600"
+                              onClick={() => navigate(`/cakes?product=${product.id}`)}
+                            >
+                              {product.name}
+                            </p>
+                            <p className="text-xs text-blue-600 font-semibold">₹{product.price}</p>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                addToCart({
+                                  id: product.id,
+                                  name: product.name,
+                                  price: product.price,
+                                  image: product.image || product.images?.[0] || '',
+                                  quantity: 1,
+                                  category: product.category
+                                });
+                                toast({
+                                  title: "Added to cart! 🛒",
+                                  description: `${product.name} added`,
+                                });
+                              }}
+                              className="mt-1 px-2 py-0.5 text-[10px] font-medium bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors flex items-center gap-1"
+                              data-testid={`add-breed-product-${idx}`}
+                            >
+                              <Plus className="w-3 h-3" />
+                              Add
+                            </button>
                           </div>
                         </div>
                       ))}
