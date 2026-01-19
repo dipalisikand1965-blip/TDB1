@@ -105,10 +105,16 @@ const Navbar = () => {
       name: 'Care', 
       icon: HeartPulse,
       color: 'from-red-500 to-pink-500',
-      description: 'Health & wellness',
+      description: 'Pet wellbeing & care services',
       path: '/care',
-      isActive: false,
-      subItems: []
+      isActive: true,
+      subItems: [
+        { name: '✂️ Grooming', path: '/care?type=grooming' },
+        { name: '🚶 Walks & Sitting', path: '/care?type=walks' },
+        { name: '🎓 Training & Behaviour', path: '/care?type=training' },
+        { name: '🏥 Vet Coordination', path: '/care?type=vet' },
+        { name: '🐾 Shop Care Essentials', path: '/care#care-kits' },
+      ]
     },
   ];
 
