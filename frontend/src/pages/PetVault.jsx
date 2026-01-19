@@ -148,8 +148,9 @@ const PetVault = () => {
       });
       if (res.ok) {
         setShowAddVaccine(false);
-        setVaccineForm({ vaccine_name: '', date_given: '', next_due_date: '', vet_name: '', notes: '' });
+        setVaccineForm({ vaccine_name: '', date_given: '', next_due_date: '', vet_name: '', notes: '', reminder_enabled: true });
         fetchSummary();
+        fetchVaccines();
       }
     } catch (err) {
       console.error('Error adding vaccine:', err);
