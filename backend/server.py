@@ -8353,7 +8353,7 @@ async def change_agent_password(agent_id: str, data: AgentPasswordChange, creden
     return {"success": True, "message": "Password changed successfully"}
 
 
-@api_router.delete("/admin/agents/{agent_id}")
+@app.delete("/api/admin/agents/{agent_id}")
 async def delete_agent(agent_id: str, credentials: HTTPBasicCredentials = Depends(security)):
     """Delete an agent"""
     verify_admin(credentials)
