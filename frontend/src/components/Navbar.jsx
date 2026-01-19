@@ -261,13 +261,16 @@ const Navbar = () => {
                 </Link>
               ))}
 
-              <Link
-                to="/my-pets"
-                className="px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 transition-all shadow-sm"
-                data-testid="pet-soul-nav-btn"
-              >
-                🐾 Pet Soul
-              </Link>
+              {/* Pet Soul - Only show for authenticated users */}
+              {user && (
+                <Link
+                  to="/pet-soul"
+                  className="px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 transition-all shadow-sm"
+                  data-testid="pet-soul-nav-btn"
+                >
+                  🐾 My Pets
+                </Link>
+              )}
 
               <Link
                 to="/voice-order"
@@ -374,14 +377,17 @@ const Navbar = () => {
 
               {/* Mobile Actions */}
               <div className="pt-4 border-t border-gray-200 space-y-2">
-                <Link
-                  to="/my-pets"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium"
-                  data-testid="mobile-pet-soul-link"
-                >
-                  🐾 Pet Soul
-                </Link>
+                {/* Pet Soul - Only show for authenticated users */}
+                {user && (
+                  <Link
+                    to="/pet-soul"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium"
+                    data-testid="mobile-pet-soul-link"
+                  >
+                    🐾 My Pets
+                  </Link>
+                )}
                 <Link
                   to="/voice-order"
                   onClick={() => setIsMenuOpen(false)}
