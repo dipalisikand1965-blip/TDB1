@@ -278,10 +278,11 @@ const IdentityForm = ({ identity, onSave, onNext }) => {
       {/* Breed */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Breed</label>
-        <Input
+        <BreedAutocomplete
           value={form.breed}
           onChange={(e) => setForm({...form, breed: e.target.value})}
           placeholder="e.g., Golden Retriever, Indie Mix"
+          name="breed"
         />
       </div>
       
