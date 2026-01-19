@@ -1493,6 +1493,11 @@ const Admin = () => {
           <BreedTagsManager />
         )}
 
+        {/* Agent Management */}
+        {activeTab === 'agents' && (
+          <AgentManagement authHeaders={getAuthHeaders()} />
+        )}
+
         {/* Orders Tab */}
         {activeTab === 'orders' && (
           <OrdersTab 
