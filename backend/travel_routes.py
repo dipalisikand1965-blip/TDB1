@@ -886,12 +886,6 @@ async def get_partners_by_type(partner_type: str, city: Optional[str] = None):
     
     return {"partners": partners, "total": len(partners)}
 
-        except Exception as e:
-            errors.append({"row": idx + 1, "error": str(e)})
-    
-    logger.info(f"Imported {imported} travel bundles")
-    return {"success": True, "imported": imported, "errors": errors}
-
 
 @router.get("/admin/bundles/export")
 async def export_travel_bundles():
