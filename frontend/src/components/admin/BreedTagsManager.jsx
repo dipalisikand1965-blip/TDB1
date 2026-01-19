@@ -23,6 +23,9 @@ const BreedTagsManager = () => {
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [bulkBreeds, setBulkBreeds] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [showAddBreedModal, setShowAddBreedModal] = useState(false);
+  const [newBreedName, setNewBreedName] = useState('');
+  const [addingBreed, setAddingBreed] = useState(false);
 
   // Fetch products and breed options
   const fetchData = async () => {
@@ -46,6 +49,35 @@ const BreedTagsManager = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Add new custom breed
+  const handleAddBreed = async () => {
+    if (!newBreedName.trim()) {
+      toast({ title: 'Error', description: 'Please enter a breed name', variant: 'destructive' });
+      return;
+    }
+    
+    const formattedBreed = newBreedName.trim().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    
+    if (breedOptions.includes(formattedBreed)) {
+      toast({ title: 'Error', description: 'This breed already exists', variant: 'destructive' });
+      return;
+    }
+    
+    setAddingBreed(true);
+    try {
+      await axios.post(`${API_URL}/api/admin/breed-tags/add`, { breed: formattedBreed });
+      setBreedOptions(prev => [...prev, formattedBreed].sort());
+      setNewBreedName('');
+      setShowAddBreedModal(false);
+      toast({ title: 'Success', description: `Added "${formattedBreed}" to breed list` });
+    } catch (error) {
+      console.error('Failed to add breed:', error);
+      toast({ title: 'Error', description: 'Failed to add breed', variant: 'destructive' });
+    } finally {
+      setAddingBreed(false);
+    }
+  };
 
   // Filter products
   const filteredProducts = products.filter(product => {
