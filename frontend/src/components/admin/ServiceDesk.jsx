@@ -511,7 +511,7 @@ const ServiceDesk = ({ authHeaders }) => {
     try {
       // Try to find pet by name and owner email
       const searchQuery = petName || '';
-      const response = await fetch(`${API_URL}/api/pet-soul/admin/pets?search=${encodeURIComponent(searchQuery)}&limit=5`, {
+      const response = await fetch(`${API_URL}/api/admin/pet-soul/pets?search=${encodeURIComponent(searchQuery)}&limit=5`, {
         headers: authHeaders
       });
       if (response.ok) {
