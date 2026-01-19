@@ -179,7 +179,7 @@ export default function VoiceOrder() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 45000);
 
-      const response = await fetch(`${API}/api/channels/voice/order`, {
+      const response = await fetch(`${API_URL}/api/channels/voice/order`, {
         method: 'POST',
         body: formData,
         signal: controller.signal
