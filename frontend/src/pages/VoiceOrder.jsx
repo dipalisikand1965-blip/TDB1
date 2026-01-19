@@ -3,8 +3,7 @@ import { Mic, MicOff, Upload, Send, Loader2, CheckCircle, XCircle, Volume2, Cloc
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { API_URL } from '../utils/api';
 
 // Limits for voice recording
 const MAX_RECORDING_SECONDS = 30;
