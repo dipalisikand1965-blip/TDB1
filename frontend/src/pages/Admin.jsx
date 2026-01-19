@@ -1348,6 +1348,7 @@ const Admin = () => {
             { id: 'fulfilment', label: '📦 Fulfilment', icon: Truck },
             { id: 'members', label: 'Customers', icon: Users },
             { id: 'pets', label: '🐾 Pet Profiles', icon: PawPrint },
+            { id: 'celebrations', label: '🎉 Celebrations', icon: Calendar },
             { id: 'servicedesk', label: '🎫 Service Desk', icon: Ticket },
             { id: 'loyalty', label: '⭐ Loyalty', icon: Star },
             { id: 'reports', label: '📊 Reports', icon: BarChart3 },
