@@ -267,16 +267,14 @@ const Navbar = () => {
                 </Link>
               ))}
 
-              {/* Pet Soul - Only show for authenticated users */}
-              {user && (
-                <Link
-                  to="/pet-soul"
-                  className="px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 transition-all shadow-sm"
-                  data-testid="pet-soul-nav-btn"
-                >
-                  🐾 My Pets
-                </Link>
-              )}
+              {/* Pet Soul (public) / My Pets (logged in) */}
+              <Link
+                to={user ? "/my-pets" : "/pet-soul"}
+                className="px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 transition-all shadow-sm"
+                data-testid="pet-soul-nav-btn"
+              >
+                {user ? "🐾 My Pets" : "🐾 Pet Soul"}
+              </Link>
 
               <Link
                 to="/voice-order"
