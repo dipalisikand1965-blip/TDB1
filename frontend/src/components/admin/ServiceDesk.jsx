@@ -1520,7 +1520,7 @@ const ServiceDesk = ({ authHeaders }) => {
             </TabsList>
 
             {/* AUTO-ASSIGNMENT TAB */}
-            <TabsContent value="assignment" className="space-y-4 mt-2">
+            <TabsContent value="assignment" className="space-y-4 mt-2 min-h-[300px]">
               <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
                 <p className="text-sm text-purple-800">
                   <Zap className="w-4 h-4 inline mr-1" />
@@ -1538,7 +1538,7 @@ const ServiceDesk = ({ authHeaders }) => {
                 ) : (
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {assignmentRules.map((rule, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded border text-sm">
+                      <div key={rule.name || idx} className="flex items-center justify-between p-2 bg-gray-50 rounded border text-sm">
                         <div className="flex-1">
                           <span className="font-medium">{rule.name}</span>
                           <span className="text-gray-500 ml-2">
