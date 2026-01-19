@@ -8291,7 +8291,7 @@ async def get_agent(agent_id: str, credentials: HTTPBasicCredentials = Depends(s
     return {"agent": agent}
 
 
-@api_router.put("/admin/agents/{agent_id}")
+@app.put("/api/admin/agents/{agent_id}")
 async def update_agent(agent_id: str, updates: AgentUpdate, credentials: HTTPBasicCredentials = Depends(security)):
     """Update agent details"""
     verify_admin(credentials)
