@@ -8226,7 +8226,7 @@ class AgentPasswordChange(BaseModel):
     new_password: str
 
 
-@api_router.get("/admin/agents")
+@app.get("/api/admin/agents")
 async def list_agents(credentials: HTTPBasicCredentials = Depends(security)):
     """List all agents"""
     verify_admin(credentials)
