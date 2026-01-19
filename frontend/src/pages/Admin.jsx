@@ -131,7 +131,9 @@ const Admin = () => {
       setMemberDetails({ orders: [], pets: [] });
     }
   }, [selectedMember]);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'dashboard';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [filterCity, setFilterCity] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   
