@@ -387,7 +387,7 @@ const IdentityForm = ({ identity, onSave, onNext }) => {
 
 // Main Pet Soul Component
 const PetSoulEnhanced = ({ petId, onComplete }) => {
-  const [step, setStep] = useState('loading'); // loading, identity, questions, complete
+  const [step, setStep] = useState('loading'); // loading, welcome, identity, questions, complete
   const [pet, setPet] = useState(null);
   const [progress, setProgress] = useState(null);
   const [questionBank, setQuestionBank] = useState(null);
@@ -417,21 +417,27 @@ const PetSoulEnhanced = ({ petId, onComplete }) => {
             // Determine starting step - check both identity.name and top-level name
             const petName = pData.pet.identity?.name || pData.pet.name;
             if (!petName) {
-              setStep('identity');
+              // New pet - show welcome first
+              setStep('welcome');
             } else if (pData.scores.overall < 100) {
-              setStep('questions');
+              // Has some progress - show welcome if score is 0, else continue
+              if (pData.scores.overall === 0) {
+                setStep('welcome');
+              } else {
+                setStep('questions');
+              }
             } else {
               setStep('complete');
             }
           } else {
-            setStep('identity');
+            setStep('welcome');
           }
         } else {
-          setStep('identity');
+          setStep('welcome');
         }
       } catch (error) {
         console.error('Error loading pet soul:', error);
-        setStep('identity');
+        setStep('welcome');
       }
     };
     
