@@ -358,12 +358,17 @@ async def add_vet(pet_id: str, vet: VetInfo):
     vet_doc["id"] = f"vet-{uuid.uuid4().hex[:8]}"
     vet_doc["created_at"] = datetime.now(timezone.utc).isoformat()
     
-    # If this is primary, unset other primaries
+    # If this is primary, unset other primaries first (only if vets array exists)
     if vet.is_primary:
-        await db.pets.update_one(
-            {"id": pet_id},
-            {"$set": {"vault.vets.$[].is_primary": False}}
-        )
+        # Get current vets and update them
+        pet = await db.pets.find_one({"id": pet_id}, {"vault.vets": 1})
+        if pet and pet.get("vault", {}).get("vets"):
+            # Update all existing vets to not be primary
+            await db.pets.update_one(
+                {"id": pet_id},
+                {"$set": {"vault.vets.$[elem].is_primary": False}},
+                array_filters=[{"elem.is_primary": True}]
+            )
     
     result = await db.pets.update_one(
         {"id": pet_id},
