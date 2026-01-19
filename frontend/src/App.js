@@ -163,6 +163,7 @@ function MainLayout() {
         <Route path="/pets" element={<MyPets />} />
         <Route path="/pet-soul/:petId" element={<PetSoulPage />} />
         <Route path="/pet-soul" element={<PetSoulPage />} />
+        <Route path="/pet-vault/:petId" element={<PetVault />} />
         
         {/* Policy Pages */}
         <Route path="/policies" element={<Policies />} />
