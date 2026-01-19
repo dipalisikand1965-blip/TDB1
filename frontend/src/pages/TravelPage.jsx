@@ -544,10 +544,18 @@ const TravelPage = () => {
 
   const fetchTravelProducts = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/products?category=travel&limit=8`);
-      if (response.ok) {
-        const data = await response.json();
+      // Fetch products
+      const productsRes = await fetch(`${API_URL}/api/travel/products`);
+      if (productsRes.ok) {
+        const data = await productsRes.json();
         setTravelProducts(data.products || []);
+      }
+      
+      // Fetch bundles
+      const bundlesRes = await fetch(`${API_URL}/api/travel/bundles`);
+      if (bundlesRes.ok) {
+        const data = await bundlesRes.json();
+        setTravelBundles(data.bundles || []);
       }
     } catch (error) {
       console.error('Error fetching travel products:', error);
