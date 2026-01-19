@@ -449,6 +449,9 @@ const TravelManager = ({ getAuthHeader }) => {
           <TabsTrigger value="requests" data-testid="travel-tab-requests">
             <Bell className="w-4 h-4 mr-2" /> Requests
           </TabsTrigger>
+          <TabsTrigger value="partners" data-testid="travel-tab-partners">
+            <Building2 className="w-4 h-4 mr-2" /> Partners
+          </TabsTrigger>
           <TabsTrigger value="products" data-testid="travel-tab-products">
             <Package className="w-4 h-4 mr-2" /> Products
           </TabsTrigger>
