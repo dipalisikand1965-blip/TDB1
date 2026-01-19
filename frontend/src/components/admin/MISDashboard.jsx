@@ -35,11 +35,11 @@ export default function MISDashboard({ authHeaders }) {
     setLoading(true);
     try {
       const [dashRes, revRes, chanRes, sdRes, pillarRes] = await Promise.all([
-        fetch(`${API}/api/mis/dashboard`, { headers: authHeaders }),
-        fetch(`${API}/api/mis/revenue/summary?period=week`, { headers: authHeaders }),
-        fetch(`${API}/api/mis/channels/performance?period=week`, { headers: authHeaders }),
-        fetch(`${API}/api/mis/service-desk/metrics?period=week`, { headers: authHeaders }),
-        fetch(`${API}/api/mis/pillars/summary?period=month`, { headers: authHeaders })
+        fetch(`${API_URL}/api/mis/dashboard`, { headers: authHeaders }),
+        fetch(`${API_URL}/api/mis/revenue/summary?period=week`, { headers: authHeaders }),
+        fetch(`${API_URL}/api/mis/channels/performance?period=week`, { headers: authHeaders }),
+        fetch(`${API_URL}/api/mis/service-desk/metrics?period=week`, { headers: authHeaders }),
+        fetch(`${API_URL}/api/mis/pillars/summary?period=month`, { headers: authHeaders })
       ]);
 
       if (dashRes.ok) setDashboard(await dashRes.json());
