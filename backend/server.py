@@ -8235,7 +8235,7 @@ async def list_agents(credentials: HTTPBasicCredentials = Depends(security)):
     return {"agents": agents, "count": len(agents)}
 
 
-@api_router.post("/admin/agents")
+@app.post("/api/admin/agents")
 async def create_agent(agent: AgentCreate, credentials: HTTPBasicCredentials = Depends(security)):
     """Create a new agent"""
     verify_admin(credentials)
