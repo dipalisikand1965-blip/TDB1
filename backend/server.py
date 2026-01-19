@@ -8368,7 +8368,7 @@ async def delete_agent(agent_id: str, credentials: HTTPBasicCredentials = Depend
     return {"success": True, "message": "Agent deleted"}
 
 
-@api_router.get("/admin/agents/permissions/options")
+@app.get("/api/admin/agents/permissions/options")
 async def get_permission_options():
     """Get available permission options for agents"""
     return {
