@@ -4746,6 +4746,15 @@ Special Instructions: {order.get('specialInstructions', 'None')}"""
     except Exception as e:
         logger.error(f"Failed to send customer notification: {e}")
     
+    # Auto-learn Pet Soul preferences from order
+    try:
+        from pet_soul_routes import learn_from_order
+        learn_result = await learn_from_order(db, order)
+        if learn_result.get("learned"):
+            logger.info(f"Pet Soul auto-learned from order {order.get('orderId')}: {learn_result.get('learned_items')}")
+    except Exception as e:
+        logger.error(f"Pet Soul auto-learn failed: {e}")
+    
     return {"message": "Order created", "orderId": order.get("orderId"), "id": order["id"], "ticket_id": order.get("orderId") if has_cake_items else None}
 
 
