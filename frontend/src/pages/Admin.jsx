@@ -3581,6 +3581,114 @@ const Admin = () => {
         </div>
       )}
 
+      {/* Abandoned Cart Settings Modal */}
+      {showAbandonedCartSettingsModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">🛒 Abandoned Cart Settings</h3>
+              <Button variant="ghost" size="icon" onClick={() => setShowAbandonedCartSettingsModal(false)}>
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            <div className="space-y-6">
+              {/* Enable/Disable */}
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium">Auto Send Reminders</p>
+                  <p className="text-sm text-gray-500">Automatically send recovery emails to abandoned carts</p>
+                </div>
+                <Switch 
+                  checked={abandonedCartSettings.enabled}
+                  onCheckedChange={(checked) => setAbandonedCartSettings({...abandonedCartSettings, enabled: checked})}
+                />
+              </div>
+              
+              {/* Reminder Configuration */}
+              <div>
+                <h4 className="font-medium mb-3">Email Sequence</h4>
+                <div className="space-y-4">
+                  {abandonedCartSettings.reminders.map((reminder, index) => (
+                    <Card key={index} className="p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge className="bg-purple-100 text-purple-700">Reminder {reminder.reminder_num}</Badge>
+                        {reminder.include_discount && (
+                          <Badge className="bg-green-100 text-green-700">🎁 Includes Discount</Badge>
+                        )}
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Send After (hours)</Label>
+                          <Input
+                            type="number"
+                            value={reminder.delay_hours}
+                            onChange={(e) => updateReminderSetting(index, 'delay_hours', parseInt(e.target.value) || 1)}
+                            min="1"
+                          />
+                        </div>
+                        <div>
+                          <Label>Subject Line</Label>
+                          <Input
+                            value={reminder.subject}
+                            onChange={(e) => updateReminderSetting(index, 'subject', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="mt-3 flex items-center gap-4">
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={reminder.include_discount}
+                            onChange={(e) => updateReminderSetting(index, 'include_discount', e.target.checked)}
+                          />
+                          <span className="text-sm">Include Discount</span>
+                        </label>
+                        
+                        {reminder.include_discount && (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <Label className="text-sm">Code:</Label>
+                              <Input
+                                className="w-32"
+                                value={reminder.discount_code || ''}
+                                onChange={(e) => updateReminderSetting(index, 'discount_code', e.target.value)}
+                                placeholder="COMEBACK10"
+                              />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Label className="text-sm">%:</Label>
+                              <Input
+                                type="number"
+                                className="w-20"
+                                value={reminder.discount_percent || 10}
+                                onChange={(e) => updateReminderSetting(index, 'discount_percent', parseInt(e.target.value) || 0)}
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Actions */}
+              <div className="flex gap-2 pt-4 border-t">
+                <Button className="flex-1 bg-purple-600 hover:bg-purple-700" onClick={saveAbandonedCartSettings}>
+                  Save Settings
+                </Button>
+                <Button variant="outline" onClick={() => setShowAbandonedCartSettingsModal(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+
       {/* Password Change Modal */}
       <Dialog open={showPasswordModal} onOpenChange={setShowPasswordModal}>
         <DialogContent className="sm:max-w-md">
