@@ -29,6 +29,7 @@ const PERSONA_ICONS = {
 
 const PetProfile = ({ isEmbed = false }) => {
   const navigate = useNavigate();
+  const { user, token } = useAuth();
   const [step, setStep] = useState(0); // Start at 0 for loading/check
   const [personas, setPersonas] = useState({});
   const [occasions, setOccasions] = useState({});
