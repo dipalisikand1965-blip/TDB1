@@ -142,6 +142,59 @@ const Checkout = () => {
     }
   }, []);
 
+  // Fetch Pet Soul insights when pet name changes
+  useEffect(() => {
+    const fetchPetSoul = async () => {
+      if (!formData.petName || formData.petName.length < 2) {
+        setPetSoulInsights(null);
+        return;
+      }
+      
+      setLoadingPetSoul(true);
+      try {
+        // Search for pet by name
+        const res = await fetch(`${API_URL}/api/pets/public?search=${encodeURIComponent(formData.petName)}&limit=5`);
+        if (res.ok) {
+          const data = await res.json();
+          const pets = data.pets || [];
+          
+          // Find exact match
+          const matchedPet = pets.find(p => 
+            p.name?.toLowerCase() === formData.petName.toLowerCase()
+          );
+          
+          if (matchedPet) {
+            // Fetch full Pet Soul profile
+            const profileRes = await fetch(`${API_URL}/api/pet-soul/profile/${matchedPet.id}`);
+            if (profileRes.ok) {
+              const profileData = await profileRes.json();
+              setPetSoulInsights({
+                pet: profileData.pet,
+                scores: profileData.scores,
+                insights: profileData.insights,
+                answers: profileData.pet?.doggy_soul_answers || {}
+              });
+              
+              // Auto-fill breed if not set
+              if (!formData.petBreed && matchedPet.breed) {
+                setFormData(prev => ({ ...prev, petBreed: matchedPet.breed }));
+              }
+            }
+          } else {
+            setPetSoulInsights(null);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching Pet Soul:', err);
+      }
+      setLoadingPetSoul(false);
+    };
+    
+    // Debounce the fetch
+    const timeoutId = setTimeout(fetchPetSoul, 500);
+    return () => clearTimeout(timeoutId);
+  }, [formData.petName]);
+
   // Fetch app settings on mount
   useEffect(() => {
     const fetchSettings = async () => {
