@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Badge } from '../components/ui/badge';
 import { Textarea } from '../components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
 import {
-  Car, Train, Plane, Truck, MapPin, Calendar, Clock, Dog, PawPrint,
+  Car, Train, Plane, Truck, MapPin, Calendar, Clock, PawPrint,
   Shield, Heart, CheckCircle, AlertTriangle, MessageCircle, Phone,
   ChevronRight, Sparkles, Package, Star, Loader2, Info, Send,
-  Navigation, Route, Briefcase, Home, ArrowRight, Users, Scale
+  ArrowRight, Users, Play, X, ChevronDown, Gift, Zap
 } from 'lucide-react';
 
 // Travel Types Configuration
@@ -25,104 +23,67 @@ const TRAVEL_TYPES = {
     id: 'cab',
     name: 'Cab / Road Travel',
     icon: Car,
-    description: 'Vet visits, grooming, short trips, intercity drives',
+    description: 'Vet visits, grooming, short trips',
     color: 'from-blue-500 to-cyan-500',
-    examples: ['Vet appointment', 'Grooming salon', 'Day trip', 'Airport transfer']
+    bgColor: 'bg-blue-50',
+    textColor: 'text-blue-600'
   },
   train: {
     id: 'train',
-    name: 'Train / Bus Travel',
+    name: 'Train / Bus',
     icon: Train,
-    description: 'Medium-distance domestic travel',
+    description: 'Medium-distance travel',
     color: 'from-green-500 to-emerald-500',
-    examples: ['Weekend getaway', 'Family visit', 'City hopping']
+    bgColor: 'bg-green-50',
+    textColor: 'text-green-600'
   },
   flight: {
     id: 'flight',
-    name: 'Flight (Domestic)',
+    name: 'Domestic Flight',
     icon: Plane,
-    description: 'Air travel within India - high care required',
+    description: 'Air travel within India',
     color: 'from-purple-500 to-violet-500',
-    examples: ['Vacation', 'Relocation', 'Family emergency']
+    bgColor: 'bg-purple-50',
+    textColor: 'text-purple-600'
   },
   relocation: {
     id: 'relocation',
     name: 'Pet Relocation',
     icon: Truck,
-    description: 'Full service city-to-city moves - premium concierge',
+    description: 'Full service moves',
     color: 'from-amber-500 to-orange-500',
-    examples: ['Job transfer', 'Permanent move', 'Long-term relocation']
+    bgColor: 'bg-amber-50',
+    textColor: 'text-amber-600'
   }
 };
 
-// Travel Request Status
-const REQUEST_STATUS = {
-  draft: { label: 'Draft', color: 'bg-gray-100 text-gray-700' },
-  submitted: { label: 'Submitted', color: 'bg-blue-100 text-blue-700' },
-  reviewing: { label: 'Under Review', color: 'bg-yellow-100 text-yellow-700' },
-  coordinating: { label: 'Coordinating', color: 'bg-purple-100 text-purple-700' },
-  confirmed: { label: 'Confirmed', color: 'bg-green-100 text-green-700' },
-  completed: { label: 'Completed', color: 'bg-emerald-100 text-emerald-700' },
-  cancelled: { label: 'Cancelled', color: 'bg-red-100 text-red-700' }
-};
+// Hero Images
+const HERO_IMAGES = [
+  'https://images.unsplash.com/photo-1759340875613-75cb64d2c16d?w=1200&q=80',
+  'https://images.unsplash.com/photo-1758991281299-756e997a027b?w=1200&q=80',
+  'https://images.unsplash.com/photo-1759559790290-a3c6fce1d55f?w=1200&q=80'
+];
 
-// Pet Profile Card Component
-const PetProfileCard = ({ pet, onSelect, selected }) => (
-  <Card 
-    className={`p-4 cursor-pointer transition-all ${
-      selected ? 'ring-2 ring-purple-500 bg-purple-50' : 'hover:shadow-md'
-    }`}
-    onClick={() => onSelect(pet)}
-  >
-    <div className="flex items-center gap-3">
-      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center overflow-hidden">
-        {pet.photo_url ? (
-          <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
-        ) : (
-          <PawPrint className="w-6 h-6 text-purple-500" />
-        )}
-      </div>
-      <div className="flex-1">
-        <h4 className="font-semibold text-gray-900">{pet.name}</h4>
-        <p className="text-sm text-gray-500">{pet.breed} • {pet.age || 'Age unknown'}</p>
-        {pet.soul?.travel_comfort && (
-          <Badge variant="outline" className="mt-1 text-xs">
-            {pet.soul.travel_comfort === 'loves_it' ? '✈️ Loves Travel' : 
-             pet.soul.travel_comfort === 'nervous' ? '😰 Gets Nervous' : '🚗 Okay with Travel'}
-          </Badge>
-        )}
-      </div>
-      {selected && <CheckCircle className="w-5 h-5 text-purple-600" />}
-    </div>
-  </Card>
-);
-
-// Travel Type Card Component
-const TravelTypeCard = ({ type, onSelect, disabled }) => {
-  const Icon = type.icon;
-  return (
-    <Card 
-      className={`p-5 cursor-pointer transition-all hover:shadow-lg ${
-        disabled ? 'opacity-50 cursor-not-allowed' : ''
-      }`}
-      onClick={() => !disabled && onSelect(type.id)}
-    >
-      <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${type.color} flex items-center justify-center mb-3`}>
-        <Icon className="w-6 h-6 text-white" />
-      </div>
-      <h3 className="font-semibold text-gray-900 mb-1">{type.name}</h3>
-      <p className="text-sm text-gray-500 mb-3">{type.description}</p>
-      <div className="flex flex-wrap gap-1">
-        {type.examples.slice(0, 2).map((ex, i) => (
-          <Badge key={i} variant="outline" className="text-xs">{ex}</Badge>
-        ))}
-      </div>
-    </Card>
-  );
-};
-
-// Travel Request Form Component
-const TravelRequestForm = ({ travelType, pet, onSubmit, onBack, loading }) => {
+// Main Travel Page Component
+const TravelPage = () => {
+  const { user, token } = useAuth();
+  const { addToCart } = useCart();
+  const formRef = useRef(null);
+  
+  // State
+  const [showWizard, setShowWizard] = useState(false);
+  const [wizardStep, setWizardStep] = useState(1); // 1: type, 2: pet, 3: details, 4: confirm
+  const [userPets, setUserPets] = useState([]);
+  const [selectedPet, setSelectedPet] = useState(null);
+  const [selectedType, setSelectedType] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [travelProducts, setTravelProducts] = useState([]);
+  const [travelBundles, setTravelBundles] = useState([]);
+  const [requestResult, setRequestResult] = useState(null);
+  const [heroIndex, setHeroIndex] = useState(0);
+  
+  // Form Data
   const [formData, setFormData] = useState({
     pickup_location: '',
     pickup_city: '',
@@ -133,392 +94,22 @@ const TravelRequestForm = ({ travelType, pet, onSubmit, onBack, loading }) => {
     return_date: '',
     is_round_trip: false,
     special_requirements: '',
-    // From pet profile (auto-populated)
-    pet_size: pet?.soul?.size || '',
-    pet_weight: pet?.soul?.weight || '',
-    crate_trained: pet?.soul?.crate_trained || null,
-    travel_anxiety: pet?.soul?.travel_anxiety || null,
-    motion_sickness: pet?.soul?.motion_sickness || false,
-    // Additional questions if missing
-    additional_notes: ''
+    pet_weight: '',
+    crate_trained: null
   });
 
-  const typeConfig = TRAVEL_TYPES[travelType];
-  const Icon = typeConfig?.icon || Car;
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-
-  // Check what info is missing from pet profile
-  const missingInfo = [];
-  if (!pet?.soul?.size) missingInfo.push('size');
-  if (!pet?.soul?.weight && (travelType === 'flight' || travelType === 'relocation')) missingInfo.push('weight');
-  if (pet?.soul?.crate_trained === null && travelType === 'flight') missingInfo.push('crate_training');
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className={`w-14 h-14 rounded-xl bg-gradient-to-r ${typeConfig?.color || 'from-gray-400 to-gray-500'} flex items-center justify-center`}>
-          <Icon className="w-7 h-7 text-white" />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-gray-900">{typeConfig?.name || 'Travel Request'}</h2>
-          <p className="text-sm text-gray-500">Traveling with {pet?.name}</p>
-        </div>
-      </div>
-
-      {/* Pet Profile Summary (Auto-populated) */}
-      <Card className="p-4 bg-purple-50 border-purple-200">
-        <div className="flex items-center gap-2 mb-2">
-          <PawPrint className="w-4 h-4 text-purple-600" />
-          <span className="font-medium text-purple-900">Pet Profile (Auto-filled)</span>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-          <div>
-            <span className="text-gray-500">Size:</span>
-            <span className="ml-1 font-medium">{pet?.soul?.size || 'Unknown'}</span>
-          </div>
-          <div>
-            <span className="text-gray-500">Weight:</span>
-            <span className="ml-1 font-medium">{pet?.soul?.weight ? `${pet.soul.weight} kg` : 'Unknown'}</span>
-          </div>
-          <div>
-            <span className="text-gray-500">Crate Trained:</span>
-            <span className="ml-1 font-medium">{pet?.soul?.crate_trained ? 'Yes' : pet?.soul?.crate_trained === false ? 'No' : 'Unknown'}</span>
-          </div>
-          <div>
-            <span className="text-gray-500">Travel Comfort:</span>
-            <span className="ml-1 font-medium">{pet?.soul?.travel_comfort || 'Unknown'}</span>
-          </div>
-        </div>
-      </Card>
-
-      {/* Missing Info Alert */}
-      {missingInfo.length > 0 && (
-        <Card className="p-4 bg-amber-50 border-amber-200">
-          <div className="flex items-start gap-2">
-            <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-medium text-amber-900">A few details needed</p>
-              <p className="text-sm text-amber-700">We'll ask about: {missingInfo.join(', ')}. This helps ensure {pet?.name}'s safety.</p>
-            </div>
-          </div>
-        </Card>
-      )}
-
-      {/* Location Fields */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <div>
-          <Label>Pickup Location</Label>
-          <Input
-            value={formData.pickup_location}
-            onChange={(e) => setFormData({...formData, pickup_location: e.target.value})}
-            placeholder="Address or landmark"
-            required
-          />
-        </div>
-        <div>
-          <Label>Pickup City</Label>
-          <Input
-            value={formData.pickup_city}
-            onChange={(e) => setFormData({...formData, pickup_city: e.target.value})}
-            placeholder="City"
-            required
-          />
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-4">
-        <div>
-          <Label>Drop Location</Label>
-          <Input
-            value={formData.drop_location}
-            onChange={(e) => setFormData({...formData, drop_location: e.target.value})}
-            placeholder="Destination address"
-            required
-          />
-        </div>
-        <div>
-          <Label>Drop City</Label>
-          <Input
-            value={formData.drop_city}
-            onChange={(e) => setFormData({...formData, drop_city: e.target.value})}
-            placeholder="Destination city"
-            required
-          />
-        </div>
-      </div>
-
-      {/* Date & Time */}
-      <div className="grid md:grid-cols-3 gap-4">
-        <div>
-          <Label>Travel Date</Label>
-          <Input
-            type="date"
-            value={formData.travel_date}
-            onChange={(e) => setFormData({...formData, travel_date: e.target.value})}
-            min={new Date().toISOString().split('T')[0]}
-            required
-          />
-        </div>
-        <div>
-          <Label>Preferred Time</Label>
-          <select
-            value={formData.travel_time}
-            onChange={(e) => setFormData({...formData, travel_time: e.target.value})}
-            className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="">Select time</option>
-            {Array.from({ length: 48 }, (_, i) => {
-              const hours = Math.floor(i / 2);
-              const minutes = i % 2 === 0 ? '00' : '30';
-              const time24 = `${hours.toString().padStart(2, '0')}:${minutes}`;
-              const period = hours < 12 ? 'AM' : 'PM';
-              const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-              const displayTime = `${displayHours}:${minutes} ${period}`;
-              return (
-                <option key={time24} value={time24}>{displayTime}</option>
-              );
-            })}
-          </select>
-        </div>
-        <div className="flex items-end">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.is_round_trip}
-              onChange={(e) => setFormData({...formData, is_round_trip: e.target.checked})}
-              className="w-4 h-4"
-            />
-            <span className="text-sm">Round Trip</span>
-          </label>
-        </div>
-      </div>
-
-      {formData.is_round_trip && (
-        <div className="w-1/3">
-          <Label>Return Date</Label>
-          <Input
-            type="date"
-            value={formData.return_date}
-            onChange={(e) => setFormData({...formData, return_date: e.target.value})}
-            min={formData.travel_date || new Date().toISOString().split('T')[0]}
-          />
-        </div>
-      )}
-
-      {/* Missing Info Questions */}
-      {missingInfo.includes('weight') && (
-        <div>
-          <Label>{pet?.name}'s weight (kg) - Required for {travelType === 'flight' ? 'flight' : 'relocation'}</Label>
-          <Input
-            type="number"
-            value={formData.pet_weight}
-            onChange={(e) => setFormData({...formData, pet_weight: e.target.value})}
-            placeholder="e.g., 15"
-            required
-          />
-        </div>
-      )}
-
-      {missingInfo.includes('crate_training') && (
-        <div>
-          <Label>Is {pet?.name} crate trained?</Label>
-          <div className="flex gap-3 mt-2">
-            <Button 
-              type="button"
-              variant={formData.crate_trained === true ? 'default' : 'outline'}
-              onClick={() => setFormData({...formData, crate_trained: true})}
-              className="flex-1"
-            >
-              Yes, crate trained
-            </Button>
-            <Button 
-              type="button"
-              variant={formData.crate_trained === false ? 'default' : 'outline'}
-              onClick={() => setFormData({...formData, crate_trained: false})}
-              className="flex-1"
-            >
-              Not yet
-            </Button>
-          </div>
-          <p className="text-xs text-gray-500 mt-1">This is important for flight safety</p>
-        </div>
-      )}
-
-      {/* Special Requirements */}
-      <div>
-        <Label>Special Requirements or Notes</Label>
-        <Textarea
-          value={formData.special_requirements}
-          onChange={(e) => setFormData({...formData, special_requirements: e.target.value})}
-          placeholder={`Any specific needs for ${pet?.name}? (e.g., anxiety medication, favorite toy, feeding schedule)`}
-          rows={3}
-        />
-      </div>
-
-      {/* Important Notice */}
-      <Card className="p-4 bg-blue-50 border-blue-200">
-        <div className="flex items-start gap-2">
-          <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-          <div className="text-sm">
-            <p className="font-medium text-blue-900">What happens next?</p>
-            <ul className="text-blue-700 mt-1 space-y-1">
-              <li>• Our concierge will review your request</li>
-              <li>• We'll assess {pet?.name}'s specific needs</li>
-              <li>• You'll receive a detailed plan via WhatsApp/Email</li>
-              <li>• No payment until everything is confirmed</li>
-            </ul>
-          </div>
-        </div>
-      </Card>
-
-      {/* Actions */}
-      <div className="flex gap-3 pt-4">
-        <Button type="button" variant="outline" onClick={onBack} className="flex-1">
-          Back
-        </Button>
-        <Button type="submit" disabled={loading} className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Submitting...
-            </>
-          ) : (
-            <>
-              Submit Request
-              <Send className="w-4 h-4 ml-2" />
-            </>
-          )}
-        </Button>
-      </div>
-    </form>
-  );
-};
-
-// Travel Products Section
-const TravelProducts = ({ products, bundles, onAddToCart }) => (
-  <div className="space-y-8">
-    {/* Travel Bundles Section */}
-    {bundles && bundles.length > 0 && (
-      <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Package className="w-6 h-6 text-blue-600" />
-          Travel Kits & Bundles
-          <Badge className="bg-green-100 text-green-700 ml-2">Save up to 30%</Badge>
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {bundles.map((bundle) => (
-            <Card key={bundle.id} className="overflow-hidden hover:shadow-lg transition-all border-2 border-transparent hover:border-blue-200">
-              <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
-                {bundle.image ? (
-                  <img src={bundle.image} alt={bundle.name} className="w-full h-full object-cover" />
-                ) : (
-                  <Package className="w-16 h-16 text-blue-400" />
-                )}
-              </div>
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge className="bg-blue-100 text-blue-700 text-xs">{bundle.travel_type}</Badge>
-                  {bundle.is_recommended && (
-                    <Badge className="bg-yellow-100 text-yellow-700 text-xs">⭐ Recommended</Badge>
-                  )}
-                </div>
-                <h4 className="font-bold text-gray-900">{bundle.name}</h4>
-                <p className="text-sm text-gray-500 mt-1 line-clamp-2">{bundle.description}</p>
-                <div className="flex items-center gap-2 mt-3">
-                  <span className="text-xl font-bold text-green-600">₹{bundle.price}</span>
-                  {bundle.original_price && (
-                    <>
-                      <span className="text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
-                      <Badge className="bg-red-100 text-red-700 text-xs">
-                        {Math.round((1 - bundle.price / bundle.original_price) * 100)}% OFF
-                      </Badge>
-                    </>
-                  )}
-                </div>
-                {bundle.paw_reward_points > 0 && (
-                  <p className="text-xs text-purple-600 mt-1">🐾 Earn {bundle.paw_reward_points} Paw Points</p>
-                )}
-                <Button 
-                  className="w-full mt-3 bg-blue-600 hover:bg-blue-700"
-                  onClick={() => onAddToCart(bundle)}
-                >
-                  Add Bundle to Cart
-                </Button>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </div>
-    )}
-
-    {/* Individual Products Section */}
-    <div>
-      <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-        <Package className="w-6 h-6 text-purple-600" />
-        Travel Essentials
-      </h3>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {products.map((product) => (
-          <Card key={product.id} className="overflow-hidden hover:shadow-md transition-shadow group">
-            <div className="aspect-square bg-gray-100 overflow-hidden">
-              {product.image ? (
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-                  <Package className="w-12 h-12 text-gray-300" />
-                </div>
-              )}
-            </div>
-            <div className="p-3">
-              <h4 className="font-medium text-sm text-gray-900 line-clamp-2 min-h-[2.5rem]">{product.name}</h4>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-lg font-bold text-purple-600">₹{product.price}</span>
-                {product.compare_price && (
-                  <span className="text-xs text-gray-400 line-through">₹{product.compare_price}</span>
-                )}
-              </div>
-              {product.paw_reward_points > 0 && (
-                <p className="text-xs text-purple-500 mt-1">🐾 {product.paw_reward_points} pts</p>
-              )}
-              {product.is_birthday_perk && (
-                <Badge className="bg-pink-100 text-pink-600 text-xs mt-1">🎂 Birthday Perk</Badge>
-              )}
-              <Button 
-                size="sm" 
-                className="w-full mt-2"
-                onClick={() => onAddToCart(product)}
-              >
-                Add to Cart
-              </Button>
-            </div>
-          </Card>
-        ))}
-      </div>
-    </div>
-  </div>
-);
-
-// Main Travel Page Component
-const TravelPage = () => {
-  const { user, token } = useAuth();
-  const { addToCart } = useCart();
-  
-  // State
-  const [step, setStep] = useState('entry'); // entry, select-pet, select-type, form, confirmation
-  const [userPets, setUserPets] = useState([]);
-  const [selectedPet, setSelectedPet] = useState(null);
-  const [selectedType, setSelectedType] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [travelProducts, setTravelProducts] = useState([]);
-  const [travelBundles, setTravelBundles] = useState([]);
-  const [requestResult, setRequestResult] = useState(null);
-  const [freeformQuery, setFreeformQuery] = useState('');
+  // Hero image rotation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
   
   // Fetch user's pets
   useEffect(() => {
@@ -527,15 +118,6 @@ const TravelPage = () => {
     }
     fetchTravelProducts();
   }, [user, token]);
-
-  // Scroll to products section if URL has #products hash
-  useEffect(() => {
-    if (window.location.hash === '#products') {
-      setTimeout(() => {
-        document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
-      }, 500);
-    }
-  }, []);
 
   const fetchUserPets = async () => {
     try {
@@ -553,15 +135,15 @@ const TravelPage = () => {
 
   const fetchTravelProducts = async () => {
     try {
-      // Fetch products
-      const productsRes = await fetch(`${API_URL}/api/travel/products`);
+      const [productsRes, bundlesRes] = await Promise.all([
+        fetch(`${API_URL}/api/travel/products`),
+        fetch(`${API_URL}/api/travel/bundles`)
+      ]);
+      
       if (productsRes.ok) {
         const data = await productsRes.json();
         setTravelProducts(data.products || []);
       }
-      
-      // Fetch bundles
-      const bundlesRes = await fetch(`${API_URL}/api/travel/bundles`);
       if (bundlesRes.ok) {
         const data = await bundlesRes.json();
         setTravelBundles(data.bundles || []);
@@ -571,24 +153,18 @@ const TravelPage = () => {
     }
   };
 
-  const handleFreeformSubmit = () => {
-    // Parse freeform query and proceed to pet selection
-    if (freeformQuery.trim()) {
-      setStep('select-pet');
+  const handleStartPlanning = () => {
+    if (!user) {
+      window.location.href = '/login?redirect=/travel';
+      return;
     }
+    setShowWizard(true);
+    setWizardStep(1);
   };
 
-  const handlePetSelect = (pet) => {
-    setSelectedPet(pet);
-    setStep('select-type');
-  };
-
-  const handleTypeSelect = (typeId) => {
-    setSelectedType(typeId);
-    setStep('form');
-  };
-
-  const handleFormSubmit = async (formData) => {
+  const handleFormSubmit = async () => {
+    if (!selectedPet || !selectedType) return;
+    
     setSubmitting(true);
     try {
       const requestPayload = {
@@ -599,8 +175,7 @@ const TravelPage = () => {
         ...formData,
         user_email: user?.email,
         user_phone: user?.phone,
-        user_name: user?.name,
-        freeform_query: freeformQuery
+        user_name: user?.name
       };
 
       const response = await fetch(`${API_URL}/api/travel/request`, {
@@ -615,7 +190,7 @@ const TravelPage = () => {
       if (response.ok) {
         const result = await response.json();
         setRequestResult(result);
-        setStep('confirmation');
+        setWizardStep(4);
         toast({
           title: "Request Submitted! 🐾",
           description: `We'll review ${selectedPet.name}'s travel needs and get back to you soon.`
@@ -655,248 +230,661 @@ const TravelPage = () => {
     });
   };
 
-  const resetFlow = () => {
-    setStep('entry');
+  const resetWizard = () => {
+    setShowWizard(false);
+    setWizardStep(1);
     setSelectedPet(null);
     setSelectedType(null);
     setRequestResult(null);
-    setFreeformQuery('');
+    setFormData({
+      pickup_location: '',
+      pickup_city: '',
+      drop_location: '',
+      drop_city: '',
+      travel_date: '',
+      travel_time: '',
+      return_date: '',
+      is_round_trip: false,
+      special_requirements: '',
+      pet_weight: '',
+      crate_trained: null
+    });
+  };
+
+  const scrollToProducts = () => {
+    document.getElementById('travel-kits')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-amber-50">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="flex justify-center gap-3 mb-4">
-            <Car className="w-8 h-8" />
-            <Train className="w-8 h-8" />
-            <Plane className="w-8 h-8" />
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      
+      {/* === HERO SECTION === */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-violet-900 via-purple-800 to-indigo-900 text-white">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0">
+          <img 
+            src={HERO_IMAGES[heroIndex]} 
+            alt="Pet Travel" 
+            className="w-full h-full object-cover opacity-30 transition-opacity duration-1000"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-violet-900/90 via-purple-800/80 to-transparent" />
+        </div>
+        
+        {/* Content */}
+        <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28">
+          <div className="max-w-2xl">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+              <Sparkles className="w-4 h-4 text-yellow-400" />
+              <span className="text-sm font-medium">Concierge-Led Pet Travel</span>
+            </div>
+            
+            {/* Main Headline */}
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              Adventures Begin
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-yellow-400">
+                Together
+              </span>
+            </h1>
+            
+            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">
+              From quick vet runs to cross-country relocations — we plan, coordinate, and ensure your pet travels safely with the care they deserve.
+            </p>
+            
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button 
+                onClick={handleStartPlanning}
+                size="lg"
+                className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105"
+                data-testid="plan-my-trip-btn"
+              >
+                <Play className="w-5 h-5 mr-2 fill-current" />
+                Plan My Trip
+              </Button>
+              <Button 
+                onClick={scrollToProducts}
+                variant="outline"
+                size="lg"
+                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
+                data-testid="shop-travel-kits-btn"
+              >
+                <Package className="w-5 h-5 mr-2" />
+                Shop Travel Kits
+              </Button>
+            </div>
+            
+            {/* Trust Indicators */}
+            <div className="flex flex-wrap gap-6 mt-12">
+              <div className="flex items-center gap-2 text-white/70">
+                <Shield className="w-5 h-5 text-green-400" />
+                <span className="text-sm">Pet Safety First</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/70">
+                <Users className="w-5 h-5 text-blue-400" />
+                <span className="text-sm">Expert Concierge</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/70">
+                <Heart className="w-5 h-5 text-pink-400" />
+                <span className="text-sm">500+ Happy Travels</span>
+              </div>
+            </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Travel with Your Best Friend</h1>
-          <p className="text-lg text-white/90 max-w-2xl mx-auto">
-            Whether it's a quick vet visit or a cross-country move, we ensure your pet travels safely, 
-            calmly, and with the care they deserve.
-          </p>
-          
-          {/* Trust Badges */}
-          <div className="flex flex-wrap justify-center gap-4 mt-8">
-            <Badge className="bg-white/20 text-white px-4 py-2">
-              <Shield className="w-4 h-4 mr-2" />
-              Pet-First Always
-            </Badge>
-            <Badge className="bg-white/20 text-white px-4 py-2">
-              <Users className="w-4 h-4 mr-2" />
-              Concierge Coordinated
-            </Badge>
-            <Badge className="bg-white/20 text-white px-4 py-2">
-              <Heart className="w-4 h-4 mr-2" />
-              Safety Assessed
-            </Badge>
+        </div>
+        
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+          <ChevronDown className="w-6 h-6 text-white/50" />
+        </div>
+      </div>
+
+      {/* === TRAVEL TYPES STRIP === */}
+      <div className="bg-white border-b shadow-sm sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between gap-4 overflow-x-auto scrollbar-hide">
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <span className="text-sm text-gray-500 hidden sm:inline">Travel Types:</span>
+            </div>
+            <div className="flex gap-2">
+              {Object.values(TRAVEL_TYPES).map((type) => {
+                const Icon = type.icon;
+                return (
+                  <button
+                    key={type.id}
+                    onClick={() => {
+                      setSelectedType(type.id);
+                      handleStartPlanning();
+                    }}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${type.bgColor} ${type.textColor} hover:scale-105 whitespace-nowrap`}
+                    data-testid={`travel-type-${type.id}`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="text-sm font-medium">{type.name}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        
-        {/* Entry Step - How can we help? */}
-        {step === 'entry' && (
-          <div className="space-y-8">
-            {/* Free-form Entry */}
-            <Card className="p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <MessageCircle className="w-6 h-6 text-purple-600" />
-                Tell us what you need
-              </h2>
-              <div className="flex gap-3">
-                <Input
-                  value={freeformQuery}
-                  onChange={(e) => setFreeformQuery(e.target.value)}
-                  placeholder="e.g., I need to take Bruno to Delhi next month..."
-                  className="flex-1"
-                  onKeyPress={(e) => e.key === 'Enter' && handleFreeformSubmit()}
-                />
-                <Button 
-                  onClick={handleFreeformSubmit}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600"
-                >
-                  <Send className="w-4 h-4 mr-2" />
-                  Go
-                </Button>
-              </div>
-            </Card>
-
-            {/* Or Choose Travel Type */}
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
-                Or choose your travel type
-              </h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                {Object.values(TRAVEL_TYPES).map((type) => (
-                  <TravelTypeCard 
-                    key={type.id}
-                    type={type}
-                    onSelect={() => {
-                      setSelectedType(type.id);
-                      setStep('select-pet');
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* How it Works */}
-            <Card className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
-              <h3 className="font-semibold text-amber-900 mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5" />
-                How Travel Works
-              </h3>
-              <div className="grid md:grid-cols-4 gap-4">
-                {[
-                  { step: '1', title: 'Tell Us', desc: 'Share your travel needs' },
-                  { step: '2', title: 'We Assess', desc: 'Review pet profile & safety' },
-                  { step: '3', title: 'Coordinate', desc: 'Plan with trusted partners' },
-                  { step: '4', title: 'Travel Safe', desc: 'Confirmed & supported' }
-                ].map((item) => (
-                  <div key={item.step} className="text-center">
-                    <div className="w-10 h-10 bg-amber-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 font-bold">
-                      {item.step}
+      {/* === HOW IT WORKS === */}
+      <div className="py-16 bg-gradient-to-b from-white to-slate-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <Badge className="bg-purple-100 text-purple-700 mb-4">How It Works</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Stress-Free Pet Travel in 4 Steps
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Our concierge team handles everything — so you can focus on the adventure ahead.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-4 gap-6">
+            {[
+              { step: 1, icon: MessageCircle, title: 'Tell Us', desc: 'Share your travel plans & pet details', color: 'from-blue-500 to-cyan-500' },
+              { step: 2, icon: Shield, title: 'We Assess', desc: 'Review safety requirements & options', color: 'from-purple-500 to-violet-500' },
+              { step: 3, icon: Users, title: 'Coordinate', desc: 'We handle logistics & partners', color: 'from-pink-500 to-rose-500' },
+              { step: 4, icon: Heart, title: 'Travel Safe', desc: 'Enjoy peace of mind throughout', color: 'from-amber-500 to-orange-500' }
+            ].map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.step} className="relative">
+                  {idx < 3 && (
+                    <div className="hidden md:block absolute top-10 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-gray-200 to-transparent" />
+                  )}
+                  <div className="text-center">
+                    <div className={`w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg`}>
+                      <Icon className="w-8 h-8 text-white" />
                     </div>
-                    <p className="font-medium text-gray-900">{item.title}</p>
-                    <p className="text-xs text-gray-600">{item.desc}</p>
+                    <div className="text-sm font-bold text-gray-400 mb-1">STEP {item.step}</div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">{item.title}</h3>
+                    <p className="text-sm text-gray-600">{item.desc}</p>
                   </div>
-                ))}
-              </div>
+                </div>
+              );
+            })}
+          </div>
+          
+          <div className="text-center mt-12">
+            <Button 
+              onClick={handleStartPlanning}
+              size="lg"
+              className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 rounded-full px-8"
+              data-testid="start-planning-btn"
+            >
+              Start Planning Now
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* === TRAVEL BUNDLES === */}
+      <div id="travel-kits" className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <Badge className="bg-green-100 text-green-700 mb-2">Save up to 30%</Badge>
+              <h2 className="text-3xl font-bold text-gray-900">Travel Kits & Bundles</h2>
+              <p className="text-gray-600 mt-1">Everything your pet needs, bundled with love</p>
+            </div>
+          </div>
+          
+          {travelBundles.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {travelBundles.map((bundle) => {
+                const typeConfig = TRAVEL_TYPES[bundle.travel_type] || TRAVEL_TYPES.cab;
+                const Icon = typeConfig.icon;
+                return (
+                  <Card 
+                    key={bundle.id} 
+                    className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-purple-200"
+                    data-testid={`bundle-${bundle.id}`}
+                  >
+                    {/* Bundle Image/Header */}
+                    <div className={`h-40 bg-gradient-to-br ${typeConfig.color} p-6 relative overflow-hidden`}>
+                      <div className="absolute -right-6 -bottom-6 opacity-20">
+                        <Icon className="w-32 h-32 text-white" />
+                      </div>
+                      <Badge className="bg-white/20 text-white backdrop-blur-sm mb-2">
+                        {typeConfig.name}
+                      </Badge>
+                      {bundle.is_recommended && (
+                        <Badge className="bg-yellow-400 text-yellow-900 ml-2">
+                          <Star className="w-3 h-3 mr-1 fill-current" /> Top Pick
+                        </Badge>
+                      )}
+                      <h3 className="text-xl font-bold text-white mt-2">{bundle.name}</h3>
+                    </div>
+                    
+                    {/* Bundle Details */}
+                    <div className="p-5">
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{bundle.description}</p>
+                      
+                      {/* Price */}
+                      <div className="flex items-baseline gap-2 mb-4">
+                        <span className="text-2xl font-bold text-gray-900">₹{bundle.price?.toLocaleString()}</span>
+                        {bundle.original_price && (
+                          <>
+                            <span className="text-gray-400 line-through">₹{bundle.original_price?.toLocaleString()}</span>
+                            <Badge className="bg-red-100 text-red-700 text-xs">
+                              {Math.round((1 - bundle.price / bundle.original_price) * 100)}% OFF
+                            </Badge>
+                          </>
+                        )}
+                      </div>
+                      
+                      {/* Paw Points */}
+                      {bundle.paw_reward_points > 0 && (
+                        <div className="flex items-center gap-1 text-sm text-purple-600 mb-4">
+                          <PawPrint className="w-4 h-4" />
+                          Earn {bundle.paw_reward_points} Paw Points
+                        </div>
+                      )}
+                      
+                      <Button 
+                        className="w-full bg-gray-900 hover:bg-gray-800"
+                        onClick={() => handleAddToCart(bundle)}
+                      >
+                        Add to Cart
+                      </Button>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <Card className="p-12 text-center bg-gray-50">
+              <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Travel Bundles Coming Soon</h3>
+              <p className="text-gray-500">We're preparing amazing travel kits for your furry friend!</p>
             </Card>
+          )}
+        </div>
+      </div>
 
-            {/* Travel Products & Bundles */}
-            <div id="products">
-              {(travelProducts.length > 0 || travelBundles.length > 0) && (
-                <TravelProducts 
-                  products={travelProducts} 
-                  bundles={travelBundles}
-                  onAddToCart={handleAddToCart} 
-                />
+      {/* === TRAVEL PRODUCTS === */}
+      <div className="py-16 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900">Travel Essentials</h2>
+              <p className="text-gray-600 mt-1">Individual items for every journey</p>
+            </div>
+          </div>
+          
+          {travelProducts.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {travelProducts.map((product) => (
+                <Card 
+                  key={product.id} 
+                  className="group overflow-hidden hover:shadow-lg transition-all"
+                  data-testid={`product-${product.id}`}
+                >
+                  {/* Product Image */}
+                  <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-50 relative overflow-hidden">
+                    {product.image ? (
+                      <img 
+                        src={product.image} 
+                        alt={product.name} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Package className="w-12 h-12 text-gray-300" />
+                      </div>
+                    )}
+                    {product.is_birthday_perk && (
+                      <Badge className="absolute top-2 left-2 bg-pink-500 text-white text-xs">
+                        <Gift className="w-3 h-3 mr-1" /> Birthday Perk
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  {/* Product Info */}
+                  <div className="p-3">
+                    <h4 className="font-medium text-sm text-gray-900 line-clamp-2 min-h-[2.5rem] mb-2">
+                      {product.name}
+                    </h4>
+                    <div className="flex items-baseline gap-2 mb-2">
+                      <span className="text-lg font-bold text-purple-600">₹{product.price?.toLocaleString()}</span>
+                      {product.compare_price && (
+                        <span className="text-xs text-gray-400 line-through">₹{product.compare_price}</span>
+                      )}
+                    </div>
+                    {product.paw_reward_points > 0 && (
+                      <p className="text-xs text-purple-500 mb-2">
+                        <PawPrint className="w-3 h-3 inline mr-1" />
+                        {product.paw_reward_points} pts
+                      </p>
+                    )}
+                    <Button 
+                      size="sm" 
+                      className="w-full"
+                      onClick={() => handleAddToCart(product)}
+                    >
+                      Add to Cart
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="p-12 text-center bg-white">
+              <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Products Loading...</h3>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      {/* === FINAL CTA === */}
+      <div className="py-20 bg-gradient-to-r from-violet-600 to-purple-600 text-white">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Ready to Travel with Your Best Friend?
+          </h2>
+          <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
+            Our concierge team is ready to make your pet's journey safe, comfortable, and stress-free.
+          </p>
+          <Button 
+            onClick={handleStartPlanning}
+            size="lg"
+            className="bg-white text-purple-600 hover:bg-gray-100 px-10 py-6 text-lg rounded-full shadow-2xl"
+            data-testid="final-cta-btn"
+          >
+            <Zap className="w-5 h-5 mr-2" />
+            Plan My Trip Now
+          </Button>
+        </div>
+      </div>
+
+      {/* === PLANNING WIZARD MODAL === */}
+      <Dialog open={showWizard} onOpenChange={(open) => !open && resetWizard()}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              {wizardStep === 4 ? (
+                <>
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  </div>
+                  Request Submitted!
+                </>
+              ) : (
+                <>
+                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                    <PawPrint className="w-5 h-5 text-purple-600" />
+                  </div>
+                  Plan Your Trip
+                </>
               )}
-            </div>
-          </div>
-        )}
-
-        {/* Select Pet Step */}
-        {step === 'select-pet' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">Who's traveling?</h2>
-              <Button variant="ghost" onClick={() => setStep('entry')}>
-                Back
-              </Button>
-            </div>
-
-            {!user ? (
-              <Card className="p-6 text-center">
-                <PawPrint className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="font-semibold text-gray-900 mb-2">Login to continue</h3>
-                <p className="text-gray-500 mb-4">We need to know your pet's profile for safe travel planning</p>
-                <Button onClick={() => window.location.href = '/login?redirect=/travel'}>
-                  Login / Sign Up
-                </Button>
-              </Card>
-            ) : userPets.length === 0 ? (
-              <Card className="p-6 text-center">
-                <PawPrint className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="font-semibold text-gray-900 mb-2">No pets found</h3>
-                <p className="text-gray-500 mb-4">Add your pet's profile first for personalized travel planning</p>
-                <Button onClick={() => window.location.href = '/pet-profile'}>
-                  Add Pet Profile
-                </Button>
-              </Card>
-            ) : (
-              <div className="grid md:grid-cols-2 gap-4">
-                {userPets.map((pet) => (
-                  <PetProfileCard
-                    key={pet.id}
-                    pet={pet}
-                    onSelect={handlePetSelect}
-                    selected={selectedPet?.id === pet.id}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Select Type Step (if not already selected) */}
-        {step === 'select-type' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">What type of travel?</h2>
-                <p className="text-gray-500">Traveling with {selectedPet?.name}</p>
-              </div>
-              <Button variant="ghost" onClick={() => setStep('select-pet')}>
-                Back
-              </Button>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              {Object.values(TRAVEL_TYPES).map((type) => (
-                <TravelTypeCard 
-                  key={type.id}
-                  type={type}
-                  onSelect={handleTypeSelect}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {/* Progress Bar */}
+          {wizardStep < 4 && (
+            <div className="flex gap-2 mb-6">
+              {[1, 2, 3].map((step) => (
+                <div 
+                  key={step}
+                  className={`flex-1 h-1.5 rounded-full transition-colors ${
+                    step <= wizardStep ? 'bg-purple-600' : 'bg-gray-200'
+                  }`}
                 />
               ))}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Form Step */}
-        {step === 'form' && selectedPet && selectedType && (
-          <div>
-            <TravelRequestForm
-              travelType={selectedType}
-              pet={selectedPet}
-              onSubmit={handleFormSubmit}
-              onBack={() => setStep('select-type')}
-              loading={submitting}
-            />
-          </div>
-        )}
-
-        {/* Confirmation Step */}
-        {step === 'confirmation' && requestResult && (
-          <Card className="p-8 text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-10 h-10 text-green-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Request Submitted!</h2>
-            <p className="text-gray-600 mb-6">
-              Your travel request for {selectedPet?.name} has been received. 
-              Our concierge team will review and contact you within 24 hours.
-            </p>
-            
-            <Card className="p-4 bg-purple-50 border-purple-200 mb-6 text-left">
-              <h3 className="font-semibold text-purple-900 mb-2">Request Details</h3>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div><span className="text-gray-500">Request ID:</span> <span className="font-medium">{requestResult.request_id}</span></div>
-                <div><span className="text-gray-500">Type:</span> <span className="font-medium">{TRAVEL_TYPES[selectedType]?.name}</span></div>
-                <div><span className="text-gray-500">Pet:</span> <span className="font-medium">{selectedPet?.name}</span></div>
-                <div><span className="text-gray-500">Status:</span> <Badge className="bg-blue-100 text-blue-700">Under Review</Badge></div>
+          {/* Step 1: Select Travel Type */}
+          {wizardStep === 1 && (
+            <div className="space-y-4">
+              <p className="text-gray-600">What type of travel are you planning?</p>
+              <div className="grid grid-cols-2 gap-3">
+                {Object.values(TRAVEL_TYPES).map((type) => {
+                  const Icon = type.icon;
+                  return (
+                    <button
+                      key={type.id}
+                      onClick={() => {
+                        setSelectedType(type.id);
+                        setWizardStep(2);
+                      }}
+                      className={`p-4 rounded-xl border-2 transition-all text-left hover:shadow-md ${
+                        selectedType === type.id 
+                          ? 'border-purple-500 bg-purple-50' 
+                          : 'border-gray-200 hover:border-purple-200'
+                      }`}
+                      data-testid={`wizard-type-${type.id}`}
+                    >
+                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${type.color} flex items-center justify-center mb-3`}>
+                        <Icon className="w-6 h-6 text-white" />
+                      </div>
+                      <h4 className="font-semibold text-gray-900">{type.name}</h4>
+                      <p className="text-sm text-gray-500">{type.description}</p>
+                    </button>
+                  );
+                })}
               </div>
-            </Card>
+            </div>
+          )}
 
-            <div className="flex gap-3 justify-center">
-              <Button variant="outline" onClick={resetFlow}>
-                New Request
-              </Button>
-              <Button onClick={() => window.location.href = '/my-pets'}>
-                View My Requests
+          {/* Step 2: Select Pet */}
+          {wizardStep === 2 && (
+            <div className="space-y-4">
+              <p className="text-gray-600">Who's traveling?</p>
+              
+              {userPets.length === 0 ? (
+                <Card className="p-6 text-center bg-amber-50 border-amber-200">
+                  <PawPrint className="w-12 h-12 text-amber-400 mx-auto mb-3" />
+                  <h4 className="font-semibold text-amber-900 mb-2">No pets found</h4>
+                  <p className="text-sm text-amber-700 mb-4">Add your pet's profile first for safe travel planning</p>
+                  <Button onClick={() => window.location.href = '/pet-profile'}>
+                    Add Pet Profile
+                  </Button>
+                </Card>
+              ) : (
+                <div className="space-y-3">
+                  {userPets.map((pet) => (
+                    <button
+                      key={pet.id}
+                      onClick={() => {
+                        setSelectedPet(pet);
+                        setWizardStep(3);
+                      }}
+                      className={`w-full p-4 rounded-xl border-2 transition-all text-left hover:shadow-md flex items-center gap-4 ${
+                        selectedPet?.id === pet.id 
+                          ? 'border-purple-500 bg-purple-50' 
+                          : 'border-gray-200 hover:border-purple-200'
+                      }`}
+                      data-testid={`wizard-pet-${pet.id}`}
+                    >
+                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        {pet.photo_url ? (
+                          <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <PawPrint className="w-6 h-6 text-purple-500" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">{pet.name}</h4>
+                        <p className="text-sm text-gray-500">{pet.breed} {pet.age && `• ${pet.age}`}</p>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-gray-400" />
+                    </button>
+                  ))}
+                </div>
+              )}
+              
+              <Button variant="ghost" onClick={() => setWizardStep(1)} className="mt-4">
+                Back
               </Button>
             </div>
-          </Card>
-        )}
-      </div>
+          )}
+
+          {/* Step 3: Journey Details */}
+          {wizardStep === 3 && selectedPet && selectedType && (
+            <div className="space-y-4" ref={formRef}>
+              {/* Selected Summary */}
+              <Card className="p-3 bg-purple-50 border-purple-200 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
+                  {(() => { const Icon = TRAVEL_TYPES[selectedType]?.icon || Car; return <Icon className="w-5 h-5 text-purple-600" />; })()}
+                </div>
+                <div className="flex-1">
+                  <span className="text-sm text-purple-600">{TRAVEL_TYPES[selectedType]?.name}</span>
+                  <span className="mx-2 text-purple-300">•</span>
+                  <span className="text-sm font-medium text-purple-900">{selectedPet.name}</span>
+                </div>
+                <button onClick={() => setWizardStep(1)} className="text-sm text-purple-600 hover:underline">
+                  Change
+                </button>
+              </Card>
+              
+              {/* Journey Form */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2 sm:col-span-1">
+                  <Label>Pickup City</Label>
+                  <Input
+                    value={formData.pickup_city}
+                    onChange={(e) => setFormData({...formData, pickup_city: e.target.value})}
+                    placeholder="e.g., Bangalore"
+                    required
+                  />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <Label>Drop City</Label>
+                  <Input
+                    value={formData.drop_city}
+                    onChange={(e) => setFormData({...formData, drop_city: e.target.value})}
+                    placeholder="e.g., Delhi"
+                    required
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Label>Pickup Address</Label>
+                  <Input
+                    value={formData.pickup_location}
+                    onChange={(e) => setFormData({...formData, pickup_location: e.target.value})}
+                    placeholder="Full address or landmark"
+                  />
+                </div>
+                <div>
+                  <Label>Travel Date</Label>
+                  <Input
+                    type="date"
+                    value={formData.travel_date}
+                    onChange={(e) => setFormData({...formData, travel_date: e.target.value})}
+                    min={new Date().toISOString().split('T')[0]}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label>Preferred Time</Label>
+                  <select
+                    value={formData.travel_time}
+                    onChange={(e) => setFormData({...formData, travel_time: e.target.value})}
+                    className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="">Select time</option>
+                    <option value="06:00">6:00 AM</option>
+                    <option value="08:00">8:00 AM</option>
+                    <option value="10:00">10:00 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="14:00">2:00 PM</option>
+                    <option value="16:00">4:00 PM</option>
+                    <option value="18:00">6:00 PM</option>
+                    <option value="20:00">8:00 PM</option>
+                  </select>
+                </div>
+              </div>
+              
+              {/* Special Requirements */}
+              <div>
+                <Label>Special Requirements (Optional)</Label>
+                <Textarea
+                  value={formData.special_requirements}
+                  onChange={(e) => setFormData({...formData, special_requirements: e.target.value})}
+                  placeholder={`Any specific needs for ${selectedPet.name}? (anxiety, medication, feeding schedule, etc.)`}
+                  rows={3}
+                />
+              </div>
+              
+              {/* Info Box */}
+              <Card className="p-4 bg-blue-50 border-blue-200">
+                <div className="flex gap-3">
+                  <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-medium text-blue-900">What happens next?</p>
+                    <ul className="text-blue-700 mt-1 space-y-1">
+                      <li>• Our concierge reviews your request</li>
+                      <li>• We contact you within 24 hours</li>
+                      <li>• No payment until everything is confirmed</li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+              
+              {/* Actions */}
+              <div className="flex gap-3 pt-2">
+                <Button variant="outline" onClick={() => setWizardStep(2)} className="flex-1">
+                  Back
+                </Button>
+                <Button 
+                  onClick={handleFormSubmit}
+                  disabled={submitting || !formData.pickup_city || !formData.drop_city || !formData.travel_date}
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600"
+                  data-testid="submit-request-btn"
+                >
+                  {submitting ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+                  ) : (
+                    <><Send className="w-4 h-4 mr-2" /> Submit Request</>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Confirmation */}
+          {wizardStep === 4 && requestResult && (
+            <div className="text-center py-6">
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="w-10 h-10 text-green-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">You're All Set!</h3>
+              <p className="text-gray-600 mb-6">
+                Your travel request for <strong>{selectedPet?.name}</strong> has been submitted.
+                <br />Our concierge team will reach out within 24 hours.
+              </p>
+              
+              <Card className="p-4 bg-gray-50 text-left mb-6">
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <span className="text-gray-500">Request ID:</span>
+                    <p className="font-medium">{requestResult.request_id}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Status:</span>
+                    <Badge className="bg-blue-100 text-blue-700 ml-2">Under Review</Badge>
+                  </div>
+                </div>
+              </Card>
+              
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={resetWizard} className="flex-1">
+                  New Request
+                </Button>
+                <Button onClick={() => { resetWizard(); window.location.href = '/my-pets'; }} className="flex-1">
+                  View My Requests
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
