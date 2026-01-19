@@ -3203,6 +3203,10 @@ const ServiceDesk = ({ authHeaders }) => {
                   </div>
                 )}
 
+              </div>
+              
+              {/* Reply Section - Fixed at bottom */}
+              <div className="border-t bg-gradient-to-r from-slate-50 to-slate-100 flex-shrink-0">
                 <div className="p-3">
                   {/* Reply Type Selector with AI Button */}
                   <div className="flex items-center gap-3 mb-3 p-2 bg-white/80 rounded-lg border">
