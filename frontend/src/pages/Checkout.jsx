@@ -689,6 +689,29 @@ _GST applicable on final invoice_
     setIsOrderPlaced(true);
     setIsSubmitting(false);
     
+    // Save customer details for future orders (if opted in)
+    if (rememberMe) {
+      try {
+        const customerToSave = {
+          parentName: formData.parentName,
+          email: formData.email,
+          phone: formData.phone,
+          whatsappNumber: formData.whatsappNumber,
+          address: formData.address,
+          landmark: formData.landmark,
+          city: formData.city,
+          pincode: formData.pincode,
+          petName: formData.petName,
+          petBreed: formData.petBreed,
+          rememberMe: true,
+          savedAt: new Date().toISOString()
+        };
+        localStorage.setItem('tdc_customer_details', JSON.stringify(customerToSave));
+      } catch (err) {
+        console.error('Error saving customer details:', err);
+      }
+    }
+    
     toast({
       title: 'Order placed successfully! 🎉',
       description: 'Please confirm your order on WhatsApp to complete.',
