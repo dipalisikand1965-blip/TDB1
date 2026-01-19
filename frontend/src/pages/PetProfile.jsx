@@ -108,14 +108,38 @@ const PetProfile = ({ isEmbed = false }) => {
         // Check for email in URL params (iframe integration) or localStorage
         const params = new URLSearchParams(window.location.search);
         let email = params.get('email');
+        let savedCustomerName = '';
+        let savedPhone = '';
         
         // If email in URL, save it and pre-fill form
         if (email) {
           localStorage.setItem('tdb_pet_parent_email', email);
           setFormData(prev => ({ ...prev, owner_email: email }));
         } else {
-          // Fallback to localStorage
-          email = localStorage.getItem('tdb_pet_parent_email');
+          // Try to get from checkout saved details first
+          try {
+            const savedCustomer = localStorage.getItem('tdc_customer_details');
+            if (savedCustomer) {
+              const parsed = JSON.parse(savedCustomer);
+              email = parsed.email;
+              savedCustomerName = parsed.parentName;
+              savedPhone = parsed.phone;
+              // Pre-fill owner details from checkout
+              setFormData(prev => ({
+                ...prev,
+                owner_email: email || prev.owner_email,
+                owner_name: savedCustomerName || prev.owner_name,
+                owner_phone: savedPhone || prev.owner_phone
+              }));
+            }
+          } catch (err) {
+            console.error('Error loading saved customer:', err);
+          }
+          
+          // Fallback to legacy localStorage key
+          if (!email) {
+            email = localStorage.getItem('tdb_pet_parent_email');
+          }
         }
 
         if (email) {
