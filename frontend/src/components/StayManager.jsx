@@ -1520,6 +1520,67 @@ const PropertyModal = ({ property, onClose, onSave, getAuthHeader }) => {
                   Leash Required in Common Areas
                 </label>
               </div>
+
+              {/* Birthday Perk Section */}
+              <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <h4 className="text-sm font-semibold text-amber-800 mb-3 flex items-center gap-2">
+                  🎁 Paw Reward (Birthday Perk)
+                </h4>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.paw_reward?.enabled || false}
+                      onChange={(e) => setFormData({
+                        ...formData, 
+                        paw_reward: {...(formData.paw_reward || {}), enabled: e.target.checked},
+                        birthdayPerks: e.target.checked
+                      })}
+                      className="w-4 h-4 text-amber-600"
+                    />
+                    <label className="text-sm font-medium">Enable Birthday Perk</label>
+                  </div>
+                  <div>
+                    <Label className="text-sm">Max Reward Value (₹)</Label>
+                    <Input
+                      type="number"
+                      value={formData.paw_reward?.max_value || 600}
+                      onChange={(e) => setFormData({
+                        ...formData, 
+                        paw_reward: {...(formData.paw_reward || {}), max_value: parseInt(e.target.value) || 600}
+                      })}
+                      placeholder="600"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label className="text-sm">Reward Description</Label>
+                    <Input
+                      value={formData.paw_reward?.custom_message || ''}
+                      onChange={(e) => setFormData({
+                        ...formData, 
+                        paw_reward: {...(formData.paw_reward || {}), custom_message: e.target.value}
+                      })}
+                      placeholder="Free TDB birthday cake when celebrating your dog's birthday during stay"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Birthday Perks Available Checkbox */}
+              <div className="mt-4 p-3 bg-pink-50 rounded-lg border border-pink-200">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input 
+                    type="checkbox"
+                    checked={formData.birthdayPerks || false}
+                    onChange={(e) => setFormData({...formData, birthdayPerks: e.target.checked})}
+                    className="w-4 h-4"
+                  />
+                  <div>
+                    <span className="font-medium text-pink-800">🎂 Birthday Perks Available</span>
+                    <p className="text-xs text-pink-600">Property offers special treats/discounts for pet birthdays</p>
+                  </div>
+                </label>
+              </div>
             </TabsContent>
 
             {/* TAB 3: Paw Standards */}
