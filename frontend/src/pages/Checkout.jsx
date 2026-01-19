@@ -81,6 +81,10 @@ const Checkout = () => {
   const [isLoadingLoyalty, setIsLoadingLoyalty] = useState(false);
   const [rememberMe, setRememberMe] = useState(true); // Default to true for convenience
   
+  // Pet Soul Insights
+  const [petSoulInsights, setPetSoulInsights] = useState(null);
+  const [loadingPetSoul, setLoadingPetSoul] = useState(false);
+  
   const [formData, setFormData] = useState({
     // Pet Parent Details
     parentName: '',
