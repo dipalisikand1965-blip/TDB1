@@ -729,7 +729,7 @@ async def admin_list_pets(
     return {"pets": pets, "total": total, "skip": skip, "limit": limit}
 
 
-@pet_soul_admin_router.get("/admin/questions")
+@pet_soul_admin_router.get("/questions")
 async def admin_get_questions():
     """Admin: Get all questions with stats"""
     # Get answer counts per question
