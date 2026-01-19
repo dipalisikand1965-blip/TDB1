@@ -1403,6 +1403,7 @@ const Admin = () => {
           <span className="text-xs text-gray-500 px-2 py-1 font-semibold uppercase">Operations</span>
           {[
             { id: 'product-tags', label: '🏷️ Product Tags', icon: Tag },
+            { id: 'breed-tags', label: '🐕 Breed Tags', icon: PawPrint },
             { id: 'discounts', label: '🎟️ Discounts', icon: Tag },
             { id: 'abandoned', label: '🛒 Abandoned', icon: ShoppingBag },
             { id: 'autoship', label: '🔄 Autoship', icon: RefreshCw },
