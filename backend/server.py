@@ -4801,6 +4801,39 @@ async def create_order(order: dict):
     
     await db.orders.insert_one(order)
     
+    # Create channel intake entry for Unified Inbox
+    try:
+        channel_intake_record = {
+            "request_id": f"order-{order.get('orderId')}",
+            "channel": "web",
+            "request_type": "order",
+            "pillar": "celebrate",
+            "status": "pending",
+            "customer_name": order.get("customer", {}).get("parentName"),
+            "customer_email": order.get("customer", {}).get("email"),
+            "customer_phone": order.get("customer", {}).get("phone") or order.get("customer", {}).get("whatsappNumber"),
+            "pet_info": {
+                "name": order.get("pet", {}).get("name"),
+                "breed": order.get("pet", {}).get("breed")
+            },
+            "message": f"Order #{order.get('orderId')}: {', '.join([item.get('name', 'Item') for item in order.get('items', [])])}",
+            "metadata": {
+                "order_id": order.get("orderId"),
+                "order_internal_id": order.get("id"),
+                "items_count": len(order.get("items", [])),
+                "total": order.get("total"),
+                "delivery_method": order.get("delivery", {}).get("method"),
+                "delivery_date": order.get("delivery", {}).get("date"),
+                "city": order.get("delivery", {}).get("city"),
+                "has_reference_images": len(reference_images) > 0
+            },
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.channel_intakes.insert_one(channel_intake_record)
+        logger.info(f"Created channel intake for order {order.get('orderId')}")
+    except Exception as e:
+        logger.error(f"Failed to create channel intake for order: {e}")
+    
     # Create service desk ticket for cake orders (Ticket ID = Order ID)
     if has_cake_items:
         try:
