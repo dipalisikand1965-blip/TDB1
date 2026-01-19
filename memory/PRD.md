@@ -790,14 +790,30 @@ See `/app/TOMORROW_SUMMARY.md` for full detailed plan
   - Used by Celebrations Calendar to show personalized festival reminders
 
 ### P0 Features Completed ✅
-- ✅ **AGENT PORTAL** (`/agent`) - Dedicated Service Desk for non-admin roles
+- ✅ **AGENT PORTAL** (`/agent`) - Dedicated access for non-admin roles
   - Standalone route at `/agent` with clean login page
   - Purple gradient background with headphones branding
-  - Shows ONLY Service Desk after login (no Products, Orders, etc.)
-  - User info badge shows name + role (Agent/Admin)
+  - **Permission-based feature access**:
+    - 🔔 Notifications
+    - 📦 Orders (with stats and order list)
+    - 🎫 Service Desk (full functionality)
+    - 📥 Unified Inbox
+    - 🚚 Fulfilment
+  - Only shows features the agent has permission for
+  - Separate login endpoint: `POST /api/agent/login`
   - Session stored in localStorage with 24h expiry
-  - Logout functionality clears session and returns to login
+  - Mobile-responsive with hamburger menu
   - File: `/app/frontend/src/pages/AgentPortal.jsx`
+- ✅ **AGENT MANAGEMENT** - Admin tool for creating/managing agent accounts
+  - Location: Admin Panel > Core Tools > 👤 Agents
+  - **Create Agent**: Username, password, name, email, phone, permissions
+  - **Edit Agent**: Update details, change permissions, enable/disable
+  - **Change Password**: Admin can reset agent passwords
+  - **Delete Agent**: Remove agent accounts
+  - **Stats**: Total agents, active, disabled, logged in today
+  - **Permissions**: notifications, orders, service_desk, unified_inbox, fulfilment
+  - APIs: `/api/admin/agents` (CRUD), `/api/agent/login`, `/api/agent/verify`
+  - File: `/app/frontend/src/components/admin/AgentManagement.jsx`
 - ✅ **BREED TAGS MANAGER** - Admin tool for product tagging
   - Location: Admin Panel > Operations > 🐕 Breed Tags
   - Stats: Total Products, Tagged Products, Untagged Products, Selected
