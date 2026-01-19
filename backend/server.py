@@ -8331,7 +8331,7 @@ async def update_agent(agent_id: str, updates: AgentUpdate, credentials: HTTPBas
     return {"success": True, "agent": agent}
 
 
-@api_router.put("/admin/agents/{agent_id}/password")
+@app.put("/api/admin/agents/{agent_id}/password")
 async def change_agent_password(agent_id: str, data: AgentPasswordChange, credentials: HTTPBasicCredentials = Depends(security)):
     """Change agent password (admin only)"""
     verify_admin(credentials)
