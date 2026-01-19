@@ -441,7 +441,7 @@ async def get_travel_stats():
 
 
 @router.get("/products")
-async def get_travel_products(limit: int = 12):
+async def get_travel_products(limit: int = 50):
     """Get travel-related products (kits, crates, harnesses, etc.)"""
     db = get_db()
     
@@ -451,7 +451,681 @@ async def get_travel_products(limit: int = 12):
             {"tags": {"$in": ["travel", "crate", "harness", "carrier", "calming"]}},
             {"name": {"$regex": "travel|crate|carrier|harness|calm", "$options": "i"}}
         ]},
-        {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1, "category": 1}
+        {"_id": 0}
     ).limit(limit).to_list(limit)
     
-    return {"products": products}
+    return {"products": products, "total": len(products)}
+
+
+# Travel Product/Bundle Models
+class TravelProductCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    price: float
+    compare_price: Optional[float] = None
+    image: Optional[str] = None
+    category: str = "travel"
+    subcategory: Optional[str] = None  # crate, harness, kit, calming, etc.
+    tags: List[str] = []
+    pet_sizes: List[str] = []  # small, medium, large
+    in_stock: bool = True
+    stock_quantity: Optional[int] = None
+    sku: Optional[str] = None
+    weight: Optional[float] = None
+    dimensions: Optional[str] = None
+    paw_reward_points: int = 0
+    is_birthday_perk: bool = False
+    birthday_discount_percent: Optional[int] = None
+
+
+class TravelBundleCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    price: float
+    original_price: Optional[float] = None
+    image: Optional[str] = None
+    travel_type: str  # cab, train, flight, relocation
+    items: List[str]  # List of product IDs
+    is_recommended: bool = True
+    paw_reward_points: int = 0
+    is_birthday_perk: bool = False
+    birthday_discount_percent: Optional[int] = None
+
+
+@router.post("/admin/products")
+async def create_travel_product(product: TravelProductCreate):
+    """Create a new travel product"""
+    db = get_db()
+    logger = get_logger()
+    
+    product_id = f"travel-{uuid.uuid4().hex[:8]}"
+    
+    product_doc = {
+        "id": product_id,
+        **product.dict(),
+        "category": "travel",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.products.insert_one(product_doc)
+    logger.info(f"Travel product created: {product_id}")
+    
+    return {"success": True, "product_id": product_id, "product": {k: v for k, v in product_doc.items() if k != "_id"}}
+
+
+@router.put("/admin/products/{product_id}")
+async def update_travel_product(product_id: str, product: TravelProductCreate):
+    """Update a travel product"""
+    db = get_db()
+    logger = get_logger()
+    
+    update_doc = {
+        **product.dict(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    result = await db.products.update_one(
+        {"id": product_id},
+        {"$set": update_doc}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    logger.info(f"Travel product updated: {product_id}")
+    return {"success": True, "message": "Product updated"}
+
+
+@router.delete("/admin/products/{product_id}")
+async def delete_travel_product(product_id: str):
+    """Delete a travel product"""
+    db = get_db()
+    logger = get_logger()
+    
+    result = await db.products.delete_one({"id": product_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    logger.info(f"Travel product deleted: {product_id}")
+    return {"success": True, "message": "Product deleted"}
+
+
+@router.post("/admin/products/import")
+async def import_travel_products(products: List[Dict[str, Any]]):
+    """Import multiple travel products from CSV data"""
+    db = get_db()
+    logger = get_logger()
+    
+    imported = 0
+    errors = []
+    
+    for idx, prod in enumerate(products):
+        try:
+            product_id = prod.get("id") or f"travel-{uuid.uuid4().hex[:8]}"
+            
+            product_doc = {
+                "id": product_id,
+                "name": prod.get("name", ""),
+                "description": prod.get("description", ""),
+                "price": float(prod.get("price", 0)),
+                "compare_price": float(prod.get("compare_price", 0)) if prod.get("compare_price") else None,
+                "image": prod.get("image", ""),
+                "category": "travel",
+                "subcategory": prod.get("subcategory", ""),
+                "tags": prod.get("tags", "").split(",") if isinstance(prod.get("tags"), str) else prod.get("tags", []),
+                "pet_sizes": prod.get("pet_sizes", "").split(",") if isinstance(prod.get("pet_sizes"), str) else prod.get("pet_sizes", []),
+                "in_stock": prod.get("in_stock", "true").lower() != "false" if isinstance(prod.get("in_stock"), str) else bool(prod.get("in_stock", True)),
+                "stock_quantity": int(prod.get("stock_quantity", 0)) if prod.get("stock_quantity") else None,
+                "sku": prod.get("sku", ""),
+                "paw_reward_points": int(prod.get("paw_reward_points", 0)),
+                "is_birthday_perk": prod.get("is_birthday_perk", "false").lower() == "true" if isinstance(prod.get("is_birthday_perk"), str) else bool(prod.get("is_birthday_perk", False)),
+                "birthday_discount_percent": int(prod.get("birthday_discount_percent", 0)) if prod.get("birthday_discount_percent") else None,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            # Upsert - update if exists, insert if not
+            await db.products.update_one(
+                {"id": product_id},
+                {"$set": product_doc},
+                upsert=True
+            )
+            imported += 1
+            
+        except Exception as e:
+            errors.append({"row": idx + 1, "error": str(e)})
+    
+    logger.info(f"Imported {imported} travel products")
+    return {"success": True, "imported": imported, "errors": errors}
+
+
+@router.get("/admin/products/export")
+async def export_travel_products():
+    """Export all travel products as CSV-ready data"""
+    db = get_db()
+    
+    products = await db.products.find(
+        {"category": "travel"},
+        {"_id": 0}
+    ).to_list(500)
+    
+    # Convert arrays to comma-separated strings for CSV
+    export_data = []
+    for p in products:
+        export_data.append({
+            "id": p.get("id", ""),
+            "name": p.get("name", ""),
+            "description": p.get("description", ""),
+            "price": p.get("price", 0),
+            "compare_price": p.get("compare_price", ""),
+            "image": p.get("image", ""),
+            "subcategory": p.get("subcategory", ""),
+            "tags": ",".join(p.get("tags", [])) if isinstance(p.get("tags"), list) else p.get("tags", ""),
+            "pet_sizes": ",".join(p.get("pet_sizes", [])) if isinstance(p.get("pet_sizes"), list) else p.get("pet_sizes", ""),
+            "in_stock": str(p.get("in_stock", True)).lower(),
+            "stock_quantity": p.get("stock_quantity", ""),
+            "sku": p.get("sku", ""),
+            "paw_reward_points": p.get("paw_reward_points", 0),
+            "is_birthday_perk": str(p.get("is_birthday_perk", False)).lower(),
+            "birthday_discount_percent": p.get("birthday_discount_percent", "")
+        })
+    
+    return {"products": export_data, "total": len(export_data)}
+
+
+# Travel Bundles CRUD
+@router.get("/bundles")
+async def get_travel_bundles(travel_type: Optional[str] = None):
+    """Get travel bundles"""
+    db = get_db()
+    
+    query = {"bundle_type": "travel"}
+    if travel_type:
+        query["travel_type"] = travel_type
+    
+    bundles = await db.product_bundles.find(
+        query,
+        {"_id": 0}
+    ).to_list(50)
+    
+    return {"bundles": bundles, "total": len(bundles)}
+
+
+@router.post("/admin/bundles")
+async def create_travel_bundle(bundle: TravelBundleCreate):
+    """Create a new travel bundle"""
+    db = get_db()
+    logger = get_logger()
+    
+    bundle_id = f"travel-bundle-{uuid.uuid4().hex[:8]}"
+    
+    bundle_doc = {
+        "id": bundle_id,
+        "bundle_type": "travel",
+        **bundle.dict(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.product_bundles.insert_one(bundle_doc)
+    logger.info(f"Travel bundle created: {bundle_id}")
+    
+    return {"success": True, "bundle_id": bundle_id, "bundle": {k: v for k, v in bundle_doc.items() if k != "_id"}}
+
+
+@router.put("/admin/bundles/{bundle_id}")
+async def update_travel_bundle(bundle_id: str, bundle: TravelBundleCreate):
+    """Update a travel bundle"""
+    db = get_db()
+    logger = get_logger()
+    
+    update_doc = {
+        **bundle.dict(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    result = await db.product_bundles.update_one(
+        {"id": bundle_id},
+        {"$set": update_doc}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    logger.info(f"Travel bundle updated: {bundle_id}")
+    return {"success": True, "message": "Bundle updated"}
+
+
+@router.delete("/admin/bundles/{bundle_id}")
+async def delete_travel_bundle(bundle_id: str):
+    """Delete a travel bundle"""
+    db = get_db()
+    logger = get_logger()
+    
+    result = await db.product_bundles.delete_one({"id": bundle_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    logger.info(f"Travel bundle deleted: {bundle_id}")
+    return {"success": True, "message": "Bundle deleted"}
+
+
+@router.post("/admin/bundles/import")
+async def import_travel_bundles(bundles: List[Dict[str, Any]]):
+    """Import multiple travel bundles from CSV data"""
+    db = get_db()
+    logger = get_logger()
+    
+    imported = 0
+    errors = []
+    
+    for idx, bnd in enumerate(bundles):
+        try:
+            bundle_id = bnd.get("id") or f"travel-bundle-{uuid.uuid4().hex[:8]}"
+            
+            bundle_doc = {
+                "id": bundle_id,
+                "bundle_type": "travel",
+                "name": bnd.get("name", ""),
+                "description": bnd.get("description", ""),
+                "price": float(bnd.get("price", 0)),
+                "original_price": float(bnd.get("original_price", 0)) if bnd.get("original_price") else None,
+                "image": bnd.get("image", ""),
+                "travel_type": bnd.get("travel_type", "cab"),
+                "items": bnd.get("items", "").split(",") if isinstance(bnd.get("items"), str) else bnd.get("items", []),
+                "is_recommended": bnd.get("is_recommended", "true").lower() != "false" if isinstance(bnd.get("is_recommended"), str) else bool(bnd.get("is_recommended", True)),
+                "paw_reward_points": int(bnd.get("paw_reward_points", 0)),
+                "is_birthday_perk": bnd.get("is_birthday_perk", "false").lower() == "true" if isinstance(bnd.get("is_birthday_perk"), str) else bool(bnd.get("is_birthday_perk", False)),
+                "birthday_discount_percent": int(bnd.get("birthday_discount_percent", 0)) if bnd.get("birthday_discount_percent") else None,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            await db.product_bundles.update_one(
+                {"id": bundle_id},
+                {"$set": bundle_doc},
+                upsert=True
+            )
+            imported += 1
+            
+        except Exception as e:
+            errors.append({"row": idx + 1, "error": str(e)})
+    
+    logger.info(f"Imported {imported} travel bundles")
+    return {"success": True, "imported": imported, "errors": errors}
+
+
+@router.get("/admin/bundles/export")
+async def export_travel_bundles():
+    """Export all travel bundles as CSV-ready data"""
+    db = get_db()
+    
+    bundles = await db.product_bundles.find(
+        {"bundle_type": "travel"},
+        {"_id": 0}
+    ).to_list(100)
+    
+    export_data = []
+    for b in bundles:
+        export_data.append({
+            "id": b.get("id", ""),
+            "name": b.get("name", ""),
+            "description": b.get("description", ""),
+            "price": b.get("price", 0),
+            "original_price": b.get("original_price", ""),
+            "image": b.get("image", ""),
+            "travel_type": b.get("travel_type", ""),
+            "items": ",".join(b.get("items", [])) if isinstance(b.get("items"), list) else b.get("items", ""),
+            "is_recommended": str(b.get("is_recommended", True)).lower(),
+            "paw_reward_points": b.get("paw_reward_points", 0),
+            "is_birthday_perk": str(b.get("is_birthday_perk", False)).lower(),
+            "birthday_discount_percent": b.get("birthday_discount_percent", "")
+        })
+    
+    return {"bundles": export_data, "total": len(export_data)}
+
+
+# Travel Settings (Paw Rewards, Birthday Perks, etc.)
+@router.get("/admin/settings")
+async def get_travel_settings():
+    """Get travel pillar settings"""
+    db = get_db()
+    
+    settings = await db.app_settings.find_one({"key": "travel_settings"}, {"_id": 0})
+    
+    if not settings:
+        # Return default settings
+        return {
+            "paw_rewards": {
+                "enabled": True,
+                "points_per_request": 50,
+                "points_per_purchase": 10,
+                "redemption_rate": 100  # 100 points = ₹1
+            },
+            "birthday_perks": {
+                "enabled": True,
+                "discount_percent": 15,
+                "valid_days_before": 7,
+                "valid_days_after": 7,
+                "free_product_id": None
+            },
+            "notifications": {
+                "email_enabled": True,
+                "whatsapp_enabled": False,
+                "sms_enabled": False
+            }
+        }
+    
+    return settings.get("value", {})
+
+
+@router.put("/admin/settings")
+async def update_travel_settings(settings: Dict[str, Any]):
+    """Update travel pillar settings"""
+    db = get_db()
+    logger = get_logger()
+    
+    await db.app_settings.update_one(
+        {"key": "travel_settings"},
+        {"$set": {
+            "key": "travel_settings",
+            "value": settings,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    
+    logger.info("Travel settings updated")
+    return {"success": True, "message": "Settings updated"}
+
+
+# Seed default travel products
+@router.post("/admin/seed-products")
+async def seed_travel_products():
+    """Seed default travel products for the pillar"""
+    db = get_db()
+    logger = get_logger()
+    
+    default_products = [
+        {
+            "id": "travel-crate-small",
+            "name": "IATA Approved Travel Crate - Small",
+            "description": "Airline-approved crate perfect for small dogs up to 8kg. Ventilated design with secure locks.",
+            "price": 3499,
+            "compare_price": 4499,
+            "image": "/images/products/travel-crate-small.jpg",
+            "category": "travel",
+            "subcategory": "crate",
+            "tags": ["travel", "crate", "flight", "iata", "small"],
+            "pet_sizes": ["small"],
+            "in_stock": True,
+            "paw_reward_points": 35,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "travel-crate-medium",
+            "name": "IATA Approved Travel Crate - Medium",
+            "description": "Airline-approved crate for medium dogs 8-20kg. Durable, easy to clean.",
+            "price": 4999,
+            "compare_price": 5999,
+            "image": "/images/products/travel-crate-medium.jpg",
+            "category": "travel",
+            "subcategory": "crate",
+            "tags": ["travel", "crate", "flight", "iata", "medium"],
+            "pet_sizes": ["medium"],
+            "in_stock": True,
+            "paw_reward_points": 50,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "travel-crate-large",
+            "name": "IATA Approved Travel Crate - Large",
+            "description": "Heavy-duty airline crate for large dogs 20-32kg. Extra ventilation and sturdy construction.",
+            "price": 6999,
+            "compare_price": 8499,
+            "image": "/images/products/travel-crate-large.jpg",
+            "category": "travel",
+            "subcategory": "crate",
+            "tags": ["travel", "crate", "flight", "iata", "large"],
+            "pet_sizes": ["large"],
+            "in_stock": True,
+            "paw_reward_points": 70,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "travel-harness",
+            "name": "Premium Car Safety Harness",
+            "description": "Crash-tested car harness for safe road travel. Adjustable fit for all sizes.",
+            "price": 1299,
+            "compare_price": 1799,
+            "image": "/images/products/travel-harness.jpg",
+            "category": "travel",
+            "subcategory": "harness",
+            "tags": ["travel", "harness", "car", "safety"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 13,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 20
+        },
+        {
+            "id": "travel-carrier-soft",
+            "name": "Soft Sided Pet Carrier",
+            "description": "Lightweight, foldable carrier for train/cab travel. Multiple mesh windows for ventilation.",
+            "price": 1999,
+            "compare_price": 2499,
+            "image": "/images/products/travel-carrier.jpg",
+            "category": "travel",
+            "subcategory": "carrier",
+            "tags": ["travel", "carrier", "soft", "train", "cab"],
+            "pet_sizes": ["small", "medium"],
+            "in_stock": True,
+            "paw_reward_points": 20,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "travel-calming-treats",
+            "name": "Calming Travel Treats",
+            "description": "Natural calming treats with chamomile & L-theanine. Perfect for anxious travelers.",
+            "price": 599,
+            "compare_price": 799,
+            "image": "/images/products/calming-treats.jpg",
+            "category": "travel",
+            "subcategory": "calming",
+            "tags": ["travel", "calming", "treats", "anxiety"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 6,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 25
+        },
+        {
+            "id": "travel-water-bottle",
+            "name": "Portable Pet Water Bottle",
+            "description": "Leak-proof travel water bottle with built-in bowl. Essential for journeys.",
+            "price": 449,
+            "compare_price": 599,
+            "image": "/images/products/water-bottle.jpg",
+            "category": "travel",
+            "subcategory": "accessory",
+            "tags": ["travel", "water", "bottle", "accessory"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 5,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "travel-first-aid",
+            "name": "Pet Travel First Aid Kit",
+            "description": "Compact first aid kit for travel emergencies. Includes bandages, antiseptic, and essentials.",
+            "price": 899,
+            "compare_price": 1199,
+            "image": "/images/products/first-aid.jpg",
+            "category": "travel",
+            "subcategory": "safety",
+            "tags": ["travel", "first-aid", "safety", "emergency"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 9,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "travel-blanket",
+            "name": "Travel Comfort Blanket",
+            "description": "Plush, washable blanket for familiar comfort during travel. Reduces anxiety.",
+            "price": 699,
+            "compare_price": 899,
+            "image": "/images/products/travel-blanket.jpg",
+            "category": "travel",
+            "subcategory": "comfort",
+            "tags": ["travel", "blanket", "comfort", "calming"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 7,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 15
+        },
+        {
+            "id": "travel-id-tag",
+            "name": "GPS Smart ID Tag",
+            "description": "QR-enabled smart tag with GPS tracking. Peace of mind during travel.",
+            "price": 1499,
+            "compare_price": 1999,
+            "image": "/images/products/id-tag.jpg",
+            "category": "travel",
+            "subcategory": "safety",
+            "tags": ["travel", "id", "gps", "safety", "tracking"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 15,
+            "is_birthday_perk": False
+        }
+    ]
+    
+    default_bundles = [
+        {
+            "id": "travel-bundle-cab",
+            "bundle_type": "travel",
+            "name": "Cab Travel Kit",
+            "description": "Everything needed for safe car journeys: harness, water bottle, and calming treats.",
+            "price": 1999,
+            "original_price": 2747,
+            "image": "/images/bundles/cab-kit.jpg",
+            "travel_type": "cab",
+            "items": ["travel-harness", "travel-water-bottle", "travel-calming-treats"],
+            "is_recommended": True,
+            "paw_reward_points": 25,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 20
+        },
+        {
+            "id": "travel-bundle-train",
+            "bundle_type": "travel",
+            "name": "Train Travel Kit",
+            "description": "Complete kit for train journeys: soft carrier, comfort blanket, and calming treats.",
+            "price": 2799,
+            "original_price": 3297,
+            "image": "/images/bundles/train-kit.jpg",
+            "travel_type": "train",
+            "items": ["travel-carrier-soft", "travel-blanket", "travel-calming-treats"],
+            "is_recommended": True,
+            "paw_reward_points": 30,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "travel-bundle-flight-small",
+            "bundle_type": "travel",
+            "name": "Flight Ready Kit - Small Dogs",
+            "description": "IATA approved crate with all essentials for safe air travel.",
+            "price": 4499,
+            "original_price": 5546,
+            "image": "/images/bundles/flight-kit-small.jpg",
+            "travel_type": "flight",
+            "items": ["travel-crate-small", "travel-water-bottle", "travel-calming-treats", "travel-first-aid"],
+            "is_recommended": True,
+            "paw_reward_points": 50,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "travel-bundle-flight-medium",
+            "bundle_type": "travel",
+            "name": "Flight Ready Kit - Medium Dogs",
+            "description": "Complete flight preparation kit with IATA crate and travel essentials.",
+            "price": 5999,
+            "original_price": 7046,
+            "image": "/images/bundles/flight-kit-medium.jpg",
+            "travel_type": "flight",
+            "items": ["travel-crate-medium", "travel-water-bottle", "travel-calming-treats", "travel-first-aid"],
+            "is_recommended": True,
+            "paw_reward_points": 65,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "travel-bundle-relocation",
+            "bundle_type": "travel",
+            "name": "Relocation Comfort Pack",
+            "description": "Premium pack for long-distance relocations: crate, blanket, treats, first aid & GPS tag.",
+            "price": 8499,
+            "original_price": 10495,
+            "image": "/images/bundles/relocation-pack.jpg",
+            "travel_type": "relocation",
+            "items": ["travel-crate-large", "travel-blanket", "travel-calming-treats", "travel-first-aid", "travel-id-tag"],
+            "is_recommended": True,
+            "paw_reward_points": 100,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 10
+        }
+    ]
+    
+    # Insert products
+    for product in default_products:
+        product["created_at"] = datetime.now(timezone.utc).isoformat()
+        product["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.products.update_one(
+            {"id": product["id"]},
+            {"$set": product},
+            upsert=True
+        )
+    
+    # Insert bundles
+    for bundle in default_bundles:
+        bundle["created_at"] = datetime.now(timezone.utc).isoformat()
+        bundle["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.product_bundles.update_one(
+            {"id": bundle["id"]},
+            {"$set": bundle},
+            upsert=True
+        )
+    
+    logger.info(f"Seeded {len(default_products)} travel products and {len(default_bundles)} bundles")
+    
+    return {
+        "success": True,
+        "products_seeded": len(default_products),
+        "bundles_seeded": len(default_bundles),
+        "message": "Travel products and bundles seeded successfully"
+    }
+
+
+@router.get("/config")
+async def get_travel_config():
+    """Get travel pillar configuration for frontend"""
+    db = get_db()
+    
+    # Get settings
+    settings = await db.app_settings.find_one({"key": "travel_settings"}, {"_id": 0})
+    
+    # Get product counts
+    product_count = await db.products.count_documents({"category": "travel"})
+    bundle_count = await db.product_bundles.count_documents({"bundle_type": "travel"})
+    
+    return {
+        "travel_types": TRAVEL_TYPES,
+        "settings": settings.get("value", {}) if settings else {},
+        "product_count": product_count,
+        "bundle_count": bundle_count,
+        "enabled": True
+    }
