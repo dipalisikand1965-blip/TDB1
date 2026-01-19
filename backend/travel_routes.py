@@ -751,6 +751,11 @@ async def import_travel_bundles(bundles: List[Dict[str, Any]]):
             )
             imported += 1
             
+        except Exception as e:
+            errors.append({"row": idx + 1, "error": str(e)})
+    
+    logger.info(f"Imported {imported} travel bundles")
+    return {"success": True, "imported": imported, "errors": errors}
 
 
 # Travel Partner Models
