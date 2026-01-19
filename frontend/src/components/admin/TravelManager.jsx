@@ -625,6 +625,148 @@ const TravelManager = ({ getAuthHeader }) => {
           </div>
         </TabsContent>
 
+        {/* Partners Tab */}
+        <TabsContent value="partners" className="space-y-4">
+          <Card className="p-4">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <Button onClick={() => { resetPartnerForm(); setEditingPartner(null); setShowPartnerModal(true); }}>
+                <Plus className="w-4 h-4 mr-2" /> Add Partner
+              </Button>
+              <div className="text-sm text-gray-500">
+                {partners.filter(p => p.is_active).length} Active Partners
+              </div>
+            </div>
+          </Card>
+
+          {/* Partner Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            {Object.entries(partnerTypes).map(([key, type]) => {
+              const count = partners.filter(p => p.type === key).length;
+              const TypeIcon = type.icon;
+              return (
+                <Card key={key} className={`p-3 ${type.color} text-white`}>
+                  <div className="flex items-center gap-2">
+                    <TypeIcon className="w-5 h-5" />
+                    <div>
+                      <p className="text-lg font-bold">{count}</p>
+                      <p className="text-xs opacity-90">{type.name}</p>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Partners List */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {partners.length === 0 ? (
+              <Card className="col-span-2 p-8 text-center">
+                <Building2 className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                <p className="text-gray-500">No travel partners yet</p>
+                <p className="text-sm text-gray-400 mt-1">Add cab services, airlines, and relocation companies</p>
+                <Button className="mt-4" onClick={() => { resetPartnerForm(); setShowPartnerModal(true); }}>
+                  Add First Partner
+                </Button>
+              </Card>
+            ) : (
+              partners.map((partner) => {
+                const typeInfo = partnerTypes[partner.type] || partnerTypes.cab_service;
+                const TypeIcon = typeInfo.icon;
+                return (
+                  <Card key={partner.id} className="p-4">
+                    <div className="flex items-start gap-4">
+                      <div className={`p-3 rounded-lg ${typeInfo.color} text-white`}>
+                        <TypeIcon className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-gray-900">{partner.name}</h4>
+                          {partner.is_verified && (
+                            <Badge className="bg-blue-100 text-blue-700 text-xs">
+                              <Shield className="w-3 h-3 mr-1" /> Verified
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-500">{typeInfo.name}</p>
+                        <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                          <span className="flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-500" /> {partner.rating || 5}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3" /> {Array.isArray(partner.cities) ? partner.cities.length : 0} cities
+                          </span>
+                          {partner.commission_percent > 0 && (
+                            <span className="flex items-center gap-1">
+                              <DollarSign className="w-3 h-3" /> {partner.commission_percent}% commission
+                            </span>
+                          )}
+                        </div>
+                        {partner.contact_email && (
+                          <p className="text-xs text-gray-400 mt-1">{partner.contact_email}</p>
+                        )}
+                        <div className="flex items-center gap-2 mt-2">
+                          {partner.is_active ? (
+                            <Badge className="bg-green-100 text-green-700 text-xs">Active</Badge>
+                          ) : (
+                            <Badge className="bg-gray-100 text-gray-600 text-xs">Inactive</Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mt-3 pt-3 border-t">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setEditingPartner(partner);
+                          setPartnerForm({
+                            name: partner.name || '',
+                            type: partner.type || 'cab_service',
+                            description: partner.description || '',
+                            logo: partner.logo || '',
+                            contact_name: partner.contact_name || '',
+                            contact_email: partner.contact_email || '',
+                            contact_phone: partner.contact_phone || '',
+                            website: partner.website || '',
+                            cities: Array.isArray(partner.cities) ? partner.cities.join(', ') : '',
+                            services: partner.services || [],
+                            commission_percent: partner.commission_percent?.toString() || '',
+                            rating: partner.rating || 5,
+                            is_verified: partner.is_verified || false,
+                            is_active: partner.is_active !== false,
+                            pet_policy: partner.pet_policy || '',
+                            special_features: partner.special_features || ''
+                          });
+                          setShowPartnerModal(true);
+                        }}
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-red-600"
+                        onClick={() => deletePartner(partner.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                      {partner.website && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => window.open(partner.website, '_blank')}
+                        >
+                          <Globe className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </Card>
+                );
+              })
+            )}
+          </div>
+        </TabsContent>
+
         {/* Products Tab */}
         <TabsContent value="products" className="space-y-4">
           <Card className="p-4">
