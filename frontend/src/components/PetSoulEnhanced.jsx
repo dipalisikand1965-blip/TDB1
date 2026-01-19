@@ -670,6 +670,13 @@ const PetSoulEnhanced = ({ petId, onComplete }) => {
     setAnswers(newAnswers);
     setHistory([...history, currentQuestion]);
     
+    // Award points for answering
+    if (answer !== null) {
+      setNewPointsEarned(GAMIFICATION.pointsPerAnswer);
+      setSoulPoints(prev => prev + GAMIFICATION.pointsPerAnswer);
+      setTimeout(() => setNewPointsEarned(0), 1500);
+    }
+    
     try {
       if (petId) {
         const res = await fetch(`${API_URL}/api/pet-soul/profile/${petId}/answer`, {
@@ -685,11 +692,24 @@ const PetSoulEnhanced = ({ petId, onComplete }) => {
         
         if (res.ok) {
           const data = await res.json();
+          const newProgress = data.scores?.overall || 0;
+          
+          // Check for milestone achievement
+          const milestone = checkMilestone(newProgress);
+          if (milestone) {
+            // Award bonus points for milestone
+            setSoulPoints(prev => prev + GAMIFICATION.bonusPerFolder);
+          }
+          
           setProgress(data.scores);
           setCurrentQuestion(data.next_question);
           
           if (!data.next_question) {
-            setStep('complete');
+            setShowConfetti(true);
+            setTimeout(() => {
+              setShowConfetti(false);
+              setStep('complete');
+            }, 2000);
           }
         }
       } else {
