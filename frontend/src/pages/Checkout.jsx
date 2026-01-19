@@ -1145,12 +1145,13 @@ _GST applicable on final invoice_
                   </div>
                   <div>
                     <Label htmlFor="petBreed">Breed</Label>
-                    <Input
+                    <BreedAutocomplete
                       id="petBreed"
                       name="petBreed"
                       value={formData.petBreed}
                       onChange={handleInputChange}
                       placeholder="e.g., Golden Retriever"
+                      data-testid="checkout-pet-breed"
                     />
                   </div>
                   <div>
