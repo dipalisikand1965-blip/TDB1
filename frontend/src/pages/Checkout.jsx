@@ -1163,6 +1163,84 @@ _GST applicable on final invoice_
                     />
                   </div>
                 </div>
+                
+                {/* Pet Soul Insights Card */}
+                {loadingPetSoul && (
+                  <div className="mt-4 flex items-center gap-2 text-sm text-purple-600">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Looking up {formData.petName}'s profile...</span>
+                  </div>
+                )}
+                
+                {petSoulInsights && (
+                  <div className="mt-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                        <Sparkles className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-purple-900">We know {petSoulInsights.pet?.name}! 🐾</h3>
+                        <p className="text-xs text-purple-600">Soul Score: {Math.round(petSoulInsights.scores?.overall || 0)}% complete</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      {/* Allergies Warning */}
+                      {petSoulInsights.insights?.key_flags?.has_allergies && (
+                        <div className="flex items-center gap-2 bg-red-50 text-red-700 rounded-lg px-3 py-2 text-sm">
+                          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                          <span><strong>Allergies:</strong> {petSoulInsights.insights.key_flags.allergy_list?.join(', ') || 'Yes'}</span>
+                        </div>
+                      )}
+                      
+                      {/* Sensitive Stomach */}
+                      {petSoulInsights.insights?.key_flags?.has_sensitive_stomach && (
+                        <div className="flex items-center gap-2 bg-orange-50 text-orange-700 rounded-lg px-3 py-2 text-sm">
+                          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                          <span><strong>Note:</strong> {petSoulInsights.pet?.name} has a sensitive stomach</span>
+                        </div>
+                      )}
+                      
+                      {/* Favorite Treats */}
+                      {petSoulInsights.answers?.favorite_treats && (
+                        <div className="flex items-center gap-2 bg-green-50 text-green-700 rounded-lg px-3 py-2 text-sm">
+                          <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                          <span><strong>Loves:</strong> {Array.isArray(petSoulInsights.answers.favorite_treats) ? petSoulInsights.answers.favorite_treats.join(', ') : petSoulInsights.answers.favorite_treats}</span>
+                        </div>
+                      )}
+                      
+                      {/* Diet Type */}
+                      {petSoulInsights.answers?.diet_type && (
+                        <div className="flex items-center gap-2 bg-blue-50 text-blue-700 rounded-lg px-3 py-2 text-sm">
+                          <Info className="w-4 h-4 flex-shrink-0" />
+                          <span><strong>Diet:</strong> {petSoulInsights.answers.diet_type}</span>
+                        </div>
+                      )}
+                      
+                      {/* Birthday Coming Up */}
+                      {petSoulInsights.pet?.birth_date && (() => {
+                        const bday = new Date(petSoulInsights.pet.birth_date);
+                        const today = new Date();
+                        bday.setFullYear(today.getFullYear());
+                        if (bday < today) bday.setFullYear(today.getFullYear() + 1);
+                        const daysUntil = Math.ceil((bday - today) / (1000 * 60 * 60 * 24));
+                        if (daysUntil <= 30) {
+                          return (
+                            <div className="flex items-center gap-2 bg-pink-50 text-pink-700 rounded-lg px-3 py-2 text-sm">
+                              <Gift className="w-4 h-4 flex-shrink-0" />
+                              <span><strong>Birthday in {daysUntil} days!</strong> Make it special 🎂</span>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+                    </div>
+                    
+                    <p className="text-xs text-purple-500 mt-3 text-center">
+                      We'll use this to make sure your order is perfect for {petSoulInsights.pet?.name}
+                    </p>
+                  </div>
+                )}
               </Card>
 
               {/* Store Pickup Section (only when pickup is selected for bakery-only carts) */}
