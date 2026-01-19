@@ -107,47 +107,72 @@ const PetProfile = ({ isEmbed = false }) => {
           setOccasions(data.occasions || {});
         }
 
-        // Check for email in URL params (iframe integration) or localStorage
-        const params = new URLSearchParams(window.location.search);
-        let email = params.get('email');
+        // Priority for email detection:
+        // 1. Authenticated user
+        // 2. URL params (iframe integration)
+        // 3. localStorage (previous checkout)
+        let email = '';
         let savedCustomerName = '';
         let savedPhone = '';
         
-        // If email in URL, save it and pre-fill form
-        if (email) {
-          localStorage.setItem('tdb_pet_parent_email', email);
-          setFormData(prev => ({ ...prev, owner_email: email }));
+        // 1. Check if user is authenticated
+        if (user && user.email) {
+          email = user.email;
+          savedCustomerName = user.name || '';
+          // Pre-fill owner details from auth
+          setFormData(prev => ({
+            ...prev,
+            owner_email: email,
+            owner_name: savedCustomerName || prev.owner_name,
+            owner_phone: user.phone || prev.owner_phone
+          }));
         } else {
-          // Try to get from checkout saved details first
-          try {
-            const savedCustomer = localStorage.getItem('tdc_customer_details');
-            if (savedCustomer) {
-              const parsed = JSON.parse(savedCustomer);
-              email = parsed.email;
-              savedCustomerName = parsed.parentName;
-              savedPhone = parsed.phone;
-              // Pre-fill owner details from checkout
-              setFormData(prev => ({
-                ...prev,
-                owner_email: email || prev.owner_email,
-                owner_name: savedCustomerName || prev.owner_name,
-                owner_phone: savedPhone || prev.owner_phone
-              }));
-            }
-          } catch (err) {
-            console.error('Error loading saved customer:', err);
-          }
+          // 2. Check for email in URL params (iframe integration)
+          const params = new URLSearchParams(window.location.search);
+          email = params.get('email');
           
-          // Fallback to legacy localStorage key
-          if (!email) {
-            email = localStorage.getItem('tdb_pet_parent_email');
+          // If email in URL, save it and pre-fill form
+          if (email) {
+            localStorage.setItem('tdb_pet_parent_email', email);
+            setFormData(prev => ({ ...prev, owner_email: email }));
+          } else {
+            // 3. Try to get from checkout saved details
+            try {
+              const savedCustomer = localStorage.getItem('tdc_customer_details');
+              if (savedCustomer) {
+                const parsed = JSON.parse(savedCustomer);
+                email = parsed.email;
+                savedCustomerName = parsed.parentName;
+                savedPhone = parsed.phone;
+                // Pre-fill owner details from checkout
+                setFormData(prev => ({
+                  ...prev,
+                  owner_email: email || prev.owner_email,
+                  owner_name: savedCustomerName || prev.owner_name,
+                  owner_phone: savedPhone || prev.owner_phone
+                }));
+              }
+            } catch (err) {
+              console.error('Error loading saved customer:', err);
+            }
+            
+            // Fallback to legacy localStorage key
+            if (!email) {
+              email = localStorage.getItem('tdb_pet_parent_email');
+            }
           }
         }
 
         if (email) {
           setSavedEmail(email);
-          // Fetch existing pets
-          const petsRes = await fetch(`${API_URL}/api/pets?owner_email=${encodeURIComponent(email)}&limit=50`);
+          
+          // Fetch existing pets - use auth token if available for better security
+          const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+          const petsEndpoint = token 
+            ? `${API_URL}/api/pets/my-pets`
+            : `${API_URL}/api/pets?owner_email=${encodeURIComponent(email)}&limit=50`;
+          
+          const petsRes = await fetch(petsEndpoint, { headers });
           if (petsRes.ok) {
             const data = await petsRes.json();
             if (data.pets && data.pets.length > 0) {
@@ -170,7 +195,7 @@ const PetProfile = ({ isEmbed = false }) => {
       }
     };
     fetchData();
-  }, []);
+  }, [user, token]);
 
   const updateFormData = (field, value) => {
     setFormData(prev => ({
