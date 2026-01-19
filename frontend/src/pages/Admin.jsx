@@ -1479,6 +1479,11 @@ const Admin = () => {
           <UnifiedInbox credentials={{ username, password }} />
         )}
 
+        {/* Celebrations Calendar */}
+        {activeTab === 'celebrations' && (
+          <CelebrationsCalendar />
+        )}
+
         {/* Orders Tab */}
         {activeTab === 'orders' && (
           <OrdersTab 
