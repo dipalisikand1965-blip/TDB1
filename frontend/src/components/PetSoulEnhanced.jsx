@@ -8,10 +8,177 @@ import {
   Heart, ChevronRight, ChevronLeft, Check, Sparkles, 
   Camera, Calendar, Scale, Dog, AlertCircle, Plus,
   Home, Plane, Utensils, GraduationCap, Sunset, Users,
-  Clock, Shield
+  Clock, Shield, Star, Gift, Trophy, Zap, Crown
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import BreedAutocomplete from './BreedAutocomplete';
+
+// GAMIFICATION CONFIG
+const GAMIFICATION = {
+  pointsPerAnswer: 10,
+  bonusPerFolder: 25,
+  milestones: [
+    { percent: 25, name: "Explorer 🐾", points: 100, reward: "Unlock personalized product recommendations", color: "from-blue-400 to-blue-600" },
+    { percent: 50, name: "Adventurer 🌟", points: 250, reward: "10% off your next purchase", color: "from-purple-400 to-purple-600" },
+    { percent: 75, name: "Champion 🏆", points: 500, reward: "Free treat on your pet's birthday", color: "from-amber-400 to-orange-500" },
+    { percent: 100, name: "Soul Master 👑", points: 1000, reward: "VIP status + Priority support", color: "from-pink-500 to-rose-600" }
+  ]
+};
+
+// Confetti Animation Component
+const Confetti = ({ active }) => {
+  if (!active) return null;
+  
+  const colors = ['#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#3B82F6'];
+  const confettiPieces = Array.from({ length: 50 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 0.5,
+    duration: 1 + Math.random() * 2,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    size: 8 + Math.random() * 8
+  }));
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+      {confettiPieces.map((piece) => (
+        <div
+          key={piece.id}
+          className="absolute animate-confetti-fall"
+          style={{
+            left: `${piece.left}%`,
+            animationDelay: `${piece.delay}s`,
+            animationDuration: `${piece.duration}s`,
+            width: piece.size,
+            height: piece.size,
+            backgroundColor: piece.color,
+            borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+            transform: `rotate(${Math.random() * 360}deg)`
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes confetti-fall {
+          0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .animate-confetti-fall {
+          animation: confetti-fall linear forwards;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+// Milestone Badge Component
+const MilestoneBadge = ({ milestone, achieved, current }) => {
+  const isNext = !achieved && current < milestone.percent;
+  
+  return (
+    <div className={`relative p-3 rounded-xl border-2 transition-all ${
+      achieved 
+        ? `bg-gradient-to-r ${milestone.color} text-white border-transparent shadow-lg` 
+        : isNext
+          ? 'border-dashed border-purple-300 bg-purple-50'
+          : 'border-gray-200 bg-gray-50 opacity-60'
+    }`}>
+      <div className="flex items-center gap-3">
+        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+          achieved ? 'bg-white/20' : 'bg-white'
+        }`}>
+          {achieved ? (
+            <Check className="w-5 h-5" />
+          ) : (
+            <span className="text-lg">{milestone.name.split(' ')[1]}</span>
+          )}
+        </div>
+        <div className="flex-1">
+          <p className={`font-semibold text-sm ${achieved ? 'text-white' : 'text-gray-900'}`}>
+            {milestone.name}
+          </p>
+          <p className={`text-xs ${achieved ? 'text-white/80' : 'text-gray-500'}`}>
+            {milestone.percent}% Complete • {milestone.points} pts
+          </p>
+        </div>
+        {achieved && (
+          <Badge className="bg-white/20 text-white border-0 text-xs">
+            Unlocked!
+          </Badge>
+        )}
+      </div>
+      {!achieved && (
+        <p className="text-xs mt-2 text-gray-600">🎁 {milestone.reward}</p>
+      )}
+    </div>
+  );
+};
+
+// Points Display Component  
+const PointsDisplay = ({ points, newPoints }) => {
+  const [showAnimation, setShowAnimation] = useState(false);
+  
+  useEffect(() => {
+    if (newPoints > 0) {
+      setShowAnimation(true);
+      setTimeout(() => setShowAnimation(false), 1000);
+    }
+  }, [newPoints]);
+
+  return (
+    <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-100 to-yellow-100 rounded-full border border-amber-200">
+      <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+      <span className="font-bold text-amber-700">{points}</span>
+      <span className="text-xs text-amber-600">Soul Points</span>
+      {showAnimation && (
+        <span className="absolute ml-16 text-green-600 font-bold text-sm animate-bounce">
+          +{newPoints}
+        </span>
+      )}
+    </div>
+  );
+};
+
+// Rewards Preview Modal
+const RewardsModal = ({ isOpen, onClose, currentProgress, totalPoints }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Trophy className="w-8 h-8 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">Your Paw Rewards 🐾</h2>
+          <p className="text-gray-500 mt-1">Complete Pet Soul to unlock amazing rewards!</p>
+        </div>
+        
+        <div className="flex items-center justify-center gap-4 mb-6 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl">
+          <Star className="w-8 h-8 text-amber-500 fill-amber-500" />
+          <div>
+            <p className="text-3xl font-bold text-amber-700">{totalPoints}</p>
+            <p className="text-sm text-amber-600">Total Soul Points</p>
+          </div>
+        </div>
+        
+        <div className="space-y-3 mb-6">
+          {GAMIFICATION.milestones.map((milestone) => (
+            <MilestoneBadge 
+              key={milestone.percent}
+              milestone={milestone}
+              achieved={currentProgress >= milestone.percent}
+              current={currentProgress}
+            />
+          ))}
+        </div>
+        
+        <Button onClick={onClose} className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+          Keep Earning Points!
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 // Folder icon mapping
 const FOLDER_ICONS = {
