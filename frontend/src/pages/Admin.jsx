@@ -23,6 +23,7 @@ import NotificationBell from '../components/admin/NotificationBell';
 import UnifiedInbox from '../components/admin/UnifiedInbox';
 import CelebrationsCalendar from '../components/admin/CelebrationsCalendar';
 import BreedTagsManager from '../components/admin/BreedTagsManager';
+import AgentManagement from '../components/admin/AgentManagement';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
 import { API_URL } from '../utils/api';
 import {
