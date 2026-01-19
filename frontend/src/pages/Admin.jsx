@@ -2104,6 +2104,11 @@ const Admin = () => {
           <StayManager getAuthHeader={getAuthHeaders} />
         )}
 
+        {/* Travel Tab */}
+        {activeTab === 'travel' && (
+          <TravelManager getAuthHeader={getAuthHeaders} />
+        )}
+
         {/* Service Desk Tab - Full Page Mode */}
         {activeTab === 'servicedesk' && (
           <div className="fixed inset-0 top-[140px] bg-slate-50 z-40 overflow-hidden">
