@@ -1,584 +1,70 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../ui/button';
+import { Card } from '../ui/card';
 import { Input } from '../ui/input';
-import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
+import { Switch } from '../ui/switch';
+import { Label } from '../ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { toast } from '../../hooks/use-toast';
-import { API_URL } from '../../utils/api';
 import {
-  Car, Train, Plane, Truck, Package, Plus, Edit, Trash2, Search, Filter,
-  Download, Upload, RefreshCw, Eye, MessageCircle, Phone, Mail, MapPin,
-  Calendar, Clock, AlertTriangle, CheckCircle, XCircle, Loader2, Star,
-  Gift, Tag, DollarSign, Users, TrendingUp, PawPrint, Shield, Send,
-  FileText, BarChart3, Settings, Bell, ChevronRight, Save, X
+  Plane, Car, Train, Truck, Package, Gift, Settings, RefreshCw, Upload, Download,
+  Plus, Edit2, Trash2, Search, Filter, Eye, Calendar, Clock, MapPin, User, Phone, Mail,
+  PawPrint, AlertTriangle, CheckCircle, XCircle, Loader2, ChevronDown, ChevronUp,
+  TrendingUp, DollarSign, Star, Bell, FileText
 } from 'lucide-react';
 import axios from 'axios';
+import { toast } from '../../hooks/use-toast';
+import { API_URL } from '../../utils/api';
 
-// Travel Request Status Config
-const REQUEST_STATUS = {
-  submitted: { label: 'Submitted', color: 'bg-blue-100 text-blue-700', icon: Send },
-  reviewing: { label: 'Under Review', color: 'bg-yellow-100 text-yellow-700', icon: Eye },
-  coordinating: { label: 'Coordinating', color: 'bg-purple-100 text-purple-700', icon: Users },
-  confirmed: { label: 'Confirmed', color: 'bg-green-100 text-green-700', icon: CheckCircle },
-  completed: { label: 'Completed', color: 'bg-emerald-100 text-emerald-700', icon: CheckCircle },
-  cancelled: { label: 'Cancelled', color: 'bg-red-100 text-red-700', icon: XCircle }
-};
-
-// Travel Type Icons
-const TRAVEL_ICONS = {
-  cab: Car,
-  train: Train,
-  flight: Plane,
-  relocation: Truck
-};
-
-// Stats Card Component
-const StatCard = ({ title, value, icon: Icon, color, subtitle }) => (
-  <Card className="hover:shadow-md transition-shadow">
-    <CardContent className="p-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-500">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
-          {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
-        </div>
-        <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center`}>
-          <Icon className="w-6 h-6 text-white" />
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-);
-
-// Request Detail Modal
-const RequestDetailModal = ({ request, isOpen, onClose, onUpdate, authHeaders }) => {
-  const [status, setStatus] = useState(request?.status || 'submitted');
-  const [conciergeNotes, setConciergeNotes] = useState(request?.concierge_notes || '');
-  const [quotedPrice, setQuotedPrice] = useState(request?.quoted_price || '');
-  const [assignedTo, setAssignedTo] = useState(request?.assigned_to || '');
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (request) {
-      setStatus(request.status);
-      setConciergeNotes(request.concierge_notes || '');
-      setQuotedPrice(request.quoted_price || '');
-      setAssignedTo(request.assigned_to || '');
-    }
-  }, [request]);
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const response = await axios.patch(
-        `${API_URL}/api/travel/request/${request.request_id}`,
-        {
-          status,
-          concierge_notes: conciergeNotes,
-          quoted_price: quotedPrice ? parseFloat(quotedPrice) : null,
-          assigned_to: assignedTo
-        },
-        { headers: authHeaders }
-      );
-      
-      if (response.data.success) {
-        toast({ title: 'Success', description: 'Request updated' });
-        onUpdate();
-        onClose();
-      }
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to update', variant: 'destructive' });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  if (!request) return null;
-
-  const TravelIcon = TRAVEL_ICONS[request.travel_type] || Car;
-  const statusConfig = REQUEST_STATUS[request.status] || REQUEST_STATUS.submitted;
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-3">
-            <TravelIcon className="w-6 h-6 text-purple-600" />
-            {request.request_id}
-            <Badge className={statusConfig.color}>{statusConfig.label}</Badge>
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-6">
-          {/* Pet & Customer Info */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <Card className="p-4 bg-purple-50">
-              <h4 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
-                <PawPrint className="w-4 h-4" /> Pet Details
-              </h4>
-              <div className="space-y-1 text-sm">
-                <p><strong>Name:</strong> {request.pet?.name}</p>
-                <p><strong>Breed:</strong> {request.pet?.breed || 'Not specified'}</p>
-                <p><strong>Size:</strong> {request.pet?.size || 'Unknown'}</p>
-                <p><strong>Weight:</strong> {request.pet?.weight ? `${request.pet.weight} kg` : 'Unknown'}</p>
-                <p><strong>Crate Trained:</strong> {request.pet?.crate_trained ? 'Yes' : request.pet?.crate_trained === false ? 'No' : 'Unknown'}</p>
-              </div>
-            </Card>
-
-            <Card className="p-4 bg-blue-50">
-              <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
-                <Users className="w-4 h-4" /> Customer
-              </h4>
-              <div className="space-y-1 text-sm">
-                <p><strong>Name:</strong> {request.customer?.name || 'N/A'}</p>
-                <p className="flex items-center gap-1">
-                  <Mail className="w-3 h-3" /> {request.customer?.email || 'N/A'}
-                </p>
-                <p className="flex items-center gap-1">
-                  <Phone className="w-3 h-3" /> {request.customer?.phone || 'N/A'}
-                </p>
-              </div>
-            </Card>
-          </div>
-
-          {/* Journey Details */}
-          <Card className="p-4">
-            <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-purple-600" /> Journey Details
-            </h4>
-            <div className="grid md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-gray-500">From</p>
-                <p className="font-medium">{request.journey?.pickup_location}</p>
-                <p className="text-gray-600">{request.journey?.pickup_city}</p>
-              </div>
-              <div>
-                <p className="text-gray-500">To</p>
-                <p className="font-medium">{request.journey?.drop_location}</p>
-                <p className="text-gray-600">{request.journey?.drop_city}</p>
-              </div>
-              <div>
-                <p className="text-gray-500">Date</p>
-                <p className="font-medium">{request.journey?.travel_date}</p>
-                {request.journey?.travel_time && <p className="text-gray-600">{request.journey.travel_time}</p>}
-              </div>
-              {request.journey?.is_round_trip && (
-                <div>
-                  <p className="text-gray-500">Return</p>
-                  <p className="font-medium">{request.journey?.return_date || 'TBD'}</p>
-                </div>
-              )}
-            </div>
-          </Card>
-
-          {/* Risk Factors */}
-          {request.risk_factors?.length > 0 && (
-            <Card className="p-4 bg-amber-50 border-amber-200">
-              <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4" /> Risk Factors
-              </h4>
-              <ul className="text-sm text-amber-800 space-y-1">
-                {request.risk_factors.map((factor, i) => (
-                  <li key={i}>• {factor}</li>
-                ))}
-              </ul>
-            </Card>
-          )}
-
-          {/* Special Requirements */}
-          {request.special_requirements && (
-            <Card className="p-4">
-              <h4 className="font-semibold text-gray-900 mb-2">Special Requirements</h4>
-              <p className="text-sm text-gray-600">{request.special_requirements}</p>
-            </Card>
-          )}
-
-          {/* Concierge Actions */}
-          <Card className="p-4 border-2 border-purple-200">
-            <h4 className="font-semibold text-purple-900 mb-4 flex items-center gap-2">
-              <Settings className="w-4 h-4" /> Concierge Actions
-            </h4>
-            
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <Label>Status</Label>
-                <Select value={status} onValueChange={setStatus}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(REQUEST_STATUS).map(([key, config]) => (
-                      <SelectItem key={key} value={key}>{config.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label>Assigned To</Label>
-                <Input
-                  value={assignedTo}
-                  onChange={(e) => setAssignedTo(e.target.value)}
-                  placeholder="Concierge name"
-                />
-              </div>
-              
-              <div>
-                <Label>Quoted Price (₹)</Label>
-                <Input
-                  type="number"
-                  value={quotedPrice}
-                  onChange={(e) => setQuotedPrice(e.target.value)}
-                  placeholder="0"
-                />
-              </div>
-            </div>
-            
-            <div className="mt-4">
-              <Label>Concierge Notes</Label>
-              <Textarea
-                value={conciergeNotes}
-                onChange={(e) => setConciergeNotes(e.target.value)}
-                placeholder="Internal notes about this request..."
-                rows={3}
-              />
-            </div>
-          </Card>
-        </div>
-
-        <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSave} disabled={saving} className="bg-purple-600 hover:bg-purple-700">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-            Save Changes
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-// Product Form Modal
-const ProductFormModal = ({ product, isOpen, onClose, onSave, authHeaders }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    category: 'travel',
-    image: '',
-    tags: [],
-    pillar: 'travel',
-    is_active: true,
-    paw_reward: { enabled: false, max_value: 100, custom_message: '' },
-    birthday_perk: false,
-    shipping_info: { weight: '', dimensions: '', ships_pan_india: true }
-  });
-  const [saving, setSaving] = useState(false);
-  const [newTag, setNewTag] = useState('');
-
-  useEffect(() => {
-    if (product) {
-      setFormData({
-        name: product.name || '',
-        description: product.description || '',
-        price: product.price || '',
-        category: product.category || 'travel',
-        image: product.image || '',
-        tags: product.tags || [],
-        pillar: 'travel',
-        is_active: product.is_active !== false,
-        paw_reward: product.paw_reward || { enabled: false, max_value: 100, custom_message: '' },
-        birthday_perk: product.birthday_perk || false,
-        shipping_info: product.shipping_info || { weight: '', dimensions: '', ships_pan_india: true }
-      });
-    } else {
-      setFormData({
-        name: '',
-        description: '',
-        price: '',
-        category: 'travel',
-        image: '',
-        tags: ['travel'],
-        pillar: 'travel',
-        is_active: true,
-        paw_reward: { enabled: false, max_value: 100, custom_message: '' },
-        birthday_perk: false,
-        shipping_info: { weight: '', dimensions: '', ships_pan_india: true }
-      });
-    }
-  }, [product, isOpen]);
-
-  const handleAddTag = () => {
-    if (newTag && !formData.tags.includes(newTag)) {
-      setFormData({ ...formData, tags: [...formData.tags, newTag] });
-      setNewTag('');
-    }
-  };
-
-  const handleRemoveTag = (tag) => {
-    setFormData({ ...formData, tags: formData.tags.filter(t => t !== tag) });
-  };
-
-  const handleSave = async () => {
-    if (!formData.name || !formData.price) {
-      toast({ title: 'Error', description: 'Name and price are required', variant: 'destructive' });
-      return;
-    }
-
-    setSaving(true);
-    try {
-      const payload = {
-        ...formData,
-        price: parseFloat(formData.price),
-        id: product?.id || `travel-${Date.now()}`
-      };
-
-      const url = product?.id 
-        ? `${API_URL}/api/admin/products/${product.id}`
-        : `${API_URL}/api/admin/products`;
-      
-      const method = product?.id ? 'put' : 'post';
-      
-      await axios[method](url, payload, { headers: authHeaders });
-      
-      toast({ title: 'Success', description: `Product ${product ? 'updated' : 'created'}` });
-      onSave();
-      onClose();
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to save product', variant: 'destructive' });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Package className="w-5 h-5 text-purple-600" />
-            {product ? 'Edit Travel Product' : 'Add Travel Product'}
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-4">
-          {/* Basic Info */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <Label>Product Name *</Label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Pet Travel Carrier"
-              />
-            </div>
-            <div>
-              <Label>Price (₹) *</Label>
-              <Input
-                type="number"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="1500"
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label>Description</Label>
-            <Textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Comfortable airline-approved carrier for small to medium dogs..."
-              rows={3}
-            />
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <Label>Category</Label>
-              <Select 
-                value={formData.category} 
-                onValueChange={(val) => setFormData({ ...formData, category: val })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="travel">Travel</SelectItem>
-                  <SelectItem value="carrier">Carrier/Crate</SelectItem>
-                  <SelectItem value="harness">Harness</SelectItem>
-                  <SelectItem value="calming">Calming Aids</SelectItem>
-                  <SelectItem value="kit">Travel Kit</SelectItem>
-                  <SelectItem value="accessory">Accessory</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Image URL</Label>
-              <Input
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                placeholder="https://..."
-              />
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div>
-            <Label>Tags</Label>
-            <div className="flex gap-2 mb-2 flex-wrap">
-              {formData.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                  {tag}
-                  <X className="w-3 h-3 cursor-pointer" onClick={() => handleRemoveTag(tag)} />
-                </Badge>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Input
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                placeholder="Add tag..."
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-                className="flex-1"
-              />
-              <Button type="button" variant="outline" onClick={handleAddTag}>Add</Button>
-            </div>
-          </div>
-
-          {/* Paw Reward */}
-          <Card className="p-4 bg-amber-50 border-amber-200">
-            <h4 className="font-semibold text-amber-900 mb-3 flex items-center gap-2">
-              <Gift className="w-4 h-4" /> Paw Reward (Birthday Perk)
-            </h4>
-            <div className="space-y-3">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={formData.paw_reward?.enabled}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    paw_reward: { ...formData.paw_reward, enabled: e.target.checked }
-                  })}
-                />
-                Enable Paw Reward
-              </label>
-              {formData.paw_reward?.enabled && (
-                <div className="grid md:grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-sm">Max Reward Value (₹)</Label>
-                    <Input
-                      type="number"
-                      value={formData.paw_reward?.max_value || ''}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        paw_reward: { ...formData.paw_reward, max_value: parseInt(e.target.value) || 0 }
-                      })}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-sm">Custom Message</Label>
-                    <Input
-                      value={formData.paw_reward?.custom_message || ''}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        paw_reward: { ...formData.paw_reward, custom_message: e.target.value }
-                      })}
-                      placeholder="Free travel kit on birthday!"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </Card>
-
-          {/* Shipping */}
-          <Card className="p-4">
-            <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <Truck className="w-4 h-4" /> Shipping Info
-            </h4>
-            <div className="grid md:grid-cols-3 gap-3">
-              <div>
-                <Label className="text-sm">Weight (kg)</Label>
-                <Input
-                  value={formData.shipping_info?.weight || ''}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    shipping_info: { ...formData.shipping_info, weight: e.target.value }
-                  })}
-                  placeholder="0.5"
-                />
-              </div>
-              <div>
-                <Label className="text-sm">Dimensions</Label>
-                <Input
-                  value={formData.shipping_info?.dimensions || ''}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    shipping_info: { ...formData.shipping_info, dimensions: e.target.value }
-                  })}
-                  placeholder="30x20x15 cm"
-                />
-              </div>
-              <div className="flex items-end">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={formData.shipping_info?.ships_pan_india !== false}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      shipping_info: { ...formData.shipping_info, ships_pan_india: e.target.checked }
-                    })}
-                  />
-                  <span className="text-sm">Ships Pan-India</span>
-                </label>
-              </div>
-            </div>
-          </Card>
-
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={formData.is_active}
-              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-            />
-            Product is Active
-          </label>
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSave} disabled={saving} className="bg-purple-600 hover:bg-purple-700">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-            {product ? 'Update' : 'Create'} Product
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-// Main TravelManager Component
 const TravelManager = ({ getAuthHeader }) => {
-  const [activeTab, setActiveTab] = useState('requests');
+  const [activeSubTab, setActiveSubTab] = useState('requests');
   const [requests, setRequests] = useState([]);
   const [products, setProducts] = useState([]);
-  const [stats, setStats] = useState(null);
+  const [bundles, setBundles] = useState([]);
+  const [stats, setStats] = useState({});
+  const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
-  const [selectedRequest, setSelectedRequest] = useState(null);
-  const [showRequestModal, setShowRequestModal] = useState(false);
-  const [showProductModal, setShowProductModal] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [showBundleModal, setShowBundleModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingBundle, setEditingBundle] = useState(null);
+  const fileInputRef = useRef(null);
+  const bundleFileInputRef = useRef(null);
 
-  const authHeaders = getAuthHeader ? getAuthHeader() : {};
+  // Product form state
+  const [productForm, setProductForm] = useState({
+    name: '', description: '', price: '', compare_price: '', image: '',
+    subcategory: '', tags: '', pet_sizes: '', in_stock: true,
+    paw_reward_points: 0, is_birthday_perk: false, birthday_discount_percent: ''
+  });
+
+  // Bundle form state
+  const [bundleForm, setBundleForm] = useState({
+    name: '', description: '', price: '', original_price: '', image: '',
+    travel_type: 'cab', items: [], is_recommended: true,
+    paw_reward_points: 0, is_birthday_perk: false, birthday_discount_percent: ''
+  });
+
+  const travelTypes = {
+    cab: { name: 'Cab / Road Travel', icon: Car, color: 'bg-green-500' },
+    train: { name: 'Train / Bus Travel', icon: Train, color: 'bg-blue-500' },
+    flight: { name: 'Domestic Flight', icon: Plane, color: 'bg-purple-500' },
+    relocation: { name: 'Pet Relocation', icon: Truck, color: 'bg-orange-500' }
+  };
+
+  const statusColors = {
+    submitted: 'bg-yellow-100 text-yellow-700',
+    reviewing: 'bg-blue-100 text-blue-700',
+    coordinating: 'bg-indigo-100 text-indigo-700',
+    confirmed: 'bg-green-100 text-green-700',
+    completed: 'bg-emerald-100 text-emerald-700',
+    cancelled: 'bg-red-100 text-red-700'
+  };
 
   useEffect(() => {
     fetchData();
@@ -587,417 +73,1034 @@ const TravelManager = ({ getAuthHeader }) => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [requestsRes, productsRes, statsRes] = await Promise.all([
-        axios.get(`${API_URL}/api/travel/requests?limit=100`, { headers: authHeaders }),
-        axios.get(`${API_URL}/api/products?category=travel&limit=100`),
-        axios.get(`${API_URL}/api/travel/stats`, { headers: authHeaders })
+      const [requestsRes, productsRes, bundlesRes, statsRes, settingsRes] = await Promise.all([
+        axios.get(`${API_URL}/api/travel/requests`, getAuthHeader()),
+        axios.get(`${API_URL}/api/travel/products`),
+        axios.get(`${API_URL}/api/travel/bundles`),
+        axios.get(`${API_URL}/api/travel/stats`),
+        axios.get(`${API_URL}/api/travel/admin/settings`, getAuthHeader())
       ]);
-
+      
       setRequests(requestsRes.data.requests || []);
       setProducts(productsRes.data.products || []);
-      setStats(statsRes.data);
+      setBundles(bundlesRes.data.bundles || []);
+      setStats(statsRes.data || {});
+      setSettings(settingsRes.data || {});
     } catch (error) {
-      console.error('Error fetching data:', error);
-      toast({ title: 'Error', description: 'Failed to load data', variant: 'destructive' });
+      console.error('Error fetching travel data:', error);
+      toast({ title: 'Error', description: 'Failed to load travel data', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
   };
 
-  // Filter requests
-  const filteredRequests = useMemo(() => {
-    return requests.filter(req => {
-      const matchesSearch = !searchQuery || 
-        req.request_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        req.pet?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        req.customer?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesStatus = statusFilter === 'all' || req.status === statusFilter;
-      const matchesType = typeFilter === 'all' || req.travel_type === typeFilter;
-      
-      return matchesSearch && matchesStatus && matchesType;
-    });
-  }, [requests, searchQuery, statusFilter, typeFilter]);
-
-  // Export to CSV
-  const exportToCSV = () => {
-    const headers = ['Request ID', 'Type', 'Pet Name', 'Customer', 'From', 'To', 'Date', 'Status', 'Price'];
-    const rows = filteredRequests.map(req => [
-      req.request_id,
-      req.travel_type_name,
-      req.pet?.name,
-      req.customer?.name,
-      req.journey?.pickup_city,
-      req.journey?.drop_city,
-      req.journey?.travel_date,
-      req.status,
-      req.quoted_price || ''
-    ]);
-
-    const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `travel-requests-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-  };
-
-  // Seed sample products
   const seedProducts = async () => {
-    const sampleProducts = [
-      { id: 'travel-001', name: 'Pet Travel Carrier (Small)', description: 'Airline-approved soft carrier for small dogs up to 8kg', price: 2499, category: 'carrier', tags: ['travel', 'carrier', 'airline-approved', 'small'], image: '' },
-      { id: 'travel-002', name: 'Pet Travel Carrier (Medium)', description: 'Sturdy carrier for medium dogs up to 15kg', price: 3499, category: 'carrier', tags: ['travel', 'carrier', 'medium'], image: '' },
-      { id: 'travel-003', name: 'Car Safety Harness', description: 'Adjustable seatbelt harness for safe car travel', price: 899, category: 'harness', tags: ['travel', 'harness', 'car', 'safety'], image: '' },
-      { id: 'travel-004', name: 'Travel Water Bowl (Collapsible)', description: 'Portable silicone bowl for on-the-go hydration', price: 349, category: 'accessory', tags: ['travel', 'bowl', 'portable'], image: '' },
-      { id: 'travel-005', name: 'Calming Treats (Travel Pack)', description: 'Natural calming treats for anxious travelers - 30 pcs', price: 599, category: 'calming', tags: ['travel', 'calming', 'treats', 'anxiety'], image: '' },
-      { id: 'travel-006', name: 'Pet First Aid Kit', description: 'Essential medical supplies for pet emergencies on the go', price: 1299, category: 'kit', tags: ['travel', 'first-aid', 'emergency', 'kit'], image: '' },
-      { id: 'travel-007', name: 'Travel Comfort Mat', description: 'Portable padded mat for rest stops and hotels', price: 799, category: 'accessory', tags: ['travel', 'mat', 'comfort', 'portable'], image: '' },
-      { id: 'travel-008', name: 'Anti-Nausea Spray', description: 'Natural spray to prevent motion sickness', price: 449, category: 'calming', tags: ['travel', 'motion-sickness', 'calming'], image: '' },
-      { id: 'travel-009', name: 'Premium Travel Kit Bundle', description: 'Complete travel kit: carrier, harness, bowl, treats, mat', price: 5999, category: 'kit', tags: ['travel', 'bundle', 'premium', 'kit'], image: '', paw_reward: { enabled: true, max_value: 500, custom_message: 'Free upgrade to premium carrier!' } },
-      { id: 'travel-010', name: 'Flight Crate (IATA Approved)', description: 'Heavy-duty IATA approved crate for air travel', price: 8999, category: 'carrier', tags: ['travel', 'crate', 'flight', 'iata-approved'], image: '' }
-    ];
-
     try {
-      for (const product of sampleProducts) {
-        await axios.post(`${API_URL}/api/admin/products`, { ...product, pillar: 'travel', is_active: true }, { headers: authHeaders });
-      }
-      toast({ title: 'Success', description: 'Travel products seeded!' });
+      const response = await axios.post(`${API_URL}/api/travel/admin/seed-products`, {}, getAuthHeader());
+      toast({ title: 'Success', description: `Seeded ${response.data.products_seeded} products and ${response.data.bundles_seeded} bundles` });
       fetchData();
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to seed products', variant: 'destructive' });
     }
   };
 
+  const updateRequestStatus = async (requestId, status) => {
+    try {
+      await axios.patch(`${API_URL}/api/travel/request/${requestId}`, { status }, getAuthHeader());
+      toast({ title: 'Success', description: 'Request status updated' });
+      fetchData();
+      setSelectedRequest(null);
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to update status', variant: 'destructive' });
+    }
+  };
+
+  const handleProductSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...productForm,
+        price: parseFloat(productForm.price) || 0,
+        compare_price: productForm.compare_price ? parseFloat(productForm.compare_price) : null,
+        tags: productForm.tags.split(',').map(t => t.trim()).filter(Boolean),
+        pet_sizes: productForm.pet_sizes.split(',').map(s => s.trim()).filter(Boolean),
+        paw_reward_points: parseInt(productForm.paw_reward_points) || 0,
+        birthday_discount_percent: productForm.birthday_discount_percent ? parseInt(productForm.birthday_discount_percent) : null
+      };
+
+      if (editingProduct) {
+        await axios.put(`${API_URL}/api/travel/admin/products/${editingProduct.id}`, payload, getAuthHeader());
+        toast({ title: 'Success', description: 'Product updated' });
+      } else {
+        await axios.post(`${API_URL}/api/travel/admin/products`, payload, getAuthHeader());
+        toast({ title: 'Success', description: 'Product created' });
+      }
+      
+      setShowProductModal(false);
+      setEditingProduct(null);
+      resetProductForm();
+      fetchData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to save product', variant: 'destructive' });
+    }
+  };
+
+  const handleBundleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...bundleForm,
+        price: parseFloat(bundleForm.price) || 0,
+        original_price: bundleForm.original_price ? parseFloat(bundleForm.original_price) : null,
+        paw_reward_points: parseInt(bundleForm.paw_reward_points) || 0,
+        birthday_discount_percent: bundleForm.birthday_discount_percent ? parseInt(bundleForm.birthday_discount_percent) : null
+      };
+
+      if (editingBundle) {
+        await axios.put(`${API_URL}/api/travel/admin/bundles/${editingBundle.id}`, payload, getAuthHeader());
+        toast({ title: 'Success', description: 'Bundle updated' });
+      } else {
+        await axios.post(`${API_URL}/api/travel/admin/bundles`, payload, getAuthHeader());
+        toast({ title: 'Success', description: 'Bundle created' });
+      }
+      
+      setShowBundleModal(false);
+      setEditingBundle(null);
+      resetBundleForm();
+      fetchData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to save bundle', variant: 'destructive' });
+    }
+  };
+
+  const deleteProduct = async (productId) => {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+    try {
+      await axios.delete(`${API_URL}/api/travel/admin/products/${productId}`, getAuthHeader());
+      toast({ title: 'Success', description: 'Product deleted' });
+      fetchData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete product', variant: 'destructive' });
+    }
+  };
+
+  const deleteBundle = async (bundleId) => {
+    if (!confirm('Are you sure you want to delete this bundle?')) return;
+    try {
+      await axios.delete(`${API_URL}/api/travel/admin/bundles/${bundleId}`, getAuthHeader());
+      toast({ title: 'Success', description: 'Bundle deleted' });
+      fetchData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete bundle', variant: 'destructive' });
+    }
+  };
+
+  const resetProductForm = () => {
+    setProductForm({
+      name: '', description: '', price: '', compare_price: '', image: '',
+      subcategory: '', tags: '', pet_sizes: '', in_stock: true,
+      paw_reward_points: 0, is_birthday_perk: false, birthday_discount_percent: ''
+    });
+  };
+
+  const resetBundleForm = () => {
+    setBundleForm({
+      name: '', description: '', price: '', original_price: '', image: '',
+      travel_type: 'cab', items: [], is_recommended: true,
+      paw_reward_points: 0, is_birthday_perk: false, birthday_discount_percent: ''
+    });
+  };
+
+  const handleProductExport = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/travel/admin/products/export`, getAuthHeader());
+      const csvContent = convertToCSV(response.data.products);
+      downloadCSV(csvContent, 'travel-products.csv');
+      toast({ title: 'Success', description: 'Products exported' });
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to export products', variant: 'destructive' });
+    }
+  };
+
+  const handleBundleExport = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/travel/admin/bundles/export`, getAuthHeader());
+      const csvContent = convertToCSV(response.data.bundles);
+      downloadCSV(csvContent, 'travel-bundles.csv');
+      toast({ title: 'Success', description: 'Bundles exported' });
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to export bundles', variant: 'destructive' });
+    }
+  };
+
+  const handleProductImport = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const rows = text.split('\n').filter(r => r.trim());
+      const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, ''));
+      
+      const products = rows.slice(1).map(row => {
+        const values = row.split(',').map(v => v.trim().replace(/"/g, ''));
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = values[i] || '');
+        return obj;
+      });
+
+      const response = await axios.post(`${API_URL}/api/travel/admin/products/import`, products, getAuthHeader());
+      toast({ title: 'Success', description: `Imported ${response.data.imported} products` });
+      fetchData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to import products', variant: 'destructive' });
+    }
+    e.target.value = '';
+  };
+
+  const handleBundleImport = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const rows = text.split('\n').filter(r => r.trim());
+      const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, ''));
+      
+      const bundles = rows.slice(1).map(row => {
+        const values = row.split(',').map(v => v.trim().replace(/"/g, ''));
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = values[i] || '');
+        return obj;
+      });
+
+      const response = await axios.post(`${API_URL}/api/travel/admin/bundles/import`, bundles, getAuthHeader());
+      toast({ title: 'Success', description: `Imported ${response.data.imported} bundles` });
+      fetchData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to import bundles', variant: 'destructive' });
+    }
+    e.target.value = '';
+  };
+
+  const convertToCSV = (data) => {
+    if (!data.length) return '';
+    const headers = Object.keys(data[0]);
+    const rows = data.map(row => headers.map(h => `"${row[h] || ''}"`).join(','));
+    return [headers.join(','), ...rows].join('\n');
+  };
+
+  const downloadCSV = (content, filename) => {
+    const blob = new Blob([content], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const filteredRequests = requests.filter(req => {
+    const matchesSearch = req.request_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      req.pet?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      req.customer?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      req.journey?.pickup_city?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || req.status === statusFilter;
+    const matchesType = typeFilter === 'all' || req.travel_type === typeFilter;
+    return matchesSearch && matchesStatus && matchesType;
+  });
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="travel-manager">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-violet-500 rounded-xl flex items-center justify-center">
-            <Plane className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Travel Manager</h2>
-            <p className="text-gray-500">Manage travel requests, products & bookings</p>
-          </div>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">✈️ Travel Manager</h2>
+          <p className="text-gray-500">Manage travel requests, products & bundles</p>
         </div>
-        <Button variant="outline" onClick={fetchData}>
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Refresh
+        <Button onClick={fetchData} variant="outline" size="sm">
+          <RefreshCw className="w-4 h-4 mr-2" /> Refresh
         </Button>
       </div>
 
-      {/* Stats */}
+      {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard 
-          title="Total Requests" 
-          value={stats?.total || 0} 
-          icon={FileText} 
-          color="bg-blue-500" 
-        />
-        <StatCard 
-          title="Pending Review" 
-          value={(stats?.by_status?.submitted || 0) + (stats?.by_status?.reviewing || 0)} 
-          icon={Clock} 
-          color="bg-yellow-500" 
-        />
-        <StatCard 
-          title="Confirmed" 
-          value={stats?.by_status?.confirmed || 0} 
-          icon={CheckCircle} 
-          color="bg-green-500" 
-        />
-        <StatCard 
-          title="Products" 
-          value={products.length} 
-          icon={Package} 
-          color="bg-purple-500" 
-        />
+        <Card className="p-4 bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+          <div className="flex items-center gap-3">
+            <Plane className="w-8 h-8 opacity-80" />
+            <div>
+              <p className="text-2xl font-bold">{stats.total || 0}</p>
+              <p className="text-sm opacity-90">Total Requests</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4 bg-gradient-to-br from-yellow-500 to-orange-500 text-white">
+          <div className="flex items-center gap-3">
+            <Clock className="w-8 h-8 opacity-80" />
+            <div>
+              <p className="text-2xl font-bold">{stats.by_status?.submitted || 0}</p>
+              <p className="text-sm opacity-90">Pending Review</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4 bg-gradient-to-br from-green-500 to-emerald-500 text-white">
+          <div className="flex items-center gap-3">
+            <CheckCircle className="w-8 h-8 opacity-80" />
+            <div>
+              <p className="text-2xl font-bold">{stats.by_status?.confirmed || 0}</p>
+              <p className="text-sm opacity-90">Confirmed</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4 bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+          <div className="flex items-center gap-3">
+            <Package className="w-8 h-8 opacity-80" />
+            <div>
+              <p className="text-2xl font-bold">{products.length}</p>
+              <p className="text-sm opacity-90">Products</p>
+            </div>
+          </div>
+        </Card>
       </div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-3 w-full max-w-md">
-          <TabsTrigger value="requests">Requests</TabsTrigger>
-          <TabsTrigger value="products">Products</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
+      {/* Sub-tabs */}
+      <Tabs value={activeSubTab} onValueChange={setActiveSubTab}>
+        <TabsList className="bg-white border">
+          <TabsTrigger value="requests" data-testid="travel-tab-requests">
+            <Bell className="w-4 h-4 mr-2" /> Requests
+          </TabsTrigger>
+          <TabsTrigger value="products" data-testid="travel-tab-products">
+            <Package className="w-4 h-4 mr-2" /> Products
+          </TabsTrigger>
+          <TabsTrigger value="bundles" data-testid="travel-tab-bundles">
+            <Gift className="w-4 h-4 mr-2" /> Bundles
+          </TabsTrigger>
+          <TabsTrigger value="settings" data-testid="travel-tab-settings">
+            <Settings className="w-4 h-4 mr-2" /> Settings
+          </TabsTrigger>
         </TabsList>
 
         {/* Requests Tab */}
         <TabsContent value="requests" className="space-y-4">
           {/* Filters */}
-          <div className="flex flex-wrap gap-3">
-            <div className="flex-1 min-w-[200px]">
-              <Input
-                placeholder="Search requests..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                {Object.entries(REQUEST_STATUS).map(([key, config]) => (
-                  <SelectItem key={key} value={key}>{config.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="cab">Cab/Road</SelectItem>
-                <SelectItem value="train">Train/Bus</SelectItem>
-                <SelectItem value="flight">Flight</SelectItem>
-                <SelectItem value="relocation">Relocation</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" onClick={exportToCSV}>
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
-          </div>
-
-          {/* Requests Table */}
-          <Card>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Request ID</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Type</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Pet</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Route</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Date</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Status</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {filteredRequests.length === 0 ? (
-                    <tr>
-                      <td colSpan="7" className="px-4 py-8 text-center text-gray-500">
-                        No travel requests found
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredRequests.map((req) => {
-                      const TravelIcon = TRAVEL_ICONS[req.travel_type] || Car;
-                      const statusConfig = REQUEST_STATUS[req.status] || REQUEST_STATUS.submitted;
-                      return (
-                        <tr key={req.request_id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 font-medium text-gray-900">{req.request_id}</td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <TravelIcon className="w-4 h-4 text-purple-600" />
-                              <span className="text-sm">{req.travel_type_name}</span>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <div>
-                              <p className="font-medium text-gray-900">{req.pet?.name}</p>
-                              <p className="text-xs text-gray-500">{req.pet?.breed}</p>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 text-sm">
-                            {req.journey?.pickup_city} → {req.journey?.drop_city}
-                          </td>
-                          <td className="px-4 py-3 text-sm">{req.journey?.travel_date}</td>
-                          <td className="px-4 py-3">
-                            <Badge className={statusConfig.color}>{statusConfig.label}</Badge>
-                          </td>
-                          <td className="px-4 py-3">
-                            <Button 
-                              size="sm" 
-                              variant="ghost"
-                              onClick={() => { setSelectedRequest(req); setShowRequestModal(true); }}
-                            >
-                              <Eye className="w-4 h-4 mr-1" />
-                              View
-                            </Button>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
+          <Card className="p-4">
+            <div className="flex flex-wrap gap-4">
+              <div className="flex-1 min-w-[200px]">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    placeholder="Search requests..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 border rounded-md"
+              >
+                <option value="all">All Status</option>
+                <option value="submitted">Submitted</option>
+                <option value="reviewing">Reviewing</option>
+                <option value="coordinating">Coordinating</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="px-3 py-2 border rounded-md"
+              >
+                <option value="all">All Types</option>
+                <option value="cab">Cab / Road</option>
+                <option value="train">Train / Bus</option>
+                <option value="flight">Flight</option>
+                <option value="relocation">Relocation</option>
+              </select>
             </div>
           </Card>
+
+          {/* Requests List */}
+          <div className="space-y-3">
+            {filteredRequests.length === 0 ? (
+              <Card className="p-8 text-center">
+                <Plane className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                <p className="text-gray-500">No travel requests found</p>
+              </Card>
+            ) : (
+              filteredRequests.map((req) => {
+                const TypeIcon = travelTypes[req.travel_type]?.icon || Plane;
+                return (
+                  <Card 
+                    key={req.request_id} 
+                    className={`p-4 hover:shadow-md transition-shadow cursor-pointer ${selectedRequest?.request_id === req.request_id ? 'ring-2 ring-blue-500' : ''}`}
+                    onClick={() => setSelectedRequest(selectedRequest?.request_id === req.request_id ? null : req)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-4">
+                        <div className={`p-3 rounded-lg ${travelTypes[req.travel_type]?.color} text-white`}>
+                          <TypeIcon className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-gray-900">{req.request_id}</h3>
+                            <Badge className={statusColors[req.status] || 'bg-gray-100'}>{req.status}</Badge>
+                            {req.risk_level === 'high' && (
+                              <Badge className="bg-red-100 text-red-700">
+                                <AlertTriangle className="w-3 h-3 mr-1" /> High Risk
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1">
+                            <PawPrint className="w-3 h-3 inline mr-1" />
+                            {req.pet?.name} ({req.pet?.breed || 'Dog'})
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            <MapPin className="w-3 h-3 inline mr-1" />
+                            {req.journey?.pickup_city} → {req.journey?.drop_city}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            <Calendar className="w-3 h-3 inline mr-1" />
+                            {req.journey?.travel_date} {req.journey?.travel_time && `at ${req.journey.travel_time}`}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-gray-400">{new Date(req.created_at).toLocaleDateString()}</p>
+                        <p className="text-sm text-gray-600 mt-1">{req.travel_type_name}</p>
+                      </div>
+                    </div>
+
+                    {/* Expanded Details */}
+                    {selectedRequest?.request_id === req.request_id && (
+                      <div className="mt-4 pt-4 border-t space-y-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                          <div>
+                            <p className="text-xs text-gray-400 uppercase">Customer</p>
+                            <p className="font-medium">{req.customer?.name || 'N/A'}</p>
+                            <p className="text-sm text-gray-500">{req.customer?.email}</p>
+                            <p className="text-sm text-gray-500">{req.customer?.phone}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-400 uppercase">Pet Details</p>
+                            <p className="text-sm">Size: {req.pet?.size || 'N/A'}</p>
+                            <p className="text-sm">Weight: {req.pet?.weight ? `${req.pet.weight}kg` : 'N/A'}</p>
+                            <p className="text-sm">Crate Trained: {req.pet?.crate_trained ? 'Yes' : 'No'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-400 uppercase">Risk Factors</p>
+                            {req.risk_factors?.length > 0 ? (
+                              <ul className="text-sm text-red-600">
+                                {req.risk_factors.map((r, i) => <li key={i}>• {r}</li>)}
+                              </ul>
+                            ) : (
+                              <p className="text-sm text-green-600">No concerns</p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {req.special_requirements && (
+                          <div>
+                            <p className="text-xs text-gray-400 uppercase">Special Requirements</p>
+                            <p className="text-sm">{req.special_requirements}</p>
+                          </div>
+                        )}
+
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            onClick={(e) => { e.stopPropagation(); updateRequestStatus(req.request_id, 'reviewing'); }}
+                            className="bg-blue-500 hover:bg-blue-600"
+                          >
+                            Start Review
+                          </Button>
+                          <Button 
+                            size="sm"
+                            onClick={(e) => { e.stopPropagation(); updateRequestStatus(req.request_id, 'confirmed'); }}
+                            className="bg-green-500 hover:bg-green-600"
+                          >
+                            Confirm
+                          </Button>
+                          <Button 
+                            size="sm"
+                            variant="outline"
+                            onClick={(e) => { e.stopPropagation(); updateRequestStatus(req.request_id, 'cancelled'); }}
+                            className="text-red-600"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </Card>
+                );
+              })
+            )}
+          </div>
         </TabsContent>
 
         {/* Products Tab */}
         <TabsContent value="products" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Travel Products ({products.length})</h3>
-            <div className="flex gap-2">
-              {products.length === 0 && (
-                <Button variant="outline" onClick={seedProducts}>
-                  <Package className="w-4 h-4 mr-2" />
-                  Seed Sample Products
+          <Card className="p-4">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex gap-2">
+                <Button onClick={() => { resetProductForm(); setEditingProduct(null); setShowProductModal(true); }}>
+                  <Plus className="w-4 h-4 mr-2" /> Add Product
                 </Button>
-              )}
-              <Button onClick={() => { setEditingProduct(null); setShowProductModal(true); }} className="bg-purple-600 hover:bg-purple-700">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Product
-              </Button>
+                <Button variant="outline" onClick={seedProducts}>
+                  <RefreshCw className="w-4 h-4 mr-2" /> Seed Default Products
+                </Button>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="file"
+                  accept=".csv"
+                  ref={fileInputRef}
+                  onChange={handleProductImport}
+                  className="hidden"
+                />
+                <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+                  <Upload className="w-4 h-4 mr-2" /> Import CSV
+                </Button>
+                <Button variant="outline" onClick={handleProductExport}>
+                  <Download className="w-4 h-4 mr-2" /> Export CSV
+                </Button>
+              </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {products.map((product) => (
-              <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="aspect-video bg-gray-100 relative">
+              <Card key={product.id} className="p-4">
+                <div className="flex items-start gap-3">
                   {product.image ? (
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                    <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-lg bg-gray-100" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Package className="w-12 h-12 text-gray-300" />
+                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <Package className="w-6 h-6 text-gray-400" />
                     </div>
                   )}
-                  {product.paw_reward?.enabled && (
-                    <Badge className="absolute top-2 right-2 bg-amber-500">🎁 Paw Reward</Badge>
-                  )}
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-gray-900">{product.name}</h4>
+                    <p className="text-sm text-gray-500">{product.subcategory}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="font-bold text-green-600">₹{product.price}</span>
+                      {product.compare_price && (
+                        <span className="text-sm text-gray-400 line-through">₹{product.compare_price}</span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {product.paw_reward_points > 0 && (
+                        <Badge variant="outline" className="text-xs">🐾 {product.paw_reward_points} pts</Badge>
+                      )}
+                      {product.is_birthday_perk && (
+                        <Badge variant="outline" className="text-xs text-pink-600">🎂 Birthday Perk</Badge>
+                      )}
+                      {!product.in_stock && (
+                        <Badge className="bg-red-100 text-red-600 text-xs">Out of Stock</Badge>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <CardContent className="p-4">
-                  <h4 className="font-semibold text-gray-900 mb-1">{product.name}</h4>
-                  <p className="text-sm text-gray-500 line-clamp-2 mb-2">{product.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-purple-600">₹{product.price}</span>
-                    <div className="flex gap-1">
-                      <Button 
-                        size="sm" 
-                        variant="ghost"
-                        onClick={() => { setEditingProduct(product); setShowProductModal(true); }}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {(product.tags || []).slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
-                    ))}
-                  </div>
-                </CardContent>
+                <div className="flex gap-2 mt-3 pt-3 border-t">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setEditingProduct(product);
+                      setProductForm({
+                        name: product.name || '',
+                        description: product.description || '',
+                        price: product.price?.toString() || '',
+                        compare_price: product.compare_price?.toString() || '',
+                        image: product.image || '',
+                        subcategory: product.subcategory || '',
+                        tags: Array.isArray(product.tags) ? product.tags.join(', ') : '',
+                        pet_sizes: Array.isArray(product.pet_sizes) ? product.pet_sizes.join(', ') : '',
+                        in_stock: product.in_stock !== false,
+                        paw_reward_points: product.paw_reward_points || 0,
+                        is_birthday_perk: product.is_birthday_perk || false,
+                        birthday_discount_percent: product.birthday_discount_percent?.toString() || ''
+                      });
+                      setShowProductModal(true);
+                    }}
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-red-600"
+                    onClick={() => deleteProduct(product.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </Card>
             ))}
           </div>
+
+          {products.length === 0 && (
+            <Card className="p-8 text-center">
+              <Package className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+              <p className="text-gray-500">No travel products yet</p>
+              <Button className="mt-4" onClick={seedProducts}>Seed Default Products</Button>
+            </Card>
+          )}
         </TabsContent>
 
-        {/* Reports Tab */}
-        <TabsContent value="reports" className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* By Type */}
-            <Card className="p-6">
-              <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-purple-600" />
-                Requests by Type
-              </h3>
-              <div className="space-y-3">
-                {[
-                  { type: 'cab', label: 'Cab/Road', icon: Car, color: 'bg-blue-500' },
-                  { type: 'train', label: 'Train/Bus', icon: Train, color: 'bg-green-500' },
-                  { type: 'flight', label: 'Flight', icon: Plane, color: 'bg-purple-500' },
-                  { type: 'relocation', label: 'Relocation', icon: Truck, color: 'bg-amber-500' }
-                ].map((item) => (
-                  <div key={item.type} className="flex items-center gap-3">
-                    <div className={`w-8 h-8 ${item.color} rounded-lg flex items-center justify-center`}>
-                      <item.icon className="w-4 h-4 text-white" />
+        {/* Bundles Tab */}
+        <TabsContent value="bundles" className="space-y-4">
+          <Card className="p-4">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <Button onClick={() => { resetBundleForm(); setEditingBundle(null); setShowBundleModal(true); }}>
+                <Plus className="w-4 h-4 mr-2" /> Add Bundle
+              </Button>
+              <div className="flex gap-2">
+                <input
+                  type="file"
+                  accept=".csv"
+                  ref={bundleFileInputRef}
+                  onChange={handleBundleImport}
+                  className="hidden"
+                />
+                <Button variant="outline" onClick={() => bundleFileInputRef.current?.click()}>
+                  <Upload className="w-4 h-4 mr-2" /> Import CSV
+                </Button>
+                <Button variant="outline" onClick={handleBundleExport}>
+                  <Download className="w-4 h-4 mr-2" /> Export CSV
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {bundles.map((bundle) => {
+              const TypeIcon = travelTypes[bundle.travel_type]?.icon || Package;
+              return (
+                <Card key={bundle.id} className="p-4">
+                  <div className="flex items-start gap-4">
+                    <div className={`p-3 rounded-lg ${travelTypes[bundle.travel_type]?.color || 'bg-gray-500'} text-white`}>
+                      <TypeIcon className="w-6 h-6" />
                     </div>
                     <div className="flex-1">
-                      <div className="flex justify-between text-sm">
-                        <span>{item.label}</span>
-                        <span className="font-medium">{stats?.by_type?.[item.type] || 0}</span>
+                      <h4 className="font-semibold text-gray-900">{bundle.name}</h4>
+                      <p className="text-sm text-gray-500">{bundle.description}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="font-bold text-green-600 text-lg">₹{bundle.price}</span>
+                        {bundle.original_price && (
+                          <span className="text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
+                        )}
+                        {bundle.original_price && (
+                          <Badge className="bg-green-100 text-green-700 text-xs">
+                            {Math.round((1 - bundle.price / bundle.original_price) * 100)}% OFF
+                          </Badge>
+                        )}
                       </div>
-                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden mt-1">
-                        <div 
-                          className={`h-full ${item.color}`}
-                          style={{ width: `${((stats?.by_type?.[item.type] || 0) / (stats?.total || 1)) * 100}%` }}
-                        />
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        <Badge variant="outline" className="text-xs">{travelTypes[bundle.travel_type]?.name}</Badge>
+                        {bundle.paw_reward_points > 0 && (
+                          <Badge variant="outline" className="text-xs">🐾 {bundle.paw_reward_points} pts</Badge>
+                        )}
+                        {bundle.is_birthday_perk && (
+                          <Badge variant="outline" className="text-xs text-pink-600">🎂 Birthday</Badge>
+                        )}
                       </div>
+                      <p className="text-xs text-gray-400 mt-2">
+                        {bundle.items?.length || 0} items included
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </Card>
-
-            {/* By Status */}
-            <Card className="p-6">
-              <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-purple-600" />
-                Requests by Status
-              </h3>
-              <div className="space-y-3">
-                {Object.entries(REQUEST_STATUS).map(([key, config]) => (
-                  <div key={key} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50">
-                    <div className="flex items-center gap-2">
-                      <config.icon className="w-4 h-4" />
-                      <span className="text-sm">{config.label}</span>
-                    </div>
-                    <Badge className={config.color}>{stats?.by_status?.[key] || 0}</Badge>
+                  <div className="flex gap-2 mt-3 pt-3 border-t">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setEditingBundle(bundle);
+                        setBundleForm({
+                          name: bundle.name || '',
+                          description: bundle.description || '',
+                          price: bundle.price?.toString() || '',
+                          original_price: bundle.original_price?.toString() || '',
+                          image: bundle.image || '',
+                          travel_type: bundle.travel_type || 'cab',
+                          items: bundle.items || [],
+                          is_recommended: bundle.is_recommended !== false,
+                          paw_reward_points: bundle.paw_reward_points || 0,
+                          is_birthday_perk: bundle.is_birthday_perk || false,
+                          birthday_discount_percent: bundle.birthday_discount_percent?.toString() || ''
+                        });
+                        setShowBundleModal(true);
+                      }}
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-red-600"
+                      onClick={() => deleteBundle(bundle.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
-                ))}
-              </div>
-            </Card>
-
-            {/* Recent Requests */}
-            <Card className="p-6 md:col-span-2">
-              <h3 className="font-semibold text-gray-900 mb-4">Recent Requests</h3>
-              <div className="space-y-3">
-                {(stats?.recent_requests || []).map((req) => (
-                  <div key={req.request_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <PawPrint className="w-5 h-5 text-purple-600" />
-                      <div>
-                        <p className="font-medium text-gray-900">{req.request_id}</p>
-                        <p className="text-xs text-gray-500">{req.travel_type_name} • {req.pet?.name}</p>
-                      </div>
-                    </div>
-                    <Badge className={REQUEST_STATUS[req.status]?.color}>{REQUEST_STATUS[req.status]?.label}</Badge>
-                  </div>
-                ))}
-                {(!stats?.recent_requests || stats.recent_requests.length === 0) && (
-                  <p className="text-center text-gray-500 py-4">No recent requests</p>
-                )}
-              </div>
-            </Card>
+                </Card>
+              );
+            })}
           </div>
+
+          {bundles.length === 0 && (
+            <Card className="p-8 text-center">
+              <Gift className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+              <p className="text-gray-500">No travel bundles yet</p>
+              <Button className="mt-4" onClick={seedProducts}>Seed Default Bundles</Button>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* Settings Tab */}
+        <TabsContent value="settings" className="space-y-4">
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">🐾 Paw Rewards Settings</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Points per Travel Request</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.points_per_request || 50}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Points per Product Purchase (per ₹100)</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.points_per_purchase || 10}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">🎂 Birthday Perks Settings</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Birthday Discount %</Label>
+                <Input 
+                  type="number" 
+                  value={settings.birthday_perks?.discount_percent || 15}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Valid Days (before/after birthday)</Label>
+                <Input 
+                  type="number" 
+                  value={settings.birthday_perks?.valid_days_before || 7}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">🔔 Notification Settings</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Email Notifications</Label>
+                <Switch checked={settings.notifications?.email_enabled !== false} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>WhatsApp Notifications</Label>
+                <Switch checked={settings.notifications?.whatsapp_enabled || false} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>SMS Notifications</Label>
+                <Switch checked={settings.notifications?.sms_enabled || false} />
+              </div>
+            </div>
+          </Card>
         </TabsContent>
       </Tabs>
 
-      {/* Request Detail Modal */}
-      <RequestDetailModal
-        request={selectedRequest}
-        isOpen={showRequestModal}
-        onClose={() => { setShowRequestModal(false); setSelectedRequest(null); }}
-        onUpdate={fetchData}
-        authHeaders={authHeaders}
-      />
+      {/* Product Modal */}
+      {showProductModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto m-4 p-6">
+            <h3 className="text-lg font-semibold mb-4">
+              {editingProduct ? 'Edit Product' : 'Add Product'}
+            </h3>
+            <form onSubmit={handleProductSubmit} className="space-y-4">
+              <div>
+                <Label>Name *</Label>
+                <Input
+                  value={productForm.name}
+                  onChange={(e) => setProductForm({...productForm, name: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <Label>Description</Label>
+                <Textarea
+                  value={productForm.description}
+                  onChange={(e) => setProductForm({...productForm, description: e.target.value})}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Price *</Label>
+                  <Input
+                    type="number"
+                    value={productForm.price}
+                    onChange={(e) => setProductForm({...productForm, price: e.target.value})}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label>Compare Price</Label>
+                  <Input
+                    type="number"
+                    value={productForm.compare_price}
+                    onChange={(e) => setProductForm({...productForm, compare_price: e.target.value})}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>Image URL</Label>
+                <Input
+                  value={productForm.image}
+                  onChange={(e) => setProductForm({...productForm, image: e.target.value})}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Subcategory</Label>
+                  <select
+                    value={productForm.subcategory}
+                    onChange={(e) => setProductForm({...productForm, subcategory: e.target.value})}
+                    className="w-full h-10 px-3 border rounded-md"
+                  >
+                    <option value="">Select</option>
+                    <option value="crate">Crate</option>
+                    <option value="carrier">Carrier</option>
+                    <option value="harness">Harness</option>
+                    <option value="calming">Calming</option>
+                    <option value="safety">Safety</option>
+                    <option value="accessory">Accessory</option>
+                    <option value="comfort">Comfort</option>
+                  </select>
+                </div>
+                <div>
+                  <Label>Pet Sizes (comma-separated)</Label>
+                  <Input
+                    value={productForm.pet_sizes}
+                    onChange={(e) => setProductForm({...productForm, pet_sizes: e.target.value})}
+                    placeholder="small, medium, large"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>Tags (comma-separated)</Label>
+                <Input
+                  value={productForm.tags}
+                  onChange={(e) => setProductForm({...productForm, tags: e.target.value})}
+                  placeholder="travel, flight, safety"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Paw Reward Points</Label>
+                  <Input
+                    type="number"
+                    value={productForm.paw_reward_points}
+                    onChange={(e) => setProductForm({...productForm, paw_reward_points: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label>Birthday Discount %</Label>
+                  <Input
+                    type="number"
+                    value={productForm.birthday_discount_percent}
+                    onChange={(e) => setProductForm({...productForm, birthday_discount_percent: e.target.value})}
+                    disabled={!productForm.is_birthday_perk}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-6">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={productForm.in_stock}
+                    onChange={(e) => setProductForm({...productForm, in_stock: e.target.checked})}
+                  />
+                  In Stock
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={productForm.is_birthday_perk}
+                    onChange={(e) => setProductForm({...productForm, is_birthday_perk: e.target.checked})}
+                  />
+                  Birthday Perk
+                </label>
+              </div>
+              <div className="flex gap-2 pt-4">
+                <Button type="submit" className="flex-1">
+                  {editingProduct ? 'Update' : 'Create'}
+                </Button>
+                <Button type="button" variant="outline" onClick={() => setShowProductModal(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </Card>
+        </div>
+      )}
 
-      {/* Product Form Modal */}
-      <ProductFormModal
-        product={editingProduct}
-        isOpen={showProductModal}
-        onClose={() => { setShowProductModal(false); setEditingProduct(null); }}
-        onSave={fetchData}
-        authHeaders={authHeaders}
-      />
+      {/* Bundle Modal */}
+      {showBundleModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto m-4 p-6">
+            <h3 className="text-lg font-semibold mb-4">
+              {editingBundle ? 'Edit Bundle' : 'Add Bundle'}
+            </h3>
+            <form onSubmit={handleBundleSubmit} className="space-y-4">
+              <div>
+                <Label>Name *</Label>
+                <Input
+                  value={bundleForm.name}
+                  onChange={(e) => setBundleForm({...bundleForm, name: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <Label>Description</Label>
+                <Textarea
+                  value={bundleForm.description}
+                  onChange={(e) => setBundleForm({...bundleForm, description: e.target.value})}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Bundle Price *</Label>
+                  <Input
+                    type="number"
+                    value={bundleForm.price}
+                    onChange={(e) => setBundleForm({...bundleForm, price: e.target.value})}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label>Original Price</Label>
+                  <Input
+                    type="number"
+                    value={bundleForm.original_price}
+                    onChange={(e) => setBundleForm({...bundleForm, original_price: e.target.value})}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>Travel Type</Label>
+                <select
+                  value={bundleForm.travel_type}
+                  onChange={(e) => setBundleForm({...bundleForm, travel_type: e.target.value})}
+                  className="w-full h-10 px-3 border rounded-md"
+                >
+                  <option value="cab">Cab / Road Travel</option>
+                  <option value="train">Train / Bus Travel</option>
+                  <option value="flight">Domestic Flight</option>
+                  <option value="relocation">Pet Relocation</option>
+                </select>
+              </div>
+              <div>
+                <Label>Image URL</Label>
+                <Input
+                  value={bundleForm.image}
+                  onChange={(e) => setBundleForm({...bundleForm, image: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label>Included Products</Label>
+                <div className="mt-2 max-h-40 overflow-y-auto border rounded-md p-2">
+                  {products.map((product) => (
+                    <label key={product.id} className="flex items-center gap-2 p-1 hover:bg-gray-50">
+                      <input
+                        type="checkbox"
+                        checked={bundleForm.items.includes(product.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setBundleForm({...bundleForm, items: [...bundleForm.items, product.id]});
+                          } else {
+                            setBundleForm({...bundleForm, items: bundleForm.items.filter(i => i !== product.id)});
+                          }
+                        }}
+                      />
+                      <span className="text-sm">{product.name} - ₹{product.price}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Paw Reward Points</Label>
+                  <Input
+                    type="number"
+                    value={bundleForm.paw_reward_points}
+                    onChange={(e) => setBundleForm({...bundleForm, paw_reward_points: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label>Birthday Discount %</Label>
+                  <Input
+                    type="number"
+                    value={bundleForm.birthday_discount_percent}
+                    onChange={(e) => setBundleForm({...bundleForm, birthday_discount_percent: e.target.value})}
+                    disabled={!bundleForm.is_birthday_perk}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-6">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={bundleForm.is_recommended}
+                    onChange={(e) => setBundleForm({...bundleForm, is_recommended: e.target.checked})}
+                  />
+                  Recommended
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={bundleForm.is_birthday_perk}
+                    onChange={(e) => setBundleForm({...bundleForm, is_birthday_perk: e.target.checked})}
+                  />
+                  Birthday Perk
+                </label>
+              </div>
+              <div className="flex gap-2 pt-4">
+                <Button type="submit" className="flex-1">
+                  {editingBundle ? 'Update' : 'Create'}
+                </Button>
+                <Button type="button" variant="outline" onClick={() => setShowBundleModal(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
