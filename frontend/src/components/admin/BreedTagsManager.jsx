@@ -84,7 +84,11 @@ const BreedTagsManager = () => {
   // Update single product breed tags
   const updateProductBreedTags = async (productId, breedTags) => {
     try {
-      await axios.put(`${API_URL}/api/admin/products/${productId}/breed-tags`, breedTags);
+      const response = await axios.put(
+        `${API_URL}/api/admin/products/${productId}/breed-tags`, 
+        breedTags,
+        { headers: { 'Content-Type': 'application/json' } }
+      );
       
       // Update local state
       setProducts(prev => prev.map(p => 
@@ -92,9 +96,11 @@ const BreedTagsManager = () => {
       ));
       
       toast({ title: 'Success', description: 'Breed tags updated' });
+      return response.data;
     } catch (error) {
       console.error('Failed to update breed tags:', error);
       toast({ title: 'Error', description: 'Failed to update breed tags', variant: 'destructive' });
+      throw error;
     }
   };
 
