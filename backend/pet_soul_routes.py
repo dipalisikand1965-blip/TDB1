@@ -696,7 +696,7 @@ async def get_profile_for_pillar(pet_id: str, pillar: str):
 
 # ==================== ADMIN ROUTES ====================
 
-@pet_soul_admin_router.get("/admin/pets")
+@pet_soul_admin_router.get("/pets")
 async def admin_list_pets(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
