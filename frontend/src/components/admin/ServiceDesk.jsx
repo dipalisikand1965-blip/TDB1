@@ -704,11 +704,21 @@ const ServiceDesk = ({ authHeaders }) => {
       }
       // Fetch audit trail
       fetchAuditTrail(selectedTicket.ticket_id);
+      
+      // Fetch Pet Soul data if ticket has pet info
+      const petName = selectedTicket.pet?.name;
+      const ownerEmail = selectedTicket.member?.email;
+      if (petName || ownerEmail) {
+        fetchPetSoul(petName, ownerEmail);
+      } else {
+        setPetSoulData(null);
+      }
     } else {
       setCustomerHistory(null);
       setAuditTrail([]);
+      setPetSoulData(null);
     }
-  }, [selectedTicket, fetchCustomerHistory, fetchAuditTrail]);
+  }, [selectedTicket, fetchCustomerHistory, fetchAuditTrail, fetchPetSoul]);
 
   // Handlers
   const handleReply = async () => {
