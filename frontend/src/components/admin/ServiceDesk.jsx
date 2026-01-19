@@ -500,6 +500,58 @@ const ServiceDesk = ({ authHeaders }) => {
     setLoadingHistory(false);
   }, [authHeaders]);
 
+  // Fetch Pet Soul data for ticket's pet
+  const fetchPetSoul = useCallback(async (petName, ownerEmail) => {
+    if (!petName && !ownerEmail) {
+      setPetSoulData(null);
+      return;
+    }
+    
+    setLoadingPetSoul(true);
+    try {
+      // Try to find pet by name and owner email
+      const searchQuery = petName || '';
+      const response = await fetch(`${API_URL}/api/pet-soul/admin/pets?search=${encodeURIComponent(searchQuery)}&limit=5`, {
+        headers: authHeaders
+      });
+      if (response.ok) {
+        const data = await response.json();
+        // Find matching pet (by name or owner email)
+        const pets = data.pets || [];
+        let matchedPet = null;
+        
+        if (pets.length > 0) {
+          // Try to find exact match by pet name
+          matchedPet = pets.find(p => 
+            p.name?.toLowerCase() === petName?.toLowerCase() ||
+            p.identity?.name?.toLowerCase() === petName?.toLowerCase()
+          );
+          // If no exact match, take first result
+          if (!matchedPet) matchedPet = pets[0];
+        }
+        
+        if (matchedPet) {
+          // Fetch full Pet Soul profile
+          const profileRes = await fetch(`${API_URL}/api/pet-soul/profile/${matchedPet.id}`, {
+            headers: authHeaders
+          });
+          if (profileRes.ok) {
+            const profileData = await profileRes.json();
+            setPetSoulData(profileData);
+          } else {
+            setPetSoulData({ pet: matchedPet, scores: { overall: 0, folders: {} } });
+          }
+        } else {
+          setPetSoulData(null);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching Pet Soul:', err);
+      setPetSoulData(null);
+    }
+    setLoadingPetSoul(false);
+  }, [authHeaders]);
+
   // Merge tickets
   const mergeTickets = async () => {
     if (selectedTickets.size < 2) {
