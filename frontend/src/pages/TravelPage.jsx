@@ -98,9 +98,20 @@ const TravelPage = () => {
     crate_trained: null
   });
 
-  // Scroll to top on mount
+  // Scroll to top on mount, or to hash if present
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const hash = window.location.hash;
+    if (hash) {
+      // Wait for content to load then scroll to hash
+      setTimeout(() => {
+        const element = document.getElementById(hash.replace('#', ''));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 500);
+    } else {
+      window.scrollTo(0, 0);
+    }
   }, []);
 
   // Hero image rotation
