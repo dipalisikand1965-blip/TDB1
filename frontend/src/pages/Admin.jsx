@@ -200,6 +200,15 @@ const Admin = () => {
   const [abandonedStats, setAbandonedStats] = useState({});
   const [selectedAbandonedCarts, setSelectedAbandonedCarts] = useState([]);
   const [sendingReminder, setSendingReminder] = useState(null);
+  const [abandonedCartSettings, setAbandonedCartSettings] = useState({
+    enabled: true,
+    reminders: [
+      { reminder_num: 1, delay_hours: 1, subject: "🛒 You left something behind!", include_discount: false },
+      { reminder_num: 2, delay_hours: 24, subject: "🐾 Your pup is still waiting!", include_discount: false },
+      { reminder_num: 3, delay_hours: 72, subject: "🎁 Final reminder + 10% OFF!", include_discount: true, discount_code: "COMEBACK10", discount_percent: 10 }
+    ]
+  });
+  const [showAbandonedCartSettingsModal, setShowAbandonedCartSettingsModal] = useState(false);
 
   // Franchise Inquiries
   const [franchiseInquiries, setFranchiseInquiries] = useState([]);
