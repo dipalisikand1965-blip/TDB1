@@ -84,6 +84,7 @@ from pet_soul_routes import (
 )
 from pet_vault_routes import (
     pet_vault_router,
+    pet_vault_admin_router,
     set_pet_vault_db
 )
 from admin_auth import (
