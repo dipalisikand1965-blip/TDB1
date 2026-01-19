@@ -227,6 +227,62 @@ const TravelManager = ({ getAuthHeader }) => {
     });
   };
 
+  const resetPartnerForm = () => {
+    setPartnerForm({
+      name: '', type: 'cab_service', description: '', logo: '',
+      contact_name: '', contact_email: '', contact_phone: '',
+      website: '', cities: '', services: [],
+      commission_percent: '', rating: 5, is_verified: false, is_active: true,
+      pet_policy: '', special_features: ''
+    });
+  };
+
+  const handlePartnerSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...partnerForm,
+        cities: partnerForm.cities.split(',').map(c => c.trim()).filter(Boolean),
+        commission_percent: parseFloat(partnerForm.commission_percent) || 0,
+        rating: parseFloat(partnerForm.rating) || 5
+      };
+
+      if (editingPartner) {
+        await axios.put(`${API_URL}/api/travel/admin/partners/${editingPartner.id}`, payload, getAuthHeader());
+        toast({ title: 'Success', description: 'Partner updated' });
+      } else {
+        await axios.post(`${API_URL}/api/travel/admin/partners`, payload, getAuthHeader());
+        toast({ title: 'Success', description: 'Partner created' });
+      }
+      
+      setShowPartnerModal(false);
+      setEditingPartner(null);
+      resetPartnerForm();
+      fetchData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to save partner', variant: 'destructive' });
+    }
+  };
+
+  const deletePartner = async (partnerId) => {
+    if (!confirm('Are you sure you want to delete this partner?')) return;
+    try {
+      await axios.delete(`${API_URL}/api/travel/admin/partners/${partnerId}`, getAuthHeader());
+      toast({ title: 'Success', description: 'Partner deleted' });
+      fetchData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete partner', variant: 'destructive' });
+    }
+  };
+
+  const partnerTypes = {
+    cab_service: { name: 'Pet Cab Service', icon: Car, color: 'bg-green-500' },
+    airline: { name: 'Airline Partner', icon: Plane, color: 'bg-blue-500' },
+    train_service: { name: 'Train/Bus Service', icon: Train, color: 'bg-purple-500' },
+    relocation: { name: 'Relocation Company', icon: Truck, color: 'bg-orange-500' },
+    cargo: { name: 'Cargo/Freight', icon: Package, color: 'bg-gray-500' }
+  };
+
   const handleProductExport = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/travel/admin/products/export`, getAuthHeader());
