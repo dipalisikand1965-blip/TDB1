@@ -457,14 +457,79 @@ const PetVault = () => {
                 <Plus className="w-4 h-4 mr-1" /> Add Vaccine
               </Button>
             </div>
-            {summary.summary.total_vaccines === 0 ? (
+            {vaccines.length === 0 ? (
               <Card className="p-8 text-center">
                 <Syringe className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <p className="text-gray-500">No vaccine records yet</p>
                 <Button className="mt-4" onClick={() => setShowAddVaccine(true)}>Add First Vaccine</Button>
               </Card>
             ) : (
-              <p className="text-gray-500 text-center">View vaccines in detail list (coming soon)</p>
+              <div className="space-y-3">
+                {vaccines.map((vax, idx) => {
+                  const daysUntil = getDaysUntil(vax.next_due_date);
+                  const isOverdue = daysUntil !== null && daysUntil < 0;
+                  const isDueSoon = daysUntil !== null && daysUntil >= 0 && daysUntil <= 14;
+                  
+                  return (
+                    <Card key={idx} className={`p-4 ${isOverdue ? 'border-red-300 bg-red-50' : isDueSoon ? 'border-yellow-300 bg-yellow-50' : ''}`}>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Syringe className={`w-5 h-5 ${isOverdue ? 'text-red-500' : isDueSoon ? 'text-yellow-600' : 'text-blue-500'}`} />
+                            <span className="font-semibold text-gray-900">{vax.vaccine_name}</span>
+                            {vax.reminder_enabled && (
+                              <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                                <Bell className="w-3 h-3 mr-1" /> Reminder On
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mt-2">
+                            <div>
+                              <span className="text-gray-500">Given: </span>
+                              <span className="font-medium">{formatDate(vax.date_given)}</span>
+                            </div>
+                            {vax.next_due_date && (
+                              <div>
+                                <span className="text-gray-500">Next Due: </span>
+                                <span className={`font-medium ${isOverdue ? 'text-red-600' : isDueSoon ? 'text-yellow-700' : ''}`}>
+                                  {formatDate(vax.next_due_date)}
+                                </span>
+                              </div>
+                            )}
+                            {vax.vet_name && (
+                              <div>
+                                <span className="text-gray-500">Vet: </span>
+                                <span className="font-medium">{vax.vet_name}</span>
+                              </div>
+                            )}
+                            {vax.batch_number && (
+                              <div>
+                                <span className="text-gray-500">Batch: </span>
+                                <span className="font-medium">{vax.batch_number}</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {vax.notes && (
+                            <p className="text-sm text-gray-500 mt-2 italic">{vax.notes}</p>
+                          )}
+                        </div>
+                        
+                        <div className="text-right">
+                          {daysUntil !== null && (
+                            <Badge className={`${isOverdue ? 'bg-red-100 text-red-700' : isDueSoon ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'}`}>
+                              {isOverdue ? `${Math.abs(daysUntil)} days overdue` : 
+                               daysUntil === 0 ? 'Due today!' : 
+                               `${daysUntil} days`}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
             )}
           </TabsContent>
 
