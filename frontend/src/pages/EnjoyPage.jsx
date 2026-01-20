@@ -287,7 +287,7 @@ const EnjoyPage = () => {
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Adventures
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-yellow-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-amber-200">
                 Worth Wagging For
               </span>
             </h1>
