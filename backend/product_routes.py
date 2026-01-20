@@ -74,15 +74,21 @@ async def get_public_products(
     search: Optional[str] = None
 ):
     """Public endpoint for products"""
+    import logging
+    logger = logging.getLogger("uvicorn.error")
+    logger.info(f"get_public_products called: category={category}, collection={collection}")
+    
     query = {}
 
     # Handle collection-based filtering (e.g., valentine)
     if collection:
+        logger.info(f"Fetching collection: {collection}")
         # Fetch collection to get product IDs
         coll = await db.collections.find_one(
             {"$or": [{"id": collection}, {"slug": collection}]},
             {"_id": 0, "product_ids": 1}
         )
+        logger.info(f"Collection found: {coll is not None}, product_ids: {len(coll.get('product_ids', [])) if coll else 0}")
         if coll and coll.get("product_ids"):
             query["id"] = {"$in": coll["product_ids"]}
 
