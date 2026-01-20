@@ -1,127 +1,252 @@
-# The Doggy Bakery - Development Roadmap
-
-## Last Updated: January 13, 2025
-
----
-
-## ✅ COMPLETED FEATURES
-
-### Session 1 - Core Platform
-- [x] Full e-commerce site with React + FastAPI + MongoDB
-- [x] Product sync from thedoggybakery.com (556+ products)
-- [x] Product categories: Cakes, Treats, Pan India, Fresh Meals, etc.
-- [x] Product modal with size, flavor, personalization options
-- [x] Shopping cart with WhatsApp checkout
-- [x] Admin panel with dashboard, orders, products, members
-- [x] Mira AI chatbot (Chatbase integration)
-- [x] Membership system with 3 tiers
-
-### Session 2 - Enhancements (Today)
-- [x] "Goes Well With" Upsell feature
-- [x] Auto-sync with Shopify (midnight daily)
-- [x] Full SEO optimization (robots.txt, sitemap.xml, JSON-LD schemas)
-- [x] Health endpoints for Kubernetes
-- [x] Chatbase conversation sync to admin
-- [x] Date picker fix in product modal
-- [x] Pan India page with treats & desi sweets
-- [x] Membership checkout flow
+# The Doggy Company - Comprehensive Roadmap
+## "Pet Life Operating System" - Single Engine, 12 Pillars, Pet Soul Driven
 
 ---
 
-## 📋 TOMORROW'S TASKS (January 14, 2025)
+## 🏗️ ARCHITECTURE VISION
 
-### Priority 1: Pet Profile System (Foundation)
-- [ ] Create pets collection in MongoDB
-- [ ] API endpoints: GET/POST/PUT/DELETE /api/pets
-- [ ] Frontend: Pet profile page with add/edit forms
-- [ ] Fields: name, breed, photo, birthday, age, allergies, favorites
-- [ ] Multiple pets per user account
-- [ ] Link to user account
-
-### Priority 2: Birthday Auto-Reminders
-- [ ] Store pet birthdays in database
-- [ ] Background task to check birthdays daily
-- [ ] Email reminders at 14, 7, 3 days before
-- [ ] Personalized cake suggestions based on past orders
-- [ ] WhatsApp reminder option (optional)
-
-### Priority 3: Abandoned Cart Recovery
-- [ ] Track cart state with timestamps
-- [ ] Store abandoned carts in MongoDB
-- [ ] Email reminder after 1 hour
-- [ ] Email reminder after 24 hours
-- [ ] "Your pup is waiting!" messaging
-- [ ] One-click return to cart link
-
-### Priority 4: Loyalty Points (Pawsome)
-- [ ] Points collection in MongoDB
-- [ ] Earn: 1 point per ₹1 spent
-- [ ] Bonus: 100 points on birthday, 200 on referral
-- [ ] Redeem: 100 points = ₹10 discount
-- [ ] Tiers: Pup (0-500) → Good Boy (500-2000) → Top Dog (2000-5000) → VIP Doggo (5000+)
-- [ ] Points history in user profile
-- [ ] Admin: View member points, adjust manually
-
-### Priority 5: Pet Wall of Fame
-- [ ] Photo gallery collection
-- [ ] Customer photo upload with order
-- [ ] Review + photo submission flow
-- [ ] Grid display with likes/votes
-- [ ] Featured pet of the month
-- [ ] Points reward for submissions
+**Core Philosophy**: Membership-first platform where Pet Soul drives everything.
+- **Single Engine**: One unified backend powering all pillars
+- **12 Pillars**: Celebrate, Dine, Travel, Stay, Enjoy, Care, Fit, Advisory, Club, Shop Assist, Paperwork, Emergency
+- **Pet Soul**: The heart of personalization - every interaction enriches the pet's profile
+- **Mira AI Concierge**: Intelligent assistant using Pet Soul data for proactive suggestions
+- **Unified Inbox (Service Desk)**: All requests across pillars in one place
 
 ---
 
-## 🔮 FUTURE BACKLOG
+## ✅ COMPLETED (This Session - Jan 20, 2026)
 
-### Build Your Cake Designer
-- Visual cake customizer with live preview
-- Choose base, flavor, size, decorations
-- Add custom message
-- Real-time price calculation
-- Save designs for later
+### Pet Soul Data Flywheel - 5 Pillars Complete
+| Pillar | Backend Endpoint | Frontend Integration |
+|--------|-----------------|---------------------|
+| Celebrate | `/api/pets/{pet_id}/soul/celebrate` | ✅ ProductCard.jsx |
+| Stay | `/api/pets/{pet_id}/soul/stay` | ✅ StayPage.jsx |
+| Dine | `/api/pet-vault/{pet_id}/record-dine-reservation` | ✅ DinePage.jsx |
+| Fit | `/api/pet-vault/{pet_id}/record-fit-activity` | ✅ FitPage.jsx |
+| Advisory | `/api/pet-vault/{pet_id}/record-advisory-consult` | ✅ AdvisoryPage.jsx |
 
-### Pet Photo Merchandise
-- Upload pet photo for printing
-- Custom bandanas, bowls, photo cakes
-- Image preview before order
-- Integration with print service
+### Service Desk - Full-Screen Module ✅
+- Route: `/admin/service-desk`
+- Own login screen, no navbar, back to admin button
+- 40+ tickets, filters, AI draft, categories
 
-### Advanced Features
-- True headless Shopify integration (Storefront API)
-- WhatsApp order notifications (Twilio)
-- Reviews with photo/video uploads
-- Gift cards system
-- Referral program
-- Subscription treat boxes
+### Admin Panel Standardization ✅
+- All managers have: Stats, Tabs, Settings, CSV Import/Export
+- CelebrateManager: 298 products from Shopify
+- DineManager & StayManager: Settings tabs added
+
+### Bug Fixes ✅
+- Collections product_count now calculated correctly
+- Email `to` field fixed (string not list) - All emails work now
+- Abandoned cart emails now working
+
+---
+
+## 🔴 PHASE 1: CRITICAL BUGS (Must Fix First)
+
+### 1.1 Missing Data/Collections
+- [ ] **Valentine Collection missing** - Check Shopify sync or recreate
+- [ ] **Health Vault data gone** - Rebuild the health records display
+- [ ] **Gamification data gone** - Restore progress tracking UI
+
+### 1.2 Broken Features  
+- [ ] **Pet profiles refresh not working** - Debug refresh button handler
+- [ ] **Pet Soul data not showing in Pet Profile** - Connect soul data to profile display
+- [ ] **Voice Order broken** - "Connection failed" error
+
+### 1.3 Pillar Flow Issues
+- [ ] **Travel pillar not working** - Full flow broken, pop-ups not opening
+- [ ] **Pet Care sub-categories broken** - Training, Vet Coordination, Shop Care not opening
+- [ ] **Some sub-pillars not clickable** - Missing tabs in navigation
+
+---
+
+## 🟠 PHASE 2: MEMBERSHIP SYSTEM (The Gateway)
+
+**Rule**: No membership = No access. Membership unlocks everything.
+
+### 2.1 Pricing Structure
+```
+SINGLE PET
+├── Annual: ₹999/year
+└── Monthly: ₹99/month
+
+FAMILY PET
+├── Primary Pet (Pet #1): ₹999/year
+└── Additional Pets: ₹499/year or ₹49/month each
+```
+
+### 2.2 Membership Status Logic
+- [ ] **Pre-boarded**: Paid but Pet Soul incomplete
+- [ ] **Active**: Pet Soul completed, full access
+- [ ] **Renewal Due**: 30 days before expiry
+- [ ] **Expired**: Can login but no new requests/orders
+
+### 2.3 Membership Source Tracking
+- [ ] Website purchase
+- [ ] Gifted by TDC
+- [ ] B2B partner (hotel, brand, corporate)
+- [ ] Prepaid/seeded account
+
+### 2.4 User Journey Flow
+```
+Landing Page → Select Plan → Pay → Pre-boarded
+    ↓
+Create Account → Add Pet → Fill Pet Soul
+    ↓
+Active Member → Access All Pillars
+```
+
+### 2.5 What Membership Unlocks (Per Pillar)
+| Pillar | Member Benefits |
+|--------|----------------|
+| CELEBRATE | Order cakes, custom handling, birthday reminders |
+| DINE | Pet-friendly reservations, concierge, preferences saved |
+| TRAVEL | Book via concierge, auto-fill pet details, bundles |
+| STAY | Request hotels, TDC rewards, concierge support |
+| CARE | Grooming, walks, vet coordination, emergency routing |
+| FIT | Exercise suggestions, weight/activity tracking |
+| ADVISORY | Behavior consults, nutrition, senior planning |
+| CLUB | Digital identity, community, tier recognition |
+| SHOP ASSIST | Curated buying, bundles, gifting via Mira |
+| PAPERWORK | Health Vault, documents, automated reminders |
+| EMERGENCY | Fast-track escalation, lost pet help |
+
+---
+
+## 🟡 PHASE 3: UX/FLOW IMPROVEMENTS
+
+### 3.1 Cart & Checkout
+- [ ] **Remove excessive pop-ups** - Add to cart directly like e-commerce
+- [ ] **Stop asking pet details twice** - Auto-fetch from profile
+- [ ] **Clarify Pick-up/Delivery** - Clear selection before checkout
+- [ ] **Auto-checkout pillar-wise** - Each pillar has its own checkout flow
+
+### 3.2 Auto-Fetch User & Pet Data
+- [ ] **Stay booking** - Auto-fill traveler & pet details from profile
+- [ ] **Cake orders** - Auto-fill pet name, age, breed
+- [ ] **All orders** - "Booking for someone else" option with new details input
+
+### 3.3 Shipping & Fulfillment
+- [ ] **No more store pickups** - All orders are shipped
+- [ ] **Shipping rules per pillar** - Different rules for cakes vs products
+- [ ] **Fulfillment pillar-wise** - Track by pillar in admin
+
+---
+
+## 🔵 PHASE 4: ADMIN & REPORTING
+
+### 4.1 Customer Management
+- [ ] **Customer folder update** - Click to see full history, pets, orders
+- [ ] **Multiple addresses with tags** - HOME, OFFICE, FRIEND, PARENTS, etc.
+
+### 4.2 Orders & Fulfillment
+- [ ] **Orders CSV export** - Filter by date, period, time, pillar
+- [ ] **Order History enhancements**:
+  - Invoice option
+  - Delivery date
+  - Rating for product/service
+  - Supplier name
+  - AWB number
+  - Courier partner name
+- [ ] **Order Management for users**:
+  - Order status
+  - Track my order
+  - Help options (not delivered, delay, missing items, wrong item, refund)
+
+### 4.3 Reports & Dashboard
+- [ ] **Reports pillar-wise** - Each pillar has its own metrics
+- [ ] **Consolidated dashboard** - All pillars overview
+- [ ] **Live MIS** - Reflecting all pillars in real-time
+
+---
+
+## 🟣 PHASE 5: PROACTIVE INTELLIGENCE (Mira + Pet Soul)
+
+### 5.1 Pet Celebrations Calendar
+- [ ] **View celebrations** - See what pet parents have planned
+- [ ] **Proactive messages** - 7 days and 2 days before events
+- [ ] **Birthday/Anniversary reminders** - Suggest cakes, gifts
+
+### 5.2 Smart Reminders
+- [ ] **Elaborate mail management** - Based on Pet Soul data
+- [ ] **Health record reminders** - Vaccinations, checkups due
+- [ ] **Paw Rewards notifications** - Points earned, available
+
+### 5.3 Mira Proactive Suggestions
+- [ ] **Check Pet Soul on chat** - Look for upcoming events
+- [ ] **Suggest relevant products** - Based on pet preferences
+- [ ] **Cross-pillar recommendations** - "Your dog likes X, try Y"
+
+---
+
+## ⚪ PHASE 6: ENHANCEMENTS & POLISH
+
+### 6.1 Emergency Improvements
+- [ ] **Call/WhatsApp for emergencies** - Not email/ticket
+- [ ] **Backend ticket creation** - After customer contact
+
+### 6.2 Product Display
+- [ ] **Show seller name** - "Seller: The Doggy Bakery"
+- [ ] **New logo** - The Doggy Company rebrand
+
+### 6.3 Stay History Enhancement
+- [ ] **More details**: Requested date, booking date, check-in/out, pax, pets
+
+### 6.4 Paw Rewards System
+- [ ] **Centralized by product/pillar** - Admin configures rules
+- [ ] **Auto-apply at checkout** - No "locked" labels needed
+- [ ] **Smarter gamification** - More intelligent progress tracking
+
+### 6.5 Landing Page Redesign
+- [ ] **Membership-first messaging** - "Become a member to begin"
+- [ ] **Talk about us** - Company story, benefits
+- [ ] **Clear onboarding explanation** - Pet Soul journey
 
 ---
 
 ## 🔧 TECHNICAL DEBT
 
-- [ ] Break down server.py into modules (routes, models, services)
-- [ ] Break down Admin.jsx into smaller components
-- [ ] Add proper error boundaries in React
-- [ ] Implement proper logging system
-- [ ] Add unit tests for critical flows
-- [ ] Performance optimization for product queries
+### Backend
+- [ ] Refactor `server.py` - Split into smaller modules
+- [ ] Route ordering fixes - Specific routes before dynamic
+- [ ] MongoDB ObjectId handling - Always exclude `_id`
+
+### Frontend
+- [ ] Refactor `Admin.jsx` - Split into components
+- [ ] Consistent component patterns - Follow CelebrateManager blueprint
+- [ ] Data test IDs - Every interactive element
+
+### Integrations
+- [ ] **Razorpay** - Seed dummy data for testing
+- [ ] **Email/WhatsApp** - Complete integration
+- [ ] **Shopify Sync** - Fix "Untitled Products" issue
 
 ---
 
-## 📝 NOTES
+## 📊 PROGRESS TRACKER
 
-- Admin credentials: aditya / lola4304
-- Chatbase API Key: d4f1656b-7634-4692-a1c8-14bdbd010285
-- Production URL: https://thedoggycompany.in
-- Preview URL: https://pet-soul-dash.preview.emergentagent.com
-- Shopify source: https://thedoggybakery.com/products.json
+| Phase | Status | Priority |
+|-------|--------|----------|
+| Phase 1: Critical Bugs | 🔴 NOT STARTED | P0 |
+| Phase 2: Membership | 🔴 NOT STARTED | P0 |
+| Phase 3: UX/Flow | 🟡 PARTIAL | P1 |
+| Phase 4: Admin/Reports | 🟡 PARTIAL | P1 |
+| Phase 5: Proactive AI | 🔴 NOT STARTED | P2 |
+| Phase 6: Enhancements | 🔴 NOT STARTED | P3 |
+| Technical Debt | 🟡 ONGOING | P3 |
 
 ---
 
-## 🎯 SUCCESS METRICS TO TRACK
+## 🎯 NEXT STEPS (Recommended Order)
 
-- Average order value (target: increase 15% with upsells)
-- Cart abandonment rate (target: recover 10%)
-- Birthday reminder conversions
-- Loyalty program engagement
-- Pet Wall of Fame submissions
+1. **Fix Critical Bugs** (Phase 1) - Valentine collection, Health Vault, broken pillars
+2. **Build Membership System** (Phase 2) - The gateway to everything
+3. **Landing Page Redesign** - Membership-first messaging
+4. **Complete remaining Pet Soul integrations** - Travel, Care, Emergency, etc.
+5. **Mira Proactive** - Use Pet Soul data for smart suggestions
+6. **Admin Dashboard enhancements** - Reports, CSV, order management
+
+---
+
+*Last Updated: January 20, 2026*
