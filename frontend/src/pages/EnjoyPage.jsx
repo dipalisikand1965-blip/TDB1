@@ -61,6 +61,13 @@ const EnjoyPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [heroIndex, setHeroIndex] = useState(0);
   
+  // Calendar view state
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'calendar'
+  const [calendarData, setCalendarData] = useState({});
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [availableCities, setAvailableCities] = useState([]);
+  
   const [rsvpForm, setRsvpForm] = useState({
     number_of_pets: 1,
     number_of_humans: 1,
