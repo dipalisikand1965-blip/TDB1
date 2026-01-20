@@ -820,19 +820,59 @@ const ProductDetailModal = ({ product, onClose }) => {
               (product.name || '').toLowerCase().includes('meal')
             ) && (
             <div className="space-y-3 mb-4 pt-3 border-t">
-              <label className="text-sm font-semibold text-gray-700 block">Personalization</label>
-              <Input 
-                placeholder="Pet's Name (for cake)" 
-                value={cartInput.petName}
-                onChange={(e) => setCartInput({...cartInput, petName: e.target.value})}
-                className="text-sm"
-              />
+              <label className="text-sm font-semibold text-gray-700 block flex items-center gap-2">
+                <PawPrint className="w-4 h-4 text-pink-600" />
+                Personalization
+              </label>
+              
+              {/* Pet Selection - Show if user has pets */}
+              {user && userPets.length > 0 && (
+                <div className="bg-pink-50 p-3 rounded-lg border border-pink-100">
+                  <label className="text-xs text-pink-700 font-medium block mb-2">
+                    Select your pet for personalized recommendations
+                  </label>
+                  <select 
+                    className="w-full px-3 py-2 border border-pink-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-pink-400"
+                    value={selectedPetId}
+                    onChange={(e) => handlePetSelect(e.target.value)}
+                  >
+                    <option value="">Choose your furry friend...</option>
+                    {userPets.map((pet) => (
+                      <option key={pet.id} value={pet.id}>
+                        🐕 {pet.name} {pet.breed ? `(${pet.breed})` : ''}
+                      </option>
+                    ))}
+                    <option value="manual">✏️ Enter manually</option>
+                  </select>
+                </div>
+              )}
+              
+              {/* Manual input - show if no pets or user selected manual */}
+              {(!user || userPets.length === 0 || selectedPetId === 'manual' || selectedPetId === '') && (
+                <Input 
+                  placeholder="Pet's Name (for cake)" 
+                  value={cartInput.petName}
+                  onChange={(e) => setCartInput({...cartInput, petName: e.target.value})}
+                  className="text-sm"
+                />
+              )}
+              
+              {/* Show selected pet info */}
+              {selectedPetId && selectedPetId !== 'manual' && cartInput.petName && (
+                <div className="flex items-center gap-2 text-sm text-pink-700 bg-pink-50 px-3 py-2 rounded-lg">
+                  <PawPrint className="w-4 h-4" />
+                  <span>Cake for <strong>{cartInput.petName}</strong></span>
+                  {cartInput.petBreed && <Badge variant="outline" className="text-xs">{cartInput.petBreed}</Badge>}
+                </div>
+              )}
+              
               <div className="grid grid-cols-2 gap-2">
                 <Input 
                   placeholder="Pet's Age" 
                   value={cartInput.age}
                   onChange={(e) => setCartInput({...cartInput, age: e.target.value})}
                   className="text-sm"
+                  disabled={selectedPetId && selectedPetId !== 'manual' && cartInput.age}
                 />
                 <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                   <PopoverTrigger asChild>
