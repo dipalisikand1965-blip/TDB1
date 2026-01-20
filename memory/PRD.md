@@ -108,6 +108,18 @@ Build a world-class, event-driven platform with a single engine powering multipl
 - Service Desk + Unified Inbox integration with auto-ticket creation
 - **Bug Fix (Jan 20, 2026)**: Added `is_active: true` to bundle seed data to fix bundles not displaying
 
+**ADVISORY Pillar** ✅ (January 20, 2026)
+- Expert pet guidance: Behaviour, Nutrition, Senior Care, New Pet, Health, Training consultations
+- Beautiful violet/purple themed frontend with "Expert Guidance for Your Pet's Wellbeing" branding
+- 6 advisory service types with unique icons and colors
+- Featured advisors section with ratings and consultation fees
+- Products & Bundles sections with Paw Points rewards
+- Admin AdvisoryManager with 5 tabs (Requests, Advisors, Products, Bundles, Settings)
+- Full Settings: Paw Rewards, Birthday Perks, Notifications, Service Desk integration
+- 4 advisors + 12 products + 5 bundles seeded
+- Service Desk ticket auto-creation on request submission
+- Unified Inbox integration with admin notifications
+
 **Dine Pillar Updates** ✅ (January 20, 2026)
 - **NEW**: Added `/api/dine/products` endpoint for dine-specific products
 - **NEW**: Added 12 dine products (travel bowl, placemat, water bottle, treat pouch, calming spray, etc.)
