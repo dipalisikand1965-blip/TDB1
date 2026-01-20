@@ -83,6 +83,14 @@ Build a world-class, event-driven platform with a single engine powering multipl
 - CSV import/export
 - Service Desk + Unified Inbox + Pet Soul integration
 
+**Enjoy Pillar** ✅ (January 20, 2026)
+- Pet-friendly events, experiences & community calendar
+- 6 experience types: Events & Pop-ups, Trails & Walks, Meetups & Playdates, Pet Cafés, Workshops, Wellness
+- Beautiful frontend with hero section and RSVP flow
+- Admin EnjoyManager with 5 tabs (Experiences, RSVPs, Partners, Products, Settings)
+- 16 experiences + 14 products seeded (Mumbai, Delhi, Bangalore, Goa, Pune, Hyderabad)
+- Service Desk + Unified Inbox + Pet Soul integration
+
 **Celebrations Pillar** ✅
 - Custom cakes, treats, birthday celebrations
 
