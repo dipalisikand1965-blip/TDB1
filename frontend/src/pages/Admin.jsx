@@ -90,7 +90,9 @@ import {
   PartyPopper,
   Dumbbell,
   Brain,
-  Bell
+  Bell,
+  Headphones,
+  ExternalLink
 } from 'lucide-react';
 
 const Admin = () => {
