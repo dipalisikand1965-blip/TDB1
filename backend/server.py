@@ -2684,7 +2684,7 @@ async def forgot_password(email: str = Body(..., embed=True)):
         
         resend.Emails.send({
             "from": SENDER_EMAIL,
-            "to": [ADMIN_EMAIL],
+            "to": ADMIN_EMAIL,  # Resend expects a string
             "subject": "🔐 Password Reset - The Doggy Company Admin",
             "html": html_content
         })
