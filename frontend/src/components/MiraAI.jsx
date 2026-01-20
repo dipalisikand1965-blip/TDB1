@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { X, Sparkles, Minimize2, Maximize2, Send, Loader2, User, Bot } from 'lucide-react';
+import { X, Sparkles, Minimize2, Maximize2, Send, Loader2, User, Bot, PawPrint } from 'lucide-react';
 import { Button } from './ui/button';
 import ReactMarkdown from 'react-markdown';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -17,6 +18,7 @@ const generateSessionId = () => {
 
 const MiraAI = () => {
   const location = useLocation();
+  const { user, token } = useAuth();
   
   // Hide MiraAI on admin and agent pages
   const hiddenPaths = ['/admin', '/agent', '/login'];
@@ -24,6 +26,8 @@ const MiraAI = () => {
   
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [userPets, setUserPets] = useState([]);
+  const [petsLoaded, setPetsLoaded] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: 'welcome',
