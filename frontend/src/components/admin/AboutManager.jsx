@@ -6,7 +6,7 @@ import { Badge } from '../ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { 
   Users, PawPrint, Plus, Edit2, Trash2, Save, X, RefreshCw,
-  GripVertical, Eye, EyeOff, Sparkles
+  GripVertical, Eye, EyeOff, Sparkles, Upload
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 
