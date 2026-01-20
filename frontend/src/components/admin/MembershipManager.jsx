@@ -211,6 +211,116 @@ const MembershipManager = () => {
     a.click();
   };
 
+  // CSV Upload handler
+  const handleCSVUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(`${API_URL}/api/admin/members/import`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Successfully imported ${result.imported} members. ${result.skipped || 0} skipped.`);
+        fetchMembers();
+        setShowUploadModal(false);
+      } else {
+        const error = await response.json();
+        alert(`Import failed: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('CSV upload failed:', error);
+      alert('Failed to upload CSV file');
+    }
+    
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Download CSV template
+  const downloadTemplate = () => {
+    const template = 'name,email,phone,membership_tier,membership_months,paw_points,notes\nJohn Doe,john@example.com,9876543210,pawsome,12,100,Offline registration\n';
+    const blob = new Blob([template], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'members_import_template.csv';
+    a.click();
+  };
+
+  // Add single member
+  const addMember = async (memberData) => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/members`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(memberData)
+      });
+      if (response.ok) {
+        fetchMembers();
+        setShowAddMemberModal(false);
+        alert('Member added successfully!');
+      } else {
+        const error = await response.json();
+        alert(`Failed to add member: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Failed to add member:', error);
+      alert('Failed to add member');
+    }
+  };
+
+  // Bulk actions
+  const executeBulkAction = async () => {
+    if (!selectedMembers.length || !bulkAction) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/admin/members/bulk-action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          member_ids: selectedMembers,
+          action: bulkAction
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Bulk action completed: ${result.affected} members updated`);
+        fetchMembers();
+        setSelectedMembers([]);
+        setShowBulkActionModal(false);
+      }
+    } catch (error) {
+      console.error('Bulk action failed:', error);
+    }
+  };
+
+  // Toggle member selection
+  const toggleMemberSelection = (memberId) => {
+    setSelectedMembers(prev => 
+      prev.includes(memberId) 
+        ? prev.filter(id => id !== memberId)
+        : [...prev, memberId]
+    );
+  };
+
+  // Select all filtered members
+  const selectAllFiltered = () => {
+    const allIds = filteredMembers.map(m => m.id);
+    setSelectedMembers(prev => 
+      prev.length === allIds.length ? [] : allIds
+    );
+  };
+
   const filteredMembers = members.filter(m => {
     const matchesSearch = !searchQuery || 
       m.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -231,13 +341,24 @@ const MembershipManager = () => {
           </h1>
           <p className="text-gray-500 mt-1">Manage members, tiers, rewards & subscriptions</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={fetchMembers}>
             <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+          </Button>
+          <Button variant="outline" onClick={() => setShowAddMemberModal(true)}>
+            <UserPlus className="w-4 h-4 mr-2" /> Add Member
+          </Button>
+          <Button variant="outline" onClick={() => setShowUploadModal(true)}>
+            <Upload className="w-4 h-4 mr-2" /> Import CSV
           </Button>
           <Button variant="outline" onClick={exportMembers}>
             <Download className="w-4 h-4 mr-2" /> Export CSV
           </Button>
+          {selectedMembers.length > 0 && (
+            <Button onClick={() => setShowBulkActionModal(true)} className="bg-purple-600">
+              <Zap className="w-4 h-4 mr-2" /> Bulk Actions ({selectedMembers.length})
+            </Button>
+          )}
         </div>
       </div>
 
