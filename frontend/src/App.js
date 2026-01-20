@@ -119,6 +119,9 @@ function AppRouter() {
       {/* Membership Landing Page - NO navbar/footer for clean entry */}
       <Route path="/membership" element={<MembershipPage />} />
       
+      {/* Members Area - Shows benefits & login/signup options */}
+      <Route path="/members" element={<MembersArea />} />
+      
       {/* Main app routes - WITH navbar */}
       <Route path="/*" element={<MainLayout />} />
     </Routes>
