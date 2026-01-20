@@ -87,6 +87,12 @@ Build a world-class, event-driven platform with a single engine powering multipl
 - Pet-friendly events, experiences & community calendar
 - 6 experience types: Events & Pop-ups, Trails & Walks, Meetups & Playdates, Pet Cafés, Workshops, Wellness
 - Beautiful frontend with hero section and RSVP flow
+- **NEW: Community Calendar View** with:
+  - Month navigation and day selection
+  - Event indicators on dates with activities
+  - City filter (India: Mumbai, Delhi, Bangalore, Goa, Hyderabad, Pune + Global ready)
+  - List/Calendar view toggle
+  - Click-to-RSVP from calendar sidebar
 - Admin EnjoyManager with 5 tabs (Experiences, RSVPs, Partners, Products, Settings)
 - 16 experiences + 14 products seeded (Mumbai, Delhi, Bangalore, Goa, Pune, Hyderabad)
 - Service Desk + Unified Inbox + Pet Soul integration
