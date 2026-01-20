@@ -333,17 +333,6 @@ const EnjoyManager = ({ getAuthHeader }) => {
     URL.revokeObjectURL(url);
   };
 
-  // Seed data
-  const seedData = async () => {
-    try {
-      const response = await axios.post(`${API_URL}/api/enjoy/admin/seed`, {}, getAuthHeader());
-      toast({ title: 'Success', description: `Seeded ${response.data.experiences_seeded} experiences and ${response.data.products_seeded} products` });
-      fetchAllData();
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to seed data', variant: 'destructive' });
-    }
-  };
-
   // Filters
   const filteredExperiences = experiences.filter(e => {
     if (typeFilter !== 'all' && e.experience_type !== typeFilter) return false;
