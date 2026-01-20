@@ -30,6 +30,7 @@ import MiraConcierge from "./pages/MiraConcierge";
 import Checkout from "./pages/Checkout";
 import About from "./pages/About";
 import Membership from "./pages/Membership";
+import MembersArea from "./pages/MembersArea";
 import Admin from "./pages/Admin";
 import Policies from "./pages/Policies";
 import FAQs from "./pages/FAQs";
