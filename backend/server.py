@@ -1792,7 +1792,7 @@ async def send_product_match_email(pet: dict, product: dict, match_reason: str):
         
         params = {
             "from": f"The Doggy Bakery <{SENDER_EMAIL}>",
-            "to": [pet.get("owner_email")],
+            "to": pet.get("owner_email"),  # Resend expects a string
             "subject": f"🐾 Perfect Match for {pet_name}: {product_name}",
             "html": html_content
         }
