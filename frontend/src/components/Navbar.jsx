@@ -133,6 +133,23 @@ const Navbar = () => {
         { name: '🎁 Shop Enjoy Essentials', path: '/enjoy#enjoy-kits' },
       ]
     },
+    { 
+      id: 'fit',
+      name: 'Fit', 
+      icon: Activity,
+      color: 'from-teal-500 to-emerald-500',
+      description: 'Fitness, weight & wellness',
+      path: '/fit',
+      isActive: true,
+      subItems: [
+        { name: '🏋️ Exercise Plans', path: '/fit?type=exercise_plan' },
+        { name: '⚖️ Weight Management', path: '/fit?type=weight_management' },
+        { name: '🥗 Nutrition Guidance', path: '/fit?type=nutrition' },
+        { name: '🏃 Agility Training', path: '/fit?type=agility' },
+        { name: '🧓 Senior Fitness', path: '/fit?type=senior_fitness' },
+        { name: '🎯 Shop Fitness Gear', path: '/fit#fit-products' },
+      ]
+    },
   ];
 
   const isActive = (path) => location.pathname === path;
