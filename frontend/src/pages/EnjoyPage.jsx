@@ -92,18 +92,26 @@ const EnjoyPage = () => {
   const fetchExperiences = async () => {
     setLoading(true);
     try {
-      const [allRes, featuredRes] = await Promise.all([
+      const [allRes, featuredRes, calendarRes] = await Promise.all([
         fetch(`${API_URL}/api/enjoy/experiences`),
-        fetch(`${API_URL}/api/enjoy/experiences?is_featured=true`)
+        fetch(`${API_URL}/api/enjoy/experiences?is_featured=true`),
+        fetch(`${API_URL}/api/enjoy/calendar`)
       ]);
       
       if (allRes.ok) {
         const data = await allRes.json();
         setExperiences(data.experiences || []);
+        // Extract unique cities
+        const cities = [...new Set((data.experiences || []).map(e => e.city).filter(Boolean))];
+        setAvailableCities(cities);
       }
       if (featuredRes.ok) {
         const data = await featuredRes.json();
         setFeaturedExperiences(data.experiences || []);
+      }
+      if (calendarRes.ok) {
+        const data = await calendarRes.json();
+        setCalendarData(data.calendar || {});
       }
     } catch (error) {
       console.error('Error fetching experiences:', error);
