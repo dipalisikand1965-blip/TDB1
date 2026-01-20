@@ -496,20 +496,20 @@ const FitManager = ({ getAuthHeader }) => {
                   className="pl-10"
                 />
               </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select value={statusFilter || 'all'} onValueChange={(val) => setStatusFilter(val === 'all' ? '' : val)}>
                 <SelectTrigger className="w-40"><SelectValue placeholder="All Status" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Status</SelectItem>
+                  <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="in_progress">In Progress</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
                   <SelectItem value="cancelled">Cancelled</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <Select value={typeFilter || 'all'} onValueChange={(val) => setTypeFilter(val === 'all' ? '' : val)}>
                 <SelectTrigger className="w-40"><SelectValue placeholder="All Types" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="assessment">Assessment</SelectItem>
                   <SelectItem value="exercise_plan">Exercise Plan</SelectItem>
                   <SelectItem value="weight_management">Weight Management</SelectItem>
