@@ -1660,7 +1660,7 @@ const Admin = () => {
 
         {/* Products Tab - Using ProductManager Component */}
         {activeTab === 'products' && (
-          <ProductManager credentials={{ username, password }} />
+          <CelebrateManager getAuthHeader={getAuthHeaders} />
         )}
 
         {/* Autoship Tab */}
