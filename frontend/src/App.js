@@ -153,6 +153,7 @@ function AppRouter() {
 function MainLayout() {
   return (
     <div className="App">
+      <DatabaseInitializer />
       <ScrollToTop />
       <Navbar />
       <Routes>
