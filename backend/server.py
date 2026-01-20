@@ -8643,6 +8643,236 @@ async def seed_about_content(username: str = Depends(verify_admin)):
     return {"message": "About content seeded successfully", "team_count": len(team_members), "dogs_count": len(featured_dogs)}
 
 
+# ==================== RAZORPAY PAYMENT ROUTES ====================
+
+# Membership Plans
+MEMBERSHIP_PLANS = {
+    "monthly": {
+        "id": "plan_monthly",
+        "name": "Monthly Membership",
+        "amount": 9900,
+        "currency": "INR",
+        "duration_days": 30,
+        "tier": "pawsome"
+    },
+    "annual": {
+        "id": "plan_annual", 
+        "name": "Annual Membership",
+        "amount": 99900,
+        "currency": "INR",
+        "duration_days": 365,
+        "tier": "pawsome"
+    },
+    "premium_annual": {
+        "id": "plan_premium",
+        "name": "Premium Annual",
+        "amount": 199900,
+        "currency": "INR",
+        "duration_days": 365,
+        "tier": "premium"
+    },
+    "vip_annual": {
+        "id": "plan_vip",
+        "name": "VIP Pack Leader",
+        "amount": 499900,
+        "currency": "INR",
+        "duration_days": 365,
+        "tier": "vip"
+    }
+}
+
+
+class CreateOrderRequest(BaseModel):
+    plan_id: str
+    user_email: str
+    user_name: Optional[str] = None
+    user_phone: Optional[str] = None
+
+
+class VerifyPaymentRequest(BaseModel):
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str
+    user_email: str
+
+
+@api_router.get("/payments/plans")
+async def get_membership_plans():
+    """Get available membership plans"""
+    plans = []
+    for key, plan in MEMBERSHIP_PLANS.items():
+        plans.append({
+            "id": key,
+            "name": plan["name"],
+            "amount": plan["amount"] / 100,
+            "currency": plan["currency"],
+            "duration_days": plan["duration_days"],
+            "tier": plan["tier"]
+        })
+    return {"plans": plans}
+
+
+@api_router.post("/payments/create-order")
+async def create_payment_order(request: CreateOrderRequest):
+    """Create a Razorpay order for membership payment"""
+    if not razorpay_client:
+        raise HTTPException(status_code=503, detail="Payment service not configured")
+    
+    plan = MEMBERSHIP_PLANS.get(request.plan_id)
+    if not plan:
+        raise HTTPException(status_code=400, detail="Invalid plan selected")
+    
+    try:
+        order_data = {
+            "amount": plan["amount"],
+            "currency": plan["currency"],
+            "receipt": f"mem_{uuid.uuid4().hex[:12]}",
+            "notes": {
+                "plan_id": request.plan_id,
+                "user_email": request.user_email,
+                "tier": plan["tier"]
+            }
+        }
+        
+        razorpay_order = razorpay_client.order.create(data=order_data)
+        
+        order_record = {
+            "id": f"order-{uuid.uuid4().hex[:12]}",
+            "razorpay_order_id": razorpay_order["id"],
+            "plan_id": request.plan_id,
+            "plan_name": plan["name"],
+            "amount": plan["amount"],
+            "currency": plan["currency"],
+            "tier": plan["tier"],
+            "duration_days": plan["duration_days"],
+            "user_email": request.user_email,
+            "user_name": request.user_name,
+            "user_phone": request.user_phone,
+            "status": "created",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.payment_orders.insert_one(order_record)
+        
+        return {
+            "order_id": razorpay_order["id"],
+            "amount": plan["amount"],
+            "currency": plan["currency"],
+            "key_id": RAZORPAY_KEY_ID,
+            "plan_name": plan["name"],
+            "prefill": {
+                "name": request.user_name or "",
+                "email": request.user_email,
+                "contact": request.user_phone or ""
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to create Razorpay order: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create payment order")
+
+
+@api_router.post("/payments/verify")
+async def verify_payment(request: VerifyPaymentRequest):
+    """Verify Razorpay payment and activate membership"""
+    if not razorpay_client:
+        raise HTTPException(status_code=503, detail="Payment service not configured")
+    
+    try:
+        params_dict = {
+            'razorpay_order_id': request.razorpay_order_id,
+            'razorpay_payment_id': request.razorpay_payment_id,
+            'razorpay_signature': request.razorpay_signature
+        }
+        
+        razorpay_client.utility.verify_payment_signature(params_dict)
+        
+        order = await db.payment_orders.find_one(
+            {"razorpay_order_id": request.razorpay_order_id},
+            {"_id": 0}
+        )
+        
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        await db.payment_orders.update_one(
+            {"razorpay_order_id": request.razorpay_order_id},
+            {"$set": {
+                "status": "paid",
+                "razorpay_payment_id": request.razorpay_payment_id,
+                "paid_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        duration_days = order.get("duration_days", 30)
+        expires_at = datetime.now(timezone.utc) + timedelta(days=duration_days)
+        
+        user = await db.users.find_one({"email": request.user_email})
+        
+        if user:
+            current_expires = user.get("membership_expires")
+            if current_expires:
+                try:
+                    current_exp_date = datetime.fromisoformat(current_expires.replace('Z', '+00:00'))
+                    if current_exp_date > datetime.now(timezone.utc):
+                        expires_at = current_exp_date + timedelta(days=duration_days)
+                except:
+                    pass
+            
+            await db.users.update_one(
+                {"email": request.user_email},
+                {"$set": {
+                    "membership_tier": order.get("tier", "pawsome"),
+                    "membership_expires": expires_at.isoformat(),
+                    "membership_plan": order.get("plan_id"),
+                    "last_payment_id": request.razorpay_payment_id
+                }}
+            )
+        else:
+            new_user = {
+                "id": f"user-{uuid.uuid4().hex[:12]}",
+                "email": request.user_email,
+                "name": order.get("user_name", ""),
+                "phone": order.get("user_phone", ""),
+                "membership_tier": order.get("tier", "pawsome"),
+                "membership_expires": expires_at.isoformat(),
+                "membership_plan": order.get("plan_id"),
+                "last_payment_id": request.razorpay_payment_id,
+                "loyalty_points": 100,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.users.insert_one(new_user)
+        
+        await db.payment_history.insert_one({
+            "id": f"pay-{uuid.uuid4().hex[:12]}",
+            "user_email": request.user_email,
+            "razorpay_order_id": request.razorpay_order_id,
+            "razorpay_payment_id": request.razorpay_payment_id,
+            "plan_id": order.get("plan_id"),
+            "amount": order.get("amount"),
+            "currency": order.get("currency", "INR"),
+            "tier": order.get("tier"),
+            "status": "success",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        return {
+            "success": True,
+            "message": "Payment verified and membership activated!",
+            "membership": {
+                "tier": order.get("tier"),
+                "expires": expires_at.isoformat(),
+                "plan": order.get("plan_name")
+            }
+        }
+        
+    except razorpay.errors.SignatureVerificationError:
+        logger.error("Razorpay signature verification failed")
+        raise HTTPException(status_code=400, detail="Payment verification failed")
+    except Exception as e:
+        logger.error(f"Payment verification error: {e}")
+        raise HTTPException(status_code=500, detail="Payment verification failed")
+
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
@@ -8652,12 +8882,6 @@ app.include_router(feedback_router)
 app.include_router(birthday_router)
 app.include_router(concierge_router)
 app.include_router(reports_email_router)
-
-
-# ==================== RAZORPAY PAYMENT ROUTES ====================
-
-# Membership Plans
-MEMBERSHIP_PLANS = {
     "monthly": {
         "id": "plan_monthly",
         "name": "Monthly Membership",
