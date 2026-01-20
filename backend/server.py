@@ -2064,18 +2064,33 @@ async def chat_with_mira(request: ChatRequest):
             # Decode token to get user info
             token = request.auth_token.replace("Bearer ", "")
             payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            # Token uses 'sub' for email
+            user_email = payload.get("sub") or payload.get("email")
             user_id = payload.get("user_id")
-            user_email = payload.get("email")
             
-            logger.info(f"Mira: Decoded token - user_id: {user_id}, email: {user_email}")
+            logger.info(f"Mira: Decoded token - sub/email: {user_email}, user_id: {user_id}")
             
-            if user_id or user_email:
-                # Fetch user's pets with their Pet Soul data
-                query = {"user_id": user_id} if user_id else {"user_email": user_email}
-                logger.info(f"Mira: Searching pets with query: {query}")
-                pets = await db.pets.find(query, {"_id": 0}).to_list(10)
+            if user_email or user_id:
+                # Fetch user's pets with their Pet Soul data - try multiple query patterns
+                queries_to_try = []
+                if user_email:
+                    queries_to_try.append({"user_email": user_email})
+                    queries_to_try.append({"user_id": user_email})  # Some pets use email as user_id
+                    queries_to_try.append({"owner_email": user_email})
+                if user_id:
+                    queries_to_try.append({"user_id": user_id})
                 
-                logger.info(f"Mira: Found {len(pets)} pets")
+                pets = []
+                for query in queries_to_try:
+                    logger.info(f"Mira: Trying query: {query}")
+                    found_pets = await db.pets.find(query, {"_id": 0}).to_list(10)
+                    if found_pets:
+                        pets = found_pets
+                        logger.info(f"Mira: Found {len(pets)} pets with query {query}")
+                        break
+                
+                if not pets:
+                    logger.info(f"Mira: No pets found for user {user_email}")
                 
                 if pets:
                     user_pets = pets
