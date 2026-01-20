@@ -2051,9 +2051,77 @@ async def chat_with_mira(request: ChatRequest):
     user_query = request.message
     session_id = request.session_id or str(uuid.uuid4())
     
-    # Rate limiting removed - Mira is now free for all users
+    # ==================== PET SOUL INTEGRATION ====================
+    user_pets = []
+    user_info = None
+    pet_soul_context = ""
     
-    # 1. Perform Web Search (DuckDuckGo)
+    if request.auth_token:
+        try:
+            token = request.auth_token.replace("Bearer ", "")
+            payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            user_email = payload.get("sub") or payload.get("email")
+            user_id = payload.get("user_id")
+            
+            if user_email or user_id:
+                # Try multiple query patterns to find user's pets
+                queries_to_try = []
+                if user_email:
+                    queries_to_try.append({"user_email": user_email})
+                    queries_to_try.append({"user_id": user_email})
+                if user_id:
+                    queries_to_try.append({"user_id": user_id})
+                
+                pets = []
+                for query in queries_to_try:
+                    found_pets = await db.pets.find(query, {"_id": 0}).to_list(10)
+                    if found_pets:
+                        pets = found_pets
+                        break
+                
+                if pets:
+                    user_pets = pets
+                    pet_soul_context = "\n\n🐾 **USER'S PET PROFILES**:\n"
+                    for pet in pets:
+                        identity = pet.get("identity", {})
+                        answers = pet.get("doggy_soul_answers", {})
+                        pet_soul_context += f"""
+**{pet.get('name', 'Pet')}** ({identity.get('breed', pet.get('breed', 'Unknown'))})
+- Age: {identity.get('age', pet.get('age', 'Unknown'))}
+- Weight: {identity.get('weight', 'Not specified')}
+"""
+                        if answers:
+                            for field in ['food_allergies', 'favorite_treats', 'behavior_with_dogs']:
+                                if field in answers and answers[field]:
+                                    pet_soul_context += f"- {field.replace('_', ' ').title()}: {answers[field]}\n"
+                        pet_soul_context += "\n"
+                    logger.info(f"Mira loaded {len(user_pets)} pets for user")
+                    
+        except Exception as e:
+            logger.warning(f"Mira Pet Soul fetch: {e}")
+    
+    # Pillar context from current page
+    pillar_context = ""
+    if request.current_page:
+        page = request.current_page.lower()
+        pillar_map = {
+            '/celebrate': "CELEBRATE pillar (cakes, treats)",
+            '/dine': "DINE pillar (pet-friendly restaurants)",
+            '/stay': "STAY pillar (pet-friendly hotels, boarding)",
+            '/travel': "TRAVEL pillar (pet travel, relocation)",
+            '/care': "CARE pillar (grooming, vet services)",
+            '/enjoy': "ENJOY pillar (events, experiences)",
+            '/fit': "FIT pillar (fitness, weight management)",
+            '/advisory': "ADVISORY pillar (expert consultations)",
+            '/paperwork': "PAPERWORK pillar (documents, records)",
+            '/emergency': "EMERGENCY pillar (urgent help, lost pet)",
+        }
+        for path, context in pillar_map.items():
+            if path in page:
+                pillar_context = f"User is browsing {context}"
+                break
+    
+    # ==================== WEB SEARCH ====================
     search_results = ""
     try:
         with DDGS() as ddgs:
