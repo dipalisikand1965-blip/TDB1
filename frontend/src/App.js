@@ -180,12 +180,12 @@ function MainLayout() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/voice-order" element={<ProtectedRoute><VoiceOrder /></ProtectedRoute>} />
         
-        {/* Pet Profile - Protected */}
-        <Route path="/pet-profile" element={<ProtectedRoute><PetProfile /></ProtectedRoute>} />
+        {/* Pet Profile - Accessible without login */}
+        <Route path="/pet-profile" element={<PetProfile />} />
         <Route path="/my-pets" element={<ProtectedRoute><MyPets /></ProtectedRoute>} />
         <Route path="/pets" element={<ProtectedRoute><MyPets /></ProtectedRoute>} />
-        <Route path="/pet-soul/:petId" element={<ProtectedRoute><PetSoulPage /></ProtectedRoute>} />
-        <Route path="/pet-soul" element={<ProtectedRoute><PetSoulPage /></ProtectedRoute>} />
+        <Route path="/pet-soul/:petId" element={<PetSoulPage />} />
+        <Route path="/pet-soul" element={<PetProfile />} />
         <Route path="/pet-vault/:petId" element={<ProtectedRoute><PetVault /></ProtectedRoute>} />
         
         {/* Policy Pages */}
