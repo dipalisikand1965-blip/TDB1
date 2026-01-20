@@ -29,7 +29,7 @@ import PaperworkManager from '../components/admin/PaperworkManager';
 import EmergencyManager from '../components/admin/EmergencyManager';
 import CelebrateManager from '../components/admin/CelebrateManager';
 import DataMigration from '../components/DataMigration';
-import { DashboardTab, OrdersTab, MembersTab, ChatsTab, DineManager, ServiceDesk, ProductTagsManager } from '../components/admin';
+import { DashboardTab, OrdersTab, MembersTab, ChatsTab, DineManager, ServiceDesk, ProductTagsManager, MembershipManager } from '../components/admin';
 import NotificationBell from '../components/admin/NotificationBell';
 import UnifiedInbox from '../components/admin/UnifiedInbox';
 import CelebrationsCalendar from '../components/admin/CelebrationsCalendar';
