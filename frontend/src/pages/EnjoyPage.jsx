@@ -368,7 +368,7 @@ const EnjoyPage = () => {
               <Select value={selectedCity || 'all'} onValueChange={(val) => setSelectedCity(val === 'all' ? '' : val)}>
                 <SelectTrigger className="w-40 h-10" data-testid="city-filter">
                   <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-purple-500" />
+                    <MapPin className="w-4 h-4 text-orange-500" />
                     <SelectValue placeholder="All Cities" />
                   </div>
                 </SelectTrigger>
