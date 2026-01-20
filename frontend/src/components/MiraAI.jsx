@@ -136,11 +136,16 @@ const MiraAI = () => {
     try {
       const response = await fetch(`${API_URL}/api/mira/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
         body: JSON.stringify({
           message: userMessage.content,
           session_id: sessionId,
-          source: 'web_widget'
+          source: 'web_widget',
+          auth_token: token || null,
+          current_page: location.pathname
         })
       });
 
