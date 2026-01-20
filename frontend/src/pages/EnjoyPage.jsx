@@ -6,6 +6,7 @@ import { Label } from '../components/ui/label';
 import { Badge } from '../components/ui/badge';
 import { Textarea } from '../components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
@@ -13,7 +14,7 @@ import {
   PartyPopper, Calendar, MapPin, Users, Clock, PawPrint,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
   ArrowRight, Play, ChevronDown, Coffee, Mountain, GraduationCap,
-  Heart, Shield, Ticket, Filter
+  Heart, Shield, Ticket, Filter, ChevronLeft, Globe, List, CalendarDays
 } from 'lucide-react';
 
 // Experience Type Configuration
