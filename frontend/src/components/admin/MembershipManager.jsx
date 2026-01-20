@@ -75,6 +75,12 @@ const MembershipManager = () => {
   const [showGiftModal, setShowGiftModal] = useState(false);
   const [showPointsModal, setShowPointsModal] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [showBulkActionModal, setShowBulkActionModal] = useState(false);
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const [bulkAction, setBulkAction] = useState('');
+  const fileInputRef = useRef(null);
 
   // Fetch members
   useEffect(() => {
