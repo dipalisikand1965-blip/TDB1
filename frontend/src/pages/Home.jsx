@@ -269,7 +269,7 @@ const Home = () => {
                 </span>
               </h2>
               <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-                Mira is your AI-powered assistant across all 12 pillars — book restaurants, plan travel, schedule grooming, get health advice, and more. 24/7 intelligent support for all your pet's needs.
+                Mira is your AI-powered assistant across all 12 pillars — book restaurants, plan travel, schedule grooming, get health advice, and more. 24/7 intelligent support for all your pet&apos;s needs.
               </p>
               
               <div className="space-y-4 mb-8">
