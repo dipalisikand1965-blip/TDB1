@@ -781,7 +781,7 @@ const EnjoyManager = ({ getAuthHeader }) => {
           {products.length === 0 && (
             <Card className="p-8 text-center">
               <Package className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-              <p className="text-gray-500">No products yet. Click "Add Product" to create one.</p>
+              <p className="text-gray-500">No products yet. Click &quot;Add Product&quot; to create one.</p>
             </Card>
           )}
         </TabsContent>
