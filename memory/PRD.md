@@ -64,16 +64,21 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 4. **Mira Proactive** - Birthday/anniversary suggestions from Pet Soul
 
 ### P1 - User Journey
-5. New landing page with pillar showcase
-6. Membership tiers (Club pillar)
+5. Build CLUB (Membership) Pillar
+6. Membership tiers implementation
 7. Onboarding flow with Pet Soul creation
 8. Auto-checkout per pillar
 
-### P2 - Admin & Code
-9. Complete admin tabs for Stay, Dine, Enjoy
-10. Pillar-wise shipping rules
-11. Campaign system
-12. Code reorganization
+### P2 - Known Issues to Fix
+9. Voice Order feature broken ("Connection failed")
+10. Service Desk modal shaking/flashing
+11. Auto-reminders only sent to Gmail
+12. Shopify Sync creating 'Untitled' Products (recurring)
+
+### P3 - Admin & Code
+13. Pillar-wise shipping rules
+14. Campaign system product selection from any pillar
+15. Code reorganization (refactor server.py, Admin.jsx)
 
 ---
 
