@@ -691,7 +691,8 @@ const EnjoyPage = () => {
         </div>
       )}
 
-      {/* All Experiences */}
+      {/* All Experiences - List View Only */}
+      {viewMode === 'list' && (
       <div id="experiences" className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between mb-6">
