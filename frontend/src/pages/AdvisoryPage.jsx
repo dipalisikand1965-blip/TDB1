@@ -190,8 +190,31 @@ const AdvisoryPage = () => {
 
       if (response.ok) {
         const result = await response.json();
+        
+        // Write to Pet Soul - Record advisory consultation
+        try {
+          await fetch(`${API_URL}/api/pet-vault/${selectedPet.id}/record-advisory-consult`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              advisor_id: 'tdc-advisory',
+              advisor_name: 'The Doggy Company Advisory',
+              service_type: requestForm.advisory_type,
+              consultation_type: requestForm.preferred_format,
+              date: new Date().toISOString().split('T')[0],
+              duration_minutes: null,
+              summary: requestForm.concern.substring(0, 200),
+              recommendations: [],
+              follow_up_date: null,
+              booking_id: result.request_id
+            })
+          });
+        } catch (soulError) {
+          console.warn('Pet Soul update failed (non-blocking):', soulError);
+        }
+        
         toast({
-          title: "Request Submitted!",
+          title: "Request Submitted! 🧠",
           description: result.message
         });
         setShowRequestModal(false);
