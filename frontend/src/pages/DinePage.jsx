@@ -1545,11 +1545,43 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
             </div>
           </div>
 
-          {/* Pet Details Section */}
+          {/* Pet Details Section with Pet Soul Integration */}
           <div className="p-4 bg-pink-50 border border-pink-200 rounded-lg">
             <h4 className="font-semibold text-pink-800 mb-3 flex items-center gap-2">
               <Dog className="w-4 h-4" /> About Your Pet
             </h4>
+            
+            {/* Pet Soul Selector - Show if user has registered pets */}
+            {userPets.length > 0 && (
+              <div className="mb-4 p-3 bg-white rounded-lg border border-pink-200">
+                <label className="text-xs font-medium text-pink-700 mb-1 block">
+                  🐾 Select from your Pet Soul profiles
+                </label>
+                <select
+                  value={selectedPetId}
+                  onChange={(e) => handlePetSelect(e.target.value)}
+                  className="w-full h-10 px-3 py-2 text-sm border border-pink-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 bg-white"
+                  data-testid="dine-pet-selector"
+                >
+                  <option value="">-- Enter details manually --</option>
+                  {userPets.map(pet => (
+                    <option key={pet.id} value={pet.id}>
+                      {pet.name} ({pet.breed || pet.species || 'Pet'})
+                    </option>
+                  ))}
+                </select>
+                {selectedPetId && (
+                  <p className="text-xs text-pink-600 mt-1">
+                    ✨ Dining history will be saved to {userPets.find(p => p.id === selectedPetId)?.name}'s Pet Soul
+                  </p>
+                )}
+              </div>
+            )}
+            
+            {loadingPets && (
+              <p className="text-xs text-gray-500 mb-2">Loading your pets...</p>
+            )}
+            
             <div className="grid grid-cols-2 gap-3 mb-2">
               <div>
                 <label className="text-xs font-medium text-gray-600">Pet's Name *</label>
