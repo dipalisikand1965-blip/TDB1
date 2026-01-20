@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
+import axios from 'axios';
 import {
   FileText, Upload, Download, Search, RefreshCw, Plus, Edit, Trash2,
   Shield, Heart, Plane, Sparkles, Scale, Bell, Settings, Package,
