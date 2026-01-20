@@ -8714,18 +8714,23 @@ class VerifyPaymentRequest(BaseModel):
 
 @api_router.get("/payments/plans")
 async def get_membership_plans():
-    """Get available membership plans"""
+    """Get available membership plans with GST breakdown"""
     plans = []
     for key, plan in MEMBERSHIP_PLANS.items():
+        gst_info = calculate_gst_amounts(plan["base_amount"])
         plans.append({
             "id": key,
             "name": plan["name"],
-            "amount": plan["amount"] / 100,
+            "base_amount": gst_info["base_amount"] / 100,  # In rupees
+            "gst_amount": gst_info["gst_amount"] / 100,  # In rupees
+            "gst_rate": gst_info["gst_rate"],  # 18%
+            "amount": gst_info["total_amount"] / 100,  # Total in rupees (for display)
+            "total_amount_paise": gst_info["total_amount"],  # For payment
             "currency": plan["currency"],
             "duration_days": plan["duration_days"],
             "tier": plan["tier"]
         })
-    return {"plans": plans}
+    return {"plans": plans, "gst_note": "All prices are inclusive of 18% GST"}
 
 
 @api_router.post("/payments/create-order")
