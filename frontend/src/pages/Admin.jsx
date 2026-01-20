@@ -1454,6 +1454,7 @@ const Admin = () => {
             { id: 'fit', label: '💪 Fit', icon: Dumbbell },
             { id: 'advisory', label: '🧠 Advisory', icon: Brain },
             { id: 'paperwork', label: '📄 Paperwork', icon: FileText },
+            { id: 'emergency', label: '🚨 Emergency', icon: Bell },
             { id: 'insights', label: '📝 Blog', icon: FileText },
             { id: 'testimonials', label: 'Testimonials', icon: Star },
             { id: 'faqs', label: 'FAQs', icon: HelpCircle },
