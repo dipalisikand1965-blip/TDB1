@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { testimonials, faqs, categories } from '../mockData';
-import ProductCard from '../components/ProductCard';
-import InstagramFeed from '../components/InstagramFeed';
-import VideoSection from '../components/VideoSection';
+import { testimonials, faqs } from '../mockData';
 import { Button } from '../components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import { Card } from '../components/ui/card';
-import { Star, Award, Clock, Shield, ArrowRight, Sparkles, Heart, Check, TrendingUp, Play, Instagram, Crown } from 'lucide-react';
+import { Star, Award, Clock, Shield, ArrowRight, Sparkles, Heart, Check, Crown, Phone, MessageCircle, Calendar, MapPin, Stethoscope, Plane } from 'lucide-react';
 import { useInView, useCountUp } from '../hooks/useAnimations';
-import { API_URL } from '../utils/api';
-
 
 // 12 Pillars of The Doggy Company
 const PILLARS = [
@@ -28,32 +23,53 @@ const PILLARS = [
   { name: 'Emergency', icon: '🚨', desc: '24/7 emergency support', link: '/emergency' },
 ];
 
+// Concierge Use Cases
+const CONCIERGE_USE_CASES = [
+  {
+    icon: <Calendar className="w-6 h-6" />,
+    title: "Book a Pet-Friendly Restaurant",
+    description: "Find and reserve tables at verified pet-friendly restaurants in seconds",
+    example: '"Mira, book a table for 2 with my dog at a pet-friendly cafe in Koramangala this Saturday"'
+  },
+  {
+    icon: <Plane className="w-6 h-6" />,
+    title: "Plan Pet Travel",
+    description: "Domestic & international pet relocation, airline bookings, pet taxis",
+    example: '"I need to fly my Golden Retriever from Bangalore to Mumbai next week"'
+  },
+  {
+    icon: <Stethoscope className="w-6 h-6" />,
+    title: "Coordinate Vet Appointments",
+    description: "Find specialists, book appointments, and manage health records",
+    example: '"Find a dermatologist for my dog who has skin allergies"'
+  },
+  {
+    icon: <MapPin className="w-6 h-6" />,
+    title: "Find Pet-Friendly Stays",
+    description: "Hotels, resorts, and home boarding options that welcome your furry friend",
+    example: '"Looking for a pet-friendly resort in Goa for a 3-day trip"'
+  },
+  {
+    icon: <MessageCircle className="w-6 h-6" />,
+    title: "Get Expert Advice",
+    description: "Nutrition guidance, behavior consultations, senior pet care",
+    example: '"My puppy is 6 months old, what should be his diet plan?"'
+  },
+  {
+    icon: <Phone className="w-6 h-6" />,
+    title: "24/7 Emergency Support",
+    description: "Lost pet alerts, medical emergencies, crisis coordination",
+    example: '"My dog ate something toxic, what should I do?"'
+  },
+];
+
 const Home = () => {
   const [activeSlide, setActiveSlide] = useState(0);
-  const [featuredProducts, setFeaturedProducts] = useState([]);
   const [statsRef, statsInView] = useInView({ threshold: 0.3 });
   
   const customersCount = useCountUp(45000, 2000, statsInView);
-  const productsCount = useCountUp(500, 2000, statsInView);
-  const citiesCount = useCountUp(3, 1500, statsInView);
-
-  // Fetch featured/bestseller products from API
-  useEffect(() => {
-    const fetchFeaturedProducts = async () => {
-      try {
-        // Fetch bestseller/featured products from cakes category
-        const response = await fetch(`${API_URL}/api/products?limit=8&category=cakes`);
-        if (response.ok) {
-          const data = await response.json();
-          // Take first 4 products as featured
-          setFeaturedProducts((data.products || []).slice(0, 4));
-        }
-      } catch (error) {
-        console.error('Failed to fetch featured products:', error);
-      }
-    };
-    fetchFeaturedProducts();
-  }, []);
+  const citiesCount = useCountUp(15, 1500, statsInView);
+  const partnersCount = useCountUp(500, 1800, statsInView);
 
   const heroSlides = [
     {
@@ -88,7 +104,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" data-testid="home-page">
       {/* Hero Section - Ultra Modern */}
       <section className="relative h-screen overflow-hidden bg-black">
         {/* Background Slides */}
@@ -199,13 +215,13 @@ const Home = () => {
       </section>
 
       {/* Trust Bar */}
-      <section className="bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 py-6">
+      <section className="bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 py-6" ref={statsRef}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-white text-center">
             <div className="flex items-center justify-center gap-3">
               <Award className="w-6 h-6" />
               <div>
-                <p className="font-bold text-lg">45K+</p>
+                <p className="font-bold text-lg">{customersCount.toLocaleString()}+</p>
                 <p className="text-sm opacity-90">Happy Pet Parents</p>
               </div>
             </div>
@@ -217,66 +233,24 @@ const Home = () => {
               </div>
             </div>
             <div className="flex items-center justify-center gap-3">
-              <Clock className="w-6 h-6" />
+              <MapPin className="w-6 h-6" />
               <div>
-                <p className="font-bold text-lg">24/7</p>
-                <p className="text-sm opacity-90">Mira AI Support</p>
+                <p className="font-bold text-lg">{citiesCount}+</p>
+                <p className="text-sm opacity-90">Cities Covered</p>
               </div>
             </div>
             <div className="flex items-center justify-center gap-3">
               <Shield className="w-6 h-6" />
               <div>
-                <p className="font-bold text-lg">Pet Soul™</p>
-                <p className="text-sm opacity-90">Personalization</p>
+                <p className="font-bold text-lg">{partnersCount}+</p>
+                <p className="text-sm opacity-90">Verified Partners</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 12 Pillars Section */}
-      <section id="pillars-section" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-purple-100 rounded-full mb-6">
-              <Crown className="w-5 h-5 text-purple-600 mr-2" />
-              <span className="text-purple-600 text-sm font-semibold">Pet Life Operating System</span>
-            </div>
-            <h2 className="text-5xl font-black text-gray-900 mb-4">
-              12 Pillars of Pet Life
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Everything your pet needs, under one roof. From celebrations to emergencies.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {PILLARS.map((pillar, idx) => (
-              <Link key={idx} to={pillar.link}>
-                <Card className="group p-6 hover:shadow-xl transition-all duration-300 cursor-pointer h-full transform hover:scale-105 hover:border-purple-200 border-2 border-transparent">
-                  <div className="text-4xl mb-4">{pillar.icon}</div>
-                  <h3 className="font-bold text-gray-900 text-lg mb-2 group-hover:text-purple-600 transition-colors">{pillar.name}</h3>
-                  <p className="text-gray-600 text-sm">{pillar.desc}</p>
-                </Card>
-              </Link>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link to="/membership">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6"
-              >
-                <Crown className="w-5 h-5 mr-2" />
-                Unlock All Pillars with Membership
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Mira AI Spotlight */}
+      {/* Mira AI Concierge® Spotlight - MAIN FOCUS */}
       <section className="py-24 bg-gradient-to-br from-purple-50 via-pink-50 to-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-purple-200 rounded-full opacity-20 blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-200 rounded-full opacity-20 blur-3xl"></div>
@@ -343,19 +317,19 @@ const Home = () => {
                 <div className="space-y-4">
                   <div className="bg-white border-2 border-purple-100 rounded-2xl p-4 shadow-sm">
                     <p className="text-sm text-gray-700">
-                      👋 Hi! I'm Mira, your Super Concierge®! I can help with restaurant bookings, travel planning, grooming appointments & more!
+                      Hi! I'm Mira, your Super Concierge®! I can help with restaurant bookings, travel planning, grooming appointments, vet coordination & more!
                     </p>
                   </div>
                   <div className="flex justify-end">
                     <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl p-4 shadow-sm max-w-[80%]">
                       <p className="text-sm">
-                        I need a pet-friendly restaurant in Mumbai for this Saturday
+                        I need a pet-friendly restaurant in Koramangala for this Saturday
                       </p>
                     </div>
                   </div>
                   <div className="bg-white border-2 border-purple-100 rounded-2xl p-4 shadow-sm">
                     <p className="text-sm text-gray-700">
-                      🍽️ Found 12 great options! I recommend "Cafe Pawsome" in Bandra - they have a lovely garden area for pets!
+                      Found 12 great options! I recommend "Cafe Pawsome" — they have a lovely garden area for pets. Shall I book a table?
                     </p>
                   </div>
                 </div>
@@ -365,81 +339,97 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Concierge® Use Cases */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-yellow-100 rounded-full mb-6">
-              <TrendingUp className="w-5 h-5 text-yellow-600 mr-2" />
-              <span className="text-yellow-600 text-sm font-semibold">Customer Favorites</span>
+            <div className="inline-flex items-center px-4 py-2 bg-purple-100 rounded-full mb-6">
+              <MessageCircle className="w-5 h-5 text-purple-600 mr-2" />
+              <span className="text-purple-600 text-sm font-semibold">What Can Mira Do?</span>
             </div>
             <h2 className="text-5xl font-black text-gray-900 mb-4">
-              Bestselling Treats
+              Your Concierge® Does It All
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Loved by thousands of dogs and trusted by pet parents across India
+              From restaurant reservations to emergency support — one chat handles everything
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product, idx) => (
-              <div
-                key={product.id}
-                className="transform transition-all duration-300 hover:-translate-y-2"
-                style={{ animationDelay: `${idx * 100}ms` }}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {CONCIERGE_USE_CASES.map((useCase, idx) => (
+              <Card 
+                key={idx} 
+                className="p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group border-2 border-transparent hover:border-purple-200"
+                onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
               >
-                <ProductCard product={product} />
-              </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center text-purple-600 mb-4 group-hover:scale-110 transition-transform">
+                  {useCase.icon}
+                </div>
+                <h3 className="font-bold text-gray-900 text-lg mb-2">{useCase.title}</h3>
+                <p className="text-gray-600 text-sm mb-4">{useCase.description}</p>
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-xs text-gray-500 italic">"{useCase.example}"</p>
+                </div>
+              </Card>
             ))}
           </div>
 
           <div className="text-center mt-12">
-            <Link to="/cakes">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6"
+              onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+            >
+              <Sparkles className="w-5 h-5 mr-2" />
+              Try Mira Now — It's Free!
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* 12 Pillars Section */}
+      <section id="pillars-section" className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 bg-purple-100 rounded-full mb-6">
+              <Crown className="w-5 h-5 text-purple-600 mr-2" />
+              <span className="text-purple-600 text-sm font-semibold">Pet Life Operating System</span>
+            </div>
+            <h2 className="text-5xl font-black text-gray-900 mb-4">
+              12 Pillars of Pet Life
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Everything your pet needs, under one roof. From celebrations to emergencies.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {PILLARS.map((pillar, idx) => (
+              <Link key={idx} to={pillar.link}>
+                <Card className="group p-6 hover:shadow-xl transition-all duration-300 cursor-pointer h-full transform hover:scale-105 hover:border-purple-200 border-2 border-transparent">
+                  <div className="text-4xl mb-4">{pillar.icon}</div>
+                  <h3 className="font-bold text-gray-900 text-lg mb-2 group-hover:text-purple-600 transition-colors">{pillar.name}</h3>
+                  <p className="text-gray-600 text-sm">{pillar.desc}</p>
+                </Card>
+              </Link>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Link to="/membership">
               <Button
                 size="lg"
-                variant="outline"
-                className="border-2 border-purple-600 text-purple-600 hover:bg-purple-50 text-lg px-8 py-6"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6"
               >
-                View All Products
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <Crown className="w-5 h-5 mr-2" />
+                Unlock All Pillars with Membership
               </Button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-black text-gray-900 mb-4">Shop by Category</h2>
-            <p className="text-xl text-gray-600">Find exactly what your pup needs</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {categories.map((category) => (
-              <Link key={category.id} to={`/${category.id}`}>
-                <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer h-full transform hover:scale-105">
-                  <div className="relative h-64 overflow-hidden">
-                    <img
-                      src={category.image}
-                      alt={category.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
-                    <div className="absolute bottom-6 left-6 right-6">
-                      <h3 className="text-white font-bold text-2xl mb-2">{category.name}</h3>
-                      <p className="text-white/90 text-sm">{category.description}</p>
-                    </div>
-                  </div>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials - Premium Design */}
+      {/* Testimonials */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -552,7 +542,7 @@ const Home = () => {
           </div>
 
           <Accordion type="single" collapsible className="space-y-4">
-            {faqs.map((faq) => (
+            {faqs.slice(0, 5).map((faq) => (
               <AccordionItem key={faq.id} value={faq.id} className="bg-white border-2 border-gray-100 rounded-xl px-6 hover:border-purple-200 transition-colors">
                 <AccordionTrigger className="text-left font-bold text-lg hover:text-purple-600">
                   {faq.question}
@@ -565,80 +555,19 @@ const Home = () => {
           </Accordion>
 
           <div className="text-center mt-12">
-            <p className="text-gray-600 mb-4">Still have questions?</p>
-            <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+            <Link to="/faqs">
+              <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50 mr-4">
+                View All FAQs
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+            <Button 
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+            >
               <Sparkles className="w-4 h-4 mr-2" />
               Ask Mira AI
             </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Video Section */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-purple-100 rounded-full mb-6">
-              <Play className="w-5 h-5 text-purple-600 mr-2" />
-              <span className="text-purple-600 text-sm font-semibold">Behind the Scenes</span>
-            </div>
-            <h2 className="text-5xl font-black text-gray-900 mb-4">
-              See How We Bake with Love
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Every cake tells a story. Watch our journey from kitchen to celebration
-            </p>
-          </div>
-
-          <VideoSection />
-
-          <div className="text-center mt-12">
-            <a
-              href="https://www.instagram.com/the_doggy_bakery/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium"
-            >
-              <Instagram className="w-5 h-5" />
-              Follow us for more videos
-              <ArrowRight className="w-4 h-4" />
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Instagram Feed */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-pink-100 rounded-full mb-6">
-              <Instagram className="w-5 h-5 text-pink-600 mr-2" />
-              <span className="text-pink-600 text-sm font-semibold">@the_doggy_bakery</span>
-            </div>
-            <h2 className="text-5xl font-black text-gray-900 mb-4">
-              Celebrations We've Crafted
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Real moments, real joy. See how we've helped pet parents celebrate their companions
-            </p>
-          </div>
-
-          <InstagramFeed />
-
-          <div className="text-center mt-12">
-            <a
-              href="https://www.instagram.com/the_doggy_bakery/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              >
-                <Instagram className="w-5 h-5 mr-2" />
-                Follow on Instagram
-              </Button>
-            </a>
           </div>
         </div>
       </section>
