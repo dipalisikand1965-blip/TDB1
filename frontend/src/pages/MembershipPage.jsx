@@ -777,6 +777,40 @@ const MembershipPage = () => {
           </Card>
         </div>
       )}
+
+      {/* Payment Modal */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <Card className="w-full max-w-3xl p-8 relative animate-in fade-in zoom-in duration-200 my-8">
+            <button 
+              onClick={() => setShowPaymentModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <CreditCard className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Complete Your Membership
+              </h2>
+              <p className="text-gray-500 mt-1">
+                Choose your plan and unlock all 12 pillars
+              </p>
+            </div>
+
+            <MembershipPayment
+              userEmail={user?.email || formData.email}
+              userName={user?.name || formData.name}
+              userPhone={user?.phone || formData.phone}
+              onSuccess={handlePaymentSuccess}
+              onClose={() => setShowPaymentModal(false)}
+            />
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
