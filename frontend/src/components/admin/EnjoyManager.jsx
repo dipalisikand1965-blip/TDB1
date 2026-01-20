@@ -251,6 +251,98 @@ const EnjoyManager = ({ getAuthHeader }) => {
     }
   };
 
+  // Product CRUD
+  const resetProductForm = () => {
+    setProductForm({
+      name: '', description: '', price: '', compare_price: '',
+      image: '', enjoy_type: 'outdoor', subcategory: '',
+      tags: '', pet_sizes: 'small, medium, large',
+      in_stock: true, paw_reward_points: '0',
+      is_birthday_perk: false, birthday_discount_percent: ''
+    });
+  };
+
+  const saveProduct = async () => {
+    try {
+      const payload = {
+        ...productForm,
+        price: parseFloat(productForm.price) || 0,
+        compare_price: parseFloat(productForm.compare_price) || null,
+        paw_reward_points: parseInt(productForm.paw_reward_points) || 0,
+        birthday_discount_percent: productForm.is_birthday_perk ? (parseInt(productForm.birthday_discount_percent) || 0) : null,
+        tags: productForm.tags.split(',').map(t => t.trim()).filter(Boolean),
+        pet_sizes: productForm.pet_sizes.split(',').map(s => s.trim()).filter(Boolean)
+      };
+      
+      if (editingProduct) {
+        await axios.put(`${API_URL}/api/enjoy/admin/products/${editingProduct.id}`, payload, getAuthHeader());
+        toast({ title: 'Success', description: 'Product updated' });
+      } else {
+        await axios.post(`${API_URL}/api/enjoy/admin/products`, payload, getAuthHeader());
+        toast({ title: 'Success', description: 'Product created' });
+      }
+      setShowProductModal(false);
+      setEditingProduct(null);
+      resetProductForm();
+      fetchAllData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to save product', variant: 'destructive' });
+    }
+  };
+
+  const deleteProduct = async (id) => {
+    if (!confirm('Delete this product?')) return;
+    try {
+      await axios.delete(`${API_URL}/api/enjoy/admin/products/${id}`, getAuthHeader());
+      toast({ title: 'Success', description: 'Product deleted' });
+      fetchAllData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete product', variant: 'destructive' });
+    }
+  };
+
+  // CSV Export
+  const exportProductsCSV = () => {
+    const headers = ['Name', 'Description', 'Price', 'Compare Price', 'Type', 'In Stock', 'Paw Points'];
+    const rows = products.map(p => [
+      p.name, p.description, p.price, p.compare_price || '', p.enjoy_type, p.in_stock ? 'Yes' : 'No', p.paw_reward_points
+    ]);
+    const csvContent = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'enjoy-products.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportExperiencesCSV = () => {
+    const headers = ['Name', 'Type', 'City', 'Date', 'Venue', 'Price', 'Max Capacity', 'Paw Points'];
+    const rows = experiences.map(e => [
+      e.name, e.experience_type, e.city, e.event_date || '', e.venue_name, e.price, e.max_capacity, e.paw_reward_points
+    ]);
+    const csvContent = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'enjoy-experiences.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Seed data
+  const seedData = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/api/enjoy/admin/seed`, {}, getAuthHeader());
+      toast({ title: 'Success', description: `Seeded ${response.data.experiences_seeded} experiences and ${response.data.products_seeded} products` });
+      fetchAllData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to seed data', variant: 'destructive' });
+    }
+  };
+
   // Filters
   const filteredExperiences = experiences.filter(e => {
     if (typeFilter !== 'all' && e.experience_type !== typeFilter) return false;
