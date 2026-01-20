@@ -2424,3 +2424,269 @@ async def import_dine_bundles_csv(
     except Exception as e:
         logger.error(f"CSV import error: {e}")
         raise HTTPException(status_code=500, detail=f"Import failed: {str(e)}")
+
+
+# ==================== DINE PRODUCTS ====================
+
+@dine_router.get("/dine/products")
+async def get_dine_products(
+    category: Optional[str] = None,
+    dine_type: Optional[str] = None,
+    in_stock: Optional[bool] = True
+):
+    """Get all active dine products (public)"""
+    query = {"category": "dine"}
+    if dine_type:
+        query["dine_type"] = dine_type
+    if in_stock is not None:
+        query["in_stock"] = in_stock
+    
+    products = await db.products.find(query, {"_id": 0}).to_list(100)
+    
+    return {
+        "products": products,
+        "total": len(products)
+    }
+
+
+@dine_router.get("/dine/products/{product_id}")
+async def get_dine_product(product_id: str):
+    """Get a specific dine product"""
+    product = await db.products.find_one({"id": product_id, "category": "dine"}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
+
+
+@dine_router.post("/admin/dine/products")
+async def create_dine_product(product_data: dict, username: str = Depends(verify_admin)):
+    """Create a new dine product"""
+    product = {
+        "id": f"dine-{uuid.uuid4().hex[:8]}",
+        **product_data,
+        "category": "dine",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.products.insert_one({k: v for k, v in product.items() if k != "_id"})
+    product.pop("_id", None)
+    
+    return {"message": "Product created", "product": product}
+
+
+@dine_router.put("/admin/dine/products/{product_id}")
+async def update_dine_product(product_id: str, product_data: dict, username: str = Depends(verify_admin)):
+    """Update a dine product"""
+    product_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    product_data.pop("id", None)
+    product_data.pop("_id", None)
+    
+    result = await db.products.update_one({"id": product_id}, {"$set": product_data})
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"message": "Product updated"}
+
+
+@dine_router.delete("/admin/dine/products/{product_id}")
+async def delete_dine_product(product_id: str, username: str = Depends(verify_admin)):
+    """Delete a dine product"""
+    result = await db.products.delete_one({"id": product_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"message": "Product deleted"}
+
+
+@dine_router.post("/admin/dine/products/seed")
+async def seed_dine_products(username: str = Depends(verify_admin)):
+    """Seed dine products with sample data"""
+    
+    # Check if products already exist
+    existing_count = await db.products.count_documents({"category": "dine"})
+    if existing_count > 0:
+        return {"message": f"Products already exist ({existing_count}). Skipping seed.", "seeded": 0}
+    
+    sample_products = [
+        {
+            "id": "dine-travel-bowl",
+            "name": "Portable Travel Bowl Set",
+            "description": "Collapsible silicone bowls for water and food. Perfect for restaurant visits and travel.",
+            "price": 449,
+            "compare_price": 599,
+            "category": "dine",
+            "dine_type": "accessories",
+            "tags": ["dine", "travel", "bowl", "portable"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 6,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "dine-placemat",
+            "name": "Pet Dining Placemat",
+            "description": "Waterproof, non-slip placemat for mess-free restaurant dining. Folds compact.",
+            "price": 349,
+            "compare_price": 449,
+            "category": "dine",
+            "dine_type": "accessories",
+            "tags": ["dine", "placemat", "restaurant", "clean"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 4,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "dine-water-bottle",
+            "name": "Pet Water Bottle with Bowl",
+            "description": "Leak-proof water bottle with attached bowl. One-handed operation for outdoor cafes.",
+            "price": 599,
+            "compare_price": 799,
+            "category": "dine",
+            "dine_type": "hydration",
+            "tags": ["dine", "water", "bottle", "portable"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 8,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 15
+        },
+        {
+            "id": "dine-treat-pouch",
+            "name": "Restaurant Treat Pouch",
+            "description": "Magnetic closure treat pouch for café visits. Keeps treats fresh and accessible.",
+            "price": 399,
+            "compare_price": 499,
+            "category": "dine",
+            "dine_type": "accessories",
+            "tags": ["dine", "treats", "pouch", "training"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 5,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "dine-calming-spray",
+            "name": "Dine-Time Calming Spray",
+            "description": "Natural pheromone spray to keep pets calm during restaurant visits. Travel-size.",
+            "price": 549,
+            "compare_price": 699,
+            "category": "dine",
+            "dine_type": "wellness",
+            "tags": ["dine", "calming", "anxiety", "spray"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 7,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "dine-bandana",
+            "name": "Café Ready Bandana",
+            "description": "Stylish bandana with 'Dining Out' message. Reversible with two patterns.",
+            "price": 299,
+            "compare_price": 399,
+            "category": "dine",
+            "dine_type": "fashion",
+            "tags": ["dine", "bandana", "fashion", "cafe"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 4,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 25
+        },
+        {
+            "id": "dine-pup-cup",
+            "name": "Reusable Pup Cup",
+            "description": "Eco-friendly reusable cup for puppuccinos and pet drinks at cafes.",
+            "price": 249,
+            "compare_price": 349,
+            "category": "dine",
+            "dine_type": "accessories",
+            "tags": ["dine", "puppuccino", "cup", "eco"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 3,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "dine-portable-mat",
+            "name": "Outdoor Dining Mat",
+            "description": "Comfortable padded mat for your pet at outdoor cafes. Waterproof and insulated.",
+            "price": 899,
+            "compare_price": 1199,
+            "category": "dine",
+            "dine_type": "comfort",
+            "tags": ["dine", "mat", "comfort", "outdoor"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 12,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "dine-cooling-vest",
+            "name": "Café Cooling Vest",
+            "description": "Lightweight cooling vest for summer cafe visits. Keeps your pet comfortable in the heat.",
+            "price": 1299,
+            "compare_price": 1599,
+            "category": "dine",
+            "dine_type": "comfort",
+            "tags": ["dine", "cooling", "summer", "vest"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 15,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "dine-etiquette-guide",
+            "name": "Pet Café Etiquette Guide",
+            "description": "Digital guide with tips for dining out with pets. Includes training commands.",
+            "price": 199,
+            "compare_price": 299,
+            "category": "dine",
+            "dine_type": "training",
+            "tags": ["dine", "guide", "training", "etiquette"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 3,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "dine-fresh-breath",
+            "name": "Fresh Breath Dental Chews",
+            "description": "Post-meal dental chews for fresh breath after restaurant visits. Pack of 10.",
+            "price": 349,
+            "compare_price": 449,
+            "category": "dine",
+            "dine_type": "treats",
+            "tags": ["dine", "dental", "breath", "chews"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 5,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "dine-photo-props",
+            "name": "Café Photo Props Kit",
+            "description": "Fun props for cute café photos: mini sunglasses, bow ties, and cute signs.",
+            "price": 399,
+            "compare_price": 549,
+            "category": "dine",
+            "dine_type": "fun",
+            "tags": ["dine", "photo", "props", "fun"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 5,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 20
+        }
+    ]
+    
+    for product in sample_products:
+        product["created_at"] = datetime.now(timezone.utc).isoformat()
+        product["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.products.insert_one(product)
+    
+    return {"message": "Dine products seeded successfully", "seeded": len(sample_products)}
