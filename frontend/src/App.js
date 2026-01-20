@@ -164,6 +164,7 @@ function MainLayout() {
         <Route path="/autoship" element={<Autoship />} />
         <Route path="/autoship-products" element={<ProductListing category="autoship" />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/service-desk" element={<ServiceDeskPage />} />
         <Route path="/admin/forgot-password" element={<ForgotPassword />} />
         <Route path="/admin/reset-password" element={<ResetPassword />} />
         <Route path="/voice-order" element={<VoiceOrder />} />
