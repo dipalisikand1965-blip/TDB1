@@ -7523,7 +7523,7 @@ async def submit_franchise_inquiry(inquiry: dict):
     try:
         params = {
             "from": SENDER_EMAIL,
-            "to": [os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.in")],
+            "to": os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.in"),  # Resend expects a string
             "subject": f"New Franchise Inquiry from {inquiry_doc['name']} - {inquiry_doc['city']}",
             "html": f"""
             <h2>New Franchise Inquiry!</h2>
