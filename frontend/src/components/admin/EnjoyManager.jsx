@@ -377,17 +377,23 @@ const EnjoyManager = ({ getAuthHeader }) => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <PartyPopper className="w-7 h-7 text-purple-600" />
+            <PartyPopper className="w-7 h-7 text-orange-600" />
             Enjoy Manager
           </h2>
           <p className="text-gray-500">Manage experiences, RSVPs, partners & products</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={seedData}>
-            <RefreshCw className="w-4 h-4 mr-2" /> Seed Data
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" size="sm" onClick={exportExperiencesCSV}>
+            <Download className="w-4 h-4 mr-1" /> Export Experiences
           </Button>
-          <Button onClick={fetchAllData} variant="outline">
-            <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+          <Button variant="outline" size="sm" onClick={exportProductsCSV}>
+            <Download className="w-4 h-4 mr-1" /> Export Products
+          </Button>
+          <Button variant="outline" size="sm" onClick={seedData}>
+            <Database className="w-4 h-4 mr-1" /> Seed Data
+          </Button>
+          <Button onClick={fetchAllData} variant="outline" size="sm">
+            <RefreshCw className="w-4 h-4 mr-1" /> Refresh
           </Button>
         </div>
       </div>
