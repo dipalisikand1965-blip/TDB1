@@ -882,7 +882,7 @@ const EnjoyPage = () => {
                 <Button
                   onClick={submitRsvp}
                   disabled={!selectedPet || submitting}
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600"
+                  className="flex-1 bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600"
                 >
                   {submitting ? (
                     <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
