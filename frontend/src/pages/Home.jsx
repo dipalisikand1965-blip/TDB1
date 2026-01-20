@@ -495,7 +495,7 @@ const Home = () => {
               Meet Our Loyal Patrons
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our cherished group of loyal customers who have been with The Doggy Bakery from the start, celebrating countless special moments along the way.
+              Our cherished group of loyal members who have been with The Doggy Company from the start, celebrating countless special moments along the way.
             </p>
           </div>
 
