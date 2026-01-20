@@ -1037,6 +1037,102 @@ const StayManager = ({ getAuthHeader }) => {
             </Card>
           </div>
         </TabsContent>
+
+        {/* Settings Tab */}
+        <TabsContent value="settings" className="space-y-6">
+          {/* General Settings */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-gray-600" />
+              General Settings
+            </h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Auto-acknowledge Bookings</label>
+                <input type="checkbox" className="w-4 h-4 text-green-600" defaultChecked />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Notification Email</label>
+                <input type="text" placeholder="stay@company.com" className="mt-1 w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Notification WhatsApp</label>
+                <input type="text" placeholder="+91 98765 43210" className="mt-1 w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Default Booking Lead Time (Days)</label>
+                <input type="number" placeholder="1" defaultValue={1} className="mt-1 w-full px-3 py-2 border rounded-lg" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Paw Rewards Settings */}
+          <Card className="p-6 border-2 border-amber-200 bg-amber-50">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <PawPrint className="w-5 h-5 text-amber-600" />
+              Paw Rewards Settings
+            </h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Enable Paw Rewards</label>
+                <input type="checkbox" className="w-4 h-4 text-amber-600" defaultChecked />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Points per Booking</label>
+                <input type="number" placeholder="50" defaultValue={50} className="mt-1 w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Points per Night</label>
+                <input type="number" placeholder="25" defaultValue={25} className="mt-1 w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Birthday Discount (%)</label>
+                <input type="number" placeholder="20" defaultValue={20} className="mt-1 w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Enable Referral Rewards</label>
+                <input type="checkbox" className="w-4 h-4 text-amber-600" defaultChecked />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Referrer Bonus Points</label>
+                <input type="number" placeholder="100" defaultValue={100} className="mt-1 w-full px-3 py-2 border rounded-lg" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Property Requirements */}
+          <Card className="p-6 border-2 border-green-200 bg-green-50">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Shield className="w-5 h-5 text-green-600" />
+              Paw Standards Requirements
+            </h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Require Pet-Friendly Verification</label>
+                <input type="checkbox" className="w-4 h-4 text-green-600" defaultChecked />
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Auto-approve Verified Properties</label>
+                <input type="checkbox" className="w-4 h-4 text-green-600" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Min Pet Deposit Amount (₹)</label>
+                <input type="number" placeholder="1000" defaultValue={1000} className="mt-1 w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Max Pets per Booking</label>
+                <input type="number" placeholder="2" defaultValue={2} className="mt-1 w-full px-3 py-2 border rounded-lg" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Save Button */}
+          <div className="flex justify-end">
+            <Button className="bg-green-600 hover:bg-green-700">
+              <Save className="w-4 h-4 mr-2" /> Save Settings
+            </Button>
+          </div>
+        </TabsContent>
       </Tabs>
 
       {/* Property Modal */}
