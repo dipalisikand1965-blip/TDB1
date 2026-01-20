@@ -1916,7 +1916,7 @@ async def send_email_notification(chat_data: dict):
         
         params = {
             "from": SENDER_EMAIL,
-            "to": [NOTIFICATION_EMAIL],
+            "to": NOTIFICATION_EMAIL,  # Resend expects a string
             "subject": f"🐾 New Mira Chat - {chat_data.get('pet_name', 'Customer Inquiry')} | {chat_data.get('service_type', 'General')}",
             "html": html_content
         }
