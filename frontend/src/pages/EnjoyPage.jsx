@@ -533,7 +533,7 @@ const EnjoyPage = () => {
               <div className="lg:col-span-1">
                 <Card className="p-6 sticky top-24">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-purple-600" />
+                    <Calendar className="w-5 h-5 text-orange-600" />
                     {selectedDate ? (
                       <span>
                         {new Date(currentMonth.getFullYear(), currentMonth.getMonth(), selectedDate).toLocaleDateString('en-US', { 
