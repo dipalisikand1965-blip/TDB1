@@ -635,6 +635,37 @@ const DineManager = ({ credentials }) => {
         >
           <Sparkles className="w-4 h-4 mr-2" /> Dine Bundles
         </Button>
+        <Button 
+          variant={activeTab === 'settings' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('settings')}
+          className={activeTab === 'settings' ? 'bg-gray-700 hover:bg-gray-800' : ''}
+        >
+          <Settings className="w-4 h-4 mr-2" /> Settings
+        </Button>
+      </div>
+      
+      {/* Request Stats Summary */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+        <Card className="p-4 bg-gradient-to-br from-blue-500 to-indigo-500 text-white">
+          <div className="text-2xl font-bold">{(reservationStats.pending || 0) + (visitStats.pending || 0) + (meetupStats.pending || 0)}</div>
+          <div className="text-xs opacity-90">Total Pending</div>
+        </Card>
+        <Card className="p-4 bg-gradient-to-br from-purple-500 to-violet-500 text-white">
+          <div className="text-2xl font-bold">{reservationStats.pending || 0}</div>
+          <div className="text-xs opacity-90">Pending Reservations</div>
+        </Card>
+        <Card className="p-4 bg-gradient-to-br from-pink-500 to-rose-500 text-white">
+          <div className="text-2xl font-bold">{visitStats.pending || 0}</div>
+          <div className="text-xs opacity-90">Pending Visits</div>
+        </Card>
+        <Card className="p-4 bg-gradient-to-br from-amber-500 to-orange-500 text-white">
+          <div className="text-2xl font-bold">{meetupStats.pending || 0}</div>
+          <div className="text-xs opacity-90">Pending Meetups</div>
+        </Card>
+        <Card className="p-4 bg-gradient-to-br from-green-500 to-emerald-500 text-white">
+          <div className="text-2xl font-bold">{(reservationStats.completed || 0) + (visitStats.completed || 0) + (meetupStats.completed || 0)}</div>
+          <div className="text-xs opacity-90">Completed</div>
+        </Card>
       </div>
       
       {/* ============ RESTAURANTS TAB ============ */}
