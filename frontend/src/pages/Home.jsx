@@ -147,8 +147,18 @@ const Home = () => {
                         {slide.cta}
                         <Sparkles className="w-5 h-5 ml-2" />
                       </Button>
+                    ) : slide.cta === 'Explore Pillars' ? (
+                      <Button
+                        size="lg"
+                        onClick={() => document.getElementById('pillars-section')?.scrollIntoView({ behavior: 'smooth' })}
+                        className="bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 hover:from-purple-700 hover:via-pink-700 hover:to-yellow-600 text-white text-lg px-8 py-7 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105"
+                        data-testid="hero-explore-pillars-btn"
+                      >
+                        {slide.cta}
+                        <ArrowRight className="w-5 h-5 ml-2" />
+                      </Button>
                     ) : (
-                      <Link to={slide.cta === 'Design Now' ? '/custom-cake' : '/cakes'}>
+                      <Link to="/membership">
                         <Button
                           size="lg"
                           className="bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 hover:from-purple-700 hover:via-pink-700 hover:to-yellow-600 text-white text-lg px-8 py-7 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105"
@@ -158,13 +168,13 @@ const Home = () => {
                         </Button>
                       </Link>
                     )}
-                    <Link to="/custom-cake">
+                    <Link to="/membership">
                       <Button
                         size="lg"
                         variant="outline"
                         className="border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-7"
                       >
-                        Design Custom Cake
+                        Become a Member
                       </Button>
                     </Link>
                   </div>
