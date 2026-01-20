@@ -84,7 +84,8 @@ import {
   Inbox,
   Settings,
   PartyPopper,
-  Dumbbell
+  Dumbbell,
+  Brain
 } from 'lucide-react';
 
 const Admin = () => {
