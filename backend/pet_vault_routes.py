@@ -885,3 +885,168 @@ async def send_health_reminder_whatsapp(phone: str, message: str) -> bool:
     except Exception as e:
         logger.error(f"WhatsApp send error: {e}")
         return False
+
+
+# ============================================
+# PET SOUL - PILLAR INTEGRATION ENDPOINTS
+# Record pillar activities to Pet Soul
+# ============================================
+
+class DineReservationRecord(BaseModel):
+    """Record a dine reservation to Pet Soul"""
+    restaurant_id: str
+    restaurant_name: str
+    restaurant_city: Optional[str] = None
+    date: str
+    time: str
+    guests: int = 2
+    pets_count: int = 1
+    pet_meal_preorder: bool = False
+    reservation_id: Optional[str] = None
+
+@pet_vault_router.post("/{pet_id}/record-dine-reservation")
+async def record_dine_reservation_to_soul(pet_id: str, data: DineReservationRecord):
+    """Record a dining reservation to the Pet Soul (taste folder)"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    # Find the pet
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    # Create the dine record
+    dine_record = {
+        "id": str(uuid.uuid4())[:8],
+        "restaurant_id": data.restaurant_id,
+        "restaurant_name": data.restaurant_name,
+        "restaurant_city": data.restaurant_city,
+        "date": data.date,
+        "time": data.time,
+        "guests": data.guests,
+        "pets_count": data.pets_count,
+        "pet_meal_preorder": data.pet_meal_preorder,
+        "reservation_id": data.reservation_id,
+        "recorded_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Update Pet Soul with dining history
+    await db.pets.update_one(
+        {"id": pet_id},
+        {
+            "$push": {"soul.dining_history": dine_record},
+            "$set": {
+                "soul.last_dine_date": data.date,
+                "soul.updated_at": datetime.now(timezone.utc).isoformat()
+            },
+            "$inc": {"soul.total_dine_visits": 1}
+        }
+    )
+    
+    logger.info(f"Recorded dine reservation to Pet Soul for {pet.get('name', pet_id)}")
+    return {"success": True, "message": "Dining reservation recorded to Pet Soul", "record_id": dine_record["id"]}
+
+
+class FitActivityRecord(BaseModel):
+    """Record a fitness/activity to Pet Soul"""
+    activity_type: str  # walk, swim, run, play, training
+    venue_name: Optional[str] = None
+    venue_id: Optional[str] = None
+    duration_minutes: Optional[int] = None
+    distance_km: Optional[float] = None
+    date: str
+    notes: Optional[str] = None
+    booking_id: Optional[str] = None
+
+@pet_vault_router.post("/{pet_id}/record-fit-activity")
+async def record_fit_activity_to_soul(pet_id: str, data: FitActivityRecord):
+    """Record a fitness activity to the Pet Soul"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    fit_record = {
+        "id": str(uuid.uuid4())[:8],
+        "activity_type": data.activity_type,
+        "venue_name": data.venue_name,
+        "venue_id": data.venue_id,
+        "duration_minutes": data.duration_minutes,
+        "distance_km": data.distance_km,
+        "date": data.date,
+        "notes": data.notes,
+        "booking_id": data.booking_id,
+        "recorded_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.pets.update_one(
+        {"id": pet_id},
+        {
+            "$push": {"soul.fitness_history": fit_record},
+            "$set": {
+                "soul.last_activity_date": data.date,
+                "soul.updated_at": datetime.now(timezone.utc).isoformat()
+            },
+            "$inc": {"soul.total_activities": 1}
+        }
+    )
+    
+    logger.info(f"Recorded fit activity to Pet Soul for {pet.get('name', pet_id)}")
+    return {"success": True, "message": "Fitness activity recorded to Pet Soul", "record_id": fit_record["id"]}
+
+
+class AdvisoryConsultRecord(BaseModel):
+    """Record an advisory consultation to Pet Soul"""
+    advisor_id: str
+    advisor_name: str
+    service_type: str  # vet, trainer, groomer, behaviorist, nutritionist
+    consultation_type: str  # in_person, video, chat
+    date: str
+    duration_minutes: Optional[int] = None
+    summary: Optional[str] = None
+    recommendations: Optional[List[str]] = None
+    follow_up_date: Optional[str] = None
+    booking_id: Optional[str] = None
+
+@pet_vault_router.post("/{pet_id}/record-advisory-consult")
+async def record_advisory_consult_to_soul(pet_id: str, data: AdvisoryConsultRecord):
+    """Record an advisory consultation to the Pet Soul"""
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    consult_record = {
+        "id": str(uuid.uuid4())[:8],
+        "advisor_id": data.advisor_id,
+        "advisor_name": data.advisor_name,
+        "service_type": data.service_type,
+        "consultation_type": data.consultation_type,
+        "date": data.date,
+        "duration_minutes": data.duration_minutes,
+        "summary": data.summary,
+        "recommendations": data.recommendations or [],
+        "follow_up_date": data.follow_up_date,
+        "booking_id": data.booking_id,
+        "recorded_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.pets.update_one(
+        {"id": pet_id},
+        {
+            "$push": {"soul.advisory_history": consult_record},
+            "$set": {
+                "soul.last_consultation_date": data.date,
+                "soul.updated_at": datetime.now(timezone.utc).isoformat()
+            },
+            "$inc": {"soul.total_consultations": 1}
+        }
+    )
+    
+    logger.info(f"Recorded advisory consultation to Pet Soul for {pet.get('name', pet_id)}")
+    return {"success": True, "message": "Advisory consultation recorded to Pet Soul", "record_id": consult_record["id"]}
+
