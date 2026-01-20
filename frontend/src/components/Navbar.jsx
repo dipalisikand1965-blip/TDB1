@@ -335,7 +335,7 @@ const Navbar = () => {
 
                   {showMorePillars && (
                     <div 
-                      className="absolute top-full right-0 mt-1 w-56 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-50"
+                      className="absolute top-full right-0 mt-1 w-56 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-[100]"
                       onMouseLeave={() => setShowMorePillars(false)}
                     >
                       {morePillars.map((pillar) => {
