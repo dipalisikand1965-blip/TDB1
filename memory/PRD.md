@@ -86,8 +86,8 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 
 ### P2 - Known Issues to Fix
 9. Voice Order feature broken ("Connection failed")
-10. Service Desk modal shaking/flashing - **RESOLVED** (now full-screen page)
-11. Auto-reminders only sent to Gmail - **Known Resend limitation** (requires domain verification)
+10. ~~Service Desk modal shaking/flashing~~ **RESOLVED** (now full-screen page)
+11. ~~Auto-reminders only sent to Gmail~~ **FIXED** (Resend 'to' field was list instead of string)
 12. Shopify Sync creating 'Untitled' Products (recurring)
 
 ### P3 - Admin & Code
