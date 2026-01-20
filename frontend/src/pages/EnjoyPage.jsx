@@ -300,7 +300,7 @@ const EnjoyPage = () => {
               <Button 
                 onClick={() => document.getElementById('experiences')?.scrollIntoView({ behavior: 'smooth' })}
                 size="lg"
-                className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-8 py-6 text-lg rounded-full shadow-2xl"
+                className="bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-amber-900 font-semibold px-8 py-6 text-lg rounded-full shadow-2xl shadow-amber-500/30"
                 data-testid="explore-experiences-btn"
               >
                 <Play className="w-5 h-5 mr-2 fill-current" />
