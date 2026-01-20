@@ -51,6 +51,8 @@ const EnjoyPage = () => {
   
   const [experiences, setExperiences] = useState([]);
   const [featuredExperiences, setFeaturedExperiences] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [bundles, setBundles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState(null);
   const [selectedCity, setSelectedCity] = useState('');
