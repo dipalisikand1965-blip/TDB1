@@ -397,9 +397,14 @@ const TravelManager = ({ getAuthHeader }) => {
           <h2 className="text-2xl font-bold text-gray-900">✈️ Travel Manager</h2>
           <p className="text-gray-500">Manage travel requests, products & bundles</p>
         </div>
-        <Button onClick={fetchData} variant="outline" size="sm">
-          <RefreshCw className="w-4 h-4 mr-2" /> Refresh
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={fetchData} variant="outline" size="sm">
+            <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+          </Button>
+          <Button onClick={seedProducts} variant="outline" size="sm">
+            <Download className="w-4 h-4 mr-2" /> Seed Data
+          </Button>
+        </div>
       </div>
 
       {/* Stats Overview */}
