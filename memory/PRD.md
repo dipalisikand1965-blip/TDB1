@@ -97,6 +97,16 @@ Build a world-class, event-driven platform with a single engine powering multipl
 - 16 experiences + 14 products seeded (Mumbai, Delhi, Bangalore, Goa, Pune, Hyderabad)
 - Service Desk + Unified Inbox + Pet Soul integration
 
+**FIT Pillar** ✅ (January 20, 2026)
+- Pet fitness, exercise plans, weight management & wellness
+- 6 plan types: Exercise Plans, Weight Management, Nutrition Guidance, Agility Training, Senior Fitness, Assessment
+- Beautiful green/teal themed frontend with "Fit Paws, Happy Hearts" branding
+- Weight & Activity tracking endpoints
+- Admin FitManager with 6 tabs (Requests, Plans, Partners, Products, Bundles, Settings)
+- Full Settings with Paw Rewards, Birthday Perks, Notifications, Service Desk integration
+- 6 plans + 12 products + 5 bundles + 4 partners seeded
+- Service Desk + Unified Inbox integration with auto-ticket creation
+
 **Celebrations Pillar** ✅
 - Custom cakes, treats, birthday celebrations
 
