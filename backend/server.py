@@ -5678,7 +5678,7 @@ async def send_abandoned_cart_email(to_email: str, name: str, items: list,
         
         params = {
             "from": f"The Doggy Bakery <{SENDER_EMAIL}>",
-            "to": [to_email],
+            "to": to_email,  # Resend expects a string, not a list
             "subject": subject,
             "html": html_content
         }
