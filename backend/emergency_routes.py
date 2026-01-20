@@ -4,11 +4,14 @@ High-priority request routing, lost pet workflows, urgent vet coordination
 Complete CRUD with Service Desk, Notifications, and Pet Soul integration
 """
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, UploadFile, File
+from fastapi.responses import StreamingResponse
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 import uuid
 import logging
+import csv
+import io
 
 logger = logging.getLogger(__name__)
 
