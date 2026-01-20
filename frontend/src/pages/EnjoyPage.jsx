@@ -266,15 +266,15 @@ const EnjoyPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-800 to-violet-900 text-white">
+      {/* Hero Section - Warm Sunset Theme */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-orange-600 via-rose-600 to-amber-700 text-white">
         <div className="absolute inset-0">
           <img 
             src={HERO_IMAGES[heroIndex]} 
             alt="Pet Events" 
-            className="w-full h-full object-cover opacity-30 transition-opacity duration-1000"
+            className="w-full h-full object-cover opacity-25 transition-opacity duration-1000"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/90 via-indigo-800/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-700/90 via-rose-600/80 to-transparent" />
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28">
