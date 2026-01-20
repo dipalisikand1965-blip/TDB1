@@ -11,7 +11,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/fit", tags=["fit"])
+router = APIRouter(prefix="/api/fit", tags=["fit"])
 
 def get_db():
     from server import db
