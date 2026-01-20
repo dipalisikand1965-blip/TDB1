@@ -4073,23 +4073,39 @@ async def get_public_hero():
 @api_router.get("/products")
 async def get_public_products(
     category: Optional[str] = None, 
+    collection: Optional[str] = None,
     pan_india: Optional[bool] = None,
     search: Optional[str] = None
 ):
     """Public endpoint for products"""
     query = {}
     
+    # Handle collection-based filtering (e.g., valentine)
+    if collection:
+        coll = await db.collections.find_one(
+            {"$or": [{"id": collection}, {"slug": collection}]},
+            {"_id": 0, "product_ids": 1}
+        )
+        if coll and coll.get("product_ids"):
+            query["id"] = {"$in": coll["product_ids"]}
+    
     # Search logic
     if search:
         search_regex = {"$regex": search, "$options": "i"}
-        query["$or"] = [
-            {"name": search_regex},
-            {"tags": search_regex},
-            {"category": search_regex},
-            {"description": search_regex},
-            {"sizes.name": search_regex},
-            {"flavors.name": search_regex}
-        ]
+        search_query = {
+            "$or": [
+                {"name": search_regex},
+                {"tags": search_regex},
+                {"category": search_regex},
+                {"description": search_regex},
+                {"sizes.name": search_regex},
+                {"flavors.name": search_regex}
+            ]
+        }
+        if query:
+            query = {"$and": [query, search_query]}
+        else:
+            query = search_query
     
     # Special handling for pan-india category
     if category == "pan-india" or pan_india:
@@ -4104,7 +4120,7 @@ async def get_public_products(
             query = {"$and": [query, pan_india_query]}
         else:
             query = pan_india_query
-    elif category:
+    elif category and not collection:
         # Search in both category field AND tags array (case-insensitive)
         category_regex = {"$regex": f"^{category}$", "$options": "i"}
         category_query = {
