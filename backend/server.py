@@ -8039,6 +8039,71 @@ async def delete_notification(
     return {"message": "Notification deleted"}
 
 
+# ==================== SEED ALL PILLARS ====================
+
+@api_router.post("/admin/seed-all")
+async def seed_all_pillars():
+    """Seed data for all pillars - uses UPSERT so existing data is NOT deleted"""
+    results = {}
+    
+    # Import seed functions
+    from advisory_routes import seed_advisory_data
+    from emergency_routes import seed_emergency_data
+    from paperwork_routes import seed_paperwork_data
+    from fit_routes import seed_fit_data
+    from enjoy_routes import seed_enjoy_data
+    from care_routes import seed_care_products
+    from travel_routes import seed_travel_products
+    
+    # Seed each pillar (uses upsert - won't delete existing data)
+    try:
+        results["advisory"] = await seed_advisory_data()
+    except Exception as e:
+        results["advisory"] = {"error": str(e)}
+    
+    try:
+        results["emergency"] = await seed_emergency_data()
+    except Exception as e:
+        results["emergency"] = {"error": str(e)}
+    
+    try:
+        results["paperwork"] = await seed_paperwork_data()
+    except Exception as e:
+        results["paperwork"] = {"error": str(e)}
+    
+    try:
+        results["fit"] = await seed_fit_data()
+    except Exception as e:
+        results["fit"] = {"error": str(e)}
+    
+    try:
+        results["enjoy"] = await seed_enjoy_data()
+    except Exception as e:
+        results["enjoy"] = {"error": str(e)}
+    
+    try:
+        results["care"] = await seed_care_products()
+    except Exception as e:
+        results["care"] = {"error": str(e)}
+    
+    try:
+        results["travel"] = await seed_travel_products()
+    except Exception as e:
+        results["travel"] = {"error": str(e)}
+    
+    # Calculate totals
+    total_products = sum(r.get("products_seeded", 0) for r in results.values() if isinstance(r, dict))
+    total_bundles = sum(r.get("bundles_seeded", 0) for r in results.values() if isinstance(r, dict))
+    total_partners = sum(r.get("partners_seeded", r.get("advisors_seeded", 0)) for r in results.values() if isinstance(r, dict))
+    
+    logger.info(f"Seed All: {total_products} products, {total_bundles} bundles, {total_partners} partners")
+    
+    return {
+        "message": "All pillars seeded (existing data preserved)",
+        "totals": {"products": total_products, "bundles": total_bundles, "partners": total_partners},
+        "details": results
+    }
+
 
 # ==================== APP SETUP ====================
 
