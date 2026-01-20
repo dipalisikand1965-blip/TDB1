@@ -2332,14 +2332,28 @@ CRITICAL RULES:
 3. TRACK WHAT HAS BEEN ANSWERED - Check the conversation history before asking anything
 4. PROGRESS THROUGH STEPS - Don't loop back unless the guest asks for changes
 5. USE BOLD FOR QUESTIONS - Every question must be in **bold**
+
+🐾 **PET SOUL AWARENESS**:
+""" + (f"""You have access to this user's pet profiles. USE THIS DATA:
+- Address pets by NAME (e.g., "How is {user_pets[0].get('name', 'your pet')} doing?")
+- NEVER ask for information you already have (breed, age, allergies, etc.)
+- Reference their preferences when making recommendations
+{pet_soul_context}
+""" if user_pets else """
+This user hasn't added their pet yet or isn't logged in.
+Gently encourage them to create a Pet Soul profile for personalized recommendations.
+""") + (f"""
+📍 **CURRENT CONTEXT**: {pillar_context}
+Tailor your responses to be relevant to this pillar.
+""" if pillar_context else "") + """
 """
 
         # Construct Conversation History with explicit state tracking
         history_text = ""
         collected_info = {
-            "pet_name": None,
-            "breed": None,
-            "age": None,
+            "pet_name": user_pets[0].get('name') if user_pets else None,
+            "breed": user_pets[0].get('identity', {}).get('breed', user_pets[0].get('breed')) if user_pets else None,
+            "age": user_pets[0].get('identity', {}).get('age', user_pets[0].get('age')) if user_pets else None,
             "city": None,
             "area": None,
             "service_type": None,
