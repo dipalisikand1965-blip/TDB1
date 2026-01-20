@@ -1447,6 +1447,7 @@ const Admin = () => {
             { id: 'travel', label: '✈️ Travel', icon: Truck },
             { id: 'care', label: '💝 Care', icon: Heart },
             { id: 'enjoy', label: '🎉 Enjoy', icon: PartyPopper },
+            { id: 'fit', label: '💪 Fit', icon: Dumbbell },
             { id: 'insights', label: '📝 Blog', icon: FileText },
             { id: 'testimonials', label: 'Testimonials', icon: Star },
             { id: 'faqs', label: 'FAQs', icon: HelpCircle },
