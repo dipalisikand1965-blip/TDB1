@@ -143,6 +143,11 @@ Build a world-class, event-driven platform with a single engine powering multipl
 | Shopify Sync creating 'Untitled' Products | NOT STARTED | P2 |
 | Auto-reminders only to Gmail | BLOCKED (Resend domain config) | P1 |
 | Service Desk modal shaking | FIXED (Jan 20, 2026) | P0 |
+| Enjoy products/bundles not showing | FIXED (Jan 20, 2026) | P0 |
+| FIT bundles not seeded | FIXED (Jan 20, 2026) | P0 |
+| Dine products missing | FIXED (Jan 20, 2026) | P0 |
+| Enjoy RSVP button not clickable | VERIFIED WORKING (Jan 20, 2026) | P0 |
+| Enjoy calendar close button missing | VERIFIED WORKING (Jan 20, 2026) | P0 |
 
 ---
 
