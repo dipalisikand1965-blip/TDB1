@@ -1,0 +1,534 @@
+import React, { useState, useEffect } from 'react';
+import { Card } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Badge } from '../components/ui/badge';
+import { Textarea } from '../components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { API_URL } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
+import { toast } from '../hooks/use-toast';
+import {
+  PartyPopper, Calendar, MapPin, Users, Clock, PawPrint,
+  CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
+  ArrowRight, Play, ChevronDown, Coffee, Mountain, GraduationCap,
+  Heart, Shield, Ticket, Filter
+} from 'lucide-react';
+
+// Experience Type Configuration
+const EXPERIENCE_TYPES = {
+  event: { name: 'Events & Pop-ups', icon: PartyPopper, color: 'from-purple-500 to-pink-500', bgColor: 'bg-purple-50', textColor: 'text-purple-600' },
+  trail: { name: 'Trails & Walks', icon: Mountain, color: 'from-green-500 to-emerald-500', bgColor: 'bg-green-50', textColor: 'text-green-600' },
+  meetup: { name: 'Meetups & Playdates', icon: Users, color: 'from-blue-500 to-cyan-500', bgColor: 'bg-blue-50', textColor: 'text-blue-600' },
+  cafe: { name: 'Pet Cafés', icon: Coffee, color: 'from-amber-500 to-orange-500', bgColor: 'bg-amber-50', textColor: 'text-amber-600' },
+  workshop: { name: 'Workshops & Classes', icon: GraduationCap, color: 'from-indigo-500 to-violet-500', bgColor: 'bg-indigo-50', textColor: 'text-indigo-600' },
+  wellness: { name: 'Wellness', icon: Heart, color: 'from-teal-500 to-cyan-500', bgColor: 'bg-teal-50', textColor: 'text-teal-600' }
+};
+
+const HERO_IMAGES = [
+  'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
+  'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
+];
+
+const EnjoyPage = () => {
+  const { user, token } = useAuth();
+  
+  const [experiences, setExperiences] = useState([]);
+  const [featuredExperiences, setFeaturedExperiences] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedType, setSelectedType] = useState(null);
+  const [selectedCity, setSelectedCity] = useState('');
+  const [showRsvpModal, setShowRsvpModal] = useState(false);
+  const [selectedExperience, setSelectedExperience] = useState(null);
+  const [userPets, setUserPets] = useState([]);
+  const [selectedPet, setSelectedPet] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [heroIndex, setHeroIndex] = useState(0);
+  
+  const [rsvpForm, setRsvpForm] = useState({
+    number_of_pets: 1,
+    number_of_humans: 1,
+    special_requirements: ''
+  });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchExperiences();
+    if (user && token) {
+      fetchUserPets();
+    }
+  }, [user, token]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchExperiences = async () => {
+    setLoading(true);
+    try {
+      const [allRes, featuredRes] = await Promise.all([
+        fetch(`${API_URL}/api/enjoy/experiences`),
+        fetch(`${API_URL}/api/enjoy/experiences?is_featured=true`)
+      ]);
+      
+      if (allRes.ok) {
+        const data = await allRes.json();
+        setExperiences(data.experiences || []);
+      }
+      if (featuredRes.ok) {
+        const data = await featuredRes.json();
+        setFeaturedExperiences(data.experiences || []);
+      }
+    } catch (error) {
+      console.error('Error fetching experiences:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUserPets = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUserPets(data.pets || []);
+      }
+    } catch (error) {
+      console.error('Error fetching pets:', error);
+    }
+  };
+
+  const handleRsvp = (experience) => {
+    if (!user) {
+      window.location.href = '/login?redirect=/enjoy';
+      return;
+    }
+    setSelectedExperience(experience);
+    setSelectedPet(null);
+    setShowRsvpModal(true);
+  };
+
+  const submitRsvp = async () => {
+    if (!selectedPet || !selectedExperience) return;
+    
+    setSubmitting(true);
+    try {
+      const response = await fetch(`${API_URL}/api/enjoy/rsvp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          experience_id: selectedExperience.id,
+          pet_id: selectedPet.id,
+          pet_name: selectedPet.name,
+          pet_breed: selectedPet.breed,
+          pet_size: selectedPet.size,
+          ...rsvpForm,
+          user_name: user?.name,
+          user_email: user?.email,
+          user_phone: user?.phone
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toast({
+          title: "RSVP Submitted! 🎉",
+          description: result.message
+        });
+        setShowRsvpModal(false);
+        fetchExperiences();
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.detail || "Failed to submit RSVP",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit RSVP",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const filteredExperiences = experiences.filter(exp => {
+    if (selectedType && exp.experience_type !== selectedType) return false;
+    if (selectedCity && !exp.city?.toLowerCase().includes(selectedCity.toLowerCase())) return false;
+    return true;
+  });
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-800 to-violet-900 text-white">
+        <div className="absolute inset-0">
+          <img 
+            src={HERO_IMAGES[heroIndex]} 
+            alt="Pet Events" 
+            className="w-full h-full object-cover opacity-30 transition-opacity duration-1000"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/90 via-indigo-800/80 to-transparent" />
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+              <Sparkles className="w-4 h-4 text-yellow-400" />
+              <span className="text-sm font-medium">Pet-Friendly Experiences</span>
+            </div>
+            
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              Adventures
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-yellow-400">
+                Worth Wagging For
+              </span>
+            </h1>
+            
+            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">
+              Discover pet-friendly events, trails, meetups, and experiences curated for you and your furry companion.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button 
+                onClick={() => document.getElementById('experiences')?.scrollIntoView({ behavior: 'smooth' })}
+                size="lg"
+                className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-8 py-6 text-lg rounded-full shadow-2xl"
+                data-testid="explore-experiences-btn"
+              >
+                <Play className="w-5 h-5 mr-2 fill-current" />
+                Explore Experiences
+              </Button>
+            </div>
+            
+            <div className="flex flex-wrap gap-6 mt-12">
+              <div className="flex items-center gap-2 text-white/70">
+                <Shield className="w-5 h-5 text-green-400" />
+                <span className="text-sm">Pet-Safe Venues</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/70">
+                <Users className="w-5 h-5 text-blue-400" />
+                <span className="text-sm">Community Events</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/70">
+                <PawPrint className="w-5 h-5 text-pink-400" />
+                <span className="text-sm">Earn Paw Points</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+          <ChevronDown className="w-6 h-6 text-white/50" />
+        </div>
+      </div>
+
+      {/* Experience Types Strip */}
+      <div className="bg-white border-b shadow-sm sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center gap-4 overflow-x-auto scrollbar-hide">
+            <button
+              onClick={() => setSelectedType(null)}
+              className={`px-4 py-2 rounded-full transition-all whitespace-nowrap ${
+                !selectedType ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              All
+            </button>
+            {Object.entries(EXPERIENCE_TYPES).map(([key, type]) => {
+              const Icon = type.icon;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setSelectedType(selectedType === key ? null : key)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all whitespace-nowrap ${
+                    selectedType === key ? `bg-gradient-to-r ${type.color} text-white` : `${type.bgColor} ${type.textColor} hover:scale-105`
+                  }`}
+                  data-testid={`experience-type-${key}`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="text-sm font-medium">{type.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Featured Experiences */}
+      {featuredExperiences.length > 0 && !selectedType && (
+        <div className="py-12 bg-gradient-to-b from-white to-purple-50">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex items-center gap-2 mb-6">
+              <Star className="w-6 h-6 text-yellow-500 fill-current" />
+              <h2 className="text-2xl font-bold text-gray-900">Featured Experiences</h2>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredExperiences.slice(0, 3).map((exp) => {
+                const typeConfig = EXPERIENCE_TYPES[exp.experience_type] || EXPERIENCE_TYPES.event;
+                const Icon = typeConfig.icon;
+                
+                return (
+                  <Card key={exp.id} className="overflow-hidden hover:shadow-xl transition-all group">
+                    <div className={`h-40 bg-gradient-to-br ${typeConfig.color} p-6 relative`}>
+                      <div className="absolute top-4 right-4">
+                        <Badge className="bg-yellow-400 text-yellow-900">
+                          <Star className="w-3 h-3 mr-1 fill-current" /> Featured
+                        </Badge>
+                      </div>
+                      <div className="absolute -right-4 -bottom-4 opacity-20">
+                        <Icon className="w-32 h-32 text-white" />
+                      </div>
+                      <Badge className="bg-white/20 text-white backdrop-blur-sm">{typeConfig.name}</Badge>
+                    </div>
+                    <div className="p-5">
+                      <h3 className="text-lg font-bold text-gray-900 mb-2">{exp.name}</h3>
+                      <p className="text-sm text-gray-600 line-clamp-2 mb-3">{exp.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-4 h-4" /> {exp.city}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4" /> {exp.event_date || 'Ongoing'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xl font-bold text-purple-600">
+                          {exp.is_free ? 'Free' : `₹${exp.price}`}
+                        </span>
+                        <Button onClick={() => handleRsvp(exp)}>
+                          RSVP Now
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* All Experiences */}
+      <div id="experiences" className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {selectedType ? EXPERIENCE_TYPES[selectedType]?.name : 'All Experiences'}
+            </h2>
+            <div className="flex items-center gap-2">
+              <Input
+                placeholder="Filter by city..."
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
+                className="w-48"
+              />
+            </div>
+          </div>
+          
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+            </div>
+          ) : filteredExperiences.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredExperiences.map((exp) => {
+                const typeConfig = EXPERIENCE_TYPES[exp.experience_type] || EXPERIENCE_TYPES.event;
+                const Icon = typeConfig.icon;
+                const spotsLeft = exp.max_capacity ? exp.max_capacity - (exp.current_bookings || 0) : null;
+                
+                return (
+                  <Card key={exp.id} className="overflow-hidden hover:shadow-lg transition-all" data-testid={`experience-${exp.id}`}>
+                    <div className={`h-32 bg-gradient-to-br ${typeConfig.color} p-4 relative`}>
+                      {exp.member_exclusive && (
+                        <Badge className="absolute top-3 right-3 bg-purple-600 text-white">Members Only</Badge>
+                      )}
+                      <Icon className="w-8 h-8 text-white/80" />
+                      <p className="text-white/80 text-sm mt-1">{typeConfig.name}</p>
+                    </div>
+                    <div className="p-4">
+                      <h4 className="font-semibold text-gray-900 mb-1">{exp.name}</h4>
+                      <p className="text-sm text-gray-500 line-clamp-2 mb-3">{exp.description}</p>
+                      
+                      <div className="space-y-1 text-sm text-gray-500 mb-3">
+                        <p className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" /> {exp.venue_name || exp.city}
+                        </p>
+                        <p className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" /> {exp.event_date || 'Ongoing'} {exp.start_time && `at ${exp.start_time}`}
+                        </p>
+                        {spotsLeft !== null && (
+                          <p className="flex items-center gap-1 text-orange-600">
+                            <Users className="w-3 h-3" /> {spotsLeft} spots left
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {exp.pet_personalities?.slice(0, 3).map((p, i) => (
+                          <Badge key={i} variant="outline" className="text-xs">{p}</Badge>
+                        ))}
+                      </div>
+                      
+                      <div className="flex items-center justify-between pt-3 border-t">
+                        <div>
+                          <span className="text-lg font-bold text-gray-900">
+                            {exp.is_free ? 'Free' : `₹${exp.price}`}
+                          </span>
+                          {exp.paw_reward_points > 0 && (
+                            <p className="text-xs text-purple-600">🐾 {exp.paw_reward_points} pts</p>
+                          )}
+                        </div>
+                        <Button size="sm" onClick={() => handleRsvp(exp)}>
+                          RSVP
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <Card className="p-12 text-center">
+              <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No Experiences Found</h3>
+              <p className="text-gray-500">Check back soon for upcoming events!</p>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      {/* RSVP Modal */}
+      <Dialog open={showRsvpModal} onOpenChange={setShowRsvpModal}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Ticket className="w-5 h-5 text-purple-600" />
+              RSVP for Experience
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedExperience && (
+            <div className="space-y-4">
+              {/* Experience Summary */}
+              <Card className="p-4 bg-purple-50 border-purple-200">
+                <h4 className="font-semibold text-purple-900">{selectedExperience.name}</h4>
+                <p className="text-sm text-purple-700">
+                  {selectedExperience.event_date} • {selectedExperience.venue_name || selectedExperience.city}
+                </p>
+                <p className="text-lg font-bold text-purple-600 mt-2">
+                  {selectedExperience.is_free ? 'Free' : `₹${selectedExperience.price}`}
+                </p>
+              </Card>
+
+              {/* Pet Selection */}
+              <div>
+                <Label className="mb-2 block">Select Pet</Label>
+                {userPets.length === 0 ? (
+                  <Card className="p-4 text-center bg-amber-50 border-amber-200">
+                    <p className="text-amber-700">Please add a pet profile first</p>
+                    <Button size="sm" className="mt-2" onClick={() => window.location.href = '/pet-profile'}>
+                      Add Pet
+                    </Button>
+                  </Card>
+                ) : (
+                  <div className="space-y-2">
+                    {userPets.map((pet) => (
+                      <button
+                        key={pet.id}
+                        onClick={() => setSelectedPet(pet)}
+                        className={`w-full p-3 rounded-lg border-2 text-left flex items-center gap-3 transition-all ${
+                          selectedPet?.id === pet.id ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-200'
+                        }`}
+                      >
+                        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                          <PawPrint className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{pet.name}</p>
+                          <p className="text-sm text-gray-500">{pet.breed}</p>
+                        </div>
+                        {selectedPet?.id === pet.id && (
+                          <CheckCircle className="w-5 h-5 text-purple-600 ml-auto" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Attendees */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Number of Pets</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={rsvpForm.number_of_pets}
+                    onChange={(e) => setRsvpForm({...rsvpForm, number_of_pets: parseInt(e.target.value) || 1})}
+                  />
+                </div>
+                <div>
+                  <Label>Number of Humans</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={rsvpForm.number_of_humans}
+                    onChange={(e) => setRsvpForm({...rsvpForm, number_of_humans: parseInt(e.target.value) || 1})}
+                  />
+                </div>
+              </div>
+
+              {/* Special Requirements */}
+              <div>
+                <Label>Special Requirements (Optional)</Label>
+                <Textarea
+                  value={rsvpForm.special_requirements}
+                  onChange={(e) => setRsvpForm({...rsvpForm, special_requirements: e.target.value})}
+                  placeholder="Any special needs for your pet?"
+                  rows={2}
+                />
+              </div>
+
+              {/* Submit */}
+              <div className="flex gap-3 pt-2">
+                <Button variant="outline" onClick={() => setShowRsvpModal(false)} className="flex-1">
+                  Cancel
+                </Button>
+                <Button
+                  onClick={submitRsvp}
+                  disabled={!selectedPet || submitting}
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600"
+                >
+                  {submitting ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+                  ) : (
+                    <><Send className="w-4 h-4 mr-2" /> Submit RSVP</>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default EnjoyPage;
