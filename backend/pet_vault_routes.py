@@ -907,7 +907,7 @@ class DineReservationRecord(BaseModel):
 @pet_vault_router.post("/{pet_id}/record-dine-reservation")
 async def record_dine_reservation_to_soul(pet_id: str, data: DineReservationRecord):
     """Record a dining reservation to the Pet Soul (taste folder)"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     # Find the pet
