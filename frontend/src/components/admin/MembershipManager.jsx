@@ -849,6 +849,153 @@ const MembershipManager = () => {
           onAdjust={(points, reason) => adjustPawPoints(selectedMember.id, points, reason)}
         />
       )}
+
+      {/* CSV Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-lg">
+            <div className="p-6 border-b flex justify-between items-center">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <Upload className="w-5 h-5 text-purple-500" /> Import Members from CSV
+              </h2>
+              <Button variant="ghost" size="sm" onClick={() => setShowUploadModal(false)}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800 mb-2">
+                  <strong>CSV Format:</strong> Upload a CSV file with the following columns:
+                </p>
+                <code className="text-xs bg-blue-100 p-2 block rounded">
+                  name, email, phone, membership_tier, membership_months, paw_points, notes
+                </code>
+              </div>
+              
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center">
+                <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                <p className="text-gray-600 mb-4">Click to upload or drag and drop</p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv"
+                  onChange={handleCSVUpload}
+                  className="hidden"
+                  id="csv-upload"
+                />
+                <label htmlFor="csv-upload">
+                  <Button as="span" className="cursor-pointer">
+                    <FileText className="w-4 h-4 mr-2" /> Choose CSV File
+                  </Button>
+                </label>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <Button variant="outline" onClick={downloadTemplate}>
+                  <Download className="w-4 h-4 mr-2" /> Download Template
+                </Button>
+                <p className="text-xs text-gray-500">Max 1000 members per upload</p>
+              </div>
+
+              <div className="p-4 bg-amber-50 rounded-lg">
+                <p className="text-sm text-amber-800">
+                  <strong>Offline Memberships:</strong> Use this to register members from events, 
+                  exhibitions, or offline sales. They will receive a welcome email with login details.
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Add Member Modal */}
+      {showAddMemberModal && (
+        <AddMemberModal
+          onClose={() => setShowAddMemberModal(false)}
+          onAdd={addMember}
+        />
+      )}
+
+      {/* Bulk Action Modal */}
+      {showBulkActionModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md">
+            <div className="p-6 border-b flex justify-between items-center">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <Zap className="w-5 h-5 text-purple-500" /> Bulk Actions
+              </h2>
+              <Button variant="ghost" size="sm" onClick={() => setShowBulkActionModal(false)}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-gray-600">
+                Apply action to <strong>{selectedMembers.length}</strong> selected members
+              </p>
+              
+              <div className="space-y-2">
+                <label className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="bulkAction" 
+                    value="upgrade_tier"
+                    checked={bulkAction === 'upgrade_tier'}
+                    onChange={(e) => setBulkAction(e.target.value)}
+                  />
+                  <TrendingUp className="w-5 h-5 text-green-500" />
+                  <span>Upgrade to next tier</span>
+                </label>
+                <label className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="bulkAction" 
+                    value="extend_1_month"
+                    checked={bulkAction === 'extend_1_month'}
+                    onChange={(e) => setBulkAction(e.target.value)}
+                  />
+                  <Calendar className="w-5 h-5 text-blue-500" />
+                  <span>Extend subscription by 1 month</span>
+                </label>
+                <label className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="bulkAction" 
+                    value="add_100_points"
+                    checked={bulkAction === 'add_100_points'}
+                    onChange={(e) => setBulkAction(e.target.value)}
+                  />
+                  <PawPrint className="w-5 h-5 text-purple-500" />
+                  <span>Add 100 Paw Points</span>
+                </label>
+                <label className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="bulkAction" 
+                    value="send_renewal_reminder"
+                    checked={bulkAction === 'send_renewal_reminder'}
+                    onChange={(e) => setBulkAction(e.target.value)}
+                  />
+                  <Mail className="w-5 h-5 text-orange-500" />
+                  <span>Send renewal reminder email</span>
+                </label>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button 
+                  onClick={executeBulkAction} 
+                  className="flex-1"
+                  disabled={!bulkAction}
+                >
+                  Apply to {selectedMembers.length} Members
+                </Button>
+                <Button variant="outline" onClick={() => { setShowBulkActionModal(false); setSelectedMembers([]); }}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
