@@ -37,6 +37,7 @@ const DinePage = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [bundles, setBundles] = useState([]);
+  const [products, setProducts] = useState([]);
   const [selectedBundle, setSelectedBundle] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCity, setSelectedCity] = useState('all');
