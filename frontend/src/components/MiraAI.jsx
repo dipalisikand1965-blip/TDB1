@@ -182,12 +182,22 @@ const MiraAI = () => {
     }
   };
 
-  // Quick action buttons
-  const quickActions = [
-    { label: '🎂 Order a Cake', message: 'I want to order a birthday cake for my dog' },
-    { label: '🍽️ Book Dining', message: 'Help me find a pet-friendly restaurant' },
-    { label: '🏨 Plan a Stay', message: 'I need a pet-friendly hotel recommendation' },
-  ];
+  // Quick action buttons - personalized if pets exist
+  const getQuickActions = () => {
+    if (userPets.length > 0) {
+      const petName = userPets[0].name;
+      return [
+        { label: `🎂 Cake for ${petName}`, message: `I want to order a birthday cake for ${petName}` },
+        { label: '🍽️ Pet-Friendly Dining', message: 'Help me find a pet-friendly restaurant' },
+        { label: `🏨 Stay for ${petName}`, message: `I need a pet-friendly hotel for ${petName}` },
+      ];
+    }
+    return [
+      { label: '🎂 Order a Cake', message: 'I want to order a birthday cake for my dog' },
+      { label: '🍽️ Book Dining', message: 'Help me find a pet-friendly restaurant' },
+      { label: '🏨 Plan a Stay', message: 'I need a pet-friendly hotel recommendation' },
+    ];
+  };
 
   const handleQuickAction = (message) => {
     setInputValue(message);
