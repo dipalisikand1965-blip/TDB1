@@ -1493,8 +1493,12 @@ const ServiceDesk = ({ authHeaders }) => {
     };
 
     return (
-      <Dialog open={showSettings} onOpenChange={setShowSettings}>
-        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto" onInteractOutside={(e) => e.preventDefault()}>
+      <Dialog open={showSettings} onOpenChange={setShowSettings} modal={true}>
+        <DialogContent 
+          className="max-w-3xl max-h-[85vh] overflow-y-auto" 
+          onInteractOutside={(e) => e.preventDefault()}
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           <DialogHeader>
             <DialogTitle>Service Desk Settings</DialogTitle>
           </DialogHeader>
