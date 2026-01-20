@@ -141,5 +141,5 @@ New comprehensive member management system with:
 ## Credentials
 
 - **Admin**: `aditya` / `lola4304`
-- **Test User**: `test@doggy.com` / `test123`
+- **Test User**: `dipali@clubconcierge.in` / `lola4304` (Working ✅)
 - **Razorpay**: Test keys in `backend/.env`
