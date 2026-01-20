@@ -654,31 +654,31 @@ const Home = () => {
         
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-5xl md:text-6xl font-black text-white mb-6">
-            Ready to Make Your Pup's Day?
+            Ready to Elevate Your Pet's Life?
           </h2>
           <p className="text-2xl text-white/90 mb-12">
-            Order fresh, premium treats made with love. Same-day delivery available!
+            Join 45,000+ pet parents who trust The Doggy Company for everything their fur babies need.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link to="/cakes">
+            <Link to="/membership">
               <Button
                 size="lg"
                 className="bg-white text-purple-600 hover:bg-gray-100 text-xl px-10 py-8 shadow-2xl transform hover:scale-105 transition-all"
               >
-                Shop Now
+                Become a Member
                 <ArrowRight className="w-6 h-6 ml-2" />
               </Button>
             </Link>
-            <Link to="/custom-cake">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm text-xl px-10 py-8"
-              >
-                Design Custom Cake
-              </Button>
-            </Link>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm text-xl px-10 py-8"
+              onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+            >
+              <Sparkles className="w-6 h-6 mr-2" />
+              Chat with Mira
+            </Button>
           </div>
         </div>
       </section>
