@@ -177,13 +177,13 @@ function MainLayout() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/voice-order" element={<VoiceOrder />} />
         
-        {/* Pet Profile */}
-        <Route path="/pet-profile" element={<PetProfile />} />
-        <Route path="/my-pets" element={<MyPets />} />
-        <Route path="/pets" element={<MyPets />} />
-        <Route path="/pet-soul/:petId" element={<PetSoulPage />} />
-        <Route path="/pet-soul" element={<PetSoulPage />} />
-        <Route path="/pet-vault/:petId" element={<PetVault />} />
+        {/* Pet Profile - Protected */}
+        <Route path="/pet-profile" element={<ProtectedRoute><PetProfile /></ProtectedRoute>} />
+        <Route path="/my-pets" element={<ProtectedRoute><MyPets /></ProtectedRoute>} />
+        <Route path="/pets" element={<ProtectedRoute><MyPets /></ProtectedRoute>} />
+        <Route path="/pet-soul/:petId" element={<ProtectedRoute><PetSoulPage /></ProtectedRoute>} />
+        <Route path="/pet-soul" element={<ProtectedRoute><PetSoulPage /></ProtectedRoute>} />
+        <Route path="/pet-vault/:petId" element={<ProtectedRoute><PetVault /></ProtectedRoute>} />
         
         {/* Policy Pages */}
         <Route path="/policies" element={<Policies />} />
