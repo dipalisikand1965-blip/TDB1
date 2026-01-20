@@ -1136,3 +1136,169 @@ async def seed_emergency_data():
         "products_seeded": len(default_products),
         "bundles_seeded": len(default_bundles)
     }
+
+
+# ============ CSV IMPORT/EXPORT ============
+
+@router.get("/admin/products/export-csv")
+async def export_emergency_products_csv():
+    """Export emergency products to CSV"""
+    db = get_db()
+    
+    products = await db.emergency_products.find({}).to_list(length=1000)
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    writer.writerow([
+        "id", "name", "description", "price", "original_price", "category",
+        "emergency_type", "image", "tags", "in_stock", "paw_reward_points", "priority"
+    ])
+    
+    for p in products:
+        writer.writerow([
+            p.get("id", ""),
+            p.get("name", ""),
+            p.get("description", ""),
+            p.get("price", 0),
+            p.get("original_price", ""),
+            p.get("category", ""),
+            p.get("emergency_type", ""),
+            p.get("image", ""),
+            "|".join(p.get("tags", [])),
+            p.get("in_stock", True),
+            p.get("paw_reward_points", 0),
+            p.get("priority", "normal")
+        ])
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=emergency_products.csv"}
+    )
+
+
+@router.post("/admin/products/import-csv")
+async def import_emergency_products_csv(file: UploadFile = File(...)):
+    """Import emergency products from CSV"""
+    db = get_db()
+    
+    content = await file.read()
+    decoded = content.decode("utf-8")
+    reader = csv.DictReader(io.StringIO(decoded))
+    
+    imported = 0
+    updated = 0
+    
+    for row in reader:
+        product_id = row.get("id") or f"emg-{uuid.uuid4().hex[:8]}"
+        
+        product_doc = {
+            "id": product_id,
+            "pillar": "emergency",
+            "name": row.get("name", ""),
+            "description": row.get("description", ""),
+            "price": float(row.get("price", 0)),
+            "original_price": float(row["original_price"]) if row.get("original_price") else None,
+            "category": row.get("category", "products"),
+            "emergency_type": row.get("emergency_type", ""),
+            "image": row.get("image", ""),
+            "tags": row.get("tags", "").split("|") if row.get("tags") else [],
+            "in_stock": row.get("in_stock", "true").lower() == "true",
+            "paw_reward_points": int(row.get("paw_reward_points", 0)),
+            "priority": row.get("priority", "normal"),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        existing = await db.emergency_products.find_one({"id": product_id})
+        if existing:
+            await db.emergency_products.update_one({"id": product_id}, {"$set": product_doc})
+            updated += 1
+        else:
+            product_doc["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.emergency_products.insert_one(product_doc)
+            imported += 1
+    
+    return {"message": f"Imported {imported} new, updated {updated} products"}
+
+
+@router.get("/admin/bundles/export-csv")
+async def export_emergency_bundles_csv():
+    """Export emergency bundles to CSV"""
+    db = get_db()
+    
+    bundles = await db.emergency_bundles.find({}).to_list(length=500)
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    writer.writerow([
+        "id", "name", "description", "price", "original_price", "items",
+        "emergency_type", "is_recommended", "paw_reward_points", "priority"
+    ])
+    
+    for b in bundles:
+        writer.writerow([
+            b.get("id", ""),
+            b.get("name", ""),
+            b.get("description", ""),
+            b.get("price", 0),
+            b.get("original_price", ""),
+            "|".join(b.get("items", [])),
+            b.get("emergency_type", ""),
+            b.get("is_recommended", True),
+            b.get("paw_reward_points", 0),
+            b.get("priority", "normal")
+        ])
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=emergency_bundles.csv"}
+    )
+
+
+@router.post("/admin/bundles/import-csv")
+async def import_emergency_bundles_csv(file: UploadFile = File(...)):
+    """Import emergency bundles from CSV"""
+    db = get_db()
+    
+    content = await file.read()
+    decoded = content.decode("utf-8")
+    reader = csv.DictReader(io.StringIO(decoded))
+    
+    imported = 0
+    updated = 0
+    
+    for row in reader:
+        bundle_id = row.get("id") or f"emg-bundle-{uuid.uuid4().hex[:8]}"
+        
+        bundle_doc = {
+            "id": bundle_id,
+            "pillar": "emergency",
+            "name": row.get("name", ""),
+            "description": row.get("description", ""),
+            "price": float(row.get("price", 0)),
+            "original_price": float(row["original_price"]) if row.get("original_price") else None,
+            "items": row.get("items", "").split("|") if row.get("items") else [],
+            "emergency_type": row.get("emergency_type", ""),
+            "is_recommended": row.get("is_recommended", "true").lower() == "true",
+            "paw_reward_points": int(row.get("paw_reward_points", 0)),
+            "priority": row.get("priority", "normal"),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        existing = await db.emergency_bundles.find_one({"id": bundle_id})
+        if existing:
+            await db.emergency_bundles.update_one({"id": bundle_id}, {"$set": bundle_doc})
+            updated += 1
+        else:
+            bundle_doc["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.emergency_bundles.insert_one(bundle_doc)
+            imported += 1
+    
+    return {"message": f"Imported {imported} new, updated {updated} bundles"}
