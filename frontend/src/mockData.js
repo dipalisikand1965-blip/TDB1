@@ -2626,7 +2626,7 @@ export const faqs = [
   {
     id: '3',
     question: 'What is Mira AI and how can it help me?',
-    answer: "Mira AI is your personal Pet Celebration Concierge! She's an intelligent assistant that helps you plan perfect celebrations, recommends products based on your dog's preferences, suggests party ideas, provides dietary guidance, and even offers referrals to trusted pet services like vets, groomers, and photographers. Just click the sparkle icon and start chatting!"
+    answer: "Mira AI is your personal Pet Concierge®! She's an intelligent assistant that helps you plan perfect celebrations, recommends products based on your dog's preferences, suggests party ideas, provides dietary guidance, and even offers referrals to trusted pet services like vets, groomers, and photographers. Just click the sparkle icon and start chatting!"
   },
   {
     id: '4',

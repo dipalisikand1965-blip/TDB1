@@ -12,6 +12,22 @@ import { useInView, useCountUp } from '../hooks/useAnimations';
 import { API_URL } from '../utils/api';
 
 
+// 12 Pillars of The Doggy Company
+const PILLARS = [
+  { name: 'Celebrate', icon: '🎂', desc: 'Cakes, treats & party supplies', link: '/celebrate' },
+  { name: 'Dine', icon: '🍽️', desc: 'Pet-friendly restaurants', link: '/dine' },
+  { name: 'Travel', icon: '✈️', desc: 'Pet relocation & travel', link: '/travel' },
+  { name: 'Stay', icon: '🏨', desc: 'Pet-friendly hotels & stays', link: '/stay' },
+  { name: 'Enjoy', icon: '🎾', desc: 'Experiences & activities', link: '/enjoy' },
+  { name: 'Care', icon: '💊', desc: 'Health, grooming & wellness', link: '/care' },
+  { name: 'Fit', icon: '🏃', desc: 'Fitness & training', link: '/fit' },
+  { name: 'Advisory', icon: '📋', desc: 'Expert consultations', link: '/advisory' },
+  { name: 'Club', icon: '👑', desc: 'Exclusive membership', link: '/membership' },
+  { name: 'Shop Assist', icon: '🛒', desc: 'Personal shopping help', link: '/shop-assist' },
+  { name: 'Paperwork', icon: '📄', desc: 'Documents & certificates', link: '/paperwork' },
+  { name: 'Emergency', icon: '🚨', desc: '24/7 emergency support', link: '/emergency' },
+];
+
 const Home = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -41,25 +57,25 @@ const Home = () => {
 
   const heroSlides = [
     {
-      title: 'Unconditional Love',
-      subtitle: 'Deserves Exceptional Treats',
-      description: 'Premium, freshly baked treats crafted with love for your furry family',
+      title: 'Your Pet\'s Life',
+      subtitle: 'One Platform, Endless Care',
+      description: 'The complete Pet Life Operating System — Celebrate, Dine, Travel, Stay, Care & more',
       image: 'https://images.unsplash.com/flagged/photo-1553802922-28e2f719977d?w=1200',
-      cta: 'Explore Cakes'
+      cta: 'Explore Pillars'
     },
     {
       title: 'Meet Mira AI',
-      subtitle: 'Your Celebration Concierge®',
-      description: 'Get personalized recommendations, party ideas, and expert guidance',
+      subtitle: 'Your Super Concierge®',
+      description: 'Get personalized recommendations, travel help, dining reservations & expert guidance 24/7',
       image: 'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=1200',
       cta: 'Chat with Mira'
     },
     {
-      title: 'Custom Celebrations',
-      subtitle: 'Designed Just for Your Pup',
-      description: 'Create the perfect cake with our interactive designer tool',
+      title: 'Pet Soul™',
+      subtitle: 'We Remember Everything',
+      description: 'Every interaction enriches your pet\'s profile for truly personalized experiences',
       image: 'https://images.unsplash.com/photo-1679067652135-324b9535d288?w=1200',
-      cta: 'Design Now'
+      cta: 'Learn More'
     }
   ];
 
