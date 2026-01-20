@@ -288,6 +288,106 @@ async def admin_create_product(product: CelebrateProductCreate):
     
     return {"message": "Product created", "id": product_id}
 
+# ============ CSV IMPORT/EXPORT (Must come BEFORE {product_id} routes) ============
+
+@router.get("/admin/products/export-csv")
+async def export_products_csv():
+    """Export celebrate products to CSV"""
+    db = get_db()
+    
+    products = await db.celebrate_products.find({}).to_list(length=1000)
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    writer.writerow([
+        "id", "name", "description", "price", "compare_price", "category", 
+        "subcategory", "image", "tags", "sizes", "flavors", "in_stock",
+        "is_bestseller", "is_new", "paw_reward_points", "pan_india"
+    ])
+    
+    for p in products:
+        writer.writerow([
+            p.get("id", ""),
+            p.get("name", ""),
+            p.get("description", ""),
+            p.get("price", 0),
+            p.get("compare_price", ""),
+            p.get("category", ""),
+            p.get("subcategory", ""),
+            p.get("image", ""),
+            "|".join(p.get("tags", [])),
+            "|".join([f"{s.get('name')}:{s.get('price')}" for s in p.get("sizes", [])]),
+            "|".join(p.get("flavors", [])),
+            p.get("in_stock", True),
+            p.get("is_bestseller", False),
+            p.get("is_new", False),
+            p.get("paw_reward_points", 0),
+            p.get("pan_india", False)
+        ])
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=celebrate_products.csv"}
+    )
+
+@router.post("/admin/products/import-csv")
+async def import_products_csv(file: UploadFile = File(...)):
+    """Import celebrate products from CSV"""
+    db = get_db()
+    
+    content = await file.read()
+    decoded = content.decode("utf-8")
+    reader = csv.DictReader(io.StringIO(decoded))
+    
+    imported = 0
+    updated = 0
+    
+    for row in reader:
+        product_id = row.get("id") or f"cel-{uuid.uuid4().hex[:8]}"
+        
+        sizes = []
+        if row.get("sizes"):
+            for s in row["sizes"].split("|"):
+                if ":" in s:
+                    name, price = s.split(":")
+                    sizes.append({"name": name, "price": float(price)})
+        
+        product_doc = {
+            "id": product_id,
+            "pillar": "celebrate",
+            "name": row.get("name", ""),
+            "description": row.get("description", ""),
+            "price": float(row.get("price", 0)),
+            "compare_price": float(row["compare_price"]) if row.get("compare_price") else None,
+            "category": row.get("category", "cakes"),
+            "subcategory": row.get("subcategory", ""),
+            "image": row.get("image", ""),
+            "tags": row.get("tags", "").split("|") if row.get("tags") else [],
+            "sizes": sizes,
+            "flavors": row.get("flavors", "").split("|") if row.get("flavors") else [],
+            "in_stock": row.get("in_stock", "true").lower() == "true",
+            "is_bestseller": row.get("is_bestseller", "false").lower() == "true",
+            "is_new": row.get("is_new", "false").lower() == "true",
+            "paw_reward_points": int(row.get("paw_reward_points", 0)),
+            "pan_india": row.get("pan_india", "false").lower() == "true",
+            "updated_at": datetime.now(timezone.utc)
+        }
+        
+        existing = await db.celebrate_products.find_one({"id": product_id})
+        if existing:
+            await db.celebrate_products.update_one({"id": product_id}, {"$set": product_doc})
+            updated += 1
+        else:
+            product_doc["created_at"] = datetime.now(timezone.utc)
+            await db.celebrate_products.insert_one(product_doc)
+            imported += 1
+    
+    return {"message": f"Imported {imported} new, updated {updated} products"}
+
 @router.put("/admin/products/{product_id}")
 async def admin_update_product(product_id: str, product: CelebrateProductCreate):
     """Admin: Update a celebrate product"""
