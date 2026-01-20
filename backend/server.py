@@ -9061,6 +9061,176 @@ async def bulk_member_action(request: BulkActionRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ==================== MEMBER DIRECTORY ENDPOINTS ====================
+
+@admin_router.get("/members/directory")
+async def get_members_directory():
+    """Get all members with their pets and activity for directory view"""
+    try:
+        # Get all users
+        users = await db.users.find({}, {"_id": 0, "password": 0}).to_list(1000)
+        
+        # Enrich with pets data
+        members = []
+        for user in users:
+            user_email = user.get("email")
+            
+            # Get user's pets
+            pets = await db.pets.find({"owner_email": user_email}, {"_id": 0}).to_list(20)
+            
+            # Get last activity (most recent order or request)
+            last_order = await db.orders.find_one(
+                {"email": user_email}, 
+                {"_id": 0, "created_at": 1},
+                sort=[("created_at", -1)]
+            )
+            
+            user["pets"] = pets
+            user["last_activity"] = last_order.get("created_at") if last_order else None
+            
+            # Calculate lifetime value
+            orders = await db.orders.find({"email": user_email}, {"total": 1}).to_list(100)
+            user["lifetime_value"] = sum(o.get("total", 0) for o in orders)
+            
+            members.append(user)
+        
+        return {"members": members, "total": len(members)}
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch members directory: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@admin_router.get("/members/{member_id}/full-profile")
+async def get_member_full_profile(member_id: str):
+    """Get complete member profile including pets, activity, notes"""
+    try:
+        # Get member
+        member = await db.users.find_one({"id": member_id}, {"_id": 0, "password": 0})
+        if not member:
+            raise HTTPException(status_code=404, detail="Member not found")
+        
+        user_email = member.get("email")
+        
+        # Get pets with full soul data
+        pets = await db.pets.find({"owner_email": user_email}, {"_id": 0}).to_list(20)
+        
+        # Get activity (orders, requests, bookings)
+        activity = []
+        
+        # Orders
+        orders = await db.orders.find({"email": user_email}, {"_id": 0}).sort("created_at", -1).to_list(20)
+        for order in orders:
+            activity.append({
+                "type": "order",
+                "title": f"Order #{order.get('id', '')[:8]}",
+                "description": f"₹{order.get('total', 0)} - {len(order.get('items', []))} items",
+                "created_at": order.get("created_at")
+            })
+        
+        # Service requests
+        requests = await db.service_requests.find({"user_email": user_email}, {"_id": 0}).sort("created_at", -1).to_list(20)
+        for req in requests:
+            activity.append({
+                "type": "request",
+                "title": f"{req.get('pillar', 'Service')} Request",
+                "description": req.get("description", "")[:100],
+                "created_at": req.get("created_at")
+            })
+        
+        # Sort activity by date
+        activity.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        
+        # Get notes
+        notes = member.get("admin_notes_list", [])
+        
+        # Get counts
+        member["total_orders"] = len(orders)
+        member["total_requests"] = len(requests)
+        member["total_bookings"] = 0  # TODO: Add bookings count
+        
+        # Calculate lifetime value
+        member["lifetime_value"] = sum(o.get("total", 0) for o in orders)
+        
+        return {
+            "member": member,
+            "pets": pets,
+            "activity": activity[:50],
+            "notes": notes
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to fetch member profile: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@admin_router.post("/members/{member_id}/notes")
+async def add_member_note(member_id: str, note_data: dict):
+    """Add an internal note to a member's profile"""
+    try:
+        note = {
+            "text": note_data.get("note"),
+            "author": "Admin",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.users.update_one(
+            {"id": member_id},
+            {"$push": {"admin_notes_list": note}}
+        )
+        
+        return {"success": True, "note": note}
+        
+    except Exception as e:
+        logger.error(f"Failed to add note: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@admin_router.get("/members/pet-soul-summary")
+async def get_pet_soul_summary():
+    """Get Pet Soul completion summary across all members"""
+    try:
+        pets = await db.pets.find({}, {"_id": 0}).to_list(1000)
+        
+        # Define soul fields
+        soul_fields = [
+            "name", "breed", "gender", "weight", "birth_date",
+            "allergies", "medical_conditions", "favorite_treats",
+            "energy_level", "sociability", "feeding_schedule"
+        ]
+        
+        total_pets = len(pets)
+        completion_buckets = {"0-25": 0, "26-50": 0, "51-75": 0, "76-100": 0}
+        
+        for pet in pets:
+            filled = sum(1 for f in soul_fields if pet.get(f) or (pet.get("soul") and pet.get("soul", {}).get(f)))
+            score = int((filled / len(soul_fields)) * 100)
+            
+            if score <= 25:
+                completion_buckets["0-25"] += 1
+            elif score <= 50:
+                completion_buckets["26-50"] += 1
+            elif score <= 75:
+                completion_buckets["51-75"] += 1
+            else:
+                completion_buckets["76-100"] += 1
+        
+        return {
+            "total_pets": total_pets,
+            "completion_distribution": completion_buckets,
+            "average_completion": sum(
+                int((sum(1 for f in soul_fields if p.get(f) or (p.get("soul") and p.get("soul", {}).get(f))) / len(soul_fields)) * 100)
+                for p in pets
+            ) // max(total_pets, 1)
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch pet soul summary: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
