@@ -56,7 +56,13 @@ const ProductListing = ({ category = 'all' }) => {
           if (searchQuery) {
             url += `&search=${encodeURIComponent(searchQuery)}`;
           } else if (category && category !== 'all') {
-            url += `&category=${category}`;
+            // Use collection parameter for special collections like valentine
+            const collectionCategories = ['valentine', 'seasonal', 'bestsellers'];
+            if (collectionCategories.includes(category.toLowerCase())) {
+              url += `&collection=${category}`;
+            } else {
+              url += `&category=${category}`;
+            }
           }
           const response = await fetch(url);
           if (response.ok) {
