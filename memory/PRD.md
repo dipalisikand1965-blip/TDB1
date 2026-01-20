@@ -106,6 +106,13 @@ Build a world-class, event-driven platform with a single engine powering multipl
 - Full Settings with Paw Rewards, Birthday Perks, Notifications, Service Desk integration
 - 6 plans + 12 products + 5 bundles + 4 partners seeded
 - Service Desk + Unified Inbox integration with auto-ticket creation
+- **Bug Fix (Jan 20, 2026)**: Added `is_active: true` to bundle seed data to fix bundles not displaying
+
+**Dine Pillar Updates** ✅ (January 20, 2026)
+- **NEW**: Added `/api/dine/products` endpoint for dine-specific products
+- **NEW**: Added 12 dine products (travel bowl, placemat, water bottle, treat pouch, calming spray, etc.)
+- **NEW**: Products section added to DinePage frontend
+- **Bug Fix (Jan 20, 2026)**: Dine now has both products AND bundles (previously only bundles)
 
 **Celebrations Pillar** ✅
 - Custom cakes, treats, birthday celebrations
