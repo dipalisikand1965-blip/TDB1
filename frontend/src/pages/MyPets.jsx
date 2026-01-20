@@ -8,7 +8,8 @@ import { Input } from '../components/ui/input';
 import { 
   PawPrint, Plus, Calendar, Gift, Edit, Trash2, 
   Search, Crown, Moon, Mountain, Sofa, Users, 
-  Utensils, Zap, Smile, ChevronRight, Heart, Sparkles, Stethoscope
+  Utensils, Zap, Smile, ChevronRight, Heart, Sparkles, Stethoscope,
+  RefreshCw
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 
