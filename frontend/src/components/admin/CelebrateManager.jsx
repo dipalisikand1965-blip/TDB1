@@ -998,6 +998,91 @@ const CelebrateManager = ({ getAuthHeader }) => {
             </div>
           </Card>
 
+          {/* REWARDS SETTINGS */}
+          <Card className="p-6 border-2 border-amber-200 bg-amber-50">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Gift className="w-5 h-5 text-amber-600" />
+              Paw Rewards Settings
+            </h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="flex items-center justify-between">
+                <Label>Enable Paw Rewards</Label>
+                <Switch
+                  checked={settings.rewards_enabled ?? true}
+                  onCheckedChange={(val) => setSettings({...settings, rewards_enabled: val})}
+                />
+              </div>
+              <div>
+                <Label>Points per ₹100 spent</Label>
+                <Input
+                  type="number"
+                  value={settings.points_per_100 || 10}
+                  onChange={(e) => setSettings({...settings, points_per_100: parseInt(e.target.value)})}
+                />
+              </div>
+              <div>
+                <Label>Points to ₹ conversion (e.g., 100 points = ₹10)</Label>
+                <Input
+                  type="number"
+                  value={settings.points_to_rupee_ratio || 10}
+                  onChange={(e) => setSettings({...settings, points_to_rupee_ratio: parseInt(e.target.value)})}
+                  placeholder="100 points = ₹X"
+                />
+              </div>
+              <div>
+                <Label>Minimum points to redeem</Label>
+                <Input
+                  type="number"
+                  value={settings.min_points_redeem || 100}
+                  onChange={(e) => setSettings({...settings, min_points_redeem: parseInt(e.target.value)})}
+                />
+              </div>
+              <div>
+                <Label>Birthday Bonus Points</Label>
+                <Input
+                  type="number"
+                  value={settings.birthday_bonus_points || 500}
+                  onChange={(e) => setSettings({...settings, birthday_bonus_points: parseInt(e.target.value)})}
+                />
+              </div>
+              <div>
+                <Label>Birthday Discount (%)</Label>
+                <Input
+                  type="number"
+                  value={settings.birthday_discount_percent || 15}
+                  onChange={(e) => setSettings({...settings, birthday_discount_percent: parseInt(e.target.value)})}
+                />
+              </div>
+            </div>
+            <div className="mt-4">
+              <div className="flex items-center justify-between">
+                <Label>Enable Referral Rewards</Label>
+                <Switch
+                  checked={settings.referral_enabled ?? true}
+                  onCheckedChange={(val) => setSettings({...settings, referral_enabled: val})}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-3">
+                <div>
+                  <Label>Referrer Bonus Points</Label>
+                  <Input
+                    type="number"
+                    value={settings.referrer_bonus || 200}
+                    onChange={(e) => setSettings({...settings, referrer_bonus: parseInt(e.target.value)})}
+                  />
+                </div>
+                <div>
+                  <Label>Referee Bonus Points</Label>
+                  <Input
+                    type="number"
+                    value={settings.referee_bonus || 100}
+                    onChange={(e) => setSettings({...settings, referee_bonus: parseInt(e.target.value)})}
+                  />
+                </div>
+              </div>
+            </div>
+          </Card>
+
           <Button onClick={saveSettings} className="bg-pink-600 hover:bg-pink-700">
             Save Settings
           </Button>
