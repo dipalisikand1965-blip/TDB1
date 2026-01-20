@@ -69,6 +69,7 @@ import VoiceOrder from "./pages/VoiceOrder";
 import AgentPortal from "./pages/AgentPortal";
 import ServiceDeskPage from "./pages/ServiceDeskPage";
 import MembershipPage from "./pages/MembershipPage";
+import AboutPage from "./pages/AboutPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
