@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -9,7 +9,8 @@ import {
   Trash2, Gift, Calendar, CreditCard, PawPrint, Star, Award,
   TrendingUp, Clock, Mail, Phone, MapPin, Shield, Sparkles,
   ChevronRight, X, Check, AlertCircle, RefreshCw, Settings,
-  Eye, History, MessageSquare, Heart, Zap, Target, Trophy
+  Eye, History, MessageSquare, Heart, Zap, Target, Trophy,
+  FileText, UserPlus, Send, Ban, CheckCircle, XCircle
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 
