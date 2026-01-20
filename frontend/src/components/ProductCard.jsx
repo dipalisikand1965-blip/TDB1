@@ -303,6 +303,62 @@ const ProductDetailModal = ({ product, onClose }) => {
   const variants = product.variants || [];
   const { user, token } = useAuth();
   
+  // Pet Soul Integration - Fetch user's pets
+  const [userPets, setUserPets] = useState([]);
+  const [selectedPetId, setSelectedPetId] = useState('');
+  const [loadingPets, setLoadingPets] = useState(false);
+  
+  // Fetch user's pets on mount if logged in
+  useEffect(() => {
+    const fetchUserPets = async () => {
+      if (!user || !token) return;
+      setLoadingPets(true);
+      try {
+        const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserPets(data.pets || []);
+        }
+      } catch (error) {
+        console.error('Error fetching pets:', error);
+      } finally {
+        setLoadingPets(false);
+      }
+    };
+    fetchUserPets();
+  }, [user, token]);
+  
+  // Handle pet selection - auto-fill details
+  const handlePetSelect = (petId) => {
+    setSelectedPetId(petId);
+    if (petId === 'manual') {
+      // User wants to type manually
+      setCartInput(prev => ({ ...prev, petName: '', age: '', selectedPetId: null }));
+      return;
+    }
+    const pet = userPets.find(p => p.id === petId);
+    if (pet) {
+      // Calculate age from birthday
+      let ageStr = '';
+      if (pet.birthday) {
+        const birthDate = new Date(pet.birthday);
+        const today = new Date();
+        const ageYears = Math.floor((today - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
+        ageStr = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : 'Less than 1 year';
+      }
+      setCartInput(prev => ({ 
+        ...prev, 
+        petName: pet.name || '',
+        age: ageStr,
+        selectedPetId: pet.id,
+        petBreed: pet.breed || '',
+        petSize: pet.size || ''
+      }));
+    }
+  };
+  
   // Build option values dynamically from variants
   const getOptionValues = (optionName, optionIndex) => {
     const values = new Set();
@@ -340,7 +396,11 @@ const ProductDetailModal = ({ product, onClose }) => {
     addPartyBox: false,
     // Bundle selections
     selectedCake: '',
-    selectedToy: ''
+    selectedToy: '',
+    // Pet Soul fields
+    selectedPetId: null,
+    petBreed: '',
+    petSize: ''
   });
   
   const [relatedProducts, setRelatedProducts] = useState([]);
