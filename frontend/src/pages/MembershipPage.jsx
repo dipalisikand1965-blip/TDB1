@@ -4,12 +4,13 @@ import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card } from '../components/ui/card';
+import MembershipPayment from '../components/MembershipPayment';
 import { 
   PawPrint, Crown, Check, Star, Heart, Gift, Calendar, 
   Shield, Sparkles, ChevronRight, Eye, EyeOff, ArrowRight,
   Utensils, Plane, Home, Dumbbell, Brain, Phone, FileText,
   ShoppingBag, Users, Award, Zap, X, Trophy, Target, TrendingUp,
-  Cake, Activity, Stethoscope, MapPin
+  Cake, Activity, Stethoscope, MapPin, CreditCard
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 
