@@ -533,9 +533,24 @@ const PaperworkManager = () => {
           <Card className="p-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-semibold text-gray-900">Paperwork Bundles ({bundles.length})</h3>
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="w-4 h-4 mr-2" /> Add Bundle
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={exportBundlesCSV}>
+                  <Download className="w-4 h-4 mr-2" /> Export CSV
+                </Button>
+                <input
+                  type="file"
+                  accept=".csv"
+                  ref={bundleFileRef}
+                  onChange={handleBundleFileChange}
+                  className="hidden"
+                />
+                <Button variant="outline" onClick={() => bundleFileRef.current?.click()} disabled={importingBundles}>
+                  <Upload className="w-4 h-4 mr-2" /> {importingBundles ? 'Importing...' : 'Import CSV'}
+                </Button>
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="w-4 h-4 mr-2" /> Add Bundle
+                </Button>
+              </div>
             </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
