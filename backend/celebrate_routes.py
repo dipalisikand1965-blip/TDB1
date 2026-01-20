@@ -452,6 +452,86 @@ async def admin_create_bundle(bundle: CelebrateBundleCreate):
     
     return {"message": "Bundle created", "id": bundle_id}
 
+@router.get("/admin/bundles/export-csv")
+async def export_bundles_csv():
+    """Export celebrate bundles to CSV"""
+    db = get_db()
+    
+    bundles = await db.celebrate_bundles.find({}).to_list(length=500)
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    writer.writerow([
+        "id", "name", "description", "price", "original_price", "category",
+        "items", "image", "occasion", "is_recommended", "paw_reward_points"
+    ])
+    
+    for b in bundles:
+        writer.writerow([
+            b.get("id", ""),
+            b.get("name", ""),
+            b.get("description", ""),
+            b.get("price", 0),
+            b.get("original_price", ""),
+            b.get("category", ""),
+            "|".join(b.get("items", [])),
+            b.get("image", ""),
+            b.get("occasion", ""),
+            b.get("is_recommended", True),
+            b.get("paw_reward_points", 0)
+        ])
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=celebrate_bundles.csv"}
+    )
+
+@router.post("/admin/bundles/import-csv")
+async def import_bundles_csv(file: UploadFile = File(...)):
+    """Import celebrate bundles from CSV"""
+    db = get_db()
+    
+    content = await file.read()
+    decoded = content.decode("utf-8")
+    reader = csv.DictReader(io.StringIO(decoded))
+    
+    imported = 0
+    updated = 0
+    
+    for row in reader:
+        bundle_id = row.get("id") or f"cel-bun-{uuid.uuid4().hex[:8]}"
+        
+        bundle_doc = {
+            "id": bundle_id,
+            "pillar": "celebrate",
+            "name": row.get("name", ""),
+            "description": row.get("description", ""),
+            "price": float(row.get("price", 0)),
+            "original_price": float(row["original_price"]) if row.get("original_price") else None,
+            "category": row.get("category", "hampers"),
+            "items": row.get("items", "").split("|") if row.get("items") else [],
+            "image": row.get("image", ""),
+            "occasion": row.get("occasion", ""),
+            "is_recommended": row.get("is_recommended", "true").lower() == "true",
+            "paw_reward_points": int(row.get("paw_reward_points", 0)),
+            "updated_at": datetime.now(timezone.utc)
+        }
+        
+        existing = await db.celebrate_bundles.find_one({"id": bundle_id})
+        if existing:
+            await db.celebrate_bundles.update_one({"id": bundle_id}, {"$set": bundle_doc})
+            updated += 1
+        else:
+            bundle_doc["created_at"] = datetime.now(timezone.utc)
+            await db.celebrate_bundles.insert_one(bundle_doc)
+            imported += 1
+    
+    return {"message": f"Imported {imported} new, updated {updated} bundles"}
+
 @router.put("/admin/bundles/{bundle_id}")
 async def admin_update_bundle(bundle_id: str, bundle: CelebrateBundleCreate):
     """Admin: Update a celebrate bundle"""
