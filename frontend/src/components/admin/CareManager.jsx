@@ -874,12 +874,106 @@ const CareManager = ({ getAuthHeader }) => {
         {/* Settings Tab */}
         <TabsContent value="settings" className="space-y-4">
           <Card className="p-6">
-            <h3 className="font-semibold text-lg mb-4">Care Pillar Settings</h3>
-            <p className="text-gray-500 text-sm">Configure Paw Rewards, notifications, and service settings</p>
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <pre className="text-sm text-gray-600 overflow-auto">
-                {JSON.stringify(settings, null, 2)}
-              </pre>
+            <h3 className="text-lg font-semibold mb-4">🐾 Paw Rewards Settings</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Points per Care Request</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.points_per_request || 30}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Points per Product Purchase (per ₹100)</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.points_per_purchase || 10}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Bonus Points for Grooming</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.grooming_bonus || 20}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Repeat Customer Bonus</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.repeat_bonus || 15}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">🎂 Birthday Perks Settings</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Birthday Discount %</Label>
+                <Input 
+                  type="number" 
+                  value={settings.birthday_perks?.discount_percent || 15}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Valid Days (before/after birthday)</Label>
+                <Input 
+                  type="number" 
+                  value={settings.birthday_perks?.valid_days || 7}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">🔔 Notification Settings</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Email Notifications</Label>
+                <Switch checked={settings.notifications?.email_enabled !== false} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>WhatsApp Notifications</Label>
+                <Switch checked={settings.notifications?.whatsapp_enabled || false} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>SMS Notifications</Label>
+                <Switch checked={settings.notifications?.sms_enabled || false} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Appointment Reminders (24h before)</Label>
+                <Switch checked={settings.notifications?.appointment_reminder !== false} />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">📋 Service Desk Integration</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Auto-create tickets for requests</Label>
+                <Switch checked={settings.service_desk?.auto_create_tickets !== false} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Route to Partners</Label>
+                <Switch checked={settings.service_desk?.route_to_partners || false} />
+              </div>
+              <div>
+                <Label>Default SLA (hours)</Label>
+                <Input 
+                  type="number" 
+                  value={settings.service_desk?.default_sla || 48}
+                  className="mt-1 w-32"
+                />
+              </div>
             </div>
           </Card>
         </TabsContent>
