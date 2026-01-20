@@ -1897,6 +1897,104 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
           onClose={() => { setEditingBundle(null); setIsAddingBundle(false); }}
         />
       )}
+      
+      {/* ============ SETTINGS TAB ============ */}
+      {activeTab === 'settings' && (
+        <div className="space-y-6">
+          {/* General Settings */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Settings className="w-5 h-5 text-gray-600" />
+              General Settings
+            </h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Auto-acknowledge Reservations</label>
+                <input type="checkbox" className="w-4 h-4 text-orange-600" defaultChecked />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Notification Email</label>
+                <Input placeholder="dine@company.com" className="mt-1" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Notification WhatsApp</label>
+                <Input placeholder="+91 98765 43210" className="mt-1" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Default Table Booking Lead Time (Hours)</label>
+                <Input type="number" placeholder="2" defaultValue={2} className="mt-1" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Paw Rewards Settings */}
+          <Card className="p-6 border-2 border-amber-200 bg-amber-50">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <PawPrint className="w-5 h-5 text-amber-600" />
+              Paw Rewards Settings
+            </h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Enable Paw Rewards</label>
+                <input type="checkbox" className="w-4 h-4 text-amber-600" defaultChecked />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Points per Reservation</label>
+                <Input type="number" placeholder="25" defaultValue={25} className="mt-1" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Birthday Bonus Points</label>
+                <Input type="number" placeholder="100" defaultValue={100} className="mt-1" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Birthday Discount (%)</label>
+                <Input type="number" placeholder="15" defaultValue={15} className="mt-1" />
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Enable Referral Rewards</label>
+                <input type="checkbox" className="w-4 h-4 text-amber-600" defaultChecked />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Referrer Bonus Points</label>
+                <Input type="number" placeholder="50" defaultValue={50} className="mt-1" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Buddy Match Settings */}
+          <Card className="p-6 border-2 border-pink-200 bg-pink-50">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Heart className="w-5 h-5 text-pink-600" />
+              Pet Buddy Match Settings
+            </h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Enable Buddy Matching</label>
+                <input type="checkbox" className="w-4 h-4 text-pink-600" defaultChecked />
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Auto-notify on Match</label>
+                <input type="checkbox" className="w-4 h-4 text-pink-600" defaultChecked />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Match Expiry (Days)</label>
+                <Input type="number" placeholder="7" defaultValue={7} className="mt-1" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Max Buddy Requests per Day</label>
+                <Input type="number" placeholder="5" defaultValue={5} className="mt-1" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Save Button */}
+          <div className="flex justify-end">
+            <Button className="bg-orange-500 hover:bg-orange-600">
+              <Save className="w-4 h-4 mr-2" /> Save Settings
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
