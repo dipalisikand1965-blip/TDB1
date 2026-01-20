@@ -115,7 +115,13 @@ const MembershipPage = () => {
 
   const handleSelectPlan = (plan) => {
     setSelectedPlan(plan);
-    setShowAuthModal(true);
+    if (user) {
+      // Already logged in, go directly to payment
+      setShowPaymentModal(true);
+    } else {
+      // Need to login first
+      setShowAuthModal(true);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -139,12 +145,22 @@ const MembershipPage = () => {
           password: formData.password
         });
       }
-      // Auth context will update, useEffect will redirect
+      // After successful auth, show payment modal if a plan was selected
+      setShowAuthModal(false);
+      if (selectedPlan) {
+        setShowPaymentModal(true);
+      }
     } catch (err) {
       setError(err.response?.data?.detail || 'Authentication failed. Please try again.');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handlePaymentSuccess = (membership) => {
+    setShowPaymentModal(false);
+    // Refresh user data and redirect to my-pets
+    navigate('/my-pets');
   };
 
   // Pillar icons mapping
