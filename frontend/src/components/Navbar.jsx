@@ -150,6 +150,23 @@ const Navbar = () => {
         { name: '🎯 Shop Fitness Gear', path: '/fit#fit-products' },
       ]
     },
+    { 
+      id: 'advisory',
+      name: 'Advisory', 
+      icon: Brain,
+      color: 'from-violet-500 to-purple-500',
+      description: 'Expert pet guidance',
+      path: '/advisory',
+      isActive: true,
+      subItems: [
+        { name: '🧠 Behaviour Consultations', path: '/advisory?type=behaviour' },
+        { name: '🍎 Nutrition Planning', path: '/advisory?type=nutrition' },
+        { name: '💜 Senior Pet Care', path: '/advisory?type=senior_care' },
+        { name: '🏠 New Pet Guidance', path: '/advisory?type=new_pet' },
+        { name: '🩺 Health Advisory', path: '/advisory?type=health' },
+        { name: '🎓 Training Consultations', path: '/advisory?type=training' },
+      ]
+    },
   ];
 
   const isActive = (path) => location.pathname === path;
