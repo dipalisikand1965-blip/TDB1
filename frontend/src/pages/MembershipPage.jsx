@@ -674,7 +674,7 @@ const MembershipPage = () => {
                 {isLogin ? 'Welcome Back!' : 'Join The Pack'}
               </h2>
               <p className="text-gray-500 mt-1">
-                {isLogin ? 'Sign in to continue' : selectedPlan === 'annual' ? '₹999/year membership' : '₹99/month membership'}
+                {isLogin ? 'Sign in to continue' : selectedPlan === 'annual' ? '₹1,179/year (incl. GST)' : '₹117/month (incl. GST)'}
               </p>
             </div>
 
