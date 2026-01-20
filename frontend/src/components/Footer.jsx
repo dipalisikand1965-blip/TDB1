@@ -98,34 +98,31 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Store Locations */}
+          {/* Registered Office */}
           <div>
             <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <Store className="w-4 h-4" /> Store Pickup Locations
+              <MapPin className="w-4 h-4" /> Registered Office
             </h3>
-            <ul className="space-y-3 text-sm">
-              {STORES.map((store, idx) => (
-                <li key={idx} className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 mt-0.5 text-pink-500 flex-shrink-0" />
-                  <div>
-                    <a 
-                      href={store.mapUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="hover:text-pink-500 transition-colors"
-                    >
-                      <strong>{store.city}:</strong> {store.shortAddress}
-                    </a>
-                  </div>
-                </li>
-              ))}
-              <li className="flex items-start gap-2 mt-4 bg-purple-900/30 p-2 rounded">
-                <Truck className="w-4 h-4 mt-0.5 text-purple-400 flex-shrink-0" />
+            <div className="text-sm space-y-3">
+              <div className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 mt-0.5 text-pink-500 flex-shrink-0" />
+                <div>
+                  <p className="text-gray-300">
+                    <strong>The Doggy Company</strong><br />
+                    Block A, Bldg No 7, Flat no 701,<br />
+                    Nahar Amrit Shakti, Chandivali,<br />
+                    Andheri East, Mumbai - 400072<br />
+                    Maharashtra, India
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 bg-purple-900/30 p-3 rounded">
+                <Truck className="w-4 h-4 text-purple-400 inline mr-2" />
                 <span className="text-purple-300">
-                  <strong>Pan-India Delivery:</strong> We deliver cakes & treats across India!
+                  <strong>Pan-India Delivery:</strong> We deliver across India!
                 </span>
-              </li>
-            </ul>
+              </div>
+            </div>
           </div>
 
           {/* Contact */}
