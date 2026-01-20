@@ -293,6 +293,7 @@ const AboutManager = ({ getAuthHeader }) => {
 const EditModal = ({ item, onSave, onClose }) => {
   const isNew = !item.id;
   const isDog = item.type === 'dog';
+  const [uploading, setUploading] = useState(false);
   
   const [formData, setFormData] = useState({
     name: item.name || '',
@@ -305,6 +306,34 @@ const EditModal = ({ item, onSave, onClose }) => {
     order: item.order || 99,
     is_active: item.is_active !== false
   });
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+
+    setUploading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/upload/about-image`, {
+        method: 'POST',
+        body: formDataUpload
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setFormData({ ...formData, image: `${API_URL}${data.url}` });
+      } else {
+        alert('Failed to upload image');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSave = () => {
     onSave({ ...item, ...formData });
@@ -390,18 +419,51 @@ const EditModal = ({ item, onSave, onClose }) => {
 
           {isDog && (
             <div>
-              <label className="text-sm font-medium">Image URL</label>
-              <Input
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                className="mt-1"
-                placeholder="https://..."
-              />
-              {formData.image && (
-                <div className="mt-2 h-32 rounded overflow-hidden">
-                  <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
+              <label className="text-sm font-medium">Photo</label>
+              <div className="mt-1 space-y-2">
+                {/* Upload Button */}
+                <div className="flex gap-2">
+                  <label className="flex-1 cursor-pointer">
+                    <div className={`px-4 py-2 border-2 border-dashed rounded-lg text-center hover:bg-gray-50 transition-colors ${uploading ? 'opacity-50' : ''}`}>
+                      {uploading ? (
+                        <span className="text-gray-500">Uploading...</span>
+                      ) : (
+                        <span className="text-gray-600">
+                          <Upload className="w-4 h-4 inline mr-2" />
+                          Click to upload photo
+                        </span>
+                      )}
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      disabled={uploading}
+                    />
+                  </label>
                 </div>
-              )}
+                
+                {/* URL Input */}
+                <Input
+                  value={formData.image}
+                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                  placeholder="Or paste image URL..."
+                />
+                
+                {/* Preview */}
+                {formData.image && (
+                  <div className="relative h-40 rounded overflow-hidden bg-gray-100">
+                    <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => setFormData({ ...formData, image: '' })}
+                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -430,7 +492,7 @@ const EditModal = ({ item, onSave, onClose }) => {
           </div>
 
           <div className="flex gap-2 pt-4">
-            <Button onClick={handleSave} className="flex-1">
+            <Button onClick={handleSave} className="flex-1" disabled={uploading}>
               <Save className="w-4 h-4 mr-2" /> Save
             </Button>
             <Button variant="outline" onClick={onClose}>Cancel</Button>
