@@ -1750,7 +1750,7 @@ const ServiceDesk = ({ authHeaders }) => {
             </TabsContent>
 
             {/* SLA RULES TAB */}
-            <TabsContent value="sla" className="space-y-4 mt-2">
+            <TabsContent value="sla" className="space-y-4 mt-2 min-h-[300px]">
               <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
                 <p className="text-sm text-amber-800">
                   <Clock className="w-4 h-4 inline mr-1" />
@@ -1863,7 +1863,7 @@ const ServiceDesk = ({ authHeaders }) => {
             </TabsContent>
 
             {/* TEAM / CONCIERGE TAB */}
-            <TabsContent value="team" className="space-y-4 mt-2">
+            <TabsContent value="team" className="space-y-4 mt-2 min-h-[300px]">
               <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-800">
                   <Users className="w-4 h-4 inline mr-1" />
@@ -2047,7 +2047,7 @@ const ServiceDesk = ({ authHeaders }) => {
             </TabsContent>
 
             {/* EMAIL TAB */}
-            <TabsContent value="email" className="space-y-4 mt-4">
+            <TabsContent value="email" className="space-y-4 mt-4 min-h-[300px]">
               <p className="text-sm text-gray-600">
                 Configure your email inbox to automatically capture emails as tickets.
               </p>
@@ -2112,7 +2112,7 @@ const ServiceDesk = ({ authHeaders }) => {
               </Button>
             </TabsContent>
 
-            <TabsContent value="whatsapp" className="space-y-4 mt-4">
+            <TabsContent value="whatsapp" className="space-y-4 mt-4 min-h-[300px]">
               <p className="text-sm text-gray-600">
                 Connect WhatsApp Business API to receive and respond to messages as tickets.
               </p>
