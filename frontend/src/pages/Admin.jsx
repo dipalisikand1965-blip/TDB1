@@ -116,6 +116,31 @@ const Admin = () => {
   const [passwordError, setPasswordError] = useState('');
   const [showPasswords, setShowPasswords] = useState({ current: false, new: false, confirm: false });
   const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [seedingAll, setSeedingAll] = useState(false);
+
+  // Seed All function - uses UPSERT so existing data is preserved
+  const seedAllPillars = async () => {
+    setSeedingAll(true);
+    try {
+      const response = await fetch(`${API_URL}/api/admin/seed-all`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: '✅ Pillars Seeded!',
+          description: `${data.totals.products} products, ${data.totals.bundles} bundles added (existing data preserved)`
+        });
+      } else {
+        toast({ title: 'Error', description: 'Failed to seed data', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to seed data', variant: 'destructive' });
+    } finally {
+      setSeedingAll(false);
+    }
+  };
 
   useEffect(() => {
     if (selectedMember) {
