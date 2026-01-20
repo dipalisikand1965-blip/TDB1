@@ -8,9 +8,78 @@ import {
   PawPrint, Crown, Check, Star, Heart, Gift, Calendar, 
   Shield, Sparkles, ChevronRight, Eye, EyeOff, ArrowRight,
   Utensils, Plane, Home, Dumbbell, Brain, Phone, FileText,
-  ShoppingBag, Users, Award, Zap, X
+  ShoppingBag, Users, Award, Zap, X, Trophy, Target, TrendingUp,
+  Cake, Activity, Stethoscope, MapPin
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
+
+// Doggy-themed membership levels
+const MEMBERSHIP_LEVELS = [
+  { 
+    key: 'curious_pup',
+    name: '🐕 Curious Pup', 
+    description: 'New members exploring the platform',
+    minMonths: 0,
+    multiplier: '1x',
+    color: 'from-gray-400 to-gray-500'
+  },
+  { 
+    key: 'loyal_companion',
+    name: '🦮 Loyal Companion', 
+    description: 'Active members for 3+ months',
+    minMonths: 3,
+    multiplier: '1.5x',
+    color: 'from-blue-400 to-blue-600'
+  },
+  { 
+    key: 'trusted_guardian',
+    name: '🐕‍🦺 Trusted Guardian', 
+    description: 'Dedicated members for 6+ months',
+    minMonths: 6,
+    multiplier: '2x',
+    color: 'from-purple-400 to-purple-600'
+  },
+  { 
+    key: 'pack_leader',
+    name: '👑 Pack Leader', 
+    description: 'Elite members or 12+ months',
+    minMonths: 12,
+    multiplier: '3x',
+    color: 'from-amber-400 to-amber-600'
+  }
+];
+
+// Sample Pet Soul profile for Bruno
+const SAMPLE_PET_SOUL = {
+  name: 'Bruno',
+  breed: 'Golden Retriever',
+  age: '3 years',
+  image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=300&fit=crop',
+  personality: ['Playful', 'Friendly', 'Food-lover'],
+  favorites: {
+    treat: 'Peanut Butter Cake',
+    activity: 'Beach walks',
+    restaurant: 'Cafe Pawsome'
+  },
+  stats: {
+    pawPoints: 2450,
+    ordersCompleted: 12,
+    restaurantsVisited: 5,
+    hotelsStayed: 2,
+    fitnessActivities: 8
+  },
+  achievements: [
+    { icon: '🎂', name: 'Birthday Celebrated', date: 'Oct 2025' },
+    { icon: '🍽️', name: 'First Dine Out', date: 'Sep 2025' },
+    { icon: '🏨', name: 'First Stay', date: 'Aug 2025' },
+    { icon: '✈️', name: 'First Travel', date: 'Jul 2025' }
+  ],
+  healthVault: {
+    vaccinations: 5,
+    documents: 8,
+    lastCheckup: 'Nov 2025'
+  }
+};
 
 const MembershipPage = () => {
   const navigate = useNavigate();
@@ -108,7 +177,7 @@ const MembershipPage = () => {
   ];
 
   const benefits = [
-    { icon: PawPrint, title: 'Pet Soul Profile', desc: 'Deep, evolving profile for your pet' },
+    { icon: PawPrint, title: 'Pet Soul™ Profile', desc: 'Deep, evolving profile for your pet' },
     { icon: Sparkles, title: 'Mira AI Concierge®', desc: '24/7 intelligent pet assistant' },
     { icon: Award, title: 'Paw Rewards', desc: 'Earn points on every interaction' },
     { icon: Calendar, title: 'Smart Reminders', desc: 'Birthday, vaccine & event alerts' },
