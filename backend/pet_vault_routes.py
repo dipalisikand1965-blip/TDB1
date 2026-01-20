@@ -825,7 +825,7 @@ async def send_health_reminder_email(to_email: str, subject: str, pet_name: str,
                 },
                 json={
                     "from": "The Doggy Company <hello@thedoggycompany.in>",
-                    "to": [to_email],
+                    "to": to_email,
                     "subject": subject,
                     "html": html_content
                 }

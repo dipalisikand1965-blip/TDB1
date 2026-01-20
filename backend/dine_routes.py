@@ -315,7 +315,7 @@ async def create_reservation(reservation: ReservationRequest):
             
             resend.Emails.send({
                 "from": f"The Doggy Company <{SENDER_EMAIL}>",
-                "to": [reservation.email],
+                "to": reservation.email,
                 "subject": f"🍽️ Reservation Request - {restaurant.get('name')}",
                 "html": f"""
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -365,7 +365,7 @@ async def create_reservation(reservation: ReservationRequest):
             
             resend.Emails.send({
                 "from": f"Dine Reservations <{SENDER_EMAIL}>",
-                "to": [notification_email],
+                "to": notification_email,
                 "subject": f"🆕 New Reservation - {restaurant.get('name')} ({reservation.date})",
                 "html": f"""
                 <div style="font-family: Arial, sans-serif;">
@@ -573,7 +573,7 @@ async def admin_update_reservation_status(
                 
                 resend.Emails.send({
                     "from": f"The Doggy Company <{SENDER_EMAIL}>",
-                    "to": [reservation.get("email")],
+                    "to": reservation.get("email"),
                     "subject": subject,
                     "html": f"""
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -1110,7 +1110,7 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
             
             resend.Emails.send({
                 "from": f"The Doggy Company <{SENDER_EMAIL}>",
-                "to": [confirmation_email],
+                "to": confirmation_email,
                 "subject": f"🐕 Pet Buddy Visit Scheduled - {restaurant.get('name')}",
                 "html": f"""
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -1295,7 +1295,7 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
                 
                 resend.Emails.send({
                     "from": f"Buddy Meet <{SENDER_EMAIL}>",
-                    "to": [target_user_email],
+                    "to": target_user_email,
                     "subject": f"🐕 New Meetup Request at {visit.get('restaurant_name')}!",
                     "html": f"""
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -1338,7 +1338,7 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
                 # Standard email notification
                 resend.Emails.send({
                     "from": f"Buddy Meet <{SENDER_EMAIL}>",
-                    "to": [target_user_email],
+                    "to": target_user_email,
                     "subject": f"🐕 New Meetup Request at {visit.get('restaurant_name')}!",
                     "html": f"""
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -1386,7 +1386,7 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
         try:
             resend.Emails.send({
                 "from": f"Buddy Meet <{SENDER_EMAIL}>",
-                "to": [requester_email],
+                "to": requester_email,
                 "subject": f"🐕 Meetup Request Submitted - {visit.get('restaurant_name')}",
                 "html": f"""
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -1527,7 +1527,7 @@ async def respond_to_meetup(request_id: str, accept: bool, user_id: str):
                     # Send acceptance email with details
                     resend.Emails.send({
                         "from": f"Buddy Meet <{SENDER_EMAIL}>",
-                        "to": [requester["email"]],
+                        "to": requester["email"],
                         "subject": f"🎉 Great News! Your Meetup Request was Accepted!",
                         "html": f"""
                         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -1566,7 +1566,7 @@ async def respond_to_meetup(request_id: str, accept: bool, user_id: str):
                     # Send decline email
                     resend.Emails.send({
                         "from": f"Buddy Meet <{SENDER_EMAIL}>",
-                        "to": [requester["email"]],
+                        "to": requester["email"],
                         "subject": f"Meetup Update - {meetup.get('restaurant_name')}",
                         "html": f"""
                         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

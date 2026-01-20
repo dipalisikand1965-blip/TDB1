@@ -426,7 +426,7 @@ async def send_daily_report_email(
     try:
         resend.Emails.send({
             "from": f"The Doggy Company Reports <{SENDER_EMAIL}>",
-            "to": [recipient_email],
+            "to": recipient_email,
             "subject": f"📈 Daily Report - {report_date}",
             "html": email_html
         })

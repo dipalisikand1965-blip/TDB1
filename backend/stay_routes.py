@@ -450,7 +450,7 @@ async def create_booking_request(booking: BookingRequest):
         try:
             resend.Emails.send({
                 "from": f"The Doggy Company Stay <{SENDER_EMAIL}>",
-                "to": [booking.guest_email],
+                "to": booking.guest_email,
                 "subject": f"🏨 Stay Booking Request - {property.get('name')}",
                 "html": f"""
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -1479,7 +1479,7 @@ async def admin_update_booking_status(
                 
                 resend.Emails.send({
                     "from": f"The Doggy Company Stay <{SENDER_EMAIL}>",
-                    "to": [booking.get("guest_email")],
+                    "to": booking.get("guest_email"),
                     "subject": subject,
                     "html": f"""
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px;">

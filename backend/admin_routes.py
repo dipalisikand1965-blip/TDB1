@@ -254,7 +254,7 @@ The Doggy Bakery Team 🐕"""
             
             resend.Emails.send({
                 "from": f"The Doggy Bakery <{SENDER_EMAIL}>",
-                "to": [customer.get("email")],
+                "to": customer.get("email"),
                 "subject": "🐾 Your Order is Ready - Complete Checkout",
                 "html": email_html
             })
@@ -492,7 +492,7 @@ Thank you for choosing The Doggy Bakery! 🐕
             
             resend.Emails.send({
                 "from": f"The Doggy Bakery <{SENDER_EMAIL}>",
-                "to": [customer.get("email")],
+                "to": customer.get("email"),
                 "subject": f"{emoji} Order Update: {label}",
                 "html": f"""
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

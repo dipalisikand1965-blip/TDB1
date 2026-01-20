@@ -301,7 +301,7 @@ async def send_email_notification(
         try:
             resend.Emails.send({
                 "from": SENDER_EMAIL,
-                "to": [customer.email],
+                "to": customer.email,
                 "subject": subject,
                 "html": html_content
             })
@@ -326,7 +326,7 @@ async def send_email_notification(
         try:
             resend.Emails.send({
                 "from": SENDER_EMAIL,
-                "to": [BUSINESS_EMAIL],
+                "to": BUSINESS_EMAIL,
                 "subject": admin_subject,
                 "html": admin_html
             })
