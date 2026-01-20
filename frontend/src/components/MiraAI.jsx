@@ -326,7 +326,7 @@ const MiraAI = () => {
           {/* Quick Actions (show only at start) */}
           {messages.length === 1 && (
             <div className="px-4 pb-2 flex gap-2 flex-wrap bg-gray-50">
-              {quickActions.map((action, idx) => (
+              {getQuickActions().map((action, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleQuickAction(action.message)}
