@@ -1,31 +1,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, MessageCircle, Store, Truck } from 'lucide-react';
+import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, MessageCircle, Truck } from 'lucide-react';
 
 const WHATSAPP_NUMBER = '919663185747';
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I'm interested in ordering from The Doggy Company 🐕")}`;
-
-// Store Locations
-const STORES = [
-  {
-    city: 'Mumbai',
-    address: 'Shop 9, off Yari Road, Jeet Nagar, Versova, Andheri West, Mumbai, Maharashtra 400061',
-    shortAddress: 'Versova, Andheri West',
-    mapUrl: 'https://maps.google.com/?q=Shop+9+off+Yari+Road+Versova+Andheri+West+Mumbai'
-  },
-  {
-    city: 'Gurugram',
-    address: 'Ground Floor, Wazirabad Rd, Wazirabad, Sector 52, Gurugram, Haryana 122003',
-    shortAddress: 'Sector 52, Gurugram',
-    mapUrl: 'https://maps.google.com/?q=Wazirabad+Rd+Sector+52+Gurugram'
-  },
-  {
-    city: 'Bangalore',
-    address: '147, 8th Main Rd, 3rd Block, Koramangala 3 Block, Koramangala, Bengaluru, Karnataka 560034',
-    shortAddress: 'Koramangala, Bengaluru',
-    mapUrl: 'https://maps.google.com/?q=147+8th+Main+Rd+Koramangala+Bengaluru'
-  }
-];
 
 const Footer = () => {
   const location = useLocation();
