@@ -53,6 +53,12 @@ const EmergencyManager = () => {
   const [showBundleModal, setShowBundleModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [saving, setSaving] = useState(false);
+  
+  // CSV Import states
+  const [importingProducts, setImportingProducts] = useState(false);
+  const [importingBundles, setImportingBundles] = useState(false);
+  const productFileRef = useRef(null);
+  const bundleFileRef = useRef(null);
 
   useEffect(() => {
     fetchAllData();
@@ -73,6 +79,59 @@ const EmergencyManager = () => {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+  
+  // CSV Export/Import functions
+  const exportProductsCSV = () => {
+    window.open(`${API_URL}/api/emergency/admin/products/export-csv`, '_blank');
+  };
+  
+  const exportBundlesCSV = () => {
+    window.open(`${API_URL}/api/emergency/admin/bundles/export-csv`, '_blank');
+  };
+  
+  const handleProductFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setImportingProducts(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const response = await axios.post(`${API_URL}/api/emergency/admin/products/import-csv`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      toast({ title: 'Success', description: response.data.message });
+      fetchAllData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to import products', variant: 'destructive' });
+    } finally {
+      setImportingProducts(false);
+      e.target.value = '';
+    }
+  };
+  
+  const handleBundleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setImportingBundles(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const response = await axios.post(`${API_URL}/api/emergency/admin/bundles/import-csv`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      toast({ title: 'Success', description: response.data.message });
+      fetchAllData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to import bundles', variant: 'destructive' });
+    } finally {
+      setImportingBundles(false);
+      e.target.value = '';
     }
   };
 
