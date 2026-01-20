@@ -480,9 +480,24 @@ const PaperworkManager = () => {
           <Card className="p-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-semibold text-gray-900">Paperwork Products ({products.length})</h3>
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="w-4 h-4 mr-2" /> Add Product
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={exportProductsCSV}>
+                  <Download className="w-4 h-4 mr-2" /> Export CSV
+                </Button>
+                <input
+                  type="file"
+                  accept=".csv"
+                  ref={productFileRef}
+                  onChange={handleProductFileChange}
+                  className="hidden"
+                />
+                <Button variant="outline" onClick={() => productFileRef.current?.click()} disabled={importingProducts}>
+                  <Upload className="w-4 h-4 mr-2" /> {importingProducts ? 'Importing...' : 'Import CSV'}
+                </Button>
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="w-4 h-4 mr-2" /> Add Product
+                </Button>
+              </div>
             </div>
             
             <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
