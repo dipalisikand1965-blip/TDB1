@@ -607,6 +607,12 @@ const FitPage = () => {
                       )}
                     </button>
                   ))}
+                  {selectedPet && (
+                    <p className="text-xs text-teal-600 mt-2 flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" />
+                      Activity will be saved to {selectedPet.name}'s Pet Soul
+                    </p>
+                  )}
                 </div>
               )}
             </div>
