@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, Query, Header, Body
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, Query, Header, Body, Request
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -26,10 +26,7 @@ import jwt
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.encoders import jsonable_encoder
-import jwt
-from passlib.context import CryptContext
-from fastapi.security import OAuth2PasswordBearer
-from fastapi.encoders import jsonable_encoder
+import razorpay
 
 from duckduckgo_search import DDGS
 from emergentintegrations.llm.chat import LlmChat, UserMessage
