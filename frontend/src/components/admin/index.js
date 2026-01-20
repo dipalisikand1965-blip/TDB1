@@ -7,3 +7,4 @@ export { default as DineManager } from './DineManager';
 export { default as ServiceDesk } from './ServiceDesk';
 export { default as ProductTagsManager } from './ProductTagsManager';
 export { default as MembershipManager } from './MembershipManager';
+export { default as AboutManager } from './AboutManager';
