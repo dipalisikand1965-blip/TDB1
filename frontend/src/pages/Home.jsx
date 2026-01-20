@@ -583,7 +583,7 @@ const Home = () => {
         
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-5xl md:text-6xl font-black text-white mb-6">
-            Ready to Elevate Your Pet's Life?
+            Ready to Elevate Your Pet&apos;s Life?
           </h2>
           <p className="text-2xl text-white/90 mb-12">
             Join 45,000+ pet parents who trust The Doggy Company for everything their fur babies need.
