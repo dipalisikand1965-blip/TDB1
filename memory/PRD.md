@@ -126,22 +126,29 @@ Build a world-class, event-driven platform with a single engine powering multipl
 | Voice Order broken on production | BLOCKED (needs deployment) | P1 |
 | Shopify Sync creating 'Untitled' Products | NOT STARTED | P2 |
 | Auto-reminders only to Gmail | BLOCKED (Resend domain config) | P1 |
-| Service Desk modal shaking | USER VERIFICATION PENDING | P0 |
+| Service Desk modal shaking | FIXED (Jan 20, 2026) | P0 |
 
 ---
 
 ## Upcoming Tasks
 
-### P0 - Critical
-1. Complete Membership Pillar V1
+### P0 - Critical (Remaining Pillars)
+1. **FIT Pillar** - Exercise plans, weight tracking, nutrition guidance
+2. **ADVISORY Pillar** - Behaviour consults, nutrition planning, senior dog planning
+3. **PAPERWORK Pillar** - Secure document uploads (vaccinations, insurance) with reminders
+4. **EMERGENCY Pillar** - High-priority request routing, lost pet workflow
+5. Complete Membership/Club Pillar (after all other pillars)
 
-### P1 - High Priority
-1. Admin Panel reorganization (Common vs Pillar-specific)
-2. SLA Breach Alerts enhancement
+### P1 - High Priority (Enhancements)
+1. Enhance CELEBRATE Pillar - Add birthday triggers, Mira planning, reminder nudges
+2. Enhance DINE Pillar - Add Mira reservations, auto-fill pet details
+3. Enhance STAY Pillar - Add advanced filters, partner tagging for rewards
+4. Enhance SHOP ASSIST Pillar - Add Mira-driven recommendations and gift guidance
 
 ### P2 - Medium Priority
-1. Component refactoring (Admin.jsx, ServiceDesk.jsx, server.py)
-2. Deployment readiness checklist
+1. Admin Panel reorganization (Common vs Pillar-specific)
+2. Component refactoring (Admin.jsx, ServiceDesk.jsx, server.py)
+3. Fix Shopify Sync 'Untitled' Products issue
 
 ### Future/Backlog
 1. Additional pillars (as needed)
