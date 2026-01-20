@@ -153,6 +153,16 @@ SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggybakery.in")
 NOTIFICATION_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.in")
 WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919663185747")
 
+# Razorpay configuration
+RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET")
+razorpay_client = None
+if RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET:
+    razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+    logger.info("Razorpay client initialized")
+else:
+    logger.warning("Razorpay keys not configured - payments disabled")
+
 # Admin credentials from environment
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "aditya")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "lola4304")
