@@ -617,7 +617,7 @@ const EnjoyPage = () => {
                           <Badge 
                             key={city} 
                             variant={selectedCity === city ? 'default' : 'outline'}
-                            className="cursor-pointer hover:bg-purple-100"
+                            className="cursor-pointer hover:bg-orange-100"
                             onClick={() => setSelectedCity(selectedCity === city ? '' : city)}
                           >
                             {city}
