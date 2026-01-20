@@ -5,6 +5,8 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 
 **Brand Identity**: World's First Pet Concierge® — "Concierge®" is the registered trademark of Club Concierge® in India, held by Dipali Sikand since 2016.
 
+**Company Address**: #83, 3rd Floor, 7th Cross, 4th B Block, Koramangala, Bangalore - 560034
+
 ---
 
 ## What's Been Implemented (Latest - Jan 20, 2026)
@@ -16,17 +18,29 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 - **Concierge® Trademark**: Added ® symbol across all user-facing instances
 - **Mira AI Section Updated**: "Super Pet Concierge®" with use case examples
 
-### Authentication Gating - COMPLETE ✅
+### Authentication Gating with Member Benefits - COMPLETE ✅
 - **ALL 12 Pillars Protected**: Users must sign in to access any pillar
-- **Product Routes Protected**: /cakes, /treats, /celebrate/* all require membership
-- **Redirects to /membership**: Non-authenticated users sent to membership page
+- **Member Benefits Preview Page**: Instead of just redirecting, users see pillar-specific benefits they'll unlock
+- **Pillar-Specific Benefits**: Each protected route shows relevant benefits (e.g., Celebrate shows "10% off cakes", Dine shows "Priority reservations")
+- **Full Membership Benefits Card**: Shows all benefits across 12 pillars with "Show All" toggle
 - **Note**: The Doggy Bakery is the supplier for Celebrate products (not a separate brand)
 
 ### FAQs Page Redesigned - COMPLETE ✅
-- **Covers All 12 Pillars**: Concierge®, Membership, Celebrate, Dine, Travel, Stay, Care, Enjoy, Fit, Advisory, Paperwork, Emergency
+- **Covers All 12 Pillars**: Concierge®, Membership, Celebrate, Dine, Travel, Stay, Care, Enjoy, Fit, Advisory, Paperwork, Emergency, Orders, Payments
 - **Filter Pills**: Quick access to FAQ categories
 - **Search**: Search across all pillars
 - **Mira AI Integration**: "Ask Mira AI" button at bottom
+
+### Admin Reports - All 12 Pillars - COMPLETE ✅
+- **Pillar Sub-tabs Added**: Summary, Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Advisory, Paperwork, Emergency, Club
+- **Generic Template**: Pillars without specific data show "Coming Soon" with basic metrics placeholder
+
+### Membership Manager Enhanced - COMPLETE ✅
+- **Add Member Button**: Manual member registration for offline events/exhibitions
+- **Import CSV**: Bulk upload for offline memberships with template download
+- **Export CSV**: Download member list for offline analysis
+- **Bulk Actions**: Select multiple members and apply actions (upgrade tier, extend subscription, add points, send reminders)
+- **Member Selection**: Checkbox selection for bulk operations
 
 ### Membership Page Enhancement - COMPLETE ✅
 - **Pet Soul™ Preview Section**: Bruno's sample profile
@@ -37,11 +51,6 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 - **Backend Routes**: `/api/payment/create-order`, `/api/payment/verify`
 - **Frontend Component**: `MembershipPayment.jsx`
 - **Status**: Infrastructure built, needs E2E testing with test cards
-
-### Admin Content Management - COMPLETE ✅
-- **MembershipManager**: Full member CRUD with tier management
-- **AboutManager**: Team and dogs management with image upload
-- **AboutPage**: Dynamic content from backend
 
 ---
 
@@ -71,7 +80,7 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 
 ### P1 - High Priority
 - [ ] **Voice Order Fix**: "Connection failed" error
-- [ ] **Mira Proactive Suggestions**: Check Pet Soul for upcoming events
+- [ ] **Mira Proactive Suggestions**: Check Pet Soul for upcoming events (birthdays, vaccinations)
 
 ### P2 - Medium Priority
 - [ ] **Shopify Sync "Untitled" Products**: Recurring data integrity issue (6+ occurrences)
@@ -106,20 +115,27 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 
 ---
 
+## API Endpoints Added This Session
+
+### Member Management
+- `POST /api/admin/members` - Add new member (for offline registrations)
+- `POST /api/admin/members/import` - Bulk import members from CSV
+- `POST /api/admin/members/bulk-action` - Execute bulk actions on selected members
+
+---
+
 ## Files Reference
 
-### Core Files
-- `/app/backend/server.py` - Main FastAPI backend
-- `/app/frontend/src/App.js` - React router with protected routes
+### Core Files Modified
+- `/app/backend/server.py` - Added member management endpoints
+- `/app/frontend/src/App.js` - Protected all pillar routes
 - `/app/frontend/src/pages/Home.jsx` - Concierge-focused landing page
 - `/app/frontend/src/pages/FAQs.jsx` - All-pillars FAQ page
-- `/app/frontend/src/components/Footer.jsx` - Updated Bangalore address
+- `/app/frontend/src/components/Footer.jsx` - Bangalore address
 - `/app/frontend/src/components/Navbar.jsx` - "The Doggy Company" branding
-- `/app/frontend/src/components/ProtectedRoute.jsx` - Auth gating component
-
-### Admin Components
-- `/app/frontend/src/components/admin/MembershipManager.jsx`
-- `/app/frontend/src/components/admin/AboutManager.jsx`
+- `/app/frontend/src/components/ProtectedRoute.jsx` - Member benefits preview gate
+- `/app/frontend/src/components/ReportsManager.jsx` - All 12 pillars in reports
+- `/app/frontend/src/components/admin/MembershipManager.jsx` - CSV upload, add member, bulk actions
 
 ---
 
