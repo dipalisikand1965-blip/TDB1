@@ -93,19 +93,20 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 1. ~~**Dine + Pet Soul** - Write dining preferences to soul~~ ✅ COMPLETE (Jan 20, 2026)
 2. ~~**Fit + Pet Soul** - Write fitness/activity data to soul~~ ✅ COMPLETE (Jan 20, 2026)
 3. ~~**Advisory + Pet Soul** - Write consultation history to soul~~ ✅ COMPLETE (Jan 20, 2026)
-4. **Mira Proactive** - Birthday/anniversary suggestions from Pet Soul
+4. ~~**UI Refresh** - Landing page, footer, Concierge® trademark~~ ✅ COMPLETE (Jan 20, 2026)
+5. **Mira Proactive** - Birthday/anniversary suggestions from Pet Soul
 
 ### P1 - User Journey
-5. Build CLUB (Membership) Pillar
-6. Membership tiers implementation
-7. Onboarding flow with Pet Soul creation
-8. Auto-checkout per pillar
+6. Build CLUB (Membership) Pillar - Razorpay Payment Integration
+7. Membership tiers implementation
+8. Onboarding flow with Pet Soul creation
+9. Auto-checkout per pillar
 
 ### P2 - Known Issues to Fix
-9. Voice Order feature broken ("Connection failed")
-10. ~~Service Desk modal shaking/flashing~~ **RESOLVED** (now full-screen page)
-11. ~~Auto-reminders only sent to Gmail~~ **FIXED** (Resend 'to' field was list instead of string)
-12. Shopify Sync creating 'Untitled' Products (recurring)
+10. Voice Order feature broken ("Connection failed")
+11. ~~Service Desk modal shaking/flashing~~ **RESOLVED** (now full-screen page)
+12. ~~Auto-reminders only sent to Gmail~~ **FIXED** (Resend 'to' field was list instead of string)
+13. Shopify Sync creating 'Untitled' Products (recurring)
 
 ### P3 - Admin & Code
 13. Pillar-wise shipping rules
