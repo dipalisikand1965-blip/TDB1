@@ -74,8 +74,8 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 
 ### P0 - Data Flywheel (Complete the Loop)
 1. ~~**Dine + Pet Soul** - Write dining preferences to soul~~ ✅ COMPLETE (Jan 20, 2026)
-2. **Fit + Pet Soul** - Backend endpoint ready (`/api/pet-vault/{pet_id}/record-fit-activity`), frontend integration needed
-3. **Advisory + Pet Soul** - Backend endpoint ready (`/api/pet-vault/{pet_id}/record-advisory-consult`), frontend integration needed
+2. ~~**Fit + Pet Soul** - Write fitness/activity data to soul~~ ✅ COMPLETE (Jan 20, 2026)
+3. ~~**Advisory + Pet Soul** - Write consultation history to soul~~ ✅ COMPLETE (Jan 20, 2026)
 4. **Mira Proactive** - Birthday/anniversary suggestions from Pet Soul
 
 ### P1 - User Journey
