@@ -311,6 +311,219 @@ const MembershipPage = () => {
         </div>
       </div>
 
+      {/* Pet Soul Preview Section */}
+      <div className="bg-gradient-to-br from-purple-900 via-purple-800 to-pink-800 py-20">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur px-4 py-2 rounded-full mb-6">
+              <PawPrint className="w-5 h-5 text-pink-400" />
+              <span className="text-white/90 text-sm">Pet Soul™ Technology</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+              Meet Bruno's Pet Soul™ Profile
+            </h2>
+            <p className="text-white/70 max-w-2xl mx-auto">
+              Every interaction with The Doggy Company enriches your pet's profile. Here's what Bruno's journey looks like — yours could be even more amazing!
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-6">
+            {/* Main Profile Card */}
+            <Card className="p-6 bg-white/10 backdrop-blur border-white/20 text-white lg:row-span-2">
+              <div className="text-center mb-6">
+                <div className="relative w-32 h-32 mx-auto mb-4">
+                  <img 
+                    src={SAMPLE_PET_SOUL.image} 
+                    alt={SAMPLE_PET_SOUL.name}
+                    className="w-full h-full rounded-full object-cover border-4 border-white/30"
+                  />
+                  <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-amber-400 to-amber-500 px-3 py-1 rounded-full text-xs font-bold text-amber-900">
+                    👑 Pack Leader
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold">{SAMPLE_PET_SOUL.name}</h3>
+                <p className="text-white/70">{SAMPLE_PET_SOUL.breed} • {SAMPLE_PET_SOUL.age}</p>
+              </div>
+
+              <div className="flex flex-wrap gap-2 justify-center mb-6">
+                {SAMPLE_PET_SOUL.personality.map((trait, idx) => (
+                  <span key={idx} className="px-3 py-1 bg-white/20 rounded-full text-sm">{trait}</span>
+                ))}
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center p-3 bg-white/10 rounded-lg">
+                  <span className="text-white/70">Favorite Treat</span>
+                  <span className="font-medium">{SAMPLE_PET_SOUL.favorites.treat}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/10 rounded-lg">
+                  <span className="text-white/70">Favorite Activity</span>
+                  <span className="font-medium">{SAMPLE_PET_SOUL.favorites.activity}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/10 rounded-lg">
+                  <span className="text-white/70">Go-to Restaurant</span>
+                  <span className="font-medium">{SAMPLE_PET_SOUL.favorites.restaurant}</span>
+                </div>
+              </div>
+            </Card>
+
+            {/* Stats Card */}
+            <Card className="p-6 bg-white/10 backdrop-blur border-white/20 text-white">
+              <h4 className="font-semibold mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-green-400" /> Journey Stats
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-3 bg-white/10 rounded-lg">
+                  <p className="text-2xl font-bold text-purple-300">{SAMPLE_PET_SOUL.stats.pawPoints}</p>
+                  <p className="text-xs text-white/60">Paw Points</p>
+                </div>
+                <div className="text-center p-3 bg-white/10 rounded-lg">
+                  <p className="text-2xl font-bold text-pink-300">{SAMPLE_PET_SOUL.stats.ordersCompleted}</p>
+                  <p className="text-xs text-white/60">Orders</p>
+                </div>
+                <div className="text-center p-3 bg-white/10 rounded-lg">
+                  <p className="text-2xl font-bold text-orange-300">{SAMPLE_PET_SOUL.stats.restaurantsVisited}</p>
+                  <p className="text-xs text-white/60">Restaurants</p>
+                </div>
+                <div className="text-center p-3 bg-white/10 rounded-lg">
+                  <p className="text-2xl font-bold text-blue-300">{SAMPLE_PET_SOUL.stats.hotelsStayed}</p>
+                  <p className="text-xs text-white/60">Hotels</p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Achievements Card */}
+            <Card className="p-6 bg-white/10 backdrop-blur border-white/20 text-white">
+              <h4 className="font-semibold mb-4 flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-amber-400" /> Achievements
+              </h4>
+              <div className="space-y-3">
+                {SAMPLE_PET_SOUL.achievements.map((achievement, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-2 bg-white/10 rounded-lg">
+                    <span className="text-2xl">{achievement.icon}</span>
+                    <div>
+                      <p className="font-medium text-sm">{achievement.name}</p>
+                      <p className="text-xs text-white/50">{achievement.date}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Health Vault Preview */}
+            <Card className="p-6 bg-white/10 backdrop-blur border-white/20 text-white lg:col-span-2">
+              <h4 className="font-semibold mb-4 flex items-center gap-2">
+                <Shield className="w-5 h-5 text-green-400" /> Health Vault
+              </h4>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-white/10 rounded-lg">
+                  <Stethoscope className="w-8 h-8 mx-auto mb-2 text-green-400" />
+                  <p className="text-2xl font-bold">{SAMPLE_PET_SOUL.healthVault.vaccinations}</p>
+                  <p className="text-xs text-white/60">Vaccinations</p>
+                </div>
+                <div className="text-center p-4 bg-white/10 rounded-lg">
+                  <FileText className="w-8 h-8 mx-auto mb-2 text-blue-400" />
+                  <p className="text-2xl font-bold">{SAMPLE_PET_SOUL.healthVault.documents}</p>
+                  <p className="text-xs text-white/60">Documents</p>
+                </div>
+                <div className="text-center p-4 bg-white/10 rounded-lg">
+                  <Calendar className="w-8 h-8 mx-auto mb-2 text-purple-400" />
+                  <p className="text-sm font-bold">{SAMPLE_PET_SOUL.healthVault.lastCheckup}</p>
+                  <p className="text-xs text-white/60">Last Checkup</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          <div className="text-center mt-10">
+            <p className="text-white/60 mb-4">This is just the beginning. Your pet's profile grows with every interaction!</p>
+            <Button 
+              size="lg"
+              className="bg-white text-purple-700 hover:bg-gray-100"
+              onClick={() => handleSelectPlan('annual')}
+            >
+              Start Building Your Pet's Soul <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Gamification & Levels Section */}
+      <div className="bg-white py-20">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-amber-100 px-4 py-2 rounded-full mb-6">
+              <Trophy className="w-5 h-5 text-amber-600" />
+              <span className="text-amber-700 text-sm font-medium">Paw Rewards & Levels</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Level Up Your Pet's Journey
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Every order, booking, and interaction earns Paw Points. Climb the ranks and unlock exclusive rewards!
+            </p>
+          </div>
+
+          {/* Membership Levels */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {MEMBERSHIP_LEVELS.map((level, idx) => (
+              <Card key={idx} className={`p-6 text-center border-2 hover:shadow-lg transition-all ${idx === 3 ? 'border-amber-300 bg-amber-50' : 'border-gray-200'}`}>
+                <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br ${level.color} flex items-center justify-center text-white text-2xl`}>
+                  {level.name.split(' ')[0]}
+                </div>
+                <h3 className="font-bold text-lg text-gray-900">{level.name}</h3>
+                <p className="text-sm text-gray-500 mt-1 mb-4">{level.description}</p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Tenure</span>
+                    <span className="font-medium">{level.minMonths}+ months</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Points Multiplier</span>
+                    <span className="font-bold text-purple-600">{level.multiplier}</span>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* How to Earn Points */}
+          <Card className="p-8 bg-gradient-to-r from-purple-50 to-pink-50">
+            <h3 className="text-xl font-bold text-center mb-6">How to Earn Paw Points</h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="text-center">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-pink-100 flex items-center justify-center">
+                  <Cake className="w-6 h-6 text-pink-600" />
+                </div>
+                <p className="font-medium">Order Treats</p>
+                <p className="text-sm text-gray-500">10 points per ₹100</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-orange-100 flex items-center justify-center">
+                  <Utensils className="w-6 h-6 text-orange-600" />
+                </div>
+                <p className="font-medium">Dine Out</p>
+                <p className="text-sm text-gray-500">50 points per booking</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-100 flex items-center justify-center">
+                  <Plane className="w-6 h-6 text-blue-600" />
+                </div>
+                <p className="font-medium">Travel</p>
+                <p className="text-sm text-gray-500">100 points per trip</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-green-100 flex items-center justify-center">
+                  <Activity className="w-6 h-6 text-green-600" />
+                </div>
+                <p className="font-medium">Log Activities</p>
+                <p className="text-sm text-gray-500">25 points per activity</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+
       {/* Pricing Section */}
       <div id="pricing" className="bg-white py-20">
         <div className="max-w-5xl mx-auto px-4">
