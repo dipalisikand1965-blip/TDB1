@@ -387,6 +387,9 @@ async def reindex_search(credentials: HTTPBasicCredentials = Depends(security)):
 async def get_public_collections():
     """Get all collections (public)"""
     collections = await db.collections.find({}, {"_id": 0}).to_list(100)
+    # Calculate product_count from product_ids
+    for col in collections:
+        col["product_count"] = len(col.get("product_ids", []))
     return {"collections": collections}
 
 
