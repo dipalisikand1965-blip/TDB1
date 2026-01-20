@@ -206,53 +206,72 @@ const Home = () => {
               <Award className="w-6 h-6" />
               <div>
                 <p className="font-bold text-lg">45K+</p>
-                <p className="text-sm opacity-90">Happy Customers</p>
+                <p className="text-sm opacity-90">Happy Pet Parents</p>
               </div>
             </div>
             <div className="flex items-center justify-center gap-3">
-              <Leaf className="w-6 h-6" />
+              <Heart className="w-6 h-6" />
               <div>
-                <p className="font-bold text-lg">100%</p>
-                <p className="text-sm opacity-90">Natural</p>
+                <p className="font-bold text-lg">12</p>
+                <p className="text-sm opacity-90">Pet Life Pillars</p>
               </div>
             </div>
             <div className="flex items-center justify-center gap-3">
               <Clock className="w-6 h-6" />
               <div>
-                <p className="font-bold text-lg">Same Day</p>
-                <p className="text-sm opacity-90">Delivery</p>
+                <p className="font-bold text-lg">24/7</p>
+                <p className="text-sm opacity-90">Mira AI Support</p>
               </div>
             </div>
             <div className="flex items-center justify-center gap-3">
               <Shield className="w-6 h-6" />
               <div>
-                <p className="font-bold text-lg">FSSAI</p>
-                <p className="text-sm opacity-90">Certified</p>
+                <p className="font-bold text-lg">Pet Soul™</p>
+                <p className="text-sm opacity-90">Personalization</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* MobiKwik Offers Banner */}
-      <section className="py-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+      {/* 12 Pillars Section */}
+      <section id="pillars-section" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-white text-center md:text-left">
-            <div className="flex items-center gap-3">
-              <CreditCard className="w-8 h-8 text-yellow-300" />
-              <div>
-                <p className="font-bold text-lg">Flat ₹75 Cashback</p>
-                <p className="text-sm opacity-90">On first MobiKwik UPI payment (orders above ₹499)</p>
-              </div>
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 bg-purple-100 rounded-full mb-6">
+              <Crown className="w-5 h-5 text-purple-600 mr-2" />
+              <span className="text-purple-600 text-sm font-semibold">Pet Life Operating System</span>
             </div>
-            <div className="hidden md:block w-px h-12 bg-white/30"></div>
-            <div className="flex items-center gap-3">
-              <Gift className="w-8 h-8 text-yellow-300" />
-              <div>
-                <p className="font-bold text-lg">₹100 Assured Cashback</p>
-                <p className="text-sm opacity-90">Scratch card on MobiKwik UPI (min. ₹899)</p>
-              </div>
-            </div>
+            <h2 className="text-5xl font-black text-gray-900 mb-4">
+              12 Pillars of Pet Life
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Everything your pet needs, under one roof. From celebrations to emergencies.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {PILLARS.map((pillar, idx) => (
+              <Link key={idx} to={pillar.link}>
+                <Card className="group p-6 hover:shadow-xl transition-all duration-300 cursor-pointer h-full transform hover:scale-105 hover:border-purple-200 border-2 border-transparent">
+                  <div className="text-4xl mb-4">{pillar.icon}</div>
+                  <h3 className="font-bold text-gray-900 text-lg mb-2 group-hover:text-purple-600 transition-colors">{pillar.name}</h3>
+                  <p className="text-gray-600 text-sm">{pillar.desc}</p>
+                </Card>
+              </Link>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Link to="/membership">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6"
+              >
+                <Crown className="w-5 h-5 mr-2" />
+                Unlock All Pillars with Membership
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
