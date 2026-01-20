@@ -11,14 +11,16 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 |--------|-------------|------------------|----------------|--------|
 | **Celebrate** | ✅ YES | ✅ YES | ✅ YES | **COMPLETE** ✅ |
 | **Stay** | ✅ YES | ✅ YES | ✅ YES | **COMPLETE** ✅ |
-| **Travel** | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
-| **Care** | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
-| **Emergency** | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
-| **Paperwork** | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
-| **Enjoy** | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
-| **Dine** | ✅ Yes | ✅ Yes | ❌ No | Needs soul write |
-| **Fit** | ✅ Yes | ✅ Yes | ❌ No | Needs soul write |
-| **Advisory** | ✅ Yes | ✅ Yes | ❌ No | Needs soul write |
+| **Dine** | ✅ YES | ✅ YES | ✅ YES | **COMPLETE** ✅ |
+| **Fit** | ✅ YES | ✅ YES | ✅ YES | **COMPLETE** ✅ |
+| **Advisory** | ✅ YES | ✅ YES | ✅ YES | **COMPLETE** ✅ |
+| Travel | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
+| Care | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
+| Emergency | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
+| Paperwork | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
+| Enjoy | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
+| Club | 🔴 No | 🔴 No | 🔴 No | **NOT STARTED** |
+| Shop Assist | 🟡 Partial | 🟡 Partial | 🔴 No | Needs work |
 
 ---
 
