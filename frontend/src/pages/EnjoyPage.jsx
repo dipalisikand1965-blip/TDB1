@@ -14,7 +14,7 @@ import {
   PartyPopper, Calendar, MapPin, Users, Clock, PawPrint,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
   ArrowRight, Play, ChevronDown, Coffee, Mountain, GraduationCap,
-  Heart, Shield, Ticket, Filter, ChevronLeft, Globe, List, CalendarDays
+  Heart, Shield, Ticket, Filter, ChevronLeft, Globe, List, CalendarDays, X
 } from 'lucide-react';
 
 // Experience Type Configuration - Using warm, playful colors
