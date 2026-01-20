@@ -11,135 +11,123 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 
 ## What's Been Implemented (Latest - Jan 20, 2026)
 
-### P0 UI & Branding Refresh - COMPLETE ✅
-- **Landing Page Redesigned**: Now focuses on Concierge® experience, removed bakery-heavy sections
-- **Footer Updated**: Bangalore office (#83, 3rd Floor, 7th Cross, 4th B Block, Koramangala, Bangalore - 560034)
-- **Navbar Logo**: "The Doggy Company" branding applied globally
-- **Concierge® Trademark**: Added ® symbol across all user-facing instances
-- **Mira AI Section Updated**: "Super Pet Concierge®" with use case examples
+### Member Directory & 360° Profile Console - COMPLETE ✅
+New comprehensive member management system with:
+- **Member Directory**: Searchable table with filters (Status, Source, Tier, City)
+- **Pet Soul Column**: Shows average Pet Soul score per member directly in the table
+- **360° Profile Console** (click Eye icon):
+  - **Account Tab**: Contact details, addresses, communication preferences
+  - **Membership Tab**: Plan, Paw Points, payment history
+  - **Pets & Soul Tab**: 
+    - Pet Soul Score with progress bar
+    - **8-Category Breakdown**: Identity, Health, Preferences, Temperament, Routine, Travel, Celebrations, Family
+    - Quick info (birthday, weight, vaccinations, celebrations)
+    - "View Full Soul" and "Send Nudge" buttons
+  - **Activity Tab**: Orders, requests, bookings with counts
+  - **Notes Tab**: Internal notes with tags/flags
 
-### Authentication Gating with Member Benefits - COMPLETE ✅
-- **ALL 12 Pillars Protected**: Users must sign in to access any pillar
-- **Member Benefits Preview Page**: Instead of just redirecting, users see pillar-specific benefits they'll unlock
-- **Pillar-Specific Benefits**: Each protected route shows relevant benefits (e.g., Celebrate shows "10% off cakes", Dine shows "Priority reservations")
-- **Full Membership Benefits Card**: Shows all benefits across 12 pillars with "Show All" toggle
-- **Note**: The Doggy Bakery is the supplier for Celebrate products (not a separate brand)
+### Pet Profile Bug Fix - COMPLETE ✅
+- Fixed: `POST /api/pets` now links pet to authenticated user via `owner_email`
+- Pets are now properly visible in My Pets page after creation
 
-### FAQs Page Redesigned - COMPLETE ✅
-- **Covers All 12 Pillars**: Concierge®, Membership, Celebrate, Dine, Travel, Stay, Care, Enjoy, Fit, Advisory, Paperwork, Emergency, Orders, Payments
-- **Filter Pills**: Quick access to FAQ categories
-- **Search**: Search across all pillars
-- **Mira AI Integration**: "Ask Mira AI" button at bottom
+### P0 UI & Branding - COMPLETE ✅
+- Landing page focused on Concierge®
+- Footer with Bangalore address
+- "The Doggy Company" branding
+- Concierge® trademark applied
 
-### Admin Reports - All 12 Pillars - COMPLETE ✅
-- **Pillar Sub-tabs Added**: Summary, Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Advisory, Paperwork, Emergency, Club
-- **Generic Template**: Pillars without specific data show "Coming Soon" with basic metrics placeholder
+### Authentication Gating with Benefits Preview - COMPLETE ✅
+- All 12 pillars protected
+- Beautiful "Member Benefits" page shows when unauthenticated users try to access
+- Pillar-specific benefits displayed
 
-### Membership Manager Enhanced - COMPLETE ✅
-- **Add Member Button**: Manual member registration for offline events/exhibitions
-- **Import CSV**: Bulk upload for offline memberships with template download
-- **Export CSV**: Download member list for offline analysis
-- **Bulk Actions**: Select multiple members and apply actions (upgrade tier, extend subscription, add points, send reminders)
-- **Member Selection**: Checkbox selection for bulk operations
+### FAQs - All 12 Pillars - COMPLETE ✅
+- Covers all pillars with category filters
 
-### Membership Page Enhancement - COMPLETE ✅
-- **Pet Soul™ Preview Section**: Bruno's sample profile
-- **Gamification & Levels**: 4 doggy-themed membership levels
-- **How to Earn Paw Points** guide
-
-### Razorpay Payment Integration - IN PROGRESS 🟡
-- **Backend Routes**: `/api/payment/create-order`, `/api/payment/verify`
-- **Frontend Component**: `MembershipPayment.jsx`
-- **Status**: Infrastructure built, needs E2E testing with test cards
+### Reports - All 12 Pillars - COMPLETE ✅
+- Reports section shows all pillar tabs
 
 ---
 
-## Data Flywheel Status (Pet Soul Integration)
-
-| Pillar | Fetches Pets | Pet Selection UI | Writes to Soul | Status |
-|--------|-------------|------------------|----------------|--------|
-| **Celebrate** | ✅ YES | ✅ YES | ✅ YES | **COMPLETE** ✅ |
-| **Stay** | ✅ YES | ✅ YES | ✅ YES | **COMPLETE** ✅ |
-| **Dine** | ✅ YES | ✅ YES | ✅ YES | **COMPLETE** ✅ |
-| **Fit** | ✅ YES | ✅ YES | ✅ YES | **COMPLETE** ✅ |
-| **Advisory** | ✅ YES | ✅ YES | ✅ YES | **COMPLETE** ✅ |
-| Travel | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
-| Care | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
-| Emergency | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
-| Paperwork | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
-| Enjoy | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
-| Club | 🔴 No | 🔴 No | 🔴 No | **NOT STARTED** |
-| Shop Assist | 🟡 Partial | 🟡 Partial | 🔴 No | Needs work |
-
----
-
-## Priority Backlog
+## Priority Backlog (Updated)
 
 ### P0 - Critical
-- [ ] **Razorpay E2E Testing**: Complete payment flow verification
+- [ ] Complete remaining Member Management features (Plan Manager, B2B Issuance, etc.)
 
 ### P1 - High Priority
-- [ ] **Voice Order Fix**: "Connection failed" error
-- [ ] **Mira Proactive Suggestions**: Check Pet Soul for upcoming events (birthdays, vaccinations)
+- [ ] **Pet Soul Daily Question**: Send one question regularly that enriches Pet Soul
+- [ ] Mira Proactive Suggestions from Pet Soul data
+- [ ] Voice Order fix ("Connection failed")
 
 ### P2 - Medium Priority
-- [ ] **Shopify Sync "Untitled" Products**: Recurring data integrity issue (6+ occurrences)
-- [ ] **Onboarding Flow**: Pet Soul creation during registration
+- [ ] Shopify Sync "Untitled Products" fix
+- [ ] Onboarding flow with Pet Soul creation
+- [ ] Preboarding & Onboarding Monitor
 
-### P3 - Future/Backlog
-- [ ] Pet Soul page for continuous profile enrichment
-- [ ] Auto-checkout per pillar
-- [ ] Standardize remaining Admin Managers
-- [ ] Centralized Product Management System
-- [ ] Refactor `server.py` (9000+ lines) into smaller modules
-
----
-
-## Known Issues
-
-| Issue | Priority | Status | Notes |
-|-------|----------|--------|-------|
-| Voice Order broken | P1 | NOT STARTED | "Connection failed" error |
-| Shopify creates 'Untitled' products | P2 | RECURRING | 6+ occurrences |
-| Razorpay E2E testing | P0 | IN PROGRESS | Infrastructure built |
+### P3 - Future
+- Rewards & Privileges Manager
+- Renewal & Collections Console
+- Templates & Communication Center
+- Permissions & Audit Log
+- Analytics Dashboard (membership health)
 
 ---
 
-## Key Technical Decisions
+## Member Management Roadmap (Per User Request)
 
-- **Authentication**: JWT + Emergent Google OAuth
-- **Payment Gateway**: Razorpay (test keys in backend/.env)
-- **LLM Integration**: OpenAI GPT-4 via Emergent LLM Key
-- **File Storage**: `/app/uploads/` directory
-- **Database**: MongoDB (collections: users, pets, orders, etc.)
+### Phase 1 - COMPLETE ✅
+1. ✅ **Member Directory** - Searchable with filters
+2. ✅ **360° Profile Console** - Account, Membership, Pets & Soul, Activity, Notes
+3. ✅ **Pet Soul Visibility** - Score + category breakdown
+
+### Phase 2 - Next
+4. [ ] **Gift & B2B Issuance** - Issue without payment, partner tracking
+5. [ ] **Membership Plan Manager** - Configure plans, pricing, add-ons
+6. [ ] **Preboarding & Onboarding Monitor** - Funnel view
+
+### Phase 3 - Engagement
+7. [ ] **Rewards & Privileges Manager**
+8. [ ] **Renewal & Collections Console**
+9. [ ] **Pet Soul Engagement** - Daily question feature
+
+### Phase 4 - Operations
+10. [ ] **Support & Disputes Tools**
+11. [ ] **Templates & Communication Center**
+12. [ ] **Analytics Dashboard**
+
+### Phase 5 - Governance
+13. [ ] **Permissions & Audit Log**
+14. [ ] **Data Export & Finance Tools**
 
 ---
 
-## API Endpoints Added This Session
+## API Endpoints Added
 
 ### Member Management
-- `POST /api/admin/members` - Add new member (for offline registrations)
-- `POST /api/admin/members/import` - Bulk import members from CSV
-- `POST /api/admin/members/bulk-action` - Execute bulk actions on selected members
+- `GET /api/admin/members/directory` - Full member list with pets
+- `GET /api/admin/members/{id}/full-profile` - 360° view
+- `POST /api/admin/members/{id}/notes` - Add internal notes
+- `GET /api/admin/members/pet-soul-summary` - Soul completion stats
+- `POST /api/admin/members` - Add single member
+- `POST /api/admin/members/import` - CSV bulk import
+- `POST /api/admin/members/bulk-action` - Bulk operations
 
 ---
 
-## Files Reference
+## Files Created/Modified
 
-### Core Files Modified
-- `/app/backend/server.py` - Added member management endpoints
-- `/app/frontend/src/App.js` - Protected all pillar routes
-- `/app/frontend/src/pages/Home.jsx` - Concierge-focused landing page
-- `/app/frontend/src/pages/FAQs.jsx` - All-pillars FAQ page
-- `/app/frontend/src/components/Footer.jsx` - Bangalore address
-- `/app/frontend/src/components/Navbar.jsx` - "The Doggy Company" branding
-- `/app/frontend/src/components/ProtectedRoute.jsx` - Member benefits preview gate
-- `/app/frontend/src/components/ReportsManager.jsx` - All 12 pillars in reports
-- `/app/frontend/src/components/admin/MembershipManager.jsx` - CSV upload, add member, bulk actions
+### New Files
+- `/app/frontend/src/components/admin/MemberDirectory.jsx` - Complete member management UI
+
+### Modified
+- `/app/backend/server.py` - Added member directory endpoints, fixed pet creation
+- `/app/frontend/src/pages/Admin.jsx` - Added Member Directory tab
+- `/app/frontend/src/components/admin/index.js` - Export MemberDirectory
 
 ---
 
 ## Credentials
 
 - **Admin**: `aditya` / `lola4304`
+- **Test User**: `test@doggy.com` / `test123`
 - **Razorpay**: Test keys in `backend/.env`
