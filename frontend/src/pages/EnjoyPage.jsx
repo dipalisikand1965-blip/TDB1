@@ -477,9 +477,9 @@ const EnjoyPage = () => {
                           disabled={!day}
                           className={`
                             aspect-square p-1 rounded-lg transition-all relative
-                            ${!day ? 'bg-transparent cursor-default' : 'hover:bg-purple-50 cursor-pointer'}
-                            ${isSelected ? 'bg-purple-100 ring-2 ring-purple-500' : ''}
-                            ${isToday(day) ? 'bg-purple-600 text-white hover:bg-purple-700' : ''}
+                            ${!day ? 'bg-transparent cursor-default' : 'hover:bg-orange-50 cursor-pointer'}
+                            ${isSelected ? 'bg-orange-100 ring-2 ring-orange-500' : ''}
+                            ${isToday(day) ? 'bg-orange-500 text-white hover:bg-orange-600' : ''}
                           `}
                           data-testid={day ? `calendar-day-${day}` : undefined}
                         >
@@ -494,12 +494,12 @@ const EnjoyPage = () => {
                                     <span
                                       key={i}
                                       className={`w-1.5 h-1.5 rounded-full ${
-                                        isToday(day) ? 'bg-white' : 'bg-purple-500'
+                                        isToday(day) ? 'bg-white' : 'bg-orange-500'
                                       }`}
                                     />
                                   ))}
                                   {events.length > 3 && (
-                                    <span className={`text-xs ${isToday(day) ? 'text-white' : 'text-purple-500'}`}>
+                                    <span className={`text-xs ${isToday(day) ? 'text-white' : 'text-orange-500'}`}>
                                       +
                                     </span>
                                   )}
