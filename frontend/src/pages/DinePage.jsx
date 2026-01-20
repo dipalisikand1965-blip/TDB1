@@ -438,6 +438,37 @@ const DinePage = () => {
           </section>
         )}
 
+        {/* Dine Products Section */}
+        {products.length > 0 && (
+          <section className="mt-12" data-testid="dine-products-section">
+            <h3 className="text-xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
+              🛍️ Dine Accessories
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {products.slice(0, 8).map((product) => (
+                <Card key={product.id} className="p-4 hover:shadow-md transition-all" data-testid={`dine-product-${product.id}`}>
+                  <div className="aspect-square bg-gradient-to-br from-orange-100 to-amber-50 rounded-lg mb-3 flex items-center justify-center">
+                    <UtensilsCrossed className="w-12 h-12 text-orange-300" />
+                  </div>
+                  <h4 className="font-medium text-gray-900 text-sm mb-1 line-clamp-1">{product.name}</h4>
+                  <p className="text-xs text-gray-500 line-clamp-2 mb-2">{product.description}</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="font-bold text-orange-600">₹{product.price}</span>
+                      {product.compare_price && (
+                        <span className="text-xs text-gray-400 line-through ml-1">₹{product.compare_price}</span>
+                      )}
+                    </div>
+                    {product.paw_reward_points > 0 && (
+                      <span className="text-xs text-orange-600">🐾 {product.paw_reward_points}</span>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Add Your Restaurant CTA */}
         <Card className="mt-12 p-8 bg-gradient-to-r from-orange-500 to-red-500 text-white text-center">
           <h3 className="text-2xl font-bold mb-2">Own a Pet-Friendly Restaurant?</h3>
