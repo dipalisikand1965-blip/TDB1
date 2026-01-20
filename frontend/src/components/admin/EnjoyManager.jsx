@@ -94,6 +94,18 @@ const EnjoyManager = ({ getAuthHeader }) => {
     is_verified: false, is_active: true
   });
 
+  // Product Form
+  const [productForm, setProductForm] = useState({
+    name: '', description: '', price: '', compare_price: '',
+    image: '', enjoy_type: 'outdoor', subcategory: '',
+    tags: '', pet_sizes: 'small, medium, large',
+    in_stock: true, paw_reward_points: '0',
+    is_birthday_perk: false, birthday_discount_percent: ''
+  });
+
+  // Settings state
+  const [settings, setSettings] = useState({});
+
   useEffect(() => {
     fetchAllData();
   }, []);
