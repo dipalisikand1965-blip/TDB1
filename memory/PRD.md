@@ -190,9 +190,8 @@ Build a world-class, event-driven platform with a single engine powering multipl
 ## Upcoming Tasks
 
 ### P0 - Critical (Remaining Pillars)
-1. **PAPERWORK Pillar** - Secure document uploads (vaccinations, insurance) with reminders
-2. **EMERGENCY Pillar** - High-priority request routing, lost pet workflow
-3. Complete Membership/Club Pillar (after all other pillars)
+1. **EMERGENCY Pillar** - High-priority request routing, lost pet workflow, urgent vet coordination
+2. Complete Membership/Club Pillar (after all other pillars)
 
 ### P1 - High Priority (Enhancements)
 1. Enhance CELEBRATE Pillar - Add birthday triggers, Mira planning, reminder nudges
