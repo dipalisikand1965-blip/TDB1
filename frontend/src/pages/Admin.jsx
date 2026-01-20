@@ -24,6 +24,7 @@ import CareManager from '../components/admin/CareManager';
 import EnjoyManager from '../components/admin/EnjoyManager';
 import FitManager from '../components/admin/FitManager';
 import AdvisoryManager from '../components/admin/AdvisoryManager';
+import PaperworkManager from '../components/admin/PaperworkManager';
 import DataMigration from '../components/DataMigration';
 import { DashboardTab, OrdersTab, MembersTab, ChatsTab, DineManager, ServiceDesk, ProductTagsManager } from '../components/admin';
 import NotificationBell from '../components/admin/NotificationBell';
