@@ -4,6 +4,23 @@ import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 import { useEffect } from "react";
+import { API_URL } from "./utils/api";
+
+// Auto-initialize database on app load (runs once per session)
+const initializeDatabase = async () => {
+  const initKey = 'db_initialized';
+  if (sessionStorage.getItem(initKey)) return; // Already initialized this session
+  
+  try {
+    const response = await fetch(`${API_URL}/init-database`);
+    if (response.ok) {
+      sessionStorage.setItem(initKey, 'true');
+      console.log('Database initialized successfully');
+    }
+  } catch (error) {
+    console.log('Database init check completed');
+  }
+};
 
 // ScrollToTop component - scrolls to top on route change
 function ScrollToTop() {
@@ -13,6 +30,14 @@ function ScrollToTop() {
     window.scrollTo(0, 0);
   }, [pathname]);
   
+  return null;
+}
+
+// Database initializer component
+function DatabaseInitializer() {
+  useEffect(() => {
+    initializeDatabase();
+  }, []);
   return null;
 }
 
