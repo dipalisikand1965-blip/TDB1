@@ -7,7 +7,7 @@ import VideoSection from '../components/VideoSection';
 import { Button } from '../components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import { Card } from '../components/ui/card';
-import { Star, Award, Leaf, Clock, Shield, ArrowRight, Sparkles, Heart, Users, Check, TrendingUp, Play, Instagram, CreditCard, Gift, Crown } from 'lucide-react';
+import { Star, Award, Clock, Shield, ArrowRight, Sparkles, Heart, Check, TrendingUp, Play, Instagram, Crown } from 'lucide-react';
 import { useInView, useCountUp } from '../hooks/useAnimations';
 import { API_URL } from '../utils/api';
 
