@@ -394,7 +394,7 @@ const EnjoyPage = () => {
                 <button
                   onClick={() => setViewMode('list')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
-                    viewMode === 'list' ? 'bg-white shadow text-purple-600' : 'text-gray-500 hover:text-gray-700'
+                    viewMode === 'list' ? 'bg-white shadow text-orange-600' : 'text-gray-500 hover:text-gray-700'
                   }`}
                   data-testid="view-list-btn"
                 >
@@ -404,7 +404,7 @@ const EnjoyPage = () => {
                 <button
                   onClick={() => setViewMode('calendar')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
-                    viewMode === 'calendar' ? 'bg-white shadow text-purple-600' : 'text-gray-500 hover:text-gray-700'
+                    viewMode === 'calendar' ? 'bg-white shadow text-orange-600' : 'text-gray-500 hover:text-gray-700'
                   }`}
                   data-testid="view-calendar-btn"
                 >
