@@ -2057,6 +2057,8 @@ async def chat_with_mira(request: ChatRequest):
     user_info = None
     pet_soul_context = ""
     
+    logger.info(f"Mira chat: auth_token provided: {bool(request.auth_token)}")
+    
     if request.auth_token:
         try:
             # Decode token to get user info
@@ -2065,10 +2067,15 @@ async def chat_with_mira(request: ChatRequest):
             user_id = payload.get("user_id")
             user_email = payload.get("email")
             
+            logger.info(f"Mira: Decoded token - user_id: {user_id}, email: {user_email}")
+            
             if user_id or user_email:
                 # Fetch user's pets with their Pet Soul data
                 query = {"user_id": user_id} if user_id else {"user_email": user_email}
+                logger.info(f"Mira: Searching pets with query: {query}")
                 pets = await db.pets.find(query, {"_id": 0}).to_list(10)
+                
+                logger.info(f"Mira: Found {len(pets)} pets")
                 
                 if pets:
                     user_pets = pets
