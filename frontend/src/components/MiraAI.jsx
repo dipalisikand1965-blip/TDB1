@@ -57,6 +57,28 @@ const MiraAI = () => {
     return () => window.removeEventListener('openMiraAI', handleOpenMira);
   }, []);
 
+  // Fetch user's pets when logged in
+  useEffect(() => {
+    const fetchUserPets = async () => {
+      if (token && !petsLoaded) {
+        try {
+          const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setUserPets(data.pets || []);
+          }
+        } catch (error) {
+          console.error('Error fetching pets for Mira:', error);
+        } finally {
+          setPetsLoaded(true);
+        }
+      }
+    };
+    fetchUserPets();
+  }, [token, petsLoaded]);
+
   // Focus input when chat opens
   useEffect(() => {
     if (isOpen && !isMinimized) {
