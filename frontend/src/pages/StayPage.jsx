@@ -1184,9 +1184,16 @@ const PropertyDetailsModal = ({ property, onClose, onBookNow, getBadgeColor, Paw
 
 // Booking Request Modal
 const BookingRequestModal = ({ property, onClose }) => {
+  const { user, token } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  
+  // Pet Soul Integration
+  const [userPets, setUserPets] = useState([]);
+  const [selectedPetId, setSelectedPetId] = useState('');
+  const [loadingPets, setLoadingPets] = useState(false);
+  
   const [formData, setFormData] = useState({
     guest_name: '',
     guest_email: '',
@@ -1212,15 +1219,92 @@ const BookingRequestModal = ({ property, onClose }) => {
     special_requests: '',
     pet_meal_preorder: false,
     welcome_kit: false,
-    grooming_requested: false
+    grooming_requested: false,
+    // Pet Soul fields
+    selectedPetId: null
   });
+  
+  // Fetch user's pets on mount
+  useEffect(() => {
+    const fetchUserPets = async () => {
+      if (!user || !token) return;
+      setLoadingPets(true);
+      try {
+        const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserPets(data.pets || []);
+        }
+      } catch (error) {
+        console.error('Error fetching pets:', error);
+      } finally {
+        setLoadingPets(false);
+      }
+    };
+    fetchUserPets();
+  }, [user, token]);
+  
+  // Handle pet selection - auto-fill pet details from Pet Soul
+  const handlePetSelect = (petId) => {
+    setSelectedPetId(petId);
+    if (petId === 'manual') {
+      // User wants to type manually
+      setFormData(prev => ({ 
+        ...prev, 
+        pet_name: '', 
+        pet_breed: '', 
+        pet_weight_kg: '', 
+        pet_age: '',
+        sleep_habits: '',
+        fears: '',
+        food_preferences: '',
+        triggers: '',
+        favourite_toy: '',
+        selectedPetId: null 
+      }));
+      return;
+    }
+    const pet = userPets.find(p => p.id === petId);
+    if (pet) {
+      const identity = pet.identity || {};
+      const answers = pet.doggy_soul_answers || {};
+      
+      // Calculate age from birthday
+      let ageStr = '';
+      if (pet.birthday) {
+        const birthDate = new Date(pet.birthday);
+        const today = new Date();
+        const ageYears = Math.floor((today - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
+        ageStr = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : 'Less than 1 year';
+      }
+      
+      setFormData(prev => ({ 
+        ...prev, 
+        pet_name: pet.name || '',
+        pet_breed: identity.breed || pet.breed || '',
+        pet_weight_kg: identity.weight?.replace(/[^0-9.]/g, '') || '',
+        pet_age: ageStr || identity.age || '',
+        sleep_habits: answers.sleep_habits || '',
+        fears: answers.fears || answers.fear_triggers || '',
+        food_preferences: answers.favorite_treats || answers.food_preferences || '',
+        triggers: answers.behavior_with_strangers || '',
+        favourite_toy: answers.favorite_toy || '',
+        selectedPetId: pet.id
+      }));
+    }
+  };
 
   const handleSubmit = async () => {
     setLoading(true);
     try {
       const response = await fetch(`${API_URL}/api/stay/booking-request`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({
           property_id: property.id,
           ...formData,
@@ -1230,6 +1314,31 @@ const BookingRequestModal = ({ property, onClose }) => {
 
       if (response.ok) {
         setSuccess(true);
+        
+        // Write to Pet Soul if pet was selected
+        if (formData.selectedPetId && token) {
+          try {
+            await fetch(`${API_URL}/api/pets/${formData.selectedPetId}/soul/stay`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                type: 'stay_booking',
+                property_id: property.id,
+                property_name: property.name,
+                city: property.city,
+                check_in_date: formData.check_in_date,
+                check_out_date: formData.check_out_date,
+                property_type: property.property_type,
+                pet_fee: property.pet_policy?.pet_fee_per_night
+              })
+            });
+          } catch (error) {
+            console.error('Failed to update Pet Soul:', error);
+          }
+        }
       } else {
         alert('Failed to submit booking request. Please try again.');
       }
