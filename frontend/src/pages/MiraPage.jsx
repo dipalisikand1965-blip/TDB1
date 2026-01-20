@@ -128,7 +128,7 @@ const MiraPage = () => {
   return (
     <>
       <Helmet>
-        <title>Mira - AI Pet Concierge | The Doggy Company</title>
+        <title>Mira - AI Pet Concierge® | The Doggy Company</title>
         <meta name="description" content="Meet Mira, your AI-powered pet shopping assistant. Get personalized treat recommendations, plan celebrations, and get instant answers 24/7." />
       </Helmet>
 

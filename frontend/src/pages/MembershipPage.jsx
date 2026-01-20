@@ -109,7 +109,7 @@ const MembershipPage = () => {
 
   const benefits = [
     { icon: PawPrint, title: 'Pet Soul Profile', desc: 'Deep, evolving profile for your pet' },
-    { icon: Sparkles, title: 'Mira AI Concierge', desc: '24/7 intelligent pet assistant' },
+    { icon: Sparkles, title: 'Mira AI Concierge®', desc: '24/7 intelligent pet assistant' },
     { icon: Award, title: 'Paw Rewards', desc: 'Earn points on every interaction' },
     { icon: Calendar, title: 'Smart Reminders', desc: 'Birthday, vaccine & event alerts' },
     { icon: Shield, title: 'Health Vault', desc: 'Secure medical records storage' },

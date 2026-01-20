@@ -1359,7 +1359,7 @@ const BookingRequestModal = ({ property, onClose }) => {
           </div>
           <h3 className="text-2xl font-bold text-gray-800 mb-2">Booking Request Sent!</h3>
           <p className="text-gray-600 mb-6">
-            Our Stay Concierge will contact you within 4 hours to confirm availability and finalize your booking at <strong>{property.name}</strong>.
+            Our Stay Concierge® will contact you within 4 hours to confirm availability and finalize your booking at <strong>{property.name}</strong>.
           </p>
           <p className="text-sm text-gray-500 mb-6">
             Check your email and WhatsApp for updates!

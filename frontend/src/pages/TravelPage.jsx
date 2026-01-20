@@ -287,7 +287,7 @@ const TravelPage = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
               <Sparkles className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm font-medium">Concierge-Led Pet Travel</span>
+              <span className="text-sm font-medium">Concierge®-Led Pet Travel</span>
             </div>
             
             {/* Main Headline */}
@@ -334,7 +334,7 @@ const TravelPage = () => {
               </div>
               <div className="flex items-center gap-2 text-white/70">
                 <Users className="w-5 h-5 text-blue-400" />
-                <span className="text-sm">Expert Concierge</span>
+                <span className="text-sm">Expert Concierge®</span>
               </div>
               <div className="flex items-center gap-2 text-white/70">
                 <Heart className="w-5 h-5 text-pink-400" />
