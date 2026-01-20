@@ -92,7 +92,8 @@ import {
   Brain,
   Bell,
   Headphones,
-  ExternalLink
+  ExternalLink,
+  Crown
 } from 'lucide-react';
 
 const Admin = () => {
