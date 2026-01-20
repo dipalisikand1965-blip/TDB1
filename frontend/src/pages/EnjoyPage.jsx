@@ -17,14 +17,14 @@ import {
   Heart, Shield, Ticket, Filter, ChevronLeft, Globe, List, CalendarDays
 } from 'lucide-react';
 
-// Experience Type Configuration
+// Experience Type Configuration - Using warm, playful colors
 const EXPERIENCE_TYPES = {
-  event: { name: 'Events & Pop-ups', icon: PartyPopper, color: 'from-purple-500 to-pink-500', bgColor: 'bg-purple-50', textColor: 'text-purple-600' },
-  trail: { name: 'Trails & Walks', icon: Mountain, color: 'from-green-500 to-emerald-500', bgColor: 'bg-green-50', textColor: 'text-green-600' },
-  meetup: { name: 'Meetups & Playdates', icon: Users, color: 'from-blue-500 to-cyan-500', bgColor: 'bg-blue-50', textColor: 'text-blue-600' },
-  cafe: { name: 'Pet Cafés', icon: Coffee, color: 'from-amber-500 to-orange-500', bgColor: 'bg-amber-50', textColor: 'text-amber-600' },
-  workshop: { name: 'Workshops & Classes', icon: GraduationCap, color: 'from-indigo-500 to-violet-500', bgColor: 'bg-indigo-50', textColor: 'text-indigo-600' },
-  wellness: { name: 'Wellness', icon: Heart, color: 'from-teal-500 to-cyan-500', bgColor: 'bg-teal-50', textColor: 'text-teal-600' }
+  event: { name: 'Events & Pop-ups', icon: PartyPopper, color: 'from-orange-500 to-rose-500', bgColor: 'bg-orange-50', textColor: 'text-orange-600' },
+  trail: { name: 'Trails & Walks', icon: Mountain, color: 'from-emerald-500 to-teal-500', bgColor: 'bg-emerald-50', textColor: 'text-emerald-600' },
+  meetup: { name: 'Meetups & Playdates', icon: Users, color: 'from-amber-500 to-orange-500', bgColor: 'bg-amber-50', textColor: 'text-amber-600' },
+  cafe: { name: 'Pet Cafés', icon: Coffee, color: 'from-rose-500 to-pink-500', bgColor: 'bg-rose-50', textColor: 'text-rose-600' },
+  workshop: { name: 'Workshops & Classes', icon: GraduationCap, color: 'from-cyan-500 to-blue-500', bgColor: 'bg-cyan-50', textColor: 'text-cyan-600' },
+  wellness: { name: 'Wellness', icon: Heart, color: 'from-teal-500 to-emerald-500', bgColor: 'bg-teal-50', textColor: 'text-teal-600' }
 };
 
 const HERO_IMAGES = [
