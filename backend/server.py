@@ -8873,6 +8873,193 @@ async def verify_payment(request: VerifyPaymentRequest):
         raise HTTPException(status_code=500, detail="Payment verification failed")
 
 
+# ==================== MEMBER MANAGEMENT ENDPOINTS ====================
+
+class AddMemberRequest(BaseModel):
+    name: str
+    email: str
+    phone: Optional[str] = None
+    membership_tier: str = "pawsome"
+    membership_months: int = 12
+    paw_points: int = 100
+    notes: Optional[str] = None
+    send_welcome_email: bool = True
+
+
+class BulkActionRequest(BaseModel):
+    member_ids: List[str]
+    action: str  # upgrade_tier, extend_1_month, add_100_points, send_renewal_reminder
+
+
+@admin_router.post("/members")
+async def add_member(request: AddMemberRequest):
+    """Add a new member manually (for offline registrations)"""
+    try:
+        # Check if email already exists
+        existing = await db.users.find_one({"email": request.email})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Calculate expiry date
+        expires_at = datetime.now(timezone.utc) + timedelta(days=request.membership_months * 30)
+        
+        # Generate temporary password
+        temp_password = secrets.token_urlsafe(8)
+        hashed_password = bcrypt.hashpw(temp_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        
+        new_member = {
+            "id": f"user-{uuid.uuid4().hex[:12]}",
+            "email": request.email,
+            "name": request.name,
+            "phone": request.phone,
+            "password": hashed_password,
+            "membership_tier": request.membership_tier,
+            "membership_expires": expires_at.isoformat(),
+            "loyalty_points": request.paw_points,
+            "admin_notes": request.notes,
+            "registration_source": "offline_admin",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.users.insert_one(new_member)
+        
+        # TODO: Send welcome email with login details if send_welcome_email is True
+        
+        return {
+            "success": True,
+            "message": f"Member {request.email} added successfully",
+            "temp_password": temp_password if request.send_welcome_email else None
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to add member: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@admin_router.post("/members/import")
+async def import_members_csv(file: UploadFile = File(...)):
+    """Import members from CSV file for bulk offline registrations"""
+    try:
+        import io
+        import csv
+        
+        content = await file.read()
+        decoded = content.decode('utf-8')
+        reader = csv.DictReader(io.StringIO(decoded))
+        
+        imported = 0
+        skipped = 0
+        errors = []
+        
+        for row in reader:
+            try:
+                email = row.get('email', '').strip()
+                if not email:
+                    skipped += 1
+                    continue
+                
+                # Check if exists
+                existing = await db.users.find_one({"email": email})
+                if existing:
+                    skipped += 1
+                    errors.append(f"{email}: already exists")
+                    continue
+                
+                # Calculate expiry
+                months = int(row.get('membership_months', '12') or '12')
+                expires_at = datetime.now(timezone.utc) + timedelta(days=months * 30)
+                
+                # Generate temp password
+                temp_password = secrets.token_urlsafe(8)
+                hashed = bcrypt.hashpw(temp_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                
+                new_member = {
+                    "id": f"user-{uuid.uuid4().hex[:12]}",
+                    "email": email,
+                    "name": row.get('name', '').strip(),
+                    "phone": row.get('phone', '').strip(),
+                    "password": hashed,
+                    "membership_tier": row.get('membership_tier', 'pawsome').strip() or 'pawsome',
+                    "membership_expires": expires_at.isoformat(),
+                    "loyalty_points": int(row.get('paw_points', '100') or '100'),
+                    "admin_notes": row.get('notes', '').strip(),
+                    "registration_source": "csv_import",
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+                
+                await db.users.insert_one(new_member)
+                imported += 1
+                
+            except Exception as row_error:
+                skipped += 1
+                errors.append(f"{row.get('email', 'unknown')}: {str(row_error)}")
+        
+        return {
+            "success": True,
+            "imported": imported,
+            "skipped": skipped,
+            "errors": errors[:10]  # Only return first 10 errors
+        }
+        
+    except Exception as e:
+        logger.error(f"CSV import failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@admin_router.post("/members/bulk-action")
+async def bulk_member_action(request: BulkActionRequest):
+    """Execute bulk actions on selected members"""
+    try:
+        affected = 0
+        
+        for member_id in request.member_ids:
+            member = await db.users.find_one({"id": member_id})
+            if not member:
+                continue
+            
+            updates = {}
+            
+            if request.action == "upgrade_tier":
+                tier_order = ["free", "pawsome", "premium", "vip"]
+                current_tier = member.get("membership_tier", "free")
+                current_idx = tier_order.index(current_tier) if current_tier in tier_order else 0
+                if current_idx < len(tier_order) - 1:
+                    updates["membership_tier"] = tier_order[current_idx + 1]
+            
+            elif request.action == "extend_1_month":
+                current_exp = member.get("membership_expires")
+                if current_exp:
+                    exp_date = datetime.fromisoformat(current_exp.replace('Z', '+00:00'))
+                else:
+                    exp_date = datetime.now(timezone.utc)
+                
+                new_exp = exp_date + timedelta(days=30)
+                updates["membership_expires"] = new_exp.isoformat()
+            
+            elif request.action == "add_100_points":
+                current_points = member.get("loyalty_points", 0)
+                updates["loyalty_points"] = current_points + 100
+            
+            elif request.action == "send_renewal_reminder":
+                # TODO: Implement email sending
+                pass
+            
+            if updates:
+                await db.users.update_one({"id": member_id}, {"$set": updates})
+                affected += 1
+        
+        return {
+            "success": True,
+            "affected": affected,
+            "action": request.action
+        }
+        
+    except Exception as e:
+        logger.error(f"Bulk action failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
