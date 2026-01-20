@@ -794,6 +794,78 @@ const EnjoyPage = () => {
       </div>
       )}
 
+      {/* Products & Bundles Section */}
+      {(products.length > 0 || bundles.length > 0) && (
+        <div id="enjoy-kits" className="py-12 bg-gradient-to-b from-amber-50 to-white">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex items-center gap-2 mb-6">
+              <Sparkles className="w-6 h-6 text-orange-600" />
+              <h2 className="text-2xl font-bold text-gray-900">Enjoy Essentials & Bundles</h2>
+            </div>
+            
+            {/* Bundles */}
+            {bundles.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-gray-700 mb-4">🎁 Value Bundles</h3>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {bundles.map((bundle) => (
+                    <Card key={bundle.id} className="p-4 border-2 border-orange-200 bg-orange-50/50">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-semibold text-gray-900">{bundle.name}</h4>
+                        {bundle.is_recommended && (
+                          <Badge className="bg-orange-500">Recommended</Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">{bundle.description}</p>
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-xl font-bold text-orange-600">₹{bundle.price}</span>
+                        <span className="text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
+                        <Badge variant="outline" className="text-orange-600">
+                          Save ₹{bundle.original_price - bundle.price}
+                        </Badge>
+                      </div>
+                      {bundle.paw_reward_points > 0 && (
+                        <p className="text-xs text-orange-600 mb-3">🐾 Earn {bundle.paw_reward_points} Paw Points</p>
+                      )}
+                      <Button className="w-full bg-orange-500 hover:bg-orange-600">Add to Cart</Button>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Products */}
+            {products.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-700 mb-4">🛍️ Enjoy Products</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {products.slice(0, 8).map((product) => (
+                    <Card key={product.id} className="p-4 hover:shadow-md transition-all">
+                      <div className="aspect-square bg-gradient-to-br from-orange-100 to-amber-50 rounded-lg mb-3 flex items-center justify-center">
+                        <PartyPopper className="w-12 h-12 text-orange-300" />
+                      </div>
+                      <h4 className="font-medium text-gray-900 text-sm mb-1 line-clamp-1">{product.name}</h4>
+                      <p className="text-xs text-gray-500 line-clamp-2 mb-2">{product.description}</p>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="font-bold text-orange-600">₹{product.price}</span>
+                          {product.compare_price && (
+                            <span className="text-xs text-gray-400 line-through ml-1">₹{product.compare_price}</span>
+                          )}
+                        </div>
+                        {product.paw_reward_points > 0 && (
+                          <span className="text-xs text-orange-600">🐾 {product.paw_reward_points}</span>
+                        )}
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* RSVP Modal */}
       <Dialog open={showRsvpModal} onOpenChange={setShowRsvpModal}>
         <DialogContent className="sm:max-w-lg">
