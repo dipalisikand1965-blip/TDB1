@@ -833,7 +833,7 @@ const EnjoyPage = () => {
                           <p className="text-sm text-gray-500">{pet.breed}</p>
                         </div>
                         {selectedPet?.id === pet.id && (
-                          <CheckCircle className="w-5 h-5 text-purple-600 ml-auto" />
+                          <CheckCircle className="w-5 h-5 text-orange-600 ml-auto" />
                         )}
                       </button>
                     ))}
