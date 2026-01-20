@@ -1452,6 +1452,7 @@ const Admin = () => {
             { id: 'enjoy', label: '🎉 Enjoy', icon: PartyPopper },
             { id: 'fit', label: '💪 Fit', icon: Dumbbell },
             { id: 'advisory', label: '🧠 Advisory', icon: Brain },
+            { id: 'paperwork', label: '📄 Paperwork', icon: FileText },
             { id: 'insights', label: '📝 Blog', icon: FileText },
             { id: 'testimonials', label: 'Testimonials', icon: Star },
             { id: 'faqs', label: 'FAQs', icon: HelpCircle },
