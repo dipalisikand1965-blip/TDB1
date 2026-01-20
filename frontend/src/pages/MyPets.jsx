@@ -208,6 +208,15 @@ const MyPets = () => {
               className="pl-10"
             />
           </div>
+          <Button 
+            variant="outline" 
+            onClick={() => window.location.reload()}
+            className="gap-2"
+            data-testid="refresh-pets-btn"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </Button>
           <Link to="/pet-profile">
             <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
