@@ -695,6 +695,13 @@ async def get_celebrate_stats():
         "completed_requests": completed_requests
     }
 
+
+@router.post("/seed")
+async def seed_celebrate_endpoint():
+    """API endpoint to seed celebrate data"""
+    return await seed_celebrate_data()
+
+
 # ============ SEED DATA ============
 
 async def seed_celebrate_data():
