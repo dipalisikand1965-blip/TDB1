@@ -1636,6 +1636,11 @@ const Admin = () => {
           />
         )}
 
+        {/* Member Directory Tab */}
+        {activeTab === 'member-directory' && (
+          <MemberDirectory />
+        )}
+
         {/* Membership Manager Tab */}
         {activeTab === 'membership' && (
           <MembershipManager />
