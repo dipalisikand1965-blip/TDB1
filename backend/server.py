@@ -783,6 +783,7 @@ from enjoy_routes import router as enjoy_router
 from fit_routes import router as fit_router
 from advisory_routes import router as advisory_router
 from paperwork_routes import router as paperwork_router
+from emergency_routes import router as emergency_router
 
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
