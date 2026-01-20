@@ -201,6 +201,7 @@ function MainLayout() {
         <Route path="/celebrate/breed-cakes" element={<ProductListing category="breed" />} />
         <Route path="/celebrate/pupcakes" element={<ProductListing category="Pupcakes" />} />
         <Route path="/celebrate/treats" element={<ProductListing category="Treats" />} />
+        <Route path="/celebrate/valentine" element={<ProductListing category="valentine" />} />
         <Route path="/celebrate/desi" element={<ProductListing category="desi" />} />
         <Route path="/celebrate/hampers" element={<ProductListing category="hampers" />} />
         <Route path="/celebrate/cat" element={<ProductListing category="cat" />} />
