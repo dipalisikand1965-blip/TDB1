@@ -1231,4 +1231,139 @@ const AdjustPointsModal = ({ member, onClose, onAdjust }) => {
   );
 };
 
+// Add Member Modal Component
+const AddMemberModal = ({ onClose, onAdd }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    membership_tier: 'pawsome',
+    membership_months: 12,
+    paw_points: 100,
+    notes: '',
+    send_welcome_email: true
+  });
+
+  const handleSubmit = () => {
+    if (!formData.email) {
+      alert('Email is required');
+      return;
+    }
+    onAdd(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b flex justify-between items-center">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <UserPlus className="w-5 h-5 text-green-500" /> Add New Member
+          </h2>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+        <div className="p-6 space-y-4">
+          <div className="p-3 bg-green-50 rounded-lg text-sm text-green-800">
+            Add members manually for offline registrations, events, or manual upgrades.
+          </div>
+          
+          <div>
+            <label className="text-sm font-medium">Name *</label>
+            <Input
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Member's full name"
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Email *</label>
+            <Input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              placeholder="member@email.com"
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Phone</label>
+            <Input
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              placeholder="9876543210"
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Membership Tier</label>
+            <select
+              value={formData.membership_tier}
+              onChange={(e) => setFormData({ ...formData, membership_tier: e.target.value })}
+              className="w-full mt-1 px-3 py-2 border rounded-lg"
+            >
+              <option value="free">🐕 Curious Pup (Free)</option>
+              <option value="pawsome">🦮 Loyal Companion</option>
+              <option value="premium">🐕‍🦺 Trusted Guardian</option>
+              <option value="vip">👑 Pack Leader</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-sm font-medium">Membership Duration (months)</label>
+            <select
+              value={formData.membership_months}
+              onChange={(e) => setFormData({ ...formData, membership_months: Number(e.target.value) })}
+              className="w-full mt-1 px-3 py-2 border rounded-lg"
+            >
+              <option value={1}>1 month</option>
+              <option value={3}>3 months</option>
+              <option value={6}>6 months</option>
+              <option value={12}>12 months (1 year)</option>
+              <option value={24}>24 months (2 years)</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-sm font-medium">Welcome Paw Points</label>
+            <Input
+              type="number"
+              value={formData.paw_points}
+              onChange={(e) => setFormData({ ...formData, paw_points: Number(e.target.value) })}
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Notes (internal)</label>
+            <textarea
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              className="w-full mt-1 px-3 py-2 border rounded-lg h-20"
+              placeholder="e.g., Registered at Pet Expo 2025"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="send_email"
+              checked={formData.send_welcome_email}
+              onChange={(e) => setFormData({ ...formData, send_welcome_email: e.target.checked })}
+              className="rounded border-gray-300"
+            />
+            <label htmlFor="send_email" className="text-sm text-gray-700">
+              Send welcome email with login details
+            </label>
+          </div>
+
+          <div className="flex gap-2 pt-4">
+            <Button onClick={handleSubmit} className="flex-1 bg-green-600 hover:bg-green-700">
+              <UserPlus className="w-4 h-4 mr-2" /> Add Member
+            </Button>
+            <Button variant="outline" onClick={onClose}>Cancel</Button>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
 export default MembershipManager;
