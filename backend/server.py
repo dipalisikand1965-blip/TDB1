@@ -7012,6 +7012,64 @@ async def add_celebrate_to_pet_soul(pet_id: str, data: dict):
     return {"message": "Celebrate order recorded in Pet Soul", "entry_id": celebrate_entry["id"]}
 
 
+@api_router.post("/pets/{pet_id}/soul/stay")
+async def add_stay_to_pet_soul(pet_id: str, data: dict):
+    """Record a stay pillar booking to Pet Soul"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    # Create stay history entry
+    stay_entry = {
+        "id": f"stay-{uuid.uuid4().hex[:8]}",
+        "type": data.get("type", "booking"),
+        "property_id": data.get("property_id"),
+        "property_name": data.get("property_name"),
+        "city": data.get("city"),
+        "property_type": data.get("property_type"),
+        "check_in_date": data.get("check_in_date"),
+        "check_out_date": data.get("check_out_date"),
+        "pet_fee": data.get("pet_fee"),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Update Pet Soul with stay history
+    soul = pet.get("soul", {}) or {}
+    stay_history = soul.get("stay_history", [])
+    stay_history.append(stay_entry)
+    
+    # Track favorite cities and property types for recommendations
+    preferences = soul.get("preferences", {}) or {}
+    
+    # Track favorite travel cities
+    favorite_cities = preferences.get("favorite_travel_cities", [])
+    if data.get("city") and data.get("city") not in favorite_cities:
+        favorite_cities.append(data.get("city"))
+        if len(favorite_cities) > 5:
+            favorite_cities = favorite_cities[-5:]
+    
+    # Track preferred property types
+    preferred_property_types = preferences.get("preferred_property_types", [])
+    if data.get("property_type") and data.get("property_type") not in preferred_property_types:
+        preferred_property_types.append(data.get("property_type"))
+        if len(preferred_property_types) > 3:
+            preferred_property_types = preferred_property_types[-3:]
+    
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$set": {
+            "soul.stay_history": stay_history,
+            "soul.preferences.favorite_travel_cities": favorite_cities,
+            "soul.preferences.preferred_property_types": preferred_property_types,
+            "soul.last_stay_booking": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    logger.info(f"Pet Soul updated with stay booking for pet {pet_id}")
+    
+    return {"message": "Stay booking recorded in Pet Soul", "entry_id": stay_entry["id"]}
+
+
 def generate_celebration_message(pet: dict, celebration: dict, days_until: int) -> dict:
     """Generate personalized celebration message based on pet's soul"""
     soul = pet.get("soul", {}) or {}
