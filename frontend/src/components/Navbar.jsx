@@ -324,7 +324,10 @@ const Navbar = () => {
                 <div className="relative" ref={moreRef}>
                   <button
                     onClick={() => setShowMorePillars(!showMorePillars)}
-                    onMouseEnter={() => setShowMorePillars(true)}
+                    onMouseEnter={() => {
+                      setShowMorePillars(true);
+                      setActivePillar(null); // Close other pillar dropdowns
+                    }}
                     className={`flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium transition-all ${
                       showMorePillars || morePillars.some(p => isPillarActive(p))
                         ? 'bg-gray-200 text-gray-800'
