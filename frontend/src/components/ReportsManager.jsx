@@ -619,11 +619,19 @@ const ReportsManager = ({ authHeaders }) => {
 
             {/* Pillar Sub-tabs */}
             <Tabs value={selectedPillar} onValueChange={setSelectedPillar}>
-              <TabsList className="bg-gray-100">
+              <TabsList className="bg-gray-100 flex-wrap h-auto gap-1 p-1">
                 <TabsTrigger value="summary">📊 Summary</TabsTrigger>
                 <TabsTrigger value="celebrate">🎂 Celebrate</TabsTrigger>
                 <TabsTrigger value="dine">🍽️ Dine</TabsTrigger>
                 <TabsTrigger value="stay">🏨 Stay</TabsTrigger>
+                <TabsTrigger value="travel">✈️ Travel</TabsTrigger>
+                <TabsTrigger value="care">💊 Care</TabsTrigger>
+                <TabsTrigger value="enjoy">🎾 Enjoy</TabsTrigger>
+                <TabsTrigger value="fit">🏃 Fit</TabsTrigger>
+                <TabsTrigger value="advisory">📋 Advisory</TabsTrigger>
+                <TabsTrigger value="paperwork">📄 Paperwork</TabsTrigger>
+                <TabsTrigger value="emergency">🚨 Emergency</TabsTrigger>
+                <TabsTrigger value="club">👑 Club</TabsTrigger>
               </TabsList>
 
               {/* Summary View */}
@@ -677,6 +685,40 @@ const ReportsManager = ({ authHeaders }) => {
                   </div>
                 )}
               </TabsContent>
+
+              {/* Generic Pillar Report Template for pillars without specific data */}
+              {['travel', 'care', 'enjoy', 'fit', 'advisory', 'paperwork', 'emergency', 'club'].map((pillar) => (
+                <TabsContent key={pillar} value={pillar}>
+                  <div className="space-y-6 mt-4">
+                    <div className="grid md:grid-cols-4 gap-4">
+                      <MetricCard title="Total Requests" value={pillarSummary?.[pillar]?.requests || 0} icon={Users} color="blue" />
+                      <MetricCard title="Completed" value={pillarSummary?.[pillar]?.completed || 0} icon={Package} color="green" />
+                      <MetricCard title="Pending" value={pillarSummary?.[pillar]?.pending || 0} icon={Clock} color="orange" />
+                      <MetricCard title="Revenue" value={formatCurrency(pillarSummary?.[pillar]?.revenue || 0)} icon={DollarSign} color="purple" />
+                    </div>
+                    
+                    <Card className="p-6">
+                      <div className="text-center py-8">
+                        <div className="text-6xl mb-4">
+                          {pillar === 'travel' && '✈️'}
+                          {pillar === 'care' && '💊'}
+                          {pillar === 'enjoy' && '🎾'}
+                          {pillar === 'fit' && '🏃'}
+                          {pillar === 'advisory' && '📋'}
+                          {pillar === 'paperwork' && '📄'}
+                          {pillar === 'emergency' && '🚨'}
+                          {pillar === 'club' && '👑'}
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2 capitalize">{pillar} Pillar</h3>
+                        <p className="text-gray-500 mb-4">Detailed analytics coming soon</p>
+                        <p className="text-sm text-gray-400">
+                          This pillar is active and tracking requests. Full analytics dashboard will be available in the next update.
+                        </p>
+                      </div>
+                    </Card>
+                  </div>
+                </TabsContent>
+              ))}
 
               {/* Celebrate Report */}
               <TabsContent value="celebrate">
