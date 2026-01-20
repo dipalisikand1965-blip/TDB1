@@ -8735,7 +8735,7 @@ async def get_membership_plans():
 
 @api_router.post("/payments/create-order")
 async def create_payment_order(request: CreateOrderRequest):
-    """Create a Razorpay order for membership payment"""
+    """Create a Razorpay order for membership payment with GST"""
     if not razorpay_client:
         raise HTTPException(status_code=503, detail="Payment service not configured")
     
@@ -8744,14 +8744,21 @@ async def create_payment_order(request: CreateOrderRequest):
         raise HTTPException(status_code=400, detail="Invalid plan selected")
     
     try:
+        # Calculate GST-inclusive amount
+        gst_info = calculate_gst_amounts(plan["base_amount"])
+        total_amount = gst_info["total_amount"]  # In paise
+        
         order_data = {
-            "amount": plan["amount"],
+            "amount": total_amount,
             "currency": plan["currency"],
             "receipt": f"mem_{uuid.uuid4().hex[:12]}",
             "notes": {
                 "plan_id": request.plan_id,
                 "user_email": request.user_email,
-                "tier": plan["tier"]
+                "tier": plan["tier"],
+                "base_amount": gst_info["base_amount"],
+                "gst_amount": gst_info["gst_amount"],
+                "gst_rate": "18%"
             }
         }
         
@@ -8762,7 +8769,10 @@ async def create_payment_order(request: CreateOrderRequest):
             "razorpay_order_id": razorpay_order["id"],
             "plan_id": request.plan_id,
             "plan_name": plan["name"],
-            "amount": plan["amount"],
+            "base_amount": gst_info["base_amount"],
+            "gst_amount": gst_info["gst_amount"],
+            "gst_rate": 18,
+            "total_amount": total_amount,
             "currency": plan["currency"],
             "tier": plan["tier"],
             "duration_days": plan["duration_days"],
@@ -8776,7 +8786,10 @@ async def create_payment_order(request: CreateOrderRequest):
         
         return {
             "order_id": razorpay_order["id"],
-            "amount": plan["amount"],
+            "base_amount": gst_info["base_amount"],
+            "gst_amount": gst_info["gst_amount"],
+            "gst_rate": 18,
+            "amount": total_amount,  # Total including GST
             "currency": plan["currency"],
             "key_id": RAZORPAY_KEY_ID,
             "plan_name": plan["name"],
