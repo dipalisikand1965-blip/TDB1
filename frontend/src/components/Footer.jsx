@@ -133,8 +133,20 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Policies Row */}
+        {/* Membership CTA */}
         <div className="border-t border-gray-800 mt-8 pt-8">
+          <div className="flex justify-center mb-6">
+            <Link 
+              to="/membership" 
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold hover:opacity-90 transition-opacity shadow-lg"
+            >
+              👑 Join The Doggy Company Membership
+            </Link>
+          </div>
+        </div>
+
+        {/* Policies Row */}
+        <div className="border-t border-gray-800 pt-6">
           <div className="flex flex-wrap justify-center gap-4 mb-6 text-sm">
             <Link to="/membership" className="hover:text-pink-500 transition-colors font-medium text-pink-400">✨ Membership</Link>
             <span className="text-gray-600">|</span>
