@@ -1391,8 +1391,10 @@ const ServiceDesk = ({ authHeaders }) => {
       setLoadingRules(false);
     };
 
-    // Load rules when tab changes to SLA or Assignment
+    // Load rules when tab changes to SLA or Assignment - only when modal is open
     useEffect(() => {
+      if (!showSettings) return; // Don't fetch if modal is closed
+      
       if (activeSettingsTab === 'sla' || activeSettingsTab === 'assignment') {
         fetchRules();
       }
@@ -1403,7 +1405,7 @@ const ServiceDesk = ({ authHeaders }) => {
       if (activeSettingsTab === 'escalation') {
         fetchEscalationRules();
       }
-    }, [activeSettingsTab]);
+    }, [activeSettingsTab, showSettings]);
 
     const handleSaveAssignmentRule = async () => {
       if (!newAssignmentRule.name || !newAssignmentRule.assign_to) {
