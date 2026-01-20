@@ -948,7 +948,8 @@ async def seed_fit_data():
             "paw_reward_points": 65,
             "is_recommended": True,
             "is_birthday_perk": True,
-            "birthday_discount_percent": 15
+            "birthday_discount_percent": 15,
+            "is_active": True
         },
         {
             "id": "fit-bundle-weight-loss",
@@ -959,7 +960,8 @@ async def seed_fit_data():
             "original_price": 7397,
             "paw_reward_points": 80,
             "is_recommended": True,
-            "is_birthday_perk": False
+            "is_birthday_perk": False,
+            "is_active": True
         },
         {
             "id": "fit-bundle-agility",
@@ -970,7 +972,8 @@ async def seed_fit_data():
             "original_price": 7297,
             "paw_reward_points": 85,
             "is_recommended": True,
-            "is_birthday_perk": False
+            "is_birthday_perk": False,
+            "is_active": True
         },
         {
             "id": "fit-bundle-senior",
@@ -982,7 +985,8 @@ async def seed_fit_data():
             "paw_reward_points": 75,
             "is_recommended": True,
             "is_birthday_perk": True,
-            "birthday_discount_percent": 20
+            "birthday_discount_percent": 20,
+            "is_active": True
         },
         {
             "id": "fit-bundle-swimmer",
@@ -993,7 +997,8 @@ async def seed_fit_data():
             "original_price": 3198,
             "paw_reward_points": 35,
             "is_recommended": False,
-            "is_birthday_perk": False
+            "is_birthday_perk": False,
+            "is_active": True
         }
     ]
     
