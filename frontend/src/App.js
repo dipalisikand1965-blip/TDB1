@@ -68,6 +68,8 @@ import ResetPassword from "./pages/ResetPassword";
 import VoiceOrder from "./pages/VoiceOrder";
 import AgentPortal from "./pages/AgentPortal";
 import ServiceDeskPage from "./pages/ServiceDeskPage";
+import MembershipPage from "./pages/MembershipPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
