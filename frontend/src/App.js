@@ -67,6 +67,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VoiceOrder from "./pages/VoiceOrder";
 import AgentPortal from "./pages/AgentPortal";
+import ServiceDeskPage from "./pages/ServiceDeskPage";
 
 function App() {
   return (
