@@ -560,9 +560,10 @@ const MembershipPage = () => {
               <div className="text-center mb-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Monthly</h3>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-bold text-gray-900">₹99</span>
+                  <span className="text-4xl font-bold text-gray-900">₹117</span>
                   <span className="text-gray-500">/month</span>
                 </div>
+                <p className="text-xs text-gray-400 mt-1">₹99 + 18% GST</p>
                 <p className="text-sm text-gray-500 mt-2">Billed monthly, cancel anytime</p>
               </div>
 
@@ -592,10 +593,11 @@ const MembershipPage = () => {
               <div className="text-center mb-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Annual</h3>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-bold text-gray-900">₹999</span>
+                  <span className="text-4xl font-bold text-gray-900">₹1,179</span>
                   <span className="text-gray-500">/year</span>
                 </div>
-                <p className="text-sm text-green-600 mt-2 font-medium">Save ₹189 (16% off)</p>
+                <p className="text-xs text-gray-400 mt-1">₹999 + 18% GST</p>
+                <p className="text-sm text-green-600 mt-2 font-medium">Save ₹225 (16% off monthly)</p>
               </div>
 
               <ul className="space-y-3 mb-8">
