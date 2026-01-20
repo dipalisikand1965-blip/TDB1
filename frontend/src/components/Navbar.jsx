@@ -167,6 +167,23 @@ const Navbar = () => {
         { name: '🎓 Training Consultations', path: '/advisory?type=training' },
       ]
     },
+    { 
+      id: 'paperwork',
+      name: 'Paperwork', 
+      icon: FileText,
+      color: 'from-blue-600 to-indigo-600',
+      description: 'Document vault & records',
+      path: '/paperwork',
+      isActive: true,
+      subItems: [
+        { name: '🛡️ Identity Documents', path: '/paperwork?category=identity' },
+        { name: '❤️ Medical Records', path: '/paperwork?category=medical' },
+        { name: '✈️ Travel Documents', path: '/paperwork?category=travel' },
+        { name: '📄 Insurance & Financial', path: '/paperwork?category=insurance' },
+        { name: '✨ Care & Training', path: '/paperwork?category=care' },
+        { name: '⚖️ Legal & Compliance', path: '/paperwork?category=legal' },
+      ]
+    },
   ];
 
   const isActive = (path) => location.pathname === path;
