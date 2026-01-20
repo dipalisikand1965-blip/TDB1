@@ -1389,7 +1389,7 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
         // 2. Write to Pet Soul if a pet was selected
         if (selectedPetId) {
           try {
-            await fetch(`${API_URL}/api/pets/${selectedPetId}/record-dine-reservation`, {
+            await fetch(`${API_URL}/api/pet-vault/${selectedPetId}/record-dine-reservation`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
