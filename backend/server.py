@@ -6964,6 +6964,54 @@ async def add_pet_achievement(pet_id: str, achievement: dict):
     return {"message": "Achievement added", "achievements": achievements}
 
 
+@api_router.post("/pets/{pet_id}/soul/celebrate")
+async def add_celebrate_to_pet_soul(pet_id: str, data: dict):
+    """Record a celebrate pillar order to Pet Soul"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    # Create celebrate history entry
+    celebrate_entry = {
+        "id": f"cel-{uuid.uuid4().hex[:8]}",
+        "type": data.get("type", "order"),
+        "product_id": data.get("product_id"),
+        "product_name": data.get("product_name"),
+        "category": data.get("category"),
+        "price": data.get("price"),
+        "variant": data.get("variant"),
+        "delivery_date": data.get("delivery_date"),
+        "occasion": data.get("occasion", "treat"),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Update Pet Soul with celebrate history
+    soul = pet.get("soul", {}) or {}
+    celebrate_history = soul.get("celebrate_history", [])
+    celebrate_history.append(celebrate_entry)
+    
+    # Track favorite categories/products for recommendations
+    preferences = soul.get("preferences", {}) or {}
+    favorite_cake_categories = preferences.get("favorite_cake_categories", [])
+    if data.get("category") and data.get("category") not in favorite_cake_categories:
+        favorite_cake_categories.append(data.get("category"))
+        if len(favorite_cake_categories) > 5:
+            favorite_cake_categories = favorite_cake_categories[-5:]  # Keep last 5
+    
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$set": {
+            "soul.celebrate_history": celebrate_history,
+            "soul.preferences.favorite_cake_categories": favorite_cake_categories,
+            "soul.last_celebrate_order": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    logger.info(f"Pet Soul updated with celebrate order for pet {pet_id}")
+    
+    return {"message": "Celebrate order recorded in Pet Soul", "entry_id": celebrate_entry["id"]}
+
+
 def generate_celebration_message(pet: dict, celebration: dict, days_until: int) -> dict:
     """Generate personalized celebration message based on pet's soul"""
     soul = pet.get("soul", {}) or {}
