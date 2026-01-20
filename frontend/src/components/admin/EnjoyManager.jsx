@@ -627,8 +627,125 @@ const EnjoyManager = ({ getAuthHeader }) => {
         {/* Settings Tab */}
         <TabsContent value="settings" className="space-y-4">
           <Card className="p-6">
-            <h3 className="font-semibold mb-4">Enjoy Pillar Settings</h3>
-            <p className="text-gray-500 text-sm">Configure experience types, cities, and notifications</p>
+            <h3 className="text-lg font-semibold mb-4">🐾 Paw Rewards Settings</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Points per RSVP</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.points_per_rsvp || 25}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Points per Product Purchase (per ₹100)</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.points_per_purchase || 10}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Bonus Points for Featured Events</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.featured_bonus || 15}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Referral Bonus Points</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.referral_bonus || 50}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">🎂 Birthday Perks Settings</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Birthday Discount %</Label>
+                <Input 
+                  type="number" 
+                  value={settings.birthday_perks?.discount_percent || 20}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Valid Days (before/after birthday)</Label>
+                <Input 
+                  type="number" 
+                  value={settings.birthday_perks?.valid_days || 7}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">🔔 Notification Settings</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Email Notifications</Label>
+                <Switch checked={settings.notifications?.email_enabled !== false} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>WhatsApp Notifications</Label>
+                <Switch checked={settings.notifications?.whatsapp_enabled || false} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>SMS Notifications</Label>
+                <Switch checked={settings.notifications?.sms_enabled || false} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>RSVP Reminders (24h before)</Label>
+                <Switch checked={settings.notifications?.rsvp_reminder !== false} />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">🌍 City & Region Settings</h3>
+            <div className="space-y-4">
+              <div>
+                <Label>Active Cities (comma-separated)</Label>
+                <Input 
+                  value={settings.active_cities?.join(', ') || 'Mumbai, Delhi, Bangalore, Pune, Hyderabad, Goa'}
+                  className="mt-1"
+                  placeholder="Mumbai, Delhi, Bangalore"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Enable Global Cities</Label>
+                <Switch checked={settings.enable_global_cities || false} />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">📋 Service Desk Integration</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Auto-create tickets for RSVPs</Label>
+                <Switch checked={settings.service_desk?.auto_create_tickets !== false} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Route to Partners</Label>
+                <Switch checked={settings.service_desk?.route_to_partners || false} />
+              </div>
+              <div>
+                <Label>Default SLA (hours)</Label>
+                <Input 
+                  type="number" 
+                  value={settings.service_desk?.default_sla || 24}
+                  className="mt-1 w-32"
+                />
+              </div>
+            </div>
           </Card>
         </TabsContent>
       </Tabs>
