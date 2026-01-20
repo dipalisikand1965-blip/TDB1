@@ -121,11 +121,11 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 2. ~~**Fit + Pet Soul** - Write fitness/activity data to soul~~ ✅ COMPLETE (Jan 20, 2026)
 3. ~~**Advisory + Pet Soul** - Write consultation history to soul~~ ✅ COMPLETE (Jan 20, 2026)
 4. ~~**UI Refresh** - Landing page, footer, Concierge® trademark~~ ✅ COMPLETE (Jan 20, 2026)
-5. **Mira Proactive** - Birthday/anniversary suggestions from Pet Soul
+5. ~~**Razorpay Membership Payments** - Payment integration~~ ✅ COMPLETE (Jan 20, 2026)
+6. **Mira Proactive** - Birthday/anniversary suggestions from Pet Soul
 
 ### P1 - User Journey
-6. Build CLUB (Membership) Pillar - Razorpay Payment Integration
-7. Membership tiers implementation
+7. ~~Membership tiers implementation~~ ✅ COMPLETE (Doggy-themed levels)
 8. Onboarding flow with Pet Soul creation
 9. Auto-checkout per pillar
 
