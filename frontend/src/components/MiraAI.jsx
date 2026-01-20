@@ -61,6 +61,50 @@ const MiraAI = () => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
+  // Fetch user's pets when logged in
+  useEffect(() => {
+    const fetchUserPets = async () => {
+      if (token && !petsLoaded) {
+        try {
+          const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            const pets = data.pets || [];
+            setUserPets(pets);
+            
+            // Update welcome message if pets found
+            if (pets.length > 0) {
+              setMessages([{
+                id: 'welcome',
+                role: 'assistant',
+                content: getWelcomeMessage()
+              }]);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching pets for Mira:', error);
+        } finally {
+          setPetsLoaded(true);
+        }
+      }
+    };
+    
+    fetchUserPets();
+  }, [token, petsLoaded]);
+
+  // Update welcome when pets change
+  useEffect(() => {
+    if (petsLoaded && messages.length === 1 && messages[0].id === 'welcome') {
+      setMessages([{
+        id: 'welcome',
+        role: 'assistant',
+        content: getWelcomeMessage()
+      }]);
+    }
+  }, [userPets, petsLoaded]);
+
   // Listen for custom event to open Mira
   useEffect(() => {
     const handleOpenMira = () => setIsOpen(true);
