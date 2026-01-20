@@ -80,7 +80,8 @@ import {
   Truck,
   BarChart3,
   Inbox,
-  Settings
+  Settings,
+  PartyPopper
 } from 'lucide-react';
 
 const Admin = () => {
