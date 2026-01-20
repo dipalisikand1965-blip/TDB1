@@ -433,6 +433,18 @@ const EnjoyPage = () => {
       {viewMode === 'calendar' && (
         <div className="py-8 bg-gradient-to-b from-amber-50 to-white" id="calendar-view">
           <div className="max-w-7xl mx-auto px-4">
+            {/* Close Calendar Button */}
+            <div className="flex justify-end mb-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setViewMode('list')}
+                className="flex items-center gap-2"
+              >
+                <X className="w-4 h-4" />
+                Close Calendar
+              </Button>
+            </div>
             <div className="grid lg:grid-cols-3 gap-6">
               {/* Calendar */}
               <div className="lg:col-span-2">
