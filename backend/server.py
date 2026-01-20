@@ -823,20 +823,76 @@ security = HTTPBasic()
 _admin_credentials_cache = {"username": None, "password": None, "loaded": False}
 
 async def load_admin_credentials_from_db():
-    """Load admin credentials from database into cache"""
+    """Load admin credentials from database into cache, create if not exists"""
     global _admin_credentials_cache
     try:
         admin_config = await db.admin_config.find_one({"type": "credentials"})
         logger.info(f"Loading admin credentials from DB: {admin_config is not None}")
+        
         if admin_config:
             _admin_credentials_cache["username"] = admin_config.get("username")
             _admin_credentials_cache["password"] = admin_config.get("password")
             _admin_credentials_cache["loaded"] = True
             logger.info(f"Admin credentials loaded: {_admin_credentials_cache['username']}")
         else:
-            logger.info("No admin credentials in DB, using .env defaults")
+            # Create default admin credentials if none exist
+            default_username = ADMIN_USERNAME
+            default_password = ADMIN_PASSWORD
+            await db.admin_config.insert_one({
+                "type": "credentials",
+                "username": default_username,
+                "password": default_password,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+            _admin_credentials_cache["username"] = default_username
+            _admin_credentials_cache["password"] = default_password
+            _admin_credentials_cache["loaded"] = True
+            logger.info(f"Created default admin credentials: {default_username}")
     except Exception as e:
         logger.error(f"Error loading admin credentials: {e}")
+
+
+async def ensure_default_user_exists():
+    """Ensure a default test user exists for login testing"""
+    from passlib.context import CryptContext
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    
+    try:
+        # Check if default user exists
+        default_email = "dipali@clubconcierge.in"
+        existing = await db.users.find_one({"email": default_email})
+        
+        if not existing:
+            # Create default user with bcrypt password
+            import uuid
+            password_hash = pwd_context.hash("lola4304")
+            user_doc = {
+                "id": str(uuid.uuid4()),
+                "email": default_email,
+                "password_hash": password_hash,
+                "name": "Dipali",
+                "phone": None,
+                "membership_tier": "free",
+                "membership_expires": None,
+                "chat_count_today": 0,
+                "last_chat_date": None,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.users.insert_one(user_doc)
+            logger.info(f"Created default user: {default_email}")
+        else:
+            # Ensure password_hash field exists and is correct
+            if "password_hash" not in existing or not existing.get("password_hash"):
+                password_hash = pwd_context.hash("lola4304")
+                await db.users.update_one(
+                    {"email": default_email},
+                    {"$set": {"password_hash": password_hash}}
+                )
+                logger.info(f"Updated password_hash for: {default_email}")
+            else:
+                logger.info(f"Default user already exists: {default_email}")
+    except Exception as e:
+        logger.error(f"Error ensuring default user: {e}")
 
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
     """Verify admin credentials - checks cached db credentials first, then falls back to .env"""
