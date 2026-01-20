@@ -392,9 +392,14 @@ const CareManager = ({ getAuthHeader }) => {
           </h2>
           <p className="text-gray-500">Manage care requests, partners, products & bundles</p>
         </div>
-        <Button onClick={fetchAllData} variant="outline">
-          <RefreshCw className="w-4 h-4 mr-2" /> Refresh
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={fetchAllData} variant="outline">
+            <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+          </Button>
+          <Button onClick={seedProducts} variant="outline">
+            <Download className="w-4 h-4 mr-2" /> Seed Data
+          </Button>
+        </div>
       </div>
 
       {/* Stats Overview */}
