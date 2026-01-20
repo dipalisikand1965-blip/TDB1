@@ -759,10 +759,10 @@ const EnjoyPage = () => {
                             {exp.is_free ? 'Free' : `₹${exp.price}`}
                           </span>
                           {exp.paw_reward_points > 0 && (
-                            <p className="text-xs text-purple-600">🐾 {exp.paw_reward_points} pts</p>
+                            <p className="text-xs text-orange-600">🐾 {exp.paw_reward_points} pts</p>
                           )}
                         </div>
-                        <Button size="sm" onClick={() => handleRsvp(exp)}>
+                        <Button size="sm" onClick={() => handleRsvp(exp)} className="bg-orange-500 hover:bg-orange-600">
                           RSVP
                         </Button>
                       </div>
