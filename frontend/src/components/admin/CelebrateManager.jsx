@@ -117,19 +117,35 @@ const CelebrateManager = ({ getAuthHeader }) => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [requestsRes, productsRes, bundlesRes, statsRes, settingsRes, partnersRes] = await Promise.all([
+      const [requestsRes, productsRes, bundlesRes, settingsRes, partnersRes] = await Promise.all([
         axios.get(`${API_URL}/api/celebrate/requests`),
-        axios.get(`${API_URL}/api/celebrate/admin/products`),
+        // Use main products collection (Shopify synced) with cakes category
+        axios.get(`${API_URL}/api/admin/products?category=cakes&limit=500`).catch(() => axios.get(`${API_URL}/api/products?limit=500`)),
         axios.get(`${API_URL}/api/celebrate/admin/bundles`),
-        axios.get(`${API_URL}/api/celebrate/stats`),
         axios.get(`${API_URL}/api/celebrate/admin/settings`),
         axios.get(`${API_URL}/api/celebrate/admin/partners`)
       ]);
       
       setRequests(requestsRes.data.requests || []);
-      setProducts(productsRes.data.products || []);
+      // Filter products for celebrate categories (cakes, treats, hampers, etc.)
+      const allProducts = productsRes.data.products || [];
+      const celebrateProducts = allProducts.filter(p => 
+        ['cakes', 'treats', 'hampers', 'pupcakes', 'dognuts', 'frozen', 'celebrate'].some(cat => 
+          (p.category || '').toLowerCase().includes(cat) ||
+          (p.subcategory || '').toLowerCase().includes(cat)
+        )
+      );
+      setProducts(celebrateProducts.length > 0 ? celebrateProducts : allProducts);
       setBundles(bundlesRes.data.bundles || []);
-      setStats(statsRes.data || {});
+      // Calculate stats from actual data
+      const statsData = {
+        total_products: celebrateProducts.length || allProducts.length,
+        total_bundles: (bundlesRes.data.bundles || []).length,
+        total_partners: (partnersRes.data.partners || []).length,
+        pending_requests: (requestsRes.data.requests || []).filter(r => ['submitted', 'acknowledged'].includes(r.status)).length,
+        completed_requests: (requestsRes.data.requests || []).filter(r => r.status === 'completed').length
+      };
+      setStats(statsData);
       setSettings(settingsRes.data || {});
       setPartners(partnersRes.data.partners || []);
     } catch (error) {
@@ -140,7 +156,21 @@ const CelebrateManager = ({ getAuthHeader }) => {
     }
   };
 
-  // Seed products
+  // Sync with Shopify (main products)
+  const syncWithShopify = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/api/admin/sync-shopify`);
+      toast({ 
+        title: 'Success', 
+        description: response.data.message || 'Shopify sync initiated'
+      });
+      fetchAllData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to sync with Shopify', variant: 'destructive' });
+    }
+  };
+
+  // Seed sample products (for testing only)
   const seedProducts = async () => {
     try {
       const response = await axios.post(`${API_URL}/api/celebrate/admin/seed`);
