@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { X, Sparkles, Minimize2, Maximize2, Send, Loader2, User, Bot, PawPrint } from 'lucide-react';
+import { X, Sparkles, Minimize2, Maximize2, Send, Loader2, User, Bot } from 'lucide-react';
 import { Button } from './ui/button';
 import ReactMarkdown from 'react-markdown';
-import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -18,7 +17,6 @@ const generateSessionId = () => {
 
 const MiraAI = () => {
   const location = useLocation();
-  const { user, token } = useAuth();
   
   // Hide MiraAI on admin and agent pages
   const hiddenPaths = ['/admin', '/agent', '/login'];
@@ -26,19 +24,6 @@ const MiraAI = () => {
   
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [userPets, setUserPets] = useState([]);
-  const [petsLoaded, setPetsLoaded] = useState(false);
-  
-  // Dynamic welcome message based on user's pets
-  const getWelcomeMessage = () => {
-    if (userPets.length > 0) {
-      const petNames = userPets.map(p => p.name).join(', ');
-      const firstPet = userPets[0];
-      return `🐾 **Welcome back!** I'm Mira, your Super Concierge® at The Doggy Company.\n\nI see you have **${petNames}** in your family! How wonderful. 🎉\n\nI already know ${firstPet.name}'s preferences, so let's skip the basics and get straight to helping you.\n\nWhat can I help you with today?\n- 🎂 A special treat or cake for ${firstPet.name}?\n- 🍽️ Pet-friendly dining reservations\n- 🏨 Stay bookings where ${firstPet.name} is welcome\n- ✈️ Travel & relocation assistance\n- 💊 Care, grooming, or vet coordination`;
-    }
-    return "🐾 **Hello, pet parent!** I'm Mira, your Super Concierge® at The Doggy Company.\n\nI can help you with:\n- 🎂 Ordering birthday cakes & treats\n- 🍽️ Dine reservations at pet-friendly restaurants\n- 🏨 Stay bookings at pet-friendly hotels\n- ✈️ Pet travel & relocation assistance\n- 💊 Pet care & nutrition advice\n\n💡 *Tip: Create a Pet Soul profile to get personalized recommendations!*\n\nHow can I assist you today?";
-  };
-  
   const [messages, setMessages] = useState([
     {
       id: 'welcome',
@@ -60,50 +45,6 @@ const MiraAI = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
-
-  // Fetch user's pets when logged in
-  useEffect(() => {
-    const fetchUserPets = async () => {
-      if (token && !petsLoaded) {
-        try {
-          const response = await fetch(`${API_URL}/api/pets/my-pets`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          if (response.ok) {
-            const data = await response.json();
-            const pets = data.pets || [];
-            setUserPets(pets);
-            
-            // Update welcome message if pets found
-            if (pets.length > 0) {
-              setMessages([{
-                id: 'welcome',
-                role: 'assistant',
-                content: getWelcomeMessage()
-              }]);
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching pets for Mira:', error);
-        } finally {
-          setPetsLoaded(true);
-        }
-      }
-    };
-    
-    fetchUserPets();
-  }, [token, petsLoaded]);
-
-  // Update welcome when pets change
-  useEffect(() => {
-    if (petsLoaded && messages.length === 1 && messages[0].id === 'welcome') {
-      setMessages([{
-        id: 'welcome',
-        role: 'assistant',
-        content: getWelcomeMessage()
-      }]);
-    }
-  }, [userPets, petsLoaded]);
 
   // Listen for custom event to open Mira
   useEffect(() => {
@@ -136,16 +77,11 @@ const MiraAI = () => {
     try {
       const response = await fetch(`${API_URL}/api/mira/chat`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage.content,
           session_id: sessionId,
-          source: 'web_widget',
-          auth_token: token || null,
-          current_page: location.pathname
+          source: 'web_widget'
         })
       });
 
@@ -182,22 +118,12 @@ const MiraAI = () => {
     }
   };
 
-  // Quick action buttons - personalized if pets exist
-  const getQuickActions = () => {
-    if (userPets.length > 0) {
-      const petName = userPets[0].name;
-      return [
-        { label: `🎂 Cake for ${petName}`, message: `I want to order a birthday cake for ${petName}` },
-        { label: '🍽️ Pet-Friendly Dining', message: 'Help me find a pet-friendly restaurant' },
-        { label: `🏨 Stay for ${petName}`, message: `I need a pet-friendly hotel for ${petName}` },
-      ];
-    }
-    return [
-      { label: '🎂 Order a Cake', message: 'I want to order a birthday cake for my dog' },
-      { label: '🍽️ Book Dining', message: 'Help me find a pet-friendly restaurant' },
-      { label: '🏨 Plan a Stay', message: 'I need a pet-friendly hotel recommendation' },
-    ];
-  };
+  // Quick action buttons
+  const quickActions = [
+    { label: '🎂 Order a Cake', message: 'I want to order a birthday cake for my dog' },
+    { label: '🍽️ Book Dining', message: 'Help me find a pet-friendly restaurant' },
+    { label: '🏨 Plan a Stay', message: 'I need a pet-friendly hotel recommendation' },
+  ];
 
   const handleQuickAction = (message) => {
     setInputValue(message);
@@ -241,11 +167,7 @@ const MiraAI = () => {
           </div>
           <div>
             <h3 className="font-bold">Mira</h3>
-            <p className="text-xs opacity-80">
-              {userPets.length > 0 
-                ? `Super Concierge® • Knows ${userPets[0].name} 🐾` 
-                : 'Super Concierge® • Online'}
-            </p>
+            <p className="text-xs opacity-80">Super Concierge® • Online</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -330,7 +252,7 @@ const MiraAI = () => {
           {/* Quick Actions (show only at start) */}
           {messages.length === 1 && (
             <div className="px-4 pb-2 flex gap-2 flex-wrap bg-gray-50">
-              {getQuickActions().map((action, idx) => (
+              {quickActions.map((action, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleQuickAction(action.message)}
