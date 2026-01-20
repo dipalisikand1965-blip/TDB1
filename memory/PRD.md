@@ -24,6 +24,21 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 
 ## What's Been Implemented (This Session - Jan 20, 2026)
 
+### Service Desk Full-Screen Module - COMPLETE ✅
+- **New Route**: `/admin/service-desk` - Dedicated full-screen workspace
+- **Own Login Screen**: Beautiful purple gradient with glass-morphism design
+- **"← Back to Admin Dashboard"** button at top navigation
+- **No Navbar/Footer**: True full-screen experience for focused work
+- **All Features Preserved**: 40+ tickets, filters, categories, AI draft, etc.
+
+### Collections product_count Fix - COMPLETE ✅
+- `/api/collections` now correctly calculates `product_count` from `product_ids`
+- Cakes: 119 products, Treats: 41 products, Breed Cakes: 40 products
+
+### Dine Page Verified Working ✅
+- 38 Restaurants displayed with filters
+- 5 Bundles and 18 Products
+
 ### Admin Standardization - COMPLETE ✅
 - **CelebrateManager** - Fixed product fetch (now shows 298 products from main Shopify-synced collection)
 - **DineManager** - Added Settings tab with General Settings, Paw Rewards, Buddy Match Settings
