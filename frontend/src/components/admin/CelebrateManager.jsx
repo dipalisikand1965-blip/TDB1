@@ -747,12 +747,12 @@ const CelebrateManager = ({ getAuthHeader }) => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button variant="outline" onClick={fetchAllData}>
                 <RefreshCw className="w-4 h-4 mr-2" /> Refresh
               </Button>
-              <Button variant="outline" onClick={seedProducts}>
-                <Sparkles className="w-4 h-4 mr-2" /> Seed
+              <Button variant="outline" onClick={syncWithShopify} className="bg-green-50 hover:bg-green-100 text-green-700">
+                <RefreshCw className="w-4 h-4 mr-2" /> Sync Shopify
               </Button>
               <Button variant="outline" onClick={exportProductsCSV}>
                 <Download className="w-4 h-4 mr-2" /> Export CSV
