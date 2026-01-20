@@ -2175,6 +2175,11 @@ const Admin = () => {
           <CareManager getAuthHeader={getAuthHeaders} />
         )}
 
+        {/* Enjoy Tab */}
+        {activeTab === 'enjoy' && (
+          <EnjoyManager getAuthHeader={getAuthHeaders} />
+        )}
+
         {/* Service Desk Tab - Full Page Mode */}
         {activeTab === 'servicedesk' && (
           <div className="fixed inset-0 top-[140px] bg-slate-50 z-40 overflow-hidden">
