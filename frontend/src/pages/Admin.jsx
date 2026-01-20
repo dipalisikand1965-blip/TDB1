@@ -2183,6 +2183,11 @@ const Admin = () => {
           <EnjoyManager getAuthHeader={getAuthHeaders} />
         )}
 
+        {/* Fit Tab */}
+        {activeTab === 'fit' && (
+          <FitManager getAuthHeader={getAuthHeaders} />
+        )}
+
         {/* Service Desk Tab - Full Page Mode */}
         {activeTab === 'servicedesk' && (
           <div className="fixed inset-0 top-[140px] bg-slate-50 z-40 overflow-hidden">
