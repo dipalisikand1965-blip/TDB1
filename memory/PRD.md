@@ -149,11 +149,10 @@ Build a world-class, event-driven platform with a single engine powering multipl
 ## Upcoming Tasks
 
 ### P0 - Critical (Remaining Pillars)
-1. **FIT Pillar** - Exercise plans, weight tracking, nutrition guidance
-2. **ADVISORY Pillar** - Behaviour consults, nutrition planning, senior dog planning
-3. **PAPERWORK Pillar** - Secure document uploads (vaccinations, insurance) with reminders
-4. **EMERGENCY Pillar** - High-priority request routing, lost pet workflow
-5. Complete Membership/Club Pillar (after all other pillars)
+1. **ADVISORY Pillar** - Behaviour consults, nutrition planning, senior dog planning
+2. **PAPERWORK Pillar** - Secure document uploads (vaccinations, insurance) with reminders
+3. **EMERGENCY Pillar** - High-priority request routing, lost pet workflow
+4. Complete Membership/Club Pillar (after all other pillars)
 
 ### P1 - High Priority (Enhancements)
 1. Enhance CELEBRATE Pillar - Add birthday triggers, Mira planning, reminder nudges
