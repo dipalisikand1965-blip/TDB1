@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { X, Sparkles, Minimize2, Maximize2, Send, Loader2, User, Bot } from 'lucide-react';
+import { X, Sparkles, Minimize2, Maximize2, Send, Loader2, User, Bot, PawPrint } from 'lucide-react';
 import { Button } from './ui/button';
 import ReactMarkdown from 'react-markdown';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
