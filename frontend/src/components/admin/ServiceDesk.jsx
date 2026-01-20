@@ -2166,7 +2166,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className={`h-full flex flex-col overflow-hidden ${isFullScreen ? 'p-4' : ''}`}>
       {/* SLA Breach Alert Banner */}
       {(stats?.overdue > 0 || (slaStats?.sla_breach_rate > 20)) && (
         <div className="bg-red-50 border-l-4 border-red-500 p-3 mb-4 rounded-r-lg flex items-center justify-between animate-pulse">
