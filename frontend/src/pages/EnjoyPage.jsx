@@ -94,10 +94,12 @@ const EnjoyPage = () => {
   const fetchExperiences = async () => {
     setLoading(true);
     try {
-      const [allRes, featuredRes, calendarRes] = await Promise.all([
+      const [allRes, featuredRes, calendarRes, productsRes, bundlesRes] = await Promise.all([
         fetch(`${API_URL}/api/enjoy/experiences`),
         fetch(`${API_URL}/api/enjoy/experiences?is_featured=true`),
-        fetch(`${API_URL}/api/enjoy/calendar`)
+        fetch(`${API_URL}/api/enjoy/calendar`),
+        fetch(`${API_URL}/api/enjoy/products`),
+        fetch(`${API_URL}/api/enjoy/bundles`)
       ]);
       
       if (allRes.ok) {
@@ -114,6 +116,14 @@ const EnjoyPage = () => {
       if (calendarRes.ok) {
         const data = await calendarRes.json();
         setCalendarData(data.calendar || {});
+      }
+      if (productsRes.ok) {
+        const data = await productsRes.json();
+        setProducts(data.products || []);
+      }
+      if (bundlesRes.ok) {
+        const data = await bundlesRes.json();
+        setBundles(data.bundles || []);
       }
     } catch (error) {
       console.error('Error fetching experiences:', error);
