@@ -251,12 +251,12 @@ const Navbar = () => {
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
               <img 
                 src="https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png?v=1718969706" 
-                alt="Logo"
+                alt="The Doggy Company Logo"
                 className="h-9 w-auto"
               />
               <div className="hidden sm:block">
                 <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent leading-tight">
-                  Doggy Co.
+                  The Doggy Company
                 </span>
               </div>
             </Link>

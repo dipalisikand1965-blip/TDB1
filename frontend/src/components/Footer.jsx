@@ -87,10 +87,10 @@ const Footer = () => {
                 <div>
                   <p className="text-gray-300">
                     <strong>The Doggy Company</strong><br />
-                    Block A, Bldg No 7, Flat no 701,<br />
-                    Nahar Amrit Shakti, Chandivali,<br />
-                    Andheri East, Mumbai - 400072<br />
-                    Maharashtra, India
+                    #83, 3rd Floor, 7th Cross,<br />
+                    4th B Block, Koramangala,<br />
+                    Bangalore - 560034<br />
+                    Karnataka, India
                   </p>
                 </div>
               </div>
