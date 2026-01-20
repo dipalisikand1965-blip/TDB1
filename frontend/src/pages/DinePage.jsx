@@ -1656,12 +1656,18 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
             />
           </div>
 
-          <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white">
-            Request Reservation
+          <Button 
+            type="submit" 
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+            disabled={submitting}
+            data-testid="dine-reserve-submit"
+          >
+            {submitting ? 'Submitting...' : 'Request Reservation'}
           </Button>
 
           <p className="text-xs text-center text-gray-500">
             Our team will confirm availability within 2 hours
+            {selectedPetId && <span className="block text-pink-600 mt-1">🐾 Reservation linked to Pet Soul</span>}
           </p>
         </form>
       </Card>
