@@ -563,7 +563,7 @@ const ProductDetailModal = ({ product, onClose }) => {
       }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     // Build variant string from selected options
     const variantDescription = Object.entries(selectedOptions)
       .map(([key, value]) => value)
@@ -610,9 +610,39 @@ const ProductDetailModal = ({ product, onClose }) => {
       autoshipFrequency: cartInput.purchaseType === 'autoship' ? cartInput.autoshipFrequency : null,
       isAutoship: cartInput.purchaseType === 'autoship',
       autoshipDetails: autoshipDetails,
-      customDetails: { ...cartInput }
+      customDetails: { ...cartInput },
+      // Pet Soul integration
+      petId: cartInput.selectedPetId,
+      petName: cartInput.petName,
+      petBreed: cartInput.petBreed
     };
     addToCart(cartItem, variantDescription, 'Selected');
+    
+    // Write to Pet Soul if pet is selected
+    if (cartInput.selectedPetId && token) {
+      try {
+        await fetch(`${API_URL}/api/pets/${cartInput.selectedPetId}/soul/celebrate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            type: 'cake_order',
+            product_id: product.id,
+            product_name: product.name,
+            category: product.category,
+            price: currentPrice,
+            variant: variantDescription,
+            delivery_date: cartInput.date ? cartInput.date.toISOString() : null,
+            occasion: cartInput.date ? 'celebration' : 'treat'
+          })
+        });
+      } catch (error) {
+        console.error('Failed to update Pet Soul:', error);
+        // Don't block the cart - Pet Soul update is best effort
+      }
+    }
     
     // Add Party Box
     if (cartInput.addPartyBox) {
