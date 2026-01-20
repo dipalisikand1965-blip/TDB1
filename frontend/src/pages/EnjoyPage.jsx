@@ -333,37 +333,311 @@ const EnjoyPage = () => {
       {/* Experience Types Strip */}
       <div className="bg-white border-b shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4 overflow-x-auto scrollbar-hide">
-            <button
-              onClick={() => setSelectedType(null)}
-              className={`px-4 py-2 rounded-full transition-all whitespace-nowrap ${
-                !selectedType ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              All
-            </button>
-            {Object.entries(EXPERIENCE_TYPES).map(([key, type]) => {
-              const Icon = type.icon;
-              return (
+          <div className="flex items-center justify-between gap-4">
+            {/* Type Filters */}
+            <div className="flex items-center gap-4 overflow-x-auto scrollbar-hide flex-1">
+              <button
+                onClick={() => setSelectedType(null)}
+                className={`px-4 py-2 rounded-full transition-all whitespace-nowrap ${
+                  !selectedType ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                All
+              </button>
+              {Object.entries(EXPERIENCE_TYPES).map(([key, type]) => {
+                const Icon = type.icon;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedType(selectedType === key ? null : key)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all whitespace-nowrap ${
+                      selectedType === key ? `bg-gradient-to-r ${type.color} text-white` : `${type.bgColor} ${type.textColor} hover:scale-105`
+                    }`}
+                    data-testid={`experience-type-${key}`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="text-sm font-medium">{type.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* View Toggle & City Filter */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              {/* City Filter */}
+              <Select value={selectedCity} onValueChange={setSelectedCity}>
+                <SelectTrigger className="w-40 h-10" data-testid="city-filter">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-purple-500" />
+                    <SelectValue placeholder="All Cities" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All Cities</SelectItem>
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50">🇮🇳 India</div>
+                  {availableCities.filter(c => CITY_REGIONS.india.cities.includes(c)).map(city => (
+                    <SelectItem key={city} value={city}>{city}</SelectItem>
+                  ))}
+                  {availableCities.filter(c => CITY_REGIONS.global.cities.includes(c)).length > 0 && (
+                    <>
+                      <div className="px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50">🌍 Global</div>
+                      {availableCities.filter(c => CITY_REGIONS.global.cities.includes(c)).map(city => (
+                        <SelectItem key={city} value={city}>{city}</SelectItem>
+                      ))}
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
+
+              {/* View Toggle */}
+              <div className="flex items-center bg-gray-100 rounded-lg p-1">
                 <button
-                  key={key}
-                  onClick={() => setSelectedType(selectedType === key ? null : key)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all whitespace-nowrap ${
-                    selectedType === key ? `bg-gradient-to-r ${type.color} text-white` : `${type.bgColor} ${type.textColor} hover:scale-105`
+                  onClick={() => setViewMode('list')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+                    viewMode === 'list' ? 'bg-white shadow text-purple-600' : 'text-gray-500 hover:text-gray-700'
                   }`}
-                  data-testid={`experience-type-${key}`}
+                  data-testid="view-list-btn"
                 >
-                  <Icon className="w-4 h-4" />
-                  <span className="text-sm font-medium">{type.name}</span>
+                  <List className="w-4 h-4" />
+                  <span className="text-sm font-medium hidden sm:inline">List</span>
                 </button>
-              );
-            })}
+                <button
+                  onClick={() => setViewMode('calendar')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+                    viewMode === 'calendar' ? 'bg-white shadow text-purple-600' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                  data-testid="view-calendar-btn"
+                >
+                  <CalendarDays className="w-4 h-4" />
+                  <span className="text-sm font-medium hidden sm:inline">Calendar</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Calendar View */}
+      {viewMode === 'calendar' && (
+        <div className="py-8 bg-gradient-to-b from-purple-50 to-white" id="calendar-view">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="grid lg:grid-cols-3 gap-6">
+              {/* Calendar */}
+              <div className="lg:col-span-2">
+                <Card className="p-6">
+                  {/* Calendar Header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                      <CalendarDays className="w-6 h-6 text-purple-600" />
+                      Event Calendar
+                    </h2>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => navigateMonth(-1)}
+                        data-testid="prev-month-btn"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </Button>
+                      <span className="text-lg font-semibold min-w-[180px] text-center">
+                        {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => navigateMonth(1)}
+                        data-testid="next-month-btn"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Weekday Headers */}
+                  <div className="grid grid-cols-7 gap-1 mb-2">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                      <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Calendar Grid */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {getDaysInMonth(currentMonth).map((day, idx) => {
+                      const events = day ? getEventsForDate(day) : [];
+                      const hasEvents = events.length > 0;
+                      const isSelected = selectedDate === day;
+                      
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => day && setSelectedDate(day)}
+                          disabled={!day}
+                          className={`
+                            aspect-square p-1 rounded-lg transition-all relative
+                            ${!day ? 'bg-transparent cursor-default' : 'hover:bg-purple-50 cursor-pointer'}
+                            ${isSelected ? 'bg-purple-100 ring-2 ring-purple-500' : ''}
+                            ${isToday(day) ? 'bg-purple-600 text-white hover:bg-purple-700' : ''}
+                          `}
+                          data-testid={day ? `calendar-day-${day}` : undefined}
+                        >
+                          {day && (
+                            <>
+                              <span className={`text-sm font-medium ${isToday(day) ? 'text-white' : ''}`}>
+                                {day}
+                              </span>
+                              {hasEvents && (
+                                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
+                                  {events.slice(0, 3).map((event, i) => (
+                                    <span
+                                      key={i}
+                                      className={`w-1.5 h-1.5 rounded-full ${
+                                        isToday(day) ? 'bg-white' : 'bg-purple-500'
+                                      }`}
+                                    />
+                                  ))}
+                                  {events.length > 3 && (
+                                    <span className={`text-xs ${isToday(day) ? 'text-white' : 'text-purple-500'}`}>
+                                      +
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Legend */}
+                  <div className="mt-4 pt-4 border-t flex items-center gap-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-purple-600" />
+                      <span>Today</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-0.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                      </div>
+                      <span>Has Events</span>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+
+              {/* Selected Date Events */}
+              <div className="lg:col-span-1">
+                <Card className="p-6 sticky top-24">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-purple-600" />
+                    {selectedDate ? (
+                      <span>
+                        {new Date(currentMonth.getFullYear(), currentMonth.getMonth(), selectedDate).toLocaleDateString('en-US', { 
+                          weekday: 'long',
+                          month: 'short', 
+                          day: 'numeric' 
+                        })}
+                      </span>
+                    ) : (
+                      <span>Select a Date</span>
+                    )}
+                  </h3>
+
+                  {selectedDate ? (
+                    getEventsForDate(selectedDate).length > 0 ? (
+                      <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                        {getEventsForDate(selectedDate).map((event) => {
+                          const typeConfig = EXPERIENCE_TYPES[event.experience_type] || EXPERIENCE_TYPES.event;
+                          const Icon = typeConfig.icon;
+                          
+                          return (
+                            <Card 
+                              key={event.id} 
+                              className={`p-3 border-l-4 hover:shadow-md transition-all cursor-pointer ${typeConfig.bgColor}`}
+                              style={{ borderLeftColor: typeConfig.textColor.replace('text-', '').replace('-600', '') }}
+                              onClick={() => {
+                                const exp = experiences.find(e => e.id === event.id);
+                                if (exp) handleRsvp(exp);
+                              }}
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${typeConfig.bgColor}`}>
+                                  <Icon className={`w-4 h-4 ${typeConfig.textColor}`} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium text-gray-900 text-sm truncate">{event.name}</h4>
+                                  <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                                    <Clock className="w-3 h-3" />
+                                    <span>{event.start_time}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
+                                    <MapPin className="w-3 h-3" />
+                                    <span className="truncate">{event.venue_name || event.city}</span>
+                                  </div>
+                                  <div className="mt-2">
+                                    <Badge variant={event.is_free ? 'secondary' : 'default'} className="text-xs">
+                                      {event.is_free ? 'Free' : `₹${event.price}`}
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </div>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <Calendar className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                        <p className="text-sm">No events on this date</p>
+                        {selectedCity && (
+                          <p className="text-xs mt-1">Try removing the city filter</p>
+                        )}
+                      </div>
+                    )
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <PawPrint className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                      <p className="text-sm">Click on a date to see events</p>
+                    </div>
+                  )}
+
+                  {/* Quick City Stats */}
+                  {availableCities.length > 0 && (
+                    <div className="mt-6 pt-4 border-t">
+                      <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                        <Globe className="w-4 h-4" />
+                        Available Cities
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {availableCities.slice(0, 6).map(city => (
+                          <Badge 
+                            key={city} 
+                            variant={selectedCity === city ? 'default' : 'outline'}
+                            className="cursor-pointer hover:bg-purple-100"
+                            onClick={() => setSelectedCity(selectedCity === city ? '' : city)}
+                          >
+                            {city}
+                          </Badge>
+                        ))}
+                        {availableCities.length > 6 && (
+                          <Badge variant="outline">+{availableCities.length - 6} more</Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Featured Experiences */}
-      {featuredExperiences.length > 0 && !selectedType && (
+      {viewMode === 'list' && featuredExperiences.length > 0 && !selectedType && (
         <div className="py-12 bg-gradient-to-b from-white to-purple-50">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center gap-2 mb-6">
