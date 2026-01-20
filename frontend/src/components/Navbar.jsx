@@ -287,7 +287,7 @@ const Navbar = () => {
                     {/* Dropdown */}
                     {activePillar === pillar.id && hasDropdown && (
                       <div 
-                        className="absolute top-full left-0 mt-1 w-56 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-50"
+                        className="absolute top-full left-0 mt-1 w-56 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-[100]"
                         onMouseLeave={() => setActivePillar(null)}
                       >
                         <div className={`px-3 py-2 bg-gradient-to-r ${pillar.color} text-white mx-1 mb-1 rounded-md`}>
