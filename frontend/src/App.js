@@ -138,45 +138,22 @@ function MainLayout() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<MemberDashboard />} />
         
-        {/* Main Categories */}
-        <Route path="/cakes" element={<ProductListing category="cakes" />} />
-        <Route path="/mini-cakes" element={<ProductListing category="mini-cakes" />} />
-        <Route path="/treats" element={<ProductListing category="treats" />} />
-        <Route path="/meals" element={<ProductListing category="fresh-meals" />} />
-        <Route path="/pan-india" element={<ProductListing category="pan-india" />} />
-        
-        {/* More Categories */}
-        <Route path="/breed-cakes" element={<ProductListing category="breed-cakes" />} />
-        <Route path="/custom" element={<ProductListing category="breed-cakes" />} />
-        <Route path="/pupcakes-dognuts" element={<ProductListing category="dognuts" />} />
-        <Route path="/desi" element={<ProductListing category="desi-treats" />} />
-        <Route path="/frozen" element={<ProductListing category="frozen-treats" />} />
-        <Route path="/nut-butters" element={<ProductListing category="nut-butters" />} />
-        <Route path="/cat-treats" element={<ProductListing category="cat-treats" />} />
-        <Route path="/accessories" element={<ProductListing category="accessories" />} />
-        <Route path="/merchandise" element={<ProductListing category="merchandise" />} />
-        <Route path="/hampers" element={<ProductListing category="hampers" />} />
-        <Route path="/gift-hampers" element={<ProductListing category="hampers" />} />
-        
-        {/* All Products */}
-        <Route path="/all" element={<ProductListing category="all" />} />
-        
         {/* Search Results */}
         <Route path="/search" element={<SearchResults />} />
         
         {/* Special Pages */}
-        <Route path="/custom-cake" element={<CustomCakeDesigner />} />
+        <Route path="/custom-cake" element={<ProtectedRoute><CustomCakeDesigner /></ProtectedRoute>} />
         <Route path="/concierge" element={<MiraConcierge />} />
         <Route path="/mira" element={<MiraPage />} />
-        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/membership" element={<Membership />} />
-        <Route path="/autoship" element={<Autoship />} />
-        <Route path="/autoship-products" element={<ProductListing category="autoship" />} />
+        <Route path="/autoship" element={<ProtectedRoute><Autoship /></ProtectedRoute>} />
+        <Route path="/autoship-products" element={<ProtectedRoute><ProductListing category="autoship" /></ProtectedRoute>} />
         <Route path="/admin/forgot-password" element={<ForgotPassword />} />
         <Route path="/admin/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<Admin />} />
-        <Route path="/voice-order" element={<VoiceOrder />} />
+        <Route path="/voice-order" element={<ProtectedRoute><VoiceOrder /></ProtectedRoute>} />
         
         {/* Pet Profile - Protected */}
         <Route path="/pet-profile" element={<ProtectedRoute><PetProfile /></ProtectedRoute>} />
