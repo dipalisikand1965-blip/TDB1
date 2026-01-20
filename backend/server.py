@@ -933,6 +933,9 @@ class ChatRequest(BaseModel):
     customer_email: Optional[str] = None
     customer_phone: Optional[str] = None
     user_email: Optional[str] = None  # For membership gating
+    auth_token: Optional[str] = None  # User auth token for Pet Soul access
+    current_page: Optional[str] = None  # Current page/pillar context
+    source: Optional[str] = None  # web_widget, concierge, embed
 
 class MiraChat(BaseModel):
     model_config = ConfigDict(extra="ignore")
