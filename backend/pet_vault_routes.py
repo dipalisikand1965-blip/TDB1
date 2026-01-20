@@ -961,7 +961,7 @@ class FitActivityRecord(BaseModel):
 @pet_vault_router.post("/{pet_id}/record-fit-activity")
 async def record_fit_activity_to_soul(pet_id: str, data: FitActivityRecord):
     """Record a fitness activity to the Pet Soul"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     pet = await db.pets.find_one({"id": pet_id})
