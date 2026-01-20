@@ -9383,6 +9383,118 @@ async def get_pet_soul_summary():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ==================== PUBLIC INITIALIZATION ENDPOINT ====================
+@api_router.get("/init-database")
+async def initialize_database():
+    """
+    Public endpoint to initialize database with required data.
+    Call this after deployment to ensure admin, user, and products exist.
+    """
+    from passlib.context import CryptContext
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    
+    results = {
+        "admin": "unchanged",
+        "user": "unchanged", 
+        "products": "unchanged"
+    }
+    
+    try:
+        # 1. Ensure admin credentials exist
+        admin_config = await db.admin_config.find_one({"type": "credentials"})
+        if not admin_config:
+            await db.admin_config.insert_one({
+                "type": "credentials",
+                "username": ADMIN_USERNAME,
+                "password": ADMIN_PASSWORD,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+            results["admin"] = "created"
+            logger.info("Admin credentials created via init endpoint")
+        else:
+            # Ensure password is correct
+            if admin_config.get("password") != ADMIN_PASSWORD:
+                await db.admin_config.update_one(
+                    {"type": "credentials"},
+                    {"$set": {"password": ADMIN_PASSWORD}}
+                )
+                results["admin"] = "password_updated"
+        
+        # Reload admin cache
+        global _admin_credentials_cache
+        _admin_credentials_cache["username"] = ADMIN_USERNAME
+        _admin_credentials_cache["password"] = ADMIN_PASSWORD
+        _admin_credentials_cache["loaded"] = True
+        
+        # 2. Ensure default user exists
+        default_email = "dipali@clubconcierge.in"
+        existing_user = await db.users.find_one({"email": default_email})
+        if not existing_user:
+            password_hash = pwd_context.hash("lola4304")
+            user_doc = {
+                "id": str(uuid.uuid4()),
+                "email": default_email,
+                "password_hash": password_hash,
+                "name": "Dipali",
+                "phone": None,
+                "membership_tier": "free",
+                "membership_expires": None,
+                "chat_count_today": 0,
+                "last_chat_date": None,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.users.insert_one(user_doc)
+            results["user"] = "created"
+            logger.info(f"Default user created: {default_email}")
+        else:
+            # Ensure password_hash exists
+            if "password_hash" not in existing_user:
+                password_hash = pwd_context.hash("lola4304")
+                await db.users.update_one(
+                    {"email": default_email},
+                    {"$set": {"password_hash": password_hash}}
+                )
+                results["user"] = "password_hash_added"
+        
+        # 3. Seed products if empty
+        product_count = await db.products.count_documents({})
+        if product_count == 0:
+            sample_products = [
+                {"id": "cake-001", "name": "Classic Peanut Butter Cake", "description": "Delicious peanut butter cake for dogs", "price": 899, "originalPrice": 899, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600", "category": "cakes", "available": True, "created_at": datetime.now(timezone.utc).isoformat()},
+                {"id": "cake-002", "name": "Banana Bliss Cake", "description": "Healthy banana cake with natural ingredients", "price": 799, "originalPrice": 799, "image": "https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=600", "category": "cakes", "available": True, "created_at": datetime.now(timezone.utc).isoformat()},
+                {"id": "cake-003", "name": "Carrot Delight Cake", "description": "Nutritious carrot cake packed with vitamins", "price": 949, "originalPrice": 949, "image": "https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=600", "category": "cakes", "available": True, "created_at": datetime.now(timezone.utc).isoformat()},
+                {"id": "cake-004", "name": "Chicken Supreme Cake", "description": "Savory chicken cake for meat lovers", "price": 1099, "originalPrice": 1099, "image": "https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=600", "category": "cakes", "available": True, "created_at": datetime.now(timezone.utc).isoformat()},
+                {"id": "treat-001", "name": "Chicken Jerky Strips", "description": "Crunchy chicken jerky treats", "price": 349, "originalPrice": 349, "image": "https://images.unsplash.com/photo-1582798244350-8b8e9e4f0b91?w=600", "category": "treats", "available": True, "created_at": datetime.now(timezone.utc).isoformat()},
+                {"id": "treat-002", "name": "Peanut Butter Biscuits", "description": "Crunchy peanut butter flavored biscuits", "price": 299, "originalPrice": 299, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", "category": "treats", "available": True, "created_at": datetime.now(timezone.utc).isoformat()},
+                {"id": "pupcake-001", "name": "Pupcake Box (6 pcs)", "description": "Assorted mini cupcakes for dogs", "price": 599, "originalPrice": 599, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600", "category": "cakes", "available": True, "created_at": datetime.now(timezone.utc).isoformat()},
+                {"id": "frozen-001", "name": "Pup Ice Cream - Peanut Butter", "description": "Frozen peanut butter treat", "price": 199, "originalPrice": 199, "image": "https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=600", "category": "frozen-treats", "available": True, "created_at": datetime.now(timezone.utc).isoformat()},
+                {"id": "hamper-001", "name": "Birthday Bash Box", "description": "Complete birthday celebration kit", "price": 1999, "originalPrice": 2499, "image": "https://images.unsplash.com/photo-1530041539828-114de669390e?w=600", "category": "hampers", "available": True, "created_at": datetime.now(timezone.utc).isoformat()},
+                {"id": "custom-001", "name": "Custom Photo Cake", "description": "Personalized cake with your pet's photo", "price": 1499, "originalPrice": 1499, "image": "https://images.unsplash.com/photo-1535254973040-607b474cb50d?w=600", "category": "custom", "available": True, "created_at": datetime.now(timezone.utc).isoformat()},
+            ]
+            await db.products.insert_many(sample_products)
+            results["products"] = f"created_{len(sample_products)}"
+            logger.info(f"Seeded {len(sample_products)} products")
+        else:
+            results["products"] = f"exists_{product_count}"
+        
+        return {
+            "success": True,
+            "message": "Database initialized successfully",
+            "results": results,
+            "credentials": {
+                "admin": {"username": "aditya", "password": "lola4304"},
+                "user": {"email": "dipali@clubconcierge.in", "password": "lola4304"}
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Database initialization failed: {e}")
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
