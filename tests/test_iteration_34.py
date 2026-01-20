@@ -204,8 +204,8 @@ class TestAdvisoryPageEndpoints:
         data = response.json()
         assert "bundles" in data, f"Expected 'bundles' in response, got: {data}"
     
-    def test_advisory_request_endpoint_requires_auth(self):
-        """Test /api/advisory/request POST endpoint requires authentication"""
+    def test_advisory_request_endpoint_works(self):
+        """Test /api/advisory/request POST endpoint accepts requests"""
         payload = {
             "advisory_type": "behaviour",
             "concern": "Test concern",
@@ -219,8 +219,11 @@ class TestAdvisoryPageEndpoints:
             json=payload
         )
         
-        # Should require auth (401) or validation error (422)
-        assert response.status_code in [401, 422], f"Expected 401 or 422, got {response.status_code}: {response.text}"
+        # Endpoint accepts requests (creates ticket)
+        assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
+        data = response.json()
+        assert "request_id" in data, f"Expected 'request_id' in response, got: {data}"
+        assert "ticket_id" in data, f"Expected 'ticket_id' in response, got: {data}"
 
 
 class TestMyPetsEndpoint:
