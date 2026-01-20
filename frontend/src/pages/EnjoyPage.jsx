@@ -32,6 +32,20 @@ const HERO_IMAGES = [
   'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
 ];
 
+// City/Region Configuration for multi-city support
+const CITY_REGIONS = {
+  india: {
+    name: 'India',
+    flag: '🇮🇳',
+    cities: ['Mumbai', 'Delhi', 'Bangalore', 'Pune', 'Hyderabad', 'Chennai', 'Kolkata', 'Goa', 'Jaipur', 'Ahmedabad']
+  },
+  global: {
+    name: 'Global',
+    flag: '🌍',
+    cities: ['Dubai', 'Singapore', 'London', 'New York', 'Sydney', 'Toronto', 'Bangkok', 'Tokyo']
+  }
+};
+
 const EnjoyPage = () => {
   const { user, token } = useAuth();
   
