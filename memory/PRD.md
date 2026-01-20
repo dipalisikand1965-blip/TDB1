@@ -202,6 +202,35 @@ Build a world-class, event-driven platform with a single engine powering multipl
 
 ---
 
+## ✅ Mira + Pet Soul Integration (January 20, 2026)
+
+**MAJOR MILESTONE**: Mira AI is now fully Pet Soul-aware!
+
+### What Mira Now Does:
+1. **Fetches user's pets** on every chat (when logged in)
+2. **Knows pet by name** - Greets "Bruno" instead of asking
+3. **Knows breed & age** - Skips mandatory questions
+4. **Knows dietary preferences** - Recommends based on food allergies, favorite treats
+5. **Knows behavior** - References separation anxiety, car rides tolerance
+6. **Knows history** - Sees pillar_history (past grooming, stays, etc.)
+7. **Pillar context** - Knows which page user is browsing
+
+### Backend Changes (`/app/backend/server.py`):
+- ChatRequest model: Added `auth_token`, `current_page`, `source` fields
+- `/api/mira/chat`: Decodes JWT, fetches pets, builds Pet Soul context
+- System prompt: Includes Pet Soul instructions + pillar context
+- Pre-populates collected_info from Pet Soul data
+
+### Frontend Changes (`/app/frontend/src/components/MiraAI.jsx`):
+- Uses `useAuth()` to get token
+- Fetches user's pets on mount
+- Passes `auth_token` and `current_page` to API
+- Personalized welcome message when pets exist
+- Header shows "Knows Bruno 🐾" when pet loaded
+- Quick actions personalized with pet name
+
+---
+
 ## In Progress
 
 ### 🔄 Membership/Club Pillar
