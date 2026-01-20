@@ -134,7 +134,7 @@ const DEFAULT_CATEGORIES = [
   { id: 'referrals', name: 'Referrals', icon: '🤝', description: 'Partner referrals' }
 ];
 
-const ServiceDesk = ({ authHeaders }) => {
+const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   // State
   const [tickets, setTickets] = useState([]);
   const [stats, setStats] = useState(null);
