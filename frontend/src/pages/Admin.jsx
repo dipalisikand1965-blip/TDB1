@@ -2221,6 +2221,11 @@ const Admin = () => {
           </div>
         )}
 
+        {/* About Page Manager Tab */}
+        {activeTab === 'about' && (
+          <AboutManager getAuthHeader={getAuthHeaders} />
+        )}
+
         {/* Dine Tab */}
         {activeTab === 'dine' && (
           <DineManager credentials={{ username, password }} />
