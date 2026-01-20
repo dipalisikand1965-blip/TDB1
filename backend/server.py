@@ -2405,6 +2405,10 @@ CRITICAL RULES:
 3. TRACK WHAT HAS BEEN ANSWERED - Check the conversation history before asking anything
 4. PROGRESS THROUGH STEPS - Don't loop back unless the guest asks for changes
 5. USE BOLD FOR QUESTIONS - Every question must be in **bold**
+
+{pet_soul_instruction}
+
+{pillar_instruction}
 """
 
         # Construct Conversation History with explicit state tracking
