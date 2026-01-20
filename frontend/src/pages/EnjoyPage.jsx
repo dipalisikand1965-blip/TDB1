@@ -638,10 +638,10 @@ const EnjoyPage = () => {
 
       {/* Featured Experiences */}
       {viewMode === 'list' && featuredExperiences.length > 0 && !selectedType && (
-        <div className="py-12 bg-gradient-to-b from-white to-purple-50">
+        <div className="py-12 bg-gradient-to-b from-white to-amber-50">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center gap-2 mb-6">
-              <Star className="w-6 h-6 text-yellow-500 fill-current" />
+              <Star className="w-6 h-6 text-amber-500 fill-current" />
               <h2 className="text-2xl font-bold text-gray-900">Featured Experiences</h2>
             </div>
             
