@@ -271,7 +271,10 @@ const Navbar = () => {
                   <div key={pillar.id} className="relative">
                     <Link
                       to={pillar.path}
-                      onMouseEnter={() => hasDropdown && setActivePillar(pillar.id)}
+                      onMouseEnter={() => {
+                        if (hasDropdown) setActivePillar(pillar.id);
+                        setShowMorePillars(false); // Close More dropdown when hovering over other pillars
+                      }}
                       className={`flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium transition-all ${
                         isPillarActive(pillar)
                           ? `bg-gradient-to-r ${pillar.color} text-white`
