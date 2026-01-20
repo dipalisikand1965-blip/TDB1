@@ -116,6 +116,23 @@ const Navbar = () => {
         { name: '🐾 Shop Care Essentials', path: '/care#care-kits' },
       ]
     },
+    { 
+      id: 'enjoy',
+      name: 'Enjoy', 
+      icon: Sparkles,
+      color: 'from-purple-500 to-indigo-500',
+      description: 'Events, meetups & experiences',
+      path: '/enjoy',
+      isActive: true,
+      subItems: [
+        { name: '🎉 Events & Pop-ups', path: '/enjoy?type=event' },
+        { name: '🥾 Trails & Walks', path: '/enjoy?type=trail' },
+        { name: '🐕 Meetups & Playdates', path: '/enjoy?type=meetup' },
+        { name: '☕ Pet Cafés', path: '/enjoy?type=cafe' },
+        { name: '📚 Workshops', path: '/enjoy?type=workshop' },
+        { name: '🎁 Shop Enjoy Essentials', path: '/enjoy#enjoy-kits' },
+      ]
+    },
   ];
 
   const isActive = (path) => location.pathname === path;
