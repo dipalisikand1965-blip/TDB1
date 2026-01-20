@@ -8055,8 +8055,14 @@ async def seed_all_pillars():
     from enjoy_routes import seed_enjoy_data
     from care_routes import seed_care_products
     from travel_routes import seed_travel_products
+    from celebrate_routes import seed_celebrate_data
     
     # Seed each pillar (uses upsert - won't delete existing data)
+    try:
+        results["celebrate"] = await seed_celebrate_data()
+    except Exception as e:
+        results["celebrate"] = {"error": str(e)}
+    
     try:
         results["advisory"] = await seed_advisory_data()
     except Exception as e:
