@@ -289,21 +289,21 @@ const Home = () => {
                 <span className="text-purple-600 text-sm font-semibold">Introducing Mira AI</span>
               </div>
               <h2 className="text-5xl font-black text-gray-900 mb-6">
-                Your Personal Pet
+                Your Super
                 <span className="block bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Celebration Concierge®
+                  Pet Concierge®
                 </span>
               </h2>
               <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-                Mira is your AI-powered assistant that helps you plan perfect celebrations, recommends products based on your dog's needs, and provides expert guidance 24/7.
+                Mira is your AI-powered assistant across all 12 pillars — book restaurants, plan travel, schedule grooming, get health advice, and more. 24/7 intelligent support for all your pet's needs.
               </p>
               
               <div className="space-y-4 mb-8">
                 {[
-                  'Personalized cake & treat recommendations',
-                  'Birthday party planning & ideas',
-                  'Dietary guidance & allergy support',
-                  'Trusted referrals (vets, groomers, photographers)'
+                  'Book dining, stays & travel with one chat',
+                  'Get personalized recommendations from Pet Soul™',
+                  'Schedule appointments & manage pet health',
+                  'Access emergency support anytime'
                 ].map((feature, idx) => (
                   <div key={idx} className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -335,7 +335,7 @@ const Home = () => {
                     </div>
                     <div>
                       <h3 className="font-bold text-lg">Mira AI</h3>
-                      <p className="text-sm opacity-90">Online now</p>
+                      <p className="text-sm opacity-90">Super Concierge® • Online</p>
                     </div>
                   </div>
                 </div>
@@ -343,19 +343,19 @@ const Home = () => {
                 <div className="space-y-4">
                   <div className="bg-white border-2 border-purple-100 rounded-2xl p-4 shadow-sm">
                     <p className="text-sm text-gray-700">
-                      👋 Hi! I'm Mira! Planning a birthday for your pup? I can help you find the perfect cake!
+                      👋 Hi! I'm Mira, your Super Concierge®! I can help with restaurant bookings, travel planning, grooming appointments & more!
                     </p>
                   </div>
                   <div className="flex justify-end">
                     <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl p-4 shadow-sm max-w-[80%]">
                       <p className="text-sm">
-                        Yes! My dog loves peanut butter. What do you recommend?
+                        I need a pet-friendly restaurant in Mumbai for this Saturday
                       </p>
                     </div>
                   </div>
                   <div className="bg-white border-2 border-purple-100 rounded-2xl p-4 shadow-sm">
                     <p className="text-sm text-gray-700">
-                      🎂 Perfect! I recommend our Pawsome 2.0 in Peanut Butter flavor - it's a customer favorite!
+                      🍽️ Found 12 great options! I recommend "Cafe Pawsome" in Bandra - they have a lovely garden area for pets!
                     </p>
                   </div>
                 </div>
