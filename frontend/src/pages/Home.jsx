@@ -368,7 +368,7 @@ const Home = () => {
                 <h3 className="font-bold text-gray-900 text-lg mb-2">{useCase.title}</h3>
                 <p className="text-gray-600 text-sm mb-4">{useCase.description}</p>
                 <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 italic">"{useCase.example}"</p>
+                  <p className="text-xs text-gray-500 italic">&quot;{useCase.example}&quot;</p>
                 </div>
               </Card>
             ))}
@@ -381,7 +381,7 @@ const Home = () => {
               onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
             >
               <Sparkles className="w-5 h-5 mr-2" />
-              Try Mira Now — It's Free!
+              Try Mira Now — It&apos;s Free!
             </Button>
           </div>
         </div>
