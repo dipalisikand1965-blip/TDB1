@@ -317,7 +317,7 @@ const Home = () => {
                 <div className="space-y-4">
                   <div className="bg-white border-2 border-purple-100 rounded-2xl p-4 shadow-sm">
                     <p className="text-sm text-gray-700">
-                      Hi! I'm Mira, your Super Concierge®! I can help with restaurant bookings, travel planning, grooming appointments, vet coordination & more!
+                      Hi! I&apos;m Mira, your Super Concierge®! I can help with restaurant bookings, travel planning, grooming appointments, vet coordination & more!
                     </p>
                   </div>
                   <div className="flex justify-end">
@@ -329,7 +329,7 @@ const Home = () => {
                   </div>
                   <div className="bg-white border-2 border-purple-100 rounded-2xl p-4 shadow-sm">
                     <p className="text-sm text-gray-700">
-                      Found 12 great options! I recommend "Cafe Pawsome" — they have a lovely garden area for pets. Shall I book a table?
+                      Found 12 great options! I recommend &quot;Cafe Pawsome&quot; — they have a lovely garden area for pets. Shall I book a table?
                     </p>
                   </div>
                 </div>
