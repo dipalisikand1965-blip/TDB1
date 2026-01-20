@@ -787,7 +787,7 @@ const EnjoyPage = () => {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Ticket className="w-5 h-5 text-purple-600" />
+              <Ticket className="w-5 h-5 text-orange-600" />
               RSVP for Experience
             </DialogTitle>
           </DialogHeader>
@@ -795,12 +795,12 @@ const EnjoyPage = () => {
           {selectedExperience && (
             <div className="space-y-4">
               {/* Experience Summary */}
-              <Card className="p-4 bg-purple-50 border-purple-200">
-                <h4 className="font-semibold text-purple-900">{selectedExperience.name}</h4>
-                <p className="text-sm text-purple-700">
+              <Card className="p-4 bg-orange-50 border-orange-200">
+                <h4 className="font-semibold text-orange-900">{selectedExperience.name}</h4>
+                <p className="text-sm text-orange-700">
                   {selectedExperience.event_date} • {selectedExperience.venue_name || selectedExperience.city}
                 </p>
-                <p className="text-lg font-bold text-purple-600 mt-2">
+                <p className="text-lg font-bold text-orange-600 mt-2">
                   {selectedExperience.is_free ? 'Free' : `₹${selectedExperience.price}`}
                 </p>
               </Card>
@@ -822,11 +822,11 @@ const EnjoyPage = () => {
                         key={pet.id}
                         onClick={() => setSelectedPet(pet)}
                         className={`w-full p-3 rounded-lg border-2 text-left flex items-center gap-3 transition-all ${
-                          selectedPet?.id === pet.id ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-200'
+                          selectedPet?.id === pet.id ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-orange-200'
                         }`}
                       >
-                        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                          <PawPrint className="w-5 h-5 text-purple-600" />
+                        <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                          <PawPrint className="w-5 h-5 text-orange-600" />
                         </div>
                         <div>
                           <p className="font-medium">{pet.name}</p>
