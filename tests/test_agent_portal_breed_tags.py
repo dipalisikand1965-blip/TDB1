@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pet-platform-3.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pet-soul-dash.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 ADMIN_USERNAME = "aditya"
