@@ -780,6 +780,7 @@ const EnjoyPage = () => {
           )}
         </div>
       </div>
+      )}
 
       {/* RSVP Modal */}
       <Dialog open={showRsvpModal} onOpenChange={setShowRsvpModal}>
