@@ -8476,6 +8476,139 @@ set_rewards_db(db)
 set_pet_soul_db(db)
 set_pet_vault_db(db)
 
+
+# ==================== ABOUT PAGE CONTENT MANAGEMENT ====================
+
+@api_router.get("/about/team")
+async def get_team_members():
+    """Get all team members for About page"""
+    members = await db.team_members.find({}, {"_id": 0}).sort("order", 1).to_list(None)
+    return {"team": members}
+
+
+@api_router.get("/about/dogs")
+async def get_featured_dogs():
+    """Get featured dogs for About page"""
+    dogs = await db.featured_dogs.find({}, {"_id": 0}).sort("order", 1).to_list(None)
+    return {"dogs": dogs}
+
+
+@api_router.get("/about/content")
+async def get_about_content():
+    """Get all About page content"""
+    team = await db.team_members.find({}, {"_id": 0}).sort("order", 1).to_list(None)
+    dogs = await db.featured_dogs.find({}, {"_id": 0}).sort("order", 1).to_list(None)
+    return {"team": team, "dogs": dogs}
+
+
+@admin_router.post("/about/team")
+async def create_team_member(member: dict, username: str = Depends(verify_admin)):
+    """Create a new team member"""
+    member_id = f"team-{uuid.uuid4().hex[:8]}"
+    member_data = {
+        "id": member_id,
+        "name": member.get("name", ""),
+        "role": member.get("role", ""),
+        "description": member.get("description", ""),
+        "emoji": member.get("emoji", "👤"),
+        "order": member.get("order", 99),
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.team_members.insert_one(member_data)
+    return {"message": "Team member created", "member": {k: v for k, v in member_data.items() if k != "_id"}}
+
+
+@admin_router.put("/about/team/{member_id}")
+async def update_team_member(member_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update a team member"""
+    allowed = ["name", "role", "description", "emoji", "order", "is_active"]
+    filtered = {k: v for k, v in updates.items() if k in allowed}
+    result = await db.team_members.update_one({"id": member_id}, {"$set": filtered})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Team member not found")
+    return {"message": "Team member updated"}
+
+
+@admin_router.delete("/about/team/{member_id}")
+async def delete_team_member(member_id: str, username: str = Depends(verify_admin)):
+    """Delete a team member"""
+    result = await db.team_members.delete_one({"id": member_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Team member not found")
+    return {"message": "Team member deleted"}
+
+
+@admin_router.post("/about/dogs")
+async def create_featured_dog(dog: dict, username: str = Depends(verify_admin)):
+    """Create a featured dog"""
+    dog_id = f"dog-{uuid.uuid4().hex[:8]}"
+    dog_data = {
+        "id": dog_id,
+        "name": dog.get("name", ""),
+        "breed": dog.get("breed", ""),
+        "role": dog.get("role", "Chief Taste Tester"),
+        "story": dog.get("story", ""),
+        "image": dog.get("image", ""),
+        "emoji": dog.get("emoji", "🐕"),
+        "order": dog.get("order", 99),
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.featured_dogs.insert_one(dog_data)
+    return {"message": "Featured dog created", "dog": {k: v for k, v in dog_data.items() if k != "_id"}}
+
+
+@admin_router.put("/about/dogs/{dog_id}")
+async def update_featured_dog(dog_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update a featured dog"""
+    allowed = ["name", "breed", "role", "story", "image", "emoji", "order", "is_active"]
+    filtered = {k: v for k, v in updates.items() if k in allowed}
+    result = await db.featured_dogs.update_one({"id": dog_id}, {"$set": filtered})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Featured dog not found")
+    return {"message": "Featured dog updated"}
+
+
+@admin_router.delete("/about/dogs/{dog_id}")
+async def delete_featured_dog(dog_id: str, username: str = Depends(verify_admin)):
+    """Delete a featured dog"""
+    result = await db.featured_dogs.delete_one({"id": dog_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Featured dog not found")
+    return {"message": "Featured dog deleted"}
+
+
+@admin_router.post("/about/seed")
+async def seed_about_content(username: str = Depends(verify_admin)):
+    """Seed initial About page content"""
+    
+    team_members = [
+        {"id": "team-bakers", "name": "Baking Maestros", "role": "The Heart of Every Treat", "description": "Our bakers are artisans who combine traditional recipes with modern nutrition. Every cake is baked with love, using Mira Sikand's time-honored recipes passed down through 75 years.", "emoji": "👨‍🍳", "order": 1, "is_active": True},
+        {"id": "team-nutrition", "name": "Nutrition Experts", "role": "Guardians of Health", "description": "Our in-house nutritionists ensure every treat is not just delicious but also healthy. They meticulously balance flavors and nutrients for your pet's wellbeing.", "emoji": "🥗", "order": 2, "is_active": True},
+        {"id": "team-concierge", "name": "Concierge® Team", "role": "Your 24/7 Pet Partners", "description": "The human hearts behind Mira. Our concierge team handles restaurant bookings, travel arrangements, emergency support, and everything in between.", "emoji": "💜", "order": 3, "is_active": True},
+        {"id": "team-care", "name": "Pet Care Specialists", "role": "Wellness Warriors", "description": "From grooming to fitness, our care specialists ensure your pet lives their healthiest, happiest life. They're the backbone of our Care and Fit pillars.", "emoji": "🩺", "order": 4, "is_active": True}
+    ]
+    
+    featured_dogs = [
+        {"id": "dog-lola", "name": "Lola", "breed": "Golden Retriever", "role": "Chief Taste Tester & Office Supervisor", "story": "Lola has been with us since Day 1. She's tasted every recipe, rejected a few (we listened!), and approved the ones you love. When she's not working, she's supervising belly rub sessions.", "image": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=400&fit=crop", "emoji": "👑", "order": 1, "is_active": True},
+        {"id": "dog-bruno", "name": "Bruno", "breed": "Labrador", "role": "Quality Assurance Manager", "story": "Bruno joined as a rescue and became our most dedicated employee. He personally tests every batch for 'enthusiastic consumption potential' - his tail wags are our 5-star rating.", "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop", "emoji": "🏆", "order": 2, "is_active": True},
+        {"id": "dog-cookie", "name": "Cookie", "breed": "Beagle", "role": "Sniff Inspector & Treat Detective", "story": "With the most powerful nose in the office, Cookie ensures every ingredient meets her exacting standards. She's caught more 'suspicious' treats than we can count (mostly in her own bowl).", "image": "https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=400&h=400&fit=crop", "emoji": "🔍", "order": 3, "is_active": True},
+        {"id": "dog-max", "name": "Max", "breed": "German Shepherd", "role": "Head of Security & Delivery Greeter", "story": "Max takes his job very seriously - no delivery person enters without a thorough inspection and mandatory pets. He's also our unofficial morale officer, always ready with a comforting presence.", "image": "https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=400&h=400&fit=crop", "emoji": "🛡️", "order": 4, "is_active": True},
+        {"id": "dog-street-heroes", "name": "Street Heroes", "breed": "Mixed Breeds", "role": "The Reason We Do This", "story": "Through our Streats program, 10% of every sale feeds and cares for street dogs. These unsung heroes remind us daily why we started - because every dog deserves love, not just those with homes.", "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=400&fit=crop", "emoji": "💛", "order": 5, "is_active": True}
+    ]
+    
+    await db.team_members.delete_many({})
+    await db.featured_dogs.delete_many({})
+    
+    if team_members:
+        await db.team_members.insert_many(team_members)
+    if featured_dogs:
+        await db.featured_dogs.insert_many(featured_dogs)
+    
+    return {"message": "About content seeded successfully", "team_count": len(team_members), "dogs_count": len(featured_dogs)}
+
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
