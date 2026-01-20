@@ -87,7 +87,8 @@ import {
   Settings,
   PartyPopper,
   Dumbbell,
-  Brain
+  Brain,
+  Bell
 } from 'lucide-react';
 
 const Admin = () => {
