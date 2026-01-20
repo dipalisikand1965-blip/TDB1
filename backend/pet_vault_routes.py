@@ -1013,7 +1013,7 @@ class AdvisoryConsultRecord(BaseModel):
 @pet_vault_router.post("/{pet_id}/record-advisory-consult")
 async def record_advisory_consult_to_soul(pet_id: str, data: AdvisoryConsultRecord):
     """Record an advisory consultation to the Pet Soul"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     pet = await db.pets.find_one({"id": pet_id})
