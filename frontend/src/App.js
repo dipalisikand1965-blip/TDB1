@@ -114,6 +114,9 @@ function AppRouter() {
       {/* Full-Screen Service Desk - NO navbar/footer */}
       <Route path="/admin/service-desk" element={<ServiceDeskPage />} />
       
+      {/* Membership Landing Page - NO navbar/footer for clean entry */}
+      <Route path="/membership" element={<MembershipPage />} />
+      
       {/* Main app routes - WITH navbar */}
       <Route path="/*" element={<MainLayout />} />
     </Routes>
