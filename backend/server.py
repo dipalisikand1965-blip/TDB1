@@ -8118,6 +8118,7 @@ app.include_router(care_router)  # Care Pillar
 app.include_router(enjoy_router)  # Enjoy Pillar
 app.include_router(fit_router)  # Fit Pillar
 app.include_router(advisory_router)  # Advisory Pillar
+app.include_router(paperwork_router)  # Paperwork Pillar
 app.include_router(pet_soul_router, prefix="/api")
 app.include_router(pet_soul_admin_router, prefix="/api/admin")
 app.include_router(pet_vault_router, prefix="/api")
