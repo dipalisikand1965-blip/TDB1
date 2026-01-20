@@ -169,7 +169,7 @@ function MainLayout() {
         <Route path="/concierge" element={<MiraConcierge />} />
         <Route path="/mira" element={<MiraPage />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/membership" element={<Membership />} />
         <Route path="/autoship" element={<Autoship />} />
         <Route path="/autoship-products" element={<ProductListing category="autoship" />} />
