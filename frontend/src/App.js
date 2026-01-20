@@ -204,6 +204,7 @@ function MainLayout() {
         <Route path="/travel" element={<TravelPage />} />
         <Route path="/care" element={<CarePage />} />
         <Route path="/enjoy" element={<EnjoyPage />} />
+        <Route path="/fit" element={<FitPage />} />
         <Route path="/pillar/:pillarId" element={<PillarPage />} />
         
         {/* Campaign Collections */}
