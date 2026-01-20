@@ -82,7 +82,8 @@ import {
   BarChart3,
   Inbox,
   Settings,
-  PartyPopper
+  PartyPopper,
+  Dumbbell
 } from 'lucide-react';
 
 const Admin = () => {
