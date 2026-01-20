@@ -898,6 +898,61 @@ async def ensure_default_user_exists():
     except Exception as e:
         logger.error(f"Error ensuring default user: {e}")
 
+
+async def seed_initial_products():
+    """Seed initial products if database is empty"""
+    try:
+        product_count = await db.products.count_documents({})
+        if product_count > 0:
+            logger.info(f"Products already exist: {product_count} products")
+            return
+        
+        logger.info("No products found, seeding initial products...")
+        
+        # Sample products for each category
+        sample_products = [
+            # Cakes
+            {"id": "cake-001", "name": "Classic Peanut Butter Cake", "description": "Delicious peanut butter cake for dogs", "price": 899, "originalPrice": 899, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 899}, {"name": "Medium (1kg)", "price": 1499}], "flavors": ["Peanut Butter"], "tags": ["birthday", "celebration"], "available": True},
+            {"id": "cake-002", "name": "Banana Bliss Cake", "description": "Healthy banana cake with natural ingredients", "price": 799, "originalPrice": 799, "image": "https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=600", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 799}, {"name": "Medium (1kg)", "price": 1299}], "flavors": ["Banana"], "tags": ["healthy", "natural"], "available": True},
+            {"id": "cake-003", "name": "Carrot Delight Cake", "description": "Nutritious carrot cake packed with vitamins", "price": 949, "originalPrice": 949, "image": "https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=600", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 949}, {"name": "Medium (1kg)", "price": 1599}], "flavors": ["Carrot"], "tags": ["healthy", "vitamins"], "available": True},
+            {"id": "cake-004", "name": "Chicken Supreme Cake", "description": "Savory chicken cake for meat lovers", "price": 1099, "originalPrice": 1099, "image": "https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=600", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 1099}, {"name": "Medium (1kg)", "price": 1799}], "flavors": ["Chicken"], "tags": ["protein", "savory"], "available": True},
+            {"id": "cake-005", "name": "Apple Cinnamon Cake", "description": "Sweet apple cake with a hint of cinnamon", "price": 849, "originalPrice": 849, "image": "https://images.unsplash.com/photo-1568571780765-9276ac8b75a2?w=600", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 849}, {"name": "Medium (1kg)", "price": 1399}], "flavors": ["Apple", "Cinnamon"], "tags": ["sweet", "festive"], "available": True},
+            
+            # Treats
+            {"id": "treat-001", "name": "Chicken Jerky Strips", "description": "Crunchy chicken jerky treats", "price": 349, "originalPrice": 349, "image": "https://images.unsplash.com/photo-1582798244350-8b8e9e4f0b91?w=600", "category": "treats", "sizes": [{"name": "100g Pack", "price": 349}, {"name": "250g Pack", "price": 749}], "flavors": ["Chicken"], "tags": ["protein", "crunchy"], "available": True},
+            {"id": "treat-002", "name": "Peanut Butter Biscuits", "description": "Crunchy peanut butter flavored biscuits", "price": 299, "originalPrice": 299, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", "category": "treats", "sizes": [{"name": "150g Pack", "price": 299}, {"name": "300g Pack", "price": 549}], "flavors": ["Peanut Butter"], "tags": ["crunchy", "training"], "available": True},
+            {"id": "treat-003", "name": "Sweet Potato Chews", "description": "Natural sweet potato chew treats", "price": 399, "originalPrice": 399, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600", "category": "treats", "sizes": [{"name": "100g Pack", "price": 399}], "flavors": ["Sweet Potato"], "tags": ["natural", "chewy"], "available": True},
+            
+            # Pupcakes
+            {"id": "pupcake-001", "name": "Pupcake Box (6 pcs)", "description": "Assorted mini cupcakes for dogs", "price": 599, "originalPrice": 599, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600", "category": "cakes", "sizes": [{"name": "Box of 6", "price": 599}, {"name": "Box of 12", "price": 999}], "flavors": ["Assorted"], "tags": ["party", "mini"], "available": True},
+            
+            # Dognuts
+            {"id": "dognut-001", "name": "Glazed Dognuts (4 pcs)", "description": "Doggy-safe glazed donuts", "price": 449, "originalPrice": 449, "image": "https://images.unsplash.com/photo-1551106652-a5bcf4b29ab6?w=600", "category": "dognuts", "sizes": [{"name": "Box of 4", "price": 449}], "flavors": ["Glazed"], "tags": ["fun", "party"], "available": True},
+            
+            # Frozen Treats
+            {"id": "frozen-001", "name": "Pup Ice Cream - Peanut Butter", "description": "Frozen peanut butter treat", "price": 199, "originalPrice": 199, "image": "https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=600", "category": "frozen-treats", "sizes": [{"name": "100ml Cup", "price": 199}], "flavors": ["Peanut Butter"], "tags": ["summer", "cooling"], "available": True},
+            {"id": "frozen-002", "name": "Pup Ice Cream - Banana", "description": "Frozen banana treat", "price": 199, "originalPrice": 199, "image": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600", "category": "frozen-treats", "sizes": [{"name": "100ml Cup", "price": 199}], "flavors": ["Banana"], "tags": ["summer", "cooling"], "available": True},
+            
+            # Hampers
+            {"id": "hamper-001", "name": "Birthday Bash Box", "description": "Complete birthday celebration kit", "price": 1999, "originalPrice": 2499, "image": "https://images.unsplash.com/photo-1530041539828-114de669390e?w=600", "category": "hampers", "sizes": [{"name": "Standard", "price": 1999}], "flavors": [], "tags": ["birthday", "gift", "celebration"], "available": True},
+            {"id": "hamper-002", "name": "Welcome Home Box", "description": "Perfect welcome gift for new pet parents", "price": 1499, "originalPrice": 1799, "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600", "category": "hampers", "sizes": [{"name": "Standard", "price": 1499}], "flavors": [], "tags": ["gift", "new pet"], "available": True},
+            
+            # Custom Cakes
+            {"id": "custom-001", "name": "Custom Photo Cake", "description": "Personalized cake with your pet's photo", "price": 1499, "originalPrice": 1499, "image": "https://images.unsplash.com/photo-1535254973040-607b474cb50d?w=600", "category": "custom", "sizes": [{"name": "Small (500g)", "price": 1499}, {"name": "Medium (1kg)", "price": 2499}], "flavors": ["Peanut Butter", "Banana", "Chicken"], "tags": ["custom", "personalized", "photo"], "available": True},
+            {"id": "custom-002", "name": "Custom Theme Cake", "description": "Themed cake designed to your specifications", "price": 1799, "originalPrice": 1799, "image": "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600", "category": "custom", "sizes": [{"name": "Small (500g)", "price": 1799}, {"name": "Medium (1kg)", "price": 2999}], "flavors": ["Peanut Butter", "Banana", "Carrot", "Chicken"], "tags": ["custom", "themed", "special"], "available": True},
+        ]
+        
+        # Add timestamps
+        for product in sample_products:
+            product["created_at"] = datetime.now(timezone.utc).isoformat()
+            product["synced_at"] = datetime.now(timezone.utc).isoformat()
+        
+        await db.products.insert_many(sample_products)
+        logger.info(f"Seeded {len(sample_products)} initial products")
+        
+    except Exception as e:
+        logger.error(f"Error seeding products: {e}")
+
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
     """Verify admin credentials - checks cached db credentials first, then falls back to .env"""
     # Use cached database credentials if available, otherwise use .env
