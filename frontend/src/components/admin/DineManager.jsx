@@ -4,7 +4,7 @@ import {
   UtensilsCrossed, Check, AlertCircle, Phone, Globe, Instagram,
   RefreshCw, Upload, Download, FileSpreadsheet, Image as ImageIcon,
   ExternalLink, MessageSquare, Sparkles, Calendar, Users, Clock,
-  PawPrint, Heart, UserCheck, XCircle, Eye
+  PawPrint, Heart, UserCheck, XCircle, Eye, Settings
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
