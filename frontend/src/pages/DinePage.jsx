@@ -1287,8 +1287,13 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
   );
 };
 
-// Reservation Modal
+// Reservation Modal with Pet Soul Integration
 const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
+  const [userPets, setUserPets] = useState([]);
+  const [selectedPetId, setSelectedPetId] = useState('');
+  const [loadingPets, setLoadingPets] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -1305,25 +1310,116 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
     pet_about: '',
   });
 
+  // Fetch user's pets on mount
+  useEffect(() => {
+    const fetchUserPets = async () => {
+      const user = getUser();
+      if (!user?.email) return;
+      
+      setLoadingPets(true);
+      try {
+        const response = await fetch(`${API_URL}/api/pets?email=${encodeURIComponent(user.email)}`);
+        if (response.ok) {
+          const data = await response.json();
+          setUserPets(data.pets || []);
+        }
+      } catch (error) {
+        console.error('Error fetching pets:', error);
+      } finally {
+        setLoadingPets(false);
+      }
+    };
+    fetchUserPets();
+    
+    // Pre-fill user info
+    const user = getUser();
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || ''
+      }));
+    }
+  }, []);
+
+  // Handle pet selection - auto-fill pet details
+  const handlePetSelect = (petId) => {
+    setSelectedPetId(petId);
+    if (petId) {
+      const pet = userPets.find(p => p.id === petId);
+      if (pet) {
+        setFormData(prev => ({
+          ...prev,
+          pet_name: pet.name || '',
+          pet_breed: pet.breed || '',
+          pet_about: `${pet.species || 'Dog'}, ${pet.age || '?'} years old. ${pet.special_traits || ''}`.trim()
+        }));
+      }
+    } else {
+      // Clear pet details if no pet selected
+      setFormData(prev => ({
+        ...prev,
+        pet_name: '',
+        pet_breed: '',
+        pet_about: ''
+      }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
+    
     try {
+      // 1. Submit reservation
       const response = await fetch(`${API_URL}/api/dine/reservations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           restaurant_id: restaurant.id,
-          ...formData
+          ...formData,
+          pet_id: selectedPetId || null
         })
       });
       
       if (response.ok) {
-        alert(`Reservation request sent for ${restaurant.name}! We'll confirm shortly.`);
+        const reservationData = await response.json();
+        
+        // 2. Write to Pet Soul if a pet was selected
+        if (selectedPetId) {
+          try {
+            await fetch(`${API_URL}/api/pets/${selectedPetId}/record-dine-reservation`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                restaurant_id: restaurant.id,
+                restaurant_name: restaurant.name,
+                restaurant_city: restaurant.city,
+                date: formData.date,
+                time: formData.time,
+                guests: formData.guests,
+                pets_count: formData.pets,
+                pet_meal_preorder: formData.petMealPreorder,
+                reservation_id: reservationData.reservation_id || reservationData.id
+              })
+            });
+          } catch (soulError) {
+            console.warn('Pet Soul update failed (non-blocking):', soulError);
+          }
+        }
+        
+        alert(`🍽️ Reservation request sent for ${restaurant.name}! We'll confirm shortly.`);
         onClose();
+      } else {
+        const error = await response.json();
+        alert(error.detail || 'Failed to submit reservation');
       }
     } catch (error) {
       console.error('Error submitting reservation:', error);
       alert('Failed to submit reservation. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
