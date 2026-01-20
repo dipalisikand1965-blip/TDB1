@@ -60,6 +60,7 @@ import TravelPage from "./pages/TravelPage";
 import CarePage from "./pages/CarePage";
 import EnjoyPage from "./pages/EnjoyPage";
 import FitPage from "./pages/FitPage";
+import AdvisoryPage from "./pages/AdvisoryPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VoiceOrder from "./pages/VoiceOrder";
