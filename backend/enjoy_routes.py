@@ -1428,12 +1428,91 @@ async def seed_enjoy_data():
             upsert=True
         )
     
-    logger.info(f"Seeded {len(default_experiences)} experiences and {len(default_products)} products")
+    # Default Bundles for Enjoy Pillar
+    default_bundles = [
+        {
+            "id": "enjoy-bundle-adventure",
+            "name": "Adventure Day Kit",
+            "description": "Everything for outdoor adventures: hiking harness, event backpack, and portable bed.",
+            "items": ["enjoy-hiking-harness", "enjoy-event-backpack", "enjoy-outdoor-bed"],
+            "price": 5499,
+            "original_price": 6197,
+            "paw_reward_points": 70,
+            "is_recommended": True,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 15,
+            "is_active": True
+        },
+        {
+            "id": "enjoy-bundle-social",
+            "name": "Social Butterfly Kit",
+            "description": "Perfect for meetups and playdates: playdate kit, cafe blanket, and social profile tag.",
+            "items": ["enjoy-playdate-kit", "enjoy-cafe-blanket", "enjoy-social-tag"],
+            "price": 1999,
+            "original_price": 2297,
+            "paw_reward_points": 28,
+            "is_recommended": True,
+            "is_birthday_perk": False,
+            "is_active": True
+        },
+        {
+            "id": "enjoy-bundle-swimmer",
+            "name": "Water Lover's Kit",
+            "description": "For dogs who love water: swim vest and quick-dry towel essentials.",
+            "items": ["enjoy-swim-vest", "enjoy-meetup-leash"],
+            "price": 2299,
+            "original_price": 2498,
+            "paw_reward_points": 30,
+            "is_recommended": False,
+            "is_birthday_perk": False,
+            "is_active": True
+        },
+        {
+            "id": "enjoy-bundle-photographer",
+            "name": "Photo Op Kit",
+            "description": "Capture memories: photo props kit and social profile tag for sharing.",
+            "items": ["enjoy-photo-props", "enjoy-social-tag"],
+            "price": 899,
+            "original_price": 1048,
+            "paw_reward_points": 14,
+            "is_recommended": False,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 20,
+            "is_active": True
+        },
+        {
+            "id": "enjoy-bundle-complete",
+            "name": "Ultimate Enjoy Bundle",
+            "description": "Complete kit for the social dog: everything you need for events, meetups, and adventures.",
+            "items": ["enjoy-hiking-harness", "enjoy-playdate-kit", "enjoy-cafe-blanket", "enjoy-photo-props", "enjoy-social-tag"],
+            "price": 3999,
+            "original_price": 4845,
+            "paw_reward_points": 85,
+            "is_recommended": True,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 10,
+            "is_active": True
+        }
+    ]
+    
+    # Seed bundles
+    for bundle in default_bundles:
+        bundle["bundle_type"] = "enjoy"
+        bundle["created_at"] = datetime.now(timezone.utc).isoformat()
+        bundle["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.enjoy_bundles.update_one(
+            {"id": bundle["id"]},
+            {"$set": bundle},
+            upsert=True
+        )
+    
+    logger.info(f"Seeded {len(default_experiences)} experiences, {len(default_products)} products, {len(default_bundles)} bundles")
     
     return {
         "success": True,
         "experiences_seeded": len(default_experiences),
-        "products_seeded": len(default_products)
+        "products_seeded": len(default_products),
+        "bundles_seeded": len(default_bundles)
     }
 
 
