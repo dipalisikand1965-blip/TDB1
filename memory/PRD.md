@@ -12,71 +12,83 @@ Building **The Doggy Company**, a "Pet Life Operating System." The vision is a w
 - **F. World-Class Admin Experience**: Every pillar must have full-featured Admin Manager
 - **G. Data Flywheel**: Intelligence layer connecting all features to Pet Soul
 
-## What's Been Implemented
+---
 
-### December 2025
-- All 12 pillars built (Celebrate, Dine, Travel, Stay, Enjoy, Care, Fit, Advisory, Paperwork, Emergency, Club planned, Shop Assist)
-- EMERGENCY Pillar completed end-to-end
-- Mira AI + Pet Soul Integration
-- "Seed All Pillars" feature with upsert protection
-- Platform Audit completed
+## What's Been Implemented
 
 ### January 2025 (Current Session)
 
-#### Phase 1 - Admin Standardization (IN PROGRESS)
-**CelebrateManager Created (NEW)**
-- Full admin component with standard tabs: Requests | Partners | Products | Bundles | Settings
-- CSV Import/Export for products and bundles
-- Backend routes: `/api/celebrate/*`
+#### Phase 1 - Admin Standardization ✅
+- **CelebrateManager Created** - Full admin with Requests | Partners | Products | Bundles | Settings
+- **CSV Import/Export Added** to Advisory, Paperwork, Emergency, Celebrate
+- **Tags Manager Updated** - Now supports all 10 pillars
 
-**CSV Import/Export Added**
-- Celebrate: ✅ Products + Bundles
-- Advisory: ✅ Products + Bundles
-- Paperwork: ✅ Products + Bundles  
-- Emergency: ✅ Products + Bundles
-- Care: Already had it
-- Travel: Already had it
-- Dine: Already had it
-- Stay: Already had it
+#### Pet Soul Integration - Celebrate Pillar ✅
+- **Pet Selection in Product Modal** - Users can select from their registered pets
+- **Auto-fill Pet Details** - Name, age, breed automatically filled from Pet Soul
+- **Order History Recording** - Celebrate orders written to Pet Soul (`soul.celebrate_history`)
+- **Preference Tracking** - Favorite cake categories tracked for recommendations
+- **Backend Endpoint Added** - `POST /api/pets/{pet_id}/soul/celebrate`
 
-**Tags Manager Updated**
-- Now includes all 10 pillars (was missing 5)
+---
+
+## Current Pet Soul Integration Status
+
+| Pillar | Fetches Pets | Pet Selection | Writes to Soul | Status |
+|--------|-------------|---------------|----------------|--------|
+| **Celebrate** | ✅ YES | ✅ YES | ✅ YES | **COMPLETE** |
+| **Travel** | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
+| **Care** | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
+| **Emergency** | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
+| **Paperwork** | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
+| **Enjoy** | ✅ Yes | ✅ Yes | ✅ Yes | Complete |
+| **Dine** | ✅ Yes | ✅ Yes | ❌ No | Needs update |
+| **Fit** | ✅ Yes | ✅ Yes | ❌ No | Needs update |
+| **Advisory** | ✅ Yes | ✅ Yes | ❌ No | Needs update |
+| **Stay** | ❌ No | ❌ No | ❌ No | **NEEDS WORK** |
+
+---
 
 ## Remaining Work
 
-### P0 - Critical
-1. **Build CLUB (Membership) Pillar** - Final major feature
-2. **Complete Admin Standardization** - Some pillars still need Settings tab:
-   - Stay: Missing Settings
-   - Dine: Missing Settings, Requests
-   - Enjoy: Missing Bundles tab
-   - Paperwork: Missing Partners tab
+### P0 - Critical (Data Flywheel)
+1. **Stay + Pet Soul** - Add pet selection to booking flow, write travel preferences
+2. **Dine + Pet Soul** - Write dining preferences to soul
+3. **Fit + Pet Soul** - Write fitness/activity data to soul
+4. **Advisory + Pet Soul** - Write consultation history to soul
+5. **Mira Proactive** - Enable birthday/anniversary suggestions from Pet Soul
 
-### P1 - High Priority
-3. **Pillar-wise Shipping Rules** - Currently general only
-4. **Fulfillment Pillar Recognition** - Only recognizes "celebrate" pillar
-5. **Campaigns System** - Build cross-pillar campaign feature
-6. **Centralized Product Management** - Single view for all pillar products
+### P1 - User Journey
+6. New landing page with pillar showcase
+7. Membership tiers (Club pillar)
+8. Onboarding flow with Pet Soul creation
+9. Auto-checkout per pillar
 
-### P2 - Medium Priority
-7. Shopify Sync 'Untitled' Products bug (recurring)
-8. Service Desk settings modal shaking
-9. Voice Order connection issues
-10. Auto-reminders only sent to Gmail
+### P2 - Admin & Code
+10. Complete admin tabs for Stay, Dine, Enjoy
+11. Pillar-wise shipping rules
+12. Campaign system
+13. Code reorganization (backend folder structure)
 
-### Future
-- Cross-pillar recommendations
-- Proactive Mira AI suggestions
-- Refactor server.py (break into route files)
-- Admin Panel reorganization
+---
 
-## Key Files Reference
-- `/app/backend/celebrate_routes.py` - NEW
-- `/app/frontend/src/components/admin/CelebrateManager.jsx` - NEW
-- `/app/backend/advisory_routes.py` - Updated with CSV
-- `/app/backend/paperwork_routes.py` - Updated with CSV
-- `/app/backend/emergency_routes.py` - Updated with CSV
-- `/app/memory/PLATFORM_AUDIT.md` - Gap analysis
+## Key Files Modified This Session
+
+### Backend
+- `/app/backend/celebrate_routes.py` - NEW complete pillar routes
+- `/app/backend/advisory_routes.py` - Added CSV import/export
+- `/app/backend/paperwork_routes.py` - Added CSV import/export
+- `/app/backend/emergency_routes.py` - Added CSV import/export
+- `/app/backend/server.py` - Added `/api/pets/{pet_id}/soul/celebrate` endpoint
+
+### Frontend
+- `/app/frontend/src/components/admin/CelebrateManager.jsx` - NEW full admin
+- `/app/frontend/src/components/admin/AdvisoryManager.jsx` - Added CSV buttons
+- `/app/frontend/src/components/admin/PaperworkManager.jsx` - Added CSV buttons
+- `/app/frontend/src/components/admin/EmergencyManager.jsx` - Added CSV buttons
+- `/app/frontend/src/components/ProductCard.jsx` - **Pet Soul integration in product modal**
+
+---
 
 ## Tech Stack
 - Frontend: React + Tailwind + Shadcn/UI
