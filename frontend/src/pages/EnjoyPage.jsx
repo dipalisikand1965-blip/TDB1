@@ -339,7 +339,7 @@ const EnjoyPage = () => {
               <button
                 onClick={() => setSelectedType(null)}
                 className={`px-4 py-2 rounded-full transition-all whitespace-nowrap ${
-                  !selectedType ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  !selectedType ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
                 All
