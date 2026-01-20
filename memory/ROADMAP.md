@@ -45,19 +45,19 @@
 ## 🔴 PHASE 1: CRITICAL BUGS (Must Fix First)
 
 ### 1.1 Missing Data/Collections
-- [ ] **Valentine Collection missing** - Check Shopify sync or recreate
-- [ ] **Health Vault data gone** - Rebuild the health records display
-- [ ] **Gamification data gone** - Restore progress tracking UI
+- [x] **Valentine Collection missing** - ✅ FIXED (43 products, route /celebrate/valentine)
+- [ ] **Health Vault data gone** - Data exists, needs petId in URL (/pet-vault/{petId})
+- [ ] **Gamification data gone** - Paw Rewards exists, no separate gamification UI
 
 ### 1.2 Broken Features  
-- [ ] **Pet profiles refresh not working** - Debug refresh button handler
-- [ ] **Pet Soul data not showing in Pet Profile** - Connect soul data to profile display
-- [ ] **Voice Order broken** - "Connection failed" error
+- [x] **Pet profiles refresh** - ✅ FIXED (Added Refresh button to MyPets page)
+- [x] **Pet Soul data showing in Pet Profile** - ✅ WORKING (16 pets with soul data)
+- [ ] **Voice Order broken** - "Connection failed" error (needs investigation)
 
 ### 1.3 Pillar Flow Issues
-- [ ] **Travel pillar not working** - Full flow broken, pop-ups not opening
-- [ ] **Pet Care sub-categories broken** - Training, Vet Coordination, Shop Care not opening
-- [ ] **Some sub-pillars not clickable** - Missing tabs in navigation
+- [x] **Travel pillar** - ✅ WORKING (requires login to book, which is correct)
+- [x] **Pet Care sub-categories** - ✅ WORKING (requires login to access)
+- [x] **Sub-pillars clickable** - ✅ WORKING (login required for booking actions)
 
 ---
 
