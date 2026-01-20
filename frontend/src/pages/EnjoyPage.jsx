@@ -365,7 +365,7 @@ const EnjoyPage = () => {
             {/* View Toggle & City Filter */}
             <div className="flex items-center gap-3 flex-shrink-0">
               {/* City Filter */}
-              <Select value={selectedCity} onValueChange={setSelectedCity}>
+              <Select value={selectedCity || 'all'} onValueChange={(val) => setSelectedCity(val === 'all' ? '' : val)}>
                 <SelectTrigger className="w-40 h-10" data-testid="city-filter">
                   <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-purple-500" />
