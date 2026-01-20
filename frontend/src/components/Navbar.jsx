@@ -172,6 +172,21 @@ const Navbar = () => {
         { name: '✈️ Travel Documents', path: '/paperwork?category=travel' },
       ]
     },
+    { 
+      id: 'emergency',
+      name: 'Emergency', 
+      icon: Clock,
+      color: 'from-red-600 to-rose-700',
+      description: '24/7 emergency support',
+      path: '/emergency',
+      isActive: true,
+      isUrgent: true,
+      subItems: [
+        { name: '🚨 Report Emergency', path: '/emergency', highlight: true },
+        { name: '🔍 Lost Pet Alert', path: '/emergency?type=lost_pet' },
+        { name: '🚑 Medical Emergency', path: '/emergency?type=medical_emergency' },
+      ]
+    },
   ];
 
   // Split pillars into visible and "more" sections
