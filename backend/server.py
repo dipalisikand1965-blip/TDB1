@@ -8144,6 +8144,432 @@ async def delete_notification(
     return {"message": "Notification deleted"}
 
 
+# ==================== SEED ALL PILLARS ====================
+
+@api_router.post("/admin/seed-all")
+async def seed_all_pillars():
+    """Seed data for all pillars at once"""
+    results = {}
+    
+    # Import seed functions from pillar routes
+    from advisory_routes import seed_advisory_data
+    from emergency_routes import seed_emergency_data
+    from paperwork_routes import seed_paperwork_data
+    from fit_routes import seed_fit_data
+    from enjoy_routes import seed_enjoy_data
+    from care_routes import seed_care_products
+    from travel_routes import seed_travel_products
+    
+    try:
+        # Advisory
+        advisory_result = await seed_advisory_data()
+        results["advisory"] = {
+            "products": advisory_result.get("products_seeded", 0),
+            "bundles": advisory_result.get("bundles_seeded", 0),
+            "partners": advisory_result.get("advisors_seeded", 0)
+        }
+    except Exception as e:
+        results["advisory"] = {"error": str(e)}
+    
+    try:
+        # Emergency
+        emergency_result = await seed_emergency_data()
+        results["emergency"] = {
+            "products": emergency_result.get("products_seeded", 0),
+            "bundles": emergency_result.get("bundles_seeded", 0),
+            "partners": emergency_result.get("partners_seeded", 0)
+        }
+    except Exception as e:
+        results["emergency"] = {"error": str(e)}
+    
+    try:
+        # Paperwork
+        paperwork_result = await seed_paperwork_data()
+        results["paperwork"] = {
+            "products": paperwork_result.get("products_seeded", 0),
+            "bundles": paperwork_result.get("bundles_seeded", 0)
+        }
+    except Exception as e:
+        results["paperwork"] = {"error": str(e)}
+    
+    try:
+        # Fit
+        fit_result = await seed_fit_data()
+        results["fit"] = {
+            "products": fit_result.get("products_seeded", 0),
+            "bundles": fit_result.get("bundles_seeded", 0),
+            "partners": fit_result.get("partners_seeded", 0)
+        }
+    except Exception as e:
+        results["fit"] = {"error": str(e)}
+    
+    try:
+        # Enjoy
+        enjoy_result = await seed_enjoy_data()
+        results["enjoy"] = {
+            "products": enjoy_result.get("products_seeded", 0),
+            "bundles": enjoy_result.get("bundles_seeded", 0),
+            "partners": enjoy_result.get("partners_seeded", 0)
+        }
+    except Exception as e:
+        results["enjoy"] = {"error": str(e)}
+    
+    try:
+        # Care
+        care_result = await seed_care_products()
+        results["care"] = {
+            "products": care_result.get("products_seeded", 0),
+            "bundles": care_result.get("bundles_seeded", 0)
+        }
+    except Exception as e:
+        results["care"] = {"error": str(e)}
+    
+    try:
+        # Travel
+        travel_result = await seed_travel_products()
+        results["travel"] = {
+            "products": travel_result.get("products_seeded", 0),
+            "bundles": travel_result.get("bundles_seeded", 0)
+        }
+    except Exception as e:
+        results["travel"] = {"error": str(e)}
+    
+    # Dine - seed products and bundles
+    try:
+        dine_products = [
+            {
+                "id": "dine-fresh-chicken",
+                "name": "Fresh Chicken Bowl",
+                "description": "Freshly prepared chicken with vegetables",
+                "price": 299,
+                "compare_price": 399,
+                "category": "dine",
+                "product_type": "fresh_meals",
+                "tags": ["fresh", "chicken", "healthy"],
+                "in_stock": True,
+                "paw_reward_points": 5
+            },
+            {
+                "id": "dine-lamb-rice",
+                "name": "Lamb & Rice Delight",
+                "description": "Tender lamb with brown rice",
+                "price": 349,
+                "compare_price": 449,
+                "category": "dine",
+                "product_type": "fresh_meals",
+                "tags": ["fresh", "lamb", "rice"],
+                "in_stock": True,
+                "paw_reward_points": 6
+            },
+            {
+                "id": "dine-fish-omega",
+                "name": "Omega Fish Bowl",
+                "description": "Fish rich in omega-3 fatty acids",
+                "price": 329,
+                "compare_price": 429,
+                "category": "dine",
+                "product_type": "fresh_meals",
+                "tags": ["fresh", "fish", "omega"],
+                "in_stock": True,
+                "paw_reward_points": 6
+            },
+            {
+                "id": "dine-veggie-bowl",
+                "name": "Veggie Power Bowl",
+                "description": "Healthy vegetarian option with lentils",
+                "price": 249,
+                "compare_price": 329,
+                "category": "dine",
+                "product_type": "fresh_meals",
+                "tags": ["fresh", "vegetarian", "healthy"],
+                "in_stock": True,
+                "paw_reward_points": 4
+            },
+            {
+                "id": "dine-puppy-starter",
+                "name": "Puppy Starter Meal",
+                "description": "Specially formulated for puppies",
+                "price": 279,
+                "compare_price": 379,
+                "category": "dine",
+                "product_type": "fresh_meals",
+                "tags": ["fresh", "puppy", "starter"],
+                "in_stock": True,
+                "paw_reward_points": 5
+            },
+            {
+                "id": "dine-senior-care",
+                "name": "Senior Care Meal",
+                "description": "Easy to digest meal for senior dogs",
+                "price": 299,
+                "compare_price": 399,
+                "category": "dine",
+                "product_type": "fresh_meals",
+                "tags": ["fresh", "senior", "easy-digest"],
+                "in_stock": True,
+                "paw_reward_points": 5
+            }
+        ]
+        
+        dine_bundles = [
+            {
+                "id": "dine-bundle-weekly",
+                "name": "Weekly Fresh Meal Plan",
+                "description": "7 days of fresh meals delivered",
+                "items": ["dine-fresh-chicken", "dine-lamb-rice", "dine-fish-omega"],
+                "price": 1499,
+                "original_price": 1999,
+                "paw_reward_points": 25,
+                "is_recommended": True,
+                "is_active": True
+            },
+            {
+                "id": "dine-bundle-variety",
+                "name": "Variety Pack",
+                "description": "Try all our flavors",
+                "items": ["dine-fresh-chicken", "dine-lamb-rice", "dine-fish-omega", "dine-veggie-bowl"],
+                "price": 999,
+                "original_price": 1226,
+                "paw_reward_points": 18,
+                "is_recommended": True,
+                "is_active": True
+            }
+        ]
+        
+        for product in dine_products:
+            product["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        
+        for bundle in dine_bundles:
+            bundle["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.dine_bundles.update_one({"id": bundle["id"]}, {"$set": bundle}, upsert=True)
+        
+        results["dine"] = {"products": len(dine_products), "bundles": len(dine_bundles)}
+    except Exception as e:
+        results["dine"] = {"error": str(e)}
+    
+    # Stay - seed products and bundles
+    try:
+        stay_products = [
+            {
+                "id": "stay-daycare-single",
+                "name": "Day Care - Single Day",
+                "description": "Full day care with play, meals, and rest",
+                "price": 799,
+                "compare_price": 999,
+                "category": "stay",
+                "product_type": "daycare",
+                "tags": ["daycare", "single"],
+                "in_stock": True,
+                "paw_reward_points": 10
+            },
+            {
+                "id": "stay-boarding-night",
+                "name": "Overnight Boarding",
+                "description": "Comfortable overnight stay with 24/7 care",
+                "price": 1299,
+                "compare_price": 1599,
+                "category": "stay",
+                "product_type": "boarding",
+                "tags": ["boarding", "overnight"],
+                "in_stock": True,
+                "paw_reward_points": 15
+            },
+            {
+                "id": "stay-luxury-suite",
+                "name": "Luxury Suite Boarding",
+                "description": "Premium suite with personal attention",
+                "price": 2499,
+                "compare_price": 2999,
+                "category": "stay",
+                "product_type": "boarding",
+                "tags": ["boarding", "luxury", "premium"],
+                "in_stock": True,
+                "paw_reward_points": 30
+            },
+            {
+                "id": "stay-grooming-basic",
+                "name": "Basic Grooming Package",
+                "description": "Bath, brush, nail trim",
+                "price": 599,
+                "compare_price": 799,
+                "category": "stay",
+                "product_type": "grooming",
+                "tags": ["grooming", "basic"],
+                "in_stock": True,
+                "paw_reward_points": 8
+            },
+            {
+                "id": "stay-grooming-full",
+                "name": "Full Grooming Spa",
+                "description": "Complete grooming with spa treatment",
+                "price": 1199,
+                "compare_price": 1499,
+                "category": "stay",
+                "product_type": "grooming",
+                "tags": ["grooming", "spa", "full"],
+                "in_stock": True,
+                "paw_reward_points": 15
+            }
+        ]
+        
+        stay_bundles = [
+            {
+                "id": "stay-bundle-weekend",
+                "name": "Weekend Getaway Package",
+                "description": "2 nights boarding + grooming",
+                "items": ["stay-boarding-night", "stay-grooming-basic"],
+                "price": 2499,
+                "original_price": 2897,
+                "paw_reward_points": 35,
+                "is_recommended": True,
+                "is_active": True
+            },
+            {
+                "id": "stay-bundle-weekly",
+                "name": "Weekly Daycare Pass",
+                "description": "5 days of daycare",
+                "items": ["stay-daycare-single"],
+                "price": 3499,
+                "original_price": 3995,
+                "paw_reward_points": 50,
+                "is_recommended": True,
+                "is_active": True
+            }
+        ]
+        
+        for product in stay_products:
+            product["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        
+        for bundle in stay_bundles:
+            bundle["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.stay_bundles.update_one({"id": bundle["id"]}, {"$set": bundle}, upsert=True)
+        
+        results["stay"] = {"products": len(stay_products), "bundles": len(stay_bundles)}
+    except Exception as e:
+        results["stay"] = {"error": str(e)}
+    
+    # Celebrate - seed products
+    try:
+        celebrate_products = [
+            {
+                "id": "celebrate-birthday-cake",
+                "name": "Birthday Paw Cake",
+                "description": "Dog-safe birthday cake with peanut butter frosting",
+                "price": 799,
+                "compare_price": 999,
+                "category": "celebrate",
+                "product_type": "cakes",
+                "tags": ["cake", "birthday", "peanut-butter"],
+                "in_stock": True,
+                "paw_reward_points": 12
+            },
+            {
+                "id": "celebrate-pupcake-box",
+                "name": "Pupcake Party Box (6 pcs)",
+                "description": "Assorted mini pupcakes for parties",
+                "price": 599,
+                "compare_price": 749,
+                "category": "celebrate",
+                "product_type": "cakes",
+                "tags": ["cupcake", "party", "assorted"],
+                "in_stock": True,
+                "paw_reward_points": 8
+            },
+            {
+                "id": "celebrate-treat-hamper",
+                "name": "Celebration Treat Hamper",
+                "description": "Premium hamper with treats, toys, and bandana",
+                "price": 1499,
+                "compare_price": 1899,
+                "category": "celebrate",
+                "product_type": "hampers",
+                "tags": ["hamper", "treats", "toys"],
+                "in_stock": True,
+                "paw_reward_points": 20
+            },
+            {
+                "id": "celebrate-gotcha-cake",
+                "name": "Gotcha Day Cake",
+                "description": "Special cake to celebrate adoption anniversary",
+                "price": 699,
+                "compare_price": 899,
+                "category": "celebrate",
+                "product_type": "cakes",
+                "tags": ["cake", "gotcha", "adoption"],
+                "in_stock": True,
+                "paw_reward_points": 10
+            },
+            {
+                "id": "celebrate-party-pack",
+                "name": "Pawty Essentials Pack",
+                "description": "Everything for a pet party: hats, decorations, treats",
+                "price": 899,
+                "compare_price": 1199,
+                "category": "celebrate",
+                "product_type": "party",
+                "tags": ["party", "decorations", "essentials"],
+                "in_stock": True,
+                "paw_reward_points": 12
+            }
+        ]
+        
+        celebrate_bundles = [
+            {
+                "id": "celebrate-bundle-birthday",
+                "name": "Ultimate Birthday Bundle",
+                "description": "Cake + Pupcakes + Party Pack",
+                "items": ["celebrate-birthday-cake", "celebrate-pupcake-box", "celebrate-party-pack"],
+                "price": 1999,
+                "original_price": 2297,
+                "paw_reward_points": 35,
+                "is_recommended": True,
+                "is_active": True
+            },
+            {
+                "id": "celebrate-bundle-premium",
+                "name": "Premium Celebration Hamper",
+                "description": "Cake + Treat Hamper + Party Pack",
+                "items": ["celebrate-birthday-cake", "celebrate-treat-hamper", "celebrate-party-pack"],
+                "price": 2799,
+                "original_price": 3197,
+                "paw_reward_points": 45,
+                "is_recommended": True,
+                "is_active": True
+            }
+        ]
+        
+        for product in celebrate_products:
+            product["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        
+        for bundle in celebrate_bundles:
+            bundle["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.celebrate_bundles.update_one({"id": bundle["id"]}, {"$set": bundle}, upsert=True)
+        
+        results["celebrate"] = {"products": len(celebrate_products), "bundles": len(celebrate_bundles)}
+    except Exception as e:
+        results["celebrate"] = {"error": str(e)}
+    
+    # Calculate totals
+    total_products = sum(r.get("products", 0) for r in results.values() if isinstance(r, dict) and "products" in r)
+    total_bundles = sum(r.get("bundles", 0) for r in results.values() if isinstance(r, dict) and "bundles" in r)
+    total_partners = sum(r.get("partners", 0) for r in results.values() if isinstance(r, dict) and "partners" in r)
+    
+    logger.info(f"Seed All: {total_products} products, {total_bundles} bundles, {total_partners} partners")
+    
+    return {
+        "message": "All pillars seeded successfully",
+        "totals": {
+            "products": total_products,
+            "bundles": total_bundles,
+            "partners": total_partners
+        },
+        "details": results
+    }
+
+
 # ==================== APP SETUP ====================
 
 app.add_middleware(
