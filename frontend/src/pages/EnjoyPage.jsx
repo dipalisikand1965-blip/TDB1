@@ -515,13 +515,13 @@ const EnjoyPage = () => {
                   {/* Legend */}
                   <div className="mt-4 pt-4 border-t flex items-center gap-4 text-sm text-gray-500">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-purple-600" />
+                      <div className="w-3 h-3 rounded-full bg-orange-500" />
                       <span>Today</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="flex gap-0.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                        <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
                       </div>
                       <span>Has Events</span>
                     </div>
