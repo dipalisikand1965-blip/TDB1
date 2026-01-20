@@ -611,6 +611,70 @@ async def delete_enjoy_product(product_id: str):
     return {"message": "Product deleted"}
 
 
+# ==================== BUNDLES ====================
+
+@router.get("/bundles")
+async def get_enjoy_bundles(limit: int = 20):
+    """Get enjoy bundles"""
+    db = get_db()
+    
+    bundles = await db.enjoy_bundles.find(
+        {"is_active": True},
+        {"_id": 0}
+    ).to_list(limit)
+    
+    return {"bundles": bundles, "total": len(bundles)}
+
+
+@router.post("/admin/bundles")
+async def create_enjoy_bundle(bundle_data: dict):
+    """Create a new enjoy bundle"""
+    db = get_db()
+    
+    bundle = {
+        "id": f"enjoy-bundle-{uuid.uuid4().hex[:8]}",
+        "bundle_type": "enjoy",
+        **bundle_data,
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.enjoy_bundles.insert_one({k: v for k, v in bundle.items() if k != "_id"})
+    
+    return {"message": "Bundle created", "id": bundle["id"]}
+
+
+@router.put("/admin/bundles/{bundle_id}")
+async def update_enjoy_bundle(bundle_id: str, bundle_data: dict):
+    """Update an enjoy bundle"""
+    db = get_db()
+    
+    bundle_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    bundle_data.pop("id", None)
+    bundle_data.pop("_id", None)
+    
+    result = await db.enjoy_bundles.update_one({"id": bundle_id}, {"$set": bundle_data})
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    return {"message": "Bundle updated"}
+
+
+@router.delete("/admin/bundles/{bundle_id}")
+async def delete_enjoy_bundle(bundle_id: str):
+    """Delete an enjoy bundle"""
+    db = get_db()
+    
+    result = await db.enjoy_bundles.delete_one({"id": bundle_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    return {"message": "Bundle deleted"}
+
+
 # ==================== CALENDAR ====================
 
 @router.get("/calendar")
