@@ -1508,6 +1508,7 @@ const Admin = () => {
             { id: 'insights', label: '📝 Blog', icon: FileText },
             { id: 'testimonials', label: 'Testimonials', icon: Star },
             { id: 'faqs', label: 'FAQs', icon: HelpCircle },
+            { id: 'about', label: '✨ About Page', icon: Sparkles },
           ].map((tab) => (
             <Button
               key={tab.id}
