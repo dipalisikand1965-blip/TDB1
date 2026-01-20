@@ -67,8 +67,10 @@ const EnjoyManager = ({ getAuthHeader }) => {
   const [showExperienceModal, setShowExperienceModal] = useState(false);
   const [showRsvpModal, setShowRsvpModal] = useState(false);
   const [showPartnerModal, setShowPartnerModal] = useState(false);
+  const [showProductModal, setShowProductModal] = useState(false);
   const [editingExperience, setEditingExperience] = useState(null);
   const [editingPartner, setEditingPartner] = useState(null);
+  const [editingProduct, setEditingProduct] = useState(null);
   const [selectedRsvp, setSelectedRsvp] = useState(null);
   
   // Experience Form
