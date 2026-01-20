@@ -199,7 +199,7 @@ function MainLayout() {
         <Route path="/franchise" element={<Franchise />} />
         <Route path="/contact" element={<Contact />} />
         
-        {/* Life Pillars */}
+        {/* Life Pillars - Public browsing, protected booking */}
         <Route path="/celebrate" element={<ProductListing category="cakes" />} />
         <Route path="/celebrate/cakes" element={<ProductListing category="cakes" />} />
         <Route path="/celebrate/birthday-cakes" element={<ProductListing category="Birthdays" />} />
@@ -212,15 +212,17 @@ function MainLayout() {
         <Route path="/celebrate/cat" element={<ProductListing category="cat" />} />
         <Route path="/celebrate/accessories" element={<ProductListing category="Accessories" />} />
         <Route path="/celebrate/:category" element={<ProductListing />} />
-        <Route path="/dine" element={<DinePage />} />
-        <Route path="/stay" element={<StayPage />} />
-        <Route path="/travel" element={<TravelPage />} />
-        <Route path="/care" element={<CarePage />} />
-        <Route path="/enjoy" element={<EnjoyPage />} />
-        <Route path="/fit" element={<FitPage />} />
-        <Route path="/advisory" element={<AdvisoryPage />} />
-        <Route path="/paperwork" element={<PaperworkPage />} />
-        <Route path="/emergency" element={<EmergencyPage />} />
+        
+        {/* Service Pillars - Protected (require login to request services) */}
+        <Route path="/dine" element={<ProtectedRoute><DinePage /></ProtectedRoute>} />
+        <Route path="/stay" element={<ProtectedRoute><StayPage /></ProtectedRoute>} />
+        <Route path="/travel" element={<ProtectedRoute><TravelPage /></ProtectedRoute>} />
+        <Route path="/care" element={<ProtectedRoute><CarePage /></ProtectedRoute>} />
+        <Route path="/enjoy" element={<ProtectedRoute><EnjoyPage /></ProtectedRoute>} />
+        <Route path="/fit" element={<ProtectedRoute><FitPage /></ProtectedRoute>} />
+        <Route path="/advisory" element={<ProtectedRoute><AdvisoryPage /></ProtectedRoute>} />
+        <Route path="/paperwork" element={<ProtectedRoute><PaperworkPage /></ProtectedRoute>} />
+        <Route path="/emergency" element={<ProtectedRoute><EmergencyPage /></ProtectedRoute>} />
         <Route path="/pillar/:pillarId" element={<PillarPage />} />
         
         {/* Campaign Collections */}
