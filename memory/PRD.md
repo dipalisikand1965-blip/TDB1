@@ -11,6 +11,18 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 
 ## What's Been Implemented (Latest - Jan 20, 2026)
 
+### User Login Fix - COMPLETE ✅ (Jan 20, 2026)
+- Fixed: User `dipali@clubconcierge.in` login was failing because the user was created in wrong database (`doggy_bakery` instead of `test_database`)
+- Root cause: Database mismatch between script and actual DB_NAME env variable
+- User now successfully logs in and can access the app
+
+### 18% GST Implementation - COMPLETE ✅ (Jan 20, 2026)
+- Backend now calculates and includes 18% GST on all membership plans
+- Added `calculate_gst_amounts()` function for consistent GST calculation
+- `/api/payments/plans` now returns: base_amount, gst_amount, gst_rate, total_amount
+- `/api/payments/create-order` now creates Razorpay orders with GST-inclusive amounts
+- GST breakdown stored in order records for compliance
+
 ### Member Directory & 360° Profile Console - COMPLETE ✅
 New comprehensive member management system with:
 - **Member Directory**: Searchable table with filters (Status, Source, Tier, City)
