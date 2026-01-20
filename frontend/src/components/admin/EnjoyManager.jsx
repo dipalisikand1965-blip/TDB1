@@ -1067,6 +1067,93 @@ const EnjoyManager = ({ getAuthHeader }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Product Modal */}
+      <Dialog open={showProductModal} onOpenChange={setShowProductModal}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editingProduct ? 'Edit Product' : 'Add Product'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Product Name</Label>
+              <Input value={productForm.name} onChange={(e) => setProductForm({...productForm, name: e.target.value})} />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea value={productForm.description} onChange={(e) => setProductForm({...productForm, description: e.target.value})} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Price (₹)</Label>
+                <Input type="number" value={productForm.price} onChange={(e) => setProductForm({...productForm, price: e.target.value})} />
+              </div>
+              <div>
+                <Label>Compare Price (₹)</Label>
+                <Input type="number" value={productForm.compare_price} onChange={(e) => setProductForm({...productForm, compare_price: e.target.value})} />
+              </div>
+            </div>
+            <div>
+              <Label>Image URL</Label>
+              <Input value={productForm.image} onChange={(e) => setProductForm({...productForm, image: e.target.value})} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Enjoy Type</Label>
+                <Select value={productForm.enjoy_type} onValueChange={(val) => setProductForm({...productForm, enjoy_type: val})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="outdoor">Outdoor</SelectItem>
+                    <SelectItem value="social">Social</SelectItem>
+                    <SelectItem value="fun">Fun</SelectItem>
+                    <SelectItem value="wellness">Wellness</SelectItem>
+                    <SelectItem value="general">General</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Subcategory</Label>
+                <Input value={productForm.subcategory} onChange={(e) => setProductForm({...productForm, subcategory: e.target.value})} />
+              </div>
+            </div>
+            <div>
+              <Label>Tags (comma-separated)</Label>
+              <Input value={productForm.tags} onChange={(e) => setProductForm({...productForm, tags: e.target.value})} placeholder="outdoor, fun, adventure" />
+            </div>
+            <div>
+              <Label>Pet Sizes (comma-separated)</Label>
+              <Input value={productForm.pet_sizes} onChange={(e) => setProductForm({...productForm, pet_sizes: e.target.value})} placeholder="small, medium, large" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Paw Reward Points</Label>
+                <Input type="number" value={productForm.paw_reward_points} onChange={(e) => setProductForm({...productForm, paw_reward_points: e.target.value})} />
+              </div>
+              <div className="flex items-center gap-2 pt-6">
+                <Switch checked={productForm.in_stock} onCheckedChange={(val) => setProductForm({...productForm, in_stock: val})} />
+                <Label>In Stock</Label>
+              </div>
+            </div>
+            <div className="border-t pt-4 space-y-3">
+              <h4 className="font-medium text-sm">🎂 Birthday Perks</h4>
+              <div className="flex items-center gap-2">
+                <Switch checked={productForm.is_birthday_perk} onCheckedChange={(val) => setProductForm({...productForm, is_birthday_perk: val})} />
+                <Label>Birthday Perk Item</Label>
+              </div>
+              {productForm.is_birthday_perk && (
+                <div>
+                  <Label>Birthday Discount %</Label>
+                  <Input type="number" value={productForm.birthday_discount_percent} onChange={(e) => setProductForm({...productForm, birthday_discount_percent: e.target.value})} />
+                </div>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setShowProductModal(false); setEditingProduct(null); }}>Cancel</Button>
+            <Button onClick={saveProduct}>{editingProduct ? 'Update' : 'Create'} Product</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
