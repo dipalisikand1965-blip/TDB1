@@ -8647,11 +8647,15 @@ async def seed_about_content(username: str = Depends(verify_admin)):
 # ==================== RAZORPAY PAYMENT ROUTES ====================
 
 # Membership Plans
+# GST Rate (18%)
+GST_RATE = 0.18
+
+# Base prices (before GST) in paise
 MEMBERSHIP_PLANS = {
     "monthly": {
         "id": "plan_monthly",
         "name": "Monthly Membership",
-        "amount": 9900,
+        "base_amount": 8390,  # ₹83.90 base -> ₹99 with GST
         "currency": "INR",
         "duration_days": 30,
         "tier": "pawsome"
@@ -8659,7 +8663,7 @@ MEMBERSHIP_PLANS = {
     "annual": {
         "id": "plan_annual", 
         "name": "Annual Membership",
-        "amount": 99900,
+        "base_amount": 84661,  # ₹846.61 base -> ₹999 with GST
         "currency": "INR",
         "duration_days": 365,
         "tier": "pawsome"
@@ -8667,7 +8671,7 @@ MEMBERSHIP_PLANS = {
     "premium_annual": {
         "id": "plan_premium",
         "name": "Premium Annual",
-        "amount": 199900,
+        "base_amount": 169407,  # ₹1694.07 base -> ₹1999 with GST
         "currency": "INR",
         "duration_days": 365,
         "tier": "premium"
@@ -8675,12 +8679,23 @@ MEMBERSHIP_PLANS = {
     "vip_annual": {
         "id": "plan_vip",
         "name": "VIP Pack Leader",
-        "amount": 499900,
+        "base_amount": 423729,  # ₹4237.29 base -> ₹4999 with GST
         "currency": "INR",
         "duration_days": 365,
         "tier": "vip"
     }
 }
+
+def calculate_gst_amounts(base_amount_paise: int) -> dict:
+    """Calculate GST and total amount from base price in paise"""
+    gst_amount = int(base_amount_paise * GST_RATE)
+    total_amount = base_amount_paise + gst_amount
+    return {
+        "base_amount": base_amount_paise,
+        "gst_amount": gst_amount,
+        "gst_rate": GST_RATE * 100,  # 18%
+        "total_amount": total_amount
+    }
 
 
 class CreateOrderRequest(BaseModel):
