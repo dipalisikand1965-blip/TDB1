@@ -2255,10 +2255,39 @@ const Admin = () => {
           <EmergencyManager getAuthHeader={getAuthHeaders} />
         )}
 
-        {/* Service Desk Tab - Full Page Mode */}
+        {/* Service Desk Tab - Redirect to Full Screen Page */}
         {activeTab === 'servicedesk' && (
-          <div className="fixed inset-0 top-[140px] bg-slate-50 z-40 overflow-hidden">
-            <ServiceDesk authHeaders={getAuthHeaders()} />
+          <div className="flex flex-col items-center justify-center h-[60vh] space-y-6">
+            <div className="text-center space-y-4">
+              <div className="p-6 bg-purple-100 rounded-full inline-block">
+                <Headphones className="w-16 h-16 text-purple-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900">Service Desk</h2>
+              <p className="text-gray-500 max-w-md">
+                For the best experience, Service Desk opens as a dedicated full-screen workspace 
+                with spacious layout and easy navigation.
+              </p>
+              <div className="flex gap-4 justify-center pt-4">
+                <Button 
+                  size="lg" 
+                  onClick={() => navigate('/admin/service-desk')}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3"
+                  data-testid="open-service-desk-btn"
+                >
+                  <ExternalLink className="w-5 h-5 mr-2" />
+                  Open Service Desk
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  onClick={() => navigate('/agent')}
+                  className="px-8 py-3"
+                >
+                  <User className="w-5 h-5 mr-2" />
+                  Agent Portal
+                </Button>
+              </div>
+            </div>
           </div>
         )}
 
