@@ -80,12 +80,12 @@ const Navbar = () => {
       icon: Home,
       color: 'from-green-500 to-teal-500',
       description: 'Pet-friendly hotels & resorts',
-      path: '/pillar/stay',
+      path: '/stay',
       isActive: true,
       subItems: [
-        { name: '🏨 Pet-Friendly Hotels', path: '/pillar/stay?type=hotel' },
-        { name: '🏡 Home Boarding', path: '/pillar/stay?type=boarding' },
-        { name: '🐕 Day Care', path: '/pillar/stay?type=daycare' },
+        { name: '🏨 Pet-Friendly Hotels', path: '/stay?type=hotel' },
+        { name: '🏡 Home Boarding', path: '/stay?type=boarding' },
+        { name: '🐕 Day Care', path: '/stay?type=daycare' },
       ]
     },
     { 
