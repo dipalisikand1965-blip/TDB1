@@ -2745,7 +2745,7 @@ async def reset_password(token: str = Body(...), new_password: str = Body(...)):
     try:
         resend.Emails.send({
             "from": SENDER_EMAIL,
-            "to": [ADMIN_EMAIL],
+            "to": ADMIN_EMAIL,  # Resend expects a string
             "subject": "✅ Password Changed - The Doggy Company Admin",
             "html": f"""
             <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
