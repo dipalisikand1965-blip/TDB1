@@ -2426,6 +2426,26 @@ CRITICAL RULES:
             "contact_method": None
         }
         
+        # Pre-populate from Pet Soul if available
+        if user_pets:
+            primary_pet = user_pets[0]
+            collected_info["pet_name"] = primary_pet.get("name")
+            collected_info["breed"] = primary_pet.get("identity", {}).get("breed") or primary_pet.get("breed")
+            collected_info["age"] = primary_pet.get("identity", {}).get("age") or primary_pet.get("age")
+            # Try to get city from user's pet addresses
+            if primary_pet.get("addresses"):
+                first_address = primary_pet["addresses"][0] if isinstance(primary_pet["addresses"], list) else None
+                if first_address:
+                    collected_info["city"] = first_address.get("city")
+                    collected_info["address"] = first_address.get("address")
+        
+        # Also try to get info from user profile
+        if user_info:
+            if not collected_info["city"] and user_info.get("city"):
+                collected_info["city"] = user_info.get("city")
+            if not collected_info["contact_method"] and user_info.get("phone"):
+                collected_info["contact_method"] = f"WhatsApp/Phone: {user_info.get('phone')}"
+        
         if request.history:
             history_text = "\n\nCONVERSATION HISTORY:\n"
             for msg in request.history[-20:]:
