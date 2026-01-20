@@ -2601,6 +2601,33 @@ async def upload_cake_reference(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail="Failed to save image")
 
 
+@api_router.post("/upload/about-image")
+async def upload_about_image(file: UploadFile = File(...)):
+    """Upload an image for About page (dogs, team)"""
+    allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Please upload JPG, PNG, or WebP images.")
+    
+    os.makedirs("uploads/about", exist_ok=True)
+    
+    file_extension = os.path.splitext(file.filename)[1] or '.jpg'
+    unique_filename = f"about-{uuid.uuid4().hex[:12]}{file_extension}"
+    file_path = f"uploads/about/{unique_filename}"
+    
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        return {
+            "message": "Image uploaded successfully",
+            "url": f"/uploads/about/{unique_filename}",
+            "filename": unique_filename
+        }
+    except Exception as e:
+        logger.error(f"Failed to save about image: {e}")
+        raise HTTPException(status_code=500, detail="Failed to save image")
+
+
 # ==================== ADMIN ROUTES ====================
 
 # Admin email for password reset
