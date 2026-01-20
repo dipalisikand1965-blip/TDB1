@@ -547,6 +547,10 @@ async def lifespan(app: FastAPI):
     logger.info("Loading admin credentials from database...")
     await load_admin_credentials_from_db()
     
+    # Ensure default user exists for login
+    logger.info("Ensuring default user exists...")
+    await ensure_default_user_exists()
+    
     # Initialize role database connection
     set_role_db(db)
     logger.info("Role management initialized")
