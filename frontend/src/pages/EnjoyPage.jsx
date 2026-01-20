@@ -419,7 +419,7 @@ const EnjoyPage = () => {
 
       {/* Calendar View */}
       {viewMode === 'calendar' && (
-        <div className="py-8 bg-gradient-to-b from-purple-50 to-white" id="calendar-view">
+        <div className="py-8 bg-gradient-to-b from-amber-50 to-white" id="calendar-view">
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid lg:grid-cols-3 gap-6">
               {/* Calendar */}
@@ -428,7 +428,7 @@ const EnjoyPage = () => {
                   {/* Calendar Header */}
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                      <CalendarDays className="w-6 h-6 text-purple-600" />
+                      <CalendarDays className="w-6 h-6 text-orange-600" />
                       Event Calendar
                     </h2>
                     <div className="flex items-center gap-2">
