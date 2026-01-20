@@ -2610,38 +2610,48 @@ export const testimonials = [
 ];
 
 // ============================================
-// FAQs
+// FAQs - Updated for The Doggy Company (Pet Concierge®)
 // ============================================
 export const faqs = [
   {
     id: '1',
-    question: 'What Ingredients Are Used In Your Dog Cakes?',
-    answer: "At The Doggy Bakery, we believe that ingredients matter when it comes to your pup's treats. Our dog cakes are made with healthy, pet-friendly, and FSSAI-approved ingredients. Base: Oats or Ragi. Flavour: Fruits (like bananas), Vegetables (like carrots), or Meat. Enhancers: Egg, Coconut Oil, Honey, or Turmeric. Topping: Homemade Yogurt, Peanut Butter, or Rolled Oats. Our cakes are preservative-free, freshly baked, and crafted with love to keep tails wagging!"
+    question: 'What is The Doggy Company?',
+    answer: "The Doggy Company is India's first and the world's most comprehensive Pet Life Operating System. We offer 12 pillars of pet services: Celebrate (cakes & treats), Dine (pet-friendly restaurants), Travel (pet relocation), Stay (pet-friendly hotels), Care (grooming & wellness), Fit (exercise & training), Advisory (expert consultations), Emergency (24/7 help), Paperwork (health records), Shop Assist (curated products), Club (membership & rewards), and Enjoy (events & experiences). All powered by Mira, Your Concierge® — our AI assistant named after our founder's grandmother."
   },
   {
     id: '2',
-    question: 'Are Your Dog Cakes Safe For Dogs With Allergies?',
-    answer: "Absolutely! We understand that some dogs have specific dietary needs or allergies. Since our cakes are made to order, we can customize them to be grain-free or adjust ingredients based on your pet's needs. You can also ask Mira AI for personalized recommendations based on your dog's dietary restrictions. Contact us at 9739982582 to discuss any specific concerns before placing your order."
+    question: 'What makes you the "World\'s First Pet Concierge®"?',
+    answer: '"Concierge®" is our registered trademark in India, held by Club Concierge® since 2016. Our founder Dipali Sikand created the world\'s first corporate concierge program (Les Concierges®) in 1998, serving over 1.5 million employees globally. Her son Aditya combined this concierge expertise with his grandmother Mira Sikand\'s 75 years of pet care recipes to create The Doggy Company — the world\'s first complete pet concierge service.'
   },
   {
     id: '3',
-    question: 'What is Mira AI and how can it help me?',
-    answer: "Mira AI is your personal Pet Concierge®! She's an intelligent assistant that helps you plan perfect celebrations, recommends products based on your dog's preferences, suggests party ideas, provides dietary guidance, and even offers referrals to trusted pet services like vets, groomers, and photographers. Just click the sparkle icon and start chatting!"
+    question: 'Who is Mira and how can she help me?',
+    answer: "Mira is Your Concierge® — our AI-powered assistant named after Mira Sikand, the beloved grandmother whose 75 years of recipes and wisdom inspired The Doggy Company. Mira can help you with everything: ordering birthday cakes, booking pet-friendly restaurants, planning travel, finding grooming services, scheduling vet consultations, managing health records, and more. Just click the sparkle icon anywhere on our platform to chat with her 24/7!"
   },
   {
     id: '4',
-    question: 'Can I Customize A Dog Cake?',
-    answer: 'Absolutely! Since our cakes are made fresh, we can personalize flavors, sizes, and decorations for birthdays or special occasions. Use our Custom Cake Designer tool or ask Mira AI for suggestions! For custom designs, please call or WhatsApp us at 9739982582 / 9663185747 or send us an image on Instagram. We recommend sharing your design at least 2-3 days in advance.'
+    question: 'What is Pet Soul™ and how does it work?',
+    answer: "Pet Soul™ is your pet's evolving digital profile that learns and grows with every interaction. Every order, booking, restaurant visit, and activity enriches your pet's profile — their preferences, health records, favorite treats, allergies, and more. This allows Mira to provide increasingly personalized recommendations. It's like your pet's personal memory that helps us serve them better over time."
   },
   {
     id: '5',
-    question: 'How Long Do Dog Cakes Stay Fresh & How To Store Them?',
-    answer: 'Our dog cakes are baked fresh daily without preservatives. To maintain freshness, store them in an airtight container in the refrigerator. If kept overnight, they can be stored for 2-3 days and should be consumed within this period for the best taste and quality.'
+    question: 'What are the membership levels?',
+    answer: "We have four doggy-themed membership levels: 🐕 Curious Pup (new members), 🦮 Loyal Companion (3+ months, 1.5x points), 🐕‍🦺 Trusted Guardian (6+ months, 2x points), and 👑 Pack Leader (12+ months or premium, 3x points). As you engage with our services, you earn Paw Points and climb the ranks, unlocking exclusive benefits and higher reward multipliers."
   },
   {
     id: '6',
-    question: 'Do you offer same-day delivery?',
-    answer: 'Yes! We offer same-day delivery in Mumbai, Bangalore and Gurugram for all orders placed by 6:00 PM. For other locations, standard delivery takes 2-3 business days. Mira AI can help you check delivery availability in your area!'
+    question: 'What are Paw Points and how do I earn them?',
+    answer: "Paw Points are our loyalty rewards! Earn 10 points per ₹100 on orders, 50 points per restaurant booking, 100 points per travel booking, and 25 points per logged activity. Your membership level multiplies your earnings — Pack Leaders earn 3x points on everything! Redeem points for discounts, free treats, and exclusive experiences."
+  },
+  {
+    id: '7',
+    question: 'Do you deliver across India?',
+    answer: "Yes! For our Celebrate pillar (cakes & treats), we offer same-day delivery in Mumbai, Bangalore, and Gurugram for orders placed by 6:00 PM. For other cities, we have pan-India shipping with special packaging. Our Dine, Stay, and Travel services are available across major Indian cities, and Mira can help you find options in your area!"
+  },
+  {
+    id: '8',
+    question: 'What is the Streats program?',
+    answer: "Streats is our heart project — 10% of every sale goes towards feeding and caring for street dogs across India. Our founder Mira Sikand always believed that every dog deserves to feel loved, not just the ones with homes. Through Streats, we extend our care to the countless dogs on our streets who need it most."
   }
 ];
 
