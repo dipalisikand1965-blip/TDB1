@@ -1637,7 +1637,7 @@ const ServiceDesk = ({ authHeaders }) => {
             </TabsContent>
 
             {/* ESCALATION RULES TAB */}
-            <TabsContent value="escalation" className="space-y-4 mt-2">
+            <TabsContent value="escalation" className="space-y-4 mt-2 min-h-[300px]">
               <div className="bg-red-50 p-3 rounded-lg border border-red-200">
                 <p className="text-sm text-red-800">
                   <ArrowUp className="w-4 h-4 inline mr-1" />
