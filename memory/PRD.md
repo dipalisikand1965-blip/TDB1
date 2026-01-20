@@ -25,13 +25,21 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 - Gift memberships & Paw Points adjustment
 - Subscriptions management & CSV export
 
-### About Page & Family Story - COMPLETE ✅ (NEW)
-- **New Route**: `/about` with comprehensive family story
-- **Mira Sikand**: The Inspirational Matriarch (75 years of pet care legacy)
-- **Dipali Sikand**: The Pioneer (Les Concierges® 1998, Club Concierge®, Trademark holder)
-- **Aditya Sikand**: The Torchbearer (The Doggy Company founder)
-- **Vision Section**: World's First Pet Concierge®, Streats program (10% to street dogs)
-- **Why "Concierge®"?**: Explains the trademark, naming of Mira AI, unique positioning
+### About Page & Family Story - COMPLETE ✅ (Redesigned)
+- **New Route**: `/about` - Team & dogs-focused layout
+- **Hero**: "World's First Pet Concierge®" + "Because every dog deserves to feel special"
+- **Mission & Vision**: Prominent cards highlighting purpose and Streats program
+- **Featured Dogs Section** (dynamically loaded from DB):
+  - Lola (Chief Taste Tester), Bruno (QA Manager), Cookie (Sniff Inspector), Max (Security), Street Heroes
+- **Team Section** (dynamically loaded from DB):
+  - Baking Maestros, Nutrition Experts, Concierge® Team, Pet Care Specialists
+- **Family Story** (compact): Mira, Dipali, Aditya with humble quote
+- **Admin Manager**: `/admin` → "About Page" tab to add/edit/delete team members and dogs
+- **Backend Endpoints**:
+  - `GET /api/about/content` - Public endpoint for About page
+  - `POST /api/admin/about/team` - Create team member
+  - `POST /api/admin/about/dogs` - Create featured dog
+  - `POST /api/admin/about/seed` - Seed default content
 
 ### FAQs & Testimonials Updated - COMPLETE ✅ (NEW)
 - **FAQs**: 8 new questions covering all 12 pillars, Pet Soul™, membership levels, Paw Points, Streats
