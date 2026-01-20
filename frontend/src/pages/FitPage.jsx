@@ -185,6 +185,26 @@ const FitPage = () => {
 
       if (response.ok) {
         const result = await response.json();
+        
+        // Write to Pet Soul - Record fitness activity
+        try {
+          await fetch(`${API_URL}/api/pet-vault/${selectedPet.id}/record-fit-activity`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              activity_type: requestForm.fit_type,
+              venue_name: 'The Doggy Company - Fit',
+              duration_minutes: null,
+              distance_km: null,
+              date: new Date().toISOString().split('T')[0],
+              notes: `Goals: ${requestForm.fitness_goals.join(', ')}. Activity level: ${requestForm.current_activity_level}`,
+              booking_id: result.request_id
+            })
+          });
+        } catch (soulError) {
+          console.warn('Pet Soul update failed (non-blocking):', soulError);
+        }
+        
         toast({
           title: "Request Submitted! 💪",
           description: `Your fitness request ${result.request_id} has been created. We'll contact you soon!`
