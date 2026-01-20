@@ -131,6 +131,7 @@ const ProductListing = ({ category = 'all' }) => {
       case 'dognuts': return 'Pupcakes & Dognuts';
       case 'nut-butters': return 'Nut Butters';
       case 'autoship': return 'Autoship Products 🔄';
+      case 'valentine': return 'Valentine Collection 💕';
       case 'other': return 'More Products';
       default: return 'All Products';
     }
