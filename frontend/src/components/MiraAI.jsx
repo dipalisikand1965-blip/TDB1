@@ -241,7 +241,11 @@ const MiraAI = () => {
           </div>
           <div>
             <h3 className="font-bold">Mira</h3>
-            <p className="text-xs opacity-80">Super Concierge® • Online</p>
+            <p className="text-xs opacity-80">
+              {userPets.length > 0 
+                ? `Super Concierge® • Knows ${userPets[0].name} 🐾` 
+                : 'Super Concierge® • Online'}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
