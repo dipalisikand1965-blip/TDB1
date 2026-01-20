@@ -58,6 +58,7 @@ import PartnerOnboarding from "./pages/PartnerOnboarding";
 import StayPage from "./pages/StayPage";
 import TravelPage from "./pages/TravelPage";
 import CarePage from "./pages/CarePage";
+import EnjoyPage from "./pages/EnjoyPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VoiceOrder from "./pages/VoiceOrder";
