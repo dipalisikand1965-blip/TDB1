@@ -1469,6 +1469,23 @@ const Admin = () => {
           
           {/* PILLAR TOOLS */}
           <span className="text-xs text-gray-500 px-2 py-1 font-semibold uppercase">Pillar Tools</span>
+          
+          {/* Seed All Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 hover:from-green-600 hover:to-emerald-700 text-xs"
+            onClick={seedAllPillars}
+            disabled={seedingAll}
+            data-testid="seed-all-btn"
+          >
+            {seedingAll ? (
+              <><RefreshCw className="w-3 h-3 mr-1 animate-spin" /> Seeding...</>
+            ) : (
+              <><Download className="w-3 h-3 mr-1" /> Seed All</>
+            )}
+          </Button>
+          
           {[
             { id: 'products', label: '🎂 Celebrate', icon: Package },
             { id: 'collections', label: 'Collections', icon: Layers },
