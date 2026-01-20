@@ -675,10 +675,10 @@ const EnjoyPage = () => {
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-xl font-bold text-purple-600">
+                        <span className="text-xl font-bold text-orange-600">
                           {exp.is_free ? 'Free' : `₹${exp.price}`}
                         </span>
-                        <Button onClick={() => handleRsvp(exp)}>
+                        <Button onClick={() => handleRsvp(exp)} className="bg-orange-500 hover:bg-orange-600">
                           RSVP Now
                         </Button>
                       </div>
