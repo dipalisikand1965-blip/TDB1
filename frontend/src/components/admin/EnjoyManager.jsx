@@ -20,7 +20,8 @@ import axios from 'axios';
 import {
   PartyPopper, Calendar, MapPin, Users, Ticket, Building2, Package,
   Settings, Search, Plus, Edit2, Trash2, RefreshCw, Eye, Clock,
-  CheckCircle, XCircle, Star, Coffee, Mountain, GraduationCap, Heart
+  CheckCircle, XCircle, Star, Coffee, Mountain, GraduationCap, Heart,
+  Download, Upload, Database
 } from 'lucide-react';
 
 const EXPERIENCE_TYPE_ICONS = {
