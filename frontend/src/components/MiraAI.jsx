@@ -18,6 +18,7 @@ const generateSessionId = () => {
 
 const MiraAI = () => {
   const location = useLocation();
+  const { user, token } = useAuth();
   
   // Hide MiraAI on admin and agent pages
   const hiddenPaths = ['/admin', '/agent', '/login'];
@@ -25,6 +26,19 @@ const MiraAI = () => {
   
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [userPets, setUserPets] = useState([]);
+  const [petsLoaded, setPetsLoaded] = useState(false);
+  
+  // Dynamic welcome message based on user's pets
+  const getWelcomeMessage = () => {
+    if (userPets.length > 0) {
+      const petNames = userPets.map(p => p.name).join(', ');
+      const firstPet = userPets[0];
+      return `🐾 **Welcome back!** I'm Mira, your Super Concierge® at The Doggy Company.\n\nI see you have **${petNames}** in your family! How wonderful. 🎉\n\nI already know ${firstPet.name}'s preferences, so let's skip the basics and get straight to helping you.\n\nWhat can I help you with today?\n- 🎂 A special treat or cake for ${firstPet.name}?\n- 🍽️ Pet-friendly dining reservations\n- 🏨 Stay bookings where ${firstPet.name} is welcome\n- ✈️ Travel & relocation assistance\n- 💊 Care, grooming, or vet coordination`;
+    }
+    return "🐾 **Hello, pet parent!** I'm Mira, your Super Concierge® at The Doggy Company.\n\nI can help you with:\n- 🎂 Ordering birthday cakes & treats\n- 🍽️ Dine reservations at pet-friendly restaurants\n- 🏨 Stay bookings at pet-friendly hotels\n- ✈️ Pet travel & relocation assistance\n- 💊 Pet care & nutrition advice\n\n💡 *Tip: Create a Pet Soul profile to get personalized recommendations!*\n\nHow can I assist you today?";
+  };
+  
   const [messages, setMessages] = useState([
     {
       id: 'welcome',
