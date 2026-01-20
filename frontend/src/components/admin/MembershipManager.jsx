@@ -446,6 +446,14 @@ const MembershipManager = () => {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
+                    <th className="px-4 py-3 text-left">
+                      <input 
+                        type="checkbox" 
+                        checked={selectedMembers.length === filteredMembers.length && filteredMembers.length > 0}
+                        onChange={selectAllFiltered}
+                        className="rounded border-gray-300"
+                      />
+                    </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Member</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Level</th>
@@ -460,9 +468,18 @@ const MembershipManager = () => {
                     const tierKey = getTierKey(member.membership_tier);
                     const tierInfo = MEMBERSHIP_LEVELS[tierKey];
                     const isExpired = member.membership_expires && new Date(member.membership_expires) < new Date();
+                    const isSelected = selectedMembers.includes(member.id);
                     
                     return (
-                      <tr key={member.id || idx} className="hover:bg-gray-50">
+                      <tr key={member.id || idx} className={`hover:bg-gray-50 ${isSelected ? 'bg-purple-50' : ''}`}>
+                        <td className="px-4 py-4">
+                          <input 
+                            type="checkbox" 
+                            checked={isSelected}
+                            onChange={() => toggleMemberSelection(member.id)}
+                            className="rounded border-gray-300"
+                          />
+                        </td>
                         <td className="px-4 py-4">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold">
