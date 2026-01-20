@@ -6767,14 +6767,15 @@ async def get_celebration_occasions():
 
 
 @api_router.post("/pets")
-async def create_pet_profile(pet: PetProfileCreate):
-    """Create a new pet profile"""
+async def create_pet_profile(pet: PetProfileCreate, current_user: dict = Depends(get_current_user)):
+    """Create a new pet profile linked to the authenticated user"""
     pet_id = f"pet-{uuid.uuid4().hex[:12]}"
     now = datetime.now(timezone.utc).isoformat()
     
     pet_data = {
         "id": pet_id,
         **pet.model_dump(),
+        "owner_email": current_user["email"],  # Link to authenticated user
         "achievements": [],
         "order_history": [],
         "created_at": now,
