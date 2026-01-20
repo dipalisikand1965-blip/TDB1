@@ -117,20 +117,21 @@ const CelebrateManager = ({ getAuthHeader }) => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
+      // Fetch from public products endpoint (Shopify synced) - no auth required
       const [requestsRes, productsRes, bundlesRes, settingsRes, partnersRes] = await Promise.all([
         axios.get(`${API_URL}/api/celebrate/requests`),
-        // Use main products collection (Shopify synced) with cakes category
-        axios.get(`${API_URL}/api/admin/products?category=cakes&limit=500`).catch(() => axios.get(`${API_URL}/api/products?limit=500`)),
+        axios.get(`${API_URL}/api/products?limit=1000`),
         axios.get(`${API_URL}/api/celebrate/admin/bundles`),
         axios.get(`${API_URL}/api/celebrate/admin/settings`),
         axios.get(`${API_URL}/api/celebrate/admin/partners`)
       ]);
       
       setRequests(requestsRes.data.requests || []);
-      // Filter products for celebrate categories (cakes, treats, hampers, etc.)
+      // Filter products for celebrate categories (cakes, treats, hampers, pupcakes, dognuts, frozen-treats, etc.)
       const allProducts = productsRes.data.products || [];
+      const celebrateCategories = ['cakes', 'treats', 'hampers', 'pupcakes', 'dognuts', 'frozen', 'celebrate', 'breed-cakes', 'mini-cakes', 'desi-treats'];
       const celebrateProducts = allProducts.filter(p => 
-        ['cakes', 'treats', 'hampers', 'pupcakes', 'dognuts', 'frozen', 'celebrate'].some(cat => 
+        celebrateCategories.some(cat => 
           (p.category || '').toLowerCase().includes(cat) ||
           (p.subcategory || '').toLowerCase().includes(cat)
         )
