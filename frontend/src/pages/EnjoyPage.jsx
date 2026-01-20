@@ -654,7 +654,7 @@ const EnjoyPage = () => {
                   <Card key={exp.id} className="overflow-hidden hover:shadow-xl transition-all group">
                     <div className={`h-40 bg-gradient-to-br ${typeConfig.color} p-6 relative`}>
                       <div className="absolute top-4 right-4">
-                        <Badge className="bg-yellow-400 text-yellow-900">
+                        <Badge className="bg-amber-400 text-amber-900">
                           <Star className="w-3 h-3 mr-1 fill-current" /> Featured
                         </Badge>
                       </div>
