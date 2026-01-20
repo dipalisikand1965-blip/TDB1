@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -11,6 +11,7 @@ import { Switch } from '../ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
+import axios from 'axios';
 import {
   Brain, Plus, Edit, Trash2, Search, Filter, Download, Upload,
   Users, Package, Settings, Star, Loader2, CheckCircle, Clock,
