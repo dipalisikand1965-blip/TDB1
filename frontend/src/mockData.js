@@ -2544,7 +2544,7 @@ export const products = [
 ];
 
 // ============================================
-// TESTIMONIALS
+// TESTIMONIALS - Updated for The Doggy Company (Pet Concierge®)
 // ============================================
 export const testimonials = [
   {
@@ -2553,9 +2553,10 @@ export const testimonials = [
     location: 'Bengaluru',
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun',
     rating: 5,
-    text: 'Ordering from The Doggy Bakery was seamless. Every bite was savored, and I felt at ease knowing he was enjoying a treat made with natural, dog-friendly ingredients.',
+    text: 'The Doggy Company is a game-changer! Started with a birthday cake for Bruno, now I use them for everything — restaurant bookings, grooming appointments, even health record storage. Mira remembers all of Bruno\'s preferences. This is what pet care should be!',
     date: '2024-12-15',
-    petName: 'Bruno'
+    petName: 'Bruno',
+    pillars: ['Celebrate', 'Dine', 'Care']
   },
   {
     id: '2',
@@ -2563,9 +2564,10 @@ export const testimonials = [
     location: 'Mumbai',
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Priya',
     rating: 5,
-    text: "Bhadra loves The Doggy Bakery's chicken and oat Woof Dognuts! It's our go-to treat to brighten her day. Thank you for these healthy delights!",
+    text: "Found the most amazing pet-friendly restaurant through The Doggy Company! Bhadra and I had a wonderful brunch at Cafe Pawsome. Mira even reminded me to bring her favorite treats. The whole experience was seamless — from booking to payment.",
     date: '2024-12-10',
-    petName: 'Bhadra'
+    petName: 'Bhadra',
+    pillars: ['Dine', 'Shop Assist']
   },
   {
     id: '3',
@@ -2573,9 +2575,10 @@ export const testimonials = [
     location: 'Mumbai',
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul',
     rating: 5,
-    text: "Wanted to make Archie's birthday special, so I ordered the Floral Fido Cake. The banana flavor was a hit—Archie enjoyed his cake very much.",
+    text: "Relocated from Mumbai to Bangalore with Archie thanks to The Doggy Company's Travel pillar. They handled everything — airline bookings, pet carrier, health certificates. Zero stress! Then celebrated our new home with a Floral Fido Cake.",
     date: '2024-11-28',
-    petName: 'Archie'
+    petName: 'Archie',
+    pillars: ['Travel', 'Celebrate', 'Paperwork']
   },
   {
     id: '4',
@@ -2583,19 +2586,21 @@ export const testimonials = [
     location: 'Bengaluru',
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Shreya',
     rating: 5,
-    text: "For Leo's birthday, I ordered a custom Chow Chow mutton-flavored cake. The resemblance was spot-on, and Leo thoroughly enjoyed the celebration.",
+    text: "The Pet Soul feature is incredible! It knows Leo's birthday is coming up, his favorite flavors, even his last vet visit. Mira proactively suggested a fitness program for his weight management. It's like having a personal assistant just for my dog!",
     date: '2024-11-20',
-    petName: 'Leo'
+    petName: 'Leo',
+    pillars: ['Fit', 'Advisory', 'Celebrate']
   },
   {
     id: '5',
     name: 'Ayesha Mehta',
-    location: 'Bangalore',
+    location: 'Gurugram',
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ayesha',
     rating: 5,
-    text: "Ninja absolutely devoured the Chicken & Oat Doggo Cake! I wanted something healthy yet indulgent for his birthday, and this was perfect.",
+    text: "Booked a pet-friendly hotel in Goa through the Stay pillar. The Concierge team ensured everything was perfect — from room setup to nearby walking spots. Ninja had the time of his life! Already planning our next trip with them.",
     date: '2024-12-01',
-    petName: 'Ninja'
+    petName: 'Ninja',
+    pillars: ['Stay', 'Travel', 'Enjoy']
   },
   {
     id: '6',
@@ -2603,9 +2608,32 @@ export const testimonials = [
     location: 'Bengaluru',
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Vikram',
     rating: 5,
-    text: 'The quality is unmatched! Fresh ingredients, beautiful presentation, and my Golden Retriever absolutely loved it. This is now our go-to for all celebrations.',
+    text: 'Used the Emergency pillar at 2 AM when Max had a health scare. Mira immediately connected me with an emergency vet and guided me through first aid. The 24/7 support is a lifesaver — literally! Every pet parent needs this service.',
     date: '2024-12-18',
-    petName: 'Max'
+    petName: 'Max',
+    pillars: ['Emergency', 'Care', 'Advisory']
+  },
+  {
+    id: '7',
+    name: 'Neha Kapoor',
+    location: 'Mumbai',
+    image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Neha',
+    rating: 5,
+    text: "Love that 10% of my purchases go to Streats for street dogs! But beyond that, the quality and service are unmatched. Cookie's entire health history is in one place, vaccination reminders are automatic, and the Paw Points keep adding up!",
+    date: '2024-12-05',
+    petName: 'Cookie',
+    pillars: ['Paperwork', 'Club', 'Celebrate']
+  },
+  {
+    id: '8',
+    name: 'Aditya Rao',
+    location: 'Bengaluru',
+    image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aditya',
+    rating: 5,
+    text: "From 🐕 Curious Pup to 👑 Pack Leader in 8 months! The gamification keeps me engaged, but the real value is how well they know Simba now. Mira's recommendations are spot-on every time. This is the future of pet care.",
+    date: '2024-12-12',
+    petName: 'Simba',
+    pillars: ['Club', 'All Pillars']
   }
 ];
 
