@@ -68,6 +68,13 @@ const DinePage = () => {
           const bundlesData = await bundlesRes.json();
           setBundles(bundlesData.bundles || []);
         }
+        
+        // Fetch dine products
+        const productsRes = await fetch(`${API_URL}/api/dine/products`);
+        if (productsRes.ok) {
+          const productsData = await productsRes.json();
+          setProducts(productsData.products || []);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
