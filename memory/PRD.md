@@ -1,145 +1,132 @@
 # The Doggy Company - Product Requirements Document
 
 ## Original Problem Statement
-Building **The Doggy Company**, a "Pet Life Operating System." A world-class, event-driven platform with a single engine powering 12 business "Pillars" with Pet Soul integration, Unified Inbox, and Mira AI concierge.
+Building **The Doggy Company**, a "Pet Life Operating System" with 12 business "Pillars". Core vision includes:
+- Deep "Pet Soul" profile for each pet
+- "Unified Inbox" for all communications
+- Mandatory "Membership" layer for accessing services
 
-**Brand Identity**: World's First Pet Concierge® — "Concierge®" is the registered trademark of Club Concierge® in India, held by Dipali Sikand since 2016.
-
-**Company Address**: #83, 3rd Floor, 7th Cross, 4th B Block, Koramangala, Bangalore - 560034
-
----
-
-## What's Been Implemented (Latest - Jan 20, 2026)
-
-### User Login Fix - COMPLETE ✅ (Jan 20, 2026)
-- Fixed: User `dipali@clubconcierge.in` login was failing because the user was created in wrong database (`doggy_bakery` instead of `test_database`)
-- Root cause: Database mismatch between script and actual DB_NAME env variable
-- User now successfully logs in and can access the app
-
-### 18% GST Implementation - COMPLETE ✅ (Jan 20, 2026)
-- Backend now calculates and includes 18% GST on all membership plans
-- Added `calculate_gst_amounts()` function for consistent GST calculation
-- `/api/payments/plans` now returns: base_amount, gst_amount, gst_rate, total_amount
-- `/api/payments/create-order` now creates Razorpay orders with GST-inclusive amounts
-- GST breakdown stored in order records for compliance
-
-### Member Directory & 360° Profile Console - COMPLETE ✅
-New comprehensive member management system with:
-- **Member Directory**: Searchable table with filters (Status, Source, Tier, City)
-- **Pet Soul Column**: Shows average Pet Soul score per member directly in the table
-- **360° Profile Console** (click Eye icon):
-  - **Account Tab**: Contact details, addresses, communication preferences
-  - **Membership Tab**: Plan, Paw Points, payment history
-  - **Pets & Soul Tab**: 
-    - Pet Soul Score with progress bar
-    - **8-Category Breakdown**: Identity, Health, Preferences, Temperament, Routine, Travel, Celebrations, Family
-    - Quick info (birthday, weight, vaccinations, celebrations)
-    - "View Full Soul" and "Send Nudge" buttons
-  - **Activity Tab**: Orders, requests, bookings with counts
-  - **Notes Tab**: Internal notes with tags/flags
-
-### Pet Profile Bug Fix - COMPLETE ✅
-- Fixed: `POST /api/pets` now links pet to authenticated user via `owner_email`
-- Pets are now properly visible in My Pets page after creation
-
-### P0 UI & Branding - COMPLETE ✅
-- Landing page focused on Concierge®
-- Footer with Bangalore address
-- "The Doggy Company" branding
-- Concierge® trademark applied
-
-### Authentication Gating with Benefits Preview - COMPLETE ✅
-- All 12 pillars protected
-- Beautiful "Member Benefits" page shows when unauthenticated users try to access
-- Pillar-specific benefits displayed
-
-### FAQs - All 12 Pillars - COMPLETE ✅
-- Covers all pillars with category filters
-
-### Reports - All 12 Pillars - COMPLETE ✅
-- Reports section shows all pillar tabs
+## Core Requirements
+- **A. Consistent Admin Managers**: All 12 pillars must have standardized manager interface
+- **B. Core Admin Features**: Stats, CRUD, Refresh/Seed buttons, CSV export
+- **C. Centralized Membership & Payments**: Single `/membership` page for login/signup and paid subscriptions
+- **D. "Pet Soul" Integration**: All pillars read/write to Pet Soul
+- **E. Dynamic & Brand-Aligned Content**: Marketing reflects "The Doggy Company" vision
+- **F. Comprehensive Member Management**: Full suite of admin tools for member lifecycle
+- **G. Pet Soul Weekly Question**: Weekly engagement via WhatsApp/Email
 
 ---
 
-## Priority Backlog (Updated)
+## What's Been Implemented (Jan 20, 2026)
 
-### P0 - Critical
-- [ ] Complete remaining Member Management features (Plan Manager, B2B Issuance, etc.)
+### ✅ Critical Fixes - COMPLETE
+- **User Login Fixed**: `dipali@clubconcierge.in` / `lola4304` - created in correct `test_database`
+- **Admin Login Fixed**: `aditya` / `lola4304` - stored in `admin_config` collection
+- **Auto Database Initialization**: Frontend auto-calls `/api/init-database` on load
+- **18% GST Implementation**: Backend calculates GST with breakdown on all membership plans
 
-### P1 - High Priority
-- [ ] **Pet Soul Daily Question**: Send one question regularly that enriches Pet Soul
-- [ ] Mira Proactive Suggestions from Pet Soul data
-- [ ] Voice Order fix ("Connection failed")
+### ✅ UI/UX Improvements - COMPLETE
+- **Auth Gating Removed**: All pages accessible without login (testing phase)
+- **Dropdown Overlap Fixed**: Navbar z-index corrected, dropdowns close properly
+- **Footer Membership Button**: Links to original membership page
+- **Pet Soul Page Fixed**: `/pet-soul` displays with navbar, no auth required
 
-### P2 - Medium Priority
-- [ ] Shopify Sync "Untitled Products" fix
-- [ ] Onboarding flow with Pet Soul creation
-- [ ] Preboarding & Onboarding Monitor
-
-### P3 - Future
-- Rewards & Privileges Manager
-- Renewal & Collections Console
-- Templates & Communication Center
-- Permissions & Audit Log
-- Analytics Dashboard (membership health)
-
----
-
-## Member Management Roadmap (Per User Request)
-
-### Phase 1 - COMPLETE ✅
-1. ✅ **Member Directory** - Searchable with filters
-2. ✅ **360° Profile Console** - Account, Membership, Pets & Soul, Activity, Notes
-3. ✅ **Pet Soul Visibility** - Score + category breakdown
-
-### Phase 2 - Next
-4. [ ] **Gift & B2B Issuance** - Issue without payment, partner tracking
-5. [ ] **Membership Plan Manager** - Configure plans, pricing, add-ons
-6. [ ] **Preboarding & Onboarding Monitor** - Funnel view
-
-### Phase 3 - Engagement
-7. [ ] **Rewards & Privileges Manager**
-8. [ ] **Renewal & Collections Console**
-9. [ ] **Pet Soul Engagement** - Daily question feature
-
-### Phase 4 - Operations
-10. [ ] **Support & Disputes Tools**
-11. [ ] **Templates & Communication Center**
-12. [ ] **Analytics Dashboard**
-
-### Phase 5 - Governance
-13. [ ] **Permissions & Audit Log**
-14. [ ] **Data Export & Finance Tools**
+### ✅ Previous Session Work
+- Member Directory with search, filters, Pet Soul progress bars
+- 360° Member Profile Console with Pets & Soul tab
+- CSV Import/Export for members
+- Reports Manager for all 12 pillars
+- Home page redesigned as Concierge®-focused
 
 ---
 
-## API Endpoints Added
+## Pending Issues
 
-### Member Management
-- `GET /api/admin/members/directory` - Full member list with pets
-- `GET /api/admin/members/{id}/full-profile` - 360° view
-- `POST /api/admin/members/{id}/notes` - Add internal notes
-- `GET /api/admin/members/pet-soul-summary` - Soul completion stats
-- `POST /api/admin/members` - Add single member
-- `POST /api/admin/members/import` - CSV bulk import
-- `POST /api/admin/members/bulk-action` - Bulk operations
+### 🔴 P0 - Critical
+- [ ] Verify production deployment works (admin/user login, products)
+
+### 🟠 P1 - High Priority
+- [ ] Voice Order "Connection failed" error
+- [ ] Shopify Sync creates "Untitled" products (recurring 7+ times)
+- [ ] Pet Soul Weekly Question feature
+
+### 🟡 P2 - Medium Priority
+- [ ] Complete Member Management System (11 remaining features)
+- [ ] Re-enable auth gating before go-live
 
 ---
 
-## Files Created/Modified
+## Future Tasks / Backlog
 
-### New Files
-- `/app/frontend/src/components/admin/MemberDirectory.jsx` - Complete member management UI
+### Code Architecture
+- [ ] Refactor `server.py` (9100+ lines) into domain-specific route files
+- [ ] Refactor `Admin.jsx` for better organization
+- [ ] Standardize all 12 Admin Pillar Managers
 
-### Modified
-- `/app/backend/server.py` - Added member directory endpoints, fixed pet creation
-- `/app/frontend/src/pages/Admin.jsx` - Added Member Directory tab
-- `/app/frontend/src/components/admin/index.js` - Export MemberDirectory
+### Features
+- [ ] GST Invoice Generation
+- [ ] Centralized Product Management System
+- [ ] Full Member Management spec (Gift/B2B Issuance, Plan Manager, etc.)
+
+---
+
+## Technical Architecture
+
+```
+/app
+├── backend
+│   ├── server.py          # Main server (9100+ lines)
+│   ├── auth_routes.py     # User authentication
+│   ├── channel_intake.py  # Voice order, multi-channel intake
+│   └── .env               # MONGO_URL, DB_NAME, API keys
+└── frontend
+    └── src/
+        ├── App.js                    # Routes, DatabaseInitializer
+        ├── components/
+        │   ├── ProtectedRoute.jsx    # Auth gating (currently disabled)
+        │   ├── Navbar.jsx            # Fixed dropdown overlap
+        │   └── Footer.jsx            # Membership button added
+        └── pages/
+            ├── MembershipPage.jsx    # Full membership page with plans
+            ├── PetProfile.jsx        # Pet Soul multi-step form
+            └── Admin.jsx             # Admin panel
+```
+
+## Key API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/admin/login` - Admin login
+- `GET /api/init-database` - Auto-initialize DB (admin, user, products)
+
+### Payments
+- `GET /api/payments/plans` - Returns plans with GST breakdown
+- `POST /api/payments/create-order` - Creates Razorpay order with GST
+
+### Admin
+- `GET /api/admin/members` - Member directory
+- `GET /api/admin/members/{user_id}` - 360° member profile
 
 ---
 
 ## Credentials
 
-- **Admin**: `aditya` / `lola4304`
-- **Test User**: `dipali@clubconcierge.in` / `lola4304` (Working ✅)
-- **Razorpay**: Test keys in `backend/.env`
+| Type | Username/Email | Password |
+|------|----------------|----------|
+| Admin | `aditya` | `lola4304` |
+| Test User | `dipali@clubconcierge.in` | `lola4304` |
+
+## Database
+- MongoDB at `localhost:27017`
+- Database name: `test_database` (from DB_NAME env var)
+- Note: Each deployment has separate DB, auto-init handles seeding
+
+## 3rd Party Integrations
+- **Razorpay**: Payment gateway (test keys)
+- **OpenAI GPT-4 / Whisper**: Mira AI and Voice Order
+- **Resend**: Transactional emails
+- **Shopify**: Product sync
+
+---
+
+*Last updated: January 20, 2026*
