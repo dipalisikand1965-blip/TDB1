@@ -5,6 +5,21 @@ Building **The Doggy Company**, a "Pet Life Operating System." A world-class, ev
 
 ---
 
+## What's Been Implemented (Latest - Jan 20, 2026)
+
+### P0 UI Refresh - COMPLETE ✅
+- **Landing Page Redesigned**: Hero section now reflects "Pet Life Operating System" vision
+  - New headline: "Your Pet's Life / One Platform, Endless Care"
+  - Added "12 Pillars of Pet Life" section with all pillars displayed
+  - CTAs updated to "Explore Pillars" and "Become a Member"
+- **Footer Updated**: "Store Pickup Locations" replaced with registered office address:
+  - Block A, Bldg No 7, Flat no 701, Nahar Amrit Shakti, Chandivali, Andheri East, Mumbai - 400072
+- **Concierge® Trademark**: Added ® symbol to all user-facing "Concierge" text across the app:
+  - TravelPage.jsx, MembershipPage.jsx, MiraPage.jsx, StayPage.jsx, mockData.js, etc.
+- **Mira AI Section Updated**: Now describes Mira as "Super Pet Concierge®" for all 12 pillars
+
+---
+
 ## Data Flywheel Status (Pet Soul Integration)
 
 | Pillar | Fetches Pets | Pet Selection UI | Writes to Soul | Status |
