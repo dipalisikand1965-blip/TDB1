@@ -109,6 +109,9 @@ function AppRouter() {
       {/* Agent Portal - Standalone Service Desk for agents */}
       <Route path="/agent" element={<AgentPortal />} />
       
+      {/* Full-Screen Service Desk - NO navbar/footer */}
+      <Route path="/admin/service-desk" element={<ServiceDeskPage />} />
+      
       {/* Main app routes - WITH navbar */}
       <Route path="/*" element={<MainLayout />} />
     </Routes>
