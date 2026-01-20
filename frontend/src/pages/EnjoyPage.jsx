@@ -195,6 +195,68 @@ const EnjoyPage = () => {
     }
   };
 
+  // Calendar helper functions
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    
+    const days = [];
+    // Add empty slots for days before the first day of month
+    for (let i = 0; i < startingDayOfWeek; i++) {
+      days.push(null);
+    }
+    // Add the days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(day);
+    }
+    return days;
+  };
+
+  const formatDateKey = (year, month, day) => {
+    return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  };
+
+  const getEventsForDate = (day) => {
+    if (!day) return [];
+    const dateKey = formatDateKey(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    let events = calendarData[dateKey] || [];
+    
+    // Filter by city if selected
+    if (selectedCity) {
+      events = events.filter(e => e.city?.toLowerCase().includes(selectedCity.toLowerCase()));
+    }
+    // Filter by type if selected
+    if (selectedType) {
+      events = events.filter(e => e.experience_type === selectedType);
+    }
+    return events;
+  };
+
+  const hasEventsOnDate = (day) => {
+    return getEventsForDate(day).length > 0;
+  };
+
+  const navigateMonth = (direction) => {
+    setCurrentMonth(prev => {
+      const newDate = new Date(prev);
+      newDate.setMonth(newDate.getMonth() + direction);
+      return newDate;
+    });
+    setSelectedDate(null);
+  };
+
+  const isToday = (day) => {
+    if (!day) return false;
+    const today = new Date();
+    return day === today.getDate() && 
+           currentMonth.getMonth() === today.getMonth() && 
+           currentMonth.getFullYear() === today.getFullYear();
+  };
+
   const filteredExperiences = experiences.filter(exp => {
     if (selectedType && exp.experience_type !== selectedType) return false;
     if (selectedCity && !exp.city?.toLowerCase().includes(selectedCity.toLowerCase())) return false;
