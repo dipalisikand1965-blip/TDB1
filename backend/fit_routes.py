@@ -262,6 +262,26 @@ async def delete_fitness_plan(plan_id: str):
 
 # ==================== PARTNERS ====================
 
+@router.get("/partners")
+async def get_public_fit_partners(
+    is_featured: bool = False,
+    city: Optional[str] = None,
+    limit: int = 20
+):
+    """Get active fitness partners (public)"""
+    db = get_db()
+    
+    query = {"is_active": True}
+    if is_featured:
+        query["is_featured"] = True
+    if city:
+        query["cities"] = {"$in": [city]}
+    
+    partners = await db.fit_partners.find(query, {"_id": 0}).to_list(limit)
+    
+    return {"partners": partners, "total": len(partners)}
+
+
 @router.get("/admin/partners")
 async def get_fit_partners(is_active: bool = True):
     """Get all fitness partners"""
