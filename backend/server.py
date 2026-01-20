@@ -781,6 +781,7 @@ from care_routes import router as care_router
 # Import Enjoy Pillar
 from enjoy_routes import router as enjoy_router
 from fit_routes import router as fit_router
+from advisory_routes import router as advisory_router
 
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
