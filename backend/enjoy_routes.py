@@ -563,6 +563,54 @@ async def export_enjoy_products():
     return {"products": products, "total": len(products)}
 
 
+@router.post("/admin/products")
+async def create_enjoy_product(product: dict):
+    """Create a new enjoy product"""
+    db = get_db()
+    
+    product["id"] = f"enjoy-{uuid.uuid4().hex[:8]}"
+    product["category"] = "enjoy"
+    product["created_at"] = datetime.now(timezone.utc).isoformat()
+    product["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.products.insert_one({k: v for k, v in product.items() if k != "_id"})
+    
+    return {"message": "Product created", "id": product["id"]}
+
+
+@router.put("/admin/products/{product_id}")
+async def update_enjoy_product(product_id: str, product_data: dict):
+    """Update an enjoy product"""
+    db = get_db()
+    
+    product_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    product_data.pop("id", None)
+    product_data.pop("_id", None)
+    
+    result = await db.products.update_one(
+        {"id": product_id},
+        {"$set": product_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"message": "Product updated"}
+
+
+@router.delete("/admin/products/{product_id}")
+async def delete_enjoy_product(product_id: str):
+    """Delete an enjoy product"""
+    db = get_db()
+    
+    result = await db.products.delete_one({"id": product_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"message": "Product deleted"}
+
+
 # ==================== CALENDAR ====================
 
 @router.get("/calendar")
