@@ -551,6 +551,10 @@ async def lifespan(app: FastAPI):
     logger.info("Ensuring default user exists...")
     await ensure_default_user_exists()
     
+    # Seed initial products if database is empty
+    logger.info("Checking products...")
+    await seed_initial_products()
+    
     # Initialize role database connection
     set_role_db(db)
     logger.info("Role management initialized")
