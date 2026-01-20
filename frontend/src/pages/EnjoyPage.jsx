@@ -373,7 +373,7 @@ const EnjoyPage = () => {
                   </div>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Cities</SelectItem>
+                  <SelectItem value="all">All Cities</SelectItem>
                   <div className="px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50">🇮🇳 India</div>
                   {availableCities.filter(c => CITY_REGIONS.india.cities.includes(c)).map(city => (
                     <SelectItem key={city} value={city}>{city}</SelectItem>
