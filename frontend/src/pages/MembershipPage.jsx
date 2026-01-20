@@ -622,7 +622,7 @@ const MembershipPage = () => {
           <div className="mt-8 text-center">
             <Card className="inline-block p-4 bg-purple-50 border-purple-200">
               <p className="text-purple-900">
-                <strong>🐾 Multiple pets?</strong> Add more pets at just ₹499/year or ₹49/month each
+                <strong>🐾 Multiple pets?</strong> Add more pets at just ₹589/year or ₹58/month each (incl. GST)
               </p>
             </Card>
           </div>
