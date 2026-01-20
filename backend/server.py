@@ -500,7 +500,7 @@ async def send_celebration_email(to_email: str, owner_name: str, pet_name: str,
         
         params = {
             "from": f"The Doggy Bakery <{SENDER_EMAIL}>",
-            "to": [to_email],
+            "to": to_email,  # Resend expects a string, not a list
             "subject": subject,
             "html": html_content
         }
