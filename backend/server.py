@@ -2051,9 +2051,117 @@ async def chat_with_mira(request: ChatRequest):
     user_query = request.message
     session_id = request.session_id or str(uuid.uuid4())
     
-    # Rate limiting removed - Mira is now free for all users
+    # ==================== PET SOUL INTEGRATION ====================
+    # Fetch user's pets if auth token provided
+    user_pets = []
+    user_info = None
+    pet_soul_context = ""
     
-    # 1. Perform Web Search (DuckDuckGo)
+    if request.auth_token:
+        try:
+            # Decode token to get user info
+            token = request.auth_token.replace("Bearer ", "")
+            payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            user_id = payload.get("user_id")
+            user_email = payload.get("email")
+            
+            if user_id or user_email:
+                # Fetch user's pets with their Pet Soul data
+                query = {"user_id": user_id} if user_id else {"user_email": user_email}
+                pets = await db.pets.find(query, {"_id": 0}).to_list(10)
+                
+                if pets:
+                    user_pets = pets
+                    pet_soul_context = "\n\n🐾 **USER'S PET PROFILES (Pet Soul Data)**:\n"
+                    for pet in pets:
+                        identity = pet.get("identity", {})
+                        answers = pet.get("doggy_soul_answers", {})
+                        insights = pet.get("insights", {})
+                        
+                        pet_soul_context += f"""
+**{pet.get('name', 'Unknown Pet')}** ({identity.get('breed', pet.get('breed', 'Unknown breed'))})
+- Age: {identity.get('age', pet.get('age', 'Unknown'))}
+- Species: {pet.get('species', 'dog')}
+- Weight: {identity.get('weight', 'Not specified')}
+"""
+                        # Add relevant Pet Soul answers
+                        if answers:
+                            pet_soul_context += "- Known Preferences:\n"
+                            pref_fields = ['food_allergies', 'diet_type', 'favorite_treats', 'sensitive_stomach',
+                                          'crate_trained', 'separation_anxiety', 'car_rides', 'behavior_with_dogs',
+                                          'handling_comfort', 'training_level']
+                            for field in pref_fields:
+                                if field in answers and answers[field]:
+                                    pet_soul_context += f"  • {field.replace('_', ' ').title()}: {answers[field]}\n"
+                        
+                        # Add insights
+                        if insights:
+                            if insights.get('diet_summary'):
+                                pet_soul_context += f"- Diet Note: {insights['diet_summary']}\n"
+                            if insights.get('behavior_summary'):
+                                pet_soul_context += f"- Behavior Note: {insights['behavior_summary']}\n"
+                        
+                        # Add pillar history (past interactions)
+                        pillar_history = pet.get("pillar_history", [])
+                        if pillar_history:
+                            recent = pillar_history[-3:]  # Last 3 interactions
+                            pet_soul_context += "- Recent Activity: "
+                            pet_soul_context += ", ".join([f"{h.get('pillar', 'unknown')} ({h.get('request_type', 'request')})" for h in recent])
+                            pet_soul_context += "\n"
+                        
+                        # Add medical reminders if any
+                        medical = pet.get("medical_reminders", [])
+                        if medical:
+                            upcoming = [m for m in medical if m.get('status') == 'pending'][:2]
+                            if upcoming:
+                                pet_soul_context += "- Upcoming Reminders: "
+                                pet_soul_context += ", ".join([f"{m.get('type', 'reminder')} on {m.get('due_date', 'soon')}" for m in upcoming])
+                                pet_soul_context += "\n"
+                        
+                        pet_soul_context += "\n"
+                    
+                    logger.info(f"Mira loaded {len(user_pets)} pets for user")
+                
+                # Also get user info
+                user = await db.users.find_one(query, {"_id": 0, "password": 0})
+                if user:
+                    user_info = user
+                    
+        except jwt.ExpiredSignatureError:
+            logger.warning("Mira: Auth token expired")
+        except jwt.InvalidTokenError:
+            logger.warning("Mira: Invalid auth token")
+        except Exception as e:
+            logger.error(f"Mira Pet Soul fetch error: {e}")
+    
+    # Determine current pillar context from page URL
+    pillar_context = ""
+    if request.current_page:
+        page = request.current_page.lower()
+        if '/celebrate' in page or '/cakes' in page or '/treats' in page:
+            pillar_context = "User is browsing CELEBRATE pillar (cakes, treats, birthday celebrations)"
+        elif '/dine' in page:
+            pillar_context = "User is browsing DINE pillar (pet-friendly restaurants, fresh meals)"
+        elif '/stay' in page:
+            pillar_context = "User is browsing STAY pillar (pet-friendly hotels, boarding, day care)"
+        elif '/travel' in page:
+            pillar_context = "User is browsing TRAVEL pillar (pet travel, relocation, transport)"
+        elif '/care' in page:
+            pillar_context = "User is browsing CARE pillar (grooming, vet coordination, pet care services)"
+        elif '/enjoy' in page:
+            pillar_context = "User is browsing ENJOY pillar (pet events, experiences, meetups)"
+        elif '/fit' in page:
+            pillar_context = "User is browsing FIT pillar (pet fitness, weight management, exercise plans)"
+        elif '/advisory' in page:
+            pillar_context = "User is browsing ADVISORY pillar (expert consultations, behavior, nutrition)"
+        elif '/paperwork' in page:
+            pillar_context = "User is browsing PAPERWORK pillar (pet documents, records, reminders)"
+        elif '/emergency' in page:
+            pillar_context = "User is browsing EMERGENCY pillar (urgent help, lost pet, medical emergency)"
+        elif '/membership' in page or '/club' in page:
+            pillar_context = "User is browsing CLUB/MEMBERSHIP pillar (membership benefits, rewards)"
+    
+    # ==================== WEB SEARCH ====================
     search_results = ""
     try:
         with DDGS() as ddgs:
@@ -2080,13 +2188,46 @@ async def chat_with_mira(request: ChatRequest):
         logger.error(f"Search failed: {e}")
         search_results = "Search unavailable."
 
-    # 2. Call LLM with Context
+    # ==================== LLM CALL ====================
     try:
         api_key = os.environ.get("EMERGENT_LLM_KEY")
         if not api_key:
             return {"response": "I'm having trouble connecting to my brain right now. Please check my API key configuration.", "session_id": session_id}
 
-        system_prompt = """ROLE & IDENTITY
+        # Build Pet Soul aware system prompt
+        pet_soul_instruction = ""
+        if user_pets:
+            primary_pet = user_pets[0]
+            pet_name = primary_pet.get('name', 'your pet')
+            pet_soul_instruction = f"""
+🐾 **PET SOUL AWARENESS - CRITICAL INSTRUCTIONS**:
+You have access to this user's pet profiles. USE THIS DATA:
+1. Address pets by NAME (e.g., "How is {pet_name} doing?")
+2. NEVER ask for information you already have (breed, age, allergies, etc.)
+3. Reference their preferences when making recommendations
+4. If they have food allergies, ALWAYS consider this for food/treat suggestions
+5. If they have travel history, reference it for travel/stay recommendations
+6. Be proactive: "Since {pet_name} loves chicken treats, you might enjoy..."
+
+{pet_soul_context}
+"""
+        else:
+            pet_soul_instruction = """
+🐾 **NO PET PROFILE FOUND**:
+This user hasn't added their pet yet or isn't logged in.
+- Gently encourage them to create a Pet Soul profile for personalized recommendations
+- You can say: "I'd love to learn more about your companion! Creating a Pet Soul profile helps me give you perfectly tailored recommendations."
+- Still provide helpful general assistance
+"""
+
+        pillar_instruction = ""
+        if pillar_context:
+            pillar_instruction = f"""
+📍 **CURRENT CONTEXT**: {pillar_context}
+Tailor your responses to be relevant to this pillar. If they're browsing Stay, focus on accommodation. If browsing Celebrate, focus on cakes and treats.
+"""
+
+        system_prompt = f"""ROLE & IDENTITY
 Mira is the world's most trusted Concierge®® — a living intelligence shaped by lineage, discretion, and a profound understanding of animal well-being. She is not a chatbot, a search engine, or a list-maker. She is the embodiment of private-office hospitality for the modern pet owner, speaking with the warmth, grace, and quiet authority of a dedicated estate manager who already knows your companion's quirks.
 Every response must feel personally curated, sensory-rich, and seamlessly polished. The guest must never feel processed — only recognised.
 Mira mirrors the guest's language with cultural precision. When the guest uses English, she responds in formal yet warm British English, with correct spelling and register. When the guest shifts language, Mira follows naturally, never forcing translation unless clarity requires it.
