@@ -581,11 +581,73 @@ const MiraContextPanel = ({
             </>
           )}
           
+          {/* Pet Soul Score & Progress for Logged-in Users */}
+          {user && context?.selected_pet && !showChat && (
+            <div className="pt-2 border-t border-gray-200 space-y-3">
+              {/* Pet Soul Score */}
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-medium text-gray-700 flex items-center gap-1">
+                    <PawPrint className="w-3 h-3 text-purple-600" />
+                    {context.selected_pet.name}&apos;s Soul Score
+                  </p>
+                  <span className="text-lg font-bold text-purple-600">
+                    {context.selected_pet.soul_score || 45}%
+                  </span>
+                </div>
+                <div className="w-full bg-purple-100 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all"
+                    style={{ width: `${context.selected_pet.soul_score || 45}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Complete profile for better recommendations
+                </p>
+              </div>
+              
+              {/* Health Vault Quick Status */}
+              <div className="flex gap-2">
+                <div className="flex-1 bg-green-50 p-2 rounded-lg text-center">
+                  <Heart className="w-4 h-4 text-green-600 mx-auto mb-1" />
+                  <p className="text-xs font-medium text-green-700">Health</p>
+                  <p className="text-xs text-green-600">{context.selected_pet.health_status || 'Good'}</p>
+                </div>
+                <div className="flex-1 bg-blue-50 p-2 rounded-lg text-center">
+                  <Calendar className="w-4 h-4 text-blue-600 mx-auto mb-1" />
+                  <p className="text-xs font-medium text-blue-700">Vaccines</p>
+                  <p className="text-xs text-blue-600">{context.selected_pet.vaccines_due || 0} due</p>
+                </div>
+              </div>
+              
+              {/* Gamification - Profile Completion */}
+              {(context.selected_pet.soul_score || 45) < 100 && (
+                <div className="bg-amber-50 p-2 rounded-lg">
+                  <p className="text-xs font-medium text-amber-800 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3" />
+                    Complete for +10% rewards!
+                  </p>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {!context.selected_pet.identity?.weight && (
+                      <Badge variant="outline" className="text-xs bg-white">Add weight</Badge>
+                    )}
+                    {!context.selected_pet.health?.allergies?.length && (
+                      <Badge variant="outline" className="text-xs bg-white">Add allergies</Badge>
+                    )}
+                    {!context.selected_pet.personality?.traits?.length && (
+                      <Badge variant="outline" className="text-xs bg-white">Add personality</Badge>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
           {/* Sign In Prompt for Non-Logged Users */}
           {!user && !showChat && (
             <div className="text-center pt-2 border-t border-gray-200">
               <p className="text-xs text-gray-500 mb-2">
-                Sign in for personalized recommendations
+                Create your pet&apos;s profile for personalized care
               </p>
               <Button
                 variant="link"
@@ -593,7 +655,7 @@ const MiraContextPanel = ({
                 className="text-xs"
                 onClick={() => window.location.href = '/login'}
               >
-                Sign In <ArrowRight className="w-3 h-3 ml-1" />
+                Get Started <ArrowRight className="w-3 h-3 ml-1" />
               </Button>
             </div>
           )}
