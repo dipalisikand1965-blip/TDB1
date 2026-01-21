@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card } from '../components/ui/card';
 import MembershipPayment from '../components/MembershipPayment';
+import PetSoulJourney from '../components/PetSoulJourney';
 import { 
   PawPrint, Crown, Check, Star, Heart, Gift, Calendar, 
   Shield, Sparkles, ChevronRight, Eye, EyeOff, ArrowRight,
@@ -12,7 +13,7 @@ import {
   ShoppingBag, Users, Award, Zap, X, Trophy, Target, TrendingUp,
   Cake, Activity, Stethoscope, MapPin, CreditCard
 } from 'lucide-react';
-import { API_URL } from '../utils/api';
+import { API_URL, getApiUrl } from '../utils/api';
 
 // Doggy-themed membership levels
 const MEMBERSHIP_LEVELS = [
@@ -85,7 +86,7 @@ const SAMPLE_PET_SOUL = {
 const MembershipPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, login, register, loading: authLoading } = useAuth();
+  const { user, token, login, register, loading: authLoading } = useAuth();
   
   // Redirect destination after login
   const from = location.state?.from || '/my-pets';
@@ -95,6 +96,8 @@ const MembershipPage = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [userPets, setUserPets] = useState([]);
+  const [loadingPets, setLoadingPets] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -106,12 +109,48 @@ const MembershipPage = () => {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // If already logged in, redirect to intended destination
+  // Fetch user's pets if logged in
   useEffect(() => {
-    if (user) {
-      navigate(from, { replace: true });
-    }
-  }, [user, navigate, from]);
+    const fetchUserPets = async () => {
+      if (!user?.email) {
+        setLoadingPets(false);
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${getApiUrl()}/api/pets?email=${user.email}`, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setUserPets(data.pets || []);
+        }
+      } catch (error) {
+        console.error('Error fetching pets:', error);
+      } finally {
+        setLoadingPets(false);
+      }
+    };
+    
+    fetchUserPets();
+  }, [user, token]);
+
+  // Handle opening Mira AI
+  const handleOpenMira = () => {
+    window.dispatchEvent(new CustomEvent('openMiraAI'));
+  };
+
+  // If logged in with pets, show Pet Soul Journey instead of sales page
+  if (user && userPets.length > 0 && !loadingPets) {
+    return (
+      <PetSoulJourney 
+        user={user} 
+        pets={userPets} 
+        onOpenMira={handleOpenMira}
+      />
+    );
+  }
 
   const handleSelectPlan = (plan) => {
     setSelectedPlan(plan);

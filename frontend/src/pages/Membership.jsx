@@ -11,7 +11,7 @@
  * - Mira AI as companion
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -42,13 +42,60 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { getApiUrl } from '../utils/api';
+import PetSoulJourney from '../components/PetSoulJourney';
 
 const Membership = () => {
   const [selectedPlan, setSelectedPlan] = useState('premium');
   const [billingCycle, setBillingCycle] = useState('yearly');
+  const [userPets, setUserPets] = useState([]);
+  const [loadingPets, setLoadingPets] = useState(true);
   const { addToCart } = useCart();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
+
+  // Fetch user's pets if logged in
+  useEffect(() => {
+    const fetchUserPets = async () => {
+      if (!user?.email) {
+        setLoadingPets(false);
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${getApiUrl()}/api/pets?email=${user.email}`, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setUserPets(data.pets || []);
+        }
+      } catch (error) {
+        console.error('Error fetching pets:', error);
+      } finally {
+        setLoadingPets(false);
+      }
+    };
+    
+    fetchUserPets();
+  }, [user, token]);
+
+  // Handle opening Mira AI
+  const handleOpenMira = () => {
+    window.dispatchEvent(new CustomEvent('openMiraAI'));
+  };
+
+  // If logged in with pets, show Pet Soul Journey instead of sales page
+  if (user && userPets.length > 0 && !loadingPets) {
+    return (
+      <PetSoulJourney 
+        user={user} 
+        pets={userPets} 
+        onOpenMira={handleOpenMira}
+      />
+    );
+  }
 
   const handleSubscribe = (plan) => {
     const price = billingCycle === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice;
