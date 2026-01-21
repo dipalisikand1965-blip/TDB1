@@ -70,6 +70,7 @@ import AgentPortal from "./pages/AgentPortal";
 import ServiceDeskPage from "./pages/ServiceDeskPage";
 import MembershipPage from "./pages/MembershipPage";
 import AboutPage from "./pages/AboutPage";
+import MembershipOnboarding from "./pages/MembershipOnboarding";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
