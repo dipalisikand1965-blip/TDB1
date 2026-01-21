@@ -232,8 +232,6 @@ const MembershipPage = () => {
     { id: 'enjoy', name: 'Enjoy', desc: 'Events & experiences', color: 'rose' },
   ];
 
-  const [showAllPillars, setShowAllPillars] = useState(false);
-
   const benefits = [
     { icon: PawPrint, title: 'Pet Soul™ Profile', desc: 'Deep, evolving profile for your pet', primary: true },
     { icon: Sparkles, title: 'Mira AI Concierge®', desc: '24/7 intelligent pet assistant', primary: true },
