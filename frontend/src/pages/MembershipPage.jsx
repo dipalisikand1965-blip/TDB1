@@ -414,7 +414,7 @@ const MembershipPage = () => {
         </div>
       </div>
 
-      {/* Pet Soul Preview Section */}
+      {/* Pet Soul Preview Section - Focus on Identity, Preferences, Milestones */}
       <div className="bg-gradient-to-br from-purple-900 via-purple-800 to-pink-800 py-20">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
@@ -423,16 +423,16 @@ const MembershipPage = () => {
               <span className="text-white/90 text-sm">Pet Soul™ Technology</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Meet Bruno's Pet Soul™ Profile
+              Meet Bruno&apos;s Pet Soul™ Profile
             </h2>
             <p className="text-white/70 max-w-2xl mx-auto">
-              Every interaction with The Doggy Company enriches your pet's profile. Here's what Bruno's journey looks like — yours could be even more amazing!
+              Every interaction enriches your pet&apos;s profile. This is what a life system looks like when it truly knows your pet.
             </p>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-6">
-            {/* Main Profile Card */}
-            <Card className="p-6 bg-white/10 backdrop-blur border-white/20 text-white lg:row-span-2">
+            {/* Identity Card */}
+            <Card className="p-6 bg-white/10 backdrop-blur border-white/20 text-white lg:row-span-2" data-testid="bruno-identity-card">
               <div className="text-center mb-6">
                 <div className="relative w-32 h-32 mx-auto mb-4">
                   <img 
@@ -441,7 +441,7 @@ const MembershipPage = () => {
                     className="w-full h-full rounded-full object-cover border-4 border-white/30"
                   />
                   <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-amber-400 to-amber-500 px-3 py-1 rounded-full text-xs font-bold text-amber-900">
-                    👑 Pack Leader
+                    Deeply Understood
                   </div>
                 </div>
                 <h3 className="text-2xl font-bold">{SAMPLE_PET_SOUL.name}</h3>
@@ -470,82 +470,79 @@ const MembershipPage = () => {
               </div>
             </Card>
 
-            {/* Stats Card */}
-            <Card className="p-6 bg-white/10 backdrop-blur border-white/20 text-white">
+            {/* Preferences & Dietary Card */}
+            <Card className="p-6 bg-white/10 backdrop-blur border-white/20 text-white" data-testid="bruno-preferences-card">
               <h4 className="font-semibold mb-4 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-green-400" /> Journey Stats
+                <Heart className="w-5 h-5 text-pink-400" /> What We Know
               </h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-white/10 rounded-lg">
-                  <p className="text-2xl font-bold text-purple-300">{SAMPLE_PET_SOUL.stats.pawPoints}</p>
-                  <p className="text-xs text-white/60">Paw Points</p>
+              <div className="space-y-4">
+                <div className="p-3 bg-white/10 rounded-lg">
+                  <p className="text-xs text-white/50 uppercase tracking-wide mb-1">Dietary Needs</p>
+                  <p className="font-medium">{SAMPLE_PET_SOUL.preferences.dietaryNeeds}</p>
                 </div>
-                <div className="text-center p-3 bg-white/10 rounded-lg">
-                  <p className="text-2xl font-bold text-pink-300">{SAMPLE_PET_SOUL.stats.ordersCompleted}</p>
-                  <p className="text-xs text-white/60">Orders</p>
+                <div className="p-3 bg-red-500/20 rounded-lg border border-red-400/30">
+                  <p className="text-xs text-red-300 uppercase tracking-wide mb-1">Allergy Alert</p>
+                  <p className="font-medium text-red-200">{SAMPLE_PET_SOUL.preferences.allergyAlert}</p>
                 </div>
-                <div className="text-center p-3 bg-white/10 rounded-lg">
-                  <p className="text-2xl font-bold text-orange-300">{SAMPLE_PET_SOUL.stats.restaurantsVisited}</p>
-                  <p className="text-xs text-white/60">Restaurants</p>
-                </div>
-                <div className="text-center p-3 bg-white/10 rounded-lg">
-                  <p className="text-2xl font-bold text-blue-300">{SAMPLE_PET_SOUL.stats.hotelsStayed}</p>
-                  <p className="text-xs text-white/60">Hotels</p>
+                <div className="p-3 bg-white/10 rounded-lg">
+                  <p className="text-xs text-white/50 uppercase tracking-wide mb-1">Exercise Level</p>
+                  <p className="font-medium">{SAMPLE_PET_SOUL.preferences.exerciseLevel}</p>
                 </div>
               </div>
             </Card>
 
-            {/* Achievements Card */}
-            <Card className="p-6 bg-white/10 backdrop-blur border-white/20 text-white">
+            {/* Milestones Card */}
+            <Card className="p-6 bg-white/10 backdrop-blur border-white/20 text-white" data-testid="bruno-milestones-card">
               <h4 className="font-semibold mb-4 flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-amber-400" /> Achievements
+                <Star className="w-5 h-5 text-amber-400" /> Life Milestones
               </h4>
               <div className="space-y-3">
-                {SAMPLE_PET_SOUL.achievements.map((achievement, idx) => (
+                {SAMPLE_PET_SOUL.milestones.map((milestone, idx) => (
                   <div key={idx} className="flex items-center gap-3 p-2 bg-white/10 rounded-lg">
-                    <span className="text-2xl">{achievement.icon}</span>
+                    <span className="text-2xl">{milestone.icon}</span>
                     <div>
-                      <p className="font-medium text-sm">{achievement.name}</p>
-                      <p className="text-xs text-white/50">{achievement.date}</p>
+                      <p className="font-medium text-sm">{milestone.name}</p>
+                      <p className="text-xs text-white/50">{milestone.date}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </Card>
 
-            {/* Health Vault Preview */}
-            <Card className="p-6 bg-white/10 backdrop-blur border-white/20 text-white lg:col-span-2">
+            {/* Health Continuity Card */}
+            <Card className="p-6 bg-white/10 backdrop-blur border-white/20 text-white lg:col-span-2" data-testid="bruno-health-card">
               <h4 className="font-semibold mb-4 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-green-400" /> Health Vault
+                <Shield className="w-5 h-5 text-green-400" /> Health Continuity
               </h4>
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center p-4 bg-white/10 rounded-lg">
                   <Stethoscope className="w-8 h-8 mx-auto mb-2 text-green-400" />
-                  <p className="text-2xl font-bold">{SAMPLE_PET_SOUL.healthVault.vaccinations}</p>
-                  <p className="text-xs text-white/60">Vaccinations</p>
+                  <p className="text-sm font-medium">{SAMPLE_PET_SOUL.healthContinuity.lastVaccination}</p>
+                  <p className="text-xs text-white/60">Last Vaccination</p>
                 </div>
                 <div className="text-center p-4 bg-white/10 rounded-lg">
-                  <FileText className="w-8 h-8 mx-auto mb-2 text-blue-400" />
-                  <p className="text-2xl font-bold">{SAMPLE_PET_SOUL.healthVault.documents}</p>
-                  <p className="text-xs text-white/60">Documents</p>
+                  <Calendar className="w-8 h-8 mx-auto mb-2 text-blue-400" />
+                  <p className="text-sm font-medium">{SAMPLE_PET_SOUL.healthContinuity.nextCheckup}</p>
+                  <p className="text-xs text-white/60">Next Checkup</p>
                 </div>
                 <div className="text-center p-4 bg-white/10 rounded-lg">
-                  <Calendar className="w-8 h-8 mx-auto mb-2 text-purple-400" />
-                  <p className="text-sm font-bold">{SAMPLE_PET_SOUL.healthVault.lastCheckup}</p>
-                  <p className="text-xs text-white/60">Last Checkup</p>
+                  <Users className="w-8 h-8 mx-auto mb-2 text-purple-400" />
+                  <p className="text-sm font-medium">{SAMPLE_PET_SOUL.healthContinuity.vetName}</p>
+                  <p className="text-xs text-white/60">Primary Vet</p>
                 </div>
               </div>
             </Card>
           </div>
 
           <div className="text-center mt-10">
-            <p className="text-white/60 mb-4">This is just the beginning. Your pet's profile grows with every interaction!</p>
+            <p className="text-white/60 mb-4">This is just the beginning. Your pet&apos;s profile grows with every interaction.</p>
             <Button 
               size="lg"
               className="bg-white text-purple-700 hover:bg-gray-100"
               onClick={() => handleSelectPlan('annual')}
+              data-testid="bruno-section-cta"
             >
-              Start Building Your Pet's Soul <ArrowRight className="ml-2 w-5 h-5" />
+              Start Building Your Pet&apos;s Soul <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </div>
         </div>
