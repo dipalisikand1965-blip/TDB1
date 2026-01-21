@@ -143,7 +143,7 @@ Extract from `server.py` (9100+ lines):
 
 ## Production URLs
 - **Live Site:** https://thedoggycompany.in ✅
-- **Preview:** https://pet-soul-hub.preview.emergentagent.com
+- **Preview:** https://doggyco.preview.emergentagent.com
 
 ## 3rd Party Integrations
 - **Razorpay:** Payment gateway (test keys)
