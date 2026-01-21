@@ -214,10 +214,17 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
 ## Changelog
 
 ### January 21, 2026 (Session 3)
-- ✅ **Pet Soul Journey Component** - Created `PetSoulJourney.jsx` - replaces generic membership page for logged-in users with pets
-- ✅ **Membership Page Personalization** - Both `Membership.jsx` and `MembershipPage.jsx` now conditionally render `PetSoulJourney` for members
-- ✅ **Context-Aware CTAs** - Homepage now shows "Become a Member" only for guests; logged-in users see "Start Your Pet Soul" or "Add Your Pet"
-- ✅ **Pet Soul Journey Features**: Pet name & breed, Soul Score (circular progress), 8 Pillars progress, Achievements, Continue Journey actions, Pet switcher for multi-pet households
+- ✅ **Pet Soul Journey Redesign** - Complete redesign per user's "Living Portrait" spec:
+  - Stage-based display (0-20%, 20-50%, 50-80%, 80-100%)
+  - "How well we understand [Pet]" instead of completion percentage
+  - 8 Pillars show insights, not raw percentages
+  - "What We've Learned" timeline with source tags (From you, From behaviour, From Mira)
+  - Quiet achievements (only at Stage 3+, no gamification)
+  - Personalized care insights (NOT product pushes)
+  - Single gentle next step question
+- ✅ **Service Desk AI Fix** - Fixed NoneType error in ticket AI draft when pet info is missing
+- ✅ **Ticket Click Handler** - Added missing onClick to ticket cards in Service Desk
+- ✅ **Context-Aware Homepage CTAs** - "Become a Member" only for guests; logged-in users see "Start Your Pet Soul"
 
 ### January 21, 2026 (Session 2)
 - ✅ **Celebrate Page Hero** - Added category-specific hero sections with dynamic backgrounds, badges, and MiraContextPanel placement
