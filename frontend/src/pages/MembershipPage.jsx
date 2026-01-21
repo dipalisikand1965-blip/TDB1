@@ -232,20 +232,24 @@ const MembershipPage = () => {
           {/* Hero Content */}
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur px-4 py-2 rounded-full mb-6">
-              <Crown className="w-5 h-5 text-yellow-400" />
-              <span className="text-white/90 text-sm">The World's First Pet Life Operating System</span>
+              <Brain className="w-5 h-5 text-yellow-400" />
+              <span className="text-white/90 text-sm">Your Pet&apos;s Evolving Intelligence System</span>
             </div>
             
             <h1 className="text-4xl sm:text-6xl font-bold text-white mb-6 leading-tight">
-              Everything Your Pet Needs,<br />
+              The Longer You&apos;re With Us,<br />
               <span className="bg-gradient-to-r from-pink-400 to-yellow-400 bg-clip-text text-transparent">
-                One Membership Away
+                The Less You Explain
               </span>
             </h1>
             
-            <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
-              Join The Doggy Company and unlock 12 pillars of pet care - from celebrations to emergencies, 
-              all powered by your pet's unique Soul profile.
+            <p className="text-xl text-white/80 mb-6 max-w-2xl mx-auto">
+              Not just a membership — an intelligent companion that learns your pet&apos;s preferences,
+              remembers their health history, and anticipates their needs.
+            </p>
+            
+            <p className="text-lg text-white/60 mb-10 italic">
+              &ldquo;The world&apos;s most intelligent pet life platform, continuously learning and anticipating your pet&apos;s needs.&rdquo;
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -254,15 +258,16 @@ const MembershipPage = () => {
                 className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-8 py-6 text-lg"
                 onClick={() => handleSelectPlan('annual')}
               >
-                Start Your Journey <ArrowRight className="ml-2 w-5 h-5" />
+                Start Your Pet&apos;s Soul <Brain className="ml-2 w-5 h-5" />
               </Button>
               <Button 
                 size="lg"
                 variant="outline"
                 className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg"
-                onClick={() => document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
               >
-                View Plans
+                <Sparkles className="mr-2 w-5 h-5" />
+                Talk to Mira First
               </Button>
             </div>
           </div>
