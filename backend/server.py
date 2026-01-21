@@ -4350,13 +4350,9 @@ async def update_admin_product(product_id: str, updates: dict):
     return {"success": True, "updated_fields": list(sanitized.keys())}
 
 
-class CSVImportRequest(BaseModel):
-    products: List[dict]
-
-
 @api_router.post("/admin/products/import-csv")
 async def import_products_csv(
-    request: CSVImportRequest,
+    request: ProductCSVImportRequest,
     credentials: HTTPBasicCredentials = Depends(security)
 ):
     """Import products from CSV data"""
