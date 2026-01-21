@@ -5180,6 +5180,10 @@ async def check_abandoned_carts():
             logger.info("Abandoned cart reminders are disabled in settings")
             return 0
         
+        # Reduced batch size and timeout protection
+        MAX_EMAILS_PER_RUN = 10  # Limit emails per scheduler run to prevent timeout
+            return 0
+        
         # Get reminder configuration (with defaults)
         reminder_config = settings.get("abandoned_cart_reminders") if settings else None
         if not reminder_config:
