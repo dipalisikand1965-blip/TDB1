@@ -152,6 +152,30 @@ const MiraAI = () => {
     setIsLoading(true);
 
     try {
+      // Build history from messages (excluding welcome)
+      const history = messages
+        .filter(m => m.id !== 'welcome')
+        .map(m => ({ role: m.role, content: m.content }));
+      
+      // Detect current pillar from pathname
+      const pathToPillar = {
+        '/travel': 'travel',
+        '/stay': 'stay',
+        '/care': 'care',
+        '/dine': 'dine',
+        '/celebrate': 'celebrate',
+        '/enjoy': 'enjoy',
+        '/shop': 'shop',
+        '/fit': 'fit',
+        '/advisory': 'advisory',
+        '/paperwork': 'paperwork',
+        '/emergency': 'emergency',
+        '/club': 'club'
+      };
+      const currentPillar = Object.entries(pathToPillar).find(([path]) => 
+        location.pathname.toLowerCase().includes(path)
+      )?.[1] || null;
+      
       const response = await fetch(`${API_URL}/api/mira/chat`, {
         method: 'POST',
         headers: { 
@@ -162,8 +186,10 @@ const MiraAI = () => {
           message: userMessage.content,
           session_id: sessionId,
           source: 'web_widget',
-          auth_token: token || null,
-          current_page: location.pathname
+          current_page: location.pathname,
+          current_pillar: currentPillar,
+          selected_pet_id: userPets.length === 1 ? (userPets[0].id || userPets[0].name) : null,
+          history: history
         })
       });
 
