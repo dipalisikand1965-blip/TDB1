@@ -757,15 +757,27 @@ const Home = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link to="/membership">
-              <Button
-                size="lg"
-                className="bg-white text-purple-600 hover:bg-gray-100 text-xl px-10 py-8 shadow-2xl transform hover:scale-105 transition-all"
-              >
-                Become a Member
-                <ArrowRight className="w-6 h-6 ml-2" />
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/pets/add">
+                <Button
+                  size="lg"
+                  className="bg-white text-purple-600 hover:bg-gray-100 text-xl px-10 py-8 shadow-2xl transform hover:scale-105 transition-all"
+                >
+                  Start Your Pet Soul
+                  <ArrowRight className="w-6 h-6 ml-2" />
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/membership">
+                <Button
+                  size="lg"
+                  className="bg-white text-purple-600 hover:bg-gray-100 text-xl px-10 py-8 shadow-2xl transform hover:scale-105 transition-all"
+                >
+                  Become a Member
+                  <ArrowRight className="w-6 h-6 ml-2" />
+                </Button>
+              </Link>
+            )}
             <Button
               size="lg"
               variant="outline"
