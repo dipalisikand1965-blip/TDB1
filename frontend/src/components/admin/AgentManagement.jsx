@@ -9,20 +9,41 @@ import { Label } from '../ui/label';
 import {
   Users, Plus, Edit, Trash2, Key, Shield, Loader2, RefreshCw,
   UserCheck, UserX, Mail, Phone, Bell, Package, Headphones,
-  Inbox, Truck, Eye, EyeOff, Check, X, Clock
+  Inbox, Truck, Eye, EyeOff, Check, X, Clock,
+  Plane, Building, UtensilsCrossed, Scissors, Dumbbell, PartyPopper,
+  ShoppingBag, GraduationCap, Heart, ShieldCheck, CloudRain, PawPrint
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../../hooks/use-toast';
-import { API_URL } from '../../utils/api';
+import { getApiUrl } from '../../utils/api';
 
-// Permission icons and info
-const PERMISSION_CONFIG = {
+// Core permission icons and info
+const CORE_PERMISSIONS = {
   notifications: { icon: Bell, name: 'Notifications', color: 'bg-yellow-100 text-yellow-700' },
   orders: { icon: Package, name: 'Orders', color: 'bg-blue-100 text-blue-700' },
   service_desk: { icon: Headphones, name: 'Service Desk', color: 'bg-purple-100 text-purple-700' },
   unified_inbox: { icon: Inbox, name: 'Unified Inbox', color: 'bg-green-100 text-green-700' },
   fulfilment: { icon: Truck, name: 'Fulfilment', color: 'bg-orange-100 text-orange-700' }
 };
+
+// Pillar permission icons and info
+const PILLAR_PERMISSIONS = {
+  pillar_celebrate: { icon: PartyPopper, name: 'Celebrate (Bakery)', color: 'bg-pink-100 text-pink-700', emoji: '🎂' },
+  pillar_dine: { icon: UtensilsCrossed, name: 'Dine', color: 'bg-amber-100 text-amber-700', emoji: '🍽️' },
+  pillar_stay: { icon: Building, name: 'Stay (Pawcation)', color: 'bg-indigo-100 text-indigo-700', emoji: '🏨' },
+  pillar_care: { icon: Scissors, name: 'Care', color: 'bg-teal-100 text-teal-700', emoji: '💊' },
+  pillar_travel: { icon: Plane, name: 'Travel', color: 'bg-blue-100 text-blue-700', emoji: '✈️' },
+  pillar_shop: { icon: ShoppingBag, name: 'Shop', color: 'bg-emerald-100 text-emerald-700', emoji: '🛍️' },
+  pillar_enjoy: { icon: Heart, name: 'Enjoy', color: 'bg-rose-100 text-rose-700', emoji: '🎉' },
+  pillar_fit: { icon: Dumbbell, name: 'Fit', color: 'bg-cyan-100 text-cyan-700', emoji: '💪' },
+  pillar_advisory: { icon: GraduationCap, name: 'Advisory', color: 'bg-violet-100 text-violet-700', emoji: '📋' },
+  pillar_paperwork: { icon: Shield, name: 'Paperwork', color: 'bg-slate-100 text-slate-700', emoji: '📄' },
+  pillar_emergency: { icon: Bell, name: 'Emergency', color: 'bg-red-100 text-red-700', emoji: '🚨' },
+  pillar_club: { icon: PawPrint, name: 'Club', color: 'bg-purple-100 text-purple-700', emoji: '👑' }
+};
+
+// Combined for badge display
+const PERMISSION_CONFIG = { ...CORE_PERMISSIONS, ...PILLAR_PERMISSIONS };
 
 const AgentManagement = ({ authHeaders }) => {
   const [agents, setAgents] = useState([]);
@@ -49,7 +70,7 @@ const AgentManagement = ({ authHeaders }) => {
   const fetchAgents = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/api/admin/agents`, { headers: authHeaders });
+      const res = await axios.get(`${getApiUrl()}/api/admin/agents`, { headers: authHeaders });
       setAgents(res.data.agents || []);
     } catch (error) {
       console.error('Failed to fetch agents:', error);
@@ -76,7 +97,7 @@ const AgentManagement = ({ authHeaders }) => {
     
     setSaving(true);
     try {
-      await axios.post(`${API_URL}/api/admin/agents`, formData, { headers: authHeaders });
+      await axios.post(`${getApiUrl()}/api/admin/agents`, formData, { headers: authHeaders });
       toast({ title: 'Success', description: `Agent "${formData.name}" created successfully` });
       setShowCreateModal(false);
       resetForm();
