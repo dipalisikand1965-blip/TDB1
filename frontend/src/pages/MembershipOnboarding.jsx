@@ -643,7 +643,7 @@ const MembershipOnboarding = () => {
 
                 <Button 
                   onClick={handleNext}
-                  className="w-full mt-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 h-12"
+                  className="w-full mt-6 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 h-12 shadow-lg shadow-orange-200/50 transition-all hover:scale-[1.02]"
                   data-testid="parent-next-btn"
                 >
                   Continue to Add Your Dog
