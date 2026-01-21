@@ -141,7 +141,7 @@ const MiraAI = () => {
   // Fetch pillar-specific quick prompts
   const fetchQuickPrompts = async (pillar) => {
     try {
-      const response = await fetch(`${API_URL}/api/mira/quick-prompts/${pillar}`);
+      const response = await fetch(`${getApiUrl()}/api/mira/quick-prompts/${pillar}`);
       if (response.ok) {
         const data = await response.json();
         setQuickPrompts(data.prompts || []);
@@ -155,7 +155,7 @@ const MiraAI = () => {
   const fetchChatHistory = async () => {
     if (!token) return;
     try {
-      const response = await fetch(`${API_URL}/api/mira/history?limit=5`, {
+      const response = await fetch(`${getApiUrl()}/api/mira/history?limit=5`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -170,7 +170,7 @@ const MiraAI = () => {
   // Start new conversation
   const startNewConversation = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/mira/session/new`, {
+      const response = await fetch(`${getApiUrl()}/api/mira/session/new`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -280,7 +280,7 @@ const MiraAI = () => {
     const fetchUserPets = async () => {
       if (token && !petsLoaded) {
         try {
-          const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+          const response = await fetch(`${getApiUrl()}/api/pets/my-pets`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           if (response.ok) {
@@ -326,7 +326,7 @@ const MiraAI = () => {
         .filter(m => m.id !== 'welcome')
         .map(m => ({ role: m.role, content: m.content }));
       
-      const response = await fetch(`${API_URL}/api/mira/chat`, {
+      const response = await fetch(`${getApiUrl()}/api/mira/chat`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
