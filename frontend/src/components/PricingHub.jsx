@@ -45,7 +45,7 @@ const PartnerCommissionRow = ({ partner, partnerType, defaultCommission, getAuth
     setSaving(true);
     try {
       const res = await fetch(
-        `${API_URL}/api/admin/pricing/partner-commissions/${partnerType}/${partner.id}?commission_type=${commissionType}&commission_value=${commissionValue}`,
+        `${getApiUrl()}/api/admin/pricing/partner-commissions/${partnerType}/${partner.id}?commission_type=${commissionType}&commission_value=${commissionValue}`,
         { method: 'PATCH', headers: getAuthHeader() }
       );
       if (res.ok) {
@@ -136,14 +136,14 @@ const PillarBundlesSection = ({ getAuthHeader, formatCurrency }) => {
     setLoading(true);
     try {
       // Fetch Celebrate bundles (products with bundle_type)
-      const celebrateRes = await fetch(`${API_URL}/api/admin/pricing/products?pillar=celebrate&limit=50`, { headers: getAuthHeader() });
+      const celebrateRes = await fetch(`${getApiUrl()}/api/admin/pricing/products?pillar=celebrate&limit=50`, { headers: getAuthHeader() });
       const celebrateData = await celebrateRes.json();
       const celebrateBundles = (celebrateData.products || []).filter(p => p.bundle_type || p.tags?.includes('bundle'));
 
       // Fetch Dine bundles
       let dineBundles = [];
       try {
-        const dineRes = await fetch(`${API_URL}/api/admin/dine/bundles`, { headers: getAuthHeader() });
+        const dineRes = await fetch(`${getApiUrl()}/api/admin/dine/bundles`, { headers: getAuthHeader() });
         if (dineRes.ok) {
           const dineData = await dineRes.json();
           dineBundles = dineData.bundles || [];
@@ -153,7 +153,7 @@ const PillarBundlesSection = ({ getAuthHeader, formatCurrency }) => {
       // Fetch Stay bundles/socials
       let stayBundles = [];
       try {
-        const stayRes = await fetch(`${API_URL}/api/admin/stay/socials`, { headers: getAuthHeader() });
+        const stayRes = await fetch(`${getApiUrl()}/api/admin/stay/socials`, { headers: getAuthHeader() });
         if (stayRes.ok) {
           const stayData = await stayRes.json();
           stayBundles = stayData.events || stayData.socials || [];
@@ -161,11 +161,11 @@ const PillarBundlesSection = ({ getAuthHeader, formatCurrency }) => {
       } catch (e) { console.log('Stay bundles not available'); }
 
       // Fetch products for Travel and Care pillars (bundles)
-      const travelRes = await fetch(`${API_URL}/api/admin/pricing/products?pillar=travel&limit=50`, { headers: getAuthHeader() });
+      const travelRes = await fetch(`${getApiUrl()}/api/admin/pricing/products?pillar=travel&limit=50`, { headers: getAuthHeader() });
       const travelData = await travelRes.json();
       const travelBundles = (travelData.products || []).filter(p => p.bundle_type || p.tags?.includes('bundle'));
 
-      const careRes = await fetch(`${API_URL}/api/admin/pricing/products?pillar=care&limit=50`, { headers: getAuthHeader() });
+      const careRes = await fetch(`${getApiUrl()}/api/admin/pricing/products?pillar=care&limit=50`, { headers: getAuthHeader() });
       const careData = await careRes.json();
       const careBundles = (careData.products || []).filter(p => p.bundle_type || p.tags?.includes('bundle'));
 
@@ -194,14 +194,14 @@ const PillarBundlesSection = ({ getAuthHeader, formatCurrency }) => {
       let body = {};
 
       if (pillar === 'dine') {
-        endpoint = `${API_URL}/api/admin/dine/bundles/${bundle.id}`;
+        endpoint = `${getApiUrl()}/api/admin/dine/bundles/${bundle.id}`;
         body = { price: bundle.price, discounted_price: bundle.discounted_price };
       } else if (pillar === 'stay') {
-        endpoint = `${API_URL}/api/admin/stay/socials/${bundle.id}`;
+        endpoint = `${getApiUrl()}/api/admin/stay/socials/${bundle.id}`;
         body = { price: bundle.price };
       } else {
         // Celebrate, Travel, Care - use product pricing endpoint
-        endpoint = `${API_URL}/api/admin/pricing/products/${bundle.id}`;
+        endpoint = `${getApiUrl()}/api/admin/pricing/products/${bundle.id}`;
         body = { selling_price: bundle.price, margin_percent: bundle.margin_percent };
       }
 
@@ -471,7 +471,7 @@ const PricingHub = ({ getAuthHeader }) => {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      let url = `${API_URL}/api/admin/pricing/products?limit=100`;
+      let url = `${getApiUrl()}/api/admin/pricing/products?limit=100`;
       if (filters.pillar) url += `&pillar=${filters.pillar}`;
       if (filters.category) url += `&category=${filters.category}`;
       if (filters.search) url += `&search=${encodeURIComponent(filters.search)}`;
@@ -488,7 +488,7 @@ const PricingHub = ({ getAuthHeader }) => {
 
   const fetchShippingRules = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/pricing/shipping-rules`, { headers: getAuthHeader() });
+      const res = await fetch(`${getApiUrl()}/api/admin/pricing/shipping-rules`, { headers: getAuthHeader() });
       const data = await res.json();
       setShippingRules(data.rules || []);
     } catch (err) {
@@ -499,7 +499,7 @@ const PricingHub = ({ getAuthHeader }) => {
   // Fetch global app settings for checkout shipping thresholds
   const fetchAppSettings = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/settings`, { headers: getAuthHeader() });
+      const res = await fetch(`${getApiUrl()}/api/admin/settings`, { headers: getAuthHeader() });
       const data = await res.json();
       setAppSettings({
         free_shipping_threshold: data.free_shipping_threshold || 3000,
@@ -520,7 +520,7 @@ const PricingHub = ({ getAuthHeader }) => {
   const saveAppSettings = async () => {
     setSavingSettings(true);
     try {
-      const res = await fetch(`${API_URL}/api/admin/settings`, {
+      const res = await fetch(`${getApiUrl()}/api/admin/settings`, {
         method: 'PUT',
         headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
         body: JSON.stringify(appSettings)
@@ -536,7 +536,7 @@ const PricingHub = ({ getAuthHeader }) => {
 
   const fetchCommissions = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/pricing/commissions`, { headers: getAuthHeader() });
+      const res = await fetch(`${getApiUrl()}/api/admin/pricing/commissions`, { headers: getAuthHeader() });
       const data = await res.json();
       setCommissions(data.commissions || []);
     } catch (err) {
@@ -546,7 +546,7 @@ const PricingHub = ({ getAuthHeader }) => {
 
   const fetchPartnerCommissions = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/pricing/partner-commissions`, { headers: getAuthHeader() });
+      const res = await fetch(`${getApiUrl()}/api/admin/pricing/partner-commissions`, { headers: getAuthHeader() });
       const data = await res.json();
       setPartnerCommissions(data);
     } catch (err) {
@@ -556,7 +556,7 @@ const PricingHub = ({ getAuthHeader }) => {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/pricing/stats`, { headers: getAuthHeader() });
+      const res = await fetch(`${getApiUrl()}/api/admin/pricing/stats`, { headers: getAuthHeader() });
       const data = await res.json();
       setStats(data);
     } catch (err) {
@@ -577,7 +577,7 @@ const PricingHub = ({ getAuthHeader }) => {
   const updateProductPricing = async (productId, pricingData) => {
     setSaving(true);
     try {
-      const res = await fetch(`${API_URL}/api/admin/pricing/products/${productId}`, {
+      const res = await fetch(`${getApiUrl()}/api/admin/pricing/products/${productId}`, {
         method: 'PATCH',
         headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
         body: JSON.stringify(pricingData)
@@ -600,7 +600,7 @@ const PricingHub = ({ getAuthHeader }) => {
     }
     setSaving(true);
     try {
-      const res = await fetch(`${API_URL}/api/admin/pricing/products/bulk-update`, {
+      const res = await fetch(`${getApiUrl()}/api/admin/pricing/products/bulk-update`, {
         method: 'POST',
         headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -625,7 +625,7 @@ const PricingHub = ({ getAuthHeader }) => {
 
   // Export CSV
   const handleExport = () => {
-    let url = `${API_URL}/api/admin/pricing/export`;
+    let url = `${getApiUrl()}/api/admin/pricing/export`;
     if (filters.pillar) url += `?pillar=${filters.pillar}`;
     window.open(url, '_blank');
   };
@@ -640,7 +640,7 @@ const PricingHub = ({ getAuthHeader }) => {
     
     setSaving(true);
     try {
-      const res = await fetch(`${API_URL}/api/admin/pricing/import`, {
+      const res = await fetch(`${getApiUrl()}/api/admin/pricing/import`, {
         method: 'POST',
         headers: getAuthHeader(),
         body: formData
@@ -661,8 +661,8 @@ const PricingHub = ({ getAuthHeader }) => {
     try {
       const method = editingRule.id ? 'PATCH' : 'POST';
       const url = editingRule.id 
-        ? `${API_URL}/api/admin/pricing/shipping-rules/${editingRule.id}`
-        : `${API_URL}/api/admin/pricing/shipping-rules`;
+        ? `${getApiUrl()}/api/admin/pricing/shipping-rules/${editingRule.id}`
+        : `${getApiUrl()}/api/admin/pricing/shipping-rules`;
       
       const res = await fetch(url, {
         method,
@@ -683,7 +683,7 @@ const PricingHub = ({ getAuthHeader }) => {
   // Save commission
   const saveCommission = async (commission) => {
     try {
-      await fetch(`${API_URL}/api/admin/pricing/commissions`, {
+      await fetch(`${getApiUrl()}/api/admin/pricing/commissions`, {
         method: 'POST',
         headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
         body: JSON.stringify(commission)
