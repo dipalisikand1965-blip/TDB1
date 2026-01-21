@@ -199,7 +199,6 @@ const MiraContextPanel = ({
           }
         }
       }
-      }
     } catch (error) {
       console.error('Error fetching Mira context:', error);
     } finally {
