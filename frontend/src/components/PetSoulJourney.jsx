@@ -677,27 +677,41 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
         </section>
 
         {/* ========== GENTLE NEXT STEP - Stage 2-3 Only ========== */}
-        {stage >= 2 && stage < 4 && (
-          <section className="mb-10">
-            <Card className="p-6 bg-white border-dashed border-2 border-purple-200">
-              <p className="text-gray-600 text-sm mb-2">One thing that would help us care better:</p>
-              <p className="text-gray-900 font-medium mb-4">
-                Does {petName} enjoy being groomed at home or prefer salon visits?
-              </p>
-              <div className="flex gap-2 flex-wrap">
-                <Button variant="outline" size="sm" className="text-purple-600 border-purple-200">
-                  At home
-                </Button>
-                <Button variant="outline" size="sm" className="text-purple-600 border-purple-200">
-                  Salon visits
-                </Button>
-                <Button variant="ghost" size="sm" className="text-gray-400">
-                  Skip for now
-                </Button>
-              </div>
-            </Card>
-          </section>
-        )}
+        {stage >= 2 && stage < 4 && (() => {
+          const nextQ = getNextQuestion();
+          if (!nextQ) return null;
+          
+          return (
+            <section className="mb-10">
+              <Card className="p-6 bg-white border-dashed border-2 border-purple-200">
+                <p className="text-gray-600 text-sm mb-2">One thing that would help us care better:</p>
+                <p className="text-gray-900 font-medium mb-4">{nextQ.question}</p>
+                <div className="flex gap-2 flex-wrap">
+                  {nextQ.options.map((option) => (
+                    <Button 
+                      key={option}
+                      variant="outline" 
+                      size="sm" 
+                      className="text-purple-600 border-purple-200 hover:bg-purple-50"
+                      disabled={answerSaving}
+                      onClick={() => handleSaveAnswer(nextQ.type, option)}
+                    >
+                      {answerSaving ? '...' : option}
+                    </Button>
+                  ))}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-gray-400"
+                    onClick={() => setAnsweredQuestions(prev => new Set([...prev, nextQ.type]))}
+                  >
+                    Skip for now
+                  </Button>
+                </div>
+              </Card>
+            </section>
+          );
+        })()}
 
         {/* Stage 4: Minimal prompt */}
         {stage === 4 && (
