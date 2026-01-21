@@ -261,40 +261,49 @@ const MembershipOnboarding = () => {
         <title>Join The Pack - Membership | The Doggy Company</title>
       </Helmet>
       
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-pink-100">
+        {/* Decorative elements */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-300/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-300/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-200/10 rounded-full blur-3xl"></div>
+        </div>
+        
         {/* Header */}
-        <header className="bg-white/80 backdrop-blur-sm border-b sticky top-0 z-50">
+        <header className="bg-white/90 backdrop-blur-md border-b border-orange-100 sticky top-0 z-50 shadow-sm">
           <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <PawPrint className="w-6 h-6 text-purple-600" />
-              <span className="font-bold text-purple-900">Join The Pack</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-500 rounded-xl flex items-center justify-center">
+                <PawPrint className="w-5 h-5 text-white" />
+              </div>
+              <span className="font-bold text-lg bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">Join The Pack</span>
             </div>
             
             {/* Progress Steps */}
             <div className="flex items-center gap-2">
               {[1, 2, 3].map((s) => (
                 <div key={s} className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
                     step >= s 
-                      ? 'bg-purple-600 text-white' 
-                      : 'bg-gray-200 text-gray-500'
+                      ? 'bg-gradient-to-br from-orange-400 to-pink-500 text-white shadow-lg shadow-orange-200' 
+                      : 'bg-gray-100 text-gray-400'
                   }`}>
-                    {step > s ? <Check className="w-4 h-4" /> : s}
+                    {step > s ? <Check className="w-5 h-5" /> : s}
                   </div>
                   {s < 3 && (
-                    <div className={`w-8 h-0.5 ${step > s ? 'bg-purple-600' : 'bg-gray-200'}`} />
+                    <div className={`w-10 h-1 rounded ${step > s ? 'bg-gradient-to-r from-orange-400 to-pink-400' : 'bg-gray-200'}`} />
                   )}
                 </div>
               ))}
             </div>
             
-            <Badge variant="outline" className="text-purple-700">
-              {planType === 'annual' ? 'Annual Plan' : 'Monthly Plan'}
+            <Badge className="bg-gradient-to-r from-orange-500 to-pink-500 text-white border-0 px-3 py-1">
+              {planType === 'annual' ? '🌟 Annual Plan' : 'Monthly Plan'}
             </Badge>
           </div>
         </header>
 
-        <main className="max-w-4xl mx-auto px-4 py-8">
+        <main className="relative max-w-4xl mx-auto px-4 py-8">
           {/* Step 1: Pet Parent Information */}
           {step === 1 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
