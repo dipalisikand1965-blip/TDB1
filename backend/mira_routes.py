@@ -1040,7 +1040,7 @@ I understand this is urgent. Let me help you immediately.
                 "error": "llm_config"
             }
         
-        system_prompt = build_mira_system_prompt(user, pets, pillar)
+        system_prompt = build_mira_system_prompt(user, pets, pillar, selected_pet)
         
         # Build conversation history
         history_text = ""
