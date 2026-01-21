@@ -34,7 +34,8 @@ export const useMiraSignal = () => {
     lastSignalRef.current[key] = now;
 
     try {
-      await fetch(`${API_URL}/api/mira/intelligence/signal`, {
+      const apiUrl = getApiUrl();
+      await fetch(`${apiUrl}/api/mira/intelligence/signal`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
