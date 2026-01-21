@@ -14,6 +14,7 @@
 
 import { useCallback, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { getApiUrl } from '../utils/api';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
