@@ -2,13 +2,117 @@ import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { SlidersHorizontal, Loader2, ChevronDown, Sparkles, PawPrint } from 'lucide-react';
+import { SlidersHorizontal, Loader2, ChevronDown, Sparkles, PawPrint, Cake, Gift, Star, Heart } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { API_URL, getApiUrl } from '../utils/api';
 import MiraContextPanel from '../components/MiraContextPanel';
 import { useAuth } from '../context/AuthContext';
 
 const PRODUCTS_PER_PAGE = 20;
+
+// Hero images for different categories
+const CATEGORY_HERO_IMAGES = {
+  cakes: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80',
+  'breed-cakes': 'https://images.unsplash.com/photo-1535591273668-578e31182c4f?w=1200&q=80',
+  treats: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1200&q=80',
+  hampers: 'https://images.unsplash.com/photo-1530041539828-114de669390e?w=1200&q=80',
+  desi: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1200&q=80',
+  'frozen-treats': 'https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=1200&q=80',
+  'mini-cakes': 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80',
+  dognuts: 'https://images.unsplash.com/photo-1551106652-a5bcf4b29ab6?w=1200&q=80',
+  valentine: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1200&q=80',
+  cat: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1200&q=80',
+  'cat-treats': 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1200&q=80',
+  default: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80'
+};
+
+// Hero content for different categories
+const CATEGORY_HERO_CONTENT = {
+  cakes: {
+    badge: 'Celebrate with Love',
+    title: 'Birthday Cakes',
+    highlight: 'Made with Joy',
+    subtitle: 'Freshly baked, 100% pet-safe cakes for your furry friend\'s special day',
+    color: 'from-pink-600 via-rose-500 to-orange-500'
+  },
+  'breed-cakes': {
+    badge: 'Custom Designs',
+    title: 'Breed-Specific',
+    highlight: 'Cakes',
+    subtitle: 'Cakes shaped like your beloved breed - from Labradors to Pugs!',
+    color: 'from-purple-600 via-violet-500 to-pink-500'
+  },
+  treats: {
+    badge: 'Healthy & Delicious',
+    title: 'Treats &',
+    highlight: 'Snacks',
+    subtitle: 'Training treats, healthy bites, and everyday rewards your pet will love',
+    color: 'from-amber-600 via-orange-500 to-yellow-500'
+  },
+  hampers: {
+    badge: 'Perfect Gifts',
+    title: 'Celebration',
+    highlight: 'Hampers',
+    subtitle: 'Complete party boxes with cakes, treats, bandanas, and toys!',
+    color: 'from-emerald-600 via-teal-500 to-cyan-500'
+  },
+  desi: {
+    badge: 'Indian Flavors',
+    title: 'Desi Doggy',
+    highlight: 'Treats 🪔',
+    subtitle: 'Traditional Indian sweets made pet-friendly - perfect for festivals!',
+    color: 'from-orange-600 via-amber-500 to-yellow-500'
+  },
+  'frozen-treats': {
+    badge: 'Beat the Heat',
+    title: 'Frozen',
+    highlight: 'Delights',
+    subtitle: 'Cool, refreshing ice creams and frozen treats for hot days',
+    color: 'from-cyan-600 via-blue-500 to-indigo-500'
+  },
+  'mini-cakes': {
+    badge: 'Bite-Sized Joy',
+    title: 'Bowto',
+    highlight: 'Cakes',
+    subtitle: 'Mini celebration cakes perfect for any occasion',
+    color: 'from-rose-600 via-pink-500 to-purple-500'
+  },
+  dognuts: {
+    badge: 'Fun Shapes',
+    title: 'Pupcakes &',
+    highlight: 'Dognuts',
+    subtitle: 'Adorable mini baked treats - cupcakes and donuts for dogs!',
+    color: 'from-pink-600 via-rose-500 to-red-500'
+  },
+  valentine: {
+    badge: 'Share the Love',
+    title: 'Valentine',
+    highlight: 'Collection 💕',
+    subtitle: 'Show your pet how much you love them with our special collection',
+    color: 'from-red-600 via-rose-500 to-pink-500'
+  },
+  cat: {
+    badge: 'For Felines',
+    title: 'Cat',
+    highlight: 'Treats 🐱',
+    subtitle: 'Special treats crafted for our feline friends',
+    color: 'from-violet-600 via-purple-500 to-indigo-500'
+  },
+  'cat-treats': {
+    badge: 'For Felines',
+    title: 'Cat',
+    highlight: 'Treats 🐱',
+    subtitle: 'Special treats crafted for our feline friends',
+    color: 'from-violet-600 via-purple-500 to-indigo-500'
+  },
+  default: {
+    badge: 'Celebrate Every Moment',
+    title: 'Dog Cakes &',
+    highlight: 'Treats',
+    subtitle: 'Freshly baked, 100% pet-safe treats for your furry family',
+    color: 'from-purple-600 via-pink-500 to-rose-500'
+  }
+};
 
 // Map category to pillar for Mira panel
 const CATEGORY_TO_PILLAR = {
