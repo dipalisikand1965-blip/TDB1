@@ -8,6 +8,15 @@ import { toast } from 'sonner';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
+// Markdown components for ReactMarkdown - defined outside component to avoid re-creation
+const markdownComponents = {
+  p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+  ul: ({ children }) => <ul className="list-disc pl-4 mb-2">{children}</ul>,
+  ol: ({ children }) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
+  li: ({ children }) => <li className="mb-1">{children}</li>,
+  strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+};
+
 // Generate unique session ID
 const generateSessionId = () => {
   const stored = sessionStorage.getItem('mira_session_id');
