@@ -231,27 +231,28 @@ async def load_pet_soul(pet_id: str) -> Dict:
     
     # Compile full Pet Soul profile
     soul = {
+        "id": pet.get("id"),
         "name": pet.get("name"),
         "breed": pet.get("identity", {}).get("breed") or pet.get("breed"),
         "age": pet.get("identity", {}).get("age") or pet.get("age"),
         "weight": pet.get("identity", {}).get("weight"),
         "size": pet.get("identity", {}).get("size"),
-        "gender": pet.get("identity", {}).get("gender"),
-        "allergies": pet.get("health", {}).get("allergies", []),
+        "gender": pet.get("identity", {}).get("gender") or pet.get("gender"),
+        "photo_url": pet.get("photo_url"),
+        "allergies": pet.get("health", {}).get("allergies", []) or pet.get("preferences", {}).get("allergies", []),
         "medical_conditions": pet.get("health", {}).get("medical_conditions", []),
         "dietary_restrictions": pet.get("health", {}).get("dietary_restrictions", []),
         "favorite_treats": pet.get("preferences", {}).get("favorite_treats", []),
         "dislikes": pet.get("preferences", {}).get("dislikes", []),
         "anxiety_triggers": pet.get("personality", {}).get("anxiety_triggers", []),
-        "behavior_with_dogs": pet.get("personality", {}).get("behavior_with_dogs"),
+        "behavior_with_dogs": pet.get("personality", {}).get("behavior_with_dogs") or pet.get("doggy_soul_answers", {}).get("behavior_with_dogs"),
         "behavior_with_humans": pet.get("personality", {}).get("behavior_with_humans"),
-        "handling_sensitivity": pet.get("care", {}).get("handling_sensitivity"),
+        "handling_sensitivity": pet.get("care", {}).get("handling_sensitivity") or pet.get("doggy_soul_answers", {}).get("handling_comfort"),
         "grooming_notes": pet.get("care", {}).get("grooming_notes"),
-        "travel_style": pet.get("travel", {}).get("preferred_mode"),
-        "crate_trained": pet.get("travel", {}).get("crate_trained"),
-        "photo_url": pet.get("photo_url"),
+        "travel_style": pet.get("travel", {}).get("preferred_mode") or pet.get("doggy_soul_answers", {}).get("usual_travel"),
+        "crate_trained": pet.get("travel", {}).get("crate_trained") or pet.get("doggy_soul_answers", {}).get("crate_trained"),
         "persona": pet.get("soul", {}).get("persona"),
-        # Doggy Soul answers
+        # Doggy Soul answers (full)
         "soul_answers": pet.get("doggy_soul_answers", {})
     }
     
