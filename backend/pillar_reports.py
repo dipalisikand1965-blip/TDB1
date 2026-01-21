@@ -90,7 +90,7 @@ async def get_pillar_summary(period: str = "this_month", start_date: str = None,
     date_start, date_end = get_date_range(period, start_date, end_date)
     
     # Celebrate Pillar - Product Sales
-    orders_query = {"created_at": {"$gte": start_date, "$lte": end_date}}
+    orders_query = {"created_at": {"$gte": date_start, "$lte": date_end}}
     orders = await db.orders.find(orders_query).to_list(10000)
     
     celebrate_revenue = sum(o.get("total", 0) for o in orders)
@@ -103,7 +103,7 @@ async def get_pillar_summary(period: str = "this_month", start_date: str = None,
     celebrate_profit = celebrate_revenue * (avg_margin / (100 + avg_margin))  # Approximate profit
     
     # Dine Pillar - Reservations
-    reservations_query = {"created_at": {"$gte": start_date, "$lte": end_date}}
+    reservations_query = {"created_at": {"$gte": date_start, "$lte": date_end}}
     reservations = await db.reservations.find(reservations_query).to_list(10000)
     visits = await db.buddy_visits.find(reservations_query).to_list(10000)
     
@@ -117,17 +117,63 @@ async def get_pillar_summary(period: str = "this_month", start_date: str = None,
     
     # Stay Pillar - Properties and Bookings
     stay_properties = await db.stay_properties.find({"status": "live"}).to_list(500) if "stay_properties" in await db.list_collection_names() else []
-    stay_bookings_query = {"created_at": {"$gte": start_date, "$lte": end_date}}
+    stay_bookings_query = {"created_at": {"$gte": date_start, "$lte": date_end}}
     stay_bookings = await db.stay_bookings.find(stay_bookings_query).to_list(1000) if "stay_bookings" in await db.list_collection_names() else []
     
     stay_count = len(stay_bookings)
     stay_revenue = sum(b.get("total", 0) for b in stay_bookings)
     stay_commission = stay_revenue * 0.12  # 12% commission
     
-    # Travel & Care (placeholder - not yet built)
-    travel_bookings = 0
-    travel_commission = 0
-    care_services = 0
+    # Care Pillar - Vet/Grooming appointments
+    care_appointments = await db.care_appointments.find({"created_at": {"$gte": date_start, "$lte": date_end}}).to_list(1000) if "care_appointments" in await db.list_collection_names() else []
+    care_services = len(care_appointments)
+    care_revenue = sum(a.get("total", 0) for a in care_appointments)
+    care_commission = care_revenue * 0.10  # 10% commission
+    
+    # Travel Pillar - Pet travel requests
+    travel_requests = await db.travel_requests.find({"created_at": {"$gte": date_start, "$lte": date_end}}).to_list(1000) if "travel_requests" in await db.list_collection_names() else []
+    travel_bookings = len(travel_requests)
+    travel_revenue = sum(t.get("estimated_cost", 0) for t in travel_requests)
+    travel_commission = travel_revenue * 0.15  # 15% commission
+    
+    # Shop Pillar - E-commerce (same as celebrate for now)
+    shop_orders = await db.orders.find({
+        "created_at": {"$gte": date_start, "$lte": date_end},
+        "category": {"$ne": "bakery"}  # Non-bakery orders
+    }).to_list(1000)
+    shop_revenue = sum(o.get("total", 0) for o in shop_orders)
+    shop_orders_count = len(shop_orders)
+    
+    # Enjoy Pillar - Activities/Events
+    activities = await db.activity_bookings.find({"created_at": {"$gte": date_start, "$lte": date_end}}).to_list(1000) if "activity_bookings" in await db.list_collection_names() else []
+    enjoy_bookings = len(activities)
+    enjoy_revenue = sum(a.get("total", 0) for a in activities)
+    
+    # Club Pillar - Community/Memberships
+    memberships = await db.memberships.find({"created_at": {"$gte": date_start, "$lte": date_end}}).to_list(1000) if "memberships" in await db.list_collection_names() else []
+    club_members = len(memberships)
+    club_revenue = sum(m.get("amount", 0) for m in memberships)
+    
+    # Learn Pillar - Training/Courses
+    enrollments = await db.enrollments.find({"created_at": {"$gte": date_start, "$lte": date_end}}).to_list(1000) if "enrollments" in await db.list_collection_names() else []
+    learn_enrollments = len(enrollments)
+    learn_revenue = sum(e.get("fee", 0) for e in enrollments)
+    
+    # Adopt Pillar - Adoption services
+    adoptions = await db.adoptions.find({"created_at": {"$gte": date_start, "$lte": date_end}}).to_list(1000) if "adoptions" in await db.list_collection_names() else []
+    adopt_count = len(adoptions)
+    adopt_fees = sum(a.get("adoption_fee", 0) for a in adoptions)
+    
+    # Insure Pillar - Pet insurance
+    policies = await db.insurance_policies.find({"created_at": {"$gte": date_start, "$lte": date_end}}).to_list(1000) if "insurance_policies" in await db.list_collection_names() else []
+    insure_policies = len(policies)
+    insure_revenue = sum(p.get("premium", 0) for p in policies)
+    insure_commission = insure_revenue * 0.20  # 20% commission
+    
+    # Farewell Pillar - End of life services
+    farewells = await db.farewell_services.find({"created_at": {"$gte": date_start, "$lte": date_end}}).to_list(1000) if "farewell_services" in await db.list_collection_names() else []
+    farewell_services = len(farewells)
+    farewell_revenue = sum(f.get("total", 0) for f in farewells)
     care_commission = 0
     
     return {
