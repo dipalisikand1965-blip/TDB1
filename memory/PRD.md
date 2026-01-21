@@ -172,4 +172,22 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
 
 ---
 
+## Changelog
+
+### January 21, 2026 (Session 2)
+- ✅ **Celebrate Page Hero** - Added category-specific hero sections with dynamic backgrounds, badges, and MiraContextPanel placement
+- ✅ **Admin Pets Endpoint** - Fixed Pydantic validation error in `/api/admin/pets` (added `Depends(security)` to verify_admin)
+- ✅ **Admin Blog Posts** - Reseeded and verified 6 blog posts working
+- ✅ **Admin Mira Tickets** - Verified 73 open tickets visible in Service Desk
+- ✅ **Admin Pillars** - Added "Live MIS" and "Pricing, Shipping & Commercial Hub" to AgentManagement, PricingHub, ServiceDesk
+
+### January 21, 2026 (Session 1)
+- ✅ Production deployment fix with getApiUrl() workaround
+- ✅ Mira AI Research Mode
+- ✅ Context-aware quick prompts
+- ✅ Voice input UI
+- ✅ Session management for chat history
+
+---
+
 *Last Updated: January 21, 2026*
