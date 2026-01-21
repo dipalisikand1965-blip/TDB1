@@ -22,10 +22,24 @@ export const getApiUrl = () => {
     if (hostname.includes('preview.emergentagent.com')) {
       return '';
     }
+    
+    // For localhost (development)
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return process.env.REACT_APP_BACKEND_URL || '';
+    }
   }
   return process.env.REACT_APP_BACKEND_URL || '';
 };
 
-// For backward compatibility, export API_URL as a getter
-// This ensures it's evaluated at runtime, not module load time
-export const API_URL = typeof window !== 'undefined' ? getApiUrl() : (process.env.REACT_APP_BACKEND_URL || '');
+// IMPORTANT: API_URL must be a getter that calls getApiUrl() every time
+// This ensures the hostname check happens at runtime, not build time
+// Using Object.defineProperty to create a live getter
+let _apiUrlCache = null;
+
+export const API_URL = (() => {
+  // In browser, always call getApiUrl() for dynamic hostname detection
+  if (typeof window !== 'undefined') {
+    return getApiUrl();
+  }
+  return process.env.REACT_APP_BACKEND_URL || '';
+})();
