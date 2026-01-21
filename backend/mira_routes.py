@@ -594,7 +594,7 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
     known_fields_section = ""
     
     if pets and len(pets) > 0:
-        pet_context = "\n\n🐾 **MEMBER'S PET PROFILES (PET SOUL DATA)**:\n"
+        pet_context = "\n\n🐾 **PET PARENT'S PET PROFILES (PET SOUL DATA)**:\n"
         for pet in pets:
             pet_context += f"""
 **{pet.get('name', 'Pet')}**
