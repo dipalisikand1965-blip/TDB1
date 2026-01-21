@@ -3890,7 +3890,13 @@ async def get_public_products(
             query = category_query
     
     products = await db.products.find(query, {"_id": 0}).to_list(500)
-    return {"products": products}
+    
+    # Ensure title field exists (use name if title is missing)
+    for p in products:
+        if not p.get("title") and p.get("name"):
+            p["title"] = p["name"]
+    
+    return {"products": products, "total": len(products)}
 
 
 @api_router.get("/products/{product_id}/related")
