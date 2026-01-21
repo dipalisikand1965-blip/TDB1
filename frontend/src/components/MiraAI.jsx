@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { X, Sparkles, Minimize2, Maximize2, Send, Loader2, User, Bot, PawPrint } from 'lucide-react';
+import { X, Sparkles, Minimize2, Maximize2, Send, Loader2, User, Bot, PawPrint, Mic, MicOff, RotateCcw, History, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -14,6 +15,27 @@ const generateSessionId = () => {
   const newId = `mira-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   sessionStorage.setItem('mira_session_id', newId);
   return newId;
+};
+
+// Detect pillar from pathname
+const detectPillarFromPath = (pathname) => {
+  const pathToPillar = {
+    '/travel': 'travel',
+    '/stay': 'stay',
+    '/care': 'care',
+    '/dine': 'dine',
+    '/celebrate': 'celebrate',
+    '/enjoy': 'enjoy',
+    '/shop': 'shop',
+    '/fit': 'fit',
+    '/advisory': 'advisory',
+    '/paperwork': 'paperwork',
+    '/emergency': 'emergency',
+    '/club': 'club'
+  };
+  return Object.entries(pathToPillar).find(([path]) => 
+    pathname.toLowerCase().includes(path)
+  )?.[1] || null;
 };
 
 const MiraAI = () => {
@@ -32,9 +54,146 @@ const MiraAI = () => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId] = useState(generateSessionId);
+  const [sessionId, setSessionId] = useState(generateSessionId);
+  const [currentPillar, setCurrentPillar] = useState(null);
+  const [previousPillar, setPreviousPillar] = useState(null);
+  const [quickPrompts, setQuickPrompts] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
+  
+  // Voice input state
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef(null);
+  
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Check for speech recognition support
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setSpeechSupported(true);
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-IN';
+      
+      recognitionRef.current.onresult = (event) => {
+        const transcript = Array.from(event.results)
+          .map(result => result[0].transcript)
+          .join('');
+        setInputValue(transcript);
+      };
+      
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+        if (event.error === 'not-allowed') {
+          toast.error('Microphone access denied. Please enable it in your browser settings.');
+        }
+      };
+      
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+  }, []);
+
+  // Toggle voice listening
+  const toggleListening = () => {
+    if (!speechSupported) {
+      toast.error('Voice input is not supported in your browser');
+      return;
+    }
+    
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      setInputValue('');
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
+
+  // Track pillar changes for cross-pillar context
+  useEffect(() => {
+    const newPillar = detectPillarFromPath(location.pathname);
+    if (newPillar && newPillar !== currentPillar) {
+      if (currentPillar) {
+        setPreviousPillar(currentPillar);
+      }
+      setCurrentPillar(newPillar);
+      // Fetch quick prompts for new pillar
+      fetchQuickPrompts(newPillar);
+    }
+  }, [location.pathname, currentPillar]);
+
+  // Fetch pillar-specific quick prompts
+  const fetchQuickPrompts = async (pillar) => {
+    try {
+      const response = await fetch(`${API_URL}/api/mira/quick-prompts/${pillar}`);
+      if (response.ok) {
+        const data = await response.json();
+        setQuickPrompts(data.prompts || []);
+      }
+    } catch (error) {
+      console.debug('Quick prompts fetch failed:', error);
+    }
+  };
+
+  // Fetch chat history
+  const fetchChatHistory = async () => {
+    if (!token) return;
+    try {
+      const response = await fetch(`${API_URL}/api/mira/history?limit=5`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setChatHistory(data.sessions || []);
+      }
+    } catch (error) {
+      console.debug('Chat history fetch failed:', error);
+    }
+  };
+
+  // Start new conversation
+  const startNewConversation = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/mira/session/new`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Clear session storage
+        sessionStorage.removeItem('mira_session_id');
+        const newSessionId = data.session_id;
+        sessionStorage.setItem('mira_session_id', newSessionId);
+        setSessionId(newSessionId);
+        
+        // Reset messages with new welcome
+        setMessages([{
+          id: 'welcome',
+          role: 'assistant',
+          content: generateWelcomeMessage()
+        }]);
+        setWelcomeGenerated(true);
+        setShowHistory(false);
+        
+        toast.success('Started new conversation');
+      }
+    } catch (error) {
+      console.error('Error starting new conversation:', error);
+      toast.error('Failed to start new conversation');
+    }
+  };
 
   // Generate personalized welcome message based on user and pets
   const generateWelcomeMessage = useCallback(() => {
@@ -134,8 +293,10 @@ const MiraAI = () => {
   useEffect(() => {
     if (isOpen && !isMinimized) {
       setTimeout(() => inputRef.current?.focus(), 100);
+      // Fetch chat history when opened
+      fetchChatHistory();
     }
-  }, [isOpen, isMinimized]);
+  }, [isOpen, isMinimized, token]);
 
   const sendMessage = async (e) => {
     e?.preventDefault();
@@ -157,25 +318,6 @@ const MiraAI = () => {
         .filter(m => m.id !== 'welcome')
         .map(m => ({ role: m.role, content: m.content }));
       
-      // Detect current pillar from pathname
-      const pathToPillar = {
-        '/travel': 'travel',
-        '/stay': 'stay',
-        '/care': 'care',
-        '/dine': 'dine',
-        '/celebrate': 'celebrate',
-        '/enjoy': 'enjoy',
-        '/shop': 'shop',
-        '/fit': 'fit',
-        '/advisory': 'advisory',
-        '/paperwork': 'paperwork',
-        '/emergency': 'emergency',
-        '/club': 'club'
-      };
-      const currentPillar = Object.entries(pathToPillar).find(([path]) => 
-        location.pathname.toLowerCase().includes(path)
-      )?.[1] || null;
-      
       const response = await fetch(`${API_URL}/api/mira/chat`, {
         method: 'POST',
         headers: { 
@@ -188,6 +330,7 @@ const MiraAI = () => {
           source: 'web_widget',
           current_page: location.pathname,
           current_pillar: currentPillar,
+          previous_pillar: previousPillar,
           selected_pet_id: userPets.length === 1 ? (userPets[0].id || userPets[0].name) : null,
           history: history
         })
@@ -202,10 +345,16 @@ const MiraAI = () => {
       const assistantMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response || "I'm sorry, I couldn't process that. Please try again."
+        content: data.response || "I'm sorry, I couldn't process that. Please try again.",
+        researchMode: data.research_mode
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+      
+      // Update quick prompts if provided
+      if (data.quick_prompts) {
+        setQuickPrompts(data.quick_prompts);
+      }
     } catch (error) {
       console.error('Mira chat error:', error);
       const errorMessage = {
@@ -225,13 +374,6 @@ const MiraAI = () => {
       sendMessage(e);
     }
   };
-
-  // Quick action buttons - professional, minimal emojis
-  const quickActions = [
-    { label: 'Order a Cake', icon: '🎂', message: 'I would like to order a birthday cake for my dog' },
-    { label: 'Book Dining', icon: '🍽️', message: 'Please help me find a pet-friendly restaurant' },
-    { label: 'Plan a Stay', icon: '🐾', message: 'I need a pet-friendly hotel recommendation' },
-  ];
 
   const handleQuickAction = (message) => {
     setInputValue(message);
@@ -278,7 +420,27 @@ const MiraAI = () => {
             <p className="text-xs text-amber-400/80 font-light">Concierge • At your service</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          {/* New Conversation Button */}
+          <button
+            className="text-white/70 hover:text-white hover:bg-white/10 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
+            onClick={startNewConversation}
+            title="Start new conversation"
+            data-testid="mira-new-chat-btn"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+          {/* Chat History Button */}
+          {token && (
+            <button
+              className="text-white/70 hover:text-white hover:bg-white/10 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
+              onClick={() => setShowHistory(!showHistory)}
+              title="Chat history"
+              data-testid="mira-history-btn"
+            >
+              <History className="w-4 h-4" />
+            </button>
+          )}
           <button
             className="text-white/70 hover:text-white hover:bg-white/10 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
             onClick={() => setIsMinimized(!isMinimized)}
@@ -301,6 +463,29 @@ const MiraAI = () => {
       {/* Chat Area */}
       {!isMinimized && (
         <>
+          {/* History Panel */}
+          {showHistory && chatHistory.length > 0 && (
+            <div className="bg-slate-50 border-b p-3 max-h-40 overflow-y-auto">
+              <p className="text-xs font-medium text-gray-500 mb-2">Recent Conversations</p>
+              {chatHistory.map((session) => (
+                <div 
+                  key={session.session_id}
+                  className="p-2 bg-white rounded-lg border mb-2 cursor-pointer hover:bg-purple-50 transition-colors"
+                  onClick={() => {
+                    // Load this session
+                    setShowHistory(false);
+                    toast.info('Loading conversation...');
+                  }}
+                >
+                  <p className="text-sm font-medium truncate">{session.preview || 'Conversation'}</p>
+                  <p className="text-xs text-gray-500">
+                    {new Date(session.created_at).toLocaleDateString()} • {session.message_count} messages
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
             {messages.map((message) => (
@@ -320,6 +505,12 @@ const MiraAI = () => {
                     ? 'bg-purple-600 text-white rounded-br-md'
                     : 'bg-white shadow-sm border border-gray-100 rounded-bl-md'
                 }`}>
+                  {message.researchMode && (
+                    <div className="text-xs text-purple-600 font-medium mb-1 flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" />
+                      Research Mode
+                    </div>
+                  )}
                   <div className={`text-sm prose prose-sm max-w-none ${
                     message.role === 'user' ? 'prose-invert' : ''
                   }`}>
@@ -357,16 +548,17 @@ const MiraAI = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Actions (show only at start) */}
-          {messages.length === 1 && (
+          {/* Quick Actions - Context-aware based on pillar */}
+          {messages.length === 1 && quickPrompts.length > 0 && (
             <div className="px-4 pb-2 flex gap-2 flex-wrap bg-gray-50">
-              {quickActions.map((action, idx) => (
+              {quickPrompts.slice(0, 3).map((prompt, idx) => (
                 <button
                   key={idx}
-                  onClick={() => handleQuickAction(action.message)}
+                  onClick={() => handleQuickAction(prompt.message)}
                   className="text-xs bg-purple-50 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-100 transition-colors"
+                  data-testid={`mira-quick-prompt-${idx}`}
                 >
-                  {action.label}
+                  {prompt.label}
                 </button>
               ))}
             </div>
@@ -381,11 +573,28 @@ const MiraAI = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
-                className="flex-1 px-4 py-2.5 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder={isListening ? "Listening..." : "Type your message..."}
+                className={`flex-1 px-4 py-2.5 border rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                  isListening ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+                }`}
                 disabled={isLoading}
                 data-testid="mira-input"
               />
+              {/* Voice Input Button */}
+              {speechSupported && (
+                <Button
+                  type="button"
+                  onClick={toggleListening}
+                  className={`rounded-full w-10 h-10 p-0 flex items-center justify-center ${
+                    isListening 
+                      ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-600'
+                  }`}
+                  data-testid="mira-voice-btn"
+                >
+                  {isListening ? <MicOff className="w-4 h-4 text-white" /> : <Mic className="w-4 h-4" />}
+                </Button>
+              )}
               <Button
                 type="submit"
                 disabled={!inputValue.trim() || isLoading}
