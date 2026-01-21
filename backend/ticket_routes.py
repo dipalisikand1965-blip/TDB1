@@ -806,6 +806,122 @@ async def add_reply(ticket_id: str, reply: TicketReply):
     
     return {"success": True, "message": message}
 
+
+# ============== MESSAGING ENDPOINT ==============
+
+class MessagingSendRequest(BaseModel):
+    ticket_id: str
+    message: str
+    channel: str  # email, whatsapp, internal
+    is_internal: bool = False
+
+@router.post("/messaging/send")
+async def send_message_via_channel(request: MessagingSendRequest):
+    """Send a message via email, WhatsApp, or internal channel"""
+    db = get_db()
+    
+    # Find the ticket
+    ticket = await db.tickets.find_one({"ticket_id": request.ticket_id})
+    if not ticket:
+        try:
+            ticket = await db.tickets.find_one({"_id": ObjectId(request.ticket_id)})
+        except:
+            raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    member = ticket.get("member", {})
+    
+    # Create message record
+    message_record = {
+        "id": str(uuid.uuid4()),
+        "type": "reply",
+        "content": request.message,
+        "sender": "concierge",
+        "channel": request.channel,
+        "timestamp": now,
+        "is_internal": request.is_internal
+    }
+    
+    result = {"success": True, "channel": request.channel, "message": message_record}
+    
+    # Send via appropriate channel
+    if request.channel == "email":
+        member_email = member.get("email")
+        if member_email:
+            # Send email via Resend
+            resend_client = get_resend()
+            if resend_client:
+                try:
+                    resend_client.Emails.send({
+                        "from": SENDER_EMAIL,
+                        "to": member_email,
+                        "subject": f"Re: Ticket {ticket.get('ticket_id')} - The Doggy Company",
+                        "html": f"""
+                            <div style="font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;">
+                                <div style="background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%); padding: 20px; border-radius: 16px 16px 0 0;">
+                                    <h2 style="color: white; margin: 0;">🐾 The Doggy Company</h2>
+                                </div>
+                                <div style="padding: 24px; background: #f8f4f0; border-radius: 0 0 16px 16px;">
+                                    <p>Hi {member.get('name', 'there')}!</p>
+                                    <div style="background: white; padding: 16px; border-radius: 8px; margin: 16px 0;">
+                                        {request.message.replace(chr(10), '<br>')}
+                                    </div>
+                                    <p style="color: #666; font-size: 14px;">
+                                        Reference: {ticket.get('ticket_id')}<br>
+                                        Best regards,<br>
+                                        The Doggy Company Concierge Team
+                                    </p>
+                                </div>
+                            </div>
+                        """
+                    })
+                    message_record["email_sent"] = True
+                    result["email_sent"] = True
+                except Exception as e:
+                    print(f"Error sending email: {e}")
+                    result["email_error"] = str(e)
+            else:
+                result["email_error"] = "Email service not configured"
+        else:
+            result["email_error"] = "No email address for member"
+    
+    elif request.channel == "whatsapp":
+        member_phone = member.get("whatsapp") or member.get("phone")
+        if member_phone:
+            # Clean phone number
+            clean_phone = member_phone.replace("+", "").replace(" ", "").replace("-", "")
+            if not clean_phone.startswith("91") and len(clean_phone) == 10:
+                clean_phone = "91" + clean_phone
+            
+            # Generate WhatsApp URL for manual sending
+            encoded_message = request.message.replace("\n", "%0A").replace(" ", "%20")
+            whatsapp_url = f"https://wa.me/{clean_phone}?text={encoded_message}"
+            
+            message_record["whatsapp_url"] = whatsapp_url
+            result["whatsapp_url"] = whatsapp_url
+            result["whatsapp_phone"] = clean_phone
+        else:
+            result["whatsapp_error"] = "No WhatsApp/phone number for member"
+    
+    # Update ticket with the message
+    update_doc = {"updated_at": now}
+    if not ticket.get("first_response_at") and not request.is_internal:
+        update_doc["first_response_at"] = now
+    
+    await db.tickets.update_one(
+        {"_id": ticket["_id"]},
+        {
+            "$push": {"messages": message_record},
+            "$set": update_doc
+        }
+    )
+    
+    return result
+
+
 @router.post("/{ticket_id}/assign")
 async def assign_ticket(ticket_id: str, assignee: str = Form(...)):
     """Assign a ticket to a concierge"""
