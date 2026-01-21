@@ -212,28 +212,35 @@ const MembershipPage = () => {
     enjoy: Star
   };
 
-  const pillars = [
-    { id: 'celebrate', name: 'Celebrate', desc: 'Birthday cakes, treats & parties', color: 'pink' },
+  // Core pillars to show initially (6)
+  const corePillars = [
+    { id: 'care', name: 'Care', desc: 'Grooming, walking, sitting', color: 'purple' },
     { id: 'dine', name: 'Dine', desc: 'Pet-friendly restaurants', color: 'orange' },
     { id: 'travel', name: 'Travel', desc: 'Pet travel assistance', color: 'blue' },
     { id: 'stay', name: 'Stay', desc: 'Pet-friendly hotels', color: 'green' },
-    { id: 'care', name: 'Care', desc: 'Grooming, walking, sitting', color: 'purple' },
+    { id: 'celebrate', name: 'Celebrate', desc: 'Birthday cakes, treats & parties', color: 'pink' },
+    { id: 'emergency', name: 'Emergency', desc: '24/7 pet emergency help', color: 'red' },
+  ];
+
+  // Additional pillars (revealed on expand)
+  const additionalPillars = [
     { id: 'fit', name: 'Fit', desc: 'Exercise & wellness', color: 'teal' },
     { id: 'advisory', name: 'Advisory', desc: 'Expert consultations', color: 'indigo' },
-    { id: 'emergency', name: 'Emergency', desc: '24/7 pet emergency help', color: 'red' },
     { id: 'paperwork', name: 'Paperwork', desc: 'Health records & docs', color: 'slate' },
     { id: 'shop', name: 'Shop Assist', desc: 'Curated products via Mira', color: 'amber' },
     { id: 'club', name: 'Club', desc: 'Community & rewards', color: 'violet' },
     { id: 'enjoy', name: 'Enjoy', desc: 'Events & experiences', color: 'rose' },
   ];
 
+  const [showAllPillars, setShowAllPillars] = useState(false);
+
   const benefits = [
-    { icon: PawPrint, title: 'Pet Soul™ Profile', desc: 'Deep, evolving profile for your pet' },
-    { icon: Sparkles, title: 'Mira AI Concierge®', desc: '24/7 intelligent pet assistant' },
-    { icon: Award, title: 'Paw Rewards', desc: 'Earn points on every interaction' },
-    { icon: Calendar, title: 'Smart Reminders', desc: 'Birthday, vaccine & event alerts' },
-    { icon: Shield, title: 'Health Vault', desc: 'Secure medical records storage' },
-    { icon: Zap, title: 'Priority Support', desc: 'Fast-track help when you need it' },
+    { icon: PawPrint, title: 'Pet Soul™ Profile', desc: 'Deep, evolving profile for your pet', primary: true },
+    { icon: Sparkles, title: 'Mira AI Concierge®', desc: '24/7 intelligent pet assistant', primary: true },
+    { icon: Calendar, title: 'Smart Reminders', desc: 'Birthday, vaccine & event alerts', primary: true },
+    { icon: Shield, title: 'Health Vault', desc: 'Secure medical records storage', primary: true },
+    { icon: Zap, title: 'Priority Support', desc: 'Fast-track help when you need it', primary: true },
+    { icon: Award, title: 'Paw Rewards', desc: 'Earn points on every interaction', primary: false },
   ];
 
   return (
