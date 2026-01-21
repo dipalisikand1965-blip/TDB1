@@ -300,25 +300,26 @@ const MembershipPage = () => {
         </div>
       </div>
 
-      {/* 12 Pillars Section */}
+      {/* Life System Pillars Section */}
       <div className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              12 Pillars of Pet Life
+              A Complete Life System for Your Pet
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
               One membership unlocks everything. No more juggling multiple apps and services.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {pillars.map((pillar) => {
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {corePillars.map((pillar) => {
               const Icon = pillarIcons[pillar.id];
               return (
                 <Card 
                   key={pillar.id}
                   className={`p-4 hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-${pillar.color}-200 group`}
+                  data-testid={`pillar-${pillar.id}`}
                 >
                   <div className={`w-12 h-12 rounded-xl bg-${pillar.color}-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
                     <Icon className={`w-6 h-6 text-${pillar.color}-600`} />
@@ -328,6 +329,43 @@ const MembershipPage = () => {
                 </Card>
               );
             })}
+          </div>
+
+          {/* Expandable additional pillars */}
+          {showAllPillars && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4 animate-in fade-in slide-in-from-top-4 duration-300">
+              {additionalPillars.map((pillar) => {
+                const Icon = pillarIcons[pillar.id];
+                return (
+                  <Card 
+                    key={pillar.id}
+                    className={`p-4 hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-${pillar.color}-200 group`}
+                    data-testid={`pillar-${pillar.id}`}
+                  >
+                    <div className={`w-12 h-12 rounded-xl bg-${pillar.color}-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
+                      <Icon className={`w-6 h-6 text-${pillar.color}-600`} />
+                    </div>
+                    <h3 className="font-semibold text-gray-900">{pillar.name}</h3>
+                    <p className="text-sm text-gray-500">{pillar.desc}</p>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Show more/less toggle */}
+          <div className="text-center mt-8">
+            <button
+              onClick={() => setShowAllPillars(!showAllPillars)}
+              className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium transition-colors"
+              data-testid="toggle-pillars-btn"
+            >
+              {showAllPillars ? (
+                <>Show less</>
+              ) : (
+                <>And more, as your journey grows <ChevronRight className="w-4 h-4" /></>
+              )}
+            </button>
           </div>
         </div>
       </div>
