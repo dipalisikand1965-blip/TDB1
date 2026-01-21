@@ -67,8 +67,11 @@ const CONCIERGE_USE_CASES = [
 ];
 
 const Home = () => {
+  const { user, token } = useAuth();
   const [activeSlide, setActiveSlide] = useState(0);
   const [statsRef, statsInView] = useInView({ threshold: 0.3 });
+  const [userPets, setUserPets] = useState([]);
+  const [loadingPets, setLoadingPets] = useState(true);
   
   const customersCount = useCountUp(45000, 2000, statsInView);
   const citiesCount = useCountUp(15, 1500, statsInView);
