@@ -21,7 +21,7 @@ import { getApiUrl } from '../utils/api';
 import { 
   MessageCircle, ChevronUp, ChevronDown, PawPrint, 
   Sparkles, ShoppingCart, ArrowRight, X, Send, Loader2,
-  Lightbulb, Calendar, Heart
+  Lightbulb, Calendar, Heart, Plus
 } from 'lucide-react';
 
 // Generate session ID for Mira conversations
