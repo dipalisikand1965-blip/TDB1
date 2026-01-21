@@ -39,7 +39,10 @@ const PILLAR_PERMISSIONS = {
   pillar_advisory: { icon: GraduationCap, name: 'Advisory', color: 'bg-violet-100 text-violet-700', emoji: '📋' },
   pillar_paperwork: { icon: Shield, name: 'Paperwork', color: 'bg-slate-100 text-slate-700', emoji: '📄' },
   pillar_emergency: { icon: Bell, name: 'Emergency', color: 'bg-red-100 text-red-700', emoji: '🚨' },
-  pillar_club: { icon: PawPrint, name: 'Club', color: 'bg-purple-100 text-purple-700', emoji: '👑' }
+  pillar_club: { icon: PawPrint, name: 'Club', color: 'bg-purple-100 text-purple-700', emoji: '👑' },
+  pillar_live_mira: { icon: Headphones, name: 'Live Mira', color: 'bg-fuchsia-100 text-fuchsia-700', emoji: '🤖' },
+  pillar_live_mis: { icon: CloudRain, name: 'Live MIS', color: 'bg-sky-100 text-sky-700', emoji: '📊' },
+  pillar_shipping: { icon: Truck, name: 'Pricing, Shipping & Commercial', color: 'bg-gray-100 text-gray-700', emoji: '🚚' }
 };
 
 // Combined for badge display
