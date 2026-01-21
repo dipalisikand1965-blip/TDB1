@@ -978,23 +978,38 @@ async def seed_initial_products():
     except Exception as e:
         logger.error(f"Error seeding products: {e}")
 
-def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
-    """Verify admin credentials - checks cached db credentials first, then falls back to .env"""
-    # Use cached database credentials if available, otherwise use .env
-    expected_username = _admin_credentials_cache.get("username") or ADMIN_USERNAME
-    expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
+def verify_admin(
+    credentials: HTTPBasicCredentials = Depends(security),
+    bearer_creds: HTTPAuthorizationCredentials = Depends(security_bearer)
+):
+    """Verify admin credentials - supports both Basic Auth and Bearer Token"""
+    # Try Bearer Token first (from JWT login)
+    if bearer_creds and bearer_creds.credentials:
+        try:
+            payload = jwt.decode(bearer_creds.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+            username = payload.get("sub")
+            role = payload.get("role")
+            if username and role == "admin":
+                return username
+        except jwt.PyJWTError:
+            pass  # Fall through to try Basic Auth
     
-    correct_username = secrets.compare_digest(credentials.username, expected_username)
-    correct_password = secrets.compare_digest(credentials.password, expected_password)
+    # Try Basic Auth
+    if credentials:
+        expected_username = _admin_credentials_cache.get("username") or ADMIN_USERNAME
+        expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
+        
+        correct_username = secrets.compare_digest(credentials.username, expected_username)
+        correct_password = secrets.compare_digest(credentials.password, expected_password)
+        
+        if correct_username and correct_password:
+            return credentials.username
     
-    if not (correct_username and correct_password):
-        # Don't send WWW-Authenticate header - prevents browser popup
-        # Frontend handles auth via its own login form
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials"
-        )
-    return credentials.username
+    # Neither auth method worked
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid credentials"
+    )
 
 
 # ==================== ADMIN CREDENTIAL MANAGEMENT ====================
