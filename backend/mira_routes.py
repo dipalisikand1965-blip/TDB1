@@ -3,6 +3,10 @@ Mira AI - The Doggy Company's Universal Concierge System
 =========================================================
 This is the soul of the Pet Life Operating System.
 Every interaction creates a ticket. No conversation goes untracked.
+
+RESEARCH MODE: Mira NEVER fabricates. For factual/rules/permission questions,
+she performs web research and cites sources. Answers clearly separate 
+confirmed facts vs variable items.
 """
 
 from fastapi import APIRouter, HTTPException, Depends, Header
@@ -15,6 +19,9 @@ import uuid
 import os
 import jwt
 import logging
+import httpx
+import json
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -23,6 +30,19 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/mira", tags=["mira"])
 security_bearer = HTTPBearer(auto_error=False)
+
+# Research mode keywords - queries containing these trigger web search
+RESEARCH_KEYWORDS = [
+    "permit", "permission", "allowed", "rules", "regulations", "requirements",
+    "legal", "law", "policy", "policies", "document", "documentation",
+    "vaccine", "vaccination", "certificate", "license", "registration",
+    "forest", "jungle", "national park", "sanctuary", "reserve",
+    "airline", "flight rules", "train rules", "cab policy",
+    "hotel policy", "restaurant policy", "pet-friendly",
+    "quarantine", "customs", "import", "export", "border",
+    "microchip", "rabies", "health certificate", "noc", "no objection",
+    "is it safe", "can i take", "do i need", "what documents", "what permits"
+]
 
 # Database reference (set from server.py)
 _db = None
