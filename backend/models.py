@@ -389,18 +389,19 @@ class VerifyPaymentRequest(BaseModel):
 # ==================== ADMIN MEMBER MANAGEMENT MODELS ====================
 
 class AddMemberRequest(BaseModel):
+    name: str
     email: str
-    name: Optional[str] = None
     phone: Optional[str] = None
-    membership_tier: str = "free"
-    password: Optional[str] = None
+    membership_tier: str = "pawsome"
+    membership_months: int = 12
+    paw_points: int = 100
+    notes: Optional[str] = None
     send_welcome_email: bool = True
 
 
 class BulkActionRequest(BaseModel):
-    user_ids: List[str]
-    action: str
-    value: Optional[str] = None
+    member_ids: List[str]
+    action: str  # upgrade_tier, extend_1_month, add_100_points, send_renewal_reminder
 
 
 class CSVImportRequest(BaseModel):
