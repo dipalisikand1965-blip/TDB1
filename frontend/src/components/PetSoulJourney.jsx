@@ -259,6 +259,10 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
   const [selectedPet, setSelectedPet] = useState(pets[0] || null);
   const [soulData, setSoulData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [answerSaving, setAnswerSaving] = useState(false);
+  const [answeredQuestions, setAnsweredQuestions] = useState(new Set());
+  const [selectedPillar, setSelectedPillar] = useState(null);
+  const [pillarDetails, setPillarDetails] = useState(null);
   
   const petName = selectedPet?.name || 'your pet';
   
@@ -293,6 +297,90 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
     
     fetchSoulData();
   }, [selectedPet?.id]);
+
+  // Save answer from gentle next step
+  const handleSaveAnswer = async (questionType, answer) => {
+    if (!selectedPet?.id || answerSaving) return;
+    
+    setAnswerSaving(true);
+    try {
+      const res = await fetch(`${getApiUrl()}/api/soul-drip/journey-answer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pet_id: selectedPet.id,
+          question_type: questionType,
+          answer: answer,
+          source: 'journey_page'
+        })
+      });
+      
+      if (res.ok) {
+        setAnsweredQuestions(prev => new Set([...prev, questionType]));
+        // Refresh soul data
+        const petRes = await fetch(`${getApiUrl()}/api/pets/${selectedPet.id}`);
+        if (petRes.ok) {
+          const petData = await petRes.json();
+          setSoulData(prev => ({ ...prev, ...petData }));
+        }
+      }
+    } catch (error) {
+      console.error('Error saving answer:', error);
+    } finally {
+      setAnswerSaving(false);
+    }
+  };
+
+  // Fetch pillar details when a pillar is clicked
+  const handlePillarClick = async (pillarKey) => {
+    if (selectedPillar === pillarKey) {
+      setSelectedPillar(null);
+      setPillarDetails(null);
+      return;
+    }
+    
+    setSelectedPillar(pillarKey);
+    
+    try {
+      const res = await fetch(`${getApiUrl()}/api/pet-gate/pillar-preferences/${selectedPet.id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setPillarDetails(data.pillars[pillarKey]);
+      }
+    } catch (error) {
+      console.error('Error fetching pillar details:', error);
+    }
+  };
+
+  // Get next unanswered question
+  const getNextQuestion = () => {
+    const questions = [
+      { type: 'grooming_preference', question: `Does ${petName} enjoy being groomed at home or prefer salon visits?`, options: ['At home', 'Salon visits'] },
+      { type: 'car_comfort', question: `How does ${petName} feel about car rides?`, options: ['Loves them', 'Gets anxious', 'Neutral'] },
+      { type: 'social_preference', question: `Does ${petName} prefer busy places or quiet spaces?`, options: ['Busy places', 'Quiet spaces', 'Either'] },
+      { type: 'treat_frequency', question: `How often does ${petName} get treats?`, options: ['Multiple daily', 'Once daily', 'Occasionally'] },
+      { type: 'vet_comfort', question: `How is ${petName} at vet visits?`, options: ['Calm', 'Anxious', 'Varies'] }
+    ];
+    
+    const answers = soulData?.doggy_soul_answers || {};
+    
+    // Find first unanswered question
+    for (const q of questions) {
+      const fieldMap = {
+        'grooming_preference': 'grooming_style',
+        'car_comfort': 'car_rides',
+        'social_preference': 'social_preference',
+        'treat_frequency': 'treat_frequency',
+        'vet_comfort': 'vet_comfort'
+      };
+      
+      if (!answeredQuestions.has(q.type) && !answers[fieldMap[q.type]]) {
+        return q;
+      }
+    }
+    
+    return null;
+  };
 
   if (!selectedPet) {
     return (
