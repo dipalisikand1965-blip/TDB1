@@ -875,7 +875,7 @@ REMEMBER:
             system_message=system_prompt
         )
         chat.with_model("openai", "gpt-5.1")  # Using GPT-5.1 as requested
-        chat.with_params(temperature=0.4, max_tokens=800)
+        # Note: GPT-5.x models only support temperature=1
         
         response = await chat.send_message(UserMessage(text=full_prompt))
         
