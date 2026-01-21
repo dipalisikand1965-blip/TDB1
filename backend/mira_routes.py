@@ -1144,6 +1144,91 @@ async def get_mira_session(session_id: str):
         "ticket": ticket
     }
 
+@router.post("/session/new")
+async def create_new_session(
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Create a new Mira conversation session.
+    Used when user wants to start fresh.
+    """
+    new_session_id = f"mira-{uuid.uuid4()}"
+    
+    user = await get_user_from_token(authorization)
+    user_info = None
+    if user:
+        user_info = {
+            "id": user.get("id"),
+            "name": user.get("name"),
+            "email": user.get("email")
+        }
+    
+    return {
+        "session_id": new_session_id,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "user": user_info,
+        "message": "New conversation started. How may I assist you today?"
+    }
+
+@router.get("/history")
+async def get_chat_history(
+    limit: int = 10,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get user's previous Mira conversation history.
+    Returns list of recent sessions with summaries.
+    """
+    db = get_db()
+    user = await get_user_from_token(authorization)
+    
+    if not user:
+        return {"sessions": [], "message": "Sign in to view conversation history"}
+    
+    user_email = user.get("email")
+    
+    # Find recent tickets for this user
+    tickets = await db.mira_tickets.find(
+        {"member.email": user_email},
+        {"_id": 0, "mira_session_id": 1, "ticket_id": 1, "pillar": 1, "created_at": 1, "messages": 1}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    sessions = []
+    for ticket in tickets:
+        # Get first user message as summary
+        first_message = ""
+        for msg in ticket.get("messages", []):
+            if msg.get("sender") == "member":
+                first_message = msg.get("content", "")[:100]
+                break
+        
+        sessions.append({
+            "session_id": ticket.get("mira_session_id"),
+            "ticket_id": ticket.get("ticket_id"),
+            "pillar": ticket.get("pillar"),
+            "created_at": ticket.get("created_at"),
+            "preview": first_message,
+            "message_count": len(ticket.get("messages", []))
+        })
+    
+    return {"sessions": sessions}
+
+@router.get("/quick-prompts/{pillar}")
+async def get_quick_prompts(pillar: str):
+    """
+    Get pillar-specific quick action prompts.
+    Used by frontend to show context-aware suggestions.
+    """
+    prompts = get_pillar_quick_prompts(pillar)
+    pillar_info = PILLARS.get(pillar, PILLARS.get("advisory"))
+    
+    return {
+        "pillar": pillar,
+        "pillar_name": pillar_info.get("name", pillar.title()),
+        "pillar_icon": pillar_info.get("icon", "📋"),
+        "prompts": prompts
+    }
+
 @router.get("/tickets")
 async def list_mira_tickets(
     status: Optional[str] = None,
