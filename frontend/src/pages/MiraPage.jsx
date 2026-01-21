@@ -501,11 +501,28 @@ const MiraPage = () => {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your message..."
-                className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder={isListening ? "Listening..." : "Type your message..."}
+                className={`flex-1 px-4 py-3 bg-gray-50 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                  isListening ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+                }`}
                 disabled={isLoading}
                 data-testid="mira-input"
               />
+              {/* Voice Input Button */}
+              {speechSupported && (
+                <Button
+                  type="button"
+                  onClick={toggleListening}
+                  className={`rounded-full px-4 ${
+                    isListening 
+                      ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-600'
+                  }`}
+                  data-testid="mira-voice-btn"
+                >
+                  {isListening ? <MicOff className="w-5 h-5 text-white" /> : <Mic className="w-5 h-5" />}
+                </Button>
+              )}
               <Button
                 type="submit"
                 disabled={!input.trim() || isLoading}
