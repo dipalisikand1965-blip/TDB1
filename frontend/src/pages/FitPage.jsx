@@ -11,6 +11,7 @@ import { Switch } from '../components/ui/switch';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
+import MiraContextPanel from '../components/MiraContextPanel';
 import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,

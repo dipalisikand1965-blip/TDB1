@@ -12,6 +12,7 @@ import { Progress } from '../components/ui/progress';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
+import MiraContextPanel from '../components/MiraContextPanel';
 import {
   Shield, Heart, Plane, FileText, Sparkles, Scale, Upload, Download,
   Folder, FolderOpen, File, Eye, Trash2, Bell, Calendar, Clock,

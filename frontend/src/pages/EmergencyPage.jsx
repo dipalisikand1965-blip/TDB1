@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
+import MiraContextPanel from '../components/MiraContextPanel';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
   ChevronRight, Sparkles, Star, Loader2, Send, ArrowRight, Play,
