@@ -1,10 +1,13 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, MessageCircle, Truck, PawPrint, Sparkles } from 'lucide-react';
+import { 
+  Facebook, Instagram, Youtube, Mail, Phone, MapPin, 
+  MessageCircle, PawPrint, Sparkles, Brain, Heart
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const WHATSAPP_NUMBER = '919663185747';
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I'm interested in ordering from The Doggy Company 🐕")}`;
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I'd like to know more about The Doggy Company 🐕")}`;
 
 const Footer = () => {
   const location = useLocation();
@@ -16,7 +19,7 @@ const Footer = () => {
   
   return (
     <footer className="bg-gray-900 text-gray-300">
-      {/* Floating WhatsApp Button - Hidden on admin/agent pages, positioned higher on mobile */}
+      {/* Floating WhatsApp Button */}
       {!shouldHideFloat && (
         <a
           href={WHATSAPP_URL}
@@ -34,157 +37,187 @@ const Footer = () => {
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* About */}
-          <div>
-            <div className="flex items-center space-x-2 mb-4">
+        {/* 5-Column Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+          
+          {/* COLUMN 1 — THE SYSTEM (CORE IDENTITY) */}
+          <div className="col-span-2 md:col-span-1">
+            <div className="flex items-center gap-2 mb-3">
+              <Brain className="w-5 h-5 text-purple-400" />
+              <h3 className="text-white font-bold text-lg">The Pet Life OS</h3>
+            </div>
+            <p className="text-sm text-gray-400 mb-4 leading-relaxed">
+              Your Pet&apos;s Life, Thoughtfully Orchestrated.
+            </p>
+            <div className="flex items-center gap-2 mb-4">
               <img 
                 src="https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png?v=1718969706" 
                 alt="The Doggy Company Logo"
-                className="h-10 w-auto"
+                className="h-8 w-auto"
               />
-              <h3 className="text-white font-bold text-lg">The Doggy Company</h3>
+              <span className="text-xs text-gray-500">The Doggy Company</span>
             </div>
-            <p className="text-sm mb-4">
-              Your Pet Life Operating System. Celebrate, Dine, Travel, Stay & Care - all under one roof since 2020.
-            </p>
-            <div className="flex space-x-4">
-              <a href="https://www.facebook.com/thedoggybakery" target="_blank" rel="noopener noreferrer" className="hover:text-pink-500 transition-colors">
+            <div className="flex space-x-3">
+              <a href="https://www.facebook.com/thedoggybakery" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="https://www.instagram.com/the_doggy_bakery/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-500 transition-colors">
+              <a href="https://www.instagram.com/the_doggy_bakery/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="https://www.youtube.com/@TheDoggyBakery" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">
+              <a href="https://www.youtube.com/@TheDoggyBakery" target="_blank" rel="noopener noreferrer" className="hover:text-red-400 transition-colors">
                 <Youtube className="w-5 h-5" />
               </a>
-              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="hover:text-green-500 transition-colors">
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="hover:text-green-400 transition-colors">
                 <MessageCircle className="w-5 h-5" />
               </a>
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* COLUMN 2 — THE 12 PILLARS */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">The 12 Pillars</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/about" className="hover:text-pink-500 transition-colors">About Us</Link></li>
-              <li><Link to="/faqs" className="hover:text-pink-500 transition-colors">FAQs</Link></li>
-              <li><Link to="/insights" className="hover:text-pink-500 transition-colors">TDC Insights</Link></li>
-              <li><Link to="/dine" className="hover:text-pink-500 transition-colors">Dine with Pets</Link></li>
-              <li><Link to="/franchise" className="hover:text-pink-500 transition-colors">Own A Bakery</Link></li>
-              <li><Link to="/partner" className="hover:text-pink-500 transition-colors">Become a Partner</Link></li>
-              <li><Link to="/contact" className="hover:text-pink-500 transition-colors">Contact Us</Link></li>
+              <li><Link to="/celebrate" className="hover:text-pink-400 transition-colors">🎂 Celebrate</Link></li>
+              <li><Link to="/dine" className="hover:text-pink-400 transition-colors">🍽️ Dine</Link></li>
+              <li><Link to="/shop" className="hover:text-pink-400 transition-colors">🛒 Shop</Link></li>
+              <li><Link to="/stay" className="hover:text-pink-400 transition-colors">🏨 Stay</Link></li>
+              <li><Link to="/enjoy" className="hover:text-pink-400 transition-colors">🎾 Enjoy</Link></li>
+              <li><Link to="/care" className="hover:text-pink-400 transition-colors">💊 Care</Link></li>
             </ul>
           </div>
 
-          {/* Registered Office */}
+          {/* COLUMN 3 — MORE PILLARS */}
           <div>
-            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <MapPin className="w-4 h-4" /> Registered Office
-            </h3>
-            <div className="text-sm space-y-3">
-              <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 mt-0.5 text-pink-500 flex-shrink-0" />
-                <div>
-                  <p className="text-gray-300">
-                    <strong>The Doggy Company</strong><br />
-                    #83, 3rd Floor, 7th Cross,<br />
-                    4th B Block, Koramangala,<br />
-                    Bangalore - 560034<br />
-                    Karnataka, India
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4 bg-purple-900/30 p-3 rounded">
-                <Truck className="w-4 h-4 text-purple-400 inline mr-2" />
-                <span className="text-purple-300">
-                  <strong>Pan-India Delivery:</strong> We deliver across India!
-                </span>
-              </div>
-            </div>
+            <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider opacity-0">More</h3>
+            <ul className="space-y-2 text-sm">
+              <li><Link to="/fit" className="hover:text-pink-400 transition-colors">🏃 Fit</Link></li>
+              <li><Link to="/travel" className="hover:text-pink-400 transition-colors">✈️ Travel</Link></li>
+              <li><Link to="/advisory" className="hover:text-pink-400 transition-colors">📋 Advisory</Link></li>
+              <li><Link to="/paperwork" className="hover:text-pink-400 transition-colors">📄 Paperwork</Link></li>
+              <li><Link to="/emergency" className="hover:text-pink-400 transition-colors">🚨 Emergency</Link></li>
+              <li><Link to="/community" className="hover:text-pink-400 transition-colors">👥 Community</Link></li>
+            </ul>
           </div>
 
-          {/* Contact */}
+          {/* COLUMN 4 — INTELLIGENCE */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Contact Us</h3>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start space-x-2">
-                <Phone className="w-4 h-4 mt-1 flex-shrink-0" />
-                <div>
-                  <p>+91 9739982582</p>
-                  <p>+91 9663185747</p>
-                </div>
-              </li>
-              <li className="flex items-start space-x-2">
-                <Mail className="w-4 h-4 mt-1 flex-shrink-0" />
-                <p>woof@thedoggycompany.in</p>
+            <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Intelligence</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/membership" className="hover:text-purple-400 transition-colors flex items-center gap-1">
+                  <PawPrint className="w-3 h-3" /> Pet Soul™
+                </Link>
               </li>
               <li>
+                <button 
+                  onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+                  className="hover:text-purple-400 transition-colors flex items-center gap-1"
+                >
+                  <Sparkles className="w-3 h-3" /> Mira AI
+                </button>
+              </li>
+              <li><Link to="/about" className="hover:text-pink-400 transition-colors">About Us</Link></li>
+              <li><Link to="/faqs" className="hover:text-pink-400 transition-colors">FAQs</Link></li>
+              <li><Link to="/insights" className="hover:text-pink-400 transition-colors">TDC Insights</Link></li>
+            </ul>
+          </div>
+
+          {/* COLUMN 5 — CONTACT */}
+          <div>
+            <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Connect</h3>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-gray-500" />
+                <span>+91 9739982582</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-gray-500" />
+                <span>woof@thedoggycompany.in</span>
+              </li>
+              <li className="flex items-start gap-2 mt-4">
+                <MapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                <span className="text-xs text-gray-500">
+                  Koramangala, Bangalore
+                </span>
+              </li>
+              <li className="mt-3">
                 <a 
                   href={WHATSAPP_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-2 mt-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full text-sm transition-colors inline-flex"
+                  className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full text-sm transition-colors"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>WhatsApp Us</span>
+                  WhatsApp
                 </a>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Membership CTA - Context-aware */}
-        <div className="border-t border-gray-800 mt-8 pt-8">
-          <div className="flex justify-center mb-6">
+        {/* Pet Soul CTA - Context-aware */}
+        <div className="border-t border-gray-800 mt-10 pt-8">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
             {user ? (
-              <Link 
-                to="/membership" 
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold hover:opacity-90 transition-opacity shadow-lg"
-              >
-                <Sparkles className="w-5 h-5" />
-                View Your Pet Soul Journey
-              </Link>
+              <>
+                <Link 
+                  to="/membership" 
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold hover:opacity-90 transition-opacity shadow-lg"
+                >
+                  <Brain className="w-5 h-5" />
+                  Your Pet Soul Journey
+                </Link>
+                <button 
+                  onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+                  className="inline-flex items-center gap-2 px-6 py-3 border border-purple-500 text-purple-400 rounded-full font-semibold hover:bg-purple-500/10 transition-all"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  Ask Mira
+                </button>
+              </>
             ) : (
-              <Link 
-                to="/membership" 
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold hover:opacity-90 transition-opacity shadow-lg"
-              >
-                👑 Join The Doggy Company Membership
-              </Link>
+              <>
+                <Link 
+                  to="/membership" 
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold hover:opacity-90 transition-opacity shadow-lg"
+                >
+                  <Heart className="w-5 h-5" />
+                  Start Your Pet Soul Journey
+                </Link>
+                <button 
+                  onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+                  className="inline-flex items-center gap-2 px-6 py-3 border border-purple-500 text-purple-400 rounded-full font-semibold hover:bg-purple-500/10 transition-all"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  Meet Mira AI
+                </button>
+              </>
             )}
           </div>
         </div>
 
-        {/* Policies Row */}
+        {/* Policies & Copyright */}
         <div className="border-t border-gray-800 pt-6">
-          <div className="flex flex-wrap justify-center gap-4 mb-6 text-sm">
-            <Link to="/membership" className="hover:text-pink-500 transition-colors font-medium text-pink-400">✨ Membership</Link>
-            <span className="text-gray-600">|</span>
-            <Link to="/shipping-policy" className="hover:text-pink-500 transition-colors">Shipping Policy</Link>
-            <span className="text-gray-600">|</span>
-            <Link to="/refund-policy" className="hover:text-pink-500 transition-colors">Refund Policy</Link>
-            <span className="text-gray-600">|</span>
-            <Link to="/privacy-policy" className="hover:text-pink-500 transition-colors">Privacy Policy</Link>
-            <span className="text-gray-600">|</span>
-            <Link to="/terms-of-service" className="hover:text-pink-500 transition-colors">Terms of Service</Link>
+          <div className="flex flex-wrap justify-center gap-4 mb-4 text-xs text-gray-500">
+            <Link to="/shipping-policy" className="hover:text-pink-400 transition-colors">Shipping</Link>
+            <span>•</span>
+            <Link to="/refund-policy" className="hover:text-pink-400 transition-colors">Refunds</Link>
+            <span>•</span>
+            <Link to="/privacy-policy" className="hover:text-pink-400 transition-colors">Privacy</Link>
+            <span>•</span>
+            <Link to="/terms" className="hover:text-pink-400 transition-colors">Terms</Link>
+            <span>•</span>
+            <Link to="/franchise" className="hover:text-pink-400 transition-colors">Own A Bakery</Link>
+            <span>•</span>
+            <Link to="/partner" className="hover:text-pink-400 transition-colors">Partner With Us</Link>
           </div>
-        </div>
-
-        {/* Payment & Delivery Info */}
-        <div className="border-t border-gray-800 pt-6">
-          <div className="flex flex-wrap justify-center gap-6 mb-6 text-sm text-gray-400">
-            <span>💳 Secure Payments</span>
-            <span>🚚 Same Day Delivery</span>
-            <span>📦 Pan-India Shipping</span>
-            <span>🐕 45,000+ Happy Pets</span>
-            <span>⭐ 4.9 Rating</span>
+          
+          <div className="text-center text-xs text-gray-600">
+            <p>© {new Date().getFullYear()} The Doggy Company • Since 2020</p>
+            <p className="mt-1 text-gray-700">
+              Crafted with <Heart className="w-3 h-3 inline text-pink-500" /> for pets and their humans
+            </p>
           </div>
-        </div>
-
-        <div className="border-t border-gray-800 pt-6 text-sm text-center">
-          <p>&copy; 2025 The Doggy Company. All rights reserved. Made with ❤️ for pets and their parents.</p>
         </div>
       </div>
     </footer>
