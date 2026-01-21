@@ -886,6 +886,9 @@ from paperwork_routes import router as paperwork_router
 from emergency_routes import router as emergency_router
 from celebrate_routes import router as celebrate_router
 
+# Import Mira AI Concierge System
+from mira_routes import router as mira_router, set_mira_db
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
