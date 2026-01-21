@@ -590,10 +590,10 @@ const MembershipPage = () => {
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Simple, Transparent Pricing
+              One Membership. One Pet Life System.
             </h2>
             <p className="text-gray-600">
-              One membership, unlimited access to all 12 pillars
+              Unlimited access to all pillars, growing intelligence over time.
             </p>
           </div>
 
