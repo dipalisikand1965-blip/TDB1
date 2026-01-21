@@ -5182,7 +5182,6 @@ async def check_abandoned_carts():
         
         # Reduced batch size and timeout protection
         MAX_EMAILS_PER_RUN = 10  # Limit emails per scheduler run to prevent timeout
-            return 0
         
         # Get reminder configuration (with defaults)
         reminder_config = settings.get("abandoned_cart_reminders") if settings else None
