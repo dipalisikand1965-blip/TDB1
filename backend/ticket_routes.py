@@ -374,6 +374,7 @@ async def create_ticket(ticket: TicketCreate):
     
     return {"success": True, "ticket": ticket_doc}
 
+@router.get("")
 @router.get("/")
 async def list_tickets(
     status: Optional[str] = None,
