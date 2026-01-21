@@ -29,7 +29,8 @@ const PILLARS = [
   { id: 'emergency', name: 'Emergency', icon: '🚨', color: 'bg-red-100 text-red-700' },
   { id: 'club', name: 'Club (Membership)', icon: '👑', color: 'bg-amber-100 text-amber-700' },
   { id: 'live_mira', name: 'Live Mira', icon: '🤖', color: 'bg-indigo-100 text-indigo-700' },
-  { id: 'shipping', name: 'Shipping', icon: '🚚', color: 'bg-gray-100 text-gray-700' }
+  { id: 'live_mis', name: 'Live MIS', icon: '📊', color: 'bg-sky-100 text-sky-700' },
+  { id: 'shipping', name: 'Pricing, Shipping & Commercial', icon: '🚚', color: 'bg-gray-100 text-gray-700' }
 ];
 
 const GST_RATES = [0, 5, 12, 18, 28];
