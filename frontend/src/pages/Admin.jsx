@@ -1511,6 +1511,7 @@ const Admin = () => {
             { id: 'testimonials', label: 'Testimonials', icon: Star },
             { id: 'faqs', label: 'FAQs', icon: HelpCircle },
             { id: 'about', label: '✨ About Page', icon: Sparkles },
+            { id: 'pages', label: '📝 Page CMS', icon: FileText },
           ].map((tab) => (
             <Button
               key={tab.id}
