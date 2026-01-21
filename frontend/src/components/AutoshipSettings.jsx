@@ -5,12 +5,11 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
+import { getApiUrl } from '../utils/api';
 import { 
   RefreshCw, Save, Trash2, Plus, Search, Sparkles, Clock, 
   Package, Percent, CheckCircle, AlertCircle
 } from 'lucide-react';
-
-const API = process.env.REACT_APP_BACKEND_URL;
 
 const AutoshipSettings = ({ getAuthHeader }) => {
   const [loading, setLoading] = useState(true);
