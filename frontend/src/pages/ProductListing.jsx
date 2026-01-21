@@ -2,22 +2,88 @@ import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { SlidersHorizontal, Loader2, ChevronDown } from 'lucide-react';
+import { SlidersHorizontal, Loader2, ChevronDown, Sparkles, PawPrint } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { API_URL, getApiUrl } from '../utils/api';
 import MiraContextPanel from '../components/MiraContextPanel';
+import { useAuth } from '../context/AuthContext';
 
 const PRODUCTS_PER_PAGE = 20;
+
+// Map category to pillar for Mira panel
+const CATEGORY_TO_PILLAR = {
+  'cakes': 'celebrate',
+  'custom': 'celebrate',
+  'breed-cakes': 'celebrate',
+  'treats': 'celebrate',
+  'desi': 'celebrate',
+  'desi-treats': 'celebrate',
+  'hampers': 'celebrate',
+  'meals': 'dine',
+  'fresh-meals': 'dine',
+  'frozen': 'celebrate',
+  'frozen-treats': 'celebrate',
+  'mini-cakes': 'celebrate',
+  'dognuts': 'celebrate',
+  'pizzas-burgers': 'dine',
+  'merchandise': 'shop',
+  'accessories': 'shop',
+  'nut-butters': 'shop',
+  'pan-india': 'shop',
+  'cat': 'shop',
+  'cat-treats': 'shop',
+  'valentine': 'celebrate',
+  'autoship': 'shop',
+  'all': 'shop'
+};
 
 const ProductListing = ({ category = 'all' }) => {
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('search');
+  const { user, token } = useAuth();
   
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('featured');
   const [priceRange, setPriceRange] = useState('all');
   const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
+  const [userPets, setUserPets] = useState([]);
+  const [personalizedMessage, setPersonalizedMessage] = useState('');
+
+  // Get the pillar for this category
+  const pillar = CATEGORY_TO_PILLAR[category] || 'shop';
+
+  // Fetch user's pets for personalization
+  useEffect(() => {
+    const fetchPets = async () => {
+      if (token) {
+        try {
+          const res = await fetch(`${getApiUrl()}/api/pets/my-pets`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setUserPets(data.pets || []);
+            
+            // Generate personalized message
+            if (data.pets && data.pets.length > 0) {
+              const pet = data.pets[0];
+              const messages = [
+                `${pet.name} would love these! 🐾`,
+                `Perfect picks for ${pet.name}!`,
+                `${pet.name}'s tail will wag for these! 🎉`,
+                `Treats ${pet.name} will adore!`,
+              ];
+              setPersonalizedMessage(messages[Math.floor(Math.random() * messages.length)]);
+            }
+          }
+        } catch (err) {
+          console.debug('Failed to fetch pets:', err);
+        }
+      }
+    };
+    fetchPets();
+  }, [token]);
 
   // Fetch products from API
   useEffect(() => {
@@ -30,7 +96,7 @@ const ProductListing = ({ category = 'all' }) => {
           const allProducts = [];
           
           for (const cat of categories) {
-            const response = await fetch(`${API_URL}/api/products?limit=500&category=${cat}`);
+            const response = await fetch(`${getApiUrl()}/api/products?limit=500&category=${cat}`);
             if (response.ok) {
               const data = await response.json();
               allProducts.push(...(data.products || []));
@@ -45,7 +111,7 @@ const ProductListing = ({ category = 'all' }) => {
           setProducts(uniqueProducts);
         } else if (category === 'autoship') {
           // For autoship, fetch all products and filter by autoship_enabled
-          const response = await fetch(`${API_URL}/api/products?limit=500&autoship_enabled=true`);
+          const response = await fetch(`${getApiUrl()}/api/products?limit=500&autoship_enabled=true`);
           if (response.ok) {
             const data = await response.json();
             // Filter client-side in case API doesn't support the filter
