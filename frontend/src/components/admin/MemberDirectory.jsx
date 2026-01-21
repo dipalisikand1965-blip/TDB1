@@ -962,7 +962,7 @@ const PetSoulTabs = ({ pets }) => {
               <MessageSquare className="w-4 h-4 mr-1" /> Soul Whisper
             </Button>
             <Button size="sm" variant="outline" className="flex-1">
-              <Edit className="w-4 h-4 mr-1" /> Edit
+              <Edit2 className="w-4 h-4 mr-1" /> Edit
             </Button>
           </div>
         </Card>
