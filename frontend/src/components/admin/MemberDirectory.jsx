@@ -103,7 +103,6 @@ const calculateSoulScore = (pet) => {
     breakdown,
     answeredFields: answeredKeys
   };
-  };
 };
 
 // Member Directory Component
