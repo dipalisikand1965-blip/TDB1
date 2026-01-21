@@ -4,7 +4,8 @@ import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { SlidersHorizontal, Loader2, ChevronDown } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-import { API_URL } from '../utils/api';
+import { API_URL, getApiUrl } from '../utils/api';
+import MiraContextPanel from '../components/MiraContextPanel';
 
 const PRODUCTS_PER_PAGE = 20;
 
