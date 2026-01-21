@@ -275,7 +275,7 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
       
       try {
         const [completenessRes, petRes] = await Promise.all([
-          fetch(`${getApiUrl()}/api/pet-gate/soul-completeness/${selectedPet.id}`),
+          fetch(`${getApiUrl()}/api/soul-drip/completeness/${selectedPet.id}`),
           fetch(`${getApiUrl()}/api/pets/${selectedPet.id}`)
         ]);
         
