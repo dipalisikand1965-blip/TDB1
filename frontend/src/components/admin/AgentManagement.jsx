@@ -119,7 +119,7 @@ const AgentManagement = ({ authHeaders }) => {
     
     setSaving(true);
     try {
-      await axios.put(`${API_URL}/api/admin/agents/${selectedAgent.id}`, {
+      await axios.put(`${getApiUrl()}/api/admin/agents/${selectedAgent.id}`, {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
@@ -148,7 +148,7 @@ const AgentManagement = ({ authHeaders }) => {
     
     setSaving(true);
     try {
-      await axios.put(`${API_URL}/api/admin/agents/${selectedAgent.id}/password`, {
+      await axios.put(`${getApiUrl()}/api/admin/agents/${selectedAgent.id}/password`, {
         new_password: newPassword
       }, { headers: authHeaders });
       
@@ -169,7 +169,7 @@ const AgentManagement = ({ authHeaders }) => {
     }
     
     try {
-      await axios.delete(`${API_URL}/api/admin/agents/${agent.id}`, { headers: authHeaders });
+      await axios.delete(`${getApiUrl()}/api/admin/agents/${agent.id}`, { headers: authHeaders });
       toast({ title: 'Success', description: 'Agent deleted' });
       fetchAgents();
     } catch (error) {
@@ -180,7 +180,7 @@ const AgentManagement = ({ authHeaders }) => {
 
   const handleToggleActive = async (agent) => {
     try {
-      await axios.put(`${API_URL}/api/admin/agents/${agent.id}`, {
+      await axios.put(`${getApiUrl()}/api/admin/agents/${agent.id}`, {
         is_active: !agent.is_active
       }, { headers: authHeaders });
       
