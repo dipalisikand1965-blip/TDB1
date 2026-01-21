@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, MessageCircle, Truck } from 'lucide-react';
+import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, MessageCircle, Truck, PawPrint, Sparkles } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const WHATSAPP_NUMBER = '919663185747';
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I'm interested in ordering from The Doggy Company 🐕")}`;
 
 const Footer = () => {
   const location = useLocation();
+  const { user } = useAuth();
   
   // Hide floating button on admin and agent pages
   const hiddenPaths = ['/admin', '/agent', '/login'];
