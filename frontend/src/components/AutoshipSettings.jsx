@@ -39,7 +39,7 @@ const AutoshipSettings = ({ getAuthHeader }) => {
   const fetchSettings = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/admin/pricing/autoship/settings`, {
+      const res = await fetch(`${getApiUrl()}/api/admin/pricing/autoship/settings`, {
         headers: getAuthHeader()
       });
       if (res.ok) {
@@ -57,7 +57,7 @@ const AutoshipSettings = ({ getAuthHeader }) => {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`${API}/api/admin/pricing/autoship/products`, {
+      const res = await fetch(`${getApiUrl()}/api/admin/pricing/autoship/products`, {
         headers: getAuthHeader()
       });
       if (res.ok) {
@@ -77,7 +77,7 @@ const AutoshipSettings = ({ getAuthHeader }) => {
   const saveTiers = async () => {
     setSaving(true);
     try {
-      const res = await fetch(`${API}/api/admin/pricing/autoship/tiers`, {
+      const res = await fetch(`${getApiUrl()}/api/admin/pricing/autoship/tiers`, {
         method: 'PUT',
         headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
         body: JSON.stringify(editableTiers)
@@ -111,7 +111,7 @@ const AutoshipSettings = ({ getAuthHeader }) => {
     if (!selectedProduct) return;
     setSaving(true);
     try {
-      const res = await fetch(`${API}/api/admin/pricing/autoship/product-override`, {
+      const res = await fetch(`${getApiUrl()}/api/admin/pricing/autoship/product-override`, {
         method: 'POST',
         headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -140,7 +140,7 @@ const AutoshipSettings = ({ getAuthHeader }) => {
   const removeOverride = async (productId) => {
     if (!confirm('Remove autoship override for this product?')) return;
     try {
-      const res = await fetch(`${API}/api/admin/pricing/autoship/product-override/${productId}`, {
+      const res = await fetch(`${getApiUrl()}/api/admin/pricing/autoship/product-override/${productId}`, {
         method: 'DELETE',
         headers: getAuthHeader()
       });
