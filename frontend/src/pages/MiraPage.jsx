@@ -356,6 +356,29 @@ const MiraPage = () => {
               </div>
               
               <div className="flex items-center gap-3">
+                {/* New Conversation Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={startNewConversation}
+                  className="gap-1"
+                  data-testid="mira-new-conversation"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  New Chat
+                </Button>
+                {/* History Button */}
+                {token && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowHistory(!showHistory)}
+                    className="gap-1"
+                    data-testid="mira-history-toggle"
+                  >
+                    <History className="w-4 h-4" />
+                  </Button>
+                )}
                 {ticketId && (
                   <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
                     {ticketId}
@@ -369,6 +392,30 @@ const MiraPage = () => {
               </div>
             </div>
           </div>
+
+          {/* History Panel */}
+          {showHistory && chatHistory.length > 0 && (
+            <div className="bg-white/90 border-b p-4">
+              <p className="text-sm font-medium text-gray-600 mb-3">Recent Conversations</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {chatHistory.map((session) => (
+                  <div 
+                    key={session.session_id}
+                    className="p-3 bg-gray-50 rounded-lg border cursor-pointer hover:bg-purple-50 hover:border-purple-200 transition-colors"
+                    onClick={() => {
+                      setShowHistory(false);
+                      toast.info('Loading conversation...');
+                    }}
+                  >
+                    <p className="text-sm font-medium truncate">{session.preview || 'Conversation'}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {new Date(session.created_at).toLocaleDateString()} • {session.message_count} msgs
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Messages Area */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
