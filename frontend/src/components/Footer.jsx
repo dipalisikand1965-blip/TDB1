@@ -135,15 +135,25 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Membership CTA */}
+        {/* Membership CTA - Context-aware */}
         <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="flex justify-center mb-6">
-            <Link 
-              to="/membership" 
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold hover:opacity-90 transition-opacity shadow-lg"
-            >
-              👑 Join The Doggy Company Membership
-            </Link>
+            {user ? (
+              <Link 
+                to="/membership" 
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold hover:opacity-90 transition-opacity shadow-lg"
+              >
+                <Sparkles className="w-5 h-5" />
+                View Your Pet Soul Journey
+              </Link>
+            ) : (
+              <Link 
+                to="/membership" 
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold hover:opacity-90 transition-opacity shadow-lg"
+              >
+                👑 Join The Doggy Company Membership
+              </Link>
+            )}
           </div>
         </div>
 
