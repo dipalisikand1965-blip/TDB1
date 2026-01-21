@@ -213,6 +213,43 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
 
 ## Changelog
 
+### January 21, 2026 (Session 5) - Pet Life Pass Update
+- ✅ **About Page Overhaul** - Restored beautiful team story:
+  - Hero: "Born from Love, Built for Every Pet Parent"
+  - **Mira** - "The Soul & Inspiration" (the dog who inspired everything)
+  - **Dipali** - "Keeper of the Concierge" (India's first registered Concierge license holder)
+  - **Aditya** - "Founder, The Doggy Bakery"
+  - Extended team: "+15 Pet Parents & Their Babies" from Mumbai, Delhi & Bangalore
+  - Pet Soul™ Technology section with 8 pillars
+  - Doctrine quote: "The longer a pet lives with us, the less their parent has to explain."
+
+- ✅ **Membership → Pet Life Pass** - Complete rebrand:
+  - Title renamed to "Pet Life Pass" (not "Membership")
+  - Badge: "Founding Members – Pet Life Pass"
+  - **Annual Plan FIRST** (₹4,999/year + GST) with "FOUNDING MEMBER" badge
+  - **Monthly Plan Second** (₹499/month + GST)
+  - Additional pets: ₹2,499/year or ₹249/month each (+ GST)
+  - Positioning: "An early invitation to help us build the world's first Pet Life Operating System"
+
+- ✅ **Pricing Backend Update** - server.py and MembershipOnboarding.jsx updated:
+  - Annual base: ₹4,999 (was ₹999)
+  - Monthly base: ₹499 (was ₹99)
+  - Additional pet annual: ₹2,499 (was ₹499)
+  - Additional pet monthly: ₹249 (was ₹49)
+
+- ✅ **Data Flow to Pet Soul** - Complete pipeline verified:
+  1. **Onboarding Form** → Writes to `doggy_soul_answers` and user profile
+  2. **Mira AI Conversations** → `save_soul_enrichment()` extracts and saves learnings
+  3. **Order Completion** → `infer_from_order()` called when order status = "delivered" or "completed"
+  4. **Admin Visibility** → Pet Parent Directory shows full Pet Soul Journey with 8 pillars
+  5. **Member Visibility** → PetSoulJourney component on `/membership` for logged-in users
+
+- ✅ **Admin Pet Parent Directory** - Enhanced with Pet Soul Journey view:
+  - Pet tabs to switch between pets (e.g., Mojo, Mystique, Luna)
+  - Circular progress score with percentage
+  - Tenure recognition (Early Journey, Growing Together, Well Known, Deeply Understood)
+  - 8-pillar breakdown with individual insights
+
 ### January 21, 2026 (Session 4)
 - ✅ **Membership Page Doctrine Overhaul** - Complete redesign per user's detailed redline feedback:
   - **Hero Section**: Softened copy to "a system that quietly learns, remembers, and adapts around your pet"
