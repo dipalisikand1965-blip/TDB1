@@ -204,72 +204,62 @@ const MembershipPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-pink-900">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      {/* Hero Section - Matching site style */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-900 text-white">
         {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-300 rounded-full blur-3xl"></div>
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 py-16 sm:py-24">
-          {/* Logo & Nav */}
-          <div className="flex justify-between items-center mb-16">
-            <Link to="/" className="flex items-center gap-2">
-              <PawPrint className="w-8 h-8 text-white" />
-              <span className="text-2xl font-bold text-white">The Doggy Company</span>
-            </Link>
-            <Button 
-              variant="outline" 
-              className="border-white/30 text-white hover:bg-white/10"
-              onClick={() => { setIsLogin(true); setShowAuthModal(true); }}
-            >
-              Sign In
-            </Button>
-          </div>
-
-          {/* Hero Content */}
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur px-4 py-2 rounded-full mb-6">
+        <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28">
+          <div className="max-w-3xl mx-auto text-center">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
               <Brain className="w-5 h-5 text-yellow-400" />
-              <span className="text-white/90 text-sm">Your Pet&apos;s Evolving Intelligence System</span>
+              <span className="text-sm font-medium">Pet Life Operating System</span>
             </div>
             
-            <h1 className="text-4xl sm:text-6xl font-bold text-white mb-6 leading-tight">
-              The Longer You&apos;re With Us,<br />
-              <span className="bg-gradient-to-r from-pink-400 to-yellow-400 bg-clip-text text-transparent">
+            {/* Main Headline */}
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              The Longer You&apos;re With Us
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-yellow-400">
                 The Less You Explain
               </span>
             </h1>
             
-            <p className="text-xl text-white/80 mb-6 max-w-2xl mx-auto">
-              Not just a membership — an intelligent companion that learns your pet&apos;s preferences,
-              remembers their health history, and anticipates their needs.
+            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+              Not just a membership — an intelligent companion that learns your pet&apos;s 
+              preferences, remembers their health history, and anticipates their needs.
             </p>
             
-            <p className="text-lg text-white/60 mb-10 italic">
-              &ldquo;The world&apos;s most intelligent pet life platform, continuously learning and anticipating your pet&apos;s needs.&rdquo;
-            </p>
-
+            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
+                onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
                 size="lg"
-                className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-8 py-6 text-lg"
-                onClick={() => handleSelectPlan('annual')}
+                className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105"
               >
-                Start Your Pet&apos;s Soul <Brain className="ml-2 w-5 h-5" />
+                <Brain className="w-5 h-5 mr-2" />
+                Start Your Pet&apos;s Soul
               </Button>
               <Button 
+                onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
                 size="lg"
                 variant="outline"
-                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg"
-                onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
               >
-                <Sparkles className="mr-2 w-5 h-5" />
+                <Sparkles className="w-5 h-5 mr-2" />
                 Talk to Mira First
               </Button>
             </div>
+            
+            {/* Trust statement */}
+            <p className="mt-8 text-white/50 text-sm italic">
+              &ldquo;The world&apos;s most intelligent pet life platform.&rdquo;
+            </p>
           </div>
         </div>
       </div>
