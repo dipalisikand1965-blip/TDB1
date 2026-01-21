@@ -726,46 +726,6 @@ const MiraContextPanel = ({
               )}
             </div>
           )}
-              
-              {/* Gamification - Profile Completion */}
-              {(context.selected_pet.soul_score || 45) < 100 && (
-                <div className="bg-amber-50 p-2 rounded-lg">
-                  <p className="text-xs font-medium text-amber-800 flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" />
-                    Complete for +10% rewards!
-                  </p>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {!context.selected_pet.identity?.weight && (
-                      <Badge variant="outline" className="text-xs bg-white">Add weight</Badge>
-                    )}
-                    {!context.selected_pet.health?.allergies?.length && (
-                      <Badge variant="outline" className="text-xs bg-white">Add allergies</Badge>
-                    )}
-                    {!context.selected_pet.personality?.traits?.length && (
-                      <Badge variant="outline" className="text-xs bg-white">Add personality</Badge>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          
-          {/* Sign In Prompt for Non-Logged Users */}
-          {!user && !showChat && (
-            <div className="text-center pt-2 border-t border-gray-200">
-              <p className="text-xs text-gray-500 mb-2">
-                Create your pet&apos;s profile for personalized care
-              </p>
-              <Button
-                variant="link"
-                size="sm"
-                className="text-xs"
-                onClick={() => window.location.href = '/login'}
-              >
-                Get Started <ArrowRight className="w-3 h-3 ml-1" />
-              </Button>
-            </div>
-          )}
         </CardContent>
       )}
     </Card>
