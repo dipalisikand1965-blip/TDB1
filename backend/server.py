@@ -6538,6 +6538,16 @@ async def membership_onboard(data: MembershipOnboardModel):
             "city": data.parent.city,
             "pincode": data.parent.pincode,
             "pet_ids": pet_ids,
+            "preferred_contact": data.parent.preferred_contact,
+            "notification_settings": data.parent.notifications or {
+                "orderUpdates": True,
+                "promotions": True,
+                "petReminders": True,
+                "newsletter": False
+            },
+            "accepted_terms": data.parent.accepted_terms,
+            "accepted_privacy": data.parent.accepted_privacy,
+            "terms_accepted_at": datetime.now(timezone.utc).isoformat() if data.parent.accepted_terms else None,
             "membership_tier": "pending",  # Will be upgraded after payment
             "membership_type": data.plan_type,
             "membership_expires": None,
