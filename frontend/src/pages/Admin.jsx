@@ -1447,7 +1447,7 @@ const Admin = () => {
             { id: 'mis', label: '📊 Live MIS', icon: BarChart3 },
             { id: 'orders', label: 'Orders', icon: Package },
             { id: 'fulfilment', label: '📦 Fulfilment', icon: Truck },
-            { id: 'member-directory', label: '👥 Member Directory', icon: Users },
+            { id: 'member-directory', label: '👥 Pet Parent Directory', icon: Users },
             { id: 'membership', label: '👑 Membership', icon: Crown },
             { id: 'members', label: 'Customers', icon: Users },
             { id: 'pets', label: '🐾 Pet Profiles', icon: PawPrint },
