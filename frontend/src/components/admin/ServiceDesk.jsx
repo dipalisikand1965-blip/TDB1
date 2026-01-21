@@ -3167,7 +3167,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
               <div className="border-t bg-gradient-to-r from-gray-50 to-purple-50/30 flex-shrink-0">
                 {/* AI Assistant Panel */}
                 {showAiPanel && aiDraft && (
-                  <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-200">
+                  <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 border-t border-purple-200">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <Sparkles className="w-4 h-4 text-purple-600" />
@@ -3177,12 +3177,12 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                         <X className="w-4 h-4" />
                       </Button>
                     </div>
-                    {/* Draft Text */}
-                    <div className="bg-white rounded-lg p-3 border border-purple-200 text-sm mb-3 max-h-24 overflow-y-auto">
+                    {/* Draft Text - Scrollable */}
+                    <div className="bg-white rounded-lg p-3 border border-purple-200 text-sm h-20 overflow-y-auto mb-2">
                       {aiDraft.draft}
                     </div>
-                    {/* Action Buttons - Always visible below text */}
-                    <div className="flex items-center gap-2">
+                    {/* Action Buttons - ALWAYS visible */}
+                    <div className="flex items-center gap-2 pt-2 border-t border-purple-100">
                       <Button 
                         size="sm" 
                         className="bg-purple-600 hover:bg-purple-700 text-white"
@@ -3196,7 +3196,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                           variant="outline"
                           onClick={() => applyAiDraft(aiDraft.quick_draft)}
                         >
-                          Quick Version
+                          Quick
                         </Button>
                       )}
                       <div className="flex-1" />
