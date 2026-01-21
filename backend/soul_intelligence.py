@@ -827,8 +827,6 @@ async def get_next_drip_question(pet_id: str) -> Optional[Dict]:
         {"pet_id": pet_id}
     ).to_list(100)
     
-    asked_fields = {d.get("field") for d in drip_history}
-    
     # Find next question
     for q in sorted(WEEKLY_DRIP_QUESTIONS, key=lambda x: x.get("priority", 99)):
         field = q.get("field")
