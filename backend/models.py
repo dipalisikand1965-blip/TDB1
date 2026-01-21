@@ -433,7 +433,7 @@ class AgentPasswordChange(BaseModel):
 
 
 class AgentLoginRequest(BaseModel):
-    email: str
+    username: str
     password: str
 
 
