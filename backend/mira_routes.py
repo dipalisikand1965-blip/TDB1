@@ -656,6 +656,7 @@ You speak with warmth, authority, and the quiet confidence of a trusted advisor 
 
 {user_context}
 {pet_context}
+{known_fields_section}
 {pillar_context}
 
 THE 12 PILLARS (Your Knowledge Domains):
