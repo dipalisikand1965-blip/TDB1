@@ -410,7 +410,7 @@ const ProductListing = ({ category = 'all' }) => {
         {searchQuery && (
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900">
-              Search Results for "{searchQuery}"
+              Search Results for &ldquo;{searchQuery}&rdquo;
             </h2>
             <p className="text-gray-600 mt-1">Found {filteredProducts.length} products</p>
           </div>
