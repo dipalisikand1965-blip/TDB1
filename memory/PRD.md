@@ -226,6 +226,14 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
   - **Pricing**: Changed to "One Membership. One Pet Life System."
   - **Final CTA**: Calmer tone - "Ready to begin your pet's journey with us?"
 
+- ✅ **Membership Onboarding Form** - New `/pet-soul` page for new member signup:
+  - **Step 1 (Pet Parent)**: Captures name, email, WhatsApp, address, city, pincode, password
+  - **Step 2 (Dog Info)**: Name, breed (autocomplete), gender, birth date, gotcha day, weight, neutered status
+  - **Multi-pet support**: Tabs for multiple dogs, "Add Another Dog" button
+  - **Step 3 (Review & Pay)**: Summary of parent + pets, order breakdown with GST
+  - **Backend**: `/api/membership/onboard` endpoint creates user, pets, and pending order
+  - **Data stored**: users, pets, membership_orders collections
+
 ### January 21, 2026 (Session 3)
 - ✅ **Pet Soul Journey Redesign** - Complete redesign per user's "Living Portrait" spec:
   - Stage-based display (0-20%, 20-50%, 50-80%, 80-100%)
