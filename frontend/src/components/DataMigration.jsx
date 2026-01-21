@@ -17,7 +17,7 @@ export default function DataMigration({ adminAuth }) {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/admin/migration/stats`, {
+      const res = await fetch(`${getApiUrl()}/api/admin/migration/stats`, {
         headers: { 'Authorization': `Basic ${adminAuth}` }
       });
       if (res.ok) {
@@ -38,7 +38,7 @@ export default function DataMigration({ adminAuth }) {
     setExporting(true);
     setMessage(null);
     try {
-      const res = await fetch(`${API}/api/admin/migration/export-all`, {
+      const res = await fetch(`${getApiUrl()}/api/admin/migration/export-all`, {
         headers: { 'Authorization': `Basic ${adminAuth}` }
       });
       if (res.ok) {
@@ -77,7 +77,7 @@ export default function DataMigration({ adminAuth }) {
       const text = await file.text();
       const data = JSON.parse(text);
 
-      const res = await fetch(`${API}/api/admin/migration/import-all`, {
+      const res = await fetch(`${getApiUrl()}/api/admin/migration/import-all`, {
         method: 'POST',
         headers: {
           'Authorization': `Basic ${adminAuth}`,
@@ -109,7 +109,7 @@ export default function DataMigration({ adminAuth }) {
     setSeeding(true);
     setMessage(null);
     try {
-      const res = await fetch(`${API}/api/admin/migration/seed-core-data`, {
+      const res = await fetch(`${getApiUrl()}/api/admin/migration/seed-core-data`, {
         method: 'POST',
         headers: { 'Authorization': `Basic ${adminAuth}` }
       });
