@@ -9554,7 +9554,20 @@ async def get_permission_options():
             {"id": "orders", "name": "Orders", "icon": "📦", "description": "View and manage orders"},
             {"id": "service_desk", "name": "Service Desk", "icon": "🎫", "description": "Handle customer tickets"},
             {"id": "unified_inbox", "name": "Unified Inbox", "icon": "📥", "description": "View all customer requests"},
-            {"id": "fulfilment", "name": "Fulfilment", "icon": "🚚", "description": "Manage order fulfilment"}
+            {"id": "fulfilment", "name": "Fulfilment", "icon": "🚚", "description": "Manage order fulfilment"},
+            # Pillar permissions
+            {"id": "pillar_celebrate", "name": "Celebrate (Bakery)", "icon": "🎂", "description": "Access to bakery orders and celebrations", "category": "pillar"},
+            {"id": "pillar_dine", "name": "Dine", "icon": "🍽️", "description": "Access to restaurant reservations", "category": "pillar"},
+            {"id": "pillar_stay", "name": "Stay (Pawcation)", "icon": "🏨", "description": "Access to stay bookings", "category": "pillar"},
+            {"id": "pillar_care", "name": "Care", "icon": "💊", "description": "Access to vet and grooming appointments", "category": "pillar"},
+            {"id": "pillar_travel", "name": "Travel", "icon": "✈️", "description": "Access to pet travel requests", "category": "pillar"},
+            {"id": "pillar_shop", "name": "Shop", "icon": "🛍️", "description": "Access to e-commerce orders", "category": "pillar"},
+            {"id": "pillar_enjoy", "name": "Enjoy", "icon": "🎉", "description": "Access to activities and events", "category": "pillar"},
+            {"id": "pillar_club", "name": "Club", "icon": "🤝", "description": "Access to community features", "category": "pillar"},
+            {"id": "pillar_learn", "name": "Learn", "icon": "📚", "description": "Access to training and courses", "category": "pillar"},
+            {"id": "pillar_adopt", "name": "Adopt", "icon": "🐕", "description": "Access to adoption services", "category": "pillar"},
+            {"id": "pillar_insure", "name": "Insure", "icon": "🛡️", "description": "Access to insurance services", "category": "pillar"},
+            {"id": "pillar_farewell", "name": "Farewell", "icon": "🌈", "description": "Access to end-of-life services", "category": "pillar"}
         ]
     }
 
