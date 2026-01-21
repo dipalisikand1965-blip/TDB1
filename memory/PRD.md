@@ -213,6 +213,19 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
 
 ## Changelog
 
+### January 21, 2026 (Session 4)
+- ✅ **Membership Page Doctrine Overhaul** - Complete redesign per user's detailed redline feedback:
+  - **Hero Section**: Softened copy to "a system that quietly learns, remembers, and adapts around your pet"
+  - **CTAs**: Clear hierarchy - "Start Your Pet's Soul" (primary), "Talk to Mira" (secondary ghost)
+  - **Removed**: "The world's most intelligent pet life platform" claim
+  - **Pillars**: Renamed to "A Complete Life System for Your Pet", shows 6 initially with "And more, as your journey grows" expand
+  - **Benefits**: Paw Rewards demoted to visually secondary position (smaller, muted colors)
+  - **Bruno's Profile**: Redesigned to focus on Identity, Preferences (allergies highlighted), and Life Milestones instead of stats/points
+  - **Tenure Recognition**: Replaced gamified levels with relationship-based naming (Early Journey → Growing Together → Well Known → Deeply Understood)
+  - **No Multipliers**: Removed points multiplier language entirely
+  - **Pricing**: Changed to "One Membership. One Pet Life System."
+  - **Final CTA**: Calmer tone - "Ready to begin your pet's journey with us?"
+
 ### January 21, 2026 (Session 3)
 - ✅ **Pet Soul Journey Redesign** - Complete redesign per user's "Living Portrait" spec:
   - Stage-based display (0-20%, 20-50%, 50-80%, 80-100%)
