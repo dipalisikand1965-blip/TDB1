@@ -480,15 +480,27 @@ const Home = () => {
           </div>
 
           <div className="text-center mt-12">
-            <Link to="/membership">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6"
-              >
-                <Crown className="w-5 h-5 mr-2" />
-                Unlock All Pillars with Membership
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/pets/add">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6"
+                >
+                  <PawPrint className="w-5 h-5 mr-2" />
+                  Add Your Pet to Unlock All Pillars
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/membership">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6"
+                >
+                  <Crown className="w-5 h-5 mr-2" />
+                  Unlock All Pillars with Membership
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </section>
