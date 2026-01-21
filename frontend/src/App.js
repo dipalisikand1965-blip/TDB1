@@ -114,6 +114,9 @@ function AppRouter() {
       {/* Full-Screen Service Desk - NO navbar/footer */}
       <Route path="/admin/service-desk" element={<ServiceDeskPage />} />
       
+      {/* Full-Screen Ask Mira Page - NO navbar/footer for immersive experience */}
+      <Route path="/ask-mira" element={<MiraPage />} />
+      
       {/* Membership Landing Page - NO navbar/footer for clean entry */}
       <Route path="/membership" element={<MembershipPage />} />
       
