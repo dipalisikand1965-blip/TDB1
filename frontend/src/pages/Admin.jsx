@@ -1636,7 +1636,7 @@ const Admin = () => {
           />
         )}
 
-        {/* Member Directory Tab */}
+        {/* Pet Parent Directory Tab */}
         {activeTab === 'member-directory' && (
           <MemberDirectory />
         )}
