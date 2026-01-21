@@ -10,7 +10,7 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
 
 ## What's Been Implemented
 
-### Mira AI Concierge System - COMPLETE (January 21, 2026)
+### Mira AI Concierge System - ENHANCED (January 21, 2026)
 
 #### Phase 1: Core Backend (`/app/backend/mira_routes.py`)
 - ✅ GPT-5.1 integration via Emergent LLM Key
@@ -21,12 +21,19 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
 - ✅ Ticket upgrade capability (Advisory → Concierge)
 - ✅ Emergency detection with immediate escalation
 - ✅ Pet Soul progressive enrichment
+- ✅ **NEW: Research Mode** - Detects factual queries and provides sourced information
+- ✅ **NEW: Context-Aware Quick Prompts** - Pillar-specific suggestions
+- ✅ **NEW: Cross-Pillar Context** - Acknowledges pillar transitions
+- ✅ **NEW: Chat History & Session Management** - New conversation, history retrieval
 
 #### Phase 2: UI Placements - ALL 12 PILLARS
 - ✅ **Contextual Panel** (`MiraContextPanel.jsx`) on:
   - Travel, Stay, Care, Dine, Enjoy, Fit, Advisory, Paperwork, Emergency
 - ✅ **Full-Screen Ask Mira** (`/ask-mira`) - Premium chat experience
 - ✅ **Global floating button** in MiraAI widget
+- ✅ **NEW: Voice Input** - Web Speech API integration for speech-to-text
+- ✅ **NEW: Pillar-Specific Quick Prompts** - Travel shows travel prompts, Care shows care prompts, etc.
+- ✅ **NEW: New Chat & History Buttons** - Visible in widget and full page
 
 #### Phase 3: Intelligence Engine (`/app/backend/mira_intelligence.py`)
 - ✅ **Passive Learning** - Tracks browsing signals (views, clicks, filters, add-to-cart)
@@ -45,10 +52,13 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
 ### Mira AI Endpoints
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/mira/chat` | POST | Main chat - creates/updates tickets |
+| `/api/mira/chat` | POST | Main chat - creates/updates tickets, includes research mode |
 | `/api/mira/context` | POST | Get personalized context for pillar pages |
 | `/api/mira/tickets` | GET | List all Mira tickets (admin) |
 | `/api/mira/session/{id}` | GET | Get session with ticket data |
+| `/api/mira/session/new` | POST | **NEW:** Create new conversation session |
+| `/api/mira/history` | GET | **NEW:** Get user's past conversation history |
+| `/api/mira/quick-prompts/{pillar}` | GET | **NEW:** Get pillar-specific quick prompts |
 | `/api/mira/pillars` | GET | Get pillar configurations |
 
 ### Intelligence Engine Endpoints
@@ -76,7 +86,7 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
   member: { id, name, email, phone },
   pet: { id, name, breed },
   pet_soul_snapshot: { /* Full Pet Soul */ },
-  messages: [{ id, type, content, sender, timestamp }]
+  messages: [{ id, type, content, sender, timestamp, research_mode }]
 }
 ```
 
