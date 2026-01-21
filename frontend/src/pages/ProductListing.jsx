@@ -107,9 +107,9 @@ const CATEGORY_HERO_CONTENT = {
   },
   default: {
     badge: 'Celebrate Every Moment',
-    title: 'Dog Cakes &',
-    highlight: 'Treats',
-    subtitle: 'Freshly baked, 100% pet-safe treats for your furry family',
+    title: 'Celebrate',
+    highlight: 'With Your Pet 🎉',
+    subtitle: 'Cakes, treats, and celebration essentials for your furry family',
     color: 'from-purple-600 via-pink-500 to-rose-500'
   }
 };
