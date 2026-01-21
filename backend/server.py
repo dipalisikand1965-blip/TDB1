@@ -8586,22 +8586,6 @@ async def verify_payment(request: VerifyPaymentRequest):
 
 # ==================== MEMBER MANAGEMENT ENDPOINTS ====================
 
-class AddMemberRequest(BaseModel):
-    name: str
-    email: str
-    phone: Optional[str] = None
-    membership_tier: str = "pawsome"
-    membership_months: int = 12
-    paw_points: int = 100
-    notes: Optional[str] = None
-    send_welcome_email: bool = True
-
-
-class BulkActionRequest(BaseModel):
-    member_ids: List[str]
-    action: str  # upgrade_tier, extend_1_month, add_100_points, send_renewal_reminder
-
-
 @admin_router.post("/members")
 async def add_member(request: AddMemberRequest):
     """Add a new member manually (for offline registrations)"""
