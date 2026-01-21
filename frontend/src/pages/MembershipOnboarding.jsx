@@ -49,12 +49,23 @@ const MembershipOnboarding = () => {
   const [parentData, setParentData] = useState({
     name: '',
     email: '',
+    phone: '',
     whatsapp: '',
     address: '',
     city: '',
     pincode: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    // New fields
+    preferredContact: 'whatsapp', // whatsapp, phone, email
+    notifications: {
+      orderUpdates: true,
+      promotions: true,
+      petReminders: true,
+      newsletter: false
+    },
+    acceptTerms: false,
+    acceptPrivacy: false
   });
   
   // Pets form state - array based on petCount
