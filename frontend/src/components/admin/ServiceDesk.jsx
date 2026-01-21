@@ -3162,8 +3162,8 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                 </div>
               </div>
 
-              {/* Reply Box with AI Assistant */}
-              <div className="border-t bg-gradient-to-r from-gray-50 to-purple-50/30">
+              {/* Reply Box with AI Assistant - FIXED at bottom, outside scrollable area */}
+              <div className="border-t bg-gradient-to-r from-gray-50 to-purple-50/30 flex-shrink-0">
                 {/* AI Assistant Panel */}
                 {showAiPanel && aiDraft && (
                   <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-200">
