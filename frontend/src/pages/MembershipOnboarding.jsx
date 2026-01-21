@@ -308,8 +308,8 @@ const MembershipOnboarding = () => {
           {step === 1 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User className="w-8 h-8 text-purple-600" />
+                <div className="w-20 h-20 bg-gradient-to-br from-orange-400 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-orange-200/50">
+                  <User className="w-10 h-10 text-white" />
                 </div>
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                   Tell us about yourself
@@ -319,7 +319,7 @@ const MembershipOnboarding = () => {
                 </p>
               </div>
 
-              <Card className="p-6 md:p-8 max-w-xl mx-auto">
+              <Card className="p-6 md:p-8 max-w-xl mx-auto bg-white/80 backdrop-blur-sm shadow-xl border-0">
                 <div className="space-y-5">
                   {/* Name */}
                   <div>
