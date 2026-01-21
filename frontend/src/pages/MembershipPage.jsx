@@ -15,38 +15,34 @@ import {
 } from 'lucide-react';
 import { API_URL, getApiUrl } from '../utils/api';
 
-// Doggy-themed membership levels
-const MEMBERSHIP_LEVELS = [
+// Tenure Recognition levels (Not gamified - reflects depth of relationship)
+const TENURE_LEVELS = [
   { 
-    key: 'curious_pup',
-    name: '🐕 Curious Pup', 
-    description: 'New members exploring the platform',
+    key: 'early_journey',
+    name: 'Early Journey', 
+    description: 'Just getting to know each other',
     minMonths: 0,
-    multiplier: '1x',
-    color: 'from-gray-400 to-gray-500'
+    color: 'from-slate-400 to-slate-500'
   },
   { 
-    key: 'loyal_companion',
-    name: '🦮 Loyal Companion', 
-    description: 'Active members for 3+ months',
+    key: 'growing_together',
+    name: 'Growing Together', 
+    description: 'Building understanding over time',
     minMonths: 3,
-    multiplier: '1.5x',
     color: 'from-blue-400 to-blue-600'
   },
   { 
-    key: 'trusted_guardian',
-    name: '🐕‍🦺 Trusted Guardian', 
-    description: 'Dedicated members for 6+ months',
+    key: 'well_known',
+    name: 'Well Known', 
+    description: 'We understand your pet deeply',
     minMonths: 6,
-    multiplier: '2x',
     color: 'from-purple-400 to-purple-600'
   },
   { 
-    key: 'pack_leader',
-    name: '👑 Pack Leader', 
-    description: 'Elite members or 12+ months',
+    key: 'deeply_understood',
+    name: 'Deeply Understood', 
+    description: 'Your pet\'s needs are anticipated',
     minMonths: 12,
-    multiplier: '3x',
     color: 'from-amber-400 to-amber-600'
   }
 ];
