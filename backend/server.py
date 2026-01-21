@@ -9300,11 +9300,6 @@ async def seed_stay_bundle_data(
 
 # ==================== ADMIN PASSWORD MANAGEMENT ====================
 
-class PasswordChangeRequest(BaseModel):
-    current_password: str
-    new_password: str
-    confirm_password: str
-
 @app.post("/api/admin/change-password")
 async def change_admin_password(
     request: PasswordChangeRequest,
