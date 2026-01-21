@@ -5194,7 +5194,7 @@ async def check_abandoned_carts():
         min_cutoff = (now - timedelta(hours=1)).isoformat()
         abandoned_carts = await db.abandoned_carts.find({
             "status": "active",
-            "email": {"$exists": True, "$ne": None, "$ne": ""},
+            "email": {"$exists": True, "$ne": None, "$ne": "", "$type": "string", "$regex": "@"},
             "items": {"$exists": True, "$ne": []},
             "updated_at": {"$lt": min_cutoff}
         }).to_list(100)
