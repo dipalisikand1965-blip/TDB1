@@ -42,7 +42,7 @@ from models import (
     PetSoul, PetCelebration, PetPreferences, PetProfileCreate, PetProfileUpdate, CelebrationReminder,
     CartItem, CartSnapshot,
     CreateOrderRequest, VerifyPaymentRequest,
-    AddMemberRequest, BulkActionRequest, CSVImportRequest,
+    AddMemberRequest, BulkActionRequest, CSVImportRequest, ProductCSVImportRequest,
     AgentCreate, AgentUpdate, AgentPasswordChange, AgentLoginRequest, PasswordChangeRequest
 )
 
