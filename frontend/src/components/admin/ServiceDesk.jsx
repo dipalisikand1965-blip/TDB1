@@ -2656,7 +2656,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
         </div>
 
         {/* Ticket Detail Panel */}
-        <div className="flex-1 border rounded-xl overflow-hidden flex flex-col bg-white shadow-lg min-h-0">
+        <div className="flex-1 border rounded-xl overflow-hidden flex flex-col bg-white shadow-lg" style={{maxHeight: 'calc(100vh - 200px)'}}>
           {ticketLoading ? (
             <div className="flex-1 flex items-center justify-center">
               <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
