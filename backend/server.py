@@ -5276,6 +5276,14 @@ async def send_abandoned_cart_email(to_email: str, name: str, items: list,
                                      subtotal: float, reminder_config: dict, cart_id: str) -> bool:
     """Send abandoned cart recovery email using admin-configured settings. Returns True if successful."""
     try:
+        # CRITICAL: Validate email is a non-empty string
+        if not to_email or not isinstance(to_email, str) or "@" not in to_email:
+            logger.warning(f"Abandoned cart email skipped: invalid email address '{to_email}'")
+            return False
+        
+        # Clean the email address
+        to_email = to_email.strip()
+        
         # Check if Resend is configured
         if not RESEND_API_KEY:
             logger.warning("Email service not configured (RESEND_API_KEY missing)")
