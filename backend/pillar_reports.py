@@ -87,7 +87,7 @@ def get_date_range(period: str, start_date: str = None, end_date: str = None):
 @router.get("/summary")
 async def get_pillar_summary(period: str = "this_month", start_date: str = None, end_date: str = None):
     """Get summary metrics for all pillars"""
-    start_date, end_date = get_date_range(period)
+    date_start, date_end = get_date_range(period, start_date, end_date)
     
     # Celebrate Pillar - Product Sales
     orders_query = {"created_at": {"$gte": start_date, "$lte": end_date}}
