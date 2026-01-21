@@ -1,0 +1,485 @@
+/**
+ * MiraContextPanel - Contextual Mira AI Panel for Pillar Pages
+ * 
+ * This component provides a non-intrusive, contextual Mira experience
+ * on pillar pages. It shows personalized notes and suggestions based
+ * on the user's Pet Soul data and current browsing context.
+ * 
+ * Placement:
+ * - Desktop: Right-side panel (sticky)
+ * - Mobile: Bottom slide-up drawer
+ */
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import { Button } from './ui/button';
+import { Card, CardContent } from './ui/card';
+import { Badge } from './ui/badge';
+import { 
+  MessageCircle, ChevronUp, ChevronDown, PawPrint, 
+  Sparkles, ShoppingCart, ArrowRight, X, Send, Loader2
+} from 'lucide-react';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// Generate session ID for Mira conversations
+const generateSessionId = () => {
+  const stored = sessionStorage.getItem('mira_context_session');
+  if (stored) return stored;
+  const newId = `mira-ctx-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  sessionStorage.setItem('mira_context_session', newId);
+  return newId;
+};
+
+const MiraContextPanel = ({ 
+  pillar = 'advisory',
+  className = '',
+  position = 'right' // 'right' for desktop, 'bottom' for mobile
+}) => {
+  const { user, token } = useAuth();
+  const { addToCart } = useCart();
+  
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [context, setContext] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [sessionId] = useState(generateSessionId);
+  
+  // Pillar-specific configurations
+  const pillarConfig = {
+    travel: {
+      icon: '✈️',
+      name: 'Travel',
+      color: 'from-blue-500 to-cyan-500',
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200'
+    },
+    stay: {
+      icon: '🏨',
+      name: 'Stay',
+      color: 'from-purple-500 to-violet-500',
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-purple-200'
+    },
+    care: {
+      icon: '💊',
+      name: 'Care',
+      color: 'from-green-500 to-emerald-500',
+      bgColor: 'bg-green-50',
+      borderColor: 'border-green-200'
+    },
+    dine: {
+      icon: '🍽️',
+      name: 'Dine',
+      color: 'from-orange-500 to-amber-500',
+      bgColor: 'bg-orange-50',
+      borderColor: 'border-orange-200'
+    },
+    celebrate: {
+      icon: '🎂',
+      name: 'Celebrate',
+      color: 'from-pink-500 to-rose-500',
+      bgColor: 'bg-pink-50',
+      borderColor: 'border-pink-200'
+    },
+    enjoy: {
+      icon: '🎉',
+      name: 'Enjoy',
+      color: 'from-yellow-500 to-orange-500',
+      bgColor: 'bg-yellow-50',
+      borderColor: 'border-yellow-200'
+    },
+    shop: {
+      icon: '🛒',
+      name: 'Shop',
+      color: 'from-indigo-500 to-purple-500',
+      bgColor: 'bg-indigo-50',
+      borderColor: 'border-indigo-200'
+    },
+    fit: {
+      icon: '🏃',
+      name: 'Fit',
+      color: 'from-teal-500 to-cyan-500',
+      bgColor: 'bg-teal-50',
+      borderColor: 'border-teal-200'
+    },
+    advisory: {
+      icon: '📋',
+      name: 'Advisory',
+      color: 'from-slate-500 to-gray-500',
+      bgColor: 'bg-slate-50',
+      borderColor: 'border-slate-200'
+    },
+    paperwork: {
+      icon: '📄',
+      name: 'Paperwork',
+      color: 'from-gray-500 to-slate-500',
+      bgColor: 'bg-gray-50',
+      borderColor: 'border-gray-200'
+    },
+    emergency: {
+      icon: '🚨',
+      name: 'Emergency',
+      color: 'from-red-500 to-rose-600',
+      bgColor: 'bg-red-50',
+      borderColor: 'border-red-200'
+    },
+    club: {
+      icon: '👑',
+      name: 'Club',
+      color: 'from-amber-500 to-yellow-500',
+      bgColor: 'bg-amber-50',
+      borderColor: 'border-amber-200'
+    }
+  };
+  
+  const config = pillarConfig[pillar] || pillarConfig.advisory;
+  
+  // Fetch Mira context when component mounts or user changes
+  const fetchContext = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/mira/context`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          current_pillar: pillar
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setContext(data);
+        
+        // Set initial welcome message for chat
+        if (data.pillar_note) {
+          setChatMessages([{
+            id: 'welcome',
+            role: 'assistant',
+            content: data.pillar_note.replace(/\*\*/g, '')
+          }]);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching Mira context:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [token, pillar]);
+  
+  useEffect(() => {
+    fetchContext();
+  }, [fetchContext]);
+  
+  // Send message to Mira
+  const sendMessage = async () => {
+    if (!inputValue.trim() || isSending) return;
+    
+    const userMessage = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: inputValue.trim()
+    };
+    
+    setChatMessages(prev => [...prev, userMessage]);
+    setInputValue('');
+    setIsSending(true);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/mira/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          message: userMessage.content,
+          session_id: sessionId,
+          source: 'pillar_panel',
+          current_pillar: pillar,
+          selected_pet_id: context?.selected_pet?.id || null,
+          history: chatMessages.filter(m => m.id !== 'welcome').map(m => ({
+            role: m.role,
+            content: m.content
+          }))
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setChatMessages(prev => [...prev, {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: data.response
+        }]);
+      }
+    } catch (error) {
+      console.error('Mira chat error:', error);
+      setChatMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "I'm having a brief pause. Please try again."
+      }]);
+    } finally {
+      setIsSending(false);
+    }
+  };
+  
+  // Handle product add to cart
+  const handleAddToCart = (product) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: 1
+    });
+  };
+  
+  // Open full Mira chat
+  const openFullMira = () => {
+    window.dispatchEvent(new CustomEvent('openMiraAI'));
+  };
+  
+  // Render minimized state
+  if (isMinimized) {
+    return (
+      <div className={`fixed bottom-4 right-4 z-40 ${className}`}>
+        <Button
+          onClick={() => setIsMinimized(false)}
+          className={`bg-gradient-to-r ${config.color} text-white rounded-full px-4 py-2 shadow-lg hover:shadow-xl transition-all`}
+          data-testid="mira-panel-expand"
+        >
+          <PawPrint className="w-4 h-4 mr-2" />
+          Mira
+        </Button>
+      </div>
+    );
+  }
+  
+  // Loading state
+  if (loading) {
+    return (
+      <Card className={`${config.bgColor} ${config.borderColor} border ${className}`}>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-slate-200 to-gray-200 animate-pulse" />
+            <div className="flex-1">
+              <div className="h-4 bg-slate-200 rounded animate-pulse mb-2 w-24" />
+              <div className="h-3 bg-slate-200 rounded animate-pulse w-32" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+  
+  return (
+    <Card 
+      className={`${config.bgColor} ${config.borderColor} border overflow-hidden transition-all duration-300 ${className}`}
+      data-testid="mira-context-panel"
+    >
+      {/* Header */}
+      <div 
+        className={`bg-gradient-to-r ${config.color} text-white p-3 cursor-pointer flex items-center justify-between`}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+            <PawPrint className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="font-semibold text-sm">Mira</p>
+            <p className="text-xs opacity-80">Your Concierge</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-white/70 hover:text-white hover:bg-white/10 h-7 w-7 p-0"
+            onClick={(e) => { e.stopPropagation(); setIsMinimized(true); }}
+          >
+            <X className="w-4 h-4" />
+          </Button>
+          {isExpanded ? (
+            <ChevronUp className="w-4 h-4 opacity-70" />
+          ) : (
+            <ChevronDown className="w-4 h-4 opacity-70" />
+          )}
+        </div>
+      </div>
+      
+      {/* Content */}
+      {isExpanded && (
+        <CardContent className="p-4 space-y-4">
+          {/* Mira's Note */}
+          {context?.pillar_note && !showChat && (
+            <div className="text-sm text-gray-700">
+              <p className="leading-relaxed" dangerouslySetInnerHTML={{ 
+                __html: context.pillar_note.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+              }} />
+            </div>
+          )}
+          
+          {/* Pet Context Badge */}
+          {context?.selected_pet && !showChat && (
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-white">
+                <PawPrint className="w-3 h-3 mr-1" />
+                {context.selected_pet.name}
+              </Badge>
+              {context.selected_pet.breed && (
+                <span className="text-xs text-gray-500">{context.selected_pet.breed}</span>
+              )}
+            </div>
+          )}
+          
+          {/* Quick Chat Interface */}
+          {showChat ? (
+            <div className="space-y-3">
+              {/* Chat Messages */}
+              <div className="max-h-48 overflow-y-auto space-y-2">
+                {chatMessages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={`text-sm p-2 rounded-lg ${
+                      msg.role === 'user'
+                        ? 'bg-slate-100 ml-4'
+                        : 'bg-white border border-gray-100'
+                    }`}
+                  >
+                    {msg.content}
+                  </div>
+                ))}
+                {isSending && (
+                  <div className="flex items-center gap-2 text-gray-500 text-sm">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    <span>Mira is typing...</span>
+                  </div>
+                )}
+              </div>
+              
+              {/* Chat Input */}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                  placeholder="Ask Mira..."
+                  className="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  disabled={isSending}
+                />
+                <Button
+                  size="sm"
+                  onClick={sendMessage}
+                  disabled={!inputValue.trim() || isSending}
+                  className={`bg-gradient-to-r ${config.color} text-white`}
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full text-xs text-gray-500"
+                onClick={() => setShowChat(false)}
+              >
+                Back to suggestions
+              </Button>
+            </div>
+          ) : (
+            <>
+              {/* Suggested Products */}
+              {context?.suggestions?.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Suggested for {context.selected_pet?.name || 'your pet'}
+                  </p>
+                  {context.suggestions.slice(0, 3).map((item) => (
+                    <div 
+                      key={item.id}
+                      className="flex items-center gap-3 bg-white p-2 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors"
+                    >
+                      {item.image && (
+                        <img 
+                          src={item.image} 
+                          alt={item.name}
+                          className="w-10 h-10 object-cover rounded"
+                        />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{item.name}</p>
+                        <p className="text-xs text-gray-500">₹{item.price}</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                        onClick={() => handleAddToCart(item)}
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 text-xs"
+                  onClick={() => setShowChat(true)}
+                  data-testid="mira-quick-chat"
+                >
+                  <MessageCircle className="w-3 h-3 mr-1" />
+                  Ask Mira
+                </Button>
+                <Button
+                  size="sm"
+                  className={`flex-1 text-xs bg-gradient-to-r ${config.color} text-white`}
+                  onClick={openFullMira}
+                  data-testid="mira-full-chat"
+                >
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  Plan My {config.name}
+                </Button>
+              </div>
+            </>
+          )}
+          
+          {/* Sign In Prompt for Non-Logged Users */}
+          {!user && !showChat && (
+            <div className="text-center pt-2 border-t border-gray-200">
+              <p className="text-xs text-gray-500 mb-2">
+                Sign in for personalized recommendations
+              </p>
+              <Button
+                variant="link"
+                size="sm"
+                className="text-xs"
+                onClick={() => window.location.href = '/login'}
+              >
+                Sign In <ArrowRight className="w-3 h-3 ml-1" />
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      )}
+    </Card>
+  );
+};
+
+export default MiraContextPanel;
