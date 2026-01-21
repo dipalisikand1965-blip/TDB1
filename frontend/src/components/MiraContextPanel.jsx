@@ -52,13 +52,27 @@ const MiraContextPanel = ({
   const [isSending, setIsSending] = useState(false);
   const [sessionId] = useState(generateSessionId);
   const [recommendations, setRecommendations] = useState([]);
+  const [quickPrompts, setQuickPrompts] = useState([]);
   
   // Mira Signal tracking for passive learning
   const { trackPillarVisit, trackClick } = useMiraSignal();
   
-  // Track pillar visit on mount
+  // Track pillar visit on mount and fetch quick prompts
   useEffect(() => {
     trackPillarVisit(pillar);
+    // Fetch pillar-specific quick prompts
+    const fetchQuickPrompts = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/mira/quick-prompts/${pillar}`);
+        if (response.ok) {
+          const data = await response.json();
+          setQuickPrompts(data.prompts || []);
+        }
+      } catch (error) {
+        console.debug('Quick prompts fetch failed:', error);
+      }
+    };
+    fetchQuickPrompts();
   }, [pillar, trackPillarVisit]);
   
   // Pillar-specific configurations
