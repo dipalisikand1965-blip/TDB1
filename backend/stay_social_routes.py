@@ -14,10 +14,11 @@ from datetime import datetime, timezone, timedelta
 from typing import Optional, List, Dict
 from fastapi import APIRouter, HTTPException, Depends, File, UploadFile
 from fastapi.responses import StreamingResponse
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.security import HTTPBasic, HTTPBasicCredentials, HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import secrets
+import jwt
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,14 @@ stay_social_admin_router = APIRouter(prefix="/api/admin/stay/social", tags=["Sta
 # Database reference
 db: AsyncIOMotorDatabase = None
 _verify_admin = None
-security = HTTPBasic()
+security = HTTPBasic(auto_error=False)
+security_bearer = HTTPBearer(auto_error=False)
+
+# JWT Settings
+JWT_SECRET = os.environ.get("JWT_SECRET", "tdb_super_secret_key_2025_woof")
+ALGORITHM = "HS256"
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "aditya")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "lola4304")
 
 
 def set_database(database: AsyncIOMotorDatabase):
