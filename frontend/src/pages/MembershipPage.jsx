@@ -10,7 +10,7 @@ import {
   PawPrint, Check, Star, Heart, Gift, Calendar, 
   Shield, Sparkles, ChevronRight, Eye, EyeOff, ArrowRight,
   Utensils, Plane, Home, Dumbbell, Brain, Phone, FileText,
-  ShoppingBag, Users, Award, Zap, X, Stethoscope, CreditCard
+  ShoppingBag, Users, Award, Zap, X, Stethoscope, CreditCard, Crown
 } from 'lucide-react';
 import { getApiUrl } from '../utils/api';
 
@@ -301,7 +301,7 @@ const MembershipPage = () => {
               A Complete Life System for Your Pet
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              One membership unlocks everything. No more juggling multiple apps and services.
+              One pass unlocks everything. No more juggling multiple apps and services.
             </p>
           </div>
 
@@ -578,33 +578,88 @@ const MembershipPage = () => {
         </div>
       </div>
 
-      {/* Pricing Section */}
-      <div id="pricing" className="bg-white py-20">
+      {/* Pricing Section - UPDATED: Annual First with New Pricing */}
+      <div id="pricing" className="bg-gradient-to-b from-purple-50 to-white py-20">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Crown className="w-4 h-4" />
+              Founding Members
+            </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              One Membership. One Pet Life System.
+              Pet Life Pass
             </h2>
-            <p className="text-gray-600">
-              Unlimited access to all pillars, growing intelligence over time.
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              An early invitation to help us build the world&apos;s first Pet Life Operating System.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Monthly Plan */}
-            <Card className="p-8 border-2 border-gray-200 hover:border-purple-300 transition-colors">
+            {/* Annual Plan - FIRST (Recommended) */}
+            <Card className="p-8 border-2 border-purple-500 relative overflow-hidden order-1">
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                FOUNDING MEMBER
+              </div>
+
               <div className="text-center mb-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Monthly</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Annual Pet Life Pass</h3>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-bold text-gray-900">₹117</span>
+                  <span className="text-4xl font-bold text-gray-900">₹4,999</span>
+                  <span className="text-gray-500">/year</span>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">+ 18% GST</p>
+                <p className="text-sm text-green-600 mt-2 font-medium">Save ₹989 vs monthly</p>
+              </div>
+
+              <ul className="space-y-3 mb-8">
+                {[
+                  'Full Pet Soul™ Profile',
+                  'Unlimited Mira AI Concierge',
+                  'All 12 Life Pillars Unlocked',
+                  'Health Vault & Records',
+                  'Priority Concierge Support',
+                  'Double Paw Points (2x)',
+                  'Birthday Surprise Gift',
+                  'Early Access to New Features'
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-gray-700">
+                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <Button 
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 py-6 text-lg"
+                onClick={() => handleSelectPlan('annual')}
+                data-testid="annual-plan-btn"
+              >
+                <Crown className="w-5 h-5 mr-2" />
+                Become a Founding Member
+              </Button>
+            </Card>
+
+            {/* Monthly Plan */}
+            <Card className="p-8 border-2 border-gray-200 hover:border-purple-300 transition-colors order-2">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Monthly Pet Life Pass</h3>
+                <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-4xl font-bold text-gray-900">₹499</span>
                   <span className="text-gray-500">/month</span>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">₹99 + 18% GST</p>
+                <p className="text-xs text-gray-400 mt-1">+ 18% GST</p>
                 <p className="text-sm text-gray-500 mt-2">Billed monthly, cancel anytime</p>
               </div>
 
               <ul className="space-y-3 mb-8">
-                {['All 12 pillars unlocked', 'Pet Soul profile', 'Mira AI concierge', 'Paw Rewards', 'Health Vault', 'Priority support'].map((item, idx) => (
+                {[
+                  'Full Pet Soul™ Profile',
+                  'Unlimited Mira AI Concierge',
+                  'All 12 Life Pillars Unlocked',
+                  'Health Vault & Records',
+                  'Priority Concierge Support',
+                  'Paw Rewards'
+                ].map((item, idx) => (
                   <li key={idx} className="flex items-center gap-2 text-gray-700">
                     <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
                     {item}
@@ -613,43 +668,11 @@ const MembershipPage = () => {
               </ul>
 
               <Button 
-                className="w-full bg-gray-900 hover:bg-gray-800"
+                className="w-full bg-gray-900 hover:bg-gray-800 py-6"
                 onClick={() => handleSelectPlan('monthly')}
+                data-testid="monthly-plan-btn"
               >
                 Get Started
-              </Button>
-            </Card>
-
-            {/* Annual Plan - Recommended */}
-            <Card className="p-8 border-2 border-purple-500 relative overflow-hidden">
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                BEST VALUE
-              </div>
-
-              <div className="text-center mb-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Annual</h3>
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-bold text-gray-900">₹1,179</span>
-                  <span className="text-gray-500">/year</span>
-                </div>
-                <p className="text-xs text-gray-400 mt-1">₹999 + 18% GST</p>
-                <p className="text-sm text-green-600 mt-2 font-medium">Save ₹225 (16% off monthly)</p>
-              </div>
-
-              <ul className="space-y-3 mb-8">
-                {['All 12 pillars unlocked', 'Pet Soul profile', 'Mira AI concierge', 'Paw Rewards (2x points)', 'Health Vault', 'Priority support', 'Birthday surprise gift'].map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-gray-700">
-                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-
-              <Button 
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                onClick={() => handleSelectPlan('annual')}
-              >
-                Get Started - Save 16%
               </Button>
             </Card>
           </div>
@@ -658,7 +681,7 @@ const MembershipPage = () => {
           <div className="mt-8 text-center">
             <Card className="inline-block p-4 bg-purple-50 border-purple-200">
               <p className="text-purple-900">
-                <strong>🐾 Multiple pets?</strong> Add more pets at just ₹589/year or ₹58/month each (incl. GST)
+                <strong>🐾 Multiple pets?</strong> Add more pets at just ₹2,499/year or ₹249/month each (+ GST)
               </p>
             </Card>
           </div>
@@ -672,7 +695,7 @@ const MembershipPage = () => {
             Ready to begin your pet&apos;s journey with us?
           </h2>
           <p className="text-white/80 mb-8 max-w-2xl mx-auto">
-            Start building a life that grows with your pet.
+            Join our founding members and help build the future of pet care.
           </p>
           <Button 
             size="lg"
@@ -680,7 +703,8 @@ const MembershipPage = () => {
             onClick={() => handleSelectPlan('annual')}
             data-testid="final-cta-btn"
           >
-            Begin Your Journey <ArrowRight className="ml-2 w-5 h-5" />
+            <Crown className="w-5 h-5 mr-2" />
+            Get Your Pet Life Pass <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
         </div>
       </div>
@@ -711,7 +735,7 @@ const MembershipPage = () => {
                 {isLogin ? 'Welcome Back!' : 'Join The Pack'}
               </h2>
               <p className="text-gray-500 mt-1">
-                {isLogin ? 'Sign in to continue' : selectedPlan === 'annual' ? '₹1,179/year (incl. GST)' : '₹117/month (incl. GST)'}
+                {isLogin ? 'Sign in to continue' : selectedPlan === 'annual' ? '₹4,999/year (+ GST)' : '₹499/month (+ GST)'}
               </p>
             </div>
 
@@ -833,7 +857,7 @@ const MembershipPage = () => {
                 <CreditCard className="w-8 h-8 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900">
-                Complete Your Membership
+                Complete Your Pet Life Pass
               </h2>
               <p className="text-gray-500 mt-1">
                 Choose your plan and unlock all 12 pillars
