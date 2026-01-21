@@ -16,7 +16,7 @@ import asyncio
 from dotenv import load_dotenv
 load_dotenv()
 
-router = APIRouter(prefix="/api/tickets", tags=["tickets"])
+router = APIRouter(prefix="/api/tickets", tags=["tickets"], redirect_slashes=False)
 
 # Security for admin verification
 security = HTTPBasic()
