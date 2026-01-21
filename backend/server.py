@@ -9372,24 +9372,6 @@ AGENT_PERMISSIONS = [
     "fulfilment"
 ]
 
-class AgentCreate(BaseModel):
-    username: str
-    password: str
-    name: str
-    email: Optional[str] = None
-    phone: Optional[str] = None
-    permissions: List[str] = ["service_desk", "unified_inbox"]
-    
-class AgentUpdate(BaseModel):
-    name: Optional[str] = None
-    email: Optional[str] = None
-    phone: Optional[str] = None
-    permissions: Optional[List[str]] = None
-    is_active: Optional[bool] = None
-
-class AgentPasswordChange(BaseModel):
-    new_password: str
-
 
 @app.put("/api/admin/agents/{agent_id}/password")
 async def reset_agent_password(agent_id: str, password_data: AgentPasswordChange, credentials: HTTPBasicCredentials = Depends(security)):
