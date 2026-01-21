@@ -563,7 +563,12 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
     global sync_task
     
-    # Load admin credentials from database FIRST
+    # FORCE INITIALIZE DATABASE ON EVERY STARTUP
+    # This ensures data exists after every deployment
+    logger.info("=== AUTOMATIC DATABASE INITIALIZATION ===")
+    await force_initialize_database()
+    
+    # Load admin credentials from database
     logger.info("Loading admin credentials from database...")
     await load_admin_credentials_from_db()
     
