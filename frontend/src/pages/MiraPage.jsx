@@ -1,30 +1,67 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { 
-  Sparkles, MessageCircle, Gift, Search, Calendar, 
-  Heart, Star, ChevronRight, PawPrint, Zap, Clock,
-  MapPin, ShoppingBag, HelpCircle, Send, Loader2,
-  Cake, Truck, Shield, Award
-} from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { API_URL } from '../utils/api';
+/**
+ * MiraPage - Premium Full-Screen "Ask Mira" Experience
+ * 
+ * This is the dedicated Mira AI concierge page with:
+ * - Full conversation interface
+ * - Pet Soul sidebar with pet profile
+ * - Rich message formatting
+ * - Ticket creation and tracking
+ */
 
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { useAuth } from '../context/AuthContext';
+import { Button } from '../components/ui/button';
+import { Card, CardContent } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { API_URL } from '../utils/api';
+import {
+  Send, Loader2, PawPrint, Sparkles, MessageCircle, 
+  Phone, Mail, ChevronDown, Heart, Shield, Star,
+  Car, Home, Scissors, UtensilsCrossed, PartyPopper,
+  HelpCircle, FileText, AlertTriangle, Crown, Calendar,
+  MapPin, Zap, ArrowRight, User, ChevronRight
+} from 'lucide-react';
+
+// Pillar Quick Actions
+const QUICK_ACTIONS = [
+  { id: 'travel', icon: Car, label: 'Travel', color: 'from-blue-500 to-cyan-500' },
+  { id: 'stay', icon: Home, label: 'Stay', color: 'from-purple-500 to-violet-500' },
+  { id: 'care', icon: Scissors, label: 'Care', color: 'from-green-500 to-emerald-500' },
+  { id: 'dine', icon: UtensilsCrossed, label: 'Dine', color: 'from-orange-500 to-amber-500' },
+  { id: 'celebrate', icon: PartyPopper, label: 'Celebrate', color: 'from-pink-500 to-rose-500' },
+  { id: 'advisory', icon: HelpCircle, label: 'Advice', color: 'from-slate-500 to-gray-500' },
+];
+
+// Generate session ID
+const generateSessionId = () => {
+  const stored = localStorage.getItem('mira_page_session');
+  if (stored) return stored;
+  const newId = `mira-page-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  localStorage.setItem('mira_page_session', newId);
+  return newId;
+};
 
 const MiraPage = () => {
-  // Chat state
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: "Woof! 🐾 I'm Mira, your Concierge®! I can help you find perfect treats, plan celebrations, check delivery, and more. What can I help you with today?"
-    }
-  ]);
+  const { user, token } = useAuth();
+  
+  // State
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionId] = useState(generateSessionId);
+  const [ticketId, setTicketId] = useState(null);
+  const [pillar, setPillar] = useState(null);
+  
+  // Pet context
+  const [pets, setPets] = useState([]);
+  const [selectedPet, setSelectedPet] = useState(null);
+  const [showPetSelector, setShowPetSelector] = useState(false);
+  
   const messagesEndRef = useRef(null);
-  const [sessionId] = useState(() => `mira-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+  const inputRef = useRef(null);
 
+  // Scroll to bottom
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -33,429 +70,450 @@ const MiraPage = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Focus input on mount
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  // Fetch user pets and set initial welcome
+  useEffect(() => {
+    const fetchContext = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/mira/context`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+          },
+          body: JSON.stringify({ current_pillar: null })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.pets?.length > 0) {
+            setPets(data.pets);
+            if (data.selected_pet) {
+              setSelectedPet(data.selected_pet);
+            }
+          }
+          
+          // Set personalized welcome message
+          const welcomeMessage = data.selected_pet 
+            ? `Hello${data.user?.name ? `, ${data.user.name}` : ''}! I'm Mira, your dedicated concierge. I see you have **${data.selected_pet.name}** with you. How can I help you both today?`
+            : user?.name 
+              ? `Hello, ${user.name}! I'm Mira, your dedicated concierge. How can I assist you today?`
+              : "Hello! I'm Mira, The Doggy Company's concierge. I'm here to help with all your pet's needs — from travel and stays to care, dining, and celebrations. How can I assist you today?";
+          
+          setMessages([{
+            id: 'welcome',
+            role: 'assistant',
+            content: welcomeMessage,
+            timestamp: new Date().toISOString()
+          }]);
+        }
+      } catch (error) {
+        console.error('Error fetching Mira context:', error);
+        setMessages([{
+          id: 'welcome',
+          role: 'assistant',
+          content: "Hello! I'm Mira, your dedicated concierge. How can I help you today?",
+          timestamp: new Date().toISOString()
+        }]);
+      }
+    };
+    
+    fetchContext();
+  }, [user, token]);
+
+  // Send message to Mira
   const sendMessage = async (e) => {
     e?.preventDefault();
     if (!input.trim() || isLoading) return;
 
-    const userMessage = input.trim();
+    const userMessage = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: input.trim(),
+      timestamp: new Date().toISOString()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
 
     try {
+      const history = messages
+        .filter(m => m.id !== 'welcome')
+        .map(m => ({ role: m.role, content: m.content }));
+
       const response = await fetch(`${API_URL}/api/mira/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
         body: JSON.stringify({
-          message: userMessage,
+          message: userMessage.content,
           session_id: sessionId,
-          source: 'mira_page'
+          source: 'full_page',
+          current_pillar: pillar,
+          selected_pet_id: selectedPet?.id || null,
+          history: history
         })
       });
 
       if (response.ok) {
         const data = await response.json();
-        setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+        setMessages(prev => [...prev, {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: data.response,
+          timestamp: new Date().toISOString()
+        }]);
+        
+        if (data.ticket_id) setTicketId(data.ticket_id);
+        if (data.pillar) setPillar(data.pillar);
       } else {
-        setMessages(prev => [...prev, { 
-          role: 'assistant', 
-          content: "Oops! I'm having a little trouble right now. Please try again! 🐕" 
+        setMessages(prev => [...prev, {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: "I'm having a brief pause. Could you please repeat that?",
+          timestamp: new Date().toISOString()
         }]);
       }
     } catch (error) {
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: "Woof! Something went wrong. Please refresh and try again! 🐾" 
+      console.error('Mira chat error:', error);
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "I apologize, but I'm having trouble connecting. Please try again.",
+        timestamp: new Date().toISOString()
       }]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleQuickQuestion = (question) => {
-    setInput(question);
-    setTimeout(() => {
-      sendMessage();
-    }, 100);
+  // Quick action handler
+  const handleQuickAction = (actionId) => {
+    const prompts = {
+      travel: "I need help arranging travel for my pet",
+      stay: "I'm looking for a pet-friendly stay",
+      care: "I'd like to book a care service - grooming or vet visit",
+      dine: "I want to find a pet-friendly restaurant",
+      celebrate: "I want to plan a celebration for my pet",
+      advisory: "I need some advice about my pet"
+    };
+    setInput(prompts[actionId] || '');
+    inputRef.current?.focus();
   };
 
-  const capabilities = [
-    {
-      icon: Search,
-      title: "Product Recommendations",
-      description: "Tell Mira about your pet's preferences, allergies, or occasion - she'll suggest the perfect treats and cakes.",
-      examples: ["What treats are good for puppies?", "My dog is allergic to chicken", "Best cake for a 5-year-old Labrador"]
-    },
-    {
-      icon: Gift,
-      title: "Gift Ideas & Occasions",
-      description: "Planning a birthday, gotcha day, or just want to spoil your furry friend? Mira has you covered.",
-      examples: ["Gift ideas for a dog lover", "Birthday party package for my pug", "Gotcha day celebration ideas"]
-    },
-    {
-      icon: Cake,
-      title: "Custom Cake Guidance",
-      description: "Need help designing the perfect cake? Mira can guide you through shapes, flavors, and customizations.",
-      examples: ["How do I order a custom cake?", "What cake shapes do you have?", "Can I add my dog's photo on a cake?"]
-    },
-    {
-      icon: Truck,
-      title: "Delivery Information",
-      description: "Check if we deliver to your area, delivery times, and shipping policies.",
-      examples: ["Do you deliver to Delhi?", "How long does delivery take?", "Same day delivery available?"]
-    },
-    {
-      icon: Shield,
-      title: "Ingredients & Safety",
-      description: "Ask about ingredients, allergens, nutritional info, and what's safe for your pet.",
-      examples: ["Are your treats grain-free?", "What's in the peanut butter cake?", "Is it safe for diabetic dogs?"]
-    },
-    {
-      icon: HelpCircle,
-      title: "Order Support",
-      description: "Questions about your order, returns, or any shopping queries - Mira is here to help.",
-      examples: ["How do I track my order?", "Can I modify my order?", "What's your return policy?"]
-    }
-  ];
-
-  const stats = [
-    { value: "45,000+", label: "Happy Pet Parents" },
-    { value: "400+", label: "Products" },
-    { value: "24/7", label: "Available" },
-    { value: "3 Cities", label: "Same-Day Delivery" }
-  ];
+  // Format message content with markdown-like styling
+  const formatContent = (content) => {
+    // Convert **text** to bold
+    return content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  };
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50" data-testid="mira-page">
       <Helmet>
-        <title>Mira - AI Pet Concierge® | The Doggy Company</title>
-        <meta name="description" content="Meet Mira, your AI-powered pet shopping assistant. Get personalized treat recommendations, plan celebrations, and get instant answers 24/7." />
+        <title>Ask Mira | The Doggy Company</title>
       </Helmet>
-
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-br from-purple-600 via-pink-600 to-purple-700 text-white overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 py-16 md:py-24">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              {/* Left Content */}
-              <div className="text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur rounded-full px-4 py-2 mb-6">
-                  <Sparkles className="w-4 h-4" />
-                  <span className="text-sm font-medium">AI-Powered Concierge®</span>
+      
+      <div className="flex h-screen">
+        {/* Main Chat Area */}
+        <div className="flex-1 flex flex-col">
+          {/* Header */}
+          <div className="bg-white/80 backdrop-blur-sm border-b border-gray-100 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-6 h-6 text-white" />
                 </div>
-                
-                <h1 className="text-4xl md:text-6xl font-black mb-6">
-                  Meet Mira 🐾
-                </h1>
-                <p className="text-xl text-purple-100 mb-8 max-w-xl">
-                  Your personal pet shopping assistant! Get instant recommendations, 
-                  plan celebrations, and find the perfect treats for your furry friend.
-                </p>
-                
-                {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                  {stats.map((stat, idx) => (
-                    <div key={idx} className="bg-white/10 backdrop-blur rounded-xl p-3 text-center">
-                      <p className="text-2xl font-bold">{stat.value}</p>
-                      <p className="text-xs text-purple-200">{stat.label}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                  <a href="#chat-section">
-                    <Button className="bg-white text-purple-600 hover:bg-purple-50 font-semibold px-6 py-3 text-lg">
-                      <MessageCircle className="w-5 h-5 mr-2" />
-                      Start Chatting
-                    </Button>
-                  </a>
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900">Ask Mira</h1>
+                  <p className="text-sm text-gray-500">Your Personal Pet Concierge</p>
                 </div>
               </div>
               
-              {/* Right: Mira Illustration */}
-              <div className="hidden lg:flex justify-center">
-                <div className="relative">
-                  <div className="w-80 h-80 bg-white/10 rounded-full flex items-center justify-center">
-                    <div className="w-64 h-64 bg-white/15 rounded-full flex items-center justify-center">
-                      <div className="w-48 h-48 bg-white/20 rounded-full flex items-center justify-center">
-                        <Sparkles className="w-20 h-20 text-white" />
-                      </div>
-                    </div>
-                  </div>
-                  {/* Floating badges */}
-                  <div className="absolute top-4 right-0 bg-white text-purple-600 rounded-full px-3 py-1 text-sm font-semibold shadow-lg">
-                    🎂 Cakes
-                  </div>
-                  <div className="absolute bottom-4 left-0 bg-white text-pink-600 rounded-full px-3 py-1 text-sm font-semibold shadow-lg">
-                    🍪 Treats
-                  </div>
-                  <div className="absolute top-1/2 -right-4 bg-white text-amber-600 rounded-full px-3 py-1 text-sm font-semibold shadow-lg">
-                    🎁 Gifts
-                  </div>
-                </div>
+              <div className="flex items-center gap-3">
+                {ticketId && (
+                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                    {ticketId}
+                  </Badge>
+                )}
+                {pillar && (
+                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                    {pillar.charAt(0).toUpperCase() + pillar.slice(1)}
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
-        </section>
 
-        {/* What Mira Can Do */}
-        <section className="py-16 md:py-24">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                How Mira Can Help You
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Mira is trained on everything about The Doggy Bakery - from our 400+ products 
-                to ingredients, delivery areas, and pet care tips!
-              </p>
-            </div>
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            {messages.length === 0 && (
+              <div className="text-center py-12">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center mx-auto mb-4">
+                  <MessageCircle className="w-10 h-10 text-purple-500" />
+                </div>
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">Start a conversation with Mira</h2>
+                <p className="text-gray-500">Ask me anything about pet services, bookings, or recommendations</p>
+              </div>
+            )}
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {capabilities.map((cap, idx) => (
-                <Card key={idx} className="p-6 hover:shadow-xl transition-all duration-300 group">
-                  <div className="w-14 h-14 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <cap.icon className="w-7 h-7 text-purple-600" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{cap.title}</h3>
-                  <p className="text-gray-600 mb-4">{cap.description}</p>
-                  <div className="space-y-2">
-                    <p className="text-xs font-semibold text-purple-600 uppercase">Try asking:</p>
-                    {cap.examples.map((ex, i) => (
-                      <button
-                        key={i}
-                        onClick={() => handleQuickQuestion(ex)}
-                        className="block w-full text-left text-sm text-gray-500 hover:text-purple-600 hover:bg-purple-50 px-3 py-1.5 rounded-lg transition-colors"
-                      >
-                        "{ex}"
-                      </button>
-                    ))}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Chat Section */}
-        <section id="chat-section" className="py-16 bg-gradient-to-r from-purple-100 via-pink-50 to-purple-100">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-8 items-start">
-              {/* Left: Info */}
-              <div className="lg:sticky lg:top-24">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                  Chat with Mira Now 💬
-                </h2>
-                <p className="text-lg text-gray-600 mb-6">
-                  Ask anything! Mira is available 24/7 to help you find the perfect 
-                  treats, answer questions, and make your pet shopping experience delightful.
-                </p>
-                
-                <div className="space-y-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                      <Zap className="w-5 h-5 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Instant Responses</p>
-                      <p className="text-sm text-gray-500">No waiting, get answers immediately</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                      <Award className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Expert Knowledge</p>
-                      <p className="text-sm text-gray-500">Trained on all our products & pet care</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
-                      <Heart className="w-5 h-5 text-pink-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Personalized Help</p>
-                      <p className="text-sm text-gray-500">Recommendations based on your pet's needs</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Quick Questions */}
-                <div className="bg-white rounded-xl p-4 shadow-sm">
-                  <p className="text-sm font-semibold text-gray-700 mb-3">Popular Questions:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      "Best birthday cake?",
-                      "Delivery to Mumbai?",
-                      "Grain-free options?",
-                      "Custom cake price?"
-                    ].map((q, i) => (
-                      <button
-                        key={i}
-                        onClick={() => handleQuickQuestion(q)}
-                        className="text-sm bg-purple-50 hover:bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full transition-colors"
-                      >
-                        {q}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              
-              {/* Right: Chat Widget */}
-              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden h-[600px] flex flex-col">
-                {/* Chat Header */}
-                <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                    <Sparkles className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold">Mira</h3>
-                    <p className="text-xs text-purple-100">Concierge® • Online</p>
-                  </div>
-                  <div className="ml-auto flex items-center gap-1">
-                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                    <span className="text-xs">Active</span>
-                  </div>
-                </div>
-
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {messages.map((msg, idx) => (
-                    <div
-                      key={idx}
-                      className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div
-                        className={`max-w-[80%] p-3 rounded-2xl ${
-                          msg.role === 'user'
-                            ? 'bg-purple-600 text-white rounded-br-md'
-                            : 'bg-gray-100 text-gray-800 rounded-bl-md'
-                        }`}
-                      >
-                        {msg.role === 'assistant' && (
-                          <div className="flex items-center gap-2 mb-1">
-                            <PawPrint className="w-3 h-3 text-purple-500" />
-                            <span className="text-xs font-semibold text-purple-600">Mira</span>
-                          </div>
-                        )}
-                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  {isLoading && (
-                    <div className="flex justify-start">
-                      <div className="bg-gray-100 p-3 rounded-2xl rounded-bl-md">
-                        <div className="flex items-center gap-2">
-                          <Loader2 className="w-4 h-4 animate-spin text-purple-500" />
-                          <span className="text-sm text-gray-500">Mira is typing...</span>
-                        </div>
-                      </div>
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[70%] rounded-2xl px-4 py-3 ${
+                    message.role === 'user'
+                      ? 'bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-br-md'
+                      : 'bg-white shadow-sm border border-gray-100 text-gray-800 rounded-bl-md'
+                  }`}
+                >
+                  {message.role === 'assistant' && (
+                    <div className="flex items-center gap-2 mb-2 text-purple-600">
+                      <Sparkles className="w-4 h-4" />
+                      <span className="text-xs font-medium">Mira</span>
                     </div>
                   )}
-                  
-                  <div ref={messagesEndRef} />
+                  <p 
+                    className="text-sm leading-relaxed whitespace-pre-wrap"
+                    dangerouslySetInnerHTML={{ __html: formatContent(message.content) }}
+                  />
+                  <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-white/70' : 'text-gray-400'}`}>
+                    {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
                 </div>
+              </div>
+            ))}
+            
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="bg-white shadow-sm border border-gray-100 rounded-2xl rounded-bl-md px-4 py-3">
+                  <div className="flex items-center gap-2 text-purple-600">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-sm">Mira is thinking...</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div ref={messagesEndRef} />
+          </div>
 
-                {/* Input */}
-                <div className="p-4 border-t bg-gray-50">
-                  <form onSubmit={sendMessage} className="flex gap-2">
-                    <Input
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      placeholder="Ask Mira anything..."
-                      className="flex-1 bg-white"
-                      disabled={isLoading}
-                    />
-                    <Button 
-                      type="submit" 
-                      disabled={!input.trim() || isLoading}
-                      className="bg-purple-600 hover:bg-purple-700"
+          {/* Quick Actions */}
+          {messages.length <= 1 && (
+            <div className="px-6 py-4 bg-white/50 backdrop-blur-sm border-t border-gray-100">
+              <p className="text-xs text-gray-500 mb-3">Quick actions</p>
+              <div className="flex flex-wrap gap-2">
+                {QUICK_ACTIONS.map((action) => (
+                  <Button
+                    key={action.id}
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full hover:bg-purple-50"
+                    onClick={() => handleQuickAction(action.id)}
+                  >
+                    <action.icon className="w-4 h-4 mr-1" />
+                    {action.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Input Area */}
+          <div className="p-4 bg-white border-t border-gray-100">
+            <form onSubmit={sendMessage} className="flex gap-3">
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                disabled={isLoading}
+                data-testid="mira-input"
+              />
+              <Button
+                type="submit"
+                disabled={!input.trim() || isLoading}
+                className="rounded-full px-6 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                data-testid="mira-send"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Send className="w-5 h-5" />
+                )}
+              </Button>
+            </form>
+            <p className="text-xs text-center text-gray-400 mt-2">
+              Every conversation creates a service desk ticket for complete tracking
+            </p>
+          </div>
+        </div>
+
+        {/* Pet Soul Sidebar - Desktop Only */}
+        <div className="hidden lg:block w-80 bg-white border-l border-gray-100 overflow-y-auto">
+          <div className="p-6">
+            {/* User Section */}
+            {user ? (
+              <div className="mb-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                    <User className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{user.name || 'Member'}</p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Card className="mb-6 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-100">
+                <CardContent className="p-4 text-center">
+                  <p className="text-sm text-gray-600 mb-3">Sign in for personalized assistance</p>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => window.location.href = '/login'}
+                  >
+                    Sign In
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Pet Selection */}
+            {pets.length > 0 && (
+              <div className="mb-6">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Your Pets</p>
+                <div className="space-y-2">
+                  {pets.map((pet) => (
+                    <div
+                      key={pet.id}
+                      onClick={() => setSelectedPet(pet)}
+                      className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                        selectedPet?.id === pet.id 
+                          ? 'border-purple-300 bg-purple-50'
+                          : 'border-gray-100 hover:border-purple-200 hover:bg-purple-50/50'
+                      }`}
                     >
-                      <Send className="w-4 h-4" />
-                    </Button>
-                  </form>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+                          <PawPrint className="w-5 h-5 text-amber-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{pet.name}</p>
+                          <p className="text-xs text-gray-500">{pet.breed}</p>
+                        </div>
+                        {selectedPet?.id === pet.id && (
+                          <div className="ml-auto">
+                            <div className="w-2 h-2 rounded-full bg-purple-500" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Selected Pet Soul Data */}
+            {selectedPet && (
+              <div className="mb-6">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+                  {selectedPet.name}'s Profile
+                </p>
+                <Card className="border-purple-100">
+                  <CardContent className="p-4 space-y-3">
+                    {selectedPet.breed && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Breed</span>
+                        <span className="font-medium">{selectedPet.breed}</span>
+                      </div>
+                    )}
+                    {selectedPet.gender && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Gender</span>
+                        <span className="font-medium">{selectedPet.gender}</span>
+                      </div>
+                    )}
+                    {selectedPet.travel_style && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Travel Style</span>
+                        <span className="font-medium">{selectedPet.travel_style}</span>
+                      </div>
+                    )}
+                    {selectedPet.crate_trained && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Crate Trained</span>
+                        <span className="font-medium">{selectedPet.crate_trained}</span>
+                      </div>
+                    )}
+                    {selectedPet.handling_sensitivity && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Handling</span>
+                        <span className="font-medium">{selectedPet.handling_sensitivity}</span>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* Capabilities */}
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">What Mira Can Do</p>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2">
+                  <Car className="w-4 h-4 text-blue-500" />
+                  <span>Book travel & transport</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Home className="w-4 h-4 text-purple-500" />
+                  <span>Find pet-friendly stays</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Scissors className="w-4 h-4 text-green-500" />
+                  <span>Schedule care services</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <UtensilsCrossed className="w-4 h-4 text-orange-500" />
+                  <span>Reserve dining spots</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <PartyPopper className="w-4 h-4 text-pink-500" />
+                  <span>Plan celebrations</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-slate-500" />
+                  <span>Handle emergencies</span>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* Testimonials */}
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-4">
-            <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
-              Pet Parents Love Mira 💜
-            </h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {[
-                {
-                  text: "Mira helped me find the perfect allergy-friendly cake for Bruno's birthday. So helpful!",
-                  author: "Priya S.",
-                  pet: "Bruno's Mom"
-                },
-                {
-                  text: "I was confused about which treats to buy. Mira asked about my dog's preferences and gave amazing suggestions!",
-                  author: "Rahul M.",
-                  pet: "Cookie's Dad"
-                },
-                {
-                  text: "24/7 availability is a game changer. Got my questions answered at midnight before the party!",
-                  author: "Sneha K.",
-                  pet: "Simba's Mom"
-                }
-              ].map((t, idx) => (
-                <Card key={idx} className="p-6">
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-gray-700 mb-4 italic">"{t.text}"</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                      <PawPrint className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">{t.author}</p>
-                      <p className="text-sm text-gray-500">{t.pet} 🐕</p>
-                    </div>
-                  </div>
-                </Card>
-              ))}
+            {/* Emergency CTA */}
+            <div className="mt-6 pt-6 border-t border-gray-100">
+              <Button 
+                variant="outline" 
+                className="w-full border-red-200 text-red-600 hover:bg-red-50"
+                onClick={() => setInput('I have an emergency!')}
+              >
+                <AlertTriangle className="w-4 h-4 mr-2" />
+                Emergency Help
+              </Button>
             </div>
           </div>
-        </section>
-
-        {/* CTA */}
-        <section className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-12">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-4">
-              Ready to Find the Perfect Treats? 🐾
-            </h2>
-            <p className="text-purple-100 mb-6">
-              Mira is waiting to help you! Start chatting now or browse our shop.
-            </p>
-            <div className="flex flex-wrap gap-4 justify-center">
-              <a href="#chat-section">
-                <Button className="bg-white text-purple-600 hover:bg-purple-50 font-semibold px-6 py-3">
-                  <MessageCircle className="w-5 h-5 mr-2" />
-                  Chat with Mira
-                </Button>
-              </a>
-              <a href="/cakes">
-                <Button variant="outline" className="border-white text-white hover:bg-white/10 px-6 py-3">
-                  Browse Cakes
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </Button>
-              </a>
-            </div>
-          </div>
-        </section>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
