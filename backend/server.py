@@ -9465,10 +9465,8 @@ async def create_agent(agent: AgentCreate, admin_user: str = Depends(verify_admi
 
 
 @app.get("/api/admin/agents/{agent_id}")
-async def get_agent(agent_id: str, credentials: HTTPBasicCredentials = Depends(security)):
+async def get_agent(agent_id: str, admin_user: str = Depends(verify_admin_auth)):
     """Get agent details"""
-    verify_admin(credentials)
-    
     agent = await db.agents.find_one(
         {"$or": [{"id": agent_id}, {"username": agent_id.lower()}]},
         {"_id": 0, "password_hash": 0}
@@ -9481,10 +9479,8 @@ async def get_agent(agent_id: str, credentials: HTTPBasicCredentials = Depends(s
 
 
 @app.put("/api/admin/agents/{agent_id}")
-async def update_agent(agent_id: str, updates: AgentUpdate, credentials: HTTPBasicCredentials = Depends(security)):
+async def update_agent(agent_id: str, updates: AgentUpdate, admin_user: str = Depends(verify_admin_auth)):
     """Update agent details"""
-    verify_admin(credentials)
-    
     # Build update document
     update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
     
@@ -9521,10 +9517,8 @@ async def update_agent(agent_id: str, updates: AgentUpdate, credentials: HTTPBas
 
 
 @app.put("/api/admin/agents/{agent_id}/password")
-async def change_agent_password(agent_id: str, data: AgentPasswordChange, credentials: HTTPBasicCredentials = Depends(security)):
+async def change_agent_password(agent_id: str, data: AgentPasswordChange, admin_user: str = Depends(verify_admin_auth)):
     """Change agent password (admin only)"""
-    verify_admin(credentials)
-    
     if len(data.new_password) < 6:
         raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
     
