@@ -62,7 +62,7 @@ const MiraContextPanel = ({
     // Fetch pillar-specific quick prompts
     const fetchQuickPrompts = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/mira/quick-prompts/${pillar}`);
+        const response = await fetch(`${getApiUrl()}/api/mira/quick-prompts/${pillar}`);
         if (response.ok) {
           const data = await response.json();
           setQuickPrompts(data.prompts || []);
@@ -168,7 +168,7 @@ const MiraContextPanel = ({
   const fetchContext = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/mira/context`, {
+      const response = await fetch(`${getApiUrl()}/api/mira/context`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -196,7 +196,7 @@ const MiraContextPanel = ({
         if (data.selected_pet?.id) {
           try {
             const recsResponse = await fetch(
-              `${API_URL}/api/mira/intelligence/recommendations/${data.selected_pet.id}?pillar=${pillar}&limit=3`,
+              `${getApiUrl()}/api/mira/intelligence/recommendations/${data.selected_pet.id}?pillar=${pillar}&limit=3`,
               {
                 headers: {
                   ...(token && { 'Authorization': `Bearer ${token}` })
@@ -238,7 +238,7 @@ const MiraContextPanel = ({
     setIsSending(true);
     
     try {
-      const response = await fetch(`${API_URL}/api/mira/chat`, {
+      const response = await fetch(`${getApiUrl()}/api/mira/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
