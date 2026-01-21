@@ -489,7 +489,6 @@ async def infer_from_order(pet_id: str, order: Dict):
     """
     Infer Pet Soul data from order behavior.
     """
-    db = get_db()
     inferences = []
     
     items = order.get("items", [])
