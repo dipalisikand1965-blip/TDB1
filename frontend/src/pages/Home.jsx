@@ -233,15 +233,30 @@ const Home = () => {
                         </Button>
                       </Link>
                     )}
-                    <Link to="/membership">
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        className="border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-7"
-                      >
-                        Become a Member
-                      </Button>
-                    </Link>
+                    {/* Dynamic secondary CTA based on auth state */}
+                    {user ? (
+                      <Link to="/pets/add">
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-7"
+                          data-testid="hero-add-pet-btn"
+                        >
+                          Start Your Pet Soul
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Link to="/membership">
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-7"
+                          data-testid="hero-become-member-btn"
+                        >
+                          Become a Member
+                        </Button>
+                      </Link>
+                    )}
                   </div>
                 </div>
               ))}
