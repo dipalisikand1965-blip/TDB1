@@ -637,7 +637,14 @@ const ReportsManager = ({ authHeaders }) => {
       {/* Global Filters */}
       <Card className="p-4">
         <div className="flex flex-wrap gap-3 items-center">
-          <Select value={period} onValueChange={setPeriod}>
+          <Select value={useCustomDate ? 'custom' : period} onValueChange={(v) => {
+            if (v === 'custom') {
+              setUseCustomDate(true);
+            } else {
+              setUseCustomDate(false);
+              setPeriod(v);
+            }
+          }}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Period" />
             </SelectTrigger>
@@ -647,8 +654,30 @@ const ReportsManager = ({ authHeaders }) => {
               <SelectItem value="this_month">This Month</SelectItem>
               <SelectItem value="this_quarter">This Quarter</SelectItem>
               <SelectItem value="ytd">Year to Date</SelectItem>
+              <SelectItem value="custom">Custom Date Range</SelectItem>
             </SelectContent>
           </Select>
+
+          {/* Custom Date Range Picker */}
+          {useCustomDate && (
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={customStartDate}
+                onChange={(e) => setCustomStartDate(e.target.value)}
+                className="px-3 py-2 border rounded-md text-sm"
+                placeholder="Start Date"
+              />
+              <span className="text-gray-500">to</span>
+              <input
+                type="date"
+                value={customEndDate}
+                onChange={(e) => setCustomEndDate(e.target.value)}
+                className="px-3 py-2 border rounded-md text-sm"
+                placeholder="End Date"
+              />
+            </div>
+          )}
 
           <Select value={cityFilter || "all"} onValueChange={(v) => setCityFilter(v === "all" ? "" : v)}>
             <SelectTrigger className="w-[150px]">
