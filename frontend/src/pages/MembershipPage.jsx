@@ -548,79 +548,40 @@ const MembershipPage = () => {
         </div>
       </div>
 
-      {/* Gamification & Levels Section */}
+      {/* Tenure Recognition Section - Calm, not gamified */}
       <div className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-amber-100 px-4 py-2 rounded-full mb-6">
-              <Trophy className="w-5 h-5 text-amber-600" />
-              <span className="text-amber-700 text-sm font-medium">Paw Rewards & Levels</span>
-            </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Level Up Your Pet's Journey
+              The Longer You Stay, The Better We Know You
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Every order, booking, and interaction earns Paw Points. Climb the ranks and unlock exclusive rewards!
+              Our understanding of your pet deepens over time. Here&apos;s how our relationship grows.
             </p>
           </div>
 
-          {/* Membership Levels */}
+          {/* Tenure Levels */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {MEMBERSHIP_LEVELS.map((level, idx) => (
-              <Card key={idx} className={`p-6 text-center border-2 hover:shadow-lg transition-all ${idx === 3 ? 'border-amber-300 bg-amber-50' : 'border-gray-200'}`}>
-                <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br ${level.color} flex items-center justify-center text-white text-2xl`}>
-                  {level.name.split(' ')[0]}
+            {TENURE_LEVELS.map((level, idx) => (
+              <Card key={idx} className={`p-6 text-center border-2 hover:shadow-lg transition-all ${idx === 3 ? 'border-amber-300 bg-amber-50' : 'border-gray-200'}`} data-testid={`tenure-level-${level.key}`}>
+                <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br ${level.color} flex items-center justify-center`}>
+                  <Heart className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="font-bold text-lg text-gray-900">{level.name}</h3>
                 <p className="text-sm text-gray-500 mt-1 mb-4">{level.description}</p>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Tenure</span>
-                    <span className="font-medium">{level.minMonths}+ months</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Points Multiplier</span>
-                    <span className="font-bold text-purple-600">{level.multiplier}</span>
-                  </div>
+                <div className="text-sm">
+                  <span className="text-gray-500">After {level.minMonths === 0 ? 'sign up' : `${level.minMonths}+ months`}</span>
                 </div>
               </Card>
             ))}
           </div>
 
-          {/* How to Earn Points */}
-          <Card className="p-8 bg-gradient-to-r from-purple-50 to-pink-50">
-            <h3 className="text-xl font-bold text-center mb-6">How to Earn Paw Points</h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-pink-100 flex items-center justify-center">
-                  <Cake className="w-6 h-6 text-pink-600" />
-                </div>
-                <p className="font-medium">Order Treats</p>
-                <p className="text-sm text-gray-500">10 points per ₹100</p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-orange-100 flex items-center justify-center">
-                  <Utensils className="w-6 h-6 text-orange-600" />
-                </div>
-                <p className="font-medium">Dine Out</p>
-                <p className="text-sm text-gray-500">50 points per booking</p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-100 flex items-center justify-center">
-                  <Plane className="w-6 h-6 text-blue-600" />
-                </div>
-                <p className="font-medium">Travel</p>
-                <p className="text-sm text-gray-500">100 points per trip</p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-green-100 flex items-center justify-center">
-                  <Activity className="w-6 h-6 text-green-600" />
-                </div>
-                <p className="font-medium">Log Activities</p>
-                <p className="text-sm text-gray-500">25 points per activity</p>
-              </div>
-            </div>
-          </Card>
+          {/* Quiet note about points */}
+          <div className="text-center">
+            <p className="text-gray-400 text-sm">
+              You&apos;ll earn Paw Points along the way — they accrue naturally as you use the system.
+            </p>
+          </div>
         </div>
       </div>
 
