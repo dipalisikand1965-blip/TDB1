@@ -229,6 +229,8 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
 - ✅ **Service Desk AI Fix** - Fixed NoneType error in ticket AI draft when pet info is missing
 - ✅ **Ticket Click Handler** - Added missing onClick to ticket cards in Service Desk
 - ✅ **Soul Enrichment Fix** - Answers now save to both `doggy_soul_answers` and `soul_enrichments`
+- ✅ **Pet Parent Directory** - Renamed from "Member Directory", rows now clickable to open profile
+- ✅ **FAQs Backend Integration** - FAQs now fetch from backend API with category grouping
 
 ### January 21, 2026 (Session 2)
 - ✅ **Celebrate Page Hero** - Added category-specific hero sections with dynamic backgrounds, badges, and MiraContextPanel placement
