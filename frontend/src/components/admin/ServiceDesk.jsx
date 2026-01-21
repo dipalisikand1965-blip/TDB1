@@ -3163,47 +3163,125 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
               </div>
               {/* END of scrollable Content area */}
 
-              {/* AI Assistant Panel - FIXED, shows when AI draft is ready */}
+              {/* AI Draft Working Surface Panel - REDESIGNED */}
               {showAiPanel && aiDraft && (
-                <div className="flex-shrink-0 p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-t-2 border-purple-300">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-purple-600" />
-                      <span className="text-sm font-semibold text-purple-800">AI Draft ({aiTone})</span>
-                    </div>
-                    <Button variant="ghost" size="sm" onClick={() => setShowAiPanel(false)}>
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  {/* Draft Text Box - LARGER */}
-                  <div className="bg-white rounded-lg p-4 border border-purple-200 text-sm min-h-[120px] max-h-[200px] overflow-y-auto mb-3 whitespace-pre-wrap">
-                    {aiDraft.draft}
-                  </div>
-                  {/* Action Buttons Row */}
-                  <div className="flex items-center gap-3 pt-3 border-t border-purple-100">
-                    <Button 
-                      size="default" 
-                      className="bg-purple-600 hover:bg-purple-700 text-white px-4"
-                      onClick={() => applyAiDraft(aiDraft.draft)}
-                    >
-                      <Copy className="w-4 h-4 mr-2" /> Use This Draft
-                    </Button>
-                    {aiDraft.quick_draft && (
-                      <Button 
-                        size="default" 
-                        variant="outline"
-                        onClick={() => applyAiDraft(aiDraft.quick_draft)}
-                      >
-                        Quick Version
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                  <div className="bg-white rounded-xl shadow-2xl w-[70%] max-w-4xl max-h-[85vh] flex flex-col overflow-hidden">
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-6 py-4 border-b bg-gradient-to-r from-purple-50 to-pink-50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                          <Sparkles className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">AI Draft</h3>
+                          <p className="text-sm text-gray-500">Tone: {aiTone}</p>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => setShowAiPanel(false)}>
+                        <X className="w-5 h-5" />
                       </Button>
+                    </div>
+                    
+                    {/* Pet Soul Context Indicator - Transparency */}
+                    {aiDraft.pet_soul_used && (
+                      <div className="px-6 py-3 bg-purple-50 border-b border-purple-100">
+                        <p className="text-xs font-medium text-purple-700 mb-1">Personalised using Pet Soul:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {aiDraft.personalization_data?.pet_name && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-white text-xs text-purple-700 border border-purple-200">
+                              <PawPrint className="w-3 h-3 mr-1" />
+                              {aiDraft.personalization_data.pet_name}
+                            </span>
+                          )}
+                          {aiDraft.personalization_data?.breed && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-white text-xs text-purple-700 border border-purple-200">
+                              {aiDraft.personalization_data.breed}
+                            </span>
+                          )}
+                          {aiDraft.pet_soul_used?.preferences?.favorite_treats?.length > 0 && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-white text-xs text-purple-700 border border-purple-200">
+                              Treats: {aiDraft.pet_soul_used.preferences.favorite_treats.join(', ')}
+                            </span>
+                          )}
+                          {aiDraft.personalization_data?.recent_activity && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-white text-xs text-gray-600 border border-gray-200">
+                              Recent: {aiDraft.personalization_data.recent_activity}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     )}
-                    <div className="flex-1" />
-                    <Button size="sm" variant="ghost" className="text-green-600">
-                      <ThumbsUp className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" variant="ghost" className="text-red-600">
-                      <ThumbsDown className="w-4 h-4" />
-                    </Button>
+                    
+                    {/* Draft Content - Main Working Surface */}
+                    <div className="flex-1 overflow-y-auto p-6">
+                      <div className="bg-gray-50 rounded-lg p-6 min-h-[250px] border border-gray-200">
+                        <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+                          {aiDraft.draft}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Action Controls - Clear Tools */}
+                    <div className="px-6 py-4 border-t bg-gray-50">
+                      <div className="flex items-center justify-between">
+                        {/* Primary Actions */}
+                        <div className="flex items-center gap-3">
+                          <Button 
+                            className="bg-purple-600 hover:bg-purple-700 text-white px-6"
+                            onClick={() => applyAiDraft(aiDraft.draft)}
+                          >
+                            <ArrowRight className="w-4 h-4 mr-2" /> Insert to Draft
+                          </Button>
+                          <Button 
+                            variant="outline"
+                            onClick={() => generateAiDraft(aiTone)}
+                            disabled={aiLoading}
+                          >
+                            {aiLoading ? (
+                              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Regenerating...</>
+                            ) : (
+                              <><RefreshCw className="w-4 h-4 mr-2" /> Redraft</>
+                            )}
+                          </Button>
+                          
+                          {/* Refine Dropdown */}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline">
+                                <Settings className="w-4 h-4 mr-2" /> Refine
+                                <ChevronDown className="w-4 h-4 ml-2" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem onClick={() => { setAiTone('shorter'); generateAiDraft('shorter'); }}>
+                                Shorter
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => { setAiTone('formal'); generateAiDraft('formal'); }}>
+                                More Formal
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => { setAiTone('more_empathetic'); generateAiDraft('more_empathetic'); }}>
+                                More Empathetic
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => { setAiTone('remove_fluff'); generateAiDraft('remove_fluff'); }}>
+                                Remove Fluff
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                        
+                        {/* Feedback */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500 mr-2">Was this helpful?</span>
+                          <Button size="sm" variant="ghost" className="text-green-600 hover:bg-green-50">
+                            <ThumbsUp className="w-4 h-4" />
+                          </Button>
+                          <Button size="sm" variant="ghost" className="text-red-600 hover:bg-red-50">
+                            <ThumbsDown className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
