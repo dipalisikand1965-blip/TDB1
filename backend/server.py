@@ -3494,6 +3494,186 @@ async def get_public_faqs(category: Optional[str] = None):
     return {"faqs": faqs, "categories": categories}
 
 
+# ==================== PAGE CONTENT CMS ====================
+
+@api_router.get("/pages/{page_slug}")
+async def get_page_content(page_slug: str):
+    """Get content for a specific page (public)"""
+    page = await db.page_content.find_one({"slug": page_slug}, {"_id": 0})
+    if not page:
+        # Return default structure if page doesn't exist
+        return {"slug": page_slug, "content": {}, "is_published": False}
+    return page
+
+@admin_router.get("/pages")
+async def get_all_pages(username: str = Depends(verify_admin)):
+    """Get all editable pages"""
+    pages = await db.page_content.find({}, {"_id": 0}).to_list(50)
+    return {"pages": pages, "total": len(pages)}
+
+@admin_router.get("/pages/{page_slug}")
+async def get_page_for_admin(page_slug: str, username: str = Depends(verify_admin)):
+    """Get specific page content for editing"""
+    page = await db.page_content.find_one({"slug": page_slug}, {"_id": 0})
+    if not page:
+        return {"slug": page_slug, "content": {}, "is_published": False}
+    return page
+
+@admin_router.put("/pages/{page_slug}")
+async def update_page_content(page_slug: str, content: dict, username: str = Depends(verify_admin)):
+    """Update page content"""
+    now = datetime.now(timezone.utc).isoformat()
+    
+    existing = await db.page_content.find_one({"slug": page_slug})
+    
+    update_data = {
+        "slug": page_slug,
+        "title": content.get("title", page_slug.replace("-", " ").title()),
+        "content": content.get("content", {}),
+        "meta": content.get("meta", {}),
+        "is_published": content.get("is_published", True),
+        "updated_at": now,
+        "updated_by": username
+    }
+    
+    if existing:
+        await db.page_content.update_one(
+            {"slug": page_slug},
+            {"$set": update_data}
+        )
+    else:
+        update_data["created_at"] = now
+        update_data["created_by"] = username
+        await db.page_content.insert_one(update_data)
+    
+    return {"success": True, "message": f"Page '{page_slug}' updated successfully"}
+
+@admin_router.post("/pages/seed")
+async def seed_page_content(username: str = Depends(verify_admin)):
+    """Seed default content for all editable pages"""
+    now = datetime.now(timezone.utc).isoformat()
+    
+    default_pages = [
+        {
+            "slug": "about",
+            "title": "About Us",
+            "content": {
+                "hero": {
+                    "title": "Pet Life Operating System",
+                    "subtitle": "We're building the world's most intelligent pet care ecosystem",
+                    "description": "The Doggy Company is more than a pet service — it's a complete life system designed around your pet."
+                },
+                "pillars": [
+                    {"name": "Celebrate", "description": "Birthday cakes, treats & parties", "icon": "cake"},
+                    {"name": "Dine", "description": "Pet-friendly restaurants & cafes", "icon": "utensils"},
+                    {"name": "Stay", "description": "Pet-friendly hotels & stays", "icon": "hotel"},
+                    {"name": "Travel", "description": "Pet travel assistance", "icon": "plane"},
+                    {"name": "Care", "description": "Grooming, walking, sitting", "icon": "heart"},
+                    {"name": "Fit", "description": "Exercise & wellness", "icon": "dumbbell"},
+                    {"name": "Advisory", "description": "Expert consultations", "icon": "user-md"},
+                    {"name": "Emergency", "description": "24/7 pet emergency help", "icon": "ambulance"},
+                    {"name": "Paperwork", "description": "Health records & docs", "icon": "file"},
+                    {"name": "Shop", "description": "Curated products", "icon": "shopping-bag"},
+                    {"name": "Club", "description": "Community & rewards", "icon": "users"},
+                    {"name": "Enjoy", "description": "Events & experiences", "icon": "calendar"}
+                ],
+                "mission": {
+                    "title": "Our Mission",
+                    "text": "To make pet parenting effortless by building an intelligent system that learns, remembers, and anticipates your pet's needs."
+                },
+                "values": [
+                    {"title": "Pet-First", "description": "Every decision starts with what's best for pets"},
+                    {"title": "Intelligence", "description": "Learning systems that get smarter over time"},
+                    {"title": "Trust", "description": "We remember so you don't have to explain"}
+                ]
+            },
+            "is_published": True
+        },
+        {
+            "slug": "membership",
+            "title": "Membership",
+            "content": {
+                "hero": {
+                    "badge": "Pet Life Operating System",
+                    "title": "The Longer You're With Us",
+                    "highlight": "The Less You Explain",
+                    "subtitle": "Not just a membership — a system that quietly learns, remembers, and adapts around your pet."
+                },
+                "pillars_heading": "A Complete Life System for Your Pet",
+                "pillars_subheading": "One membership unlocks everything. No more juggling multiple apps and services.",
+                "benefits": [
+                    {"title": "Pet Soul™ Profile", "description": "Deep, evolving profile for your pet", "primary": True},
+                    {"title": "Mira AI Concierge®", "description": "24/7 intelligent pet assistant", "primary": True},
+                    {"title": "Smart Reminders", "description": "Birthday, vaccine & event alerts", "primary": True},
+                    {"title": "Health Vault", "description": "Secure medical records storage", "primary": True},
+                    {"title": "Priority Support", "description": "Fast-track help when you need it", "primary": True},
+                    {"title": "Paw Rewards", "description": "Earn points on every interaction", "primary": False}
+                ],
+                "tenure_levels": [
+                    {"name": "Early Journey", "description": "Just getting to know each other", "months": 0},
+                    {"name": "Growing Together", "description": "Building understanding over time", "months": 3},
+                    {"name": "Well Known", "description": "We understand your pet deeply", "months": 6},
+                    {"name": "Deeply Understood", "description": "Your pet's needs are anticipated", "months": 12}
+                ],
+                "pricing": {
+                    "heading": "One Membership. One Pet Life System.",
+                    "subheading": "Unlimited access to all pillars, growing intelligence over time.",
+                    "annual": {"price": 999, "period": "year", "savings": "Save ₹189"},
+                    "monthly": {"price": 99, "period": "month"}
+                },
+                "cta": {
+                    "heading": "Ready to begin your pet's journey with us?",
+                    "subheading": "Start building a life that grows with your pet.",
+                    "button_text": "Begin Your Journey"
+                }
+            },
+            "is_published": True
+        },
+        {
+            "slug": "terms",
+            "title": "Terms & Conditions",
+            "content": {
+                "sections": [
+                    {"title": "Acceptance of Terms", "text": "By accessing and using The Doggy Company services, you accept and agree to be bound by these terms."},
+                    {"title": "Membership", "text": "Membership fees are non-refundable. Annual memberships auto-renew unless cancelled 7 days before renewal."},
+                    {"title": "Services", "text": "We strive to provide accurate information about our services. Availability may vary by location."},
+                    {"title": "Privacy", "text": "Your data is protected under our Privacy Policy. We never share personal information with third parties without consent."},
+                    {"title": "Liability", "text": "We are not liable for any indirect damages. Our total liability is limited to the amount paid for services."}
+                ],
+                "last_updated": "January 2026"
+            },
+            "is_published": True
+        },
+        {
+            "slug": "privacy",
+            "title": "Privacy Policy",
+            "content": {
+                "sections": [
+                    {"title": "Information We Collect", "text": "We collect information you provide directly: name, email, phone, address, and pet details."},
+                    {"title": "How We Use Information", "text": "To provide services, personalize your experience, send updates, and improve our platform."},
+                    {"title": "Data Security", "text": "We implement industry-standard security measures to protect your data."},
+                    {"title": "Your Rights", "text": "You can access, update, or delete your data at any time through your account settings."},
+                    {"title": "Contact", "text": "For privacy concerns, contact privacy@thedoggycompany.in"}
+                ],
+                "last_updated": "January 2026"
+            },
+            "is_published": True
+        }
+    ]
+    
+    seeded = 0
+    for page in default_pages:
+        existing = await db.page_content.find_one({"slug": page["slug"]})
+        if not existing:
+            page["created_at"] = now
+            page["updated_at"] = now
+            page["created_by"] = username
+            await db.page_content.insert_one(page)
+            seeded += 1
+    
+    return {"success": True, "seeded": seeded, "total_pages": len(default_pages)}
+
+
 # ==================== TESTIMONIALS CRUD ====================
 
 @admin_router.get("/testimonials")
