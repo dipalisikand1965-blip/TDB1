@@ -446,6 +446,12 @@ const MiraPage = () => {
                     <div className="flex items-center gap-2 mb-2 text-purple-600">
                       <Sparkles className="w-4 h-4" />
                       <span className="text-xs font-medium">Mira</span>
+                      {message.researchMode && (
+                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <Search className="w-3 h-3" />
+                          Research Mode
+                        </span>
+                      )}
                     </div>
                   )}
                   <p 
