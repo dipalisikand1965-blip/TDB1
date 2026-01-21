@@ -1113,14 +1113,19 @@ REMEMBER:
             "research_mode": research_context is not None
         })
         
-        # 8. Check for enrichments to save to Pet Soul
-        enrichments = extract_enrichments(user_message, response)
+        # 8. Check for enrichments to save to Pet Soul (ADVANCED)
+        try:
+            from soul_intelligence import extract_enrichments_advanced, save_soul_enrichment
+            enrichments = extract_enrichments_advanced(user_message, response)
+        except ImportError:
+            enrichments = extract_enrichments(user_message, response)
+        
         if enrichments and selected_pet:
             for enrichment in enrichments:
                 await save_pet_soul_enrichment(
                     selected_pet.get("id"),
                     {**enrichment, "session_id": session_id},
-                    source="user-stated"
+                    source=enrichment.get("source", "user-stated")
                 )
         
         # 9. Return response with additional metadata
