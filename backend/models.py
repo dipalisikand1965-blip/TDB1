@@ -412,23 +412,23 @@ class CSVImportRequest(BaseModel):
 # ==================== AGENT MODELS ====================
 
 class AgentCreate(BaseModel):
-    name: str
-    email: str
-    phone: Optional[str] = None
+    username: str
     password: str
-    role: str = "agent"
-    status: str = "active"
+    name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    permissions: List[str] = ["service_desk", "unified_inbox"]
 
 
 class AgentUpdate(BaseModel):
     name: Optional[str] = None
+    email: Optional[str] = None
     phone: Optional[str] = None
-    role: Optional[str] = None
-    status: Optional[str] = None
+    permissions: Optional[List[str]] = None
+    is_active: Optional[bool] = None
 
 
 class AgentPasswordChange(BaseModel):
-    current_password: str
     new_password: str
 
 
