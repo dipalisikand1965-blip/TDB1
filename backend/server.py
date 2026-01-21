@@ -6465,6 +6465,10 @@ class ParentOnboardModel(BaseModel):
     city: str
     pincode: str
     password: str
+    preferred_contact: Optional[str] = "whatsapp"
+    notifications: Optional[dict] = None
+    accepted_terms: bool = False
+    accepted_privacy: bool = False
 
 class MembershipOnboardModel(BaseModel):
     parent: ParentOnboardModel
