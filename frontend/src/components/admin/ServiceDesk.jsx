@@ -40,7 +40,7 @@ const DEFAULT_VIEWS = [
   { id: 'today', name: "Today's Tickets", icon: '📅', filter: { today: true } },
 ];
 
-// Pillar-specific views - ALL 12 PILLARS
+// Pillar-specific views - ALL 12 PILLARS + Special Views
 const PILLAR_VIEWS = [
   { id: 'celebrate', name: 'Celebrate', icon: '🎂', filter: { category: 'celebrate' } },
   { id: 'dine', name: 'Dine', icon: '🍽️', filter: { category: 'dine' } },
@@ -55,6 +55,8 @@ const PILLAR_VIEWS = [
   { id: 'emergency', name: 'Emergency', icon: '🚨', filter: { category: 'emergency' } },
   { id: 'club', name: 'Club', icon: '👑', filter: { category: 'club' } },
   { id: 'mira', name: 'Mira AI', icon: '🤖', filter: { category: 'mira_conversation' } },
+  { id: 'live_mis', name: 'Live MIS', icon: '📊', filter: { category: 'live_mis' } },
+  { id: 'shipping', name: 'Shipping & Commercial', icon: '🚚', filter: { category: 'shipping' } },
 ];
 
 // Source labels and colors
