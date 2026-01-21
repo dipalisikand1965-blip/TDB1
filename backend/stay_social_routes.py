@@ -50,10 +50,38 @@ def set_admin_verify(verify_func):
     _verify_admin = verify_func
 
 
-def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
+def verify_admin(
+    credentials: HTTPBasicCredentials = Depends(security),
+    bearer_creds: HTTPAuthorizationCredentials = Depends(security_bearer)
+):
+    """Verify admin credentials - supports both Basic Auth and Bearer Token"""
+    # Try Bearer token first (frontend typically uses this)
+    if bearer_creds and bearer_creds.credentials:
+        try:
+            payload = jwt.decode(bearer_creds.credentials, JWT_SECRET, algorithms=[ALGORITHM])
+            username = payload.get("sub") or payload.get("admin")
+            if username:
+                return username
+        except jwt.ExpiredSignatureError:
+            pass  # Fall through to basic auth
+        except jwt.InvalidTokenError:
+            pass  # Fall through to basic auth
+    
+    # Try Basic Auth
+    if credentials and credentials.username and credentials.password:
+        is_correct_username = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
+        is_correct_password = secrets.compare_digest(credentials.password, ADMIN_PASSWORD)
+        if is_correct_username and is_correct_password:
+            return credentials.username
+    
+    # Try external verify function
     if _verify_admin:
-        return _verify_admin(credentials)
-    raise HTTPException(status_code=401, detail="Admin verification not configured")
+        try:
+            return _verify_admin(credentials)
+        except:
+            pass
+    
+    raise HTTPException(status_code=401, detail="Invalid admin credentials")
 
 
 # ==================== MODELS ====================
