@@ -2333,13 +2333,20 @@ ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "dipali@clubconcierge.in")
 
 @admin_router.post("/login")
 async def admin_login(request: AdminLoginRequest):
-    """Verify admin login"""
+    """Verify admin login and return JWT token"""
     # Check database credentials first, then fall back to env
     expected_username = _admin_credentials_cache.get("username") or ADMIN_USERNAME
     expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
     
     if request.username == expected_username and request.password == expected_password:
-        return {"success": True, "message": "Login successful"}
+        # Generate JWT token for admin
+        token_data = {
+            "sub": request.username,
+            "role": "admin",
+            "exp": datetime.now(timezone.utc) + timedelta(days=7)
+        }
+        token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
+        return {"success": True, "message": "Login successful", "token": token}
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
 
