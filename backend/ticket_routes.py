@@ -1271,14 +1271,14 @@ async def ai_draft_reply(request: AIReplyRequest):
         raise HTTPException(status_code=404, detail="Ticket not found")
     
     # Build context from ticket
-    member = ticket.get("member", {})
+    member = ticket.get("member") or {}
     messages = ticket.get("messages", [])
     
     # ========== PET SOUL INTEGRATION ==========
     # Load Pet Soul data for personalization
     pet_soul_context = {}
-    pet_info = ticket.get("pet", {})
-    pet_name = pet_info.get("name")
+    pet_info = ticket.get("pet") or {}
+    pet_name = pet_info.get("name") if pet_info else None
     
     if pet_name or member.get("email"):
         # Try to find pet by name or owner email
