@@ -679,12 +679,21 @@ const Home = () => {
 
           <div className="text-center mt-12">
             <p className="text-gray-600 mb-4">Want to join the Pawsome Panel?</p>
-            <Link to="/membership">
-              <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white">
-                <Crown className="w-4 h-4 mr-2" />
-                Become a Member
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/pets/add">
+                <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white">
+                  <PawPrint className="w-4 h-4 mr-2" />
+                  Add Your Pet
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/membership">
+                <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white">
+                  <Crown className="w-4 h-4 mr-2" />
+                  Become a Member
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </section>
