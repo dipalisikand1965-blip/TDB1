@@ -9420,19 +9420,15 @@ async def reset_agent_password(agent_id: str, password_data: AgentPasswordChange
 
 
 @app.get("/api/admin/agents")
-async def list_agents(credentials: HTTPBasicCredentials = Depends(security)):
+async def list_agents(admin_user: str = Depends(verify_admin_auth)):
     """List all agents"""
-    verify_admin(credentials)
-    
     agents = await db.agents.find({}, {"_id": 0, "password_hash": 0}).to_list(1000)
     return {"agents": agents, "count": len(agents)}
 
 
 @app.post("/api/admin/agents")
-async def create_agent(agent: AgentCreate, credentials: HTTPBasicCredentials = Depends(security)):
+async def create_agent(agent: AgentCreate, admin_user: str = Depends(verify_admin_auth)):
     """Create a new agent"""
-    verify_admin(credentials)
-    
     # Check if username already exists
     existing = await db.agents.find_one({"username": agent.username.lower()})
     if existing:
