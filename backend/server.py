@@ -1553,7 +1553,8 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     }
 async def send_product_match_email(pet: dict, product: dict, match_reason: str):
     """Send email about a product match"""
-    if not RESEND_API_KEY or not pet.get("owner_email"):
+    owner_email = pet.get("owner_email")
+    if not RESEND_API_KEY or not owner_email or not isinstance(owner_email, str) or "@" not in owner_email:
         return
 
     try:
