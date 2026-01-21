@@ -638,7 +638,7 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
     user_context = ""
     if user:
         user_context = f"""
-**MEMBER CONTEXT**:
+**PET PARENT CONTEXT**:
 - Name: {user.get('name', 'Valued Guest')}
 - Membership: {user.get('membership_tier', 'Free').title()}
 """
