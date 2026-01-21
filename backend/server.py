@@ -876,9 +876,14 @@ async def load_admin_credentials_from_db():
             _admin_credentials_cache["username"] = default_username
             _admin_credentials_cache["password"] = default_password
             _admin_credentials_cache["loaded"] = True
-            logger.info(f"Created default admin credentials: {default_username}")
+            logger.info(f"AUTO-CREATED default admin credentials: {default_username}")
     except Exception as e:
         logger.error(f"Error loading admin credentials: {e}")
+        # Fallback to env variables
+        _admin_credentials_cache["username"] = ADMIN_USERNAME
+        _admin_credentials_cache["password"] = ADMIN_PASSWORD
+        _admin_credentials_cache["loaded"] = True
+        logger.info(f"Using fallback admin credentials from env: {ADMIN_USERNAME}")
 
 
 async def ensure_default_user_exists():
