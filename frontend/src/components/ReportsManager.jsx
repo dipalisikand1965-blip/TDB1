@@ -492,8 +492,19 @@ const ReportsManager = ({ authHeaders }) => {
       if (selectedPillar === 'celebrate') fetchCelebrateReport();
       else if (selectedPillar === 'dine') fetchDineReport();
       else if (selectedPillar === 'stay') fetchStayReport();
+      else if (selectedPillar === 'care') fetchCareReport();
+      else if (selectedPillar === 'travel') fetchTravelReport();
+      else if (selectedPillar === 'shop') fetchShopReport();
+      else if (selectedPillar === 'enjoy') fetchEnjoyReport();
+      else if (selectedPillar === 'club') fetchClubReport();
+      else if (selectedPillar === 'learn') fetchLearnReport();
+      else if (selectedPillar === 'adopt') fetchAdoptReport();
+      else if (selectedPillar === 'insure') fetchInsureReport();
+      else if (selectedPillar === 'farewell') fetchFarewellReport();
     }
-  }, [activeTab, selectedPillar, fetchCelebrateReport, fetchDineReport, fetchStayReport]);
+  }, [activeTab, selectedPillar, fetchCelebrateReport, fetchDineReport, fetchStayReport, 
+      fetchCareReport, fetchTravelReport, fetchShopReport, fetchEnjoyReport,
+      fetchClubReport, fetchLearnReport, fetchAdoptReport, fetchInsureReport, fetchFarewellReport]);
 
   // Fetch partner and mira reports when their tabs are active
   useEffect(() => {
