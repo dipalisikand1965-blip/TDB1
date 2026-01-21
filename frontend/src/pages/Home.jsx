@@ -522,7 +522,7 @@ const Home = () => {
               Meet Pet Soul™
             </h2>
             <p className="text-xl text-white/80 max-w-3xl mx-auto">
-              Your pet's evolving digital identity. Every interaction builds a smarter profile —
+              Your pet&apos;s evolving digital identity. Every interaction builds a smarter profile —
               so we understand your pet better than anyone else.
             </p>
           </div>
@@ -535,7 +535,7 @@ const Home = () => {
               <h3 className="text-xl font-bold text-white mb-3">Progressive Learning</h3>
               <p className="text-white/70">
                 Every order, every chat, every booking teaches us something new about your pet.
-                The longer you're with us, the less you need to explain.
+                The longer you&apos;re with us, the less you need to explain.
               </p>
             </Card>
 
@@ -557,20 +557,20 @@ const Home = () => {
               <h3 className="text-xl font-bold text-white mb-3">Mira AI Companion</h3>
               <p className="text-white/70">
                 Our AI concierge knows your pet personally. Ask her anything —
-                she'll give recommendations tailored to your pet's unique profile.
+                she&apos;ll give recommendations tailored to your pet&apos;s unique profile.
               </p>
             </Card>
           </div>
 
           <div className="text-center">
             <p className="text-white/60 mb-6 text-lg">
-              "The world's most intelligent pet life platform, continuously learning and anticipating your pet's needs."
+              &quot;The world&apos;s most intelligent pet life platform, continuously learning and anticipating your pet&apos;s needs.&quot;
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/membership">
                 <Button size="lg" className="bg-white text-purple-900 hover:bg-purple-50 px-8 py-6 text-lg">
                   <Zap className="w-5 h-5 mr-2" />
-                  Start Your Pet's Soul
+                  Start Your Pet&apos;s Soul
                 </Button>
               </Link>
               <Button 
