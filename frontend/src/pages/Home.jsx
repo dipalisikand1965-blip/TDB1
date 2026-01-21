@@ -4,8 +4,11 @@ import { testimonials, faqs } from '../mockData';
 import { Button } from '../components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import { Card } from '../components/ui/card';
-import { Star, Award, Clock, Shield, ArrowRight, Sparkles, Heart, Check, Crown, Phone, MessageCircle, Calendar, MapPin, Stethoscope, Plane } from 'lucide-react';
+import { Star, Award, Clock, Shield, ArrowRight, Sparkles, Heart, Check, Crown, Phone, MessageCircle, Calendar, MapPin, Stethoscope, Plane, Brain, TrendingUp, Zap } from 'lucide-react';
 import { useInView, useCountUp } from '../hooks/useAnimations';
+import { useAuth } from '../context/AuthContext';
+import PersonalizedDashboard from '../components/PersonalizedDashboard';
+import { getApiUrl } from '../utils/api';
 
 // 12 Pillars of The Doggy Company
 const PILLARS = [
