@@ -409,6 +409,10 @@ class CSVImportRequest(BaseModel):
     send_welcome_emails: bool = False
 
 
+class ProductCSVImportRequest(BaseModel):
+    products: List[dict]
+
+
 # ==================== AGENT MODELS ====================
 
 class AgentCreate(BaseModel):
