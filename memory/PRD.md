@@ -125,6 +125,9 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
 - ✅ Personalized recommendations
 
 ### P1 - High Priority
+- [x] ~~Celebrate page hero section~~ - COMPLETED Jan 21, 2026
+- [x] ~~Admin Pets endpoint fix~~ - COMPLETED Jan 21, 2026
+- [x] ~~Add missing pillars to admin~~ - COMPLETED Jan 21, 2026
 - [ ] WhatsApp Business API integration for Unified Inbox
 - [ ] Voice Order fix - "Connection failed" error
 - [ ] Shopify Sync fix - "Untitled" products issue
