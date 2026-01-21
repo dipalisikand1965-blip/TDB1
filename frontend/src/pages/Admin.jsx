@@ -2233,6 +2233,11 @@ const Admin = () => {
           <AboutManager getAuthHeader={getAuthHeaders} />
         )}
 
+        {/* Page Content CMS Tab */}
+        {activeTab === 'pages' && (
+          <PageContentManager getAuthHeader={getAuthHeaders} />
+        )}
+
         {/* Dine Tab */}
         {activeTab === 'dine' && (
           <DineManager credentials={{ username, password }} />
