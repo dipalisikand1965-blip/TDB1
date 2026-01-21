@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Lock, Eye, EyeOff, CheckCircle, XCircle, Loader2, ArrowLeft } from 'lucide-react';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { getApiUrl } from '../utils/api';
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
