@@ -157,24 +157,29 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
 - ✅ Mira AI complete across all pillars
 - ✅ Intelligence Engine with passive learning
 - ✅ Personalized recommendations
+- ✅ **Pet Soul Journey for Logged-in Members** - COMPLETED Jan 21, 2026
 
 ### P1 - High Priority
 - [x] ~~Celebrate page hero section~~ - COMPLETED Jan 21, 2026
 - [x] ~~Admin Pets endpoint fix~~ - COMPLETED Jan 21, 2026
 - [x] ~~Add missing pillars to admin~~ - COMPLETED Jan 21, 2026
+- [x] ~~Membership page personalization~~ - COMPLETED Jan 21, 2026
 - [ ] WhatsApp Business API integration for Unified Inbox
 - [ ] Voice Order fix - "Connection failed" error
 - [ ] Shopify Sync fix - "Untitled" products issue
+- [ ] Checkout form validation feedback
 
 ### P2 - Medium Priority
 - [ ] Multi-channel Mira (Voice input, WhatsApp handoff)
 - [ ] Proactive outreach via WhatsApp/Email
 - [ ] Complete server.py refactoring
+- [ ] Consolidate Membership.jsx and MembershipPage.jsx
 
 ### P3 - Future
 - [ ] Learning from Outcomes visualization (admin dashboard)
 - [ ] A/B testing for recommendations
-- [ ] Pet Soul Weekly Question feature
+- [ ] Pet Soul Weekly Question via WhatsApp
+- [ ] Commerce filtering based on Pet Soul (allergies, age)
 
 ---
 
