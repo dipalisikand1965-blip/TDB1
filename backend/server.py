@@ -5787,6 +5787,18 @@ async def update_order(order_id: str, updates: dict, username: str = Depends(ver
                     triggered_by="admin"
                 )
                 logger.info(f"Status change notification sent for order {order_id}: {old_status} -> {new_status}")
+                
+                # SOUL ENRICHMENT: Infer preferences from completed orders
+                if new_status in ["delivered", "completed"]:
+                    try:
+                        from soul_intelligence import infer_from_order
+                        pet_id = current_order.get("pet_id") or current_order.get("selected_pet_id")
+                        if pet_id:
+                            await infer_from_order(pet_id, current_order)
+                            logger.info(f"Soul enriched from order {order_id} for pet {pet_id}")
+                    except Exception as soul_err:
+                        logger.warning(f"Soul enrichment from order failed: {soul_err}")
+                        
             except Exception as e:
                 logger.error(f"Failed to send status change notification: {e}")
     
