@@ -545,14 +545,18 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
               const score = folderScores[pillar.key] || 0;
               const insight = getPillarInsight(pillar.key, soulData, petName);
               const hasContent = score > 0 || insight;
+              const isSelected = selectedPillar === pillar.key;
               
               return (
                 <Card 
                   key={pillar.key} 
-                  className={`p-4 transition-all ${
-                    hasContent 
-                      ? 'bg-white hover:shadow-md' 
-                      : 'bg-gray-50/50 opacity-60'
+                  onClick={() => handlePillarClick(pillar.key)}
+                  className={`p-4 transition-all cursor-pointer ${
+                    isSelected
+                      ? 'bg-purple-50 ring-2 ring-purple-300 shadow-md'
+                      : hasContent 
+                        ? 'bg-white hover:shadow-md hover:border-purple-200' 
+                        : 'bg-gray-50/50 opacity-60 hover:opacity-80'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-2">
@@ -576,6 +580,58 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
               );
             })}
           </div>
+          
+          {/* Pillar Detail Panel */}
+          {selectedPillar && pillarDetails && (
+            <Card className="mt-4 p-5 bg-white border-purple-100 animate-in slide-in-from-top-2">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">{pillarDetails.icon}</span>
+                  <h3 className="font-bold text-gray-900">{pillarDetails.name}</h3>
+                  <Badge variant="outline" className="ml-2">{pillarDetails.percentage}% complete</Badge>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setSelectedPillar(null)}
+                  className="text-gray-400"
+                >
+                  Close
+                </Button>
+              </div>
+              
+              {Object.keys(pillarDetails.data).length > 0 ? (
+                <div className="grid md:grid-cols-2 gap-3">
+                  {Object.entries(pillarDetails.data).map(([key, value]) => {
+                    const displayKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    let displayValue = value;
+                    
+                    if (Array.isArray(value)) {
+                      displayValue = value.join(', ');
+                    } else if (typeof value === 'object') {
+                      displayValue = JSON.stringify(value);
+                    } else if (typeof value === 'boolean') {
+                      displayValue = value ? 'Yes' : 'No';
+                    }
+                    
+                    return (
+                      <div key={key} className="flex items-start gap-2 p-2 bg-gray-50 rounded-lg">
+                        <span className="text-purple-500 text-xs">•</span>
+                        <div>
+                          <p className="text-xs text-gray-500">{displayKey}</p>
+                          <p className="text-sm text-gray-800 font-medium">{displayValue}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-sm text-center py-4">
+                  No information yet. Talk to Mira or answer questions to build this pillar.
+                </p>
+              )}
+            </Card>
+          )}
         </section>
 
         {/* ========== WHAT WE'VE LEARNED TIMELINE - Stage 2+ ========== */}
