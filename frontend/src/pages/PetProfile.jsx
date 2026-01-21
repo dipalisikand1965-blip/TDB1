@@ -932,7 +932,14 @@ const PetProfile = ({ isEmbed = false }) => {
 
         <hr className="my-6" />
 
-        <h3 className="font-semibold text-gray-900">Your Contact Info</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-gray-900">Your Contact Info</h3>
+          {existingPets.length > 0 && formData.owner_email && (
+            <Badge variant="outline" className="text-green-600 border-green-300 bg-green-50">
+              <Check className="w-3 h-3 mr-1" /> Pre-filled from your account
+            </Badge>
+          )}
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -942,7 +949,7 @@ const PetProfile = ({ isEmbed = false }) => {
               placeholder="Pet Parent's name"
               value={formData.owner_name}
               onChange={(e) => updateFormData('owner_name', e.target.value)}
-              className="mt-1"
+              className={`mt-1 ${existingPets.length > 0 && formData.owner_name ? 'bg-gray-50' : ''}`}
             />
           </div>
           <div>
@@ -952,7 +959,7 @@ const PetProfile = ({ isEmbed = false }) => {
               placeholder="+91 98765 43210"
               value={formData.owner_phone}
               onChange={(e) => updateFormData('owner_phone', e.target.value)}
-              className="mt-1"
+              className={`mt-1 ${existingPets.length > 0 && formData.owner_phone ? 'bg-gray-50' : ''}`}
             />
           </div>
         </div>
@@ -965,8 +972,12 @@ const PetProfile = ({ isEmbed = false }) => {
             placeholder="your@email.com"
             value={formData.owner_email}
             onChange={(e) => updateFormData('owner_email', e.target.value)}
-            className="mt-1"
+            className={`mt-1 ${existingPets.length > 0 && formData.owner_email ? 'bg-gray-50' : ''}`}
+            readOnly={existingPets.length > 0 && !!formData.owner_email}
           />
+          {existingPets.length > 0 && formData.owner_email && (
+            <p className="text-xs text-gray-500 mt-1">Email linked to your existing pets</p>
+          )}
         </div>
 
         <div className="flex items-center gap-6 mt-4">
