@@ -428,28 +428,28 @@ const MiraAI = () => {
 
   return (
     <div 
-      className={`fixed z-50 bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 flex flex-col border border-slate-200 ${
+      className={`fixed z-50 bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 flex flex-col ${
         isMinimized 
-          ? 'bottom-6 right-6 w-80 h-16' 
-          : 'bottom-6 right-6 w-[380px] h-[550px] max-h-[calc(100vh-100px)] md:w-[420px] md:h-[620px]'
+          ? 'bottom-20 right-4 sm:bottom-6 sm:right-6 w-72 h-14' 
+          : 'bottom-0 right-0 left-0 top-0 sm:bottom-6 sm:right-6 sm:left-auto sm:top-auto sm:w-[400px] sm:h-[600px] sm:max-h-[calc(100vh-100px)] sm:rounded-2xl rounded-none'
       }`}
       data-testid="mira-chat-container"
     >
-      {/* Header - Professional dark theme */}
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white p-4 flex items-center justify-between flex-shrink-0 border-b border-amber-500/30">
+      {/* Header - Modern gradient theme */}
+      <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-rose-500 text-white p-4 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center border border-amber-500/30">
-            <span className="text-lg">🐾</span>
+          <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-yellow-300" />
           </div>
           <div>
-            <h3 className="font-semibold tracking-wide">Mira</h3>
-            <p className="text-xs text-amber-400/80 font-light">Concierge • At your service</p>
+            <h3 className="font-bold tracking-wide">Mira</h3>
+            <p className="text-xs text-white/80">Your Pet Concierge</p>
           </div>
         </div>
         <div className="flex items-center gap-1">
           {/* New Conversation Button */}
           <button
-            className="text-white/70 hover:text-white hover:bg-white/10 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
+            className="text-white/70 hover:text-white hover:bg-white/20 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
             onClick={startNewConversation}
             title="Start new conversation"
             data-testid="mira-new-chat-btn"
@@ -459,7 +459,7 @@ const MiraAI = () => {
           {/* Chat History Button */}
           {token && (
             <button
-              className="text-white/70 hover:text-white hover:bg-white/10 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
+              className="text-white/70 hover:text-white hover:bg-white/20 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
               onClick={() => setShowHistory(!showHistory)}
               title="Chat history"
               data-testid="mira-history-btn"
@@ -468,7 +468,7 @@ const MiraAI = () => {
             </button>
           )}
           <button
-            className="text-white/70 hover:text-white hover:bg-white/10 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
+            className="text-white/70 hover:text-white hover:bg-white/20 h-9 w-9 rounded-full flex items-center justify-center transition-colors hidden sm:flex"
             onClick={() => setIsMinimized(!isMinimized)}
             title={isMinimized ? "Expand" : "Minimize"}
             data-testid="mira-minimize-btn"
@@ -476,7 +476,7 @@ const MiraAI = () => {
             {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
           </button>
           <button
-            className="text-white/70 hover:text-white hover:bg-red-500/80 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
+            className="text-white/70 hover:text-white hover:bg-white/20 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
             onClick={() => setIsOpen(false)}
             title="Close Mira"
             data-testid="mira-close-btn"
