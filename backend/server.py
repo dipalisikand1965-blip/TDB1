@@ -9366,7 +9366,20 @@ AGENT_PERMISSIONS = [
     "orders", 
     "service_desk",
     "unified_inbox",
-    "fulfilment"
+    "fulfilment",
+    # Pillar-specific permissions
+    "pillar_celebrate",  # Bakery
+    "pillar_dine",       # Restaurants
+    "pillar_stay",       # Pawcation
+    "pillar_care",       # Vet/Grooming
+    "pillar_travel",     # Pet Travel
+    "pillar_shop",       # E-commerce
+    "pillar_enjoy",      # Activities
+    "pillar_club",       # Community
+    "pillar_learn",      # Training
+    "pillar_adopt",      # Adoption
+    "pillar_insure",     # Insurance
+    "pillar_farewell"    # End of life
 ]
 
 
