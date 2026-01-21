@@ -5242,6 +5242,11 @@ async def check_abandoned_carts():
             reminder_config_item = threshold["config"]
             
             if RESEND_API_KEY:
+                # Check if we've hit the max emails per run limit
+                if reminders_sent >= MAX_EMAILS_PER_RUN:
+                    logger.info(f"Hit max emails per run limit ({MAX_EMAILS_PER_RUN}), stopping")
+                    break
+                
                 # Rate limit: wait 1 second between emails
                 if reminders_sent > 0:
                     await asyncio.sleep(1.0)
