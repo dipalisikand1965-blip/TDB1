@@ -545,9 +545,9 @@ const AgentManagement = ({ authHeaders }) => {
             </div>
             
             <div>
-              <Label className="mb-2 block">Permissions</Label>
-              <div className="grid grid-cols-2 gap-2">
-                {Object.entries(PERMISSION_CONFIG).map(([key, config]) => {
+              <Label className="mb-2 block">Core Permissions</Label>
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {Object.entries(CORE_PERMISSIONS).map(([key, config]) => {
                   const Icon = config.icon;
                   const isSelected = formData.permissions.includes(key);
                   return (
@@ -567,6 +567,34 @@ const AgentManagement = ({ authHeaders }) => {
                       </div>
                       <Icon className="w-4 h-4 text-gray-600" />
                       <span className="text-sm font-medium">{config.name}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              <Label className="mb-2 block">Pillar Assignments</Label>
+              <p className="text-xs text-gray-500 mb-2">Select which pillars this agent can handle</p>
+              <div className="grid grid-cols-3 gap-2">
+                {Object.entries(PILLAR_PERMISSIONS).map(([key, config]) => {
+                  const Icon = config.icon;
+                  const isSelected = formData.permissions.includes(key);
+                  return (
+                    <div
+                      key={key}
+                      onClick={() => togglePermission(key)}
+                      className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors border ${
+                        isSelected 
+                          ? `${config.color} border-current` 
+                          : 'bg-gray-50 hover:bg-gray-100 border-transparent'
+                      }`}
+                    >
+                      <div className={`w-4 h-4 rounded border flex items-center justify-center ${
+                        isSelected ? 'bg-purple-600 border-purple-600' : 'border-gray-300'
+                      }`}>
+                        {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
+                      </div>
+                      <span className="text-lg">{config.emoji}</span>
+                      <span className="text-xs font-medium truncate">{config.name.split(' ')[0]}</span>
                     </div>
                   );
                 })}
