@@ -434,6 +434,7 @@ async def save_soul_enrichment(pet_id: str, enrichments: List[Dict], session_id:
     """
     Save enrichments to Pet Soul.
     Handles both single values and list appends.
+    Saves to doggy_soul_answers for consistency.
     """
     db = get_db()
     
@@ -456,13 +457,16 @@ async def save_soul_enrichment(pet_id: str, enrichments: List[Dict], session_id:
             "raw_text": enrichment.get("raw_text")
         }
         
-        # Update the field
+        # Update both doggy_soul_answers (primary) and soul_enrichments (legacy)
         if is_list:
             # Append to existing list
             await db.pets.update_one(
                 {"id": pet_id},
                 {
-                    "$addToSet": {f"soul_enrichments.{field}": {"$each": value}},
+                    "$addToSet": {
+                        f"doggy_soul_answers.{field}": {"$each": value},
+                        f"soul_enrichments.{field}": {"$each": value}
+                    },
                     "$push": {"enrichment_history": history_record}
                 }
             )
@@ -471,7 +475,10 @@ async def save_soul_enrichment(pet_id: str, enrichments: List[Dict], session_id:
             await db.pets.update_one(
                 {"id": pet_id},
                 {
-                    "$set": {f"soul_enrichments.{field}": value},
+                    "$set": {
+                        f"doggy_soul_answers.{field}": value,
+                        f"soul_enrichments.{field}": value
+                    },
                     "$push": {"enrichment_history": history_record}
                 }
             )
