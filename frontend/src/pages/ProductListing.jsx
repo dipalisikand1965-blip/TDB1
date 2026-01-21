@@ -334,6 +334,10 @@ const ProductListing = ({ category = 'all' }) => {
     }
   };
 
+  // Get hero content for current category
+  const heroContent = CATEGORY_HERO_CONTENT[category] || CATEGORY_HERO_CONTENT.default;
+  const heroImage = CATEGORY_HERO_IMAGES[category] || CATEGORY_HERO_IMAGES.default;
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white flex items-center justify-center">
@@ -347,15 +351,71 @@ const ProductListing = ({ category = 'all' }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            {getCategoryTitle()}
-          </h1>
-          <p className="text-gray-600">{getCategoryDescription()}</p>
-          <p className="text-purple-600 text-sm mt-2">Showing {filteredProducts.length} products</p>
+      
+      {/* === HERO SECTION === */}
+      <div className={`relative overflow-hidden bg-gradient-to-br ${heroContent.color} text-white`}>
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0">
+          <img 
+            src={heroImage} 
+            alt={getCategoryTitle()} 
+            className="w-full h-full object-cover opacity-25"
+          />
+          <div className={`absolute inset-0 bg-gradient-to-r ${heroContent.color} opacity-90`} />
         </div>
+        
+        {/* Content */}
+        <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24">
+          <div className="max-w-2xl">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+              <Sparkles className="w-4 h-4 text-yellow-400" />
+              <span className="text-sm font-medium">{heroContent.badge}</span>
+            </div>
+            
+            {/* Main Headline */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+              {heroContent.title}
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-300">
+                {heroContent.highlight}
+              </span>
+            </h1>
+            
+            <p className="text-lg md:text-xl text-white/90 mb-8 max-w-lg">
+              {heroContent.subtitle}
+            </p>
+            
+            {/* Quick Stats */}
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+                <Cake className="w-5 h-5 text-yellow-300" />
+                <span className="text-sm">{filteredProducts.length} Products</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+                <Gift className="w-5 h-5 text-pink-300" />
+                <span className="text-sm">Same Day Delivery</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+                <Star className="w-5 h-5 text-yellow-300" />
+                <span className="text-sm">100% Pet Safe</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Main Content Area */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Search Results Title (only for search) */}
+        {searchQuery && (
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Search Results for "{searchQuery}"
+            </h2>
+            <p className="text-gray-600 mt-1">Found {filteredProducts.length} products</p>
+          </div>
+        )}
 
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-4 mb-8 p-4 bg-white rounded-xl shadow-sm">
@@ -387,12 +447,18 @@ const ProductListing = ({ category = 'all' }) => {
               <SelectItem value="rating">Top Rated</SelectItem>
             </SelectContent>
           </Select>
+          
+          <p className="ml-auto text-purple-600 text-sm">
+            Showing {filteredProducts.length} products
+          </p>
         </div>
 
         {/* Products Grid */}
         {filteredProducts.length === 0 ? (
           <div className="text-center py-16">
+            <PawPrint className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500 text-lg">No products found in this category.</p>
+            <p className="text-gray-400 text-sm mt-2">Try adjusting your filters or browse other categories</p>
           </div>
         ) : (
           <>
@@ -426,8 +492,15 @@ const ProductListing = ({ category = 'all' }) => {
         )}
       </div>
       
-      {/* Mira Context Panel - Celebrate/Shop Pillar */}
-      <MiraContextPanel pillar="celebrate" position="right" />
+      {/* Mira Context Panel - Fixed on right side for desktop */}
+      <div className="hidden lg:block fixed right-4 top-24 w-72 z-30">
+        <MiraContextPanel pillar={pillar} />
+      </div>
+      
+      {/* Mira Context Panel - Bottom slide-up for mobile */}
+      <div className="lg:hidden fixed bottom-20 right-4 w-80 max-w-[calc(100vw-2rem)] z-30">
+        <MiraContextPanel pillar={pillar} position="bottom" />
+      </div>
     </div>
   );
 };
