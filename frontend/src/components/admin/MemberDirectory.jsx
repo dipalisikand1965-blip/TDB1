@@ -653,7 +653,7 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
               </div>
             </TabsContent>
 
-            {/* Pets & Soul Tab */}
+            {/* Pets & Soul Tab - Enhanced with 8 Pillar Tabs */}
             <TabsContent value="pets" className="space-y-6 mt-0">
               {pets.length === 0 ? (
                 <Card className="p-8 text-center">
@@ -661,63 +661,9 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
                   <p className="text-gray-500">No pets registered yet</p>
                 </Card>
               ) : (
-                <div className="grid md:grid-cols-2 gap-6">
-                  {pets.map((pet, idx) => {
-                    const soulScore = calculateSoulScore(pet);
-                    return (
-                      <Card key={pet.id || idx} className="overflow-hidden">
-                        <div className="p-4 bg-gradient-to-r from-purple-100 to-pink-100">
-                          <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-3xl">
-                              🐕
-                            </div>
-                            <div>
-                              <h3 className="text-xl font-bold">{pet.name}</h3>
-                              <p className="text-gray-600">{pet.breed} • {pet.gender}</p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="p-4">
-                          {/* Soul Score Overview */}
-                          <div className="mb-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-sm font-medium">Pet Soul Score</span>
-                              <span className="text-2xl font-bold text-purple-600">{soulScore.total}%</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                              <div 
-                                className={`h-full transition-all ${
-                                  soulScore.total >= 70 ? 'bg-green-500' : 
-                                  soulScore.total >= 40 ? 'bg-yellow-500' : 'bg-red-500'
-                                }`}
-                                style={{ width: `${soulScore.total}%` }}
-                              />
-                            </div>
-                          </div>
-
-                          {/* Soul Score Breakdown */}
-                          <div className="space-y-2">
-                            <p className="text-sm font-medium text-gray-700">Category Breakdown:</p>
-                            <div className="grid grid-cols-2 gap-2">
-                              {SOUL_CATEGORIES.map(cat => {
-                                const catScore = soulScore.breakdown[cat.key] || { percent: 0 };
-                                return (
-                                  <div key={cat.key} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                                    <span className="text-lg">{cat.icon}</span>
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-xs font-medium truncate">{cat.label}</p>
-                                      <div className="w-full bg-gray-200 rounded-full h-1.5">
-                                        <div 
-                                          className={`h-full rounded-full ${
-                                            catScore.percent >= 70 ? 'bg-green-500' : 
-                                            catScore.percent >= 40 ? 'bg-yellow-500' : 'bg-red-500'
-                                          }`}
-                                          style={{ width: `${catScore.percent}%` }}
-                                        />
-                                      </div>
-                                    </div>
-                                    <span className="text-xs font-medium">{catScore.percent}%</span>
+                <PetSoulTabs pets={pets} />
+              )}
+            </TabsContent>
                                   </div>
                                 );
                               })}
