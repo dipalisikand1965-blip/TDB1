@@ -812,10 +812,26 @@ const PetSoulTabs = ({ pets }) => {
     const answers = pet.doggy_soul_answers || {};
     const pillarData = {};
     
-    // Extract all answers that start with the pillar key
+    // Map of pillar keys to possible answer field patterns
+    const pillarFieldMap = {
+      health: ['weight', 'allergies', 'medical', 'vaccinations', 'vet', 'medications', 'health_'],
+      diet: ['food', 'diet', 'feeding', 'treats', 'eating', 'diet_'],
+      behavior: ['temperament', 'nature', 'reaction', 'social', 'behavior', 'training', 'describe', 'behavior_'],
+      grooming: ['grooming', 'bath', 'nail', 'ear', 'brush', 'grooming_'],
+      travel: ['travel', 'car', 'carrier', 'motion', 'hotel', 'travel_'],
+      play: ['toy', 'play', 'activity', 'exercise', 'game', 'play_'],
+      emergency: ['emergency', 'backup', 'hospital', 'insurance', 'contact', 'emergency_'],
+      celebrate: ['birthday', 'gotcha', 'celebration', 'party', 'celebrate_']
+    };
+    
+    const patterns = pillarFieldMap[pillarKey] || [pillarKey + '_'];
+    
+    // Extract all matching answers
     Object.entries(answers).forEach(([key, value]) => {
-      if (key.startsWith(pillarKey + '_')) {
-        const fieldName = key.replace(pillarKey + '_', '').replace(/_/g, ' ');
+      const keyLower = key.toLowerCase();
+      const matches = patterns.some(pattern => keyLower.includes(pattern.toLowerCase()));
+      if (matches) {
+        const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         pillarData[fieldName] = value;
       }
     });
