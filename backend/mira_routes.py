@@ -991,7 +991,8 @@ async def get_mira_context(
     if pet_id:
         pet_soul = await load_pet_soul(pet_id)
         response["selected_pet"] = pet_soul
-    elif len(pets) == 1:
+    elif len(pets) >= 1:
+        # Auto-select first pet if none specified
         pet_soul = await load_pet_soul(pets[0].get("id") or pets[0].get("name"))
         response["selected_pet"] = pet_soul
     
