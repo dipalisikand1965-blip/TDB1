@@ -5074,23 +5074,6 @@ async def admin_update_autoship_status(
 
 # ==================== ABANDONED CART SYSTEM ====================
 
-class CartItem(BaseModel):
-    product_id: str
-    name: str
-    price: float
-    quantity: int
-    variant: Optional[str] = None
-    image: Optional[str] = None
-
-class CartSnapshot(BaseModel):
-    session_id: str
-    user_id: Optional[str] = None
-    email: Optional[str] = None
-    phone: Optional[str] = None
-    name: Optional[str] = None
-    items: List[CartItem]
-    subtotal: float
-    
 @api_router.post("/cart/snapshot")
 async def save_cart_snapshot(cart: CartSnapshot):
     """Save a cart snapshot for abandoned cart tracking"""
