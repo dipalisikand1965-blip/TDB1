@@ -478,6 +478,88 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Meet Pet Soul Section - NEW */}
+      <section className="py-24 bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-900 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-20 w-96 h-96 bg-purple-500 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-80 h-80 bg-pink-500 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6 border border-white/20">
+              <Brain className="w-5 h-5 text-yellow-400 mr-2" />
+              <span className="text-white text-sm font-semibold">Introducing</span>
+            </div>
+            <h2 className="text-5xl font-black mb-4">
+              Meet Pet Soul™
+            </h2>
+            <p className="text-xl text-white/80 max-w-3xl mx-auto">
+              Your pet's evolving digital identity. Every interaction builds a smarter profile —
+              so we understand your pet better than anyone else.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <TrendingUp className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Progressive Learning</h3>
+              <p className="text-white/70">
+                Every order, every chat, every booking teaches us something new about your pet.
+                The longer you're with us, the less you need to explain.
+              </p>
+            </Card>
+
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Heart className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">True Personalization</h3>
+              <p className="text-white/70">
+                From allergies to favorite treats, from travel anxiety to celebration preferences —
+                we remember it all for a truly personalized experience.
+              </p>
+            </Card>
+
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-indigo-400 to-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Sparkles className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Mira AI Companion</h3>
+              <p className="text-white/70">
+                Our AI concierge knows your pet personally. Ask her anything —
+                she'll give recommendations tailored to your pet's unique profile.
+              </p>
+            </Card>
+          </div>
+
+          <div className="text-center">
+            <p className="text-white/60 mb-6 text-lg">
+              "The world's most intelligent pet life platform, continuously learning and anticipating your pet's needs."
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/membership">
+                <Button size="lg" className="bg-white text-purple-900 hover:bg-purple-50 px-8 py-6 text-lg">
+                  <Zap className="w-5 h-5 mr-2" />
+                  Start Your Pet's Soul
+                </Button>
+              </Link>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg"
+                onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+              >
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Talk to Mira
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
