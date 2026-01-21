@@ -3350,7 +3350,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                         </Button>
                       </div>
                       <ul className="text-xs text-amber-700 space-y-1">
-                        {(Array.isArray(aiActions) ? aiActions : [aiActions]).slice(0, 4).map((action, idx) => (
+                        {(Array.isArray(aiActions) ? aiActions : aiActions ? [aiActions] : []).slice(0, 4).map((action, idx) => (
                           <li key={idx} className="flex items-start gap-1">
                             <span className="text-amber-500">•</span> {action}
                           </li>
