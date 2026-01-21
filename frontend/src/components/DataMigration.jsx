@@ -3,8 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { Download, Upload, Database, RefreshCw, CheckCircle, AlertTriangle } from 'lucide-react';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { getApiUrl } from '../utils/api';
 
 export default function DataMigration({ adminAuth }) {
   const [stats, setStats] = useState(null);
