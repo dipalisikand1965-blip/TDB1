@@ -971,14 +971,18 @@ async def admin_get_buddy_connections(username: str = Depends(verify_admin)):
 @stay_social_admin_router.post("/seed-products")
 async def admin_seed_products(username: str = Depends(verify_admin)):
     """Seed Stay Bundles and Social Events"""
-    bundles_result = await seed_stay_bundles(db)
-    socials_result = await seed_sample_socials(db)
-    
-    return {
-        "message": "Stay products seeded successfully!",
-        "bundles": bundles_result,
-        "socials": socials_result
-    }
+    try:
+        bundles_result = await seed_stay_bundles(db)
+        socials_result = await seed_sample_socials(db)
+        
+        return {
+            "message": "Stay products seeded successfully!",
+            "bundles": bundles_result,
+            "socials": socials_result
+        }
+    except Exception as e:
+        logger.error(f"Error seeding stay products: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to seed products: {str(e)}")
 
 
 # ==================== SEEDING ====================
