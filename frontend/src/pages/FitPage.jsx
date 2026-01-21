@@ -699,6 +699,14 @@ const FitPage = () => {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Mira Contextual Panel */}
+      <div className="hidden lg:block fixed right-4 top-24 w-72 z-30">
+        <MiraContextPanel pillar="fit" />
+      </div>
+      <div className="lg:hidden fixed bottom-20 right-4 w-80 max-w-[calc(100vw-2rem)] z-30">
+        <MiraContextPanel pillar="fit" position="bottom" />
+      </div>
     </div>
   );
 };
