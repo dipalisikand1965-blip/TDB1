@@ -249,10 +249,15 @@ const ProductListing = ({ category = 'all' }) => {
     fetchProducts();
   }, [category, searchQuery]);
 
-  // Reset visible count when category or filters change
-  useEffect(() => {
+  // Use a key-based approach to reset visible count
+  const filterKey = `${category}-${searchQuery}-${priceRange}-${sortBy}`;
+  const [lastFilterKey, setLastFilterKey] = useState(filterKey);
+  
+  // Reset visible count when filters change
+  if (filterKey !== lastFilterKey) {
+    setLastFilterKey(filterKey);
     setVisibleCount(PRODUCTS_PER_PAGE);
-  }, [category, searchQuery, priceRange, sortBy]);
+  }
 
   let filteredProducts = [...products];
 
