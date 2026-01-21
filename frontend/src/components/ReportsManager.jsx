@@ -155,12 +155,129 @@ const ReportsManager = ({ authHeaders }) => {
     } catch (error) {
       console.error('Failed to fetch stay report:', error);
     }
-  }, [authHeaders, period]);
+  }, [authHeaders, getDateParams]);
+
+  // Fetch care report
+  const fetchCareReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/care?${getDateParams()}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setCareReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch care report:', error);
+    }
+  }, [authHeaders, getDateParams]);
+
+  // Fetch travel report
+  const fetchTravelReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/travel?${getDateParams()}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setTravelReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch travel report:', error);
+    }
+  }, [authHeaders, getDateParams]);
+
+  // Fetch shop report
+  const fetchShopReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/shop?${getDateParams()}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setShopReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch shop report:', error);
+    }
+  }, [authHeaders, getDateParams]);
+
+  // Fetch enjoy report
+  const fetchEnjoyReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/enjoy?${getDateParams()}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setEnjoyReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch enjoy report:', error);
+    }
+  }, [authHeaders, getDateParams]);
+
+  // Fetch club report
+  const fetchClubReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/club?${getDateParams()}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setClubReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch club report:', error);
+    }
+  }, [authHeaders, getDateParams]);
+
+  // Fetch learn report
+  const fetchLearnReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/learn?${getDateParams()}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setLearnReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch learn report:', error);
+    }
+  }, [authHeaders, getDateParams]);
+
+  // Fetch adopt report
+  const fetchAdoptReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/adopt?${getDateParams()}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setAdoptReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch adopt report:', error);
+    }
+  }, [authHeaders, getDateParams]);
+
+  // Fetch insure report
+  const fetchInsureReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/insure?${getDateParams()}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setInsureReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch insure report:', error);
+    }
+  }, [authHeaders, getDateParams]);
+
+  // Fetch farewell report
+  const fetchFarewellReport = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/farewell?${getDateParams()}`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setFarewellReport(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch farewell report:', error);
+    }
+  }, [authHeaders, getDateParams]);
 
   // Fetch pillar comparison
   const fetchPillarComparison = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/reports/pillars/comparison?period=${period}`, { headers: authHeaders });
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/comparison?${getDateParams()}`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setPillarComparison(data);
@@ -168,12 +285,12 @@ const ReportsManager = ({ authHeaders }) => {
     } catch (error) {
       console.error('Failed to fetch pillar comparison:', error);
     }
-  }, [authHeaders, period]);
+  }, [authHeaders, getDateParams]);
 
   // Fetch partner report
   const fetchPartnerReport = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/reports/pillars/partners?period=${period}`, { headers: authHeaders });
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/partners?${getDateParams()}`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setPartnerReport(data);
@@ -181,12 +298,12 @@ const ReportsManager = ({ authHeaders }) => {
     } catch (error) {
       console.error('Failed to fetch partner report:', error);
     }
-  }, [authHeaders, period]);
+  }, [authHeaders, getDateParams]);
 
   // Fetch mira AI report
   const fetchMiraReport = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/reports/pillars/mira?period=${period}`, { headers: authHeaders });
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/mira?${getDateParams()}`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setMiraReport(data);
@@ -194,7 +311,7 @@ const ReportsManager = ({ authHeaders }) => {
     } catch (error) {
       console.error('Failed to fetch mira report:', error);
     }
-  }, [authHeaders, period]);
+  }, [authHeaders, getDateParams]);
 
   // Fetch executive summary
   const fetchExecutiveSummary = useCallback(async () => {
