@@ -168,7 +168,10 @@ const MiraContextPanel = ({
   const fetchContext = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${getApiUrl()}/api/mira/context`, {
+      const apiUrl = getApiUrl();
+      console.log('[MiraPanel] Fetching context from:', `${apiUrl}/api/mira/context`);
+      
+      const response = await fetch(`${apiUrl}/api/mira/context`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -179,8 +182,11 @@ const MiraContextPanel = ({
         })
       });
       
+      console.log('[MiraPanel] Response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('[MiraPanel] Context loaded:', data.pillar_note?.substring(0, 50));
         setContext(data);
         
         // Set initial welcome message for chat
@@ -196,7 +202,7 @@ const MiraContextPanel = ({
         if (data.selected_pet?.id) {
           try {
             const recsResponse = await fetch(
-              `${getApiUrl()}/api/mira/intelligence/recommendations/${data.selected_pet.id}?pillar=${pillar}&limit=3`,
+              `${apiUrl}/api/mira/intelligence/recommendations/${data.selected_pet.id}?pillar=${pillar}&limit=3`,
               {
                 headers: {
                   ...(token && { 'Authorization': `Bearer ${token}` })
@@ -211,13 +217,31 @@ const MiraContextPanel = ({
             console.debug('Recommendations fetch failed:', recError);
           }
         }
+      } else {
+        // Even if context fails, set a default message
+        console.error('[MiraPanel] Context fetch failed:', response.status);
+        setContext({
+          pillar_note: `I'm Mira, your ${config.name} concierge. How can I help you today?`,
+          user: null,
+          pets: [],
+          selected_pet: null,
+          suggestions: []
+        });
       }
     } catch (error) {
-      console.error('Error fetching Mira context:', error);
+      console.error('[MiraPanel] Error fetching context:', error);
+      // Set default context on error so panel still shows
+      setContext({
+        pillar_note: `I'm Mira, your ${config.name} concierge. How can I help you today?`,
+        user: null,
+        pets: [],
+        selected_pet: null,
+        suggestions: []
+      });
     } finally {
       setLoading(false);
     }
-  }, [token, pillar]);
+  }, [token, pillar, config.name]);
   
   useEffect(() => {
     fetchContext();
