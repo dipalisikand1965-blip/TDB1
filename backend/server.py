@@ -558,6 +558,66 @@ Need help choosing? Chat with Mira, our Concierge®!"""
     encoded_message = urllib.parse.quote(message)
     return f"https://wa.me/{WHATSAPP_NUMBER}?text={encoded_message}"
 
+
+async def force_initialize_database():
+    """Force initialize database on every startup - ensures data survives deployments"""
+    from passlib.context import CryptContext
+    import uuid
+    
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    
+    try:
+        # 1. Force create admin credentials
+        admin_exists = await db.admin_config.find_one({"type": "credentials"})
+        if not admin_exists:
+            await db.admin_config.insert_one({
+                "type": "credentials",
+                "username": ADMIN_USERNAME,
+                "password": ADMIN_PASSWORD,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+            logger.info(f"✓ AUTO-CREATED admin: {ADMIN_USERNAME}")
+        else:
+            logger.info(f"✓ Admin exists: {admin_exists.get('username')}")
+        
+        # 2. Force create default user
+        default_email = "dipali@clubconcierge.in"
+        user_exists = await db.users.find_one({"email": default_email})
+        if not user_exists:
+            password_hash = pwd_context.hash("lola4304")
+            await db.users.insert_one({
+                "id": str(uuid.uuid4()),
+                "email": default_email,
+                "password_hash": password_hash,
+                "name": "Dipali",
+                "phone": None,
+                "membership_tier": "free",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+            logger.info(f"✓ AUTO-CREATED user: {default_email}")
+        else:
+            # Ensure password_hash exists
+            if not user_exists.get("password_hash"):
+                password_hash = pwd_context.hash("lola4304")
+                await db.users.update_one(
+                    {"email": default_email},
+                    {"$set": {"password_hash": password_hash}}
+                )
+                logger.info(f"✓ Fixed password for: {default_email}")
+            else:
+                logger.info(f"✓ User exists: {default_email}")
+        
+        # 3. Check products count
+        product_count = await db.products.count_documents({})
+        logger.info(f"✓ Products in database: {product_count}")
+        
+        logger.info("=== DATABASE INITIALIZATION COMPLETE ===")
+        
+    except Exception as e:
+        logger.error(f"Database initialization error: {e}")
+        # Continue anyway - don't block startup
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
