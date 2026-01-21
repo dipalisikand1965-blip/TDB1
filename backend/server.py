@@ -102,6 +102,12 @@ from pet_vault_routes import (
     pet_vault_admin_router,
     set_pet_vault_db
 )
+from soul_intelligence import set_soul_db
+from pet_gate_routes import (
+    pet_gate_router,
+    soul_drip_router,
+    set_pet_gate_db
+)
 from admin_auth import (
     router as admin_auth_router,
     set_admin_db,
