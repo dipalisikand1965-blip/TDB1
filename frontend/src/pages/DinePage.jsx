@@ -14,6 +14,7 @@ import { Input } from '../components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
+import MiraContextPanel from '../components/MiraContextPanel';
 
 // Get user from localStorage
 const getUser = () => {
