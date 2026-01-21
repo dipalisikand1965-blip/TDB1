@@ -23,9 +23,24 @@ def set_pillar_reports_admin_verify(verify_func):
 router = APIRouter(prefix="/api/admin/reports/pillars", tags=["Pillar Reports"])
 
 # Helper functions
-def get_date_range(period: str):
-    """Get start and end dates based on period"""
+def get_date_range(period: str, start_date: str = None, end_date: str = None):
+    """Get start and end dates based on period or custom dates"""
     now = datetime.now(timezone.utc)
+    
+    # Custom date range takes priority
+    if start_date and end_date:
+        try:
+            start = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
+            end = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
+            if not start.tzinfo:
+                start = start.replace(tzinfo=timezone.utc)
+            if not end.tzinfo:
+                end = end.replace(tzinfo=timezone.utc)
+            # Set end to end of day
+            end = end.replace(hour=23, minute=59, second=59)
+            return start.isoformat(), end.isoformat()
+        except:
+            pass  # Fall through to period-based logic
     
     if period == "today":
         start = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -49,14 +64,18 @@ def get_date_range(period: str):
         last_month_end = first_of_month - timedelta(days=1)
         start = last_month_end.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         end = last_month_end.replace(hour=23, minute=59, second=59)
+    elif period == "this_quarter":
+        quarter = (now.month - 1) // 3
+        start = now.replace(month=quarter * 3 + 1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        end = now
+    elif period == "ytd" or period == "this_year":
+        start = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        end = now
     elif period == "last_30_days":
         start = now - timedelta(days=30)
         end = now
     elif period == "last_90_days":
         start = now - timedelta(days=90)
-        end = now
-    elif period == "this_year":
-        start = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
         end = now
     else:
         start = now - timedelta(days=30)
@@ -66,7 +85,7 @@ def get_date_range(period: str):
 
 
 @router.get("/summary")
-async def get_pillar_summary(period: str = "this_month"):
+async def get_pillar_summary(period: str = "this_month", start_date: str = None, end_date: str = None):
     """Get summary metrics for all pillars"""
     start_date, end_date = get_date_range(period)
     
