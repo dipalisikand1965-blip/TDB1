@@ -9400,10 +9400,8 @@ AGENT_PERMISSIONS = [
 
 
 @app.put("/api/admin/agents/{agent_id}/password")
-async def reset_agent_password(agent_id: str, password_data: AgentPasswordChange, credentials: HTTPBasicCredentials = Depends(security)):
+async def reset_agent_password(agent_id: str, password_data: AgentPasswordChange, admin_user: str = Depends(verify_admin_auth)):
     """Reset agent password (admin only)"""
-    verify_admin(credentials)
-    
     # Hash the new password
     password_hash = pwd_context.hash(password_data.new_password)
     
