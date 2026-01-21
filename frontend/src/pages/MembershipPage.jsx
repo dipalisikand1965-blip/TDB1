@@ -382,15 +382,31 @@ const MembershipPage = () => {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {benefits.map((benefit, idx) => (
-              <div key={idx} className="flex gap-4 p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+          {/* Primary benefits - full visual weight */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            {benefits.filter(b => b.primary).map((benefit, idx) => (
+              <div key={idx} className="flex gap-4 p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow" data-testid={`benefit-${benefit.title.toLowerCase().replace(/\s+/g, '-')}`}>
                 <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
                   <benefit.icon className="w-6 h-6 text-purple-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">{benefit.title}</h3>
                   <p className="text-sm text-gray-500">{benefit.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Secondary benefits (Paw Rewards) - reduced visual weight */}
+          <div className="flex justify-center">
+            {benefits.filter(b => !b.primary).map((benefit, idx) => (
+              <div key={idx} className="flex gap-3 p-4 bg-gray-50 rounded-xl max-w-sm" data-testid={`benefit-${benefit.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                  <benefit.icon className="w-5 h-5 text-gray-500" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-700 text-sm">{benefit.title}</h3>
+                  <p className="text-xs text-gray-400">{benefit.desc}</p>
                 </div>
               </div>
             ))}
