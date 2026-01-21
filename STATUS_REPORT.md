@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://unified-paws.preview.emergentagent.com
+**Preview URL:** https://soulfulfur.preview.emergentagent.com
 
 ---
 
