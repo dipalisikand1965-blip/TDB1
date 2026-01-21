@@ -456,3 +456,173 @@ async def logout_user(request: dict):
     if session_token:
         await db.user_sessions.delete_one({"session_token": session_token})
     return {"message": "Logged out successfully"}
+
+
+# ============ MEMBERSHIP ONBOARDING ============
+
+class PetOnboard(BaseModel):
+    name: str
+    breed: str
+    gender: Optional[str] = None
+    birth_date: Optional[str] = None
+    gotcha_date: Optional[str] = None
+    weight: Optional[float] = None
+    weight_unit: Optional[str] = "kg"
+    is_neutered: Optional[bool] = None
+    species: str = "dog"
+
+class ParentOnboard(BaseModel):
+    name: str
+    email: EmailStr
+    phone: str
+    whatsapp: Optional[str] = None
+    address: Optional[str] = None
+    city: str
+    pincode: str
+    password: str
+
+class MembershipOnboardRequest(BaseModel):
+    parent: ParentOnboard
+    pets: list[PetOnboard]
+    plan_type: str = "annual"
+    pet_count: int = 1
+
+@auth_router.post("/membership/onboard")
+async def membership_onboard(data: MembershipOnboardRequest):
+    """
+    Onboard a new member with pet parent details and pet profiles.
+    Creates user account, pet profiles, and prepares for payment.
+    """
+    # Check if email exists
+    existing = await db.users.find_one({"email": data.parent.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered. Please login.")
+    
+    user_id = str(uuid.uuid4())
+    pet_ids = []
+    
+    try:
+        # Create pet profiles first
+        for pet_data in data.pets:
+            pet_id = str(uuid.uuid4())
+            pet_doc = {
+                "id": pet_id,
+                "name": pet_data.name,
+                "breed": pet_data.breed,
+                "species": pet_data.species,
+                "gender": pet_data.gender,
+                "date_of_birth": pet_data.birth_date,
+                "gotcha_day": pet_data.gotcha_date,
+                "weight": pet_data.weight,
+                "weight_unit": pet_data.weight_unit,
+                "is_neutered": pet_data.is_neutered,
+                "owner_email": data.parent.email,
+                "owner_name": data.parent.name,
+                "owner_id": user_id,
+                "identity": {
+                    "name": pet_data.name,
+                    "breed": pet_data.breed,
+                    "gender": pet_data.gender,
+                    "weight": pet_data.weight,
+                    "weight_unit": pet_data.weight_unit
+                },
+                "doggy_soul_answers": {},
+                "soul_enrichments": [],
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.pets.insert_one(pet_doc)
+            pet_ids.append(pet_id)
+            logger.info(f"Created pet profile: {pet_data.name} ({pet_id})")
+        
+        # Create user account (pending membership until payment)
+        user_doc = {
+            "id": user_id,
+            "email": data.parent.email,
+            "password_hash": get_password_hash_secure(data.parent.password),
+            "name": data.parent.name,
+            "phone": data.parent.phone,
+            "whatsapp": data.parent.whatsapp or data.parent.phone,
+            "address": data.parent.address,
+            "city": data.parent.city,
+            "pincode": data.parent.pincode,
+            "pet_ids": pet_ids,
+            "membership_tier": "pending",  # Will be upgraded after payment
+            "membership_type": data.plan_type,
+            "membership_expires": None,
+            "chat_count_today": 0,
+            "last_chat_date": None,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.users.insert_one(user_doc)
+        logger.info(f"Created user account: {data.parent.email} ({user_id})")
+        
+        # Calculate pricing
+        base_price = 999 if data.plan_type == "annual" else 99
+        additional_pet_price = 499 if data.plan_type == "annual" else 49
+        additional_pets = max(0, len(data.pets) - 1)
+        subtotal = base_price + (additional_pets * additional_pet_price)
+        gst = int(subtotal * 0.18)
+        total = subtotal + gst
+        
+        # Create pending order for payment
+        order_id = f"TDC-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+        order_doc = {
+            "order_id": order_id,
+            "user_id": user_id,
+            "user_email": data.parent.email,
+            "type": "membership",
+            "plan_type": data.plan_type,
+            "pet_count": len(data.pets),
+            "pet_ids": pet_ids,
+            "amount": {
+                "base": base_price,
+                "additional_pets": additional_pets * additional_pet_price,
+                "subtotal": subtotal,
+                "gst": gst,
+                "total": total
+            },
+            "status": "pending",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.membership_orders.insert_one(order_doc)
+        logger.info(f"Created membership order: {order_id}")
+        
+        # Admin notification
+        await notify_admin(
+            notification_type="member",
+            title=f"🐾 New Membership Signup Started",
+            message=f"{data.parent.name} ({data.parent.email}) started membership with {len(data.pets)} pet(s). Awaiting payment.",
+            category="general",
+            related_id=user_id,
+            link_to="/admin?tab=members",
+            priority="high",
+            metadata={
+                "name": data.parent.name,
+                "email": data.parent.email,
+                "city": data.parent.city,
+                "pets": [p.name for p in data.pets],
+                "plan": data.plan_type,
+                "amount": total
+            }
+        )
+        
+        return {
+            "success": True,
+            "user_id": user_id,
+            "order_id": order_id,
+            "pet_ids": pet_ids,
+            "amount": total,
+            "message": "Account created. Please complete payment."
+        }
+        
+    except Exception as e:
+        # Cleanup on error
+        logger.error(f"Membership onboard error: {e}")
+        # Try to cleanup created records
+        if pet_ids:
+            await db.pets.delete_many({"id": {"$in": pet_ids}})
+        await db.users.delete_one({"id": user_id})
+        raise HTTPException(status_code=500, detail=f"Failed to create membership: {str(e)}")
+
