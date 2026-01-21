@@ -109,6 +109,49 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Fetch user's pets if logged in
+  useEffect(() => {
+    const fetchUserPets = async () => {
+      if (!user?.email) {
+        setLoadingPets(false);
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${getApiUrl()}/api/pets?email=${user.email}`, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setUserPets(data.pets || []);
+        }
+      } catch (error) {
+        console.error('Error fetching pets:', error);
+      } finally {
+        setLoadingPets(false);
+      }
+    };
+    
+    fetchUserPets();
+  }, [user, token]);
+
+  // Handle opening Mira AI
+  const handleOpenMira = () => {
+    window.dispatchEvent(new CustomEvent('openMiraAI'));
+  };
+
+  // If logged in with pets, show personalized dashboard
+  if (user && userPets.length > 0 && !loadingPets) {
+    return (
+      <PersonalizedDashboard 
+        user={user} 
+        pets={userPets} 
+        onOpenMira={handleOpenMira}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen" data-testid="home-page">
       {/* Hero Section - Ultra Modern */}
