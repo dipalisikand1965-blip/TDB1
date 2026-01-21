@@ -3178,10 +3178,10 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                       </Button>
                     </div>
                     <div className="space-y-2">
-                      <div className="bg-white rounded-lg p-3 border border-purple-200 text-sm max-h-32 overflow-y-auto">
+                      <div className="bg-white rounded-lg p-2 border border-purple-200 text-sm max-h-20 overflow-y-auto">
                         {aiDraft.draft}
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <Button 
                           size="sm" 
                           className="bg-purple-600 hover:bg-purple-700 text-white"
@@ -3195,11 +3195,10 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                             variant="outline"
                             onClick={() => applyAiDraft(aiDraft.quick_draft)}
                           >
-                            Use Quick Version
+                            Quick
                           </Button>
                         )}
-                        <div className="flex-1" />
-                        <Button size="sm" variant="ghost" className="text-green-600">
+                        <Button size="sm" variant="ghost" className="text-green-600 ml-auto">
                           <ThumbsUp className="w-3 h-3" />
                         </Button>
                         <Button size="sm" variant="ghost" className="text-red-600">
