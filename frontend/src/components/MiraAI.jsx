@@ -138,7 +138,7 @@ I am here to assist with anything your companion may need — from celebrating s
       const errorMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "⚠️ I'm having trouble connecting right now. Please try again in a moment, or contact us directly at woof@thedoggycompany.in"
+        content: "I apologise — I am experiencing a brief connection difficulty. Please try again in a moment, or reach us directly at woof@thedoggycompany.in"
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
