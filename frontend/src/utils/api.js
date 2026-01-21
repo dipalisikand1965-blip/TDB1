@@ -12,7 +12,7 @@ export const getApiUrl = () => {
     // For the custom domain thedoggycompany.in - use the Emergent API endpoint
     // This is a workaround until custom domain routing is fixed
     if (hostname === 'thedoggycompany.in' || hostname === 'www.thedoggycompany.in') {
-      const apiUrl = 'https://soulfulfur.preview.emergentagent.com';
+      const apiUrl = 'https://doggy-concierge.preview.emergentagent.com';
       console.log('[API] Using Emergent URL for custom domain:', apiUrl);
       return apiUrl;
     }
