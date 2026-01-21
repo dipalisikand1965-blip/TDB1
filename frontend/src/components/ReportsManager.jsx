@@ -108,7 +108,7 @@ const ReportsManager = ({ authHeaders }) => {
   // Fetch pillar summary
   const fetchPillarSummary = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/reports/pillars/summary?period=${period}`, { headers: authHeaders });
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/summary?${getDateParams()}`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setPillarSummary(data);
@@ -116,12 +116,12 @@ const ReportsManager = ({ authHeaders }) => {
     } catch (error) {
       console.error('Failed to fetch pillar summary:', error);
     }
-  }, [authHeaders, period]);
+  }, [authHeaders, getDateParams]);
 
   // Fetch celebrate report
   const fetchCelebrateReport = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/reports/pillars/celebrate?period=${period}`, { headers: authHeaders });
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/celebrate?${getDateParams()}`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setCelebrateReport(data);
@@ -129,12 +129,12 @@ const ReportsManager = ({ authHeaders }) => {
     } catch (error) {
       console.error('Failed to fetch celebrate report:', error);
     }
-  }, [authHeaders, period]);
+  }, [authHeaders, getDateParams]);
 
   // Fetch dine report
   const fetchDineReport = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/reports/pillars/dine?period=${period}`, { headers: authHeaders });
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/dine?${getDateParams()}`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setDineReport(data);
@@ -142,12 +142,12 @@ const ReportsManager = ({ authHeaders }) => {
     } catch (error) {
       console.error('Failed to fetch dine report:', error);
     }
-  }, [authHeaders, period]);
+  }, [authHeaders, getDateParams]);
 
   // Fetch stay report
   const fetchStayReport = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/reports/pillars/stay?period=${period}`, { headers: authHeaders });
+      const res = await fetch(`${API_URL}/api/admin/reports/pillars/stay?${getDateParams()}`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setStayReport(data);
