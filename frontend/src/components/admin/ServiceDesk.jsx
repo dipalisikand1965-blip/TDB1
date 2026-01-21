@@ -2695,7 +2695,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
               </div>
 
               {/* Content - Scrollable Area */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+              <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{minHeight: '200px', maxHeight: 'calc(100vh - 400px)'}}>
                 {/* Smart Suggestions - Magic Prompts */}
                 {petSoulData && (
                   <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-3 shadow-sm">
