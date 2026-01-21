@@ -222,9 +222,13 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
   - Quiet achievements (only at Stage 3+, no gamification)
   - Personalized care insights (NOT product pushes)
   - Single gentle next step question
+- ✅ **Functional Gentle Next Step** - Answers save to Pet Soul and advance to next question
+- ✅ **Clickable Pillar Cards** - Click to expand and see pillar-wise preferences
+- ✅ **Pillar Preferences API** - `/api/pet-gate/pillar-preferences/{pet_id}` returns all data organized by pillar
+- ✅ **Journey Answer API** - `/api/soul-drip/journey-answer` saves answers from Journey page
 - ✅ **Service Desk AI Fix** - Fixed NoneType error in ticket AI draft when pet info is missing
 - ✅ **Ticket Click Handler** - Added missing onClick to ticket cards in Service Desk
-- ✅ **Context-Aware Homepage CTAs** - "Become a Member" only for guests; logged-in users see "Start Your Pet Soul"
+- ✅ **Soul Enrichment Fix** - Answers now save to both `doggy_soul_answers` and `soul_enrichments`
 
 ### January 21, 2026 (Session 2)
 - ✅ **Celebrate Page Hero** - Added category-specific hero sections with dynamic backgrounds, badges, and MiraContextPanel placement
