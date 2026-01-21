@@ -28,22 +28,69 @@ const MiraAI = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [userPets, setUserPets] = useState([]);
   const [petsLoaded, setPetsLoaded] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content: `**Good day.** I am Mira, your dedicated Concierge at The Doggy Company.
-
-I am here to assist with anything your companion may need — from celebrating special moments to travel arrangements, dining, wellness, and beyond.
-
-**How may I be of service today?**`
-    }
-  ]);
+  const [welcomeGenerated, setWelcomeGenerated] = useState(false);
+  const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId] = useState(generateSessionId);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Generate personalized welcome message based on user and pets
+  const generateWelcomeMessage = useCallback(() => {
+    if (user && userPets.length > 0) {
+      const petNames = userPets.map(p => p.name).join(', ');
+      const firstPet = userPets[0];
+      const breed = firstPet.identity?.breed || firstPet.breed || '';
+      const allergies = firstPet.health?.allergies?.join(', ') || '';
+      
+      let personalizedWelcome = `**Good day, ${user.name || 'valued guest'}.**\n\nI am Mira, your dedicated Concierge. I see you are here with `;
+      
+      if (userPets.length === 1) {
+        personalizedWelcome += `**${firstPet.name}**`;
+        if (breed) personalizedWelcome += `, your lovely ${breed}`;
+        personalizedWelcome += `.`;
+      } else {
+        personalizedWelcome += `**${petNames}** — what a wonderful family.`;
+      }
+      
+      personalizedWelcome += `\n\nI have your preferences and ${userPets.length === 1 ? `${firstPet.name}'s` : 'your pets\''} profiles ready`;
+      if (allergies) {
+        personalizedWelcome += ` — including dietary considerations`;
+      }
+      personalizedWelcome += `. Every recommendation I offer will be tailored to their specific needs.\n\n**How may I assist you today?**`;
+      
+      return personalizedWelcome;
+    } else if (user) {
+      return `**Good day, ${user.name || 'valued guest'}.**\n\nI am Mira, your dedicated Concierge at The Doggy Company.\n\nI notice you haven't added your pet's profile yet. Creating a **Pet Soul** profile allows me to personalise every recommendation — from birthday cakes to travel arrangements.\n\n**How may I be of service today?**`;
+    } else {
+      return `**Good day.** I am Mira, your dedicated Concierge at The Doggy Company.\n\nI am here to assist with anything your companion may need — from celebrating special moments to travel arrangements, dining, wellness, and beyond.\n\n**How may I be of service today?**`;
+    }
+  }, [user, userPets]);
+
+  // Update welcome message when user/pets data is loaded
+  useEffect(() => {
+    if (petsLoaded && !welcomeGenerated) {
+      setMessages([{
+        id: 'welcome',
+        role: 'assistant',
+        content: generateWelcomeMessage()
+      }]);
+      setWelcomeGenerated(true);
+    }
+  }, [petsLoaded, welcomeGenerated, generateWelcomeMessage]);
+
+  // Set initial welcome for non-logged-in users
+  useEffect(() => {
+    if (!token && !welcomeGenerated) {
+      setMessages([{
+        id: 'welcome',
+        role: 'assistant',
+        content: generateWelcomeMessage()
+      }]);
+      setWelcomeGenerated(true);
+    }
+  }, [token, welcomeGenerated, generateWelcomeMessage]);
 
   // Scroll to bottom when messages change
   const scrollToBottom = useCallback(() => {
