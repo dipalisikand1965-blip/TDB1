@@ -305,7 +305,11 @@ const MemberDirectory = () => {
                     : 0;
                   
                   return (
-                    <tr key={member.id || idx} className="hover:bg-gray-50">
+                    <tr 
+                      key={member.id || idx} 
+                      className="hover:bg-purple-50 cursor-pointer transition-colors"
+                      onClick={() => openMemberProfile(member)}
+                    >
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold">
