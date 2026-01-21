@@ -6604,6 +6604,50 @@ async def get_public_pets(limit: int = 100, skip: int = 0):
     return {"pets": pets}
 
 
+@api_router.post("/pets/public")
+async def create_pet_profile_public(pet: PetProfileCreate):
+    """Create a new pet profile without authentication (public form)"""
+    pet_id = f"pet-{uuid.uuid4().hex[:12]}"
+    now = datetime.now(timezone.utc).isoformat()
+    
+    pet_data = {
+        "id": pet_id,
+        **pet.model_dump(),
+        "owner_email": pet.owner_email,  # Use provided email
+        "achievements": [],
+        "order_history": [],
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    # Auto-add birthday and gotcha day to celebrations if dates provided
+    celebrations = list(pet.celebrations) if pet.celebrations else []
+    
+    if pet.birth_date and not any(c.occasion == "birthday" for c in celebrations):
+        celebrations.append(PetCelebration(
+            occasion="birthday",
+            date=pet.birth_date,
+            is_recurring=True
+        ))
+    
+    if pet.gotcha_date and not any(c.occasion == "gotcha_day" for c in celebrations):
+        celebrations.append(PetCelebration(
+            occasion="gotcha_day",
+            date=pet.gotcha_date,
+            is_recurring=True
+        ))
+    
+    pet_data["celebrations"] = [c.model_dump() for c in celebrations]
+    
+    await db.pets.insert_one(pet_data)
+    
+    # Remove MongoDB _id before returning
+    pet_data.pop("_id", None)
+    
+    logger.info(f"Created public pet profile: {pet_id} - {pet.name}")
+    return {"message": "Pet profile created", "pet": pet_data}
+
+
 async def list_pet_profiles(
     owner_email: Optional[str] = None,
     owner_phone: Optional[str] = None,
