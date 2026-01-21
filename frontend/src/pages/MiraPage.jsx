@@ -619,7 +619,7 @@ const MiraPage = () => {
             {selectedPet && (
               <div className="mb-6">
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
-                  {selectedPet.name}'s Profile
+                  {selectedPet.name}&apos;s Profile
                 </p>
                 <Card className="border-purple-100">
                   <CardContent className="p-4 space-y-3">
