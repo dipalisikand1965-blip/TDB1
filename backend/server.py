@@ -6750,9 +6750,9 @@ async def membership_onboard(data: MembershipOnboardModel):
         await db.users.insert_one(user_doc)
         logger.info(f"Created user account: {data.parent.email} ({user_id})")
         
-        # Calculate pricing
-        base_price = 999 if data.plan_type == "annual" else 99
-        additional_pet_price = 499 if data.plan_type == "annual" else 49
+        # Calculate pricing - Updated to new Founding Member rates
+        base_price = 4999 if data.plan_type == "annual" else 499
+        additional_pet_price = 2499 if data.plan_type == "annual" else 249
         additional_pets = max(0, len(data.pets) - 1)
         subtotal = base_price + (additional_pets * additional_pet_price)
         gst = int(subtotal * 0.18)

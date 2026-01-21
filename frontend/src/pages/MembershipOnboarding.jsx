@@ -242,10 +242,10 @@ const MembershipOnboarding = () => {
     }
   };
 
-  // Calculate pricing
+  // Calculate pricing - Updated to new Founding Member rates
   const getPricing = () => {
-    const basePrice = planType === 'annual' ? 999 : 99;
-    const additionalPetPrice = planType === 'annual' ? 499 : 49;
+    const basePrice = planType === 'annual' ? 4999 : 499;
+    const additionalPetPrice = planType === 'annual' ? 2499 : 249;
     const additionalPets = Math.max(0, petsData.length - 1);
     const subtotal = basePrice + (additionalPets * additionalPetPrice);
     const gst = Math.round(subtotal * 0.18);
