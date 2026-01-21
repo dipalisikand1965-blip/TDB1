@@ -529,6 +529,37 @@ async def create_booking_request(booking: BookingRequest):
     except Exception as e:
         logger.error(f"Failed to auto-create ticket for stay booking: {e}")
     
+    # Create Unified Inbox entry for Stay booking
+    try:
+        inbox_entry = {
+            "request_id": f"STAY-{booking_doc['id']}",
+            "channel": "web",
+            "pillar": "stay",
+            "type": "booking_request",
+            "status": "pending",
+            "customer_name": booking.guest_name,
+            "customer_email": booking.guest_email,
+            "customer_phone": booking.guest_phone,
+            "pet_name": booking.pet_name,
+            "message": f"Stay Booking: {property.get('name')} ({booking.check_in_date} - {booking.check_out_date})",
+            "metadata": {
+                "booking_id": booking_doc["id"],
+                "property_id": property_id,
+                "property_name": property.get("name"),
+                "property_city": property.get("city"),
+                "check_in_date": booking.check_in_date,
+                "check_out_date": booking.check_out_date,
+                "num_adults": booking.num_adults,
+                "num_pets": booking.num_pets,
+                "ticket_id": ticket_id if 'ticket_id' in dir() else None
+            },
+            "created_at": now
+        }
+        await db.channel_intakes.insert_one(inbox_entry)
+        logger.info(f"Created Unified Inbox entry for stay booking {booking_doc['id']}")
+    except Exception as e:
+        logger.error(f"Failed to create Unified Inbox entry for stay booking: {e}")
+    
     return {
         "success": True,
         "booking_id": booking_doc["id"],
