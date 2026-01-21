@@ -1264,8 +1264,6 @@ async def get_mira_context(
     Get contextual Mira data for pillar pages.
     Returns personalized suggestions based on Pet Soul.
     """
-    db = get_db()
-    
     current_pillar = request.current_pillar
     pet_id = request.pet_id
     
