@@ -148,16 +148,15 @@ mongo_url = os.environ.get('MONGO_URL') or 'mongodb://localhost:27017'
 db_name = os.environ.get('DB_NAME') or 'test_database'
 logger.info(f"MongoDB URL: {mongo_url[:30]}... DB: {db_name}")
 try:
-    # Connection settings optimized for both local and Atlas
+    # Connection settings optimized for both local and cloud deployments
+    # More lenient timeouts to handle cold starts and network latency
     client = AsyncIOMotorClient(
         mongo_url,
-        serverSelectionTimeoutMS=10000,
-        connectTimeoutMS=10000,
-        socketTimeoutMS=30000,
+        serverSelectionTimeoutMS=30000,  # Increased from 10s to 30s
+        connectTimeoutMS=30000,          # Increased from 10s to 30s
+        socketTimeoutMS=60000,           # Increased from 30s to 60s
         maxPoolSize=10,
         minPoolSize=1,
-        retryWrites=True,
-        w='majority'
     )
     db = client[db_name]
     logger.info(f"MongoDB connection configured")
