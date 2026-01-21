@@ -197,12 +197,20 @@ const StayManager = ({ getAuthHeader }) => {
         method: 'POST',
         headers: getAuthHeader()
       });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Seed products error:', response.status, errorText);
+        alert(`Failed to seed products: ${response.status}`);
+        return;
+      }
+      
       const data = await response.json();
       alert(data.message || 'Products seeded successfully!');
       fetchData();
     } catch (error) {
       console.error('Error seeding products:', error);
-      alert('Failed to seed products');
+      alert('Failed to seed products: ' + (error.message || 'Network error'));
     }
   };
   
