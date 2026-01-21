@@ -672,21 +672,22 @@ const MembershipPage = () => {
         </div>
       </div>
 
-      {/* CTA Section */}
+      {/* CTA Section - Calmer */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to Give Your Pet the Best Life?
+            Ready to begin your pet&apos;s journey with us?
           </h2>
           <p className="text-white/80 mb-8 max-w-2xl mx-auto">
-            Join thousands of pet parents who've transformed their pet care experience.
+            Start building a life that grows with your pet.
           </p>
           <Button 
             size="lg"
             className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-6 text-lg"
             onClick={() => handleSelectPlan('annual')}
+            data-testid="final-cta-btn"
           >
-            Start Your Journey Today <ArrowRight className="ml-2 w-5 h-5" />
+            Begin Your Journey <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
         </div>
       </div>
