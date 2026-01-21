@@ -6,6 +6,8 @@
  * - Pet Soul sidebar with pet profile
  * - Rich message formatting
  * - Ticket creation and tracking
+ * - Voice input support
+ * - Research mode for factual queries
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -15,12 +17,14 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { API_URL } from '../utils/api';
+import { toast } from 'sonner';
 import {
   Send, Loader2, PawPrint, Sparkles, MessageCircle, 
   Phone, Mail, ChevronDown, Heart, Shield, Star,
   Car, Home, Scissors, UtensilsCrossed, PartyPopper,
   HelpCircle, FileText, AlertTriangle, Crown, Calendar,
-  MapPin, Zap, ArrowRight, User, ChevronRight
+  MapPin, Zap, ArrowRight, User, ChevronRight, Mic, MicOff, 
+  RotateCcw, History, Search
 } from 'lucide-react';
 
 // Pillar Quick Actions
