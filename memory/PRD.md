@@ -213,6 +213,12 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
 
 ## Changelog
 
+### January 21, 2026 (Session 3)
+- ✅ **Pet Soul Journey Component** - Created `PetSoulJourney.jsx` - replaces generic membership page for logged-in users with pets
+- ✅ **Membership Page Personalization** - Both `Membership.jsx` and `MembershipPage.jsx` now conditionally render `PetSoulJourney` for members
+- ✅ **Context-Aware CTAs** - Homepage now shows "Become a Member" only for guests; logged-in users see "Start Your Pet Soul" or "Add Your Pet"
+- ✅ **Pet Soul Journey Features**: Pet name & breed, Soul Score (circular progress), 8 Pillars progress, Achievements, Continue Journey actions, Pet switcher for multi-pet households
+
 ### January 21, 2026 (Session 2)
 - ✅ **Celebrate Page Hero** - Added category-specific hero sections with dynamic backgrounds, badges, and MiraContextPanel placement
 - ✅ **Admin Pets Endpoint** - Fixed Pydantic validation error in `/api/admin/pets` (added `Depends(security)` to verify_admin)
