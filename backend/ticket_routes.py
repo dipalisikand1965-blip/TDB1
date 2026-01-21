@@ -1261,6 +1261,7 @@ class AIReplyRequest(BaseModel):
 async def ai_draft_reply(request: AIReplyRequest):
     """
     Generate AI-powered reply draft for a ticket using GPT
+    With Pet Soul personalization - no generic pet language
     """
     db = get_db()
     
@@ -1273,6 +1274,44 @@ async def ai_draft_reply(request: AIReplyRequest):
     member = ticket.get("member", {})
     messages = ticket.get("messages", [])
     
+    # ========== PET SOUL INTEGRATION ==========
+    # Load Pet Soul data for personalization
+    pet_soul_context = {}
+    pet_info = ticket.get("pet", {})
+    pet_name = pet_info.get("name")
+    
+    if pet_name or member.get("email"):
+        # Try to find pet by name or owner email
+        pet_query = {}
+        if pet_info.get("id"):
+            pet_query = {"id": pet_info.get("id")}
+        elif pet_name:
+            pet_query = {"name": pet_name}
+        elif member.get("email"):
+            pet_query = {"owner_email": member.get("email")}
+        
+        if pet_query:
+            pet_doc = await db.pets.find_one(pet_query, {"_id": 0})
+            if pet_doc:
+                # Extract Pet Soul data
+                pet_soul_context = {
+                    "name": pet_doc.get("name"),
+                    "breed": pet_doc.get("breed") or pet_doc.get("identity", {}).get("breed"),
+                    "age": pet_doc.get("age") or pet_doc.get("birth_date"),
+                    "gender": pet_doc.get("gender") or pet_doc.get("identity", {}).get("gender"),
+                    "preferences": {
+                        "favorite_treats": pet_doc.get("preferences", {}).get("favorite_treats", []),
+                        "allergies": pet_doc.get("preferences", {}).get("allergies", []),
+                    },
+                    "personality": {
+                        "anxiety_triggers": pet_doc.get("personality", {}).get("anxiety_triggers", []),
+                        "handling_comfort": pet_doc.get("doggy_soul_answers", {}).get("handling_comfort"),
+                    },
+                    "recent_activity": ticket.get("category", "inquiry")
+                }
+                # Clean up empty values
+                pet_soul_context = {k: v for k, v in pet_soul_context.items() if v}
+    
     # Get conversation history
     conversation = "\n".join([
         f"[{m.get('sender', 'unknown').upper()}] {m.get('content', '')[:500]}"
@@ -1281,28 +1320,62 @@ async def ai_draft_reply(request: AIReplyRequest):
     
     # Define tone based on reply_type
     tone_instructions = {
-        "professional": "professional, courteous, and business-appropriate",
-        "friendly": "warm, friendly, and personable while remaining professional",
+        "professional": "professional, courteous, and efficient",
+        "friendly": "warm and personable while remaining professional",
         "empathetic": "deeply empathetic, understanding, and supportive",
-        "quick": "brief, to-the-point, and efficient"
+        "concise": "brief, to-the-point, and efficient",
+        "formal": "formal and business-appropriate",
+        "shorter": "concise version of the draft - reduce length by 50%",
+        "more_empathetic": "more caring and understanding version",
+        "remove_fluff": "stripped of unnecessary pleasantries, just the essential information"
     }
     
     tone = tone_instructions.get(request.reply_type, tone_instructions["professional"])
     
-    # Build the prompt
-    system_prompt = f"""You are a world-class pet concierge at The Doggy Company (TDB), India's premier pet lifestyle brand.
-Your role is to draft exceptional customer service replies that make members feel valued and cared for.
+    # Build Pet Soul context string
+    pet_context_str = ""
+    if pet_soul_context:
+        pet_context_str = f"""
+PET SOUL DATA (Use this for genuine personalization):
+- Pet Name: {pet_soul_context.get('name', 'Unknown')}
+- Breed: {pet_soul_context.get('breed', 'Not specified')}
+- Age/DOB: {pet_soul_context.get('age', 'Not specified')}
+- Gender: {pet_soul_context.get('gender', 'Not specified')}"""
+        
+        if pet_soul_context.get('preferences', {}).get('favorite_treats'):
+            pet_context_str += f"\n- Favorite Treats: {', '.join(pet_soul_context['preferences']['favorite_treats'])}"
+        if pet_soul_context.get('preferences', {}).get('allergies'):
+            pet_context_str += f"\n- Allergies: {', '.join(pet_soul_context['preferences']['allergies'])}"
+        if pet_soul_context.get('personality', {}).get('anxiety_triggers'):
+            pet_context_str += f"\n- Anxiety Triggers: {', '.join(pet_soul_context['personality']['anxiety_triggers'])}"
+        if pet_soul_context.get('personality', {}).get('handling_comfort'):
+            pet_context_str += f"\n- Handling Comfort: {pet_soul_context['personality']['handling_comfort']}"
+    
+    # Build the prompt - NO GENERIC PET LANGUAGE
+    system_prompt = f"""You are a professional pet concierge at The Doggy Company (TDC).
+Your role is to draft exceptional, genuinely personalized customer service replies.
 
-BRAND VOICE:
-- Warm, premium, and caring
-- We call pet parents "Pet Parents" and their pets by name when known
-- We use terms like "fur baby", "pawsome", "woof" naturally
-- We are the "Pet Life Operating System" - we handle everything for their pets
+CRITICAL RULES - LANGUAGE:
+1. NEVER use generic pet phrases like:
+   - "fur baby" / "furbaby"
+   - "pawsome" / "paw-fect"
+   - "woof" / "bark-tastic"
+   - "four-legged friend"
+   - "furry companion"
+   
+2. Reference the pet by name naturally (1-2 times max)
+3. Use known preferences subtly and naturally
+4. Be warm but professional - not cutesy
+5. No invented personality traits - only use what's in Pet Soul data
 
 MEMBER CONTEXT:
 - Name: {member.get('name', 'Valued Member')}
-- Pet Name: {ticket.get('pet', {}).get('name', 'their pet')}
+- Email: {member.get('email', '')}
+{pet_context_str if pet_context_str else f"- Pet: {pet_name or 'their pet'}"}
+
+TICKET CONTEXT:
 - Category: {ticket.get('category', 'general')}
+- Sub-category: {ticket.get('sub_category', '')}
 - Urgency: {ticket.get('urgency', 'medium')}
 - Status: {ticket.get('status', 'open')}
 
@@ -1314,16 +1387,16 @@ TICKET DESCRIPTION:
 CONVERSATION HISTORY:
 {conversation if conversation else 'No previous messages'}
 
-{f"ADDITIONAL CONTEXT: {request.additional_context}" if request.additional_context else ""}
+{f"ADDITIONAL CONTEXT FROM ADMIN: {request.additional_context}" if request.additional_context else ""}
 
 Generate a reply that:
-1. Addresses their specific concern
-2. Shows genuine care for them and their pet
+1. Addresses their specific concern directly
+2. Uses Pet Soul data for subtle, natural personalization (NOT generic language)
 3. Provides clear next steps or solutions
-4. Ends with a warm sign-off
-5. Is ready to send (no placeholders)
+4. Ends with a professional sign-off
+5. Is ready to send (no placeholders like [X] or [your name])
 
-Reply (do not include subject line, just the message body):"""
+Reply (message body only, no subject line):"""
 
     try:
         from emergentintegrations.llm.chat import LlmChat, UserMessage
@@ -1341,21 +1414,19 @@ Reply (do not include subject line, just the message body):"""
         user_message = UserMessage(text="Generate the reply now.")
         response = await chat.send_message(user_message)
         
-        # Also generate a shorter version
-        quick_chat = LlmChat(
-            api_key=api_key,
-            session_id=f"reply-quick-{request.ticket_id}",
-            system_message=f"Based on this customer service context, generate a very brief 1-2 sentence acknowledgment reply. Be warm but extremely concise.\n\nContext: {ticket.get('description', '')[:300]}"
-        ).with_model("openai", "gpt-4o")
-        
-        quick_response = await quick_chat.send_message(UserMessage(text="Generate brief reply."))
-        
         return {
             "success": True,
             "draft": response,
-            "quick_draft": quick_response,
             "tone": request.reply_type,
-            "ticket_id": request.ticket_id
+            "ticket_id": request.ticket_id,
+            # Return Pet Soul context for transparency
+            "pet_soul_used": pet_soul_context if pet_soul_context else None,
+            "personalization_data": {
+                "pet_name": pet_soul_context.get("name") if pet_soul_context else pet_name,
+                "breed": pet_soul_context.get("breed") if pet_soul_context else None,
+                "preferences_used": bool(pet_soul_context.get("preferences")),
+                "recent_activity": ticket.get("category")
+            }
         }
         
     except Exception as e:
