@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import MiraContextPanel from '../components/MiraContextPanel';
 import {
   Search, Filter, MapPin, Star, Heart, Dog, Calendar, Phone, Globe, 
   ChevronRight, Sparkles, Shield, TreePine, Sun, Waves, Mountain,
