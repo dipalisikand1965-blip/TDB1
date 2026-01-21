@@ -9537,10 +9537,8 @@ async def change_agent_password(agent_id: str, data: AgentPasswordChange, admin_
 
 
 @app.delete("/api/admin/agents/{agent_id}")
-async def delete_agent(agent_id: str, credentials: HTTPBasicCredentials = Depends(security)):
+async def delete_agent(agent_id: str, admin_user: str = Depends(verify_admin_auth)):
     """Delete an agent"""
-    verify_admin(credentials)
-    
     result = await db.agents.delete_one(
         {"$or": [{"id": agent_id}, {"username": agent_id.lower()}]}
     )
