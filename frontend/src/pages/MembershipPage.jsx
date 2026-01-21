@@ -47,7 +47,7 @@ const TENURE_LEVELS = [
   }
 ];
 
-// Sample Pet Soul profile for Bruno
+// Sample Pet Soul profile for Bruno - Focus on identity, preferences, milestones
 const SAMPLE_PET_SOUL = {
   name: 'Bruno',
   breed: 'Golden Retriever',
@@ -59,23 +59,21 @@ const SAMPLE_PET_SOUL = {
     activity: 'Beach walks',
     restaurant: 'Cafe Pawsome'
   },
-  stats: {
-    pawPoints: 2450,
-    ordersCompleted: 12,
-    restaurantsVisited: 5,
-    hotelsStayed: 2,
-    fitnessActivities: 8
+  preferences: {
+    dietaryNeeds: 'Grain-free diet',
+    allergyAlert: 'Sensitive to chicken',
+    exerciseLevel: 'High energy'
   },
-  achievements: [
+  milestones: [
     { icon: '🎂', name: 'Birthday Celebrated', date: 'Oct 2025' },
     { icon: '🍽️', name: 'First Dine Out', date: 'Sep 2025' },
     { icon: '🏨', name: 'First Stay', date: 'Aug 2025' },
     { icon: '✈️', name: 'First Travel', date: 'Jul 2025' }
   ],
-  healthVault: {
-    vaccinations: 5,
-    documents: 8,
-    lastCheckup: 'Nov 2025'
+  healthContinuity: {
+    lastVaccination: 'Nov 2025',
+    nextCheckup: 'Feb 2026',
+    vetName: 'Dr. Sharma'
   }
 };
 
