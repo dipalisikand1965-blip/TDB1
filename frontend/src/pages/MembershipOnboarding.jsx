@@ -547,14 +547,14 @@ const MembershipOnboarding = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-3">
                       Notification Preferences
                     </label>
-                    <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
+                    <div className="space-y-3 bg-gradient-to-br from-orange-50 to-pink-50 p-4 rounded-xl border border-orange-100">
                       {[
-                        { key: 'orderUpdates', label: 'Order & Delivery Updates', desc: 'Status of your orders and deliveries' },
-                        { key: 'petReminders', label: 'Pet Care Reminders', desc: 'Vaccination, grooming & health reminders' },
-                        { key: 'promotions', label: 'Offers & Promotions', desc: 'Exclusive deals and member discounts' },
-                        { key: 'newsletter', label: 'Monthly Newsletter', desc: 'Pet care tips and community updates' }
+                        { key: 'orderUpdates', label: 'Order & Delivery Updates', desc: 'Status of your orders and deliveries', icon: '📦' },
+                        { key: 'petReminders', label: 'Pet Care Reminders', desc: 'Vaccination, grooming & health reminders', icon: '💊' },
+                        { key: 'promotions', label: 'Offers & Promotions', desc: 'Exclusive deals and member discounts', icon: '🎁' },
+                        { key: 'newsletter', label: 'Monthly Newsletter', desc: 'Pet care tips and community updates', icon: '📰' }
                       ].map((notif) => (
-                        <label key={notif.key} className="flex items-start gap-3 cursor-pointer">
+                        <label key={notif.key} className="flex items-start gap-3 cursor-pointer hover:bg-white/50 p-2 rounded-lg transition-colors">
                           <input
                             type="checkbox"
                             checked={parentData.notifications[notif.key]}
@@ -562,16 +562,46 @@ const MembershipOnboarding = () => {
                               ...parentData, 
                               notifications: {...parentData.notifications, [notif.key]: e.target.checked}
                             })}
-                            className="mt-1 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                            className="mt-1 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
                             data-testid={`notification-${notif.key}`}
                           />
                           <div>
-                            <p className="text-sm font-medium text-gray-700">{notif.label}</p>
+                            <p className="text-sm font-medium text-gray-700">{notif.icon} {notif.label}</p>
                             <p className="text-xs text-gray-500">{notif.desc}</p>
                           </div>
                         </label>
                       ))}
                     </div>
+                  </div>
+
+                  {/* Soul Whispers - Weekly WhatsApp Drip */}
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={parentData.notifications.soulWhispers}
+                        onChange={(e) => setParentData({
+                          ...parentData, 
+                          notifications: {...parentData.notifications, soulWhispers: e.target.checked}
+                        })}
+                        className="mt-1 w-5 h-5 rounded border-green-300 text-green-600 focus:ring-green-500"
+                        data-testid="notification-soul-whispers"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">💬</span>
+                          <p className="font-semibold text-green-800">Soul Whispers</p>
+                          <Badge className="bg-green-100 text-green-700 text-xs">Recommended</Badge>
+                        </div>
+                        <p className="text-sm text-green-700 mt-1">
+                          Weekly WhatsApp messages with one gentle question about your pet. 
+                          Helps us understand your furry friend better over time.
+                        </p>
+                        <p className="text-xs text-green-600 mt-2 italic">
+                          "Quick questions, deep understanding. No spam, just love."
+                        </p>
+                      </div>
+                    </label>
                   </div>
 
                   {/* Terms & Conditions */}
