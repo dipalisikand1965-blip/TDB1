@@ -962,7 +962,7 @@ async def mira_chat(
     
     # 4. Handle EMERGENCY immediately
     if pillar == "emergency":
-        emergency_response = f"""**EMERGENCY DETECTED**
+        emergency_response = """**EMERGENCY DETECTED**
 
 I understand this is urgent. Let me help you immediately.
 
