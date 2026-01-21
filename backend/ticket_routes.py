@@ -4,7 +4,7 @@ Handles all concierge requests across multiple channels
 """
 
 from fastapi import APIRouter, HTTPException, Query, Form, UploadFile, File, Depends, Header
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.security import HTTPBasic, HTTPBasicCredentials, HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
@@ -13,33 +13,53 @@ import uuid
 import os
 import secrets
 import asyncio
+import jwt
 from dotenv import load_dotenv
 load_dotenv()
 
 router = APIRouter(prefix="/api/tickets", tags=["tickets"], redirect_slashes=False)
 
-# Security for admin verification
-security = HTTPBasic()
+# Security - support both Basic Auth and Bearer Token
+security_basic = HTTPBasic(auto_error=False)
+security_bearer = HTTPBearer(auto_error=False)
 
 # Get MongoDB connection from server.py
 def get_db():
     from server import db
     return db
 
-# Admin credentials verification
-def verify_token(credentials: HTTPBasicCredentials = Depends(security)):
-    """Verify admin credentials for ticket operations"""
-    from server import ADMIN_USERNAME, ADMIN_PASSWORD, _admin_credentials_cache
+# Admin credentials verification - supports both Basic Auth and Bearer Token
+async def verify_token(
+    basic_creds: HTTPBasicCredentials = Depends(security_basic),
+    bearer_creds: HTTPAuthorizationCredentials = Depends(security_bearer)
+):
+    """Verify admin credentials for ticket operations - supports Basic Auth and Bearer Token"""
+    from server import ADMIN_USERNAME, ADMIN_PASSWORD, _admin_credentials_cache, SECRET_KEY, ALGORITHM
     
-    expected_username = _admin_credentials_cache.get("username") or ADMIN_USERNAME
-    expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
+    # Try Bearer Token first (from JWT login)
+    if bearer_creds and bearer_creds.credentials:
+        try:
+            payload = jwt.decode(bearer_creds.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+            username = payload.get("sub")
+            role = payload.get("role")
+            if username and role == "admin":
+                return username
+        except jwt.PyJWTError:
+            pass  # Fall through to try Basic Auth
     
-    correct_username = secrets.compare_digest(credentials.username, expected_username)
-    correct_password = secrets.compare_digest(credentials.password, expected_password)
+    # Try Basic Auth
+    if basic_creds:
+        expected_username = _admin_credentials_cache.get("username") or ADMIN_USERNAME
+        expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
+        
+        correct_username = secrets.compare_digest(basic_creds.username, expected_username)
+        correct_password = secrets.compare_digest(basic_creds.password, expected_password)
+        
+        if correct_username and correct_password:
+            return basic_creds.username
     
-    if not (correct_username and correct_password):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    return credentials.username
+    # Neither auth method worked
+    raise HTTPException(status_code=401, detail="Invalid credentials")
 
 # Get Resend for email notifications
 def get_resend():
