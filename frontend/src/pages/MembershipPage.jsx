@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -7,13 +7,12 @@ import { Card } from '../components/ui/card';
 import MembershipPayment from '../components/MembershipPayment';
 import PetSoulJourney from '../components/PetSoulJourney';
 import { 
-  PawPrint, Crown, Check, Star, Heart, Gift, Calendar, 
+  PawPrint, Check, Star, Heart, Gift, Calendar, 
   Shield, Sparkles, ChevronRight, Eye, EyeOff, ArrowRight,
   Utensils, Plane, Home, Dumbbell, Brain, Phone, FileText,
-  ShoppingBag, Users, Award, Zap, X, Trophy, Target, TrendingUp,
-  Cake, Activity, Stethoscope, MapPin, CreditCard
+  ShoppingBag, Users, Award, Zap, X, Stethoscope, CreditCard
 } from 'lucide-react';
-import { API_URL, getApiUrl } from '../utils/api';
+import { getApiUrl } from '../utils/api';
 
 // Tenure Recognition levels (Not gamified - reflects depth of relationship)
 const TENURE_LEVELS = [
