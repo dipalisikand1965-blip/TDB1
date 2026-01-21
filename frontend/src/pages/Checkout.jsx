@@ -619,9 +619,10 @@ _GST applicable on final invoice_
     e.preventDefault();
     
     if (!validateForm()) {
+      const missingFields = Object.keys(formErrors).join(', ');
       toast({
         title: 'Please fill required fields',
-        description: 'Some required information is missing.',
+        description: `Missing: ${missingFields || 'Some required information'}`,
         variant: 'destructive'
       });
       return;
