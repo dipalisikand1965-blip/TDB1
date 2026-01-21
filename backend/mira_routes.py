@@ -958,17 +958,23 @@ async def list_mira_tickets(
     
     return {"tickets": tickets, "total": len(tickets)}
 
+class MiraContextRequest(BaseModel):
+    current_pillar: Optional[str] = None
+    pet_id: Optional[str] = None
+
 @router.post("/context")
 async def get_mira_context(
-    authorization: Optional[str] = Header(None),
-    current_pillar: Optional[str] = None,
-    pet_id: Optional[str] = None
+    request: MiraContextRequest,
+    authorization: Optional[str] = Header(None)
 ):
     """
     Get contextual Mira data for pillar pages.
     Returns personalized suggestions based on Pet Soul.
     """
     db = get_db()
+    
+    current_pillar = request.current_pillar
+    pet_id = request.pet_id
     
     user = await get_user_from_token(authorization)
     
