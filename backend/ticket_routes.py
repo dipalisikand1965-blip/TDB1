@@ -227,7 +227,12 @@ def serialize_ticket(ticket: dict) -> dict:
     """Convert MongoDB ticket to JSON-serializable format"""
     if not ticket:
         return None
-    ticket["id"] = str(ticket.pop("_id"))
+    # Handle _id conversion
+    if "_id" in ticket:
+        ticket.pop("_id")
+    # Ensure ticket_id exists (some old tickets may have 'id' instead)
+    if not ticket.get("ticket_id") and ticket.get("id"):
+        ticket["ticket_id"] = ticket["id"]
     return ticket
 
 # ============== TICKET ROUTES ==============
