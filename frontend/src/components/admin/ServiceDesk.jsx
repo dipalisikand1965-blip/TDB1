@@ -3161,6 +3161,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                   ))}
                 </div>
               </div>
+              {/* END of scrollable Content area */}
 
               {/* Reply Box with AI Assistant - FIXED at bottom, outside scrollable area */}
               <div className="border-t bg-gradient-to-r from-gray-50 to-purple-50/30 flex-shrink-0">
