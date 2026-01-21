@@ -3177,34 +3177,35 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                         <X className="w-4 h-4" />
                       </Button>
                     </div>
-                    <div className="space-y-2">
-                      <div className="bg-white rounded-lg p-2 border border-purple-200 text-sm max-h-20 overflow-y-auto">
-                        {aiDraft.draft}
-                      </div>
-                      <div className="flex items-center gap-2 flex-wrap">
+                    {/* Draft Text */}
+                    <div className="bg-white rounded-lg p-3 border border-purple-200 text-sm mb-3 max-h-24 overflow-y-auto">
+                      {aiDraft.draft}
+                    </div>
+                    {/* Action Buttons - Always visible below text */}
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        size="sm" 
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                        onClick={() => applyAiDraft(aiDraft.draft)}
+                      >
+                        <Copy className="w-3 h-3 mr-1" /> Use This Draft
+                      </Button>
+                      {aiDraft.quick_draft && (
                         <Button 
                           size="sm" 
-                          className="bg-purple-600 hover:bg-purple-700 text-white"
-                          onClick={() => applyAiDraft(aiDraft.draft)}
+                          variant="outline"
+                          onClick={() => applyAiDraft(aiDraft.quick_draft)}
                         >
-                          <Copy className="w-3 h-3 mr-1" /> Use This Draft
+                          Quick Version
                         </Button>
-                        {aiDraft.quick_draft && (
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => applyAiDraft(aiDraft.quick_draft)}
-                          >
-                            Quick
-                          </Button>
-                        )}
-                        <Button size="sm" variant="ghost" className="text-green-600 ml-auto">
-                          <ThumbsUp className="w-3 h-3" />
-                        </Button>
-                        <Button size="sm" variant="ghost" className="text-red-600">
-                          <ThumbsDown className="w-3 h-3" />
-                        </Button>
-                      </div>
+                      )}
+                      <div className="flex-1" />
+                      <Button size="sm" variant="ghost" className="text-green-600">
+                        <ThumbsUp className="w-3 h-3" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="text-red-600">
+                        <ThumbsDown className="w-3 h-3" />
+                      </Button>
                     </div>
                   </div>
                 )}
