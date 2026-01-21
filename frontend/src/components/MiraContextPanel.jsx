@@ -17,13 +17,12 @@ import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { useMiraSignal } from '../hooks/useMiraSignal';
+import { getApiUrl } from '../utils/api';
 import { 
   MessageCircle, ChevronUp, ChevronDown, PawPrint, 
   Sparkles, ShoppingCart, ArrowRight, X, Send, Loader2,
   Lightbulb, Calendar, Heart
 } from 'lucide-react';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Generate session ID for Mira conversations
 const generateSessionId = () => {
