@@ -514,6 +514,25 @@ const MiraContextPanel = ({
                 </div>
               )}
               
+              {/* Quick Prompts - Pillar-specific */}
+              {quickPrompts.length > 0 && !showChat && (
+                <div className="flex flex-wrap gap-1">
+                  {quickPrompts.slice(0, 3).map((prompt, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setInputValue(prompt.message);
+                        setShowChat(true);
+                      }}
+                      className="text-xs bg-white border border-gray-200 text-gray-700 px-2 py-1 rounded-full hover:bg-purple-50 hover:border-purple-200 transition-colors"
+                      data-testid={`mira-panel-prompt-${idx}`}
+                    >
+                      {prompt.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              
               {/* Action Buttons */}
               <div className="flex gap-2">
                 <Button
