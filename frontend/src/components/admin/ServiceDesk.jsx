@@ -2559,6 +2559,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
               displayTickets.map(ticket => (
                 <div
                   key={ticket.id}
+                  onClick={() => fetchTicketDetails(ticket.ticket_id)}
                   className={`mx-2 my-2 p-3 rounded-xl cursor-pointer transition-all duration-200 border ${
                     selectedTicket?.id === ticket.id 
                       ? 'bg-white shadow-lg border-amber-300 ring-2 ring-amber-200' 
