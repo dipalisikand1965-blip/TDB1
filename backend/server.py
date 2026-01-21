@@ -887,7 +887,7 @@ async def load_admin_credentials_from_db():
 
 
 async def ensure_default_user_exists():
-    """Ensure a default test user exists for login testing"""
+    """Ensure a default test user exists for login testing - ALWAYS runs on startup"""
     from passlib.context import CryptContext
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     
@@ -913,7 +913,7 @@ async def ensure_default_user_exists():
                 "created_at": datetime.now(timezone.utc).isoformat()
             }
             await db.users.insert_one(user_doc)
-            logger.info(f"Created default user: {default_email}")
+            logger.info(f"AUTO-CREATED default user: {default_email}")
         else:
             # Ensure password_hash field exists and is correct
             if "password_hash" not in existing or not existing.get("password_hash"):
