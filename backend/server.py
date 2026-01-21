@@ -8389,20 +8389,6 @@ def calculate_gst_amounts(base_amount_paise: int) -> dict:
     }
 
 
-class CreateOrderRequest(BaseModel):
-    plan_id: str
-    user_email: str
-    user_name: Optional[str] = None
-    user_phone: Optional[str] = None
-
-
-class VerifyPaymentRequest(BaseModel):
-    razorpay_order_id: str
-    razorpay_payment_id: str
-    razorpay_signature: str
-    user_email: str
-
-
 @api_router.get("/payments/plans")
 async def get_membership_plans():
     """Get available membership plans with GST breakdown"""
