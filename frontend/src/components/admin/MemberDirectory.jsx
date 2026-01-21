@@ -664,50 +664,6 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
                 <PetSoulTabs pets={pets} />
               )}
             </TabsContent>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-
-                          {/* Quick Info */}
-                          <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-2 text-sm">
-                            <div>
-                              <span className="text-gray-500">Birthday:</span>
-                              <span className="ml-1 font-medium">
-                                {pet.birth_date ? new Date(pet.birth_date).toLocaleDateString() : 'Not set'}
-                              </span>
-                            </div>
-                            <div>
-                              <span className="text-gray-500">Weight:</span>
-                              <span className="ml-1 font-medium">{pet.weight ? `${pet.weight} kg` : 'Not set'}</span>
-                            </div>
-                            <div>
-                              <span className="text-gray-500">Vaccinations:</span>
-                              <span className="ml-1 font-medium">{pet.vaccinations_complete ? '✅' : '⚠️ Due'}</span>
-                            </div>
-                            <div>
-                              <span className="text-gray-500">Celebrations:</span>
-                              <span className="ml-1 font-medium">{pet.celebrations?.length || 0} saved</span>
-                            </div>
-                          </div>
-
-                          {/* Actions */}
-                          <div className="mt-4 flex gap-2">
-                            <Button size="sm" variant="outline" className="flex-1">
-                              <Eye className="w-3 h-3 mr-1" /> View Full Soul
-                            </Button>
-                            <Button size="sm" variant="outline" className="flex-1">
-                              <MessageSquare className="w-3 h-3 mr-1" /> Send Nudge
-                            </Button>
-                          </div>
-                        </div>
-                      </Card>
-                    );
-                  })}
-                </div>
-              )}
-            </TabsContent>
 
             {/* Activity Tab */}
             <TabsContent value="activity" className="space-y-4 mt-0">
