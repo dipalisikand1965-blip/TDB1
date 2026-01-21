@@ -1157,25 +1157,38 @@ const PetProfile = ({ isEmbed = false }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50 py-12">
-      <div className="max-w-2xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-amber-50">
+      {/* Decorative Header */}
+      <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 text-white py-8 mb-8">
+        <div className="max-w-2xl mx-auto px-4 text-center">
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 bg-white/20 backdrop-blur rounded-full flex items-center justify-center">
+              <PawPrint className="w-8 h-8" />
+            </div>
+          </div>
+          <h1 className="text-3xl font-bold mb-2">Pet Soul Profile</h1>
+          <p className="text-white/80">Create your pet's unique digital identity</p>
+        </div>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-4 pb-12">
         {/* Progress Bar */}
         {step > 0 && step < 6 && (
-          <div className="mb-8">
+          <div className="mb-8 bg-white rounded-xl p-4 shadow-md">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-600">Step {step === 1.5 ? '2' : step > 1.5 ? Math.floor(step) + 1 : step} of 6</span>
-              <span className="text-sm text-gray-600">{Math.round(((step === 1.5 ? 2 : step > 1.5 ? step + 1 : step) / 6) * 100)}%</span>
+              <span className="text-sm font-medium text-gray-600">Step {step === 1.5 ? '2' : step > 1.5 ? Math.floor(step) + 1 : step} of 6</span>
+              <span className="text-sm font-medium text-purple-600">{Math.round(((step === 1.5 ? 2 : step > 1.5 ? step + 1 : step) / 6) * 100)}%</span>
             </div>
-            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-purple-600 to-pink-600 transition-all duration-300"
+                className="h-full bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 transition-all duration-500 ease-out"
                 style={{ width: `${((step === 1.5 ? 2 : step > 1.5 ? step + 1 : step) / 6) * 100}%` }}
               />
             </div>
           </div>
         )}
 
-        <Card className="p-6 md:p-8 shadow-xl">
+        <Card className="p-6 md:p-8 shadow-2xl border-0 bg-white/95 backdrop-blur">
           {step === 0 && renderMyPets()}
           {step === 1 && renderStep1()}
           {step === 1.5 && renderStep1b()}
@@ -1187,7 +1200,7 @@ const PetProfile = ({ isEmbed = false }) => {
 
           {/* Navigation Buttons */}
           {step > 0 && step < 6 && (
-            <div className="flex justify-between mt-8 pt-6 border-t">
+            <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
               <Button
                 variant="outline"
                 onClick={() => {
@@ -1196,7 +1209,7 @@ const PetProfile = ({ isEmbed = false }) => {
                   else setStep(s => s - 1);
                 }}
                 disabled={step === 1}
-                className={step === 1 ? 'invisible' : ''}
+                className={step === 1 ? 'invisible' : 'border-gray-300 hover:bg-gray-50'}
               >
                 <ChevronLeft className="w-4 h-4 mr-1" />
                 Back
@@ -1210,7 +1223,7 @@ const PetProfile = ({ isEmbed = false }) => {
                     else setStep(s => s + 1);
                   }}
                   disabled={!canProceed()}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg"
                 >
                   Next
                   <ChevronRight className="w-4 h-4 ml-1" />
@@ -1219,7 +1232,7 @@ const PetProfile = ({ isEmbed = false }) => {
                 <Button
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  className="bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 hover:from-purple-700 hover:via-pink-600 hover:to-amber-600 shadow-lg"
                 >
                   {isSubmitting ? 'Creating...' : 'Create Pet Profile'}
                   <Sparkles className="w-4 h-4 ml-2" />
@@ -1228,6 +1241,12 @@ const PetProfile = ({ isEmbed = false }) => {
             </div>
           )}
         </Card>
+
+        {/* Footer */}
+        <div className="text-center mt-8 text-gray-500 text-sm">
+          <p>Powered by <span className="font-semibold text-purple-600">The Doggy Company</span></p>
+          <p className="mt-1">Your pet's data is safe and secure 🔒</p>
+        </div>
       </div>
     </div>
   );
