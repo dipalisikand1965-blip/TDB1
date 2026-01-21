@@ -779,4 +779,196 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
   );
 };
 
+// Pet Soul Tabs Component with 8 Pillars
+const PetSoulTabs = ({ pets }) => {
+  const [selectedPet, setSelectedPet] = useState(0);
+  const [selectedPillar, setSelectedPillar] = useState(null);
+  const [hoveredPet, setHoveredPet] = useState(null);
+
+  const currentPet = pets[selectedPet];
+  const soulScore = calculateSoulScore(currentPet);
+
+  const getPillarData = (pet, pillarKey) => {
+    const answers = pet.doggy_soul_answers || {};
+    const pillarData = {};
+    
+    // Extract all answers that start with the pillar key
+    Object.entries(answers).forEach(([key, value]) => {
+      if (key.startsWith(pillarKey + '_')) {
+        const fieldName = key.replace(pillarKey + '_', '').replace(/_/g, ' ');
+        pillarData[fieldName] = value;
+      }
+    });
+    
+    return pillarData;
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Pet Tabs with Hover Preview */}
+      {pets.length > 1 && (
+        <div className="flex gap-2 flex-wrap">
+          {pets.map((pet, idx) => {
+            const petScore = calculateSoulScore(pet);
+            return (
+              <div key={pet.id || idx} className="relative">
+                <button
+                  onClick={() => { setSelectedPet(idx); setSelectedPillar(null); }}
+                  onMouseEnter={() => setHoveredPet(idx)}
+                  onMouseLeave={() => setHoveredPet(null)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+                    selectedPet === idx
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  <span className="text-xl">🐕</span>
+                  <span className="font-medium">{pet.name}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                    selectedPet === idx ? 'bg-white/20' : 'bg-gray-200'
+                  }`}>{petScore.total}%</span>
+                </button>
+
+                {/* Hover Preview */}
+                {hoveredPet === idx && selectedPet !== idx && (
+                  <div className="absolute z-20 top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border p-4 animate-in fade-in slide-in-from-top-2">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center text-2xl">
+                        🐕
+                      </div>
+                      <div>
+                        <p className="font-bold">{pet.name}</p>
+                        <p className="text-xs text-gray-500">{pet.breed}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex-1 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+                          style={{ width: `${petScore.total}%` }}
+                        />
+                      </div>
+                      <span className="text-sm font-bold">{petScore.total}%</span>
+                    </div>
+                    <p className="text-xs text-gray-400">Click to view full profile</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Selected Pet Profile */}
+      {currentPet && (
+        <Card className="overflow-hidden">
+          {/* Pet Header */}
+          <div className="p-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-4xl">
+                🐕
+              </div>
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold">{currentPet.name}</h3>
+                <p className="text-purple-200">{currentPet.breed} • {currentPet.gender}</p>
+                <div className="flex items-center gap-3 mt-2">
+                  <div className="flex-1 max-w-xs bg-white/20 rounded-full h-3">
+                    <div 
+                      className="h-full bg-white rounded-full transition-all"
+                      style={{ width: `${soulScore.total}%` }}
+                    />
+                  </div>
+                  <span className="font-bold text-lg">{soulScore.total}% Soul</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 8 Pillars Grid */}
+          <div className="p-4">
+            <p className="text-sm font-medium text-gray-700 mb-3">Soul Pillars</p>
+            <div className="grid grid-cols-4 gap-3">
+              {SOUL_CATEGORIES.map(pillar => {
+                const pillarScore = soulScore.breakdown[pillar.key]?.percent || 0;
+                const isSelected = selectedPillar === pillar.key;
+                
+                return (
+                  <button
+                    key={pillar.key}
+                    onClick={() => setSelectedPillar(isSelected ? null : pillar.key)}
+                    className={`p-3 rounded-xl border-2 transition-all ${
+                      isSelected 
+                        ? `border-purple-500 bg-purple-50 ring-2 ring-purple-200`
+                        : 'border-gray-200 hover:border-purple-300'
+                    }`}
+                  >
+                    <div className="text-center">
+                      <span className="text-2xl block mb-1">{pillar.icon}</span>
+                      <p className="text-xs font-medium text-gray-700">{pillar.label}</p>
+                      <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                        <div 
+                          className={`h-full rounded-full ${pillar.color}`}
+                          style={{ width: `${pillarScore}%` }}
+                        />
+                      </div>
+                      <p className="text-xs font-bold mt-1" style={{ color: pillarScore >= 70 ? '#22c55e' : pillarScore >= 40 ? '#eab308' : '#ef4444' }}>
+                        {pillarScore}%
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Selected Pillar Details */}
+          {selectedPillar && (
+            <div className="p-4 border-t bg-gray-50 animate-in slide-in-from-top-2">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-2xl">
+                  {SOUL_CATEGORIES.find(p => p.key === selectedPillar)?.icon}
+                </span>
+                <h4 className="font-bold text-lg">
+                  {SOUL_CATEGORIES.find(p => p.key === selectedPillar)?.label} Details
+                </h4>
+              </div>
+              
+              {Object.keys(getPillarData(currentPet, selectedPillar)).length > 0 ? (
+                <div className="grid grid-cols-2 gap-3">
+                  {Object.entries(getPillarData(currentPet, selectedPillar)).map(([field, value]) => (
+                    <div key={field} className="p-3 bg-white rounded-lg border">
+                      <p className="text-xs text-gray-500 uppercase">{field}</p>
+                      <p className="font-medium text-gray-900">{value || 'Not set'}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6 text-gray-400">
+                  <p>No data collected for this pillar yet</p>
+                  <Button size="sm" variant="outline" className="mt-2">
+                    <MessageSquare className="w-3 h-3 mr-1" /> Send Soul Whisper
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Quick Actions */}
+          <div className="p-4 border-t flex gap-2">
+            <Button size="sm" variant="outline" className="flex-1">
+              <Eye className="w-4 h-4 mr-1" /> Full Profile
+            </Button>
+            <Button size="sm" variant="outline" className="flex-1">
+              <MessageSquare className="w-4 h-4 mr-1" /> Soul Whisper
+            </Button>
+            <Button size="sm" variant="outline" className="flex-1">
+              <Edit className="w-4 h-4 mr-1" /> Edit
+            </Button>
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+};
+
 export default MemberDirectory;
