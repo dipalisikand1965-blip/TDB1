@@ -290,7 +290,10 @@ const PetProfile = ({ isEmbed = false }) => {
         source: isEmbed ? 'shopify_embed' : 'direct'
       };
 
-      const response = await fetch(`${API_URL}/api/pets`, {
+      // Use public endpoint if not logged in, authenticated endpoint if logged in
+      const endpoint = token ? `${API_URL}/api/pets` : `${API_URL}/api/pets/public`;
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
