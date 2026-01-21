@@ -43,14 +43,14 @@ const MEMBERSHIP_TIERS = {
 
 // Pet Soul categories for score breakdown
 const SOUL_CATEGORIES = [
-  { key: 'identity', label: 'Identity', icon: '🐕', fields: ['name', 'breed', 'gender', 'birthday'] },
-  { key: 'health', label: 'Health', icon: '💊', fields: ['weight', 'allergies', 'medical_conditions', 'vaccinations'] },
-  { key: 'preferences', label: 'Preferences', icon: '🎾', fields: ['favorite_treats', 'favorite_toys', 'sleeping_spot'] },
-  { key: 'temperament', label: 'Temperament', icon: '🧠', fields: ['energy_level', 'sociability', 'anxiety_triggers'] },
-  { key: 'routine', label: 'Routine', icon: '⏰', fields: ['feeding_schedule', 'walk_schedule', 'sleep_schedule'] },
-  { key: 'travel', label: 'Travel', icon: '✈️', fields: ['car_comfort', 'crate_trained', 'travel_anxiety'] },
-  { key: 'celebrations', label: 'Celebrations', icon: '🎂', fields: ['birthday', 'gotcha_day', 'favorite_celebration'] },
-  { key: 'family', label: 'Family', icon: '👨‍👩‍👧', fields: ['household_members', 'other_pets', 'children'] }
+  { key: 'health', label: 'Health', icon: '💊', color: 'bg-red-500', fields: ['weight', 'allergies', 'medical_conditions', 'vaccinations', 'vet_info', 'medications'] },
+  { key: 'diet', label: 'Diet', icon: '🍖', color: 'bg-orange-500', fields: ['food_brand', 'food_type', 'feeding_schedule', 'portion_size', 'treats', 'allergies'] },
+  { key: 'behavior', label: 'Behavior', icon: '🧠', color: 'bg-yellow-500', fields: ['temperament', 'fears', 'training_level', 'social_with_dogs', 'social_with_kids', 'alone_time'] },
+  { key: 'grooming', label: 'Grooming', icon: '✨', color: 'bg-green-500', fields: ['grooming_frequency', 'bath_frequency', 'nail_trim', 'ear_cleaning', 'preferred_groomer'] },
+  { key: 'travel', label: 'Travel', icon: '✈️', color: 'bg-blue-500', fields: ['car_behavior', 'carrier_trained', 'motion_sickness', 'preferred_destinations', 'hotel_behavior'] },
+  { key: 'play', label: 'Play', icon: '🎾', color: 'bg-indigo-500', fields: ['favorite_toys', 'favorite_activities', 'energy_level', 'favorite_games', 'exercise_needs'] },
+  { key: 'emergency', label: 'Emergency', icon: '🚨', color: 'bg-purple-500', fields: ['emergency_contacts', 'backup_caregiver', 'emergency_hospital', 'insurance_info'] },
+  { key: 'celebrate', label: 'Celebrate', icon: '🎂', color: 'bg-pink-500', fields: ['birthday', 'gotcha_day', 'favorite_treats', 'party_preference'] }
 ];
 
 // Calculate Pet Soul score
