@@ -581,44 +581,151 @@ const MiraContextPanel = ({
             </>
           )}
           
-          {/* Pet Soul Score & Progress for Logged-in Users */}
-          {user && context?.selected_pet && !showChat && (
+          {/* PET SOUL SCORE - ALWAYS SHOW FOR MEMBERS */}
+          {!showChat && (
             <div className="pt-2 border-t border-gray-200 space-y-3">
-              {/* Pet Soul Score */}
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-medium text-gray-700 flex items-center gap-1">
-                    <PawPrint className="w-3 h-3 text-purple-600" />
-                    {context.selected_pet.name}&apos;s Soul Score
-                  </p>
-                  <span className="text-lg font-bold text-purple-600">
-                    {context.selected_pet.soul_score || 45}%
-                  </span>
-                </div>
-                <div className="w-full bg-purple-100 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all"
-                    style={{ width: `${context.selected_pet.soul_score || 45}%` }}
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Complete profile for better recommendations
-                </p>
-              </div>
-              
-              {/* Health Vault Quick Status */}
-              <div className="flex gap-2">
-                <div className="flex-1 bg-green-50 p-2 rounded-lg text-center">
-                  <Heart className="w-4 h-4 text-green-600 mx-auto mb-1" />
-                  <p className="text-xs font-medium text-green-700">Health</p>
-                  <p className="text-xs text-green-600">{context.selected_pet.health_status || 'Good'}</p>
-                </div>
-                <div className="flex-1 bg-blue-50 p-2 rounded-lg text-center">
-                  <Calendar className="w-4 h-4 text-blue-600 mx-auto mb-1" />
-                  <p className="text-xs font-medium text-blue-700">Vaccines</p>
-                  <p className="text-xs text-blue-600">{context.selected_pet.vaccines_due || 0} due</p>
-                </div>
-              </div>
+              {/* Pet Soul Score - Always visible to encourage completion */}
+              {context?.selected_pet ? (
+                <>
+                  {/* Has Pet - Show Soul Score */}
+                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs font-medium text-gray-700 flex items-center gap-1">
+                        <PawPrint className="w-3 h-3 text-purple-600" />
+                        {context.selected_pet.name}&apos;s Soul Score
+                      </p>
+                      <span className="text-lg font-bold text-purple-600">
+                        {context.selected_pet.soul_score || 0}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-purple-100 rounded-full h-2.5">
+                      <div 
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 h-2.5 rounded-full transition-all"
+                        style={{ width: `${context.selected_pet.soul_score || 0}%` }}
+                      />
+                    </div>
+                    
+                    {/* Gamification Rewards Message */}
+                    {(context.selected_pet.soul_score || 0) < 100 && (
+                      <div className="mt-2 flex items-center gap-1 text-xs text-amber-700">
+                        <Sparkles className="w-3 h-3" />
+                        <span>Complete to unlock {100 - (context.selected_pet.soul_score || 0)}% rewards!</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Health Vault Quick Status */}
+                  <div className="flex gap-2">
+                    <div className="flex-1 bg-green-50 p-2 rounded-lg text-center cursor-pointer hover:bg-green-100 transition-colors"
+                         onClick={() => window.location.href = `/pet/${context.selected_pet.id}?tab=health`}>
+                      <Heart className="w-4 h-4 text-green-600 mx-auto mb-1" />
+                      <p className="text-xs font-medium text-green-700">Health Vault</p>
+                      <p className="text-xs text-green-600">{context.selected_pet.health_status || 'Update'}</p>
+                    </div>
+                    <div className="flex-1 bg-blue-50 p-2 rounded-lg text-center cursor-pointer hover:bg-blue-100 transition-colors"
+                         onClick={() => window.location.href = `/pet/${context.selected_pet.id}?tab=vaccines`}>
+                      <Calendar className="w-4 h-4 text-blue-600 mx-auto mb-1" />
+                      <p className="text-xs font-medium text-blue-700">Vaccines</p>
+                      <p className="text-xs text-blue-600">{context.selected_pet.vaccines_due || 0} due</p>
+                    </div>
+                  </div>
+                  
+                  {/* Gamification - What's Missing */}
+                  {(context.selected_pet.soul_score || 0) < 100 && (
+                    <div className="bg-amber-50 p-2 rounded-lg">
+                      <p className="text-xs font-semibold text-amber-800 flex items-center gap-1 mb-1">
+                        <Lightbulb className="w-3 h-3" />
+                        Quick wins to boost your score:
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {!context.selected_pet.identity?.weight && (
+                          <Badge variant="outline" className="text-xs bg-white cursor-pointer hover:bg-amber-100"
+                                 onClick={() => window.location.href = `/pet/${context.selected_pet.id}?tab=identity`}>
+                            +5% Add weight
+                          </Badge>
+                        )}
+                        {!context.selected_pet.identity?.microchip && (
+                          <Badge variant="outline" className="text-xs bg-white cursor-pointer hover:bg-amber-100"
+                                 onClick={() => window.location.href = `/pet/${context.selected_pet.id}?tab=identity`}>
+                            +5% Add microchip
+                          </Badge>
+                        )}
+                        {!context.selected_pet.health?.allergies?.length && (
+                          <Badge variant="outline" className="text-xs bg-white cursor-pointer hover:bg-amber-100"
+                                 onClick={() => window.location.href = `/pet/${context.selected_pet.id}?tab=health`}>
+                            +10% Add allergies
+                          </Badge>
+                        )}
+                        {!context.selected_pet.personality?.traits?.length && (
+                          <Badge variant="outline" className="text-xs bg-white cursor-pointer hover:bg-amber-100"
+                                 onClick={() => window.location.href = `/pet/${context.selected_pet.id}?tab=personality`}>
+                            +10% Add personality
+                          </Badge>
+                        )}
+                        {!context.selected_pet.preferences?.food_brand && (
+                          <Badge variant="outline" className="text-xs bg-white cursor-pointer hover:bg-amber-100"
+                                 onClick={() => window.location.href = `/pet/${context.selected_pet.id}?tab=preferences`}>
+                            +5% Food preferences
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* 100% Complete Celebration */}
+                  {(context.selected_pet.soul_score || 0) >= 100 && (
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-2 rounded-lg text-center">
+                      <p className="text-xs font-bold text-green-700 flex items-center justify-center gap-1">
+                        🎉 Soul Complete! You know {context.selected_pet.name} inside out!
+                      </p>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  {/* No Pet - Encourage to Add */}
+                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 rounded-lg text-center">
+                    <PawPrint className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                    <p className="text-sm font-semibold text-gray-800">Start Your Pet&apos;s Soul</p>
+                    <p className="text-xs text-gray-500 mt-1">Add your pet to unlock personalized care</p>
+                    <div className="mt-2">
+                      <div className="w-full bg-purple-100 rounded-full h-2">
+                        <div className="bg-gray-300 h-2 rounded-full" style={{ width: '0%' }} />
+                      </div>
+                      <p className="text-xs text-purple-600 font-medium mt-1">Soul Score: 0%</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      className="mt-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs"
+                      onClick={() => window.location.href = '/pets/add'}
+                    >
+                      <Plus className="w-3 h-3 mr-1" />
+                      Add Your Pet
+                    </Button>
+                  </div>
+                  
+                  {/* Benefits of Adding Pet */}
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-gray-600">Unlock with your Pet Soul:</p>
+                    <div className="grid grid-cols-2 gap-1">
+                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <Heart className="w-3 h-3 text-green-500" /> Health Vault
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <Calendar className="w-3 h-3 text-blue-500" /> Vaccine Reminders
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <Sparkles className="w-3 h-3 text-purple-500" /> AI Recommendations
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <Lightbulb className="w-3 h-3 text-amber-500" /> Birthday Alerts
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
               
               {/* Gamification - Profile Completion */}
               {(context.selected_pet.soul_score || 45) < 100 && (
