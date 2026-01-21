@@ -450,7 +450,7 @@ const MiraContextPanel = ({
                 <div className="space-y-2">
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wide flex items-center gap-1">
                     <Lightbulb className="w-3 h-3" />
-                    Mira's Suggestions
+                    Mira&apos;s Suggestions
                   </p>
                   {recommendations.slice(0, 2).map((rec) => (
                     <div 
