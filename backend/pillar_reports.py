@@ -221,15 +221,66 @@ async def get_pillar_summary(period: str = "this_month", start_date: str = None,
                 "name": "Care",
                 "icon": "💊",
                 "services": care_services,
-                "commission": care_commission,
-                "status": "coming_soon"
+                "revenue": round(care_revenue, 2),
+                "commission": round(care_commission, 2),
+                "status": "active" if care_services > 0 else "coming_soon"
+            },
+            "shop": {
+                "name": "Shop",
+                "icon": "🛍️",
+                "orders": shop_orders_count,
+                "revenue": round(shop_revenue, 2),
+                "status": "active" if shop_orders_count > 0 else "coming_soon"
+            },
+            "enjoy": {
+                "name": "Enjoy",
+                "icon": "🎉",
+                "bookings": enjoy_bookings,
+                "revenue": round(enjoy_revenue, 2),
+                "status": "active" if enjoy_bookings > 0 else "coming_soon"
+            },
+            "club": {
+                "name": "Club",
+                "icon": "🤝",
+                "members": club_members,
+                "revenue": round(club_revenue, 2),
+                "status": "active" if club_members > 0 else "coming_soon"
+            },
+            "learn": {
+                "name": "Learn",
+                "icon": "📚",
+                "enrollments": learn_enrollments,
+                "revenue": round(learn_revenue, 2),
+                "status": "active" if learn_enrollments > 0 else "coming_soon"
+            },
+            "adopt": {
+                "name": "Adopt",
+                "icon": "🐕",
+                "adoptions": adopt_count,
+                "fees": round(adopt_fees, 2),
+                "status": "active" if adopt_count > 0 else "coming_soon"
+            },
+            "insure": {
+                "name": "Insure",
+                "icon": "🛡️",
+                "policies": insure_policies,
+                "revenue": round(insure_revenue, 2),
+                "commission": round(insure_commission, 2),
+                "status": "active" if insure_policies > 0 else "coming_soon"
+            },
+            "farewell": {
+                "name": "Farewell",
+                "icon": "🌈",
+                "services": farewell_services,
+                "revenue": round(farewell_revenue, 2),
+                "status": "active" if farewell_services > 0 else "coming_soon"
             }
         },
         "totals": {
-            "total_revenue": round(celebrate_revenue + stay_revenue, 2),
-            "total_commission": round(dine_commission + stay_commission + travel_commission + care_commission, 2),
-            "total_bookings": celebrate_orders + dine_bookings + stay_count + travel_bookings,
-            "estimated_profit": round(celebrate_profit + dine_commission + stay_commission, 2)
+            "total_revenue": round(celebrate_revenue + stay_revenue + care_revenue + travel_revenue + shop_revenue + enjoy_revenue + club_revenue + learn_revenue + adopt_fees + insure_revenue + farewell_revenue, 2),
+            "total_commission": round(dine_commission + stay_commission + travel_commission + care_commission + insure_commission, 2),
+            "total_bookings": celebrate_orders + dine_bookings + stay_count + travel_bookings + care_services + enjoy_bookings + learn_enrollments + adopt_count + farewell_services,
+            "estimated_profit": round(celebrate_profit + dine_commission + stay_commission + care_commission + insure_commission, 2)
         }
     }
 
