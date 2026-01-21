@@ -53,17 +53,131 @@ const MiraPage = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId] = useState(generateSessionId);
+  const [sessionId, setSessionId] = useState(generateSessionId);
   const [ticketId, setTicketId] = useState(null);
   const [pillar, setPillar] = useState(null);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
   
   // Pet context
   const [pets, setPets] = useState([]);
   const [selectedPet, setSelectedPet] = useState(null);
   const [showPetSelector, setShowPetSelector] = useState(false);
   
+  // Voice input state
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef(null);
+  
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Check for speech recognition support
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setSpeechSupported(true);
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-IN';
+      
+      recognitionRef.current.onresult = (event) => {
+        const transcript = Array.from(event.results)
+          .map(result => result[0].transcript)
+          .join('');
+        setInput(transcript);
+      };
+      
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+        if (event.error === 'not-allowed') {
+          toast.error('Microphone access denied. Please enable it in your browser settings.');
+        }
+      };
+      
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+  }, []);
+
+  // Toggle voice listening
+  const toggleListening = () => {
+    if (!speechSupported) {
+      toast.error('Voice input is not supported in your browser');
+      return;
+    }
+    
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      setInput('');
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
+
+  // Start new conversation
+  const startNewConversation = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/mira/session/new`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.removeItem('mira_page_session');
+        const newSessionId = data.session_id;
+        localStorage.setItem('mira_page_session', newSessionId);
+        setSessionId(newSessionId);
+        setTicketId(null);
+        setPillar(null);
+        
+        // Reset messages
+        const welcomeMessage = selectedPet 
+          ? `Hello${user?.name ? `, ${user.name}` : ''}! I'm Mira, starting a fresh conversation. I see you have **${selectedPet.name}** with you. How can I help you both today?`
+          : user?.name 
+            ? `Hello, ${user.name}! I'm Mira, starting a fresh conversation. How can I assist you today?`
+            : "Hello! I'm Mira, starting a fresh conversation. How can I assist you today?";
+        
+        setMessages([{
+          id: 'welcome',
+          role: 'assistant',
+          content: welcomeMessage,
+          timestamp: new Date().toISOString()
+        }]);
+        
+        toast.success('Started new conversation');
+        setShowHistory(false);
+      }
+    } catch (error) {
+      console.error('Error starting new conversation:', error);
+      toast.error('Failed to start new conversation');
+    }
+  };
+
+  // Fetch chat history
+  const fetchChatHistory = async () => {
+    if (!token) return;
+    try {
+      const response = await fetch(`${API_URL}/api/mira/history?limit=5`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setChatHistory(data.sessions || []);
+      }
+    } catch (error) {
+      console.debug('Chat history fetch failed:', error);
+    }
+  };
 
   // Scroll to bottom
   const scrollToBottom = () => {
@@ -74,10 +188,11 @@ const MiraPage = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Focus input on mount
+  // Focus input on mount and fetch history
   useEffect(() => {
     inputRef.current?.focus();
-  }, []);
+    fetchChatHistory();
+  }, [token]);
 
   // Fetch user pets and set initial welcome
   useEffect(() => {
