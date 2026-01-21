@@ -737,6 +737,145 @@ def get_pillar_specific_questions(pillar: str) -> List[str]:
     }
     return questions.get(pillar, ["How can I assist you today?"])
 
+def get_pillar_quick_prompts(pillar: str) -> List[Dict[str, str]]:
+    """Get pillar-specific quick action prompts"""
+    prompts = {
+        "travel": [
+            {"label": "Book a Cab", "message": "I need to book a pet-friendly cab"},
+            {"label": "Flight Help", "message": "I need help arranging a flight for my pet"},
+            {"label": "Travel Documents", "message": "What documents do I need to travel with my pet?"}
+        ],
+        "stay": [
+            {"label": "Find Hotel", "message": "I'm looking for a pet-friendly hotel"},
+            {"label": "Book Boarding", "message": "I need pet boarding services"},
+            {"label": "Pawcation", "message": "Help me plan a pawcation"}
+        ],
+        "care": [
+            {"label": "Book Grooming", "message": "I'd like to book a grooming session"},
+            {"label": "Vet Visit", "message": "I need to schedule a vet visit"},
+            {"label": "Pet Sitting", "message": "I need a pet sitter"}
+        ],
+        "dine": [
+            {"label": "Find Restaurant", "message": "Find me a pet-friendly restaurant"},
+            {"label": "Book Table", "message": "I want to make a reservation for dining with my pet"},
+            {"label": "Outdoor Cafes", "message": "Suggest pet-friendly outdoor cafes near me"}
+        ],
+        "celebrate": [
+            {"label": "Order Cake", "message": "I want to order a birthday cake for my pet"},
+            {"label": "Party Planning", "message": "Help me plan a birthday party for my pet"},
+            {"label": "Custom Treats", "message": "I'd like to order custom celebration treats"}
+        ],
+        "enjoy": [
+            {"label": "Find Events", "message": "What pet events are happening nearby?"},
+            {"label": "Trails & Hikes", "message": "Suggest pet-friendly trails for hiking"},
+            {"label": "Meetups", "message": "Are there any pet meetups coming up?"}
+        ],
+        "fit": [
+            {"label": "Weight Plan", "message": "My pet needs help with weight management"},
+            {"label": "Training", "message": "I'm looking for behavior training"},
+            {"label": "Exercise Ideas", "message": "Suggest exercise routines for my pet"}
+        ],
+        "paperwork": [
+            {"label": "Health Certificate", "message": "I need a health certificate for my pet"},
+            {"label": "Pet Passport", "message": "Help me get a pet passport"},
+            {"label": "Insurance", "message": "Tell me about pet insurance options"}
+        ],
+        "emergency": [
+            {"label": "Emergency Vet", "message": "I need an emergency vet NOW"},
+            {"label": "Lost Pet", "message": "My pet is lost, please help"},
+            {"label": "Poison Help", "message": "My pet may have eaten something toxic"}
+        ],
+        "shop": [
+            {"label": "Treats", "message": "Show me healthy treats for my pet"},
+            {"label": "Food", "message": "I'm looking for premium pet food"},
+            {"label": "Accessories", "message": "What accessories do you recommend?"}
+        ],
+        "club": [
+            {"label": "Membership", "message": "Tell me about membership benefits"},
+            {"label": "Rewards", "message": "How do I redeem my rewards?"},
+            {"label": "Upgrade Tier", "message": "I want to upgrade my membership"}
+        ],
+        "advisory": [
+            {"label": "Health Advice", "message": "I have a health question about my pet"},
+            {"label": "Nutrition Guide", "message": "What's the best diet for my pet?"},
+            {"label": "Behavior Tips", "message": "I need advice about my pet's behavior"}
+        ]
+    }
+    return prompts.get(pillar, prompts["advisory"])
+
+def needs_research(message: str) -> bool:
+    """Check if the message requires web research for factual information"""
+    message_lower = message.lower()
+    return any(keyword in message_lower for keyword in RESEARCH_KEYWORDS)
+
+async def perform_web_research(query: str, pet_context: str = "") -> Dict[str, Any]:
+    """
+    Perform web search for factual queries using Emergent's web search capability.
+    Returns sourced information with citations.
+    """
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        
+        api_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not api_key:
+            return {"success": False, "error": "No API key configured"}
+        
+        # Build research prompt
+        research_prompt = f"""You are a research assistant. Search the web and provide FACTUAL, SOURCED information about the following query. 
+
+QUERY: {query}
+{f"CONTEXT: The user is asking about this in relation to: {pet_context}" if pet_context else ""}
+
+IMPORTANT INSTRUCTIONS:
+1. Search for current, verified information from official sources
+2. Clearly cite your sources with URLs where possible
+3. Separate CONFIRMED FACTS from VARIABLE INFORMATION (things that may change or vary)
+4. If information could not be verified, explicitly state "Could not verify"
+5. Never fabricate or make assumptions about regulations/rules
+6. Include dates of the information if available
+7. Mention if policies may have changed or if user should verify
+
+Format your response as:
+**CONFIRMED FACTS:**
+- [fact 1] (Source: URL or organization name)
+- [fact 2] (Source: URL or organization name)
+
+**VARIABLE/MAY CHANGE:**
+- [item that varies or may change]
+
+**RECOMMENDED NEXT STEPS:**
+- [action item 1]
+- [action item 2]
+
+**SOURCES CONSULTED:**
+- [source 1]
+- [source 2]
+"""
+        
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"mira-research-{uuid.uuid4()}",
+            system_message="You are a factual research assistant. You must search the web and provide accurate, sourced information. Never fabricate facts."
+        )
+        chat.with_model("openai", "gpt-5.1")
+        
+        # The LLM will use its capabilities to provide researched information
+        response = await chat.send_message(UserMessage(text=research_prompt))
+        
+        return {
+            "success": True,
+            "research_result": response,
+            "query": query
+        }
+        
+    except Exception as e:
+        logger.error(f"Web research error: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "query": query
+        }
+
 # ============== API ROUTES ==============
 
 @router.post("/chat")
