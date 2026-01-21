@@ -3,6 +3,21 @@
 
 ---
 
+## THE DOCTRINE (Foundational Principles)
+
+> **"The longer a pet lives with us, the less their parent has to explain."**
+
+### Core Truths
+1. **No member without a pet** - Membership requires at least one registered pet
+2. **Pet Parent (Hooman)** is the account; **Pet Soul** is the intelligence
+3. **Every system** must read/write Pet Soul
+4. **Mira AI** must use Pet Soul context live
+5. **Questions are progressive**, never repetitive
+6. **Recognition > Recommendation**
+7. **Silence is better than irrelevant messaging**
+
+---
+
 ## Original Problem Statement
 The Doggy Company is building a "Pet Life Operating System" with 12 business "Pillars". The core vision includes a deep "Pet Soul" profile for each pet, a "Unified Inbox," a mandatory "Membership" layer, and a central "Mira AI" concierge.
 
@@ -25,15 +40,17 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
 - ✅ **NEW: Context-Aware Quick Prompts** - Pillar-specific suggestions
 - ✅ **NEW: Cross-Pillar Context** - Acknowledges pillar transitions
 - ✅ **NEW: Chat History & Session Management** - New conversation, history retrieval
+- ✅ **NEW: Known Fields Section** - Mira sees exactly what she knows, never re-asks
 
 #### Phase 2: UI Placements - ALL 12 PILLARS
 - ✅ **Contextual Panel** (`MiraContextPanel.jsx`) on:
-  - Travel, Stay, Care, Dine, Enjoy, Fit, Advisory, Paperwork, Emergency
+  - Travel, Stay, Care, Dine, Enjoy, Fit, Advisory, Paperwork, Emergency, Celebrate
 - ✅ **Full-Screen Ask Mira** (`/ask-mira`) - Premium chat experience
 - ✅ **Global floating button** in MiraAI widget
 - ✅ **NEW: Voice Input** - Web Speech API integration for speech-to-text
 - ✅ **NEW: Pillar-Specific Quick Prompts** - Travel shows travel prompts, Care shows care prompts, etc.
 - ✅ **NEW: New Chat & History Buttons** - Visible in widget and full page
+- ✅ **NEW: Celebrate Page Hero** - Category-specific headers with dynamic images
 
 #### Phase 3: Intelligence Engine (`/app/backend/mira_intelligence.py`)
 - ✅ **Passive Learning** - Tracks browsing signals (views, clicks, filters, add-to-cart)
@@ -42,8 +59,25 @@ The Doggy Company is building a "Pet Life Operating System" with 12 business "Pi
 - ✅ **Learning from Outcomes** - Tracks accepted/rejected recommendations
 - ✅ **Proactive Triggers** - Birthday reminders, vaccine alerts, reorder suggestions
 
-#### Frontend Hooks
+#### Phase 4: Soul Intelligence Engine (`/app/backend/soul_intelligence.py`) - NEW
+- ✅ **Known Fields Detection** - Tracks all known Pet Soul fields
+- ✅ **Advanced Enrichment Extraction** - Regex-based extraction from conversations
+- ✅ **Behavioral Inference** - Learn from orders, returns, patterns
+- ✅ **Intelligent Commerce Filtering** - Exclude products based on allergies, age, size
+- ✅ **Soul Completeness Calculation** - Weighted scoring of essential/important/nice fields
+- ✅ **Weekly Drip Question Selection** - Contextual, priority-based questions
+
+#### Phase 5: Pet-First Gating (`/app/backend/pet_gate_routes.py`) - NEW
+- ✅ **Pet Requirement Check** - /api/pet-gate/check
+- ✅ **Action-Specific Messaging** - Different messages for checkout, chat, booking
+- ✅ **Soul Drip Endpoints** - /api/soul-drip/next-question, /api/soul-drip/respond
+- ✅ **Soul Completeness API** - /api/soul-drip/completeness/{pet_id}
+- ✅ **Commerce Filtering API** - /api/pet-gate/filter-products/{pet_id}
+
+#### Frontend Components
 - ✅ `useMiraSignal.js` - Hook for passive learning signal tracking
+- ✅ `usePetGate.js` - Hook for pet-first gating
+- ✅ `PetGateModal.jsx` - "Add Your Pet First" modal
 
 ---
 
