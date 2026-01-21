@@ -3165,8 +3165,8 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
 
               {/* AI Assistant Panel - FIXED, shows when AI draft is ready */}
               {showAiPanel && aiDraft && (
-                <div className="flex-shrink-0 p-3 bg-gradient-to-r from-purple-50 to-pink-50 border-t-2 border-purple-300">
-                  <div className="flex items-center justify-between mb-2">
+                <div className="flex-shrink-0 p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-t-2 border-purple-300">
+                  <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-purple-600" />
                       <span className="text-sm font-semibold text-purple-800">AI Draft ({aiTone})</span>
@@ -3175,34 +3175,34 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                       <X className="w-4 h-4" />
                     </Button>
                   </div>
-                  {/* Draft Text Box */}
-                  <div className="bg-white rounded-lg p-3 border border-purple-200 text-sm h-16 overflow-y-auto">
+                  {/* Draft Text Box - LARGER */}
+                  <div className="bg-white rounded-lg p-4 border border-purple-200 text-sm min-h-[120px] max-h-[200px] overflow-y-auto mb-3 whitespace-pre-wrap">
                     {aiDraft.draft}
                   </div>
                   {/* Action Buttons Row */}
-                  <div className="flex items-center gap-2 mt-2 pt-2 border-t border-purple-100">
+                  <div className="flex items-center gap-3 pt-3 border-t border-purple-100">
                     <Button 
-                      size="sm" 
-                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                      size="default" 
+                      className="bg-purple-600 hover:bg-purple-700 text-white px-4"
                       onClick={() => applyAiDraft(aiDraft.draft)}
                     >
-                      <Copy className="w-3 h-3 mr-1" /> Use This Draft
+                      <Copy className="w-4 h-4 mr-2" /> Use This Draft
                     </Button>
                     {aiDraft.quick_draft && (
                       <Button 
-                        size="sm" 
+                        size="default" 
                         variant="outline"
                         onClick={() => applyAiDraft(aiDraft.quick_draft)}
                       >
-                        Quick
+                        Quick Version
                       </Button>
                     )}
                     <div className="flex-1" />
                     <Button size="sm" variant="ghost" className="text-green-600">
-                      <ThumbsUp className="w-3 h-3" />
+                      <ThumbsUp className="w-4 h-4" />
                     </Button>
                     <Button size="sm" variant="ghost" className="text-red-600">
-                      <ThumbsDown className="w-3 h-3" />
+                      <ThumbsDown className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
