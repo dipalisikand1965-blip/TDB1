@@ -271,16 +271,16 @@ const MembershipPage = () => {
             </h1>
             
             <p className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-              Not just a membership — an intelligent companion that learns your pet&apos;s 
-              preferences, remembers their health history, and anticipates their needs.
+              Not just a membership — a system that quietly learns, remembers, and adapts around your pet.
             </p>
             
-            {/* CTA Buttons */}
+            {/* CTA Buttons - Clear hierarchy */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
                 size="lg"
                 className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105"
+                data-testid="hero-start-soul-btn"
               >
                 <Brain className="w-5 h-5 mr-2" />
                 Start Your Pet&apos;s Soul
@@ -288,18 +288,14 @@ const MembershipPage = () => {
               <Button 
                 onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
                 size="lg"
-                variant="outline"
-                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
+                variant="ghost"
+                className="text-white/70 hover:text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
+                data-testid="hero-talk-mira-btn"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
-                Talk to Mira First
+                Talk to Mira
               </Button>
             </div>
-            
-            {/* Trust statement */}
-            <p className="mt-8 text-white/50 text-sm italic">
-              &ldquo;The world&apos;s most intelligent pet life platform.&rdquo;
-            </p>
           </div>
         </div>
       </div>
