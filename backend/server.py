@@ -3081,6 +3081,11 @@ async def get_all_products(
     products = await db.products.find(query, {"_id": 0}).limit(limit).to_list(limit)
     total = await db.products.count_documents(query)
     
+    # Ensure title field exists (use name if title is missing)
+    for p in products:
+        if not p.get("title") and p.get("name"):
+            p["title"] = p["name"]
+    
     # Get distinct categories
     categories = await db.products.distinct("category")
     
