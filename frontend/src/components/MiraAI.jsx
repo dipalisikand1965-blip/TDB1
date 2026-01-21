@@ -174,12 +174,12 @@ I am here to assist with anything your companion may need — from celebrating s
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
+        className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-slate-800 to-slate-900 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group border border-amber-500/30"
         data-testid="mira-fab-button"
       >
-        <Sparkles className="w-6 h-6" />
-        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
-          Chat with Mira
+        <span className="text-xl">🐾</span>
+        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap font-medium">
+          Speak with Mira
         </span>
       </button>
     );
@@ -187,27 +187,27 @@ I am here to assist with anything your companion may need — from celebrating s
 
   return (
     <div 
-      className={`fixed z-50 bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 flex flex-col ${
+      className={`fixed z-50 bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 flex flex-col border border-slate-200 ${
         isMinimized 
           ? 'bottom-6 right-6 w-80 h-16' 
-          : 'bottom-6 right-6 w-[380px] h-[550px] max-h-[calc(100vh-100px)] md:w-[400px] md:h-[600px]'
+          : 'bottom-6 right-6 w-[380px] h-[550px] max-h-[calc(100vh-100px)] md:w-[420px] md:h-[620px]'
       }`}
       data-testid="mira-chat-container"
     >
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 flex items-center justify-between flex-shrink-0">
+      {/* Header - Professional dark theme */}
+      <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white p-4 flex items-center justify-between flex-shrink-0 border-b border-amber-500/30">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-            <Sparkles className="w-5 h-5" />
+          <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center border border-amber-500/30">
+            <span className="text-lg">🐾</span>
           </div>
           <div>
-            <h3 className="font-bold">Mira</h3>
-            <p className="text-xs opacity-80">Super Concierge® • Online</p>
+            <h3 className="font-semibold tracking-wide">Mira</h3>
+            <p className="text-xs text-amber-400/80 font-light">Concierge • At your service</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
-            className="text-white hover:bg-white/20 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
+            className="text-white/70 hover:text-white hover:bg-white/10 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
             onClick={() => setIsMinimized(!isMinimized)}
             title={isMinimized ? "Expand" : "Minimize"}
             data-testid="mira-minimize-btn"
@@ -215,7 +215,7 @@ I am here to assist with anything your companion may need — from celebrating s
             {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
           </button>
           <button
-            className="text-white bg-white/10 hover:bg-red-500 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
+            className="text-white/70 hover:text-white hover:bg-red-500/80 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
             onClick={() => setIsOpen(false)}
             title="Close Mira"
             data-testid="mira-close-btn"
