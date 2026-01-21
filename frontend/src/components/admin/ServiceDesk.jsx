@@ -3163,55 +3163,51 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
               </div>
               {/* END of scrollable Content area */}
 
-              {/* Reply Box with AI Assistant - FIXED at bottom, outside scrollable area */}
-              <div className="border-t bg-gradient-to-r from-gray-50 to-purple-50/30 flex-shrink-0">
-                {/* AI Assistant Panel */}
-                {showAiPanel && aiDraft && (
-                  <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 border-t border-purple-200">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-purple-600" />
-                        <span className="text-sm font-semibold text-purple-800">AI Draft ({aiTone})</span>
-                      </div>
-                      <Button variant="ghost" size="sm" onClick={() => setShowAiPanel(false)}>
-                        <X className="w-4 h-4" />
-                      </Button>
+              {/* AI Assistant Panel - FIXED, shows when AI draft is ready */}
+              {showAiPanel && aiDraft && (
+                <div className="flex-shrink-0 p-3 bg-gradient-to-r from-purple-50 to-pink-50 border-t-2 border-purple-300">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-purple-600" />
+                      <span className="text-sm font-semibold text-purple-800">AI Draft ({aiTone})</span>
                     </div>
-                    {/* Draft Text - Scrollable */}
-                    <div className="bg-white rounded-lg p-3 border border-purple-200 text-sm h-20 overflow-y-auto mb-2">
-                      {aiDraft.draft}
-                    </div>
-                    {/* Action Buttons - ALWAYS visible */}
-                    <div className="flex items-center gap-2 pt-2 border-t border-purple-100">
+                    <Button variant="ghost" size="sm" onClick={() => setShowAiPanel(false)}>
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  {/* Draft Text Box */}
+                  <div className="bg-white rounded-lg p-3 border border-purple-200 text-sm h-16 overflow-y-auto">
+                    {aiDraft.draft}
+                  </div>
+                  {/* Action Buttons Row */}
+                  <div className="flex items-center gap-2 mt-2 pt-2 border-t border-purple-100">
+                    <Button 
+                      size="sm" 
+                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                      onClick={() => applyAiDraft(aiDraft.draft)}
+                    >
+                      <Copy className="w-3 h-3 mr-1" /> Use This Draft
+                    </Button>
+                    {aiDraft.quick_draft && (
                       <Button 
                         size="sm" 
-                        className="bg-purple-600 hover:bg-purple-700 text-white"
-                        onClick={() => applyAiDraft(aiDraft.draft)}
+                        variant="outline"
+                        onClick={() => applyAiDraft(aiDraft.quick_draft)}
                       >
-                        <Copy className="w-3 h-3 mr-1" /> Use This Draft
+                        Quick
                       </Button>
-                      {aiDraft.quick_draft && (
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => applyAiDraft(aiDraft.quick_draft)}
-                        >
-                          Quick
-                        </Button>
-                      )}
-                      <div className="flex-1" />
-                      <Button size="sm" variant="ghost" className="text-green-600">
-                        <ThumbsUp className="w-3 h-3" />
-                      </Button>
-                      <Button size="sm" variant="ghost" className="text-red-600">
-                        <ThumbsDown className="w-3 h-3" />
-                      </Button>
-                    </div>
+                    )}
+                    <div className="flex-1" />
+                    <Button size="sm" variant="ghost" className="text-green-600">
+                      <ThumbsUp className="w-3 h-3" />
+                    </Button>
+                    <Button size="sm" variant="ghost" className="text-red-600">
+                      <ThumbsDown className="w-3 h-3" />
+                    </Button>
                   </div>
-                )}
+                </div>
+              )}
 
-              </div>
-              
               {/* Reply Section - Fixed at bottom */}
               <div className="border-t bg-gradient-to-r from-slate-50 to-slate-100 flex-shrink-0">
                 <div className="p-3">
