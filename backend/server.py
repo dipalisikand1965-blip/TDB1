@@ -439,6 +439,13 @@ async def send_celebration_email(to_email: str, owner_name: str, pet_name: str,
                                   celebration: dict, persona: str, photo_url: str = None):
     """Send a personalized celebration reminder email"""
     try:
+        # Validate email is a proper string
+        if not to_email or not isinstance(to_email, str) or "@" not in to_email:
+            logger.warning(f"Celebration email skipped: invalid email '{to_email}'")
+            return
+        
+        to_email = to_email.strip()
+        
         days_text = "tomorrow" if celebration["days_until"] == 1 else f"in {celebration['days_until']} days"
         occasion_type = celebration["occasion"]
         
