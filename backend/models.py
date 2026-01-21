@@ -357,18 +357,13 @@ class CartItem(BaseModel):
 
 
 class CartSnapshot(BaseModel):
-    id: str = Field(default_factory=lambda: f"cart-{uuid.uuid4().hex[:12]}")
-    user_email: str
-    user_name: Optional[str] = None
+    session_id: str
+    user_id: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    name: Optional[str] = None
     items: List[CartItem]
-    total: float
-    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    status: str = "active"
-    reminders_sent: int = 0
-    last_reminder_at: Optional[str] = None
-    recovered: bool = False
-    recovery_discount_code: Optional[str] = None
+    subtotal: float
 
 
 # ==================== PAYMENT MODELS ====================
