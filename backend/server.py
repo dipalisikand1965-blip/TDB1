@@ -8281,6 +8281,8 @@ set_mis_db(db)
 set_rewards_db(db)
 set_pet_soul_db(db)
 set_pet_vault_db(db)
+set_soul_db(db)
+set_pet_gate_db(db)
 
 
 # ==================== ABOUT PAGE CONTENT MANAGEMENT ====================
