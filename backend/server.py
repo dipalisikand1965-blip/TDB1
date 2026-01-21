@@ -978,11 +978,11 @@ async def seed_initial_products():
     except Exception as e:
         logger.error(f"Error seeding products: {e}")
 
-def verify_admin(
+async def verify_admin_auth(
     credentials: HTTPBasicCredentials = Depends(security),
     bearer_creds: HTTPAuthorizationCredentials = Depends(security_bearer)
 ):
-    """Verify admin credentials - supports both Basic Auth and Bearer Token"""
+    """Verify admin credentials - supports both Basic Auth and Bearer Token. Use as a dependency."""
     # Try Bearer Token first (from JWT login)
     if bearer_creds and bearer_creds.credentials:
         try:
@@ -995,7 +995,7 @@ def verify_admin(
             pass  # Fall through to try Basic Auth
     
     # Try Basic Auth
-    if credentials:
+    if credentials and credentials.username and credentials.password:
         expected_username = _admin_credentials_cache.get("username") or ADMIN_USERNAME
         expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
         
@@ -1010,6 +1010,22 @@ def verify_admin(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid credentials"
     )
+
+
+def verify_admin(credentials: HTTPBasicCredentials):
+    """Verify admin credentials - Basic Auth only. For legacy endpoint calls."""
+    expected_username = _admin_credentials_cache.get("username") or ADMIN_USERNAME
+    expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
+    
+    correct_username = secrets.compare_digest(credentials.username, expected_username)
+    correct_password = secrets.compare_digest(credentials.password, expected_password)
+    
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials"
+        )
+    return credentials.username
 
 
 # ==================== ADMIN CREDENTIAL MANAGEMENT ====================
