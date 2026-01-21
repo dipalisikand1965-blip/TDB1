@@ -14,18 +14,18 @@ const Footer = () => {
   
   return (
     <footer className="bg-gray-900 text-gray-300">
-      {/* Floating WhatsApp Button - Hidden on admin/agent pages */}
+      {/* Floating WhatsApp Button - Hidden on admin/agent pages, positioned higher on mobile */}
       {!shouldHideFloat && (
         <a
           href={WHATSAPP_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="fixed bottom-6 left-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
+          className="fixed bottom-24 sm:bottom-6 left-4 sm:left-6 z-40 bg-green-500 hover:bg-green-600 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
           data-testid="whatsapp-float-btn"
           aria-label="Contact on WhatsApp"
         >
-          <MessageCircle className="w-6 h-6" />
-          <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
+          <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+          <span className="hidden sm:inline-block max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
             Chat with us
           </span>
         </a>
