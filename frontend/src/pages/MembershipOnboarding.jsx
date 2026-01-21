@@ -97,15 +97,20 @@ const MembershipOnboarding = () => {
     if (!parentData.name.trim()) errors.name = 'Name is required';
     if (!parentData.email.trim()) errors.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(parentData.email)) errors.email = 'Invalid email format';
+    if (!parentData.phone.trim()) errors.phone = 'Phone number is required';
+    else if (!/^\+?[0-9]{10,13}$/.test(parentData.phone.replace(/\s/g, ''))) 
+      errors.phone = 'Invalid phone number';
     if (!parentData.whatsapp.trim()) errors.whatsapp = 'WhatsApp number is required';
     else if (!/^\+?[0-9]{10,13}$/.test(parentData.whatsapp.replace(/\s/g, ''))) 
-      errors.whatsapp = 'Invalid phone number';
+      errors.whatsapp = 'Invalid WhatsApp number';
     if (!parentData.city.trim()) errors.city = 'City is required';
     if (!parentData.pincode.trim()) errors.pincode = 'Pincode is required';
     else if (!/^[0-9]{6}$/.test(parentData.pincode)) errors.pincode = 'Invalid pincode (6 digits)';
     if (!parentData.password) errors.password = 'Password is required';
     else if (parentData.password.length < 6) errors.password = 'Password must be at least 6 characters';
     if (parentData.password !== parentData.confirmPassword) errors.confirmPassword = 'Passwords do not match';
+    if (!parentData.acceptTerms) errors.acceptTerms = 'You must accept the Terms & Conditions';
+    if (!parentData.acceptPrivacy) errors.acceptPrivacy = 'You must accept the Privacy Policy';
     
     setParentErrors(errors);
     return Object.keys(errors).length === 0;
