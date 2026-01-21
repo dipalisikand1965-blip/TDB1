@@ -28,6 +28,24 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.encoders import jsonable_encoder
 import razorpay
 
+# Import models from models.py
+from models import (
+    AdminCredentialReset, AdminLoginRequest,
+    StatusCheck, StatusCheckCreate,
+    ChatRequest, MiraChat,
+    ProductUpdate, ProductFulfilmentUpdate,
+    Review, ReviewCreate,
+    AutoshipSubscription, AutoshipCreate,
+    Collection, CollectionCreate, CollectionUpdate,
+    ShippingThreshold, AppSettings, UpdateAppSettings,
+    MembershipUser, UserRegister, UserLogin, MembershipUpgrade,
+    PetSoul, PetCelebration, PetPreferences, PetProfileCreate, PetProfileUpdate, CelebrationReminder,
+    CartItem, CartSnapshot,
+    CreateOrderRequest, VerifyPaymentRequest,
+    AddMemberRequest, BulkActionRequest, CSVImportRequest,
+    AgentCreate, AgentUpdate, AgentPasswordChange, AgentLoginRequest, PasswordChangeRequest
+)
+
 from duckduckgo_search import DDGS
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
