@@ -51,6 +51,15 @@ const MiraContextPanel = ({
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [sessionId] = useState(generateSessionId);
+  const [recommendations, setRecommendations] = useState([]);
+  
+  // Mira Signal tracking for passive learning
+  const { trackPillarVisit, trackClick } = useMiraSignal();
+  
+  // Track pillar visit on mount
+  useEffect(() => {
+    trackPillarVisit(pillar);
+  }, [pillar, trackPillarVisit]);
   
   // Pillar-specific configurations
   const pillarConfig = {
