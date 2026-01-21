@@ -58,6 +58,7 @@ const calculateSoulScore = (pet) => {
   if (!pet) return { total: 0, breakdown: {} };
   
   const soul = pet.soul || {};
+  const answers = pet.doggy_soul_answers || {};
   const breakdown = {};
   let totalFilled = 0;
   let totalFields = 0;
@@ -66,9 +67,14 @@ const calculateSoulScore = (pet) => {
     let filledInCategory = 0;
     category.fields.forEach(field => {
       totalFields++;
-      // Check if field exists in pet or soul data
-      const value = pet[field] || soul[field] || (soul[category.key] && soul[category.key][field]);
-      if (value && value !== '' && value !== null) {
+      // Check multiple possible locations for the data
+      const prefixedKey = `${category.key}_${field}`;
+      const value = pet[field] || 
+                    soul[field] || 
+                    answers[field] || 
+                    answers[prefixedKey] ||
+                    (soul[category.key] && soul[category.key][field]);
+      if (value && value !== '' && value !== null && value !== undefined) {
         filledInCategory++;
         totalFilled++;
       }
@@ -80,9 +86,23 @@ const calculateSoulScore = (pet) => {
     };
   });
 
+  // Also count any answers in doggy_soul_answers that we haven't categorized
+  const answeredKeys = Object.keys(answers).length;
+  if (answeredKeys > 0 && totalFilled === 0) {
+    // Fallback: if we have answers but categories don't match, calculate based on total answers
+    const estimatedPercent = Math.min(100, Math.round((answeredKeys / 40) * 100));
+    return {
+      total: estimatedPercent,
+      breakdown,
+      answeredFields: answeredKeys
+    };
+  }
+
   return {
     total: totalFields > 0 ? Math.round((totalFilled / totalFields) * 100) : 0,
-    breakdown
+    breakdown,
+    answeredFields: answeredKeys
+  };
   };
 };
 
