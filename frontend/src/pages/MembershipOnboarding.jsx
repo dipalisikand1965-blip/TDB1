@@ -473,6 +473,147 @@ const MembershipOnboarding = () => {
                       {parentErrors.confirmPassword && <p className="text-red-500 text-xs mt-1">{parentErrors.confirmPassword}</p>}
                     </div>
                   </div>
+
+                  {/* Phone Numbers */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        Phone Number *
+                      </label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Input
+                          type="tel"
+                          value={parentData.phone}
+                          onChange={(e) => setParentData({...parentData, phone: e.target.value})}
+                          placeholder="+91 98765 43210"
+                          className={`pl-10 ${parentErrors.phone ? 'border-red-500' : ''}`}
+                          data-testid="parent-phone-input"
+                        />
+                      </div>
+                      {parentErrors.phone && <p className="text-red-500 text-xs mt-1">{parentErrors.phone}</p>}
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        WhatsApp Number *
+                      </label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Input
+                          type="tel"
+                          value={parentData.whatsapp}
+                          onChange={(e) => setParentData({...parentData, whatsapp: e.target.value})}
+                          placeholder="+91 98765 43210"
+                          className={`pl-10 ${parentErrors.whatsapp ? 'border-red-500' : ''}`}
+                          data-testid="parent-whatsapp-input"
+                        />
+                      </div>
+                      {parentErrors.whatsapp && <p className="text-red-500 text-xs mt-1">{parentErrors.whatsapp}</p>}
+                      <button 
+                        type="button"
+                        onClick={() => setParentData({...parentData, whatsapp: parentData.phone})}
+                        className="text-xs text-purple-600 hover:text-purple-700 mt-1"
+                      >
+                        Same as phone number
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Preferred Contact Method */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Preferred Contact Method *
+                    </label>
+                    <div className="flex gap-3">
+                      {[
+                        { value: 'whatsapp', label: 'WhatsApp', icon: '💬' },
+                        { value: 'phone', label: 'Phone Call', icon: '📞' },
+                        { value: 'email', label: 'Email', icon: '📧' }
+                      ].map((method) => (
+                        <button
+                          key={method.value}
+                          type="button"
+                          onClick={() => setParentData({...parentData, preferredContact: method.value})}
+                          className={`flex-1 p-3 rounded-xl border-2 text-sm transition-all ${
+                            parentData.preferredContact === method.value
+                              ? 'border-purple-500 bg-purple-50'
+                              : 'border-gray-200 hover:border-purple-300'
+                          }`}
+                          data-testid={`contact-method-${method.value}`}
+                        >
+                          <span className="mr-1">{method.icon}</span> {method.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Notification Settings */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Notification Preferences
+                    </label>
+                    <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
+                      {[
+                        { key: 'orderUpdates', label: 'Order & Delivery Updates', desc: 'Status of your orders and deliveries' },
+                        { key: 'petReminders', label: 'Pet Care Reminders', desc: 'Vaccination, grooming & health reminders' },
+                        { key: 'promotions', label: 'Offers & Promotions', desc: 'Exclusive deals and member discounts' },
+                        { key: 'newsletter', label: 'Monthly Newsletter', desc: 'Pet care tips and community updates' }
+                      ].map((notif) => (
+                        <label key={notif.key} className="flex items-start gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={parentData.notifications[notif.key]}
+                            onChange={(e) => setParentData({
+                              ...parentData, 
+                              notifications: {...parentData.notifications, [notif.key]: e.target.checked}
+                            })}
+                            className="mt-1 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                            data-testid={`notification-${notif.key}`}
+                          />
+                          <div>
+                            <p className="text-sm font-medium text-gray-700">{notif.label}</p>
+                            <p className="text-xs text-gray-500">{notif.desc}</p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Terms & Conditions */}
+                  <div className="space-y-3 pt-4 border-t">
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={parentData.acceptTerms}
+                        onChange={(e) => setParentData({...parentData, acceptTerms: e.target.checked})}
+                        className={`mt-1 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 ${parentErrors.acceptTerms ? 'border-red-500' : ''}`}
+                        data-testid="accept-terms"
+                      />
+                      <div>
+                        <p className="text-sm text-gray-700">
+                          I agree to the <a href="/terms" target="_blank" className="text-purple-600 hover:underline">Terms & Conditions</a> *
+                        </p>
+                        {parentErrors.acceptTerms && <p className="text-red-500 text-xs">{parentErrors.acceptTerms}</p>}
+                      </div>
+                    </label>
+                    
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={parentData.acceptPrivacy}
+                        onChange={(e) => setParentData({...parentData, acceptPrivacy: e.target.checked})}
+                        className={`mt-1 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 ${parentErrors.acceptPrivacy ? 'border-red-500' : ''}`}
+                        data-testid="accept-privacy"
+                      />
+                      <div>
+                        <p className="text-sm text-gray-700">
+                          I agree to the <a href="/privacy" target="_blank" className="text-purple-600 hover:underline">Privacy Policy</a> *
+                        </p>
+                        {parentErrors.acceptPrivacy && <p className="text-red-500 text-xs">{parentErrors.acceptPrivacy}</p>}
+                      </div>
+                    </label>
+                  </div>
                 </div>
 
                 <Button 
