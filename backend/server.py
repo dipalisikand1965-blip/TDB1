@@ -1108,8 +1108,15 @@ async def verify_admin_auth(
     )
 
 
-def verify_admin(credentials: HTTPBasicCredentials):
+def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
     """Verify admin credentials - Basic Auth only. For legacy endpoint calls."""
+    if not credentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Basic Auth credentials required",
+            headers={"WWW-Authenticate": "Basic"}
+        )
+    
     expected_username = _admin_credentials_cache.get("username") or ADMIN_USERNAME
     expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
     
