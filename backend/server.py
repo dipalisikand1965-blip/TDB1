@@ -998,12 +998,6 @@ def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
 
 # ==================== ADMIN CREDENTIAL MANAGEMENT ====================
 
-class AdminCredentialReset(BaseModel):
-    """Model for resetting admin credentials"""
-    reset_token: str
-    new_username: str
-    new_password: str
-
 @app.post("/api/admin/reset-credentials")
 async def reset_admin_credentials(data: AdminCredentialReset):
     """
