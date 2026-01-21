@@ -287,7 +287,8 @@ const MiraPage = () => {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
           content: data.response,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          researchMode: data.research_mode
         }]);
         
         if (data.ticket_id) setTicketId(data.ticket_id);
