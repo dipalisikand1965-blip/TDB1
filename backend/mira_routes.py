@@ -999,12 +999,24 @@ I understand this is urgent. Let me help you immediately.
             "is_emergency": True
         }
     
-    # 5. Build prompt and call LLM
+    # 5. Check if this needs RESEARCH MODE
+    research_context = None
+    if needs_research(user_message):
+        logger.info(f"Research mode activated for: {user_message[:50]}...")
+        pet_context = ""
+        if selected_pet:
+            pet_context = f"traveling with a {selected_pet.get('breed', 'dog')} named {selected_pet.get('name', 'pet')}"
+        research_result = await perform_web_research(user_message, pet_context)
+        if research_result.get("success"):
+            research_context = research_result.get("research_result")
+    
+    # 6. Build prompt and call LLM
     try:
         from emergentintegrations.llm.chat import LlmChat, UserMessage
         
         api_key = os.environ.get("EMERGENT_LLM_KEY")
         if not api_key:
+            logger.error("EMERGENT_LLM_KEY not configured")
             return {
                 "response": "I'm having a moment of pause. Please try again shortly.",
                 "session_id": session_id,
@@ -1023,7 +1035,38 @@ I understand this is urgent. Let me help you immediately.
                 content = msg.get("content", "")
                 history_text += f"{role}: {content}\n"
         
+        # Cross-pillar context handling
+        cross_pillar_note = ""
+        if request.previous_pillar and request.previous_pillar != pillar:
+            prev_pillar_name = PILLARS.get(request.previous_pillar, {}).get("name", request.previous_pillar)
+            curr_pillar_name = PILLARS.get(pillar, {}).get("name", pillar)
+            cross_pillar_note = f"""
+CROSS-PILLAR CONTEXT: The user has moved from {prev_pillar_name} to {curr_pillar_name}. 
+Acknowledge this transition warmly. Example: "I see you've moved from {prev_pillar_name} to {curr_pillar_name}. Let me help you with your {curr_pillar_name} needs now."
+Carry forward any relevant context from the previous conversation.
+"""
+        
+        # Research mode integration
+        research_instruction = ""
+        if research_context:
+            research_instruction = f"""
+RESEARCH MODE ACTIVE - FACTUAL QUERY DETECTED:
+I have researched the following verified information. Use this to respond:
+
+{research_context}
+
+CRITICAL RULES FOR RESEARCH RESPONSES:
+1. Clearly separate CONFIRMED FACTS from VARIABLE ITEMS
+2. Cite sources when available
+3. If any fact could not be verified, say "I could not verify this - please confirm directly"
+4. Provide concrete next steps the user can take
+5. Maintain your warm, concierge tone while being factually precise
+6. NEVER fabricate or assume facts about regulations, permissions, or policies
+"""
+        
         full_prompt = f"""{history_text}
+{cross_pillar_note}
+{research_instruction}
 
 CURRENT USER MESSAGE: {user_message}
 
@@ -1031,7 +1074,8 @@ REMEMBER:
 - Never ask for information already in Pet Soul
 - Ask ONE question at a time
 - Progress the conversation forward
-- Keep response concise and warm"""
+- Keep response concise and warm
+- If this is a factual query about rules/regulations, be precise and cite sources"""
         
         chat = LlmChat(
             api_key=api_key,
@@ -1043,16 +1087,17 @@ REMEMBER:
         
         response = await chat.send_message(UserMessage(text=full_prompt))
         
-        # 6. Add AI response to ticket
+        # 7. Add AI response to ticket
         await add_message_to_ticket(session_id, {
             "type": "mira_response",
             "content": response,
             "sender": "mira",
             "channel": request.source,
-            "is_internal": False
+            "is_internal": False,
+            "research_mode": research_context is not None
         })
         
-        # 7. Check for enrichments to save to Pet Soul
+        # 8. Check for enrichments to save to Pet Soul
         enrichments = extract_enrichments(user_message, response)
         if enrichments and selected_pet:
             for enrichment in enrichments:
@@ -1062,7 +1107,7 @@ REMEMBER:
                     source="user-stated"
                 )
         
-        # 8. Return response
+        # 9. Return response with additional metadata
         return {
             "response": response,
             "session_id": session_id,
@@ -1070,11 +1115,13 @@ REMEMBER:
             "pillar": pillar,
             "ticket_type": intent,
             "pets": [{"id": p.get("id"), "name": p.get("name")} for p in pets] if pets else [],
-            "selected_pet": selected_pet.get("name") if selected_pet else None
+            "selected_pet": selected_pet.get("name") if selected_pet else None,
+            "research_mode": research_context is not None,
+            "quick_prompts": get_pillar_quick_prompts(pillar)
         }
         
     except Exception as e:
-        logger.error(f"Mira chat error: {e}")
+        logger.error(f"Mira chat error: {e}", exc_info=True)
         return {
             "response": "I apologize for the brief pause. Could you please repeat that?",
             "session_id": session_id,
