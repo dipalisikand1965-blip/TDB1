@@ -7,7 +7,7 @@ import { Badge } from './ui/badge';
 import { Textarea } from './ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { API_URL } from '../utils/api';
+import { getApiUrl } from '../utils/api';
 import AutoshipSettings from './AutoshipSettings';
 import {
   Search, Filter, Download, Upload, Edit, Save, Loader2, RefreshCw,
@@ -16,11 +16,20 @@ import {
 } from 'lucide-react';
 
 const PILLARS = [
-  { id: 'celebrate', name: 'Celebrate', icon: '🎂', color: 'bg-pink-100 text-pink-700' },
+  { id: 'celebrate', name: 'Celebrate (Bakery)', icon: '🎂', color: 'bg-pink-100 text-pink-700' },
   { id: 'dine', name: 'Dine', icon: '🍽️', color: 'bg-orange-100 text-orange-700' },
-  { id: 'stay', name: 'Stay', icon: '🏨', color: 'bg-green-100 text-green-700' },
+  { id: 'stay', name: 'Stay (Pawcation)', icon: '🏨', color: 'bg-green-100 text-green-700' },
   { id: 'travel', name: 'Travel', icon: '✈️', color: 'bg-blue-100 text-blue-700' },
-  { id: 'care', name: 'Care', icon: '💊', color: 'bg-purple-100 text-purple-700' }
+  { id: 'care', name: 'Care', icon: '💊', color: 'bg-purple-100 text-purple-700' },
+  { id: 'shop', name: 'Shop', icon: '🛍️', color: 'bg-emerald-100 text-emerald-700' },
+  { id: 'enjoy', name: 'Enjoy', icon: '🎉', color: 'bg-rose-100 text-rose-700' },
+  { id: 'fit', name: 'Fit', icon: '💪', color: 'bg-cyan-100 text-cyan-700' },
+  { id: 'advisory', name: 'Advisory', icon: '📋', color: 'bg-violet-100 text-violet-700' },
+  { id: 'paperwork', name: 'Paperwork', icon: '📄', color: 'bg-slate-100 text-slate-700' },
+  { id: 'emergency', name: 'Emergency', icon: '🚨', color: 'bg-red-100 text-red-700' },
+  { id: 'club', name: 'Club (Membership)', icon: '👑', color: 'bg-amber-100 text-amber-700' },
+  { id: 'live_mira', name: 'Live Mira', icon: '🤖', color: 'bg-indigo-100 text-indigo-700' },
+  { id: 'shipping', name: 'Shipping', icon: '🚚', color: 'bg-gray-100 text-gray-700' }
 ];
 
 const GST_RATES = [0, 5, 12, 18, 28];
