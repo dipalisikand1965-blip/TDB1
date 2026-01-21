@@ -32,7 +32,11 @@ const MiraAI = () => {
     {
       id: 'welcome',
       role: 'assistant',
-      content: "🐾 **Hello, pet parent!** I'm Mira, your Super Concierge® at The Doggy Company.\n\nI can help you with:\n- 🎂 Ordering birthday cakes & treats\n- 🍽️ Dine reservations at pet-friendly restaurants\n- 🏨 Stay bookings at pet-friendly hotels\n- ✈️ Pet travel & relocation assistance\n- 💊 Pet care & nutrition advice\n\nHow can I assist you today?"
+      content: `**Good day.** I am Mira, your dedicated Concierge at The Doggy Company.
+
+I am here to assist with anything your companion may need — from celebrating special moments to travel arrangements, dining, wellness, and beyond.
+
+**How may I be of service today?**`
     }
   ]);
   const [inputValue, setInputValue] = useState('');
