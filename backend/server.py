@@ -5210,6 +5210,11 @@ async def check_abandoned_carts():
             reminders_already_sent = cart.get("reminders_sent", 0)
             updated_at = cart.get("updated_at", "")
             
+            # CRITICAL: Skip carts without valid email addresses
+            if not email or not isinstance(email, str) or "@" not in email:
+                logger.debug(f"Skipping cart {cart_id}: invalid or missing email")
+                continue
+            
             # Find which reminder to send next
             next_reminder_num = reminders_already_sent + 1
             
