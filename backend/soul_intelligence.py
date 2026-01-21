@@ -405,7 +405,7 @@ def extract_enrichments_advanced(user_message: str, ai_response: str = None) -> 
                     if config.get("is_numeric"):
                         try:
                             value = float(value)
-                        except:
+                        except (ValueError, TypeError):
                             pass
                 else:
                     # Couldn't extract value
