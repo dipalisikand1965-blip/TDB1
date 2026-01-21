@@ -10,6 +10,7 @@ import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
+import MiraContextPanel from '../components/MiraContextPanel';
 import {
   Scissors, PawPrint, GraduationCap, Stethoscope, AlertTriangle, Heart,
   ClipboardList, MapPin, Calendar, Clock, CheckCircle, MessageCircle,
