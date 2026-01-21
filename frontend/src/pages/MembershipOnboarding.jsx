@@ -345,25 +345,6 @@ const MembershipOnboarding = () => {
                     {parentErrors.email && <p className="text-red-500 text-xs mt-1">{parentErrors.email}</p>}
                   </div>
 
-                  {/* WhatsApp */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      WhatsApp Number *
-                    </label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <Input
-                        type="tel"
-                        value={parentData.whatsapp}
-                        onChange={(e) => setParentData({...parentData, whatsapp: e.target.value})}
-                        placeholder="+91 98765 43210"
-                        className={`pl-10 ${parentErrors.whatsapp ? 'border-red-500' : ''}`}
-                        data-testid="parent-whatsapp-input"
-                      />
-                    </div>
-                    {parentErrors.whatsapp && <p className="text-red-500 text-xs mt-1">{parentErrors.whatsapp}</p>}
-                  </div>
-
                   {/* Address */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
