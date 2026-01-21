@@ -153,11 +153,11 @@ I am here to assist with anything your companion may need — from celebrating s
     }
   };
 
-  // Quick action buttons
+  // Quick action buttons - professional, minimal emojis
   const quickActions = [
-    { label: '🎂 Order a Cake', message: 'I want to order a birthday cake for my dog' },
-    { label: '🍽️ Book Dining', message: 'Help me find a pet-friendly restaurant' },
-    { label: '🏨 Plan a Stay', message: 'I need a pet-friendly hotel recommendation' },
+    { label: 'Order a Cake', icon: '🎂', message: 'I would like to order a birthday cake for my dog' },
+    { label: 'Book Dining', icon: '🍽️', message: 'Please help me find a pet-friendly restaurant' },
+    { label: 'Plan a Stay', icon: '🐾', message: 'I need a pet-friendly hotel recommendation' },
   ];
 
   const handleQuickAction = (message) => {
