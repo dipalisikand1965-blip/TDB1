@@ -5,8 +5,7 @@ import { Button } from './ui/button';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+import { getApiUrl } from '../utils/api';
 
 // Markdown components for ReactMarkdown - defined outside component to avoid re-creation
 const markdownComponents = {
