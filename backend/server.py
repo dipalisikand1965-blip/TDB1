@@ -9546,10 +9546,6 @@ async def get_permission_options():
 
 # ==================== AGENT LOGIN (Separate from Admin) ====================
 
-class AgentLoginRequest(BaseModel):
-    username: str
-    password: str
-
 @app.post("/api/agent/login")
 async def agent_login(request: AgentLoginRequest):
     """
