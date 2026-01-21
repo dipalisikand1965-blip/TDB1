@@ -1,81 +1,312 @@
 /**
- * PetSoulJourney - The logged-in member's view of their Pet Soul progress
+ * PetSoulJourney - A Living Portrait, Not a Dashboard
  * 
- * THE DOCTRINE: "The system must feel like it remembers, not like it asks."
+ * THE DOCTRINE: 
+ * "The Pet Soul Journey should feel like someone quietly paying attention — 
+ * not like a system asking for information."
  * 
- * This replaces the generic sales pitch on /membership for logged-in members.
- * It shows their actual journey - achievements, progress, and next steps.
+ * CORE PRINCIPLES:
+ * - This is a confidence-of-understanding system, NOT a profile completion system
+ * - Fewer questions over time, better recognition over time
+ * - Less visible "system", more visible care
+ * 
+ * STAGES:
+ * - 0-20%: "We&apos;ve just met" - Minimal data, early trust
+ * - 20-50%: "Patterns are emerging" - Early preferences visible
+ * - 50-80%: "We know [Pet]" - Strong confidence, clear preferences  
+ * - 80-100%: "This system knows my pet" - Deep trust, longitudinal memory
  */
 
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from './ui/button';
-import { Card } from './ui/card';
-import { Badge } from './ui/badge';
-import { Progress } from './ui/progress';
+import React, { useState, useEffect } from &apos;react&apos;;
+import { Link } from &apos;react-router-dom&apos;;
+import { Button } from &apos;./ui/button&apos;;
+import { Card } from &apos;./ui/card&apos;;
+import { Badge } from &apos;./ui/badge&apos;;
 import { 
-  Brain, Heart, PawPrint, Trophy, Star, Sparkles, 
-  TrendingUp, Calendar, Shield, Check, ChevronRight,
-  Cake, UtensilsCrossed, Plane, Home, Activity, Stethoscope,
-  Crown, Zap, Gift, FileText, Clock, ArrowRight
-} from 'lucide-react';
-import { getApiUrl } from '../utils/api';
+  Brain, Heart, PawPrint, Sparkles, 
+  Home, Calendar, Plane, ChevronRight,
+  Clock, ArrowRight, Star
+} from &apos;lucide-react&apos;;
+import { getApiUrl } from &apos;../utils/api&apos;;
 
-// Membership level badges
-const MEMBERSHIP_LEVELS = {
-  curious_pup: { name: 'Curious Pup', emoji: '🐕', color: 'from-gray-400 to-gray-500' },
-  loyal_companion: { name: 'Loyal Companion', emoji: '🦮', color: 'from-blue-400 to-blue-600' },
-  trusted_guardian: { name: 'Trusted Guardian', emoji: '🐕‍🦺', color: 'from-purple-400 to-purple-600' },
-  pack_leader: { name: 'Pack Leader', emoji: '👑', color: 'from-amber-400 to-amber-600' }
-};
-
-// Pillar configuration
-const PILLARS = [
-  { key: 'identity', name: 'Identity & Temperament', icon: '🎭', color: 'bg-purple-100 text-purple-600' },
-  { key: 'family', name: 'Family & Pack', icon: '👨‍👩‍👧‍👦', color: 'bg-blue-100 text-blue-600' },
-  { key: 'rhythm', name: 'Rhythm & Routine', icon: '⏰', color: 'bg-green-100 text-green-600' },
-  { key: 'home', name: 'Home Comforts', icon: '🏠', color: 'bg-amber-100 text-amber-600' },
-  { key: 'travel', name: 'Travel Style', icon: '✈️', color: 'bg-sky-100 text-sky-600' },
-  { key: 'taste', name: 'Taste & Treat', icon: '🍖', color: 'bg-orange-100 text-orange-600' },
-  { key: 'training', name: 'Training & Behaviour', icon: '🎓', color: 'bg-indigo-100 text-indigo-600' },
-  { key: 'horizon', name: 'Long Horizon', icon: '🌅', color: 'bg-rose-100 text-rose-600' }
+// 8 Soul Pillars - Visual representation
+const SOUL_PILLARS = [
+  { key: &apos;identity_temperament&apos;, name: &apos;Identity &amp; Temperament&apos;, icon: &apos;🎭&apos;, color: &apos;purple&apos; },
+  { key: &apos;family_pack&apos;, name: &apos;Family &amp; Pack&apos;, icon: &apos;👨‍👩‍👧‍👦&apos;, color: &apos;blue&apos; },
+  { key: &apos;rhythm_routine&apos;, name: &apos;Rhythm &amp; Routine&apos;, icon: &apos;⏰&apos;, color: &apos;green&apos; },
+  { key: &apos;home_comforts&apos;, name: &apos;Home Comforts&apos;, icon: &apos;🏠&apos;, color: &apos;amber&apos; },
+  { key: &apos;travel_style&apos;, name: &apos;Travel Style&apos;, icon: &apos;✈️&apos;, color: &apos;sky&apos; },
+  { key: &apos;taste_treat&apos;, name: &apos;Taste &amp; Treat&apos;, icon: &apos;🍖&apos;, color: &apos;orange&apos; },
+  { key: &apos;training_behaviour&apos;, name: &apos;Training &amp; Behaviour&apos;, icon: &apos;🎓&apos;, color: &apos;indigo&apos; },
+  { key: &apos;long_horizon&apos;, name: &apos;Long Horizon&apos;, icon: &apos;🌅&apos;, color: &apos;rose&apos; }
 ];
 
-const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
+// Generate pillar insight text based on soul data
+const getPillarInsight = (pillarKey, soulData, petName) =&gt; {
+  const answers = soulData?.doggy_soul_answers || {};
+  const insights = soulData?.insights?.folder_summaries || {};
+  
+  // Map pillar key to insight text
+  const insightMap = {
+    identity_temperament: answers.describe_3_words 
+      ? `${petName} is ${answers.describe_3_words.toLowerCase()}`
+      : answers.general_nature 
+        ? `Generally ${answers.general_nature.toLowerCase()}`
+        : null,
+    family_pack: answers.most_attached_to
+      ? `Most attached to ${answers.most_attached_to.toLowerCase()}`
+      : answers.behavior_with_dogs
+        ? `${answers.behavior_with_dogs} with other dogs`
+        : null,
+    rhythm_routine: answers.walks_per_day
+      ? `${answers.walks_per_day} walks daily, most energetic in the ${(answers.energetic_time || &apos;day&apos;).toLowerCase()}`
+      : null,
+    home_comforts: answers.space_preference
+      ? `Prefers ${answers.space_preference.toLowerCase()}`
+      : answers.crate_trained === &apos;Yes&apos;
+        ? &apos;Comfortable with crate training&apos;
+        : null,
+    travel_style: answers.car_rides
+      ? answers.car_rides.toLowerCase().includes(&apos;love&apos;) 
+        ? &apos;Enjoys car rides&apos;
+        : answers.car_rides.toLowerCase().includes(&apos;anxi&apos;)
+          ? &apos;Gets anxious during travel&apos;
+          : `Travel comfort: ${answers.car_rides}`
+      : null,
+    taste_treat: answers.favorite_treats?.length
+      ? `Loves ${answers.favorite_treats.join(&apos;, &apos;).toLowerCase()}`
+      : answers.food_allergies?.length
+        ? `Sensitive to ${answers.food_allergies.join(&apos;, &apos;).toLowerCase()}`
+        : null,
+    training_behaviour: answers.training_level
+      ? `${answers.training_level}`
+      : null,
+    long_horizon: null // Usually empty in early stages
+  };
+  
+  return insightMap[pillarKey];
+};
+
+// Get learning timeline entries from soul data
+const getLearningTimeline = (soulData, petName) =&gt; {
+  const entries = [];
+  const answers = soulData?.doggy_soul_answers || {};
+  const pillarInteractions = soulData?.pillar_interactions || [];
+  
+  // Add entries from behavioral learning
+  if (answers.auto_learned_from) {
+    entries.push({
+      text: &apos;Preferences learned from recent activity&apos;,
+      source: &apos;behaviour&apos;,
+      date: answers.last_auto_updated
+    });
+  }
+  
+  if (answers.food_allergies?.length &amp;&amp; answers.food_allergies[0] !== &apos;None&apos;) {
+    entries.push({
+      text: `${answers.food_allergies.join(&apos;, &apos;)} sensitivity noted`,
+      source: &apos;you&apos;,
+      date: null
+    });
+  }
+  
+  if (answers.prefers_grain_free) {
+    entries.push({
+      text: &apos;Prefers grain-free options&apos;,
+      source: &apos;behaviour&apos;,
+      date: null
+    });
+  }
+  
+  if (answers.separation_anxiety &amp;&amp; answers.separation_anxiety !== &apos;None&apos;) {
+    entries.push({
+      text: `${answers.separation_anxiety} separation comfort`,
+      source: &apos;you&apos;,
+      date: null
+    });
+  }
+  
+  if (answers.car_rides?.toLowerCase().includes(&apos;love&apos;)) {
+    entries.push({
+      text: `${petName} enjoys car rides`,
+      source: &apos;you&apos;,
+      date: null
+    });
+  }
+  
+  if (answers.crate_trained === &apos;Yes&apos;) {
+    entries.push({
+      text: &apos;Comfortable with crate&apos;,
+      source: &apos;you&apos;,
+      date: null
+    });
+  }
+  
+  if (answers.loves_celebrations) {
+    entries.push({
+      text: `${petName} loves celebrations&apos;,
+      source: &apos;behaviour&apos;,
+      date: null
+    });
+  }
+  
+  // Add entries from pillar interactions
+  pillarInteractions.forEach(interaction =&gt; {
+    if (interaction.learned) {
+      Object.entries(interaction.learned).forEach(([key, value]) =&gt; {
+        if (key === &apos;favorite_treats&apos; &amp;&amp; value?.length) {
+          entries.push({
+            text: `Loves ${value.join(&apos;, &apos;)}`,
+            source: &apos;behaviour&apos;,
+            date: interaction.timestamp
+          });
+        }
+      });
+    }
+  });
+  
+  return entries.slice(0, 8); // Max 8 entries
+};
+
+// Get achievements based on soul progress
+const getAchievements = (soulData, overallScore) =&gt; {
+  const achievements = [];
+  const folderScores = soulData?.folder_scores || {};
+  
+  // Only show achievements at 50%+ (Stage 3+)
+  if (overallScore &lt; 50) return [];
+  
+  // Check pillar completion
+  if (folderScores.rhythm_routine &gt;= 80) {
+    achievements.push({ name: &apos;Routine Understood&apos;, icon: &apos;⏰&apos; });
+  }
+  if (folderScores.home_comforts &gt;= 80) {
+    achievements.push({ name: &apos;Home Preferences Known&apos;, icon: &apos;🏠&apos; });
+  }
+  if (folderScores.identity_temperament &gt;= 80) {
+    achievements.push({ name: &apos;Personality Mapped&apos;, icon: &apos;🎭&apos; });
+  }
+  if (folderScores.family_pack &gt;= 80) {
+    achievements.push({ name: &apos;Pack Dynamics Clear&apos;, icon: &apos;👨‍👩‍👧‍👦&apos; });
+  }
+  if (folderScores.travel_style &gt;= 50) {
+    achievements.push({ name: &apos;Travel-Aware&apos;, icon: &apos;✈️&apos; });
+  }
+  if (soulData?.vault?.vaccines?.length &gt; 0) {
+    achievements.push({ name: &apos;Health Vault Active&apos;, icon: &apos;💉&apos; });
+  }
+  if (soulData?.doggy_soul_answers?.loves_celebrations) {
+    achievements.push({ name: &apos;Celebration Ready&apos;, icon: &apos;🎂&apos; });
+  }
+  
+  return achievements.slice(0, 4); // Max 4 quiet achievements
+};
+
+// Get personalized care insights
+const getCareInsights = (soulData, petName) =&gt; {
+  const insights = [];
+  const answers = soulData?.doggy_soul_answers || {};
+  
+  // These are care insights, NOT product pushes
+  if (answers.separation_anxiety === &apos;Moderate&apos; || answers.separation_anxiety === &apos;Severe&apos;) {
+    insights.push(`Advance notice helps ${petName} stay calm during changes`);
+  }
+  
+  if (answers.space_preference?.toLowerCase().includes(&apos;busy&apos;)) {
+    insights.push(`${petName} does well in lively environments`);
+  } else if (answers.space_preference?.toLowerCase().includes(&apos;quiet&apos;)) {
+    insights.push(`${petName} prefers calm, quiet spaces`);
+  }
+  
+  if (answers.handling_comfort === &apos;Very comfortable&apos;) {
+    insights.push(`${petName} is comfortable with handling and grooming`);
+  }
+  
+  if (answers.car_rides?.toLowerCase().includes(&apos;anxi&apos;)) {
+    insights.push(`Short, positive car experiences help build confidence`);
+  }
+  
+  if (answers.food_allergies?.length &amp;&amp; answers.food_allergies[0] !== &apos;None&apos;) {
+    insights.push(`Avoid ${answers.food_allergies.join(&apos; and &apos;)} in treats and food`);
+  }
+  
+  if (answers.energetic_time) {
+    insights.push(`${petName} is most active in the ${answers.energetic_time.toLowerCase()}`);
+  }
+  
+  return insights.slice(0, 3);
+};
+
+// Determine current stage (0-20, 20-50, 50-80, 80-100)
+const getStage = (score) =&gt; {
+  if (score &lt; 20) return 1;
+  if (score &lt; 50) return 2;
+  if (score &lt; 80) return 3;
+  return 4;
+};
+
+// Generate identity line based on stage and data
+const getIdentityLine = (stage, soulData, petName) =&gt; {
+  const answers = soulData?.doggy_soul_answers || {};
+  
+  if (stage === 1) {
+    return `We&apos;re getting to know ${petName} and their daily rhythm.`;
+  }
+  
+  if (stage === 2) {
+    const traits = [];
+    if (answers.space_preference) traits.push(answers.space_preference.toLowerCase().includes(&apos;busy&apos;) ? &apos;social&apos; : &apos;calm&apos;);
+    if (answers.general_nature) traits.push(answers.general_nature.toLowerCase());
+    return traits.length 
+      ? `${petName} seems to prefer ${traits.join(&apos; and &apos;)} environments.`
+      : `${petName}&apos;s preferences are becoming clearer.`;
+  }
+  
+  if (stage === 3) {
+    const personality = answers.describe_3_words || answers.general_nature || &apos;unique&apos;;
+    const comfort = answers.space_preference?.toLowerCase().includes(&apos;quiet&apos;) ? &apos;quiet comfort&apos; : &apos;daily rhythm&apos;;
+    return `${petName} is a ${personality.toLowerCase()} who thrives on routine and ${comfort}.`;
+  }
+  
+  // Stage 4 - Deep understanding
+  const traits = [answers.describe_3_words, answers.general_nature].filter(Boolean).join(&apos;, &apos;).toLowerCase();
+  const travel = answers.car_rides?.toLowerCase().includes(&apos;anxi&apos;) ? &apos;especially during travel or change&apos; : &apos;&apos;;
+  return `${petName} prefers ${answers.space_preference?.toLowerCase() || &apos;familiar&apos;} spaces, ${traits} ${travel}`;
+};
+
+const PetSoulJourney = ({ user, pets = [], onOpenMira }) =&gt; {
   const [selectedPet, setSelectedPet] = useState(pets[0] || null);
   const [soulData, setSoulData] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  const petName = selectedPet?.name || 'your pet';
-  const memberLevel = MEMBERSHIP_LEVELS[user?.membership_level || 'curious_pup'];
+  const petName = selectedPet?.name || &apos;your pet&apos;;
   
-  // Calculate membership tenure
-  const getMembershipTenure = () => {
-    if (!user?.created_at) return 'New member';
-    const start = new Date(user.created_at);
-    const now = new Date();
-    const months = Math.floor((now - start) / (1000 * 60 * 60 * 24 * 30));
-    if (months < 1) return 'New member';
-    if (months === 1) return '1 month';
-    return `${months} months`;
-  };
-
   // Fetch soul completeness data
-  useEffect(() => {
-    const fetchSoulData = async () => {
+  useEffect(() =&gt; {
+    const fetchSoulData = async () =&gt; {
       if (!selectedPet?.id) {
         setLoading(false);
         return;
       }
       
       try {
-        const res = await fetch(`${getApiUrl()}/api/pet-gate/soul-completeness/${selectedPet.id}`);
-        if (res.ok) {
-          const data = await res.json();
-          setSoulData(data);
+        // Fetch both completeness and full pet data
+        const [completenessRes, petRes] = await Promise.all([
+          fetch(`${getApiUrl()}/api/pet-gate/soul-completeness/${selectedPet.id}`),
+          fetch(`${getApiUrl()}/api/pets/${selectedPet.id}`)
+        ]);
+        
+        let data = {};
+        if (completenessRes.ok) {
+          data = await completenessRes.json();
         }
+        if (petRes.ok) {
+          const petData = await petRes.json();
+          data = { ...data, ...petData };
+        }
+        setSoulData(data);
       } catch (error) {
-        console.error('Error fetching soul data:', error);
+        console.error(&apos;Error fetching soul data:&apos;, error);
       } finally {
         setLoading(false);
       }
@@ -84,355 +315,348 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
     fetchSoulData();
   }, [selectedPet?.id]);
 
-  // Get pet's achievements from soul data
-  const getAchievements = () => {
-    const achievements = selectedPet?.achievements || [];
-    if (achievements.length > 0) return achievements;
-    
-    // Default achievements based on activity
-    const defaultAchievements = [];
-    if (selectedPet?.name) {
-      defaultAchievements.push({ icon: '🐾', name: 'Soul Created', desc: 'Started the journey' });
-    }
-    if (soulData?.overall_score > 20) {
-      defaultAchievements.push({ icon: '🌟', name: 'Getting Started', desc: '20% soul complete' });
-    }
-    if (soulData?.overall_score > 50) {
-      defaultAchievements.push({ icon: '🏆', name: 'Halfway There', desc: '50% soul complete' });
-    }
-    return defaultAchievements;
-  };
-
-  // Get next actions to improve soul
-  const getNextActions = () => {
-    const actions = [];
-    
-    if (soulData?.missing_essential?.length > 0) {
-      actions.push({
-        title: `Add ${soulData.missing_essential[0]}`,
-        desc: 'Essential info for better recommendations',
-        link: `/pets/${selectedPet?.id}?tab=soul`,
-        priority: 'high'
-      });
-    }
-    
-    if (soulData?.missing_important?.length > 0) {
-      actions.push({
-        title: `Tell us about ${petName}'s ${soulData.missing_important[0]}`,
-        desc: 'Helps Mira understand better',
-        link: `/pets/${selectedPet?.id}?tab=soul`,
-        priority: 'medium'
-      });
-    }
-    
-    // Always suggest talking to Mira
-    actions.push({
-      title: `Ask Mira about ${petName}`,
-      desc: 'Every chat enriches the soul',
-      action: 'mira',
-      priority: 'low'
-    });
-    
-    return actions.slice(0, 3);
-  };
-
+  // No pet state
   if (!selectedPet) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white py-16 px-4">
-        <div className="max-w-2xl mx-auto text-center">
-          <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <PawPrint className="w-10 h-10 text-purple-600" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+      &lt;div className=&quot;min-h-screen bg-gradient-to-b from-slate-50 to-white py-16 px-4&quot;&gt;
+        &lt;div className=&quot;max-w-2xl mx-auto text-center&quot;&gt;
+          &lt;div className=&quot;w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-6&quot;&gt;
+            &lt;PawPrint className=&quot;w-10 h-10 text-purple-600&quot; /&gt;
+          &lt;/div&gt;
+          &lt;h1 className=&quot;text-3xl font-bold text-gray-900 mb-4&quot;&gt;
             Start Your Pet Soul Journey
-          </h1>
-          <p className="text-lg text-gray-600 mb-8">
+          &lt;/h1&gt;
+          &lt;p className=&quot;text-lg text-gray-600 mb-8&quot;&gt;
             Add your first pet to begin building their evolving digital soul.
-          </p>
-          <Link to="/pets/add">
-            <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600">
-              <PawPrint className="w-5 h-5 mr-2" />
+          &lt;/p&gt;
+          &lt;Link to=&quot;/pets/add&quot;&gt;
+            &lt;Button size=&quot;lg&quot; className=&quot;bg-gradient-to-r from-purple-600 to-pink-600&quot;&gt;
+              &lt;PawPrint className=&quot;w-5 h-5 mr-2&quot; /&gt;
               Add Your Pet
-            </Button>
-          </Link>
-        </div>
-      </div>
+            &lt;/Button&gt;
+          &lt;/Link&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
     );
   }
 
-  const achievements = getAchievements();
-  const nextActions = getNextActions();
   const overallScore = soulData?.overall_score || selectedPet?.overall_score || 0;
+  const stage = getStage(overallScore);
+  const identityLine = getIdentityLine(stage, soulData, petName);
+  const learningTimeline = getLearningTimeline(soulData, petName);
+  const achievements = getAchievements(soulData, overallScore);
+  const careInsights = getCareInsights(soulData, petName);
+  const folderScores = soulData?.folder_scores || {};
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white" data-testid="pet-soul-journey">
-      {/* Hero - Recognition, not sales */}
-      <section className="relative bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-900 text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-10 left-10 w-72 h-72 bg-purple-500 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-pink-500 rounded-full blur-3xl"></div>
-        </div>
+    &lt;div className=&quot;min-h-screen bg-gradient-to-b from-slate-50 to-white&quot; data-testid=&quot;pet-soul-journey&quot;&gt;
+      {/* ========== PET IDENTITY HEADER - Always at Top ========== */}
+      &lt;section className=&quot;relative bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-white overflow-hidden&quot;&gt;
+        &lt;div className=&quot;absolute inset-0 opacity-10&quot;&gt;
+          &lt;div className=&quot;absolute top-0 left-0 w-96 h-96 bg-purple-400 rounded-full blur-3xl&quot;&gt;&lt;/div&gt;
+          &lt;div className=&quot;absolute bottom-0 right-0 w-80 h-80 bg-pink-400 rounded-full blur-3xl&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;
         
-        <div className="relative max-w-7xl mx-auto px-4 py-12 md:py-16">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            {/* Left - Pet info */}
-            <div className="flex items-center gap-6">
-              {/* Pet avatar */}
-              <div className="relative">
-                <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-white/20 flex items-center justify-center overflow-hidden border-4 border-white/30">
-                  {selectedPet?.image_url ? (
-                    <img src={selectedPet.image_url} alt={petName} className="w-full h-full object-cover" />
-                  ) : (
-                    <PawPrint className="w-12 h-12 text-white/60" />
-                  )}
-                </div>
-                <div className={`absolute -bottom-2 -right-2 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r ${memberLevel.color} text-white shadow-lg`}>
-                  {memberLevel.emoji} {memberLevel.name}
-                </div>
-              </div>
-              
-              {/* Pet details */}
-              <div>
-                <p className="text-white/70 text-sm mb-1">Pet Soul Journey</p>
-                <h1 className="text-3xl md:text-4xl font-bold mb-2">{petName}</h1>
-                <p className="text-white/80">
-                  {selectedPet?.breed || 'Your beloved pet'} 
-                  {selectedPet?.age ? ` • ${selectedPet.age}` : ''}
-                </p>
-                <div className="flex items-center gap-2 mt-2 text-white/60 text-sm">
-                  <Clock className="w-4 h-4" />
-                  <span>Member for {getMembershipTenure()}</span>
-                </div>
-              </div>
-            </div>
+        &lt;div className=&quot;relative max-w-4xl mx-auto px-4 py-12 md:py-16&quot;&gt;
+          &lt;div className=&quot;flex flex-col md:flex-row items-center gap-6 md:gap-10&quot;&gt;
+            {/* Pet Photo */}
+            &lt;div className=&quot;relative&quot;&gt;
+              &lt;div className=&quot;w-28 h-28 md:w-36 md:h-36 rounded-full bg-white/20 flex items-center justify-center overflow-hidden border-4 border-white/30 shadow-xl&quot;&gt;
+                {selectedPet?.image_url || selectedPet?.photo_url ? (
+                  &lt;img 
+                    src={selectedPet.image_url || selectedPet.photo_url} 
+                    alt={petName} 
+                    className=&quot;w-full h-full object-cover&quot; 
+                  /&gt;
+                ) : (
+                  &lt;PawPrint className=&quot;w-14 h-14 text-white/50&quot; /&gt;
+                )}
+              &lt;/div&gt;
+            &lt;/div&gt;
             
-            {/* Right - Soul Score */}
-            <div className="text-center md:text-right">
-              <p className="text-white/70 text-sm mb-2">Pet Soul Score</p>
-              <div className="flex items-center justify-center md:justify-end gap-3">
-                <div className="relative w-20 h-20">
-                  <svg className="w-full h-full transform -rotate-90">
-                    <circle
-                      cx="40"
-                      cy="40"
-                      r="36"
-                      fill="none"
-                      stroke="rgba(255,255,255,0.2)"
-                      strokeWidth="8"
-                    />
-                    <circle
-                      cx="40"
-                      cy="40"
-                      r="36"
-                      fill="none"
-                      stroke="url(#scoreGradient)"
-                      strokeWidth="8"
-                      strokeLinecap="round"
-                      strokeDasharray={`${overallScore * 2.26} 226`}
-                    />
-                    <defs>
-                      <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#f472b6" />
-                        <stop offset="100%" stopColor="#fbbf24" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-2xl font-bold">{Math.round(overallScore)}%</span>
-                  </div>
-                </div>
-                <div className="text-left">
-                  <p className="text-white font-semibold">
-                    {overallScore < 30 ? 'Just Getting Started' : 
-                     overallScore < 60 ? 'Growing Together' : 
-                     overallScore < 80 ? 'Deep Understanding' : 'Soul Mates'}
-                  </p>
-                  <p className="text-white/60 text-sm">
-                    {100 - Math.round(overallScore)}% left to discover
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+            {/* Pet Identity */}
+            &lt;div className=&quot;text-center md:text-left flex-1&quot;&gt;
+              &lt;h1 className=&quot;text-4xl md:text-5xl font-bold mb-3&quot;&gt;{petName}&lt;/h1&gt;
+              
+              {/* Mira-generated identity line - evolves with understanding */}
+              &lt;p className=&quot;text-lg md:text-xl text-white/90 leading-relaxed max-w-xl&quot;&gt;
+                {identityLine}
+              &lt;/p&gt;
+              
+              {selectedPet?.breed &amp;&amp; (
+                &lt;p className=&quot;text-white/60 mt-2&quot;&gt;
+                  {selectedPet.breed}
+                  {selectedPet?.age ? ` • ${selectedPet.age}` : &apos;&apos;}
+                &lt;/p&gt;
+              )}
+            &lt;/div&gt;
+          &lt;/div&gt;
           
-          {/* Pet switcher if multiple pets */}
-          {pets.length > 1 && (
-            <div className="flex gap-2 mt-6 pt-6 border-t border-white/20">
-              <span className="text-white/60 text-sm self-center mr-2">Switch pet:</span>
-              {pets.map((pet) => (
-                <button
+          {/* Pet Switcher - only if multiple pets */}
+          {pets.length &gt; 1 &amp;&amp; (
+            &lt;div className=&quot;flex gap-2 mt-8 pt-6 border-t border-white/20 justify-center md:justify-start&quot;&gt;
+              {pets.map((pet) =&gt; (
+                &lt;button
                   key={pet.id}
-                  onClick={() => setSelectedPet(pet)}
+                  onClick={() =&gt; setSelectedPet(pet)}
                   className={`px-4 py-2 rounded-full text-sm transition-all ${
                     selectedPet?.id === pet.id
-                      ? 'bg-white text-purple-700 font-semibold'
-                      : 'bg-white/20 text-white hover:bg-white/30'
+                      ? &apos;bg-white text-purple-700 font-semibold shadow-lg&apos;
+                      : &apos;bg-white/20 text-white hover:bg-white/30&apos;
                   }`}
-                >
+                &gt;
                   {pet.name}
-                </button>
+                &lt;/button&gt;
               ))}
-            </div>
+            &lt;/div&gt;
           )}
-        </div>
-      </section>
+        &lt;/div&gt;
+      &lt;/section&gt;
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* What We Know Section */}
-        <section className="mb-10">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Brain className="w-6 h-6 text-purple-600" />
-                What We Know About {petName}
-              </h2>
-              <p className="text-gray-600">This is {petName}&apos;s evolving digital soul</p>
-            </div>
-            <Link to={`/pets/${selectedPet?.id}?tab=soul`}>
-              <Button variant="outline" className="border-purple-200 text-purple-600">
-                View Full Soul <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
-          </div>
+      &lt;div className=&quot;max-w-4xl mx-auto px-4 py-8&quot;&gt;
+        
+        {/* ========== PET SOUL SCORE - Soft, Not Dominant ========== */}
+        &lt;section className=&quot;mb-10&quot;&gt;
+          &lt;Card className=&quot;p-6 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-100&quot;&gt;
+            &lt;div className=&quot;flex items-center justify-between&quot;&gt;
+              &lt;div className=&quot;flex items-center gap-4&quot;&gt;
+                &lt;div className=&quot;relative w-16 h-16&quot;&gt;
+                  &lt;svg className=&quot;w-full h-full transform -rotate-90&quot;&gt;
+                    &lt;circle
+                      cx=&quot;32&quot;
+                      cy=&quot;32&quot;
+                      r=&quot;28&quot;
+                      fill=&quot;none&quot;
+                      stroke=&quot;#e9d5ff&quot;
+                      strokeWidth=&quot;6&quot;
+                    /&gt;
+                    &lt;circle
+                      cx=&quot;32&quot;
+                      cy=&quot;32&quot;
+                      r=&quot;28&quot;
+                      fill=&quot;none&quot;
+                      stroke=&quot;url(#soulGradient)&quot;
+                      strokeWidth=&quot;6&quot;
+                      strokeLinecap=&quot;round&quot;
+                      strokeDasharray={`${overallScore * 1.76} 176`}
+                    /&gt;
+                    &lt;defs&gt;
+                      &lt;linearGradient id=&quot;soulGradient&quot; x1=&quot;0%&quot; y1=&quot;0%&quot; x2=&quot;100%&quot; y2=&quot;0%&quot;&gt;
+                        &lt;stop offset=&quot;0%&quot; stopColor=&quot;#9333ea&quot; /&gt;
+                        &lt;stop offset=&quot;100%&quot; stopColor=&quot;#ec4899&quot; /&gt;
+                      &lt;/linearGradient&gt;
+                    &lt;/defs&gt;
+                  &lt;/svg&gt;
+                  &lt;div className=&quot;absolute inset-0 flex items-center justify-center&quot;&gt;
+                    &lt;span className=&quot;text-lg font-bold text-purple-700&quot;&gt;{Math.round(overallScore)}%&lt;/span&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                  &lt;p className=&quot;text-sm text-purple-600 font-medium&quot;&gt;How well we understand {petName}&lt;/p&gt;
+                  &lt;p className=&quot;text-gray-600 text-sm&quot;&gt;
+                    {stage === 1 &amp;&amp; &apos;Just getting started&apos;}
+                    {stage === 2 &amp;&amp; &apos;Patterns are emerging&apos;}
+                    {stage === 3 &amp;&amp; `We know ${petName} well`}
+                    {stage === 4 &amp;&amp; &apos;Deep understanding&apos;}
+                  &lt;/p&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              
+              {/* Stage 1: Gentle assurance */}
+              {stage === 1 &amp;&amp; (
+                &lt;p className=&quot;text-sm text-purple-600/80 max-w-xs text-right&quot;&gt;
+                  You don&apos;t need to fill anything out. We&apos;ll learn naturally as you go.
+                &lt;/p&gt;
+              )}
+            &lt;/div&gt;
+          &lt;/Card&gt;
+        &lt;/section&gt;
+
+        {/* ========== THE 8 SOUL PILLARS - Visual, Not Form-Like ========== */}
+        &lt;section className=&quot;mb-10&quot;&gt;
+          &lt;div className=&quot;flex items-center justify-between mb-6&quot;&gt;
+            &lt;h2 className=&quot;text-xl font-bold text-gray-900 flex items-center gap-2&quot;&gt;
+              &lt;Brain className=&quot;w-5 h-5 text-purple-600&quot; /&gt;
+              What We Know About {petName}
+            &lt;/h2&gt;
+            &lt;Link to={`/pets/${selectedPet?.id}?tab=soul`}&gt;
+              &lt;Button variant=&quot;ghost&quot; size=&quot;sm&quot; className=&quot;text-purple-600&quot;&gt;
+                View Full Soul &lt;ChevronRight className=&quot;w-4 h-4 ml-1&quot; /&gt;
+              &lt;/Button&gt;
+            &lt;/Link&gt;
+          &lt;/div&gt;
           
-          {/* 8 Pillars Progress */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {PILLARS.map((pillar) => {
-              const score = soulData?.pillar_scores?.[pillar.key] || 0;
+          &lt;div className=&quot;grid grid-cols-2 md:grid-cols-4 gap-3&quot;&gt;
+            {SOUL_PILLARS.map((pillar) =&gt; {
+              const score = folderScores[pillar.key] || 0;
+              const insight = getPillarInsight(pillar.key, soulData, petName);
+              const hasContent = score &gt; 0 || insight;
+              
               return (
-                <Card key={pillar.key} className="p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-2xl">{pillar.icon}</span>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900 truncate">{pillar.name}</p>
-                    </div>
-                  </div>
-                  <Progress value={score} className="h-2 mb-1" />
-                  <p className="text-xs text-gray-500 text-right">{Math.round(score)}%</p>
-                </Card>
+                &lt;Card 
+                  key={pillar.key} 
+                  className={`p-4 transition-all ${
+                    hasContent 
+                      ? &apos;bg-white hover:shadow-md&apos; 
+                      : &apos;bg-gray-50/50 opacity-60&apos;
+                  }`}
+                &gt;
+                  &lt;div className=&quot;flex items-center gap-2 mb-2&quot;&gt;
+                    &lt;span className=&quot;text-xl&quot;&gt;{pillar.icon}&lt;/span&gt;
+                    &lt;span className=&quot;text-sm font-medium text-gray-700 truncate&quot;&gt;{pillar.name}&lt;/span&gt;
+                  &lt;/div&gt;
+                  
+                  {/* Soft progress indicator - not percentage */}
+                  &lt;div className=&quot;h-1.5 bg-gray-100 rounded-full overflow-hidden mb-2&quot;&gt;
+                    &lt;div 
+                      className={`h-full rounded-full transition-all bg-gradient-to-r from-${pillar.color}-400 to-${pillar.color}-500`}
+                      style={{ width: `${Math.min(score, 100)}%` }}
+                    /&gt;
+                  &lt;/div&gt;
+                  
+                  {/* Insight line - NOT a percentage */}
+                  {insight &amp;&amp; (
+                    &lt;p className=&quot;text-xs text-gray-600 line-clamp-2&quot;&gt;{insight}&lt;/p&gt;
+                  )}
+                &lt;/Card&gt;
               );
             })}
-          </div>
-        </section>
+          &lt;/div&gt;
+        &lt;/section&gt;
 
-        {/* Achievements Section */}
-        <section className="mb-10">
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2 mb-6">
-            <Trophy className="w-6 h-6 text-amber-500" />
-            {petName}&apos;s Achievements
-          </h2>
-          
-          <div className="grid md:grid-cols-3 gap-4">
-            {achievements.length > 0 ? achievements.slice(0, 6).map((achievement, idx) => (
-              <Card key={idx} className="p-4 flex items-center gap-4 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-100">
-                <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-2xl">
-                  {achievement.icon || '🏆'}
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">{achievement.name}</p>
-                  <p className="text-sm text-gray-600">{achievement.desc || achievement.date}</p>
-                </div>
-              </Card>
-            )) : (
-              <Card className="p-6 col-span-3 text-center bg-gray-50">
-                <Trophy className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">Achievements unlock as you build {petName}&apos;s soul</p>
-              </Card>
-            )}
-          </div>
-        </section>
+        {/* ========== WHAT WE&apos;VE LEARNED TIMELINE - Stage 2+ ========== */}
+        {stage &gt;= 2 &amp;&amp; learningTimeline.length &gt; 0 &amp;&amp; (
+          &lt;section className=&quot;mb-10&quot;&gt;
+            &lt;h2 className=&quot;text-xl font-bold text-gray-900 flex items-center gap-2 mb-6&quot;&gt;
+              &lt;Clock className=&quot;w-5 h-5 text-purple-600&quot; /&gt;
+              What We&apos;ve Learned
+            &lt;/h2&gt;
+            
+            &lt;div className=&quot;relative pl-6 border-l-2 border-purple-100 space-y-4&quot;&gt;
+              {learningTimeline.map((entry, idx) =&gt; (
+                &lt;div key={idx} className=&quot;relative&quot;&gt;
+                  &lt;div className=&quot;absolute -left-8 w-4 h-4 rounded-full bg-white border-2 border-purple-300&quot;&gt;&lt;/div&gt;
+                  &lt;div className=&quot;flex items-start gap-3&quot;&gt;
+                    &lt;div className=&quot;flex-1&quot;&gt;
+                      &lt;p className=&quot;text-gray-800&quot;&gt;{entry.text}&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;Badge variant=&quot;outline&quot; className={`text-xs shrink-0 ${
+                      entry.source === &apos;behaviour&apos; ? &apos;border-green-300 text-green-700&apos; :
+                      entry.source === &apos;mira&apos; ? &apos;border-purple-300 text-purple-700&apos; :
+                      &apos;border-blue-300 text-blue-700&apos;
+                    }`}&gt;
+                      {entry.source === &apos;behaviour&apos; ? &apos;From behaviour&apos; :
+                       entry.source === &apos;mira&apos; ? &apos;From Mira&apos; : &apos;From you&apos;}
+                    &lt;/Badge&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              ))}
+            &lt;/div&gt;
+          &lt;/section&gt;
+        )}
 
-        {/* Next Steps Section */}
-        <section className="mb-10">
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2 mb-6">
-            <Zap className="w-6 h-6 text-purple-600" />
-            Continue {petName}&apos;s Journey
-          </h2>
-          
-          <div className="grid md:grid-cols-3 gap-4">
-            {nextActions.map((action, idx) => (
-              <Card 
-                key={idx} 
-                className={`p-5 cursor-pointer hover:shadow-lg transition-all group ${
-                  action.priority === 'high' ? 'border-2 border-purple-200 bg-purple-50' : ''
-                }`}
-                onClick={() => action.action === 'mira' ? onOpenMira?.() : null}
-              >
-                {action.link ? (
-                  <Link to={action.link} className="block">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-semibold text-gray-900 mb-1">{action.title}</p>
-                        <p className="text-sm text-gray-600">{action.desc}</p>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-purple-600 transition-colors" />
-                    </div>
-                  </Link>
-                ) : (
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="font-semibold text-gray-900 mb-1">{action.title}</p>
-                      <p className="text-sm text-gray-600">{action.desc}</p>
-                    </div>
-                    <Sparkles className="w-5 h-5 text-purple-400" />
-                  </div>
-                )}
-              </Card>
-            ))}
-          </div>
-        </section>
+        {/* ========== ACHIEVEMENTS - Stage 3+ Only, Quiet ========== */}
+        {stage &gt;= 3 &amp;&amp; achievements.length &gt; 0 &amp;&amp; (
+          &lt;section className=&quot;mb-10&quot;&gt;
+            &lt;h2 className=&quot;text-xl font-bold text-gray-900 flex items-center gap-2 mb-6&quot;&gt;
+              &lt;Star className=&quot;w-5 h-5 text-amber-500&quot; /&gt;
+              {petName}&apos;s Milestones
+            &lt;/h2&gt;
+            
+            &lt;div className=&quot;grid grid-cols-2 md:grid-cols-4 gap-3&quot;&gt;
+              {achievements.map((achievement, idx) =&gt; (
+                &lt;Card key={idx} className=&quot;p-4 bg-amber-50/50 border-amber-100&quot;&gt;
+                  &lt;div className=&quot;flex items-center gap-3&quot;&gt;
+                    &lt;span className=&quot;text-2xl&quot;&gt;{achievement.icon}&lt;/span&gt;
+                    &lt;p className=&quot;text-sm font-medium text-gray-700&quot;&gt;{achievement.name}&lt;/p&gt;
+                  &lt;/div&gt;
+                &lt;/Card&gt;
+              ))}
+            &lt;/div&gt;
+          &lt;/section&gt;
+        )}
 
-        {/* Mira Section */}
-        <section className="mb-10">
-          <Card className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white overflow-hidden">
-            <div className="p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-8 h-8 text-yellow-300" />
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <h3 className="text-xl font-bold mb-2">Mira Remembers Everything</h3>
-                <p className="text-white/90">
-                  Ask Mira anything about {petName} - she already knows their preferences, 
-                  health history, and personality. No need to repeat yourself.
-                </p>
-              </div>
-              <Button 
+        {/* ========== PERSONALISED CARE INSIGHTS - Stage 3+ ========== */}
+        {stage &gt;= 3 &amp;&amp; careInsights.length &gt; 0 &amp;&amp; (
+          &lt;section className=&quot;mb-10&quot;&gt;
+            &lt;h2 className=&quot;text-xl font-bold text-gray-900 flex items-center gap-2 mb-6&quot;&gt;
+              &lt;Heart className=&quot;w-5 h-5 text-rose-500&quot; /&gt;
+              What Helps {petName} Most
+            &lt;/h2&gt;
+            
+            &lt;Card className=&quot;p-6 bg-gradient-to-r from-rose-50 to-pink-50 border-rose-100&quot;&gt;
+              &lt;ul className=&quot;space-y-3&quot;&gt;
+                {careInsights.map((insight, idx) =&gt; (
+                  &lt;li key={idx} className=&quot;flex items-start gap-3&quot;&gt;
+                    &lt;span className=&quot;text-rose-400 mt-0.5&quot;&gt;•&lt;/span&gt;
+                    &lt;p className=&quot;text-gray-700&quot;&gt;{insight}&lt;/p&gt;
+                  &lt;/li&gt;
+                ))}
+              &lt;/ul&gt;
+            &lt;/Card&gt;
+          &lt;/section&gt;
+        )}
+
+        {/* ========== MIRA AI - Always Available ========== */}
+        &lt;section className=&quot;mb-10&quot;&gt;
+          &lt;Card className=&quot;bg-gradient-to-r from-indigo-600 to-purple-600 text-white overflow-hidden&quot;&gt;
+            &lt;div className=&quot;p-6 flex flex-col md:flex-row items-center gap-6&quot;&gt;
+              &lt;div className=&quot;w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0&quot;&gt;
+                &lt;Sparkles className=&quot;w-7 h-7 text-yellow-300&quot; /&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex-1 text-center md:text-left&quot;&gt;
+                &lt;h3 className=&quot;text-lg font-bold mb-1&quot;&gt;Mira Knows {petName}&lt;/h3&gt;
+                &lt;p className=&quot;text-white/80 text-sm&quot;&gt;
+                  Ask Mira anything — she already knows {petName}&apos;s preferences and history.
+                &lt;/p&gt;
+              &lt;/div&gt;
+              &lt;Button 
                 onClick={onOpenMira}
-                className="bg-white text-purple-600 hover:bg-purple-50 px-6"
-                data-testid="journey-chat-mira-btn"
-              >
-                <Sparkles className="w-4 h-4 mr-2" />
+                className=&quot;bg-white text-purple-600 hover:bg-purple-50 px-6&quot;
+                data-testid=&quot;journey-chat-mira-btn&quot;
+              &gt;
+                &lt;Sparkles className=&quot;w-4 h-4 mr-2&quot; /&gt;
                 Chat with Mira
-              </Button>
-            </div>
-          </Card>
-        </section>
+              &lt;/Button&gt;
+            &lt;/div&gt;
+          &lt;/Card&gt;
+        &lt;/section&gt;
 
-        {/* Membership Benefits Reminder */}
-        <section>
-          <Card className="p-6 bg-gradient-to-r from-slate-50 to-purple-50 border-slate-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${memberLevel.color} flex items-center justify-center text-white text-xl`}>
-                  {memberLevel.emoji}
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">{memberLevel.name} Benefits Active</p>
-                  <p className="text-sm text-gray-600">
-                    All 12 pillars unlocked • Priority support • Health vault access
-                  </p>
-                </div>
-              </div>
-              <Link to="/my-pets">
-                <Button variant="ghost" className="text-purple-600">
-                  Manage Membership <ArrowRight className="w-4 h-4 ml-1" />
-                </Button>
-              </Link>
-            </div>
-          </Card>
-        </section>
-      </div>
-    </div>
+        {/* ========== GENTLE NEXT STEP - Stage 2+ Only, ONE question ========== */}
+        {stage &gt;= 2 &amp;&amp; stage &lt; 4 &amp;&amp; (
+          &lt;section className=&quot;mb-10&quot;&gt;
+            &lt;Card className=&quot;p-6 bg-white border-dashed border-2 border-purple-200&quot;&gt;
+              &lt;p className=&quot;text-gray-600 text-sm mb-2&quot;&gt;One thing that would help us care better:&lt;/p&gt;
+              &lt;p className=&quot;text-gray-900 font-medium mb-4&quot;&gt;
+                Does {petName} enjoy being groomed at home or prefer salon visits?
+              &lt;/p&gt;
+              &lt;div className=&quot;flex gap-2&quot;&gt;
+                &lt;Button variant=&quot;outline&quot; size=&quot;sm&quot; className=&quot;text-purple-600 border-purple-200&quot;&gt;
+                  At home
+                &lt;/Button&gt;
+                &lt;Button variant=&quot;outline&quot; size=&quot;sm&quot; className=&quot;text-purple-600 border-purple-200&quot;&gt;
+                  Salon visits
+                &lt;/Button&gt;
+                &lt;Button variant=&quot;ghost&quot; size=&quot;sm&quot; className=&quot;text-gray-400&quot;&gt;
+                  Skip for now
+                &lt;/Button&gt;
+              &lt;/div&gt;
+            &lt;/Card&gt;
+          &lt;/section&gt;
+        )}
+
+        {/* Stage 4: Minimal prompt */}
+        {stage === 4 &amp;&amp; (
+          &lt;section className=&quot;mb-10&quot;&gt;
+            &lt;Card className=&quot;p-6 bg-gray-50 border-gray-100 text-center&quot;&gt;
+              &lt;p className=&quot;text-gray-600&quot;&gt;
+                If anything changes with {petName}, tell us. We&apos;ll adjust.
+              &lt;/p&gt;
+            &lt;/Card&gt;
+          &lt;/section&gt;
+        )}
+      &lt;/div&gt;
+    &lt;/div&gt;
   );
 };
 
