@@ -9230,6 +9230,10 @@ app.include_router(pet_soul_admin_router, prefix="/api/admin")
 app.include_router(pet_vault_router, prefix="/api")
 app.include_router(pet_vault_admin_router, prefix="/api/admin/pet-vault")
 
+# Pet-First Gating & Soul Drip
+app.include_router(pet_gate_router)  # Pet gating at /api/pet-gate/*
+app.include_router(soul_drip_router)  # Soul drip at /api/soul-drip/*
+
 # Mira AI Concierge System (New)
 app.include_router(mira_router)  # Mira AI routes at /api/mira/*
 app.include_router(mira_intelligence_router)  # Mira Intelligence at /api/mira/intelligence/*
