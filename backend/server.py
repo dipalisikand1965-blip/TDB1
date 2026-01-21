@@ -9162,6 +9162,10 @@ app.include_router(pet_soul_admin_router, prefix="/api/admin")
 app.include_router(pet_vault_router, prefix="/api")
 app.include_router(pet_vault_admin_router, prefix="/api/admin/pet-vault")
 
+# Mira AI Concierge System (New)
+app.include_router(mira_router)  # Mira AI routes at /api/mira/*
+set_mira_db(db)  # Initialize Mira with database
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
