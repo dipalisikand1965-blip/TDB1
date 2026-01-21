@@ -101,6 +101,7 @@ const MembershipPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showAllPillars, setShowAllPillars] = useState(false);
 
   // Fetch user's pets if logged in
   useEffect(() => {
