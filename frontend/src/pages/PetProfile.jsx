@@ -1120,12 +1120,51 @@ const PetProfile = ({ isEmbed = false }) => {
       </div>
 
       <Button 
-        onClick={() => setStep(1)} 
+        onClick={() => {
+          // Pre-fill owner info from existing pets
+          if (existingPets.length > 0) {
+            const firstPet = existingPets[0];
+            setFormData(prev => ({
+              ...prev,
+              owner_email: firstPet.owner_email || savedEmail || prev.owner_email,
+              owner_name: firstPet.owner_name || prev.owner_name,
+              owner_phone: firstPet.owner_phone || prev.owner_phone,
+              // Reset pet-specific info
+              name: '',
+              breed: '',
+              gender: '',
+              photo_url: '',
+              birth_date: '',
+              gotcha_date: '',
+              soul: {
+                persona: '',
+                special_move: '',
+                human_job: '',
+                security_blanket: '',
+                love_language: '',
+                personality_tag: ''
+              },
+              celebrations: [],
+              selectedOccasions: [],
+              preferences: {
+                favorite_flavors: [],
+                allergies: [],
+                texture_preference: '',
+                treat_size: ''
+              }
+            }));
+          }
+          setStep(1);
+        }} 
         className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
       >
         <Plus className="w-4 h-4 mr-2" />
         Add Another Pet
       </Button>
+
+      <p className="text-center text-sm text-gray-500 mt-2">
+        Your details (name, email, phone) will be carried over automatically
+      </p>
 
       <p className="text-center text-xs text-gray-400">
         Logged in as {savedEmail}
