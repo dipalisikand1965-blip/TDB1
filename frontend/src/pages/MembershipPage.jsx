@@ -148,13 +148,8 @@ const MembershipPage = () => {
 
   const handleSelectPlan = (plan) => {
     setSelectedPlan(plan);
-    if (user) {
-      // Already logged in, go directly to payment
-      setShowPaymentModal(true);
-    } else {
-      // Need to login first
-      setShowAuthModal(true);
-    }
+    // Always redirect to onboarding page for new signups
+    navigate(`/pet-soul?plan=${plan}`);
   };
 
   const handleSubmit = async (e) => {
