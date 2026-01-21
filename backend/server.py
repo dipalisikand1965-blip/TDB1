@@ -1850,8 +1850,10 @@ async def get_status_checks():
     return status_checks
 
 
-@api_router.post("/mira/chat")
-async def chat_with_mira(request: ChatRequest):
+# Note: /api/mira/chat is now handled by mira_routes.py (new Mira AI system)
+# This legacy endpoint is kept as fallback - renamed to /mira/chat-legacy
+@api_router.post("/mira/chat-legacy")
+async def chat_with_mira_legacy(request: ChatRequest):
     user_query = request.message
     session_id = request.session_id or str(uuid.uuid4())
     
