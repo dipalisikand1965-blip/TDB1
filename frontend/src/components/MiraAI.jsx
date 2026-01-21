@@ -326,7 +326,10 @@ const MiraAI = () => {
         .filter(m => m.id !== 'welcome')
         .map(m => ({ role: m.role, content: m.content }));
       
-      const response = await fetch(`${getApiUrl()}/api/mira/chat`, {
+      const apiUrl = getApiUrl();
+      console.log('[Mira] Sending chat to:', `${apiUrl}/api/mira/chat`);
+      
+      const response = await fetch(`${apiUrl}/api/mira/chat`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -344,11 +347,16 @@ const MiraAI = () => {
         })
       });
 
+      console.log('[Mira] Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Failed to get response');
+        const errorText = await response.text();
+        console.error('[Mira] Error response:', errorText);
+        throw new Error(`Failed to get response: ${response.status}`);
       }
 
       const data = await response.json();
+      console.log('[Mira] Response received:', data.response?.substring(0, 100));
       
       const assistantMessage = {
         id: (Date.now() + 1).toString(),
@@ -364,7 +372,7 @@ const MiraAI = () => {
         setQuickPrompts(data.quick_prompts);
       }
     } catch (error) {
-      console.error('Mira chat error:', error);
+      console.error('[Mira] Chat error:', error);
       const errorMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
