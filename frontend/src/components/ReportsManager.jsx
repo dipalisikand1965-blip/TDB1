@@ -59,6 +59,11 @@ const ReportsManager = ({ authHeaders }) => {
   const [cityFilter, setCityFilter] = useState('');
   const [days, setDays] = useState(30);
   
+  // Custom date range
+  const [customStartDate, setCustomStartDate] = useState('');
+  const [customEndDate, setCustomEndDate] = useState('');
+  const [useCustomDate, setUseCustomDate] = useState(false);
+  
   // Report data
   const [executiveSummary, setExecutiveSummary] = useState(null);
   const [revenueByCity, setRevenueByCity] = useState(null);
@@ -71,17 +76,34 @@ const ReportsManager = ({ authHeaders }) => {
   const [reviewsReport, setReviewsReport] = useState(null);
   const [financialReport, setFinancialReport] = useState(null);
   
-  // Pillar Reports data
+  // Pillar Reports data - ALL 12 PILLARS
   const [pillarSummary, setPillarSummary] = useState(null);
   const [celebrateReport, setCelebrateReport] = useState(null);
   const [dineReport, setDineReport] = useState(null);
   const [stayReport, setStayReport] = useState(null);
+  const [careReport, setCareReport] = useState(null);
+  const [travelReport, setTravelReport] = useState(null);
+  const [shopReport, setShopReport] = useState(null);
+  const [enjoyReport, setEnjoyReport] = useState(null);
+  const [clubReport, setClubReport] = useState(null);
+  const [learnReport, setLearnReport] = useState(null);
+  const [adoptReport, setAdoptReport] = useState(null);
+  const [insureReport, setInsureReport] = useState(null);
+  const [farewellReport, setFarewellReport] = useState(null);
   const [pillarComparison, setPillarComparison] = useState(null);
   const [selectedPillar, setSelectedPillar] = useState('summary');
   
   // Partner and Mira AI Reports data
   const [partnerReport, setPartnerReport] = useState(null);
   const [miraReport, setMiraReport] = useState(null);
+  
+  // Build query params with custom date support
+  const getDateParams = useCallback(() => {
+    if (useCustomDate && customStartDate && customEndDate) {
+      return `start_date=${customStartDate}&end_date=${customEndDate}`;
+    }
+    return `period=${period}`;
+  }, [useCustomDate, customStartDate, customEndDate, period]);
 
   // Fetch pillar summary
   const fetchPillarSummary = useCallback(async () => {
