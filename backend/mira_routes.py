@@ -202,10 +202,12 @@ async def load_user_pets(user_email: str = None, user_id: str = None) -> List[Di
     
     queries = []
     if user_email:
+        queries.append({"owner_email": user_email})
         queries.append({"user_email": user_email})
         queries.append({"user_id": user_email})
     if user_id:
         queries.append({"user_id": user_id})
+        queries.append({"owner_email": user_id})
     
     for query in queries:
         found = await db.pets.find(query, {"_id": 0}).to_list(20)
