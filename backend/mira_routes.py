@@ -579,11 +579,20 @@ async def save_pet_soul_enrichment(pet_id: str, enrichment: Dict, source: str = 
     
     return False
 
-def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar: str = None) -> str:
-    """Build the comprehensive Mira system prompt"""
+def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar: str = None, selected_pet: Dict = None) -> str:
+    """Build the comprehensive Mira system prompt with KNOWN FIELDS section"""
+    
+    # Import soul intelligence for known fields
+    try:
+        from soul_intelligence import format_known_fields_for_prompt, get_known_fields
+    except ImportError:
+        format_known_fields_for_prompt = lambda x: ""
+        get_known_fields = lambda x: {}
     
     # Pet context section
     pet_context = ""
+    known_fields_section = ""
+    
     if pets and len(pets) > 0:
         pet_context = "\n\n🐾 **MEMBER'S PET PROFILES (PET SOUL DATA)**:\n"
         for pet in pets:
@@ -618,6 +627,12 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
                 pet_context += f"- Crate Trained: {'Yes' if travel['crate_trained'] else 'No'}\n"
             
             pet_context += "\n"
+    
+    # CRITICAL: Add KNOWN FIELDS section for the selected pet
+    if selected_pet:
+        known_fields_section = format_known_fields_for_prompt(selected_pet)
+    elif pets and len(pets) == 1:
+        known_fields_section = format_known_fields_for_prompt(pets[0])
     
     # User context section
     user_context = ""
