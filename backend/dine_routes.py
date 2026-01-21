@@ -412,6 +412,37 @@ async def create_reservation(reservation: ReservationRequest):
     except Exception as e:
         logger.error(f"Failed to auto-create ticket for reservation: {e}")
     
+    # Create Unified Inbox entry for Dine reservation
+    try:
+        inbox_entry = {
+            "request_id": f"DINE-{reservation_doc['id']}",
+            "channel": "web",
+            "pillar": "dine",
+            "type": "reservation_request",
+            "status": "pending",
+            "customer_name": reservation.name,
+            "customer_email": reservation.email,
+            "customer_phone": reservation.phone,
+            "pet_name": reservation.pet_name,
+            "message": f"Dine Reservation: {restaurant.get('name')} on {reservation.date} at {reservation.time}",
+            "metadata": {
+                "reservation_id": reservation_doc["id"],
+                "restaurant_id": reservation.restaurant_id,
+                "restaurant_name": restaurant.get("name"),
+                "restaurant_city": restaurant.get("city"),
+                "date": reservation.date,
+                "time": reservation.time,
+                "guests": reservation.guests,
+                "pets": reservation.pets,
+                "ticket_id": ticket_id if 'ticket_id' in dir() else None
+            },
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.channel_intakes.insert_one(inbox_entry)
+        logger.info(f"Created Unified Inbox entry for dine reservation {reservation_doc['id']}")
+    except Exception as e:
+        logger.error(f"Failed to create Unified Inbox entry for dine reservation: {e}")
+    
     # Create admin notification
     await notify_admin(
         notification_type="reservation",
