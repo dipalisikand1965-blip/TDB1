@@ -432,6 +432,40 @@ const MiraContextPanel = ({
             </div>
           ) : (
             <>
+              {/* AI Recommendations from Intelligence Engine */}
+              {recommendations.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide flex items-center gap-1">
+                    <Lightbulb className="w-3 h-3" />
+                    Mira's Suggestions
+                  </p>
+                  {recommendations.slice(0, 2).map((rec) => (
+                    <div 
+                      key={rec.id}
+                      className="bg-white p-3 rounded-lg border border-gray-100 hover:border-purple-200 transition-colors cursor-pointer"
+                      onClick={() => {
+                        trackClick(pillar, rec.id, { type: rec.type });
+                        if (rec.cta === 'Book a Cab' || rec.cta === 'Plan Flight') {
+                          setShowChat(true);
+                          setInputValue(rec.title);
+                        }
+                      }}
+                    >
+                      <p className="text-sm font-medium text-gray-900">{rec.title}</p>
+                      <p className="text-xs text-gray-600 mt-1">{rec.description}</p>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-xs text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">
+                          {rec.reason}
+                        </span>
+                        <Button size="sm" variant="ghost" className="h-6 text-xs">
+                          {rec.cta} <ArrowRight className="w-3 h-3 ml-1" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
               {/* Suggested Products */}
               {context?.suggestions?.length > 0 && (
                 <div className="space-y-2">
