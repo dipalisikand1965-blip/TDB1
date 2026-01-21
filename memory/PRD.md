@@ -6,100 +6,125 @@ Building **The Doggy Company**, a "Pet Life Operating System" with 12 business "
 - "Unified Inbox" for all communications
 - Mandatory "Membership" layer for accessing services
 
-## Core Requirements
-- **A. Consistent Admin Managers**: All 12 pillars must have standardized manager interface
-- **B. Core Admin Features**: Stats, CRUD, Refresh/Seed buttons, CSV export
-- **C. Centralized Membership & Payments**: Single `/membership` page for login/signup and paid subscriptions
-- **D. "Pet Soul" Integration**: All pillars read/write to Pet Soul
-- **E. Dynamic & Brand-Aligned Content**: Marketing reflects "The Doggy Company" vision
-- **F. Comprehensive Member Management**: Full suite of admin tools for member lifecycle
-- **G. Pet Soul Weekly Question**: Weekly engagement via WhatsApp/Email
+---
+
+## ✅ COMPLETED (Jan 20, 2026)
+
+### Critical Fixes
+- [x] User Login Fixed - `dipali@clubconcierge.in` / `lola4304`
+- [x] Admin Login Fixed - `aditya` / `lola4304`
+- [x] MongoDB Production Fix - `load_dotenv(override=False)` + clean `.env`
+- [x] 18% GST Implementation - Backend calculates GST with breakdown
+- [x] Auto Database Seeding - 48 products seeded on empty DB
+
+### UI/UX Improvements
+- [x] Auth Gating Removed - All pages accessible without login (testing phase)
+- [x] Dropdown Overlap Fixed - Navbar z-index corrected
+- [x] Footer Membership Button - Links to original membership page
+- [x] Pet Soul Page Fixed - `/pet-soul` displays with navbar
+
+### Previous Session Work
+- [x] Member Directory with search, filters, Pet Soul progress bars
+- [x] 360° Member Profile Console with Pets & Soul tab
+- [x] CSV Import/Export for members
+- [x] Reports Manager for all 12 pillars
+- [x] Home page redesigned as Concierge®-focused
 
 ---
 
-## What's Been Implemented (Jan 20, 2026)
+## 📋 TOMORROW'S PLAN (Jan 21, 2026)
 
-### ✅ Critical Fixes - COMPLETE
-- **User Login Fixed**: `dipali@clubconcierge.in` / `lola4304` - created in correct `test_database`
-- **Admin Login Fixed**: `aditya` / `lola4304` - stored in `admin_config` collection
-- **Auto Database Initialization**: Frontend auto-calls `/api/init-database` on load
-- **18% GST Implementation**: Backend calculates GST with breakdown on all membership plans
+### 🔴 Phase 1: Refactoring (Priority)
+Extract from `server.py` (9100+ lines):
 
-### ✅ UI/UX Improvements - COMPLETE
-- **Auth Gating Removed**: All pages accessible without login (testing phase)
-- **Dropdown Overlap Fixed**: Navbar z-index corrected, dropdowns close properly
-- **Footer Membership Button**: Links to original membership page
-- **Pet Soul Page Fixed**: `/pet-soul` displays with navbar, no auth required
+| # | New File | Lines | Contents |
+|---|----------|-------|----------|
+| 1 | `models.py` | ~450 | All Pydantic models |
+| 2 | `payments_routes.py` | ~300 | Razorpay, GST, payments |
+| 3 | `mira_routes.py` | ~500 | Mira AI chat, web search |
+| 4 | `admin_members_routes.py` | ~400 | Member management |
+| 5 | `cart_routes.py` | ~500 | Abandoned cart, autoship |
+| 6 | `content_routes.py` | ~600 | FAQs, Blog, Testimonials |
 
-### ✅ Previous Session Work
-- Member Directory with search, filters, Pet Soul progress bars
-- 360° Member Profile Console with Pets & Soul tab
-- CSV Import/Export for members
-- Reports Manager for all 12 pillars
-- Home page redesigned as Concierge®-focused
+### 🟠 Phase 2: Bug Fixes
+- [ ] Voice Order "Connection failed" debug
+- [ ] Shopify Sync "Untitled Products" fix (recurring 7+ times)
 
----
-
-## Pending Issues
-
-### 🔴 P0 - Critical
-- [ ] Verify production deployment works (admin/user login, products)
-
-### 🟠 P1 - High Priority
-- [ ] Voice Order "Connection failed" error
-- [ ] Shopify Sync creates "Untitled" products (recurring 7+ times)
-- [ ] Pet Soul Weekly Question feature
-
-### 🟡 P2 - Medium Priority
+### 🟡 Phase 3: Features
+- [ ] Pet Soul Weekly Question (WhatsApp/Email integration)
 - [ ] Complete Member Management System (11 remaining features)
-- [ ] Re-enable auth gating before go-live
+- [ ] Re-enable Auth Gating before go-live
 
 ---
 
-## Future Tasks / Backlog
+## 🔵 BACKLOG
 
 ### Code Architecture
-- [ ] Refactor `server.py` (9100+ lines) into domain-specific route files
+- [ ] Create `/app/backend/models/` folder structure
+- [ ] Create `/app/backend/routes/` folder structure
+- [ ] Create `/app/backend/services/` for business logic
 - [ ] Refactor `Admin.jsx` for better organization
-- [ ] Standardize all 12 Admin Pillar Managers
 
 ### Features
 - [ ] GST Invoice Generation
 - [ ] Centralized Product Management System
-- [ ] Full Member Management spec (Gift/B2B Issuance, Plan Manager, etc.)
+- [ ] Standardize all 12 Admin Pillar Managers
 
 ---
 
 ## Technical Architecture
 
+### Current Structure
 ```
 /app
-├── backend
-│   ├── server.py          # Main server (9100+ lines)
-│   ├── auth_routes.py     # User authentication
-│   ├── channel_intake.py  # Voice order, multi-channel intake
-│   └── .env               # MONGO_URL, DB_NAME, API keys
-└── frontend
+├── backend/
+│   ├── server.py           # 9100+ lines (NEEDS REFACTORING)
+│   ├── auth_routes.py      # User authentication
+│   ├── dine_routes.py      # Dine pillar (115KB)
+│   ├── stay_routes.py      # Stay pillar (74KB)
+│   ├── travel_routes.py    # Travel pillar
+│   ├── care_routes.py      # Care pillar
+│   ├── enjoy_routes.py     # Enjoy pillar
+│   ├── fit_routes.py       # Fit pillar
+│   ├── advisory_routes.py  # Advisory pillar
+│   ├── paperwork_routes.py # Paperwork pillar
+│   ├── emergency_routes.py # Emergency pillar
+│   └── ... (40+ route files)
+└── frontend/
     └── src/
-        ├── App.js                    # Routes, DatabaseInitializer
+        ├── App.js
         ├── components/
-        │   ├── ProtectedRoute.jsx    # Auth gating (currently disabled)
-        │   ├── Navbar.jsx            # Fixed dropdown overlap
-        │   └── Footer.jsx            # Membership button added
         └── pages/
-            ├── MembershipPage.jsx    # Full membership page with plans
-            ├── PetProfile.jsx        # Pet Soul multi-step form
-            └── Admin.jsx             # Admin panel
 ```
+
+### Target Structure (After Refactoring)
+```
+/app/backend/
+├── server.py              # Core app setup only (~500 lines)
+├── models/
+│   ├── __init__.py
+│   ├── user_models.py
+│   ├── product_models.py
+│   └── pet_models.py
+├── routes/
+│   ├── payments_routes.py
+│   ├── mira_routes.py
+│   └── content_routes.py
+└── services/
+    ├── email_service.py
+    └── shopify_sync.py
+```
+
+---
 
 ## Key API Endpoints
 
 ### Authentication
 - `POST /api/auth/login` - User login
 - `POST /api/admin/login` - Admin login
-- `GET /api/init-database` - Auto-initialize DB (admin, user, products)
+- `GET /api/init-database` - Initialize DB (admin, user, products)
 
-### Payments
+### Payments (with GST)
 - `GET /api/payments/plans` - Returns plans with GST breakdown
 - `POST /api/payments/create-order` - Creates Razorpay order with GST
 
@@ -116,17 +141,16 @@ Building **The Doggy Company**, a "Pet Life Operating System" with 12 business "
 | Admin | `aditya` | `lola4304` |
 | Test User | `dipali@clubconcierge.in` | `lola4304` |
 
-## Database
-- MongoDB at `localhost:27017`
-- Database name: `test_database` (from DB_NAME env var)
-- Note: Each deployment has separate DB, auto-init handles seeding
+## Production URLs
+- **Live Site:** https://thedoggycompany.in ✅
+- **Preview:** https://pet-concierge-2.preview.emergentagent.com
 
 ## 3rd Party Integrations
-- **Razorpay**: Payment gateway (test keys)
-- **OpenAI GPT-4 / Whisper**: Mira AI and Voice Order
-- **Resend**: Transactional emails
-- **Shopify**: Product sync
+- **Razorpay:** Payment gateway (test keys)
+- **OpenAI GPT-4 / Whisper:** Mira AI and Voice Order
+- **Resend:** Transactional emails
+- **Shopify:** Product sync
 
 ---
 
-*Last updated: January 20, 2026*
+*Last updated: January 20, 2026 - MongoDB production fix deployed*
