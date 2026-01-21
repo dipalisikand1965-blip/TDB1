@@ -191,12 +191,16 @@ const MembershipOnboarding = () => {
           parent: {
             name: parentData.name,
             email: parentData.email,
-            phone: parentData.whatsapp,
+            phone: parentData.phone,
             whatsapp: parentData.whatsapp,
             address: parentData.address,
             city: parentData.city,
             pincode: parentData.pincode,
-            password: parentData.password
+            password: parentData.password,
+            preferred_contact: parentData.preferredContact,
+            notifications: parentData.notifications,
+            accepted_terms: parentData.acceptTerms,
+            accepted_privacy: parentData.acceptPrivacy
           },
           pets: petsData.map(pet => ({
             name: pet.name,
