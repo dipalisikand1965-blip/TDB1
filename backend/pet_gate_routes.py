@@ -329,7 +329,215 @@ async def trigger_whatsapp_drip(pet_id: str):
 # INTELLIGENT COMMERCE FILTERING
 # =============================================================================
 
-@pet_gate_router.post("/filter-products/{pet_id}")
+class JourneyAnswerRequest(BaseModel):
+    pet_id: str
+    question_type: str  # e.g., "grooming_preference", "car_comfort"
+    answer: str
+    source: str = "journey_page"  # Track where the answer came from
+
+
+@soul_drip_router.post("/journey-answer")
+async def save_journey_answer(request: JourneyAnswerRequest):
+    """
+    Save an answer from the Pet Soul Journey "Gentle Next Step" questions.
+    These answers go directly into the Pet Soul.
+    """
+    db = get_db()
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Map question types to soul fields
+    question_field_map = {
+        "grooming_preference": "grooming_style",
+        "car_comfort": "car_rides",
+        "food_texture": "texture_preference",
+        "activity_level": "energetic_time",
+        "social_preference": "social_preference",
+        "sleep_location": "sleep_location",
+        "treat_frequency": "treat_frequency",
+        "vet_comfort": "vet_comfort"
+    }
+    
+    field = question_field_map.get(request.question_type, request.question_type)
+    
+    try:
+        from soul_intelligence import save_soul_enrichment
+        
+        # Save the answer to Pet Soul
+        await save_soul_enrichment(request.pet_id, [{
+            "field": field,
+            "value": request.answer,
+            "confidence": "high",
+            "source": request.source
+        }])
+        
+        # Also record in drip history for tracking
+        await db.soul_drip_history.insert_one({
+            "pet_id": request.pet_id,
+            "question_id": f"journey_{request.question_type}",
+            "field": field,
+            "response": request.answer,
+            "asked_at": now,
+            "answered_at": now,
+            "channel": "journey_page"
+        })
+        
+        return {
+            "success": True,
+            "message": "Answer saved to Pet Soul",
+            "field_updated": field
+        }
+        
+    except Exception as e:
+        logger.error(f"Error saving journey answer: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@pet_gate_router.get("/pillar-preferences/{pet_id}")
+async def get_pillar_preferences(pet_id: str):
+    """
+    Get all Pet Soul data organized by pillar.
+    This powers the pillar-wise preferences view.
+    """
+    db = get_db()
+    
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    pet_name = pet.get("name", "Pet")
+    soul_answers = pet.get("doggy_soul_answers", {})
+    preferences = pet.get("preferences", {})
+    celebrations = pet.get("celebrations", [])
+    vault = pet.get("vault", {})
+    pillar_interactions = pet.get("pillar_interactions", [])
+    
+    # Organize data by pillar
+    pillars = {
+        "identity_temperament": {
+            "name": "Identity & Temperament",
+            "icon": "🎭",
+            "data": {
+                "describe_3_words": soul_answers.get("describe_3_words"),
+                "general_nature": soul_answers.get("general_nature"),
+                "stranger_reaction": soul_answers.get("stranger_reaction"),
+                "loud_sounds": soul_answers.get("loud_sounds"),
+                "personality_tag": pet.get("soul", {}).get("personality_tag") if pet.get("soul") else None,
+            }
+        },
+        "family_pack": {
+            "name": "Family & Pack",
+            "icon": "👨‍👩‍👧‍👦",
+            "data": {
+                "lives_with": soul_answers.get("lives_with"),
+                "behavior_with_dogs": soul_answers.get("behavior_with_dogs"),
+                "most_attached_to": soul_answers.get("most_attached_to"),
+                "attention_seeking": soul_answers.get("attention_seeking"),
+                "owner_name": pet.get("owner_name"),
+                "owner_phone": pet.get("owner_phone"),
+                "owner_email": pet.get("owner_email"),
+            }
+        },
+        "rhythm_routine": {
+            "name": "Rhythm & Routine",
+            "icon": "⏰",
+            "data": {
+                "walks_per_day": soul_answers.get("walks_per_day"),
+                "energetic_time": soul_answers.get("energetic_time"),
+                "sleep_location": soul_answers.get("sleep_location"),
+                "alone_comfort": soul_answers.get("alone_comfort"),
+                "separation_anxiety": soul_answers.get("separation_anxiety"),
+            }
+        },
+        "home_comforts": {
+            "name": "Home Comforts",
+            "icon": "🏠",
+            "data": {
+                "favorite_item": soul_answers.get("favorite_item"),
+                "space_preference": soul_answers.get("space_preference"),
+                "crate_trained": soul_answers.get("crate_trained"),
+                "grooming_style": soul_answers.get("grooming_style"),
+            }
+        },
+        "travel_style": {
+            "name": "Travel Style",
+            "icon": "✈️",
+            "data": {
+                "car_rides": soul_answers.get("car_rides"),
+                "usual_travel": soul_answers.get("usual_travel"),
+                "hotel_experience": soul_answers.get("hotel_experience"),
+                "travel_anxiety": soul_answers.get("travel_anxiety"),
+            }
+        },
+        "taste_treat": {
+            "name": "Taste & Treat",
+            "icon": "🍖",
+            "data": {
+                "favorite_treats": soul_answers.get("favorite_treats") or preferences.get("favorite_flavors"),
+                "food_allergies": soul_answers.get("food_allergies") or preferences.get("allergies"),
+                "texture_preference": preferences.get("texture_preference"),
+                "treat_size": preferences.get("treat_size"),
+                "prefers_grain_free": soul_answers.get("prefers_grain_free"),
+                "diet_type": soul_answers.get("diet_type"),
+            }
+        },
+        "training_behaviour": {
+            "name": "Training & Behaviour",
+            "icon": "🎓",
+            "data": {
+                "training_level": soul_answers.get("training_level"),
+                "handling_comfort": soul_answers.get("handling_comfort"),
+                "leash_behavior": soul_answers.get("leash_behavior"),
+            }
+        },
+        "long_horizon": {
+            "name": "Long Horizon",
+            "icon": "🌅",
+            "data": {
+                "vaccinations": len(vault.get("vaccines", [])),
+                "medications": len(vault.get("medications", [])),
+                "vet_visits": len(vault.get("vet_visits", [])),
+                "celebrations": celebrations,
+                "birth_date": pet.get("birth_date"),
+                "gotcha_date": pet.get("gotcha_date"),
+            }
+        }
+    }
+    
+    # Clean up None values and calculate completeness per pillar
+    for pillar_key, pillar_data in pillars.items():
+        filled_count = sum(1 for v in pillar_data["data"].values() if v is not None and v != "" and v != [])
+        total_count = len(pillar_data["data"])
+        pillar_data["filled"] = filled_count
+        pillar_data["total"] = total_count
+        pillar_data["percentage"] = round((filled_count / total_count * 100) if total_count > 0 else 0)
+        # Remove None values for cleaner response
+        pillar_data["data"] = {k: v for k, v in pillar_data["data"].items() if v is not None and v != "" and v != []}
+    
+    # Get learning history
+    learning_history = await db.soul_drip_history.find(
+        {"pet_id": pet_id},
+        {"_id": 0}
+    ).sort("answered_at", -1).limit(20).to_list(20)
+    
+    # Get Mira conversation count for this pet
+    mira_conversations = await db.mira_tickets.count_documents({
+        "pet_id": pet_id
+    })
+    
+    return {
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "breed": pet.get("breed"),
+        "overall_score": pet.get("overall_score", 0),
+        "folder_scores": pet.get("folder_scores", {}),
+        "pillars": pillars,
+        "learning_history": learning_history,
+        "mira_conversations": mira_conversations,
+        "pillar_interactions": pillar_interactions
+    }
+
+
+@pet_gate_router.get("/filter-products/{pet_id}")
 async def get_filtered_products(pet_id: str, product_ids: List[str] = None, limit: int = 50):
     """
     Filter products based on Pet Soul - excluding harmful/irrelevant items.
