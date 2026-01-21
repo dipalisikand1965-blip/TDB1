@@ -40,13 +40,21 @@ const DEFAULT_VIEWS = [
   { id: 'today', name: "Today's Tickets", icon: '📅', filter: { today: true } },
 ];
 
-// Pillar-specific views
+// Pillar-specific views - ALL 12 PILLARS
 const PILLAR_VIEWS = [
-  { id: 'stay', name: 'Stay', icon: '🏨', filter: { category: 'stay' } },
-  { id: 'dine', name: 'Dine', icon: '🍽️', filter: { category: 'dine' } },
   { id: 'celebrate', name: 'Celebrate', icon: '🎂', filter: { category: 'celebrate' } },
+  { id: 'dine', name: 'Dine', icon: '🍽️', filter: { category: 'dine' } },
+  { id: 'stay', name: 'Stay', icon: '🏨', filter: { category: 'stay' } },
+  { id: 'travel', name: 'Travel', icon: '✈️', filter: { category: 'travel' } },
   { id: 'care', name: 'Care', icon: '💊', filter: { category: 'care' } },
-  { id: 'grooming', name: 'Grooming', icon: '✂️', filter: { category: 'grooming' } },
+  { id: 'shop', name: 'Shop', icon: '🛍️', filter: { category: 'shop' } },
+  { id: 'enjoy', name: 'Enjoy', icon: '🎉', filter: { category: 'enjoy' } },
+  { id: 'fit', name: 'Fit', icon: '💪', filter: { category: 'fit' } },
+  { id: 'advisory', name: 'Advisory', icon: '📋', filter: { category: 'advisory' } },
+  { id: 'paperwork', name: 'Paperwork', icon: '📄', filter: { category: 'paperwork' } },
+  { id: 'emergency', name: 'Emergency', icon: '🚨', filter: { category: 'emergency' } },
+  { id: 'club', name: 'Club', icon: '👑', filter: { category: 'club' } },
+  { id: 'mira', name: 'Mira AI', icon: '🤖', filter: { category: 'mira_conversation' } },
 ];
 
 // Source labels and colors
