@@ -844,8 +844,9 @@ def root():
     """Root endpoint"""
     return {"message": "The Doggy Bakery API", "version": "2.0", "health": "ok"}
 
-# Security
-security = HTTPBasic()
+# Security - support both Basic Auth and Bearer Token
+security = HTTPBasic(auto_error=False)
+security_bearer = HTTPBearer(auto_error=False)
 
 # Cache for admin credentials from database
 _admin_credentials_cache = {"username": None, "password": None, "loaded": False}
