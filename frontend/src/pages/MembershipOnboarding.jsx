@@ -62,7 +62,8 @@ const MembershipOnboarding = () => {
       orderUpdates: true,
       promotions: true,
       petReminders: true,
-      newsletter: false
+      newsletter: false,
+      soulWhispers: true // Weekly WhatsApp drip - default ON
     },
     acceptTerms: false,
     acceptPrivacy: false
