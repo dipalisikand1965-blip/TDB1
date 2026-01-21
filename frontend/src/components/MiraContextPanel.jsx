@@ -178,6 +178,27 @@ const MiraContextPanel = ({
             content: data.pillar_note.replace(/\*\*/g, '')
           }]);
         }
+        
+        // Fetch personalized recommendations if we have a selected pet
+        if (data.selected_pet?.id) {
+          try {
+            const recsResponse = await fetch(
+              `${API_URL}/api/mira/intelligence/recommendations/${data.selected_pet.id}?pillar=${pillar}&limit=3`,
+              {
+                headers: {
+                  ...(token && { 'Authorization': `Bearer ${token}` })
+                }
+              }
+            );
+            if (recsResponse.ok) {
+              const recsData = await recsResponse.json();
+              setRecommendations(recsData.recommendations || []);
+            }
+          } catch (recError) {
+            console.debug('Recommendations fetch failed:', recError);
+          }
+        }
+      }
       }
     } catch (error) {
       console.error('Error fetching Mira context:', error);
