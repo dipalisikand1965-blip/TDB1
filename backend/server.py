@@ -9639,6 +9639,67 @@ async def verify_agent_session(data: dict):
     return {"valid": True, "agent": agent}
 
 
+# ============== BREED VALIDATION API ==============
+
+from breed_utils import normalize_breed_name, get_breed_suggestions, validate_breed
+
+@app.get("/api/breed/validate")
+async def validate_breed_name(breed: str):
+    """Validate and correct a breed name"""
+    return validate_breed(breed)
+
+@app.get("/api/breed/suggestions")
+async def get_breed_name_suggestions(partial: str, limit: int = 5):
+    """Get breed name suggestions based on partial input"""
+    return {"suggestions": get_breed_suggestions(partial, limit)}
+
+@app.post("/api/breed/normalize")
+async def normalize_breed(data: dict):
+    """Normalize a breed name to its correct spelling"""
+    breed = data.get("breed", "")
+    corrected, was_corrected, original = normalize_breed_name(breed)
+    return {
+        "original": breed,
+        "corrected": corrected,
+        "was_corrected": was_corrected
+    }
+
+
+# ============== MEMBER RECOGNITION API ==============
+
+from member_recognition import MemberRecognition, member_lookup_api
+
+@app.get("/api/member/lookup")
+async def lookup_member(identifier: str):
+    """Auto-recognize a member by phone, email, or name"""
+    return await member_lookup_api(db, identifier)
+
+@app.get("/api/member/search")
+async def search_members(q: str, limit: int = 10):
+    """Search members by name, email, or phone"""
+    if not q or len(q) < 2:
+        return {"members": [], "count": 0}
+    
+    # Search across multiple fields
+    query = {
+        "$or": [
+            {"name": {"$regex": q, "$options": "i"}},
+            {"email": {"$regex": q, "$options": "i"}},
+            {"phone": {"$regex": q}}
+        ]
+    }
+    
+    members = await db.users.find(query, {"_id": 0, "password_hash": 0}).limit(limit).to_list(limit)
+    
+    # Enrich with basic stats
+    recognition = MemberRecognition(db)
+    enriched_members = []
+    for m in members:
+        enriched_members.append(await recognition._enrich_member_data(m))
+    
+    return {"members": enriched_members, "count": len(enriched_members)}
+
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
