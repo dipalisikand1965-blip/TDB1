@@ -255,6 +255,9 @@ const ProductListing = ({ category = 'all' }) => {
           </>
         )}
       </div>
+      
+      {/* Mira Context Panel - Celebrate/Shop Pillar */}
+      <MiraContextPanel pillar="celebrate" position="right" />
     </div>
   );
 };
