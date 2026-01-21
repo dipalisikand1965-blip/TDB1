@@ -243,8 +243,8 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     setLoadingRolesUsers(true);
     try {
       const [rolesRes, usersRes] = await Promise.all([
-        fetch(`${API_URL}/api/roles`, { headers: authHeaders }),
-        fetch(`${API_URL}/api/roles/users/all`, { headers: authHeaders })
+        fetch(`${getApiUrl()}/api/roles`, { headers: authHeaders }),
+        fetch(`${getApiUrl()}/api/roles/users/all`, { headers: authHeaders })
       ]);
       
       if (rolesRes.ok) {
@@ -264,7 +264,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   // Create new team member/agent
   const handleCreateAgent = async (agentData) => {
     try {
-      const res = await fetch(`${API_URL}/api/roles/users/create`, {
+      const res = await fetch(`${getApiUrl()}/api/roles/users/create`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify(agentData)
@@ -288,7 +288,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   // Assign role to user
   const handleAssignRole = async (userId, roleId) => {
     try {
-      const res = await fetch(`${API_URL}/api/roles/users/assign`, {
+      const res = await fetch(`${getApiUrl()}/api/roles/users/assign`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId, role_id: roleId })
@@ -308,7 +308,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   const fetchEscalationRules = async () => {
     setLoadingEscalation(true);
     try {
-      const res = await fetch(`${API_URL}/api/escalation`, { headers: authHeaders });
+      const res = await fetch(`${getApiUrl()}/api/escalation`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setEscalationRules(data.rules || []);
@@ -322,7 +322,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   // Toggle escalation rule
   const handleToggleEscalationRule = async (ruleId) => {
     try {
-      const res = await fetch(`${API_URL}/api/escalation/${ruleId}/toggle`, {
+      const res = await fetch(`${getApiUrl()}/api/escalation/${ruleId}/toggle`, {
         method: 'POST',
         headers: authHeaders
       });
@@ -337,7 +337,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   // Manual escalation check
   const handleRunEscalationCheck = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/escalation/run-check`, {
+      const res = await fetch(`${getApiUrl()}/api/escalation/run-check`, {
         method: 'POST',
         headers: authHeaders
       });
@@ -367,7 +367,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     formData.append('file', file);
     
     try {
-      const res = await fetch(`${API_URL}/api/tickets/${selectedTicket.ticket_id}/attachments`, {
+      const res = await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/attachments`, {
         method: 'POST',
         headers: { 'Authorization': authHeaders.Authorization },
         body: formData
@@ -395,7 +395,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   const handleMarkSpam = async (ticketId) => {
     if (!confirm('Mark this ticket as spam?')) return;
     try {
-      await fetch(`${API_URL}/api/tickets/${ticketId}`, {
+      await fetch(`${getApiUrl()}/api/tickets/${ticketId}`, {
         method: 'PATCH',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'spam', is_spam: true })
@@ -408,7 +408,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
 
   const handleMarkUnread = async (ticketId) => {
     try {
-      await fetch(`${API_URL}/api/tickets/${ticketId}`, {
+      await fetch(`${getApiUrl()}/api/tickets/${ticketId}`, {
         method: 'PATCH',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({ is_read: false })
@@ -422,7 +422,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   const handleDeleteTicket = async (ticketId) => {
     if (!confirm('Are you sure you want to delete this ticket? This action cannot be undone.')) return;
     try {
-      await fetch(`${API_URL}/api/tickets/${ticketId}`, {
+      await fetch(`${getApiUrl()}/api/tickets/${ticketId}`, {
         method: 'DELETE',
         headers: authHeaders
       });
@@ -445,7 +445,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
         urgency: ticket.urgency,
         source: 'manual'
       };
-      await fetch(`${API_URL}/api/tickets`, {
+      await fetch(`${getApiUrl()}/api/tickets`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify(clonedData)
@@ -460,7 +460,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
 
   const handleFollowTicket = async (ticketId) => {
     try {
-      await fetch(`${API_URL}/api/tickets/${ticketId}/follow`, {
+      await fetch(`${getApiUrl()}/api/tickets/${ticketId}/follow`, {
         method: 'POST',
         headers: authHeaders
       });
@@ -479,7 +479,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   // Fetch canned responses
   const fetchCannedResponses = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/api/tickets/canned-responses`, { headers: authHeaders });
+      const response = await fetch(`${getApiUrl()}/api/tickets/canned-responses`, { headers: authHeaders });
       if (response.ok) {
         const data = await response.json();
         setCannedResponses(data.responses || []);
@@ -495,7 +495,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     
     setLoadingHistory(true);
     try {
-      const response = await fetch(`${API_URL}/api/tickets/customer/${encodeURIComponent(identifier)}/full-history`, {
+      const response = await fetch(`${getApiUrl()}/api/tickets/customer/${encodeURIComponent(identifier)}/full-history`, {
         headers: authHeaders
       });
       if (response.ok) {
@@ -519,7 +519,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     try {
       // Try to find pet by name and owner email
       const searchQuery = petName || '';
-      const response = await fetch(`${API_URL}/api/admin/pet-soul/pets?search=${encodeURIComponent(searchQuery)}&limit=5`, {
+      const response = await fetch(`${getApiUrl()}/api/admin/pet-soul/pets?search=${encodeURIComponent(searchQuery)}&limit=5`, {
         headers: authHeaders
       });
       if (response.ok) {
@@ -540,7 +540,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
         
         if (matchedPet) {
           // Fetch full Pet Soul profile
-          const profileRes = await fetch(`${API_URL}/api/pet-soul/profile/${matchedPet.id}`, {
+          const profileRes = await fetch(`${getApiUrl()}/api/pet-soul/profile/${matchedPet.id}`, {
             headers: authHeaders
           });
           if (profileRes.ok) {
@@ -577,7 +577,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     
     setMerging(true);
     try {
-      const response = await fetch(`${API_URL}/api/tickets/merge`, {
+      const response = await fetch(`${getApiUrl()}/api/tickets/merge`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({ primary_ticket_id: primaryId, merge_ticket_ids: mergeIds })
@@ -614,7 +614,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
       if (filters.urgency) params.append('urgency', filters.urgency);
       if (filters.search) params.append('search', filters.search);
       
-      const res = await fetch(`${API_URL}/api/tickets/?${params}`, { headers: authHeaders });
+      const res = await fetch(`${getApiUrl()}/api/tickets/?${params}`, { headers: authHeaders });
       const data = await res.json();
       setTickets(data.tickets || []);
     } catch (err) {
@@ -624,7 +624,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
 
   const fetchStats = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/api/tickets/stats`, { headers: authHeaders });
+      const res = await fetch(`${getApiUrl()}/api/tickets/stats`, { headers: authHeaders });
       const data = await res.json();
       setStats(data);
     } catch (err) {
@@ -635,11 +635,11 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   const fetchMetadata = useCallback(async () => {
     try {
       const [catRes, statusRes, conciergeRes, intRes, slaRes] = await Promise.all([
-        fetch(`${API_URL}/api/tickets/categories`, { headers: authHeaders }),
-        fetch(`${API_URL}/api/tickets/statuses`, { headers: authHeaders }),
-        fetch(`${API_URL}/api/tickets/concierges`, { headers: authHeaders }),
-        fetch(`${API_URL}/api/tickets/integrations`, { headers: authHeaders }),
-        fetch(`${API_URL}/api/tickets/sla/stats`, { headers: authHeaders }).catch(() => ({ json: () => ({}) }))
+        fetch(`${getApiUrl()}/api/tickets/categories`, { headers: authHeaders }),
+        fetch(`${getApiUrl()}/api/tickets/statuses`, { headers: authHeaders }),
+        fetch(`${getApiUrl()}/api/tickets/concierges`, { headers: authHeaders }),
+        fetch(`${getApiUrl()}/api/tickets/integrations`, { headers: authHeaders }),
+        fetch(`${getApiUrl()}/api/tickets/sla/stats`, { headers: authHeaders }).catch(() => ({ json: () => ({}) }))
       ]);
       
       const [catData, statusData, conciergeData, intData, slaData] = await Promise.all([
@@ -659,7 +659,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   const fetchTicketDetails = async (ticketId) => {
     setTicketLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/tickets/${ticketId}`, { headers: authHeaders });
+      const res = await fetch(`${getApiUrl()}/api/tickets/${ticketId}`, { headers: authHeaders });
       const data = await res.json();
       setSelectedTicket(data.ticket);
     } catch (err) {
@@ -690,7 +690,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   const fetchAuditTrail = useCallback(async (ticketId) => {
     setLoadingAudit(true);
     try {
-      const response = await fetch(`${API_URL}/api/tickets/${ticketId}/audit`, {
+      const response = await fetch(`${getApiUrl()}/api/tickets/${ticketId}/audit`, {
         headers: authHeaders
       });
       if (response.ok) {
@@ -736,7 +736,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     try {
       if (isInternalNote || sendChannel === 'internal') {
         // Internal note - use existing endpoint
-        await fetch(`${API_URL}/api/tickets/${selectedTicket.ticket_id}/reply`, {
+        await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/reply`, {
           method: 'POST',
           headers: { ...authHeaders, 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -746,7 +746,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
         });
       } else {
         // Send via channel (email/whatsapp) using messaging API
-        const response = await fetch(`${API_URL}/api/tickets/messaging/send`, {
+        const response = await fetch(`${getApiUrl()}/api/tickets/messaging/send`, {
           method: 'POST',
           headers: { ...authHeaders, 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -783,7 +783,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     
     setAutoAssigning(true);
     try {
-      const response = await fetch(`${API_URL}/api/tickets/sla/auto-assign/${selectedTicket.ticket_id}`, {
+      const response = await fetch(`${getApiUrl()}/api/tickets/sla/auto-assign/${selectedTicket.ticket_id}`, {
         method: 'POST',
         headers: authHeaders
       });
@@ -808,7 +808,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     
     setAutoAssigning(true);
     try {
-      const response = await fetch(`${API_URL}/api/tickets/sla/auto-assign-all`, {
+      const response = await fetch(`${getApiUrl()}/api/tickets/sla/auto-assign-all`, {
         method: 'POST',
         headers: authHeaders
       });
@@ -826,7 +826,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
 
   const handleCheckEscalations = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/tickets/sla/check-escalations`, {
+      const response = await fetch(`${getApiUrl()}/api/tickets/sla/check-escalations`, {
         method: 'POST',
         headers: authHeaders
       });
@@ -875,7 +875,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
       const promises = Array.from(selectedTickets).map(ticketId => {
         const formData = new FormData();
         formData.append('assignee', assigneeId);
-        return fetch(`${API_URL}/api/tickets/${ticketId}/assign`, {
+        return fetch(`${getApiUrl()}/api/tickets/${ticketId}/assign`, {
           method: 'POST',
           headers: authHeaders,
           body: formData
@@ -906,7 +906,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     setBulkActionLoading(true);
     try {
       const promises = Array.from(selectedTickets).map(ticketId => 
-        fetch(`${API_URL}/api/tickets/${ticketId}`, {
+        fetch(`${getApiUrl()}/api/tickets/${ticketId}`, {
           method: 'PATCH',
           headers: { ...authHeaders, 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
@@ -938,7 +938,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     setBulkActionLoading(true);
     try {
       const promises = Array.from(selectedTickets).map(ticketId => 
-        fetch(`${API_URL}/api/tickets/${ticketId}`, {
+        fetch(`${getApiUrl()}/api/tickets/${ticketId}`, {
           method: 'DELETE',
           headers: authHeaders
         })
@@ -997,7 +997,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     setAiDraft(null);
     
     try {
-      const response = await fetch(`${API_URL}/api/tickets/ai/draft-reply`, {
+      const response = await fetch(`${getApiUrl()}/api/tickets/ai/draft-reply`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1033,7 +1033,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     
     setAiLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/tickets/ai/summarize?ticket_id=${selectedTicket.ticket_id}`, {
+      const response = await fetch(`${getApiUrl()}/api/tickets/ai/summarize?ticket_id=${selectedTicket.ticket_id}`, {
         method: 'POST',
         headers: authHeaders
       });
@@ -1053,7 +1053,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     
     setAiLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/tickets/ai/suggest-actions?ticket_id=${selectedTicket.ticket_id}`, {
+      const response = await fetch(`${getApiUrl()}/api/tickets/ai/suggest-actions?ticket_id=${selectedTicket.ticket_id}`, {
         method: 'POST',
         headers: authHeaders
       });
@@ -1107,7 +1107,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
       if (!note) return;
       
       try {
-        await fetch(`${API_URL}/api/tickets/${selectedTicket.ticket_id}`, {
+        await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}`, {
           method: 'PATCH',
           headers: { ...authHeaders, 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: newStatus, resolution_note: note })
@@ -1118,7 +1118,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
       }
     } else {
       try {
-        await fetch(`${API_URL}/api/tickets/${selectedTicket.ticket_id}`, {
+        await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}`, {
           method: 'PATCH',
           headers: { ...authHeaders, 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: newStatus })
@@ -1141,7 +1141,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     formData.append('assignee', assignee);
     
     try {
-      await fetch(`${API_URL}/api/tickets/${selectedTicket.ticket_id}/assign`, {
+      await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/assign`, {
         method: 'POST',
         headers: authHeaders,
         body: formData
@@ -1173,7 +1173,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
       
       setCreating(true);
       try {
-        await fetch(`${API_URL}/api/tickets/`, {
+        await fetch(`${getApiUrl()}/api/tickets/`, {
           method: 'POST',
           headers: { ...authHeaders, 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)
@@ -1376,9 +1376,9 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
       setLoadingRules(true);
       try {
         const [assignRes, slaRes, availRes] = await Promise.all([
-          fetch(`${API_URL}/api/tickets/sla/rules/assignment`, { headers: authHeaders }),
-          fetch(`${API_URL}/api/tickets/sla/rules/sla`, { headers: authHeaders }),
-          fetch(`${API_URL}/api/tickets/sla/concierges/availability`, { headers: authHeaders })
+          fetch(`${getApiUrl()}/api/tickets/sla/rules/assignment`, { headers: authHeaders }),
+          fetch(`${getApiUrl()}/api/tickets/sla/rules/sla`, { headers: authHeaders }),
+          fetch(`${getApiUrl()}/api/tickets/sla/concierges/availability`, { headers: authHeaders })
         ]);
         
         if (assignRes.ok) {
@@ -1422,7 +1422,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
       }
       setSaving(true);
       try {
-        const res = await fetch(`${API_URL}/api/tickets/sla/rules/assignment`, {
+        const res = await fetch(`${getApiUrl()}/api/tickets/sla/rules/assignment`, {
           method: 'POST',
           headers: { ...authHeaders, 'Content-Type': 'application/json' },
           body: JSON.stringify(newAssignmentRule)
@@ -1440,7 +1440,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     const handleDeleteAssignmentRule = async (ruleName) => {
       if (!confirm(`Delete rule "${ruleName}"?`)) return;
       try {
-        await fetch(`${API_URL}/api/tickets/sla/rules/assignment/${encodeURIComponent(ruleName)}`, {
+        await fetch(`${getApiUrl()}/api/tickets/sla/rules/assignment/${encodeURIComponent(ruleName)}`, {
           method: 'DELETE',
           headers: authHeaders
         });
@@ -1457,7 +1457,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
       }
       setSaving(true);
       try {
-        const res = await fetch(`${API_URL}/api/tickets/sla/rules/sla`, {
+        const res = await fetch(`${getApiUrl()}/api/tickets/sla/rules/sla`, {
           method: 'POST',
           headers: { ...authHeaders, 'Content-Type': 'application/json' },
           body: JSON.stringify(newSlaRule)
@@ -1474,7 +1474,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
 
     const handleToggleAvailability = async (conciergeId, available) => {
       try {
-        await fetch(`${API_URL}/api/tickets/sla/concierges/availability`, {
+        await fetch(`${getApiUrl()}/api/tickets/sla/concierges/availability`, {
           method: 'POST',
           headers: { ...authHeaders, 'Content-Type': 'application/json' },
           body: JSON.stringify({ concierge_id: conciergeId, available })
@@ -1488,7 +1488,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     const handleSaveIntegration = async (provider, config) => {
       setSaving(true);
       try {
-        await fetch(`${API_URL}/api/tickets/integrations`, {
+        await fetch(`${getApiUrl()}/api/tickets/integrations`, {
           method: 'POST',
           headers: { ...authHeaders, 'Content-Type': 'application/json' },
           body: JSON.stringify({ provider, config, enabled: true })
@@ -3541,7 +3541,7 @@ const CategoryManager = ({ categories, setCategories, authHeaders }) => {
       };
       
       // Save to backend
-      await fetch(`${API_URL}/api/tickets/categories/custom`, {
+      await fetch(`${getApiUrl()}/api/tickets/categories/custom`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify(categoryData)
@@ -3567,7 +3567,7 @@ const CategoryManager = ({ categories, setCategories, authHeaders }) => {
       };
       
       // Save to backend
-      await fetch(`${API_URL}/api/tickets/categories/sub`, {
+      await fetch(`${getApiUrl()}/api/tickets/categories/sub`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify(subCatData)
@@ -3591,7 +3591,7 @@ const CategoryManager = ({ categories, setCategories, authHeaders }) => {
     if (!confirm('Delete this category?')) return;
     
     try {
-      await fetch(`${API_URL}/api/tickets/categories/custom/${categoryId}`, {
+      await fetch(`${getApiUrl()}/api/tickets/categories/custom/${categoryId}`, {
         method: 'DELETE',
         headers: authHeaders
       });
