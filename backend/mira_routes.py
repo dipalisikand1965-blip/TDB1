@@ -609,6 +609,286 @@ async def save_pet_soul_enrichment(pet_id: str, enrichment: Dict, source: str = 
     
     return False
 
+# ============== CONCIERGE ACTION DETECTION ==============
+
+# Keywords that indicate concierge action is needed
+CONCIERGE_ACTION_TRIGGERS = {
+    "dining": {
+        "keywords": ["restaurant", "cafe", "lunch", "dinner", "brunch", "breakfast", "reservation", "book a table", "pet-friendly restaurant", "dining"],
+        "priority": "medium",
+        "action_type": "dining_reservation"
+    },
+    "stay": {
+        "keywords": ["hotel", "stay", "accommodation", "room", "resort", "pet-friendly hotel", "book a room", "pawcation"],
+        "priority": "medium", 
+        "action_type": "hotel_booking"
+    },
+    "travel": {
+        "keywords": ["travel", "trip", "flight", "train", "cab", "transport", "pet relocation", "moving", "airlines"],
+        "priority": "high",
+        "action_type": "travel_arrangement"
+    },
+    "care": {
+        "keywords": ["vet", "grooming", "appointment", "vaccination", "checkup", "salon", "spa", "trim", "bath"],
+        "priority": "high",
+        "action_type": "care_appointment"
+    },
+    "verification": {
+        "keywords": ["is it pet-friendly", "do they allow pets", "pet policy", "can i bring my dog", "are pets allowed", "verify", "check if", "confirm if"],
+        "priority": "medium",
+        "action_type": "venue_verification"
+    }
+}
+
+def detect_concierge_action_needed(message: str, pillar: str = None) -> Dict:
+    """
+    Detect if a message requires concierge action (booking, reservation, verification).
+    Returns action details if needed, None otherwise.
+    """
+    message_lower = message.lower()
+    
+    for category, config in CONCIERGE_ACTION_TRIGGERS.items():
+        for keyword in config["keywords"]:
+            if keyword in message_lower:
+                return {
+                    "action_needed": True,
+                    "category": category,
+                    "action_type": config["action_type"],
+                    "priority": config["priority"],
+                    "trigger_keyword": keyword
+                }
+    
+    # Also check pillar-based triggers
+    if pillar in ["dine", "stay", "travel", "care"]:
+        # For these pillars, most requests need concierge action
+        action_words = ["want", "need", "looking for", "find me", "book", "reserve", "arrange"]
+        if any(word in message_lower for word in action_words):
+            return {
+                "action_needed": True,
+                "category": pillar,
+                "action_type": f"{pillar}_request",
+                "priority": PILLARS.get(pillar, {}).get("urgency_default", "medium"),
+                "trigger_keyword": pillar
+            }
+    
+    return {"action_needed": False}
+
+async def create_service_desk_ticket(
+    session_id: str,
+    user: Dict,
+    pets: List[Dict],
+    message: str,
+    action_details: Dict,
+    pillar: str
+) -> str:
+    """
+    Create a Service Desk ticket for concierge action.
+    Routes to Unified Inbox and Service Desk.
+    """
+    db = get_db()
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Generate ticket ID
+    action_type = action_details.get("action_type", "request")
+    prefix_map = {
+        "dining_reservation": "DIN",
+        "hotel_booking": "HTL",
+        "travel_arrangement": "TRV",
+        "care_appointment": "CARE",
+        "venue_verification": "VER"
+    }
+    prefix = prefix_map.get(action_type, "REQ")
+    date_part = datetime.now().strftime("%Y%m%d")
+    
+    # Count existing tickets today
+    count = await db.service_desk_tickets.count_documents({
+        "created_at": {"$regex": f"^{datetime.now().strftime('%Y-%m-%d')}"}
+    })
+    
+    ticket_id = f"{prefix}-{date_part}-{str(count + 1).zfill(4)}"
+    
+    # Pet summary for ticket
+    pet_summary = []
+    for pet in pets:
+        pet_summary.append({
+            "id": pet.get("id"),
+            "name": pet.get("name"),
+            "breed": pet.get("breed") or pet.get("identity", {}).get("breed"),
+            "allergies": pet.get("allergies") or pet.get("preferences", {}).get("allergies", [])
+        })
+    
+    ticket_doc = {
+        "ticket_id": ticket_id,
+        "mira_session_id": session_id,
+        "ticket_type": "concierge_action",
+        "action_type": action_details.get("action_type"),
+        "category": action_details.get("category"),
+        "pillar": pillar,
+        "priority": action_details.get("priority", "medium"),
+        "status": "pending",
+        
+        # Request details
+        "original_request": message,
+        "trigger_keyword": action_details.get("trigger_keyword"),
+        
+        # Member info
+        "member": {
+            "id": user.get("id") if user else None,
+            "name": user.get("name") if user else "Guest",
+            "email": user.get("email") if user else None,
+            "phone": user.get("phone") if user else None,
+            "membership_tier": user.get("membership_tier", "free") if user else "free"
+        },
+        
+        # Pet info
+        "pets": pet_summary,
+        "pet_count": len(pets),
+        
+        # Timestamps
+        "created_at": now,
+        "updated_at": now,
+        "assigned_at": None,
+        "resolved_at": None,
+        
+        # Assignment
+        "assigned_to": None,
+        
+        # For routing
+        "visible_in_inbox": True,
+        "visible_in_service_desk": True,
+        "visible_in_mira_folder": True,
+        "requires_human_action": True,
+        
+        # Notes for concierge
+        "concierge_notes": [],
+        "resolution_summary": None,
+        
+        # Audit trail
+        "audit_trail": [{
+            "action": "ticket_created",
+            "timestamp": now,
+            "performed_by": "mira_ai",
+            "details": f"Auto-created from Mira conversation. Action: {action_details.get('action_type')}"
+        }]
+    }
+    
+    # Insert into service desk collection
+    await db.service_desk_tickets.insert_one(ticket_doc)
+    
+    # Also add to unified inbox
+    await db.unified_inbox.insert_one({
+        **ticket_doc,
+        "inbox_type": "service_request",
+        "source": "mira_ai",
+        "unread": True
+    })
+    
+    # Link to the mira ticket
+    await db.mira_tickets.update_one(
+        {"mira_session_id": session_id},
+        {
+            "$set": {
+                "service_desk_ticket_id": ticket_id,
+                "requires_concierge_action": True,
+                "action_type": action_details.get("action_type")
+            },
+            "$push": {
+                "audit_trail": {
+                    "action": "service_desk_ticket_created",
+                    "timestamp": now,
+                    "ticket_id": ticket_id,
+                    "action_type": action_details.get("action_type")
+                }
+            }
+        }
+    )
+    
+    logger.info(f"Service Desk ticket created: {ticket_id} | Action: {action_details.get('action_type')} | Member: {user.get('email') if user else 'Guest'}")
+    
+    return ticket_id
+
+async def update_pet_soul_travel_dining(
+    pets: List[Dict],
+    message: str,
+    pillar: str,
+    member_id: str = None
+):
+    """
+    Update Pet Soul with travel/dining preferences mentioned in conversation.
+    """
+    db = get_db()
+    now = datetime.now(timezone.utc).isoformat()
+    message_lower = message.lower()
+    
+    # Extract location mentions
+    location_patterns = [
+        r"to\s+(\w+(?:\s+\w+)?)",  # "to Ooty", "to Goa"
+        r"in\s+(\w+(?:\s+\w+)?)",  # "in Bangalore", "in Delhi"
+        r"at\s+(\w+(?:\s+\w+)?)",  # "at MindEscapes"
+    ]
+    
+    locations = []
+    for pattern in location_patterns:
+        matches = re.findall(pattern, message, re.IGNORECASE)
+        locations.extend(matches)
+    
+    # Filter out common non-location words
+    non_locations = ["the", "my", "all", "for", "with", "and", "pets", "dogs", "lunch", "dinner"]
+    locations = [loc for loc in locations if loc.lower() not in non_locations]
+    
+    if not locations and not pillar:
+        return
+    
+    # Update each pet's soul with travel/dining preferences
+    for pet in pets:
+        pet_id = pet.get("id")
+        if not pet_id:
+            continue
+        
+        update_data = {}
+        
+        if pillar == "travel" and locations:
+            update_data["soul_enrichments.travel_destinations"] = {
+                "$each": locations[-3:]  # Keep last 3
+            }
+            
+        if pillar == "dine" and locations:
+            update_data["soul_enrichments.dining_locations"] = {
+                "$each": locations[-3:]
+            }
+        
+        if update_data:
+            await db.pets.update_one(
+                {"id": pet_id},
+                {"$addToSet": update_data}
+            )
+            
+    # Also store in relationship memory
+    if member_id and locations:
+        try:
+            from mira_memory import MiraMemory
+            
+            if pillar == "travel":
+                await MiraMemory.store_memory(
+                    member_id=member_id,
+                    memory_type="event",
+                    content=f"Planning trip to {', '.join(locations[:2])} with pets",
+                    relevance_tags=["travel", "upcoming"],
+                    source="conversation",
+                    confidence="medium"
+                )
+            elif pillar == "dine":
+                await MiraMemory.store_memory(
+                    member_id=member_id,
+                    memory_type="shopping",
+                    content=f"Interested in pet-friendly dining at {', '.join(locations[:2])}",
+                    relevance_tags=["dining", "preference"],
+                    source="conversation",
+                    confidence="medium"
+                )
+        except Exception as e:
+            logger.warning(f"Could not store memory: {e}")
+
 def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar: str = None, selected_pet: Dict = None) -> str:
     """Build the comprehensive Mira system prompt with KNOWN FIELDS section"""
     
