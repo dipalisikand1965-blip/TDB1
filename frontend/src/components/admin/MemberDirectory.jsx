@@ -1046,13 +1046,44 @@ const PetSoulTabs = ({ pets }) => {
 
           {/* Actions */}
           <div className="p-4 bg-black/20 flex gap-2">
-            <Button size="sm" variant="secondary" className="flex-1 bg-white/10 hover:bg-white/20 text-white border-0">
+            <Button 
+              size="sm" 
+              variant="secondary" 
+              className="flex-1 bg-white/10 hover:bg-white/20 text-white border-0"
+              onClick={() => {
+                // Open member's Pet Soul Journey page in new tab
+                if (currentPet?.id) {
+                  window.open(`/pet-soul-journey/${currentPet.id}`, '_blank');
+                }
+              }}
+            >
               <Eye className="w-4 h-4 mr-1" /> View Full Soul
             </Button>
-            <Button size="sm" variant="secondary" className="flex-1 bg-white/10 hover:bg-white/20 text-white border-0">
+            <Button 
+              size="sm" 
+              variant="secondary" 
+              className="flex-1 bg-white/10 hover:bg-white/20 text-white border-0"
+              onClick={() => {
+                // Open Mira chat for Soul Whisper
+                window.dispatchEvent(new CustomEvent('openMiraAI', { 
+                  detail: { 
+                    prefilledMessage: `Send a Soul Whisper question to ${currentPet?.name || 'this pet'}'s parent`,
+                    petId: currentPet?.id
+                  }
+                }));
+              }}
+            >
               <MessageSquare className="w-4 h-4 mr-1" /> Send Soul Whisper
             </Button>
-            <Button size="sm" variant="secondary" className="flex-1 bg-white/10 hover:bg-white/20 text-white border-0">
+            <Button 
+              size="sm" 
+              variant="secondary" 
+              className="flex-1 bg-white/10 hover:bg-white/20 text-white border-0"
+              onClick={() => {
+                // TODO: Open edit modal for pet
+                alert(`Edit functionality coming soon for ${currentPet?.name}`);
+              }}
+            >
               <Edit2 className="w-4 h-4 mr-1" /> Edit
             </Button>
           </div>
