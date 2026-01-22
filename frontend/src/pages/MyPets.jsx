@@ -842,6 +842,27 @@ const MyPets = () => {
               </Card>
             </Link>
           </div>
+            )}
+          </>
+        )}
+
+        {/* Empty State - No Pets Yet */}
+        {pets.length === 0 && (
+          <Card className="p-12 text-center">
+            <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <PawPrint className="w-12 h-12 text-purple-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-700 mb-2">No pets yet!</h3>
+            <p className="text-gray-500 mb-6">
+              Create a profile for your furry friend and unlock personalized celebrations
+            </p>
+            <Link to="/pet-profile">
+              <Button className="bg-purple-600 hover:bg-purple-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Your First Pet
+              </Button>
+            </Link>
+          </Card>
         )}
 
         {/* Fun Fact */}
