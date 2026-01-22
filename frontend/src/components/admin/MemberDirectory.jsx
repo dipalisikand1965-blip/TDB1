@@ -444,8 +444,11 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
   const [pets, setPets] = useState([]);
   const [activity, setActivity] = useState([]);
   const [notes, setNotes] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const [memories, setMemories] = useState([]);
   const [newNote, setNewNote] = useState('');
   const [loading, setLoading] = useState(true);
+  const [ticketsLoading, setTicketsLoading] = useState(false);
 
   useEffect(() => {
     fetchMemberDetails();
@@ -466,6 +469,54 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
       console.error('Failed to fetch member details:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Fetch tickets when Tickets tab is selected
+  useEffect(() => {
+    if (activeTab === 'tickets' && tickets.length === 0) {
+      fetchMemberTickets();
+    }
+  }, [activeTab]);
+
+  // Fetch memories when Memories tab is selected
+  useEffect(() => {
+    if (activeTab === 'memories' && memories.length === 0) {
+      fetchMemberMemories();
+    }
+  }, [activeTab]);
+
+  const fetchMemberTickets = async () => {
+    setTicketsLoading(true);
+    try {
+      // Fetch from service desk tickets
+      const response = await fetch(`${API_URL}/api/admin/service-desk/tickets?member_email=${encodeURIComponent(member.email)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setTickets(data.tickets || data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch member tickets:', error);
+    } finally {
+      setTicketsLoading(false);
+    }
+  };
+
+  const fetchMemberMemories = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/mira/memory/admin/member/${encodeURIComponent(member.email)}`);
+      if (response.ok) {
+        const data = await response.json();
+        // Flatten memories from all types
+        const allMemories = [];
+        Object.values(data.by_type || {}).forEach(typeData => {
+          (typeData.memories || []).forEach(m => allMemories.push(m));
+        });
+        allMemories.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setMemories(allMemories);
+      }
+    } catch (error) {
+      console.error('Failed to fetch member memories:', error);
     }
   };
 
