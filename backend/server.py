@@ -9086,6 +9086,10 @@ set_pet_vault_db(db)
 set_soul_db(db)
 set_pet_gate_db(db)
 
+# Setup Communication System (Unified Reminder & Mailing)
+setup_communication_routes(app, db)
+logger.info("Communication system routes initialized")
+
 
 # ==================== ABOUT PAGE CONTENT MANAGEMENT ====================
 
