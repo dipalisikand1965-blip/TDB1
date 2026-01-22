@@ -4104,6 +4104,384 @@ const Admin = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Health Vault Modal */}
+      {showHealthVaultModal && selectedPetForHealth && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-4xl max-h-[90vh] overflow-hidden bg-white flex flex-col">
+            {/* Header */}
+            <div className="p-4 border-b bg-gradient-to-r from-red-50 to-pink-50 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+                  {selectedPetForHealth.photo_url ? (
+                    <img src={selectedPetForHealth.photo_url} alt={selectedPetForHealth.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <PawPrint className="w-6 h-6 text-red-300" />
+                  )}
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Heart className="w-5 h-5 text-red-500" /> {selectedPetForHealth.name}'s Health Vault
+                  </h2>
+                  <p className="text-sm text-gray-500">{selectedPetForHealth.breed} • {selectedPetForHealth.species}</p>
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setShowHealthVaultModal(false)}>
+                <X className="w-6 h-6" />
+              </Button>
+            </div>
+            
+            {/* Tabs */}
+            <div className="flex gap-2 p-3 border-b bg-gray-50">
+              {[
+                { id: 'vaccines', label: 'Vaccines', icon: Syringe, count: healthVaultData.vaccines.length },
+                { id: 'medications', label: 'Medications', icon: Pill, count: healthVaultData.medications.length },
+                { id: 'visits', label: 'Vet Visits', icon: Stethoscope, count: healthVaultData.vet_visits.length },
+                { id: 'weight', label: 'Weight', icon: Scale, count: healthVaultData.weight_history.length },
+              ].map((tab) => (
+                <Button
+                  key={tab.id}
+                  variant={healthTab === tab.id ? 'default' : 'ghost'}
+                  size="sm"
+                  className={healthTab === tab.id ? 'bg-red-500 hover:bg-red-600' : ''}
+                  onClick={() => setHealthTab(tab.id)}
+                >
+                  <tab.icon className="w-4 h-4 mr-1" />
+                  {tab.label}
+                  {tab.count > 0 && (
+                    <Badge className={`ml-1 ${healthTab === tab.id ? 'bg-white text-red-600' : 'bg-red-100 text-red-700'}`}>
+                      {tab.count}
+                    </Badge>
+                  )}
+                </Button>
+              ))}
+            </div>
+            
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              {loadingHealth ? (
+                <div className="flex items-center justify-center py-12">
+                  <RefreshCw className="w-8 h-8 animate-spin text-red-500" />
+                </div>
+              ) : (
+                <>
+                  {/* Vaccines Tab */}
+                  {healthTab === 'vaccines' && (
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-semibold text-gray-700">Vaccination Records</h3>
+                        <Button size="sm" onClick={() => setShowAddVaccineModal(true)} className="bg-red-500 hover:bg-red-600">
+                          <Plus className="w-4 h-4 mr-1" /> Add Vaccine
+                        </Button>
+                      </div>
+                      {healthVaultData.vaccines.length === 0 ? (
+                        <Card className="p-8 text-center">
+                          <Syringe className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                          <p className="text-gray-500">No vaccination records yet</p>
+                          <Button size="sm" variant="outline" className="mt-3" onClick={() => setShowAddVaccineModal(true)}>
+                            Add First Vaccine
+                          </Button>
+                        </Card>
+                      ) : (
+                        <div className="space-y-3">
+                          {healthVaultData.vaccines.map((vaccine, idx) => (
+                            <Card key={idx} className="p-4 hover:shadow-md transition-shadow">
+                              <div className="flex items-start justify-between">
+                                <div className="flex gap-3">
+                                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <Syringe className="w-5 h-5 text-green-600" />
+                                  </div>
+                                  <div>
+                                    <p className="font-semibold text-gray-900">{vaccine.vaccine_name}</p>
+                                    <p className="text-sm text-gray-500">
+                                      Given: {new Date(vaccine.date_given).toLocaleDateString()}
+                                      {vaccine.vet_name && ` • Dr. ${vaccine.vet_name}`}
+                                    </p>
+                                    {vaccine.notes && <p className="text-sm text-gray-400 mt-1">{vaccine.notes}</p>}
+                                  </div>
+                                </div>
+                                {vaccine.next_due_date && (
+                                  <Badge className={new Date(vaccine.next_due_date) < new Date() ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}>
+                                    Due: {new Date(vaccine.next_due_date).toLocaleDateString()}
+                                  </Badge>
+                                )}
+                              </div>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Medications Tab */}
+                  {healthTab === 'medications' && (
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-semibold text-gray-700">Active & Past Medications</h3>
+                        <Button size="sm" onClick={() => setShowAddMedicationModal(true)} className="bg-red-500 hover:bg-red-600">
+                          <Plus className="w-4 h-4 mr-1" /> Add Medication
+                        </Button>
+                      </div>
+                      {healthVaultData.medications.length === 0 ? (
+                        <Card className="p-8 text-center">
+                          <Pill className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                          <p className="text-gray-500">No medication records yet</p>
+                          <Button size="sm" variant="outline" className="mt-3" onClick={() => setShowAddMedicationModal(true)}>
+                            Add First Medication
+                          </Button>
+                        </Card>
+                      ) : (
+                        <div className="space-y-3">
+                          {healthVaultData.medications.map((med, idx) => (
+                            <Card key={idx} className="p-4 hover:shadow-md transition-shadow">
+                              <div className="flex items-start justify-between">
+                                <div className="flex gap-3">
+                                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <Pill className="w-5 h-5 text-purple-600" />
+                                  </div>
+                                  <div>
+                                    <p className="font-semibold text-gray-900">{med.medication_name}</p>
+                                    <p className="text-sm text-gray-500">
+                                      {med.dosage} • {med.frequency}
+                                    </p>
+                                    {med.reason && <p className="text-sm text-gray-400 mt-1">For: {med.reason}</p>}
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <Badge className={!med.end_date || new Date(med.end_date) > new Date() ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}>
+                                    {!med.end_date || new Date(med.end_date) > new Date() ? 'Active' : 'Completed'}
+                                  </Badge>
+                                  <p className="text-xs text-gray-400 mt-1">
+                                    Started: {new Date(med.start_date).toLocaleDateString()}
+                                  </p>
+                                </div>
+                              </div>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Vet Visits Tab */}
+                  {healthTab === 'visits' && (
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-semibold text-gray-700">Vet Visit History</h3>
+                      </div>
+                      {healthVaultData.vet_visits.length === 0 ? (
+                        <Card className="p-8 text-center">
+                          <Stethoscope className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                          <p className="text-gray-500">No vet visits recorded yet</p>
+                        </Card>
+                      ) : (
+                        <div className="space-y-3">
+                          {healthVaultData.vet_visits.map((visit, idx) => (
+                            <Card key={idx} className="p-4">
+                              <div className="flex gap-3">
+                                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                  <Stethoscope className="w-5 h-5 text-blue-600" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex justify-between items-start">
+                                    <div>
+                                      <p className="font-semibold text-gray-900">{visit.reason}</p>
+                                      <p className="text-sm text-gray-500">Dr. {visit.vet_name} {visit.clinic_name && `• ${visit.clinic_name}`}</p>
+                                    </div>
+                                    <p className="text-sm text-gray-500">{new Date(visit.visit_date).toLocaleDateString()}</p>
+                                  </div>
+                                  {visit.diagnosis && <p className="text-sm text-gray-600 mt-2">Diagnosis: {visit.diagnosis}</p>}
+                                  {visit.treatment && <p className="text-sm text-gray-600">Treatment: {visit.treatment}</p>}
+                                </div>
+                              </div>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Weight History Tab */}
+                  {healthTab === 'weight' && (
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-semibold text-gray-700">Weight History</h3>
+                      </div>
+                      {healthVaultData.weight_history.length === 0 ? (
+                        <Card className="p-8 text-center">
+                          <Scale className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                          <p className="text-gray-500">No weight records yet</p>
+                        </Card>
+                      ) : (
+                        <div className="space-y-3">
+                          {healthVaultData.weight_history.map((entry, idx) => (
+                            <Card key={idx} className="p-4">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                    <Scale className="w-5 h-5 text-orange-600" />
+                                  </div>
+                                  <div>
+                                    <p className="font-semibold text-gray-900">{entry.weight_kg} kg</p>
+                                    <p className="text-sm text-gray-500">{new Date(entry.date).toLocaleDateString()}</p>
+                                  </div>
+                                </div>
+                                {entry.notes && <p className="text-sm text-gray-400">{entry.notes}</p>}
+                              </div>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Add Vaccine Modal */}
+      <Dialog open={showAddVaccineModal} onOpenChange={setShowAddVaccineModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Syringe className="w-5 h-5 text-green-600" /> Add Vaccination Record
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Vaccine Name *</Label>
+              <Input
+                value={newVaccine.vaccine_name}
+                onChange={(e) => setNewVaccine({ ...newVaccine, vaccine_name: e.target.value })}
+                placeholder="e.g., Rabies, DHPP, Bordetella"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Date Given *</Label>
+                <Input
+                  type="date"
+                  value={newVaccine.date_given}
+                  onChange={(e) => setNewVaccine({ ...newVaccine, date_given: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Next Due Date</Label>
+                <Input
+                  type="date"
+                  value={newVaccine.next_due_date}
+                  onChange={(e) => setNewVaccine({ ...newVaccine, next_due_date: e.target.value })}
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Vet Name</Label>
+              <Input
+                value={newVaccine.vet_name}
+                onChange={(e) => setNewVaccine({ ...newVaccine, vet_name: e.target.value })}
+                placeholder="Dr. Smith"
+              />
+            </div>
+            <div>
+              <Label>Notes</Label>
+              <Textarea
+                value={newVaccine.notes}
+                onChange={(e) => setNewVaccine({ ...newVaccine, notes: e.target.value })}
+                placeholder="Any additional notes..."
+                rows={2}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddVaccineModal(false)}>Cancel</Button>
+            <Button onClick={handleAddVaccine} className="bg-green-600 hover:bg-green-700">
+              <Plus className="w-4 h-4 mr-1" /> Add Vaccine
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Medication Modal */}
+      <Dialog open={showAddMedicationModal} onOpenChange={setShowAddMedicationModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Pill className="w-5 h-5 text-purple-600" /> Add Medication Record
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Medication Name *</Label>
+              <Input
+                value={newMedication.medication_name}
+                onChange={(e) => setNewMedication({ ...newMedication, medication_name: e.target.value })}
+                placeholder="e.g., Apoquel, Carprofen"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Dosage *</Label>
+                <Input
+                  value={newMedication.dosage}
+                  onChange={(e) => setNewMedication({ ...newMedication, dosage: e.target.value })}
+                  placeholder="e.g., 5mg, 1 tablet"
+                />
+              </div>
+              <div>
+                <Label>Frequency *</Label>
+                <Input
+                  value={newMedication.frequency}
+                  onChange={(e) => setNewMedication({ ...newMedication, frequency: e.target.value })}
+                  placeholder="e.g., Twice daily"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Start Date *</Label>
+                <Input
+                  type="date"
+                  value={newMedication.start_date}
+                  onChange={(e) => setNewMedication({ ...newMedication, start_date: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>End Date (if known)</Label>
+                <Input
+                  type="date"
+                  value={newMedication.end_date}
+                  onChange={(e) => setNewMedication({ ...newMedication, end_date: e.target.value })}
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Reason/Condition</Label>
+              <Input
+                value={newMedication.reason}
+                onChange={(e) => setNewMedication({ ...newMedication, reason: e.target.value })}
+                placeholder="e.g., Allergies, Joint pain"
+              />
+            </div>
+            <div>
+              <Label>Notes</Label>
+              <Textarea
+                value={newMedication.notes}
+                onChange={(e) => setNewMedication({ ...newMedication, notes: e.target.value })}
+                placeholder="Any additional notes..."
+                rows={2}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddMedicationModal(false)}>Cancel</Button>
+            <Button onClick={handleAddMedication} className="bg-purple-600 hover:bg-purple-700">
+              <Plus className="w-4 h-4 mr-1" /> Add Medication
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
