@@ -290,7 +290,6 @@ A memory-driven communication system that:
 ### 🔴 Critical (Before Go-Live)
 - [ ] Re-enable ProtectedRoute.jsx for auth gating
 - [ ] Production Razorpay keys
-- [ ] Build Admin Panel UI for Unified Reminder System (template management, history view)
 
 ### 🟡 Medium Priority
 - [ ] WhatsApp Business API integration (currently provisional with click-to-chat links)
@@ -303,6 +302,7 @@ A memory-driven communication system that:
 - [ ] Member analytics dashboard
 - [ ] Standardize all 12 pillar admin managers
 - [ ] Birthday email automation (scheduler integration)
+- [ ] Custom template creation UI in Communications Manager
 
 ---
 
