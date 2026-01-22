@@ -9032,6 +9032,10 @@ app.add_middleware(
 os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
+# Mount static uploads for pet photos
+os.makedirs("static/uploads/pets", exist_ok=True)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 # Set database for admin routes
 set_admin_routes_db(db)
 
