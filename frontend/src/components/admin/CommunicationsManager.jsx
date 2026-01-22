@@ -329,17 +329,34 @@ const CommunicationsManager = ({ authHeaders }) => {
           </p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Button variant="outline" onClick={fetchData}>
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => {
+              setTemplateForm({ name: '', trigger_description: '', channel: 'email', priority: 'normal', subject: '', body: '', variables: [] });
+              setShowCreateTemplateModal(true);
+            }}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Template
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => setShowScheduleModal(true)}
+          >
+            <Calendar className="w-4 h-4 mr-2" />
+            Schedule Send
           </Button>
           <Button 
             onClick={() => setShowTestEmailModal(true)}
             className="bg-purple-600 hover:bg-purple-700"
           >
             <Send className="w-4 h-4 mr-2" />
-            Send Test Email
+            Send Test
           </Button>
         </div>
       </div>
