@@ -631,27 +631,50 @@ const MyPets = () => {
                       
                       {soulExpanded && (
                         <div className="px-6 pb-6">
-                          {pet.soul && Object.keys(pet.soul).length > 0 ? (
-                            <div className="grid md:grid-cols-2 gap-3 mb-4">
-                              {Object.entries(SOUL_QUESTION_LABELS).map(([key, label]) => {
-                                const value = pet.soul[key];
-                                if (!value) return null;
-                                
-                                return (
-                                  <div key={key} className="bg-purple-50 rounded-lg p-3">
-                                    <p className="text-xs text-purple-600 font-semibold mb-1">{label}</p>
-                                    <p className="text-sm text-gray-800">{value}</p>
+                          {(() => {
+                            // Check if there are any non-empty soul answers (excluding persona)
+                            const soulEntries = Object.entries(pet.soul || {}).filter(
+                              ([key, value]) => key !== 'persona' && value && value.trim && value.trim() !== ''
+                            );
+                            const hasAnswers = soulEntries.length > 0;
+                            
+                            return hasAnswers ? (
+                              <div className="grid md:grid-cols-2 gap-3 mb-4">
+                                {/* Show persona first if exists */}
+                                {pet.soul?.persona && (
+                                  <div className="col-span-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-4 mb-2">
+                                    <p className="text-xs text-purple-600 font-semibold mb-1">🎭 Personality Type</p>
+                                    <p className="text-lg font-bold text-purple-800 capitalize">{pet.soul.persona.replace(/_/g, ' ')}</p>
                                   </div>
-                                );
-                              })}
-                            </div>
-                          ) : (
-                            <div className="text-center py-6 bg-purple-50 rounded-xl mb-4">
-                              <MessageCircle className="w-8 h-8 text-purple-300 mx-auto mb-2" />
-                              <p className="text-purple-700 font-medium">No soul answers yet</p>
-                              <p className="text-sm text-purple-500">Answer questions to build {pet.name}'s unique profile</p>
-                            </div>
-                          )}
+                                )}
+                                {/* Show other soul answers */}
+                                {Object.entries(SOUL_QUESTION_LABELS).map(([key, label]) => {
+                                  const value = pet.soul?.[key];
+                                  if (!value || (typeof value === 'string' && value.trim() === '')) return null;
+                                  
+                                  return (
+                                    <div key={key} className="bg-purple-50 rounded-lg p-3">
+                                      <p className="text-xs text-purple-600 font-semibold mb-1">{label}</p>
+                                      <p className="text-sm text-gray-800">{value}</p>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <div className="text-center py-6 bg-purple-50 rounded-xl mb-4">
+                                {pet.soul?.persona && (
+                                  <div className="mb-3">
+                                    <Badge className="bg-purple-200 text-purple-800 text-sm px-3 py-1">
+                                      🎭 {pet.soul.persona.replace(/_/g, ' ')}
+                                    </Badge>
+                                  </div>
+                                )}
+                                <MessageCircle className="w-8 h-8 text-purple-300 mx-auto mb-2" />
+                                <p className="text-purple-700 font-medium">Soul journey started!</p>
+                                <p className="text-sm text-purple-500">Answer more questions to discover {pet.name}'s full personality</p>
+                              </div>
+                            );
+                          })()}
                           
                           <Link to={`/pet-soul-journey/${pet.id}`}>
                             <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white">
