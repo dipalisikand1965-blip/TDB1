@@ -1189,7 +1189,7 @@ REMEMBER:
         
         response = await chat.send_message(UserMessage(text=full_prompt))
         
-        # 7. Add AI response to ticket
+        # 8. Add AI response to ticket
         await add_message_to_ticket(session_id, {
             "type": "mira_response",
             "content": response,
@@ -1199,7 +1199,7 @@ REMEMBER:
             "research_mode": research_context is not None
         })
         
-        # 8. Check for enrichments to save to Pet Soul (ADVANCED)
+        # 9. Check for enrichments to save to Pet Soul (ADVANCED)
         try:
             from soul_intelligence import extract_enrichments_advanced, save_soul_enrichment
             enrichments = extract_enrichments_advanced(user_message, response)
@@ -1214,7 +1214,42 @@ REMEMBER:
                     source=enrichment.get("source", "user-stated")
                 )
         
-        # 9. Return response with additional metadata
+        # 10. Extract and store RELATIONSHIP MEMORIES
+        if member_id:
+            try:
+                from mira_memory import MemoryExtractor, MiraMemory
+                
+                extracted_memories = await MemoryExtractor.extract_memories_from_conversation(
+                    user_message=user_message,
+                    ai_response=response,
+                    member_id=member_id,
+                    pet_id=selected_pet.get("id") if selected_pet else None,
+                    pet_name=selected_pet.get("name") if selected_pet else None,
+                    session_id=session_id
+                )
+                
+                for memory in extracted_memories:
+                    await MiraMemory.store_memory(
+                        member_id=member_id,
+                        memory_type=memory["memory_type"],
+                        content=memory["content"],
+                        pet_id=selected_pet.get("id") if selected_pet else None,
+                        pet_name=selected_pet.get("name") if selected_pet else None,
+                        context=memory.get("context"),
+                        relevance_tags=memory.get("relevance_tags", []),
+                        source=memory.get("source", "conversation"),
+                        confidence=memory.get("confidence", "medium"),
+                        session_id=session_id
+                    )
+                
+                if extracted_memories:
+                    logger.info(f"Stored {len(extracted_memories)} new relationship memories for {member_id}")
+            except ImportError:
+                pass  # Memory module not available
+            except Exception as e:
+                logger.warning(f"Error storing relationship memories: {e}")
+        
+        # 11. Return response with additional metadata
         return {
             "response": response,
             "session_id": session_id,
