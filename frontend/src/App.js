@@ -43,6 +43,7 @@ import PetProfile from "./pages/PetProfile";
 import MyPets from "./pages/MyPets";
 import PetSoulPage from "./pages/PetSoulPage";
 import PetSoulJourneyPage from "./pages/PetSoulJourneyPage";
+import PetSoulDemo from "./pages/PetSoulDemo";
 import PetVault from "./pages/PetVault";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
