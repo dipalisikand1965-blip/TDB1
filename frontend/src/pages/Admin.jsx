@@ -825,6 +825,80 @@ const Admin = () => {
     }
   };
 
+  // Fetch Health Vault Data for a Pet
+  const fetchHealthVaultData = async (petId) => {
+    setLoadingHealth(true);
+    try {
+      const [vaccinesRes, medicationsRes, visitsRes, weightRes, vetsRes] = await Promise.all([
+        fetch(`${API_URL}/api/pet-vault/${petId}/vaccines`, { headers: getAuthHeaders() }),
+        fetch(`${API_URL}/api/pet-vault/${petId}/medications`, { headers: getAuthHeaders() }),
+        fetch(`${API_URL}/api/pet-vault/${petId}/visits`, { headers: getAuthHeaders() }),
+        fetch(`${API_URL}/api/pet-vault/${petId}/weight-history`, { headers: getAuthHeaders() }),
+        fetch(`${API_URL}/api/pet-vault/${petId}/vets`, { headers: getAuthHeaders() })
+      ]);
+      
+      const vaccines = vaccinesRes.ok ? await vaccinesRes.json() : { vaccines: [] };
+      const medications = medicationsRes.ok ? await medicationsRes.json() : { medications: [] };
+      const visits = visitsRes.ok ? await visitsRes.json() : { visits: [] };
+      const weight = weightRes.ok ? await weightRes.json() : { history: [] };
+      const vets = vetsRes.ok ? await vetsRes.json() : { vets: [] };
+      
+      setHealthVaultData({
+        vaccines: vaccines.vaccines || [],
+        medications: medications.medications || [],
+        vet_visits: visits.visits || [],
+        weight_history: weight.history || [],
+        vets: vets.vets || []
+      });
+    } catch (error) {
+      console.error('Failed to fetch health vault data:', error);
+    } finally {
+      setLoadingHealth(false);
+    }
+  };
+
+  // Add vaccine record
+  const handleAddVaccine = async () => {
+    if (!selectedPetForHealth || !newVaccine.vaccine_name || !newVaccine.date_given) return;
+    try {
+      const response = await fetch(`${API_URL}/api/pet-vault/${selectedPetForHealth.id}/vaccines`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(newVaccine)
+      });
+      if (response.ok) {
+        toast({ title: 'Vaccine Added', description: `${newVaccine.vaccine_name} recorded successfully` });
+        setShowAddVaccineModal(false);
+        setNewVaccine({ vaccine_name: '', date_given: '', next_due_date: '', vet_name: '', notes: '' });
+        fetchHealthVaultData(selectedPetForHealth.id);
+      }
+    } catch (error) {
+      console.error('Failed to add vaccine:', error);
+      toast({ title: 'Error', description: 'Failed to add vaccine', variant: 'destructive' });
+    }
+  };
+
+  // Add medication record
+  const handleAddMedication = async () => {
+    if (!selectedPetForHealth || !newMedication.medication_name || !newMedication.dosage) return;
+    try {
+      const response = await fetch(`${API_URL}/api/pet-vault/${selectedPetForHealth.id}/medications`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(newMedication)
+      });
+      if (response.ok) {
+        toast({ title: 'Medication Added', description: `${newMedication.medication_name} recorded successfully` });
+        setShowAddMedicationModal(false);
+        setNewMedication({ medication_name: '', dosage: '', frequency: '', start_date: '', end_date: '', reason: '', notes: '' });
+        fetchHealthVaultData(selectedPetForHealth.id);
+      }
+    } catch (error) {
+      console.error('Failed to add medication:', error);
+      toast({ title: 'Error', description: 'Failed to add medication', variant: 'destructive' });
+    }
+  };
+
   // Fetch Discount Codes
   const fetchDiscountCodes = async () => {
     try {
