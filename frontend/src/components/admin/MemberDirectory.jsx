@@ -802,6 +802,149 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
               </Card>
             </TabsContent>
 
+            {/* Tickets Tab - Service Desk History */}
+            <TabsContent value="tickets" className="space-y-4 mt-0">
+              {ticketsLoading ? (
+                <div className="p-8 text-center">
+                  <RefreshCw className="w-8 h-8 animate-spin mx-auto text-purple-500 mb-2" />
+                  <p className="text-gray-500">Loading tickets...</p>
+                </div>
+              ) : tickets.length === 0 ? (
+                <Card className="p-8 text-center">
+                  <Briefcase className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                  <p className="text-gray-500">No tickets for this member</p>
+                </Card>
+              ) : (
+                <div className="space-y-3">
+                  {tickets.map((ticket, idx) => {
+                    const statusColors = {
+                      pending: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+                      in_progress: 'bg-blue-100 text-blue-700 border-blue-200',
+                      resolved: 'bg-green-100 text-green-700 border-green-200',
+                      closed: 'bg-gray-100 text-gray-700 border-gray-200',
+                      new: 'bg-purple-100 text-purple-700 border-purple-200'
+                    };
+                    const priorityColors = {
+                      high: 'bg-red-100 text-red-700',
+                      medium: 'bg-orange-100 text-orange-700',
+                      low: 'bg-gray-100 text-gray-700'
+                    };
+                    
+                    return (
+                      <Card key={idx} className="p-4 hover:shadow-md transition-shadow">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start gap-3 flex-1">
+                            <div className={`p-2 rounded-lg ${
+                              ticket.action_type?.includes('dining') ? 'bg-orange-100' :
+                              ticket.action_type?.includes('travel') ? 'bg-blue-100' :
+                              ticket.action_type?.includes('care') ? 'bg-red-100' :
+                              ticket.action_type?.includes('stay') ? 'bg-purple-100' :
+                              'bg-gray-100'
+                            }`}>
+                              {ticket.action_type?.includes('dining') && <Utensils className="w-4 h-4 text-orange-600" />}
+                              {ticket.action_type?.includes('travel') && <Plane className="w-4 h-4 text-blue-600" />}
+                              {ticket.action_type?.includes('care') && <Heart className="w-4 h-4 text-red-600" />}
+                              {ticket.action_type?.includes('stay') && <Home className="w-4 h-4 text-purple-600" />}
+                              {!ticket.action_type?.includes('dining') && !ticket.action_type?.includes('travel') && 
+                               !ticket.action_type?.includes('care') && !ticket.action_type?.includes('stay') && 
+                               <Briefcase className="w-4 h-4 text-gray-600" />}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-mono text-sm text-gray-500">{ticket.ticket_id}</span>
+                                <Badge className={`text-xs ${statusColors[ticket.status] || statusColors.pending}`}>
+                                  {ticket.status?.replace('_', ' ') || 'pending'}
+                                </Badge>
+                                {ticket.priority && (
+                                  <Badge className={`text-xs ${priorityColors[ticket.priority] || priorityColors.medium}`}>
+                                    {ticket.priority}
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="font-medium text-gray-800">
+                                {ticket.action_type?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Request'}
+                              </p>
+                              <p className="text-sm text-gray-600 mt-1">
+                                {ticket.original_request?.slice(0, 100) || ticket.description?.slice(0, 100)}...
+                              </p>
+                              {ticket.pets && ticket.pets.length > 0 && (
+                                <div className="flex items-center gap-1 mt-2">
+                                  <PawPrint className="w-3 h-3 text-purple-500" />
+                                  <span className="text-xs text-gray-500">
+                                    {ticket.pets.map(p => p.name).join(', ')}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right text-xs text-gray-400">
+                            <p>{ticket.created_at ? new Date(ticket.created_at).toLocaleDateString() : ''}</p>
+                            <p>{ticket.created_at ? new Date(ticket.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}</p>
+                          </div>
+                        </div>
+                        {ticket.resolution_summary && (
+                          <div className="mt-3 p-2 bg-green-50 rounded-lg text-sm text-green-700">
+                            <strong>Resolution:</strong> {ticket.resolution_summary}
+                          </div>
+                        )}
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+            </TabsContent>
+
+            {/* Memories Tab - Mira's Relationship Memory */}
+            <TabsContent value="memories" className="space-y-4 mt-0">
+              {memories.length === 0 ? (
+                <Card className="p-8 text-center">
+                  <History className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                  <p className="text-gray-500">No memories stored for this member</p>
+                  <p className="text-xs text-gray-400 mt-1">Mira will learn and remember from conversations</p>
+                </Card>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                    <History className="w-4 h-4 text-purple-500" />
+                    <span className="font-medium">{memories.length} memories stored</span>
+                    <span className="text-gray-400">• "Store forever. Surface selectively."</span>
+                  </div>
+                  {memories.map((memory, idx) => {
+                    const typeConfig = {
+                      event: { icon: Calendar, color: 'blue', bg: 'bg-blue-50', border: 'border-blue-200' },
+                      health: { icon: Heart, color: 'red', bg: 'bg-red-50', border: 'border-red-200' },
+                      shopping: { icon: Tag, color: 'green', bg: 'bg-green-50', border: 'border-green-200' },
+                      general: { icon: MessageSquare, color: 'purple', bg: 'bg-purple-50', border: 'border-purple-200' }
+                    };
+                    const config = typeConfig[memory.memory_type] || typeConfig.general;
+                    const Icon = config.icon;
+                    
+                    return (
+                      <Card key={idx} className={`p-3 ${config.bg} ${config.border} border`}>
+                        <div className="flex items-start gap-3">
+                          <Icon className={`w-4 h-4 mt-0.5 text-${config.color}-600`} />
+                          <div className="flex-1">
+                            <p className="text-sm text-gray-800">{memory.content}</p>
+                            <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                              {memory.pet_name && (
+                                <span className="flex items-center gap-1">
+                                  <PawPrint className="w-3 h-3" />
+                                  {memory.pet_name}
+                                </span>
+                              )}
+                              <span>{new Date(memory.created_at).toLocaleDateString()}</span>
+                              <Badge variant="outline" className="text-xs">{memory.memory_type}</Badge>
+                              {memory.is_critical && <Badge className="bg-red-100 text-red-700 text-xs">Critical</Badge>}
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+            </TabsContent>
+
             {/* Notes Tab */}
             <TabsContent value="notes" className="space-y-4 mt-0">
               <Card className="p-4">
