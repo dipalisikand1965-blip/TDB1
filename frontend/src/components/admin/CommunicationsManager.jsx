@@ -420,9 +420,25 @@ const CommunicationsManager = ({ authHeaders }) => {
                       </div>
                     </div>
                     
-                    <Badge className={PRIORITY_CONFIG[reminder.priority]?.color || 'bg-gray-100'}>
-                      {reminder.priority}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge className={PRIORITY_CONFIG[reminder.priority]?.color || 'bg-gray-100'}>
+                        {reminder.priority}
+                      </Badge>
+                      <Button
+                        size="sm"
+                        className="bg-purple-600 hover:bg-purple-700"
+                        onClick={() => handleSendNow(reminder)}
+                        disabled={sendingReminder === reminder.pet_id}
+                      >
+                        {sendingReminder === reminder.pet_id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Send className="w-3 h-3 mr-1" /> Send Now
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 </Card>
               ))}
