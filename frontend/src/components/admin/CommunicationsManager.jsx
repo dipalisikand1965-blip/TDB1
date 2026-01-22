@@ -503,7 +503,7 @@ const CommunicationsManager = ({ authHeaders }) => {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                       <Button 
                         size="sm" 
                         variant="ghost"
@@ -511,9 +511,41 @@ const CommunicationsManager = ({ authHeaders }) => {
                           setSelectedTemplate(template);
                           setShowPreviewModal(true);
                         }}
+                        title="Preview"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => {
+                          setTemplateForm({
+                            id: template.id,
+                            name: template.name,
+                            trigger_description: template.trigger_description || '',
+                            channel: template.channel,
+                            priority: template.priority,
+                            subject: template.subject,
+                            body: template.body,
+                            variables: template.variables || []
+                          });
+                          setShowEditTemplateModal(true);
+                        }}
+                        title="Edit"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      {!template.is_default && (
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                          onClick={() => handleDeleteTemplate(template.id)}
+                          title="Delete"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </Card>
