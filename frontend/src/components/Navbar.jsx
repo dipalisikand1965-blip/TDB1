@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { useAuth } from '../context/AuthContext';
 import SearchBar from './SearchBar';
 import { API_URL } from '../utils/api';
+import Logo from './Logo';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
