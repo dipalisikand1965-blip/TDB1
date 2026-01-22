@@ -440,4 +440,29 @@ def setup_communication_routes(app, db):
             }
         }
     
+    # ============================================
+    # VACCINE REMINDER SCHEDULER
+    # ============================================
+    
+    @app.post("/api/admin/communications/run-vaccine-scheduler")
+    async def run_vaccine_scheduler():
+        """Manually trigger the vaccine reminder scheduler"""
+        result = await vaccine_scheduler.check_and_send_vaccine_reminders()
+        return {
+            "success": True,
+            "message": f"Checked {result.get('checked', 0)} pets, sent {result.get('reminders_sent', 0)} reminders",
+            **result
+        }
+    
+    @app.get("/api/admin/communications/vaccine-alerts")
+    async def get_vaccine_alerts(days_ahead: int = 14):
+        """Get upcoming vaccine alerts for admin dashboard"""
+        alerts = await vaccine_scheduler.get_upcoming_vaccine_alerts(days_ahead)
+        return {
+            "alerts": alerts,
+            "count": len(alerts),
+            "overdue_count": len([a for a in alerts if a["status"] == "overdue"]),
+            "due_soon_count": len([a for a in alerts if a["status"] == "due_soon"])
+        }
+    
     return router
