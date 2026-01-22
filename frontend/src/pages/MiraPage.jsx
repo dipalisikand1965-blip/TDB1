@@ -330,8 +330,14 @@ const MiraPage = () => {
 
   // Format message content with markdown-like styling
   const formatContent = (content) => {
-    // Convert **text** to bold
-    return content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    if (!content) return '';
+    // Convert **text** to bold - handle multiple occurrences
+    let formatted = content.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    // Convert *text* to italic (single asterisks)
+    formatted = formatted.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    // Convert newlines to <br>
+    formatted = formatted.replace(/\n/g, '<br>');
+    return formatted;
   };
 
   return (
