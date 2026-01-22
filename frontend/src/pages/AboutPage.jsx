@@ -227,7 +227,7 @@ const AboutPage = () => {
         <div className="max-w-6xl mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <PawPrint className="w-6 h-6 text-purple-400" />
-            <span className="text-xl font-bold text-white">The Doggy Company</span>
+            <span className="text-xl font-bold text-white">The Doggy Company®</span>
           </div>
           <p className="mb-4">Built with love for pets and their parents</p>
           <p className="text-sm">© 2026 The Doggy Company. All rights reserved.</p>
