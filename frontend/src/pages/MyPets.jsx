@@ -322,7 +322,7 @@ const MyPets = () => {
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50 py-12">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
             My Furry Family 🐾
           </h1>
@@ -334,69 +334,123 @@ const MyPets = () => {
           </p>
         </div>
 
-        {/* Upcoming Celebrations Alert */}
-        {upcomingCelebrations.length > 0 && (
-          <Card className="mb-8 p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
-            <div className="flex items-center gap-3 mb-4">
-              <Calendar className="w-6 h-6 text-amber-600" />
-              <h3 className="font-bold text-lg text-amber-800">Upcoming Celebrations!</h3>
+        {/* View Toggle & Actions */}
+        {pets.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+            {/* View Mode Tabs */}
+            <div className="flex items-center gap-2 bg-white rounded-lg p-1 shadow-sm border">
+              <Button
+                variant={viewMode === 'family' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('family')}
+                className={viewMode === 'family' ? 'bg-purple-600' : ''}
+              >
+                <Home className="w-4 h-4 mr-2" />
+                Family Dashboard
+              </Button>
+              <Button
+                variant={viewMode === 'detailed' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('detailed')}
+                className={viewMode === 'detailed' ? 'bg-purple-600' : ''}
+              >
+                <List className="w-4 h-4 mr-2" />
+                Detailed View
+              </Button>
             </div>
-            <div className="space-y-2">
-              {upcomingCelebrations.slice(0, 3).map((celeb, idx) => (
-                <div key={idx} className="flex items-center justify-between bg-white/50 rounded-lg p-3">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{celeb.emoji}</span>
-                    <div>
-                      <p className="font-medium text-amber-900">
-                        {celeb.pet_name}'s {celeb.occasion_name}
-                      </p>
-                      <p className="text-sm text-amber-700">
-                        {celeb.days_until === 0 ? '🎉 TODAY!' : 
-                         celeb.days_until === 1 ? 'Tomorrow!' : 
-                         `In ${celeb.days_until} days`}
-                      </p>
-                    </div>
-                  </div>
-                  <Link to={`/${celeb.recommended_collection}`}>
-                    <Button size="sm" variant="outline" className="border-amber-400 text-amber-700">
-                      <Gift className="w-4 h-4 mr-1" />
-                      Shop Gifts
-                    </Button>
-                  </Link>
-                </div>
-              ))}
+            
+            {/* Actions */}
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.reload()}
+                size="sm"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh
+              </Button>
+              <Link to="/pet-profile">
+                <Button size="sm" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Pet
+                </Button>
+              </Link>
             </div>
-          </Card>
+          </div>
         )}
 
-        {/* Search & Add */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <Input
-              placeholder="Search your pets..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Button 
-            variant="outline" 
-            onClick={() => window.location.reload()}
-            className="gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh
-          </Button>
-          <Link to="/pet-profile">
-            <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 w-full sm:w-auto">
-              <Plus className="w-4 h-4 mr-2" />
-              Add New Pet
-            </Button>
-          </Link>
-        </div>
+        {/* Family Dashboard View */}
+        {viewMode === 'family' && pets.length > 0 && (
+          <FamilyDashboard
+            memberId={user?.email}
+            memberName={user?.name}
+            token={token}
+            pets={pets}
+            onSelectPet={(petId) => {
+              setSelectedPetId(petId);
+              setViewMode('detailed');
+              // Scroll to the pet card
+              setTimeout(() => {
+                document.getElementById(`pet-card-${petId}`)?.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }}
+            showTimeline={true}
+            showBulkActions={true}
+          />
+        )}
 
-        {/* Pets Grid */}
+        {/* Detailed View */}
+        {viewMode === 'detailed' && (
+          <>
+            {/* Upcoming Celebrations Alert */}
+            {upcomingCelebrations.length > 0 && (
+              <Card className="mb-8 p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <Calendar className="w-6 h-6 text-amber-600" />
+                  <h3 className="font-bold text-lg text-amber-800">Upcoming Celebrations!</h3>
+                </div>
+                <div className="space-y-2">
+                  {upcomingCelebrations.slice(0, 3).map((celeb, idx) => (
+                    <div key={idx} className="flex items-center justify-between bg-white/50 rounded-lg p-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{celeb.emoji}</span>
+                        <div>
+                          <p className="font-medium text-amber-900">
+                            {celeb.pet_name}'s {celeb.occasion_name}
+                          </p>
+                          <p className="text-sm text-amber-700">
+                            {celeb.days_until === 0 ? '🎉 TODAY!' : 
+                             celeb.days_until === 1 ? 'Tomorrow!' : 
+                             `In ${celeb.days_until} days`}
+                          </p>
+                        </div>
+                      </div>
+                      <Link to={`/${celeb.recommended_collection}`}>
+                        <Button size="sm" variant="outline" className="border-amber-400 text-amber-700">
+                          <Gift className="w-4 h-4 mr-1" />
+                          Shop Gifts
+                        </Button>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            {/* Search */}
+            <div className="flex gap-4 mb-8">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input
+                  placeholder="Search your pets..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            {/* Pets List */}
         {filteredPets.length === 0 ? (
           <Card className="p-12 text-center">
             <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
