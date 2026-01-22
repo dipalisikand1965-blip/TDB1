@@ -58,6 +58,14 @@
 |---|------|--------|-------|
 | U1 | **Pet Parent Name** | ✅ FIXED | Changed "Full Name" to "Pet Parent Name" on /pet-soul form |
 | U2 | **View Full Soul Button** | ✅ FIXED | Now handles both `id` and `_id` fields for pets |
+| U3 | **Page Content Manager Expanded** | ✅ DONE | Now covers ALL pages: Core, 12 Pillars, Legal, Other |
+| U4 | **Footer with Lineage Links** | ✅ DONE | Les Concierges®, Club Concierge®, The Doggy Bakery® with external links |
+| U5 | **Mira Dedication Popup** | ✅ DONE | "In loving memory of Mira" button in footer opens dedication modal |
+| U6 | **Outcome Statements** | ✅ DONE | Replaced feature tiles with "We remember...", "We plan...", "We celebrate..." |
+| U7 | **Proof Blocks** | ✅ DONE | 45,000+ pets, Since 2020, Since 1998, 30+ Years |
+| U8 | **Privacy Section** | ✅ DONE | "Pet Soul Data is Sacred" with security guarantees |
+| U9 | **Seed All Defaults** | ✅ DONE | Backend endpoint seeds all pillar pages with default content |
+| U10 | **Import/Export CMS** | ✅ DONE | JSON import/export for page content |
 
 ---
 
