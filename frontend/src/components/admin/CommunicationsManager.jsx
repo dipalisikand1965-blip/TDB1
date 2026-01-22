@@ -43,8 +43,34 @@ const CommunicationsManager = ({ authHeaders }) => {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showSendModal, setShowSendModal] = useState(false);
   const [showTestEmailModal, setShowTestEmailModal] = useState(false);
+  const [showEditTemplateModal, setShowEditTemplateModal] = useState(false);
+  const [showCreateTemplateModal, setShowCreateTemplateModal] = useState(false);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [sending, setSending] = useState(false);
   const [sendingReminder, setSendingReminder] = useState(null);
+  const [savingTemplate, setSavingTemplate] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [selectedRecipients, setSelectedRecipients] = useState([]);
+  
+  // Template form state
+  const [templateForm, setTemplateForm] = useState({
+    name: '',
+    trigger_description: '',
+    channel: 'email',
+    priority: 'normal',
+    subject: '',
+    body: '',
+    variables: []
+  });
+  
+  // Schedule form state
+  const [scheduleForm, setScheduleForm] = useState({
+    template_id: '',
+    scheduled_date: '',
+    scheduled_time: '',
+    recipient_type: 'all', // 'all', 'selected', 'filter'
+    selected_pet_ids: []
+  });
   
   // Test email form
   const [testEmail, setTestEmail] = useState({
