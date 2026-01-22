@@ -7,15 +7,19 @@ import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
 import { Label } from '../components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { 
   PawPrint, Plus, Calendar, Gift, Edit, Trash2, Save, X,
   Search, Crown, Moon, Mountain, Sofa, Users, Camera,
   Utensils, Zap, Smile, ChevronRight, ChevronDown, ChevronUp,
   Heart, Sparkles, Stethoscope, Syringe, Pill, AlertCircle,
-  RefreshCw, Loader2, Check, MessageCircle, Upload
+  RefreshCw, Loader2, Check, MessageCircle, Upload, 
+  LayoutGrid, List, Brain, Home
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { toast } from '../hooks/use-toast';
+import FamilyDashboard from '../components/FamilyDashboard';
+import MemoryTimeline from '../components/MemoryTimeline';
 
 // Persona icons mapping
 const PERSONA_ICONS = {
