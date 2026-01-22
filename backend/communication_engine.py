@@ -628,6 +628,103 @@ class CommunicationEngine:
         )
         return result.modified_count > 0
 
+    async def send_email(self, to_email: str, subject: str, body: str, 
+                         pet_name: str = None, parent_name: str = None) -> Dict:
+        """
+        Send an email using Resend API.
+        Returns: { success: bool, error: str?, email_id: str? }
+        """
+        if not RESEND_AVAILABLE:
+            logger.warning("Resend not configured - email not sent")
+            return {"success": False, "error": "Email service not configured", "provider": "none"}
+        
+        if not to_email or "@" not in to_email:
+            return {"success": False, "error": "Invalid email address"}
+        
+        try:
+            # Build styled HTML email
+            html_content = self._build_email_html(subject, body, pet_name, parent_name)
+            
+            params = {
+                "from": f"The Doggy Company <{SENDER_EMAIL}>",
+                "to": to_email.strip(),
+                "subject": subject,
+                "html": html_content
+            }
+            
+            email_response = resend.Emails.send(params)
+            logger.info(f"Email sent to {to_email}: {email_response}")
+            
+            return {
+                "success": True, 
+                "email_id": email_response.get("id") if isinstance(email_response, dict) else str(email_response),
+                "provider": "resend"
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to send email to {to_email}: {e}")
+            return {"success": False, "error": str(e)}
+    
+    def _build_email_html(self, subject: str, body: str, pet_name: str = None, parent_name: str = None) -> str:
+        """Build a styled HTML email using The Doggy Company brand"""
+        # Convert plain text body to HTML (preserve line breaks)
+        html_body = body.replace("\n", "<br>")
+        
+        return f'''
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f5f5f5; }}
+                .container {{ max-width: 600px; margin: 0 auto; background: #ffffff; }}
+                .header {{ background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%); color: white; padding: 30px; text-align: center; }}
+                .header h1 {{ margin: 0; font-size: 24px; }}
+                .header p {{ margin: 10px 0 0 0; opacity: 0.9; font-size: 14px; }}
+                .content {{ padding: 30px; background: #fff; }}
+                .content p {{ margin: 0 0 15px 0; }}
+                .cta-button {{ display: inline-block; background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%); color: white; padding: 12px 24px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 15px 0; }}
+                .footer {{ background: #f9fafb; padding: 20px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e7eb; }}
+                .footer a {{ color: #9333ea; }}
+                .pet-badge {{ display: inline-block; background: #fdf4ff; color: #9333ea; padding: 4px 12px; border-radius: 15px; font-size: 12px; margin-bottom: 15px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🐾 The Doggy Company</h1>
+                    <p>Your Pet's Life Operating System</p>
+                </div>
+                <div class="content">
+                    {"<span class='pet-badge'>💛 About " + pet_name + "</span><br>" if pet_name else ""}
+                    <div style="margin-top: 10px;">
+                        {html_body}
+                    </div>
+                </div>
+                <div class="footer">
+                    <p>The Doggy Company | Pet Life OS®</p>
+                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.in</p>
+                    <p style="font-size: 11px; color: #9ca3af; margin-top: 10px;">
+                        You're receiving this because you're part of The Doggy Company family. 
+                        <a href="https://thedoggycompany.in/settings">Manage preferences</a>
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        '''
+    
+    def generate_whatsapp_link(self, message: str, phone: str = None) -> str:
+        """
+        Generate a WhatsApp click-to-chat link.
+        WhatsApp API integration is provisional - this creates a redirect link.
+        """
+        import urllib.parse
+        target_phone = phone or WHATSAPP_NUMBER
+        encoded_message = urllib.parse.quote(message)
+        return f"https://wa.me/{target_phone}?text={encoded_message}"
+
 
 # ============================================
 # DECISION ENGINE
