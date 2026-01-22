@@ -451,33 +451,35 @@ const MyPets = () => {
             </div>
 
             {/* Pets List */}
-        {filteredPets.length === 0 ? (
-          <Card className="p-12 text-center">
-            <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <PawPrint className="w-12 h-12 text-purple-400" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-700 mb-2">No pets yet!</h3>
-            <p className="text-gray-500 mb-6">
-              Create a profile for your furry friend and unlock personalized celebrations
-            </p>
-            <Link to="/pet-profile">
-              <Button className="bg-purple-600 hover:bg-purple-700">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Your First Pet
-              </Button>
-            </Link>
-          </Card>
-        ) : (
-          <div className="space-y-6">
-            {filteredPets.map((pet) => {
-              const personaInfo = getPersonaInfo(pet);
-              const PersonaIcon = PERSONA_ICONS[pet.soul?.persona] || PawPrint;
-              const isEditing = editingPet === pet.id;
-              const health = healthData[pet.id];
-              const soulExpanded = expandedSoul[pet.id];
-              const healthExpanded = expandedHealth[pet.id];
-              
-              return (
+            {filteredPets.length === 0 ? (
+              <Card className="p-12 text-center">
+                <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <PawPrint className="w-12 h-12 text-purple-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-700 mb-2">No pets found</h3>
+                <p className="text-gray-500 mb-6">
+                  {searchQuery ? 'Try a different search term' : 'Add your first pet to get started'}
+                </p>
+                {!searchQuery && (
+                  <Link to="/pet-profile">
+                    <Button className="bg-purple-600 hover:bg-purple-700">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Your First Pet
+                    </Button>
+                  </Link>
+                )}
+              </Card>
+            ) : (
+              <div className="space-y-6">
+                {filteredPets.map((pet) => {
+                  const personaInfo = getPersonaInfo(pet);
+                  const PersonaIcon = PERSONA_ICONS[pet.soul?.persona] || PawPrint;
+                  const isEditing = editingPet === pet.id;
+                  const health = healthData[pet.id];
+                  const soulExpanded = expandedSoul[pet.id];
+                  const healthExpanded = expandedHealth[pet.id];
+                  
+                  return (
                 <Card key={pet.id} className="overflow-hidden hover:shadow-lg transition-all">
                   {/* Pet Header with Photo and Basic Info */}
                   <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50">
