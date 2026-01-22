@@ -52,6 +52,15 @@
 
 ---
 
+## 🔵 UI FIXES (Completed)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| U1 | **Pet Parent Name** | ✅ FIXED | Changed "Full Name" to "Pet Parent Name" on /pet-soul form |
+| U2 | **View Full Soul Button** | ✅ FIXED | Now handles both `id` and `_id` fields for pets |
+
+---
+
 ## 🔵 BACKLOG (P3) - Future
 
 | # | Task | Status | Notes |
