@@ -28,8 +28,10 @@ import ProductListing from "./pages/ProductListing";
 import CustomCakeDesigner from "./pages/CustomCakeDesigner";
 import MiraConcierge from "./pages/MiraConcierge";
 import Checkout from "./pages/Checkout";
-import About from "./pages/About";
-import Membership from "./pages/Membership";
+// About and Membership use the doctrine-aligned *Page versions
+import AboutPage from "./pages/AboutPage";
+import MembershipPage from "./pages/MembershipPage";
+import MembershipOnboarding from "./pages/MembershipOnboarding";
 import Admin from "./pages/Admin";
 import Policies from "./pages/Policies";
 import FAQs from "./pages/FAQs";
@@ -69,9 +71,6 @@ import ResetPassword from "./pages/ResetPassword";
 import VoiceOrder from "./pages/VoiceOrder";
 import AgentPortal from "./pages/AgentPortal";
 import ServiceDeskPage from "./pages/ServiceDeskPage";
-import MembershipPage from "./pages/MembershipPage";
-import AboutPage from "./pages/AboutPage";
-import MembershipOnboarding from "./pages/MembershipOnboarding";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
