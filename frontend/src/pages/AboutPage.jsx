@@ -1,38 +1,291 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { 
   Brain, Heart, Sparkles, Users, PawPrint, Quote, Crown,
-  Target, Globe, MessageCircle, Lightbulb, Shield, ArrowRight
+  Target, Globe, MessageCircle, Lightbulb, Shield, ArrowRight,
+  ChevronDown, Calendar, Award, Cake, Building2, Cpu
 } from 'lucide-react';
 
+// Timeline data for the heritage journey
+const timelineData = [
+  {
+    year: '1990s',
+    title: 'Les Concierges® Founded',
+    description: 'Dipali establishes the foundation of concierge excellence — service defined by memory, anticipation, and quiet judgement.',
+    icon: Crown,
+    color: 'from-indigo-500 to-blue-600'
+  },
+  {
+    year: '2010s',
+    title: 'Club Concierge® Expands',
+    description: 'Premium concierge services grow to serve elite lifestyle ecosystems across India.',
+    icon: Award,
+    color: 'from-purple-500 to-indigo-600'
+  },
+  {
+    year: '2015',
+    title: 'The Doggy Bakery® Born',
+    description: 'Aditya launches a handcrafted pet bakery celebrating birthdays, adoption milestones, and everyday joy moments.',
+    icon: Cake,
+    color: 'from-amber-500 to-orange-600'
+  },
+  {
+    year: '2019',
+    title: '45,000+ Pets Served',
+    description: 'The Doggy Bakery® becomes synonymous with celebrating pets across India — not just with products, but with meaning.',
+    icon: Heart,
+    color: 'from-pink-500 to-rose-600'
+  },
+  {
+    year: '2020',
+    title: 'The Doggy Company® Founded',
+    description: 'Concierge expertise and lived pet experience converge into India\'s first Pet Life Operating System.',
+    icon: Building2,
+    color: 'from-violet-500 to-purple-600'
+  },
+  {
+    year: '2024',
+    title: 'Pet Soul™ & Mira® AI Launch',
+    description: 'Revolutionary pet intelligence technology that remembers, learns, and anticipates — bringing Mira\'s spirit to life.',
+    icon: Cpu,
+    color: 'from-emerald-500 to-teal-600'
+  }
+];
+
+// Custom hook for scroll animations
+const useScrollAnimation = () => {
+  const [visibleSections, setVisibleSections] = useState(new Set());
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisibleSections((prev) => new Set([...prev, entry.target.id]));
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    const sections = document.querySelectorAll('[data-animate]');
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
+  return visibleSections;
+};
+
+// Animated section wrapper component
+const AnimatedSection = ({ id, children, className = '', delay = 0 }) => {
+  const visibleSections = useScrollAnimation();
+  const isVisible = visibleSections.has(id);
+  
+  return (
+    <section
+      id={id}
+      data-animate
+      className={`${className} transition-all duration-700 ease-out ${
+        isVisible 
+          ? 'opacity-100 translate-y-0' 
+          : 'opacity-0 translate-y-8'
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </section>
+  );
+};
+
+// Timeline component
+const HeritageTimeline = () => {
+  const [activeIndex, setActiveIndex] = useState(null);
+  const timelineRef = useRef(null);
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.dataset.index);
+            setActiveIndex((prev) => (prev === null || index > prev) ? index : prev);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    const items = timelineRef.current?.querySelectorAll('[data-timeline-item]');
+    items?.forEach((item) => observer.observe(item));
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={timelineRef} className="relative">
+      {/* Vertical line */}
+      <div className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gradient-to-b from-purple-200 via-pink-200 to-amber-200 h-full rounded-full hidden md:block" />
+      
+      {/* Timeline items */}
+      <div className="space-y-8 md:space-y-0">
+        {timelineData.map((item, index) => {
+          const Icon = item.icon;
+          const isActive = activeIndex !== null && index <= activeIndex;
+          const isEven = index % 2 === 0;
+          
+          return (
+            <div
+              key={index}
+              data-timeline-item
+              data-index={index}
+              className={`relative flex flex-col md:flex-row items-center transition-all duration-700 ${
+                isActive ? 'opacity-100' : 'opacity-40'
+              }`}
+            >
+              {/* Left content (for even items on desktop) */}
+              <div className={`w-full md:w-5/12 ${isEven ? 'md:pr-12 md:text-right' : 'md:order-3 md:pl-12'}`}>
+                {(isEven || window.innerWidth < 768) && (
+                  <Card 
+                    className={`p-6 bg-white border-2 transition-all duration-500 hover:shadow-xl cursor-pointer ${
+                      isActive ? 'border-purple-200 shadow-lg' : 'border-gray-100'
+                    }`}
+                    onClick={() => setActiveIndex(index)}
+                  >
+                    <div className="flex items-center gap-3 mb-3 md:justify-end">
+                      <span className={`text-sm font-bold px-3 py-1 rounded-full bg-gradient-to-r ${item.color} text-white`}>
+                        {item.year}
+                      </span>
+                    </div>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">{item.title}</h4>
+                    <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
+                  </Card>
+                )}
+              </div>
+
+              {/* Center icon */}
+              <div className="relative z-10 md:w-2/12 flex justify-center my-4 md:my-8">
+                <div 
+                  className={`w-14 h-14 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg transition-all duration-500 ${
+                    isActive ? 'scale-110 ring-4 ring-white ring-offset-2' : 'scale-100'
+                  }`}
+                >
+                  <Icon className="w-6 h-6 text-white" />
+                </div>
+              </div>
+
+              {/* Right content (for odd items on desktop) */}
+              <div className={`w-full md:w-5/12 ${!isEven ? 'md:pl-12' : 'md:order-1 md:pr-12'} hidden md:block`}>
+                {!isEven && (
+                  <Card 
+                    className={`p-6 bg-white border-2 transition-all duration-500 hover:shadow-xl cursor-pointer ${
+                      isActive ? 'border-purple-200 shadow-lg' : 'border-gray-100'
+                    }`}
+                    onClick={() => setActiveIndex(index)}
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className={`text-sm font-bold px-3 py-1 rounded-full bg-gradient-to-r ${item.color} text-white`}>
+                        {item.year}
+                      </span>
+                    </div>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">{item.title}</h4>
+                    <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
+                  </Card>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// Navigation dots for smooth scrolling
+const ScrollNav = () => {
+  const sections = [
+    { id: 'hero', label: 'Home' },
+    { id: 'heritage', label: 'Heritage' },
+    { id: 'timeline', label: 'Journey' },
+    { id: 'purpose', label: 'Purpose' },
+    { id: 'difference', label: 'Difference' },
+    { id: 'concierge', label: 'Concierge' },
+    { id: 'team', label: 'Team' },
+    { id: 'leaders', label: 'Leaders' },
+  ];
+
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  return (
+    <div className="fixed right-6 top-1/2 transform -translate-y-1/2 z-50 hidden xl:flex flex-col gap-3">
+      {sections.map((section) => (
+        <button
+          key={section.id}
+          onClick={() => scrollToSection(section.id)}
+          className="group flex items-center gap-2"
+          title={section.label}
+        >
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium text-gray-600 bg-white px-2 py-1 rounded shadow-sm">
+            {section.label}
+          </span>
+          <div className="w-3 h-3 rounded-full bg-purple-300 hover:bg-purple-600 hover:scale-125 transition-all duration-200 shadow-sm" />
+        </button>
+      ))}
+    </div>
+  );
+};
+
 const AboutPage = () => {
+  // Smooth scroll behavior for the entire page
+  useEffect(() => {
+    document.documentElement.style.scrollBehavior = 'smooth';
+    return () => {
+      document.documentElement.style.scrollBehavior = 'auto';
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-white" data-testid="about-page">
+      <ScrollNav />
+      
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white py-24 overflow-hidden">
+      <section id="hero" className="relative bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white py-24 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-purple-400 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-80 h-80 bg-pink-400 rounded-full blur-3xl"></div>
+          <div className="absolute top-0 left-0 w-96 h-96 bg-purple-400 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-80 h-80 bg-pink-400 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
         
         <div className="relative max-w-4xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-sm mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-sm mb-8 animate-fade-in">
             <Heart className="w-4 h-4 text-pink-400" />
             <span>About The Doggy Company®</span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight animate-slide-up">
             Where a pet's life is
             <span className="block mt-2 bg-gradient-to-r from-pink-300 via-purple-300 to-yellow-300 bg-clip-text text-transparent">
               remembered, not just served.
             </span>
           </h1>
           
-          <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-3xl mx-auto animate-slide-up" style={{ animationDelay: '0.2s' }}>
             The Doggy Company® is India's Pet Life Operating System — a unified system built to understand, anticipate, and care for pets over the long term, not just in individual moments.
           </p>
+
+          {/* Scroll indicator */}
+          <button 
+            onClick={() => document.getElementById('heritage')?.scrollIntoView({ behavior: 'smooth' })}
+            className="mt-12 animate-bounce"
+          >
+            <ChevronDown className="w-8 h-8 text-white/50 hover:text-white transition-colors" />
+          </button>
         </div>
       </section>
 
@@ -46,7 +299,7 @@ const AboutPage = () => {
       </section>
 
       {/* Heritage Section */}
-      <section className="py-20 bg-white">
+      <AnimatedSection id="heritage" className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm font-medium mb-4">
@@ -62,7 +315,7 @@ const AboutPage = () => {
           </div>
 
           {/* Heritage Table */}
-          <div className="overflow-hidden rounded-xl border border-gray-200 mb-8">
+          <div className="overflow-hidden rounded-xl border border-gray-200 mb-8 transform hover:shadow-lg transition-shadow duration-300">
             <table className="w-full" data-testid="heritage-table">
               <thead className="bg-gradient-to-r from-purple-50 to-indigo-50">
                 <tr>
@@ -93,16 +346,36 @@ const AboutPage = () => {
             </table>
           </div>
 
-          <div className="bg-gradient-to-r from-slate-800 to-purple-900 rounded-xl p-8 text-center text-white">
+          <div className="bg-gradient-to-r from-slate-800 to-purple-900 rounded-xl p-8 text-center text-white transform hover:scale-[1.02] transition-transform duration-300">
             <p className="text-lg leading-relaxed">
               These two worlds — <strong>concierge</strong> and <strong>lived pet experience</strong> — converge in The Doggy Company®.
             </p>
           </div>
         </div>
-      </section>
+      </AnimatedSection>
+
+      {/* Interactive Timeline Section */}
+      <AnimatedSection id="timeline" className="py-20 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-4">
+              <Calendar className="w-4 h-4" />
+              Our Journey
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              The Heritage Timeline
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              From concierge excellence to pet life intelligence — trace the journey that led to The Doggy Company®.
+            </p>
+          </div>
+
+          <HeritageTimeline />
+        </div>
+      </AnimatedSection>
 
       {/* Why We Exist */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <AnimatedSection id="purpose" className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-sm font-medium mb-4">
@@ -115,7 +388,7 @@ const AboutPage = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 mb-12">
-            <Card className="p-8 bg-white border-2 border-purple-100">
+            <Card className="p-8 bg-white border-2 border-purple-100 transform hover:scale-105 hover:shadow-xl transition-all duration-300">
               <h3 className="text-xl font-bold text-gray-900 mb-4">The Truth About Pets</h3>
               <p className="text-gray-600 leading-relaxed">
                 Pets are more than dependents.<br />
@@ -123,7 +396,7 @@ const AboutPage = () => {
               </p>
             </Card>
             
-            <Card className="p-8 bg-white border-2 border-red-100">
+            <Card className="p-8 bg-white border-2 border-red-100 transform hover:scale-105 hover:shadow-xl transition-all duration-300">
               <h3 className="text-xl font-bold text-gray-900 mb-4">Today's Problem</h3>
               <p className="text-gray-600 leading-relaxed">
                 Yet today's pet ecosystem is <strong className="text-red-600">fragmented</strong>, <strong className="text-red-600">transactional</strong>, <strong className="text-red-600">repetitive</strong>, and <strong className="text-red-600">memory-less</strong>.
@@ -131,7 +404,7 @@ const AboutPage = () => {
             </Card>
           </div>
 
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-8 text-center text-white">
+          <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-8 text-center text-white transform hover:shadow-2xl transition-shadow duration-300">
             <p className="text-xl font-medium mb-4">
               We created The Doggy Company® to change that.
             </p>
@@ -141,10 +414,10 @@ const AboutPage = () => {
             </p>
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* What Makes Us Different */}
-      <section className="py-20 bg-white">
+      <AnimatedSection id="difference" className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium mb-4">
@@ -157,7 +430,7 @@ const AboutPage = () => {
           </div>
 
           {/* Differentiators Table */}
-          <div className="overflow-hidden rounded-xl border border-gray-200">
+          <div className="overflow-hidden rounded-xl border border-gray-200 transform hover:shadow-lg transition-shadow duration-300">
             <table className="w-full" data-testid="differentiators-table">
               <thead className="bg-gradient-to-r from-emerald-50 to-teal-50">
                 <tr>
@@ -166,10 +439,10 @@ const AboutPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                <tr className="hover:bg-gray-50 transition-colors">
+                <tr className="hover:bg-gray-50 transition-colors group">
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Brain className="w-5 h-5 text-purple-600" />
                       </div>
                       <div className="font-semibold text-gray-900">A Living Profile</div>
@@ -180,10 +453,10 @@ const AboutPage = () => {
                     Every interaction — grooming, celebration, travel planning, vet visits — builds a <strong className="text-purple-700">Pet Soul™</strong> profile that never forgets and always informs better care. Pet parents don't repeat themselves. Their pets are already understood.
                   </td>
                 </tr>
-                <tr className="hover:bg-gray-50 transition-colors">
+                <tr className="hover:bg-gray-50 transition-colors group">
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Users className="w-5 h-5 text-blue-600" />
                       </div>
                       <div className="font-semibold text-gray-900">Human-Led</div>
@@ -194,10 +467,10 @@ const AboutPage = () => {
                     Our approach to care and concierge is driven by people with <strong className="text-gray-900">judgement</strong>, <strong className="text-gray-900">empathy</strong>, and <strong className="text-gray-900">context</strong> — supported by technology, never replaced by it.
                   </td>
                 </tr>
-                <tr className="hover:bg-gray-50 transition-colors">
+                <tr className="hover:bg-gray-50 transition-colors group">
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Heart className="w-5 h-5 text-pink-600" />
                       </div>
                       <div className="font-semibold text-gray-900">Celebration as Culture</div>
@@ -207,10 +480,10 @@ const AboutPage = () => {
                     Celebration sits at the heart of pet life. From birthdays to adoption anniversaries, we treat moments with <strong className="text-gray-900">intention and meaning</strong> — not as transactions or add-ons.
                   </td>
                 </tr>
-                <tr className="hover:bg-gray-50 transition-colors">
+                <tr className="hover:bg-gray-50 transition-colors group">
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Lightbulb className="w-5 h-5 text-amber-600" />
                       </div>
                       <div className="font-semibold text-gray-900">Built by People Who've Lived It</div>
@@ -225,7 +498,7 @@ const AboutPage = () => {
           </div>
 
           <div className="mt-8 text-center">
-            <Card className="inline-block p-6 bg-slate-900 text-white">
+            <Card className="inline-block p-6 bg-slate-900 text-white transform hover:scale-105 transition-transform duration-300">
               <p className="text-lg">
                 This is not a service that transacts.<br />
                 <strong className="text-purple-300">This is a system that remembers and nurtures.</strong>
@@ -233,10 +506,10 @@ const AboutPage = () => {
             </Card>
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* Our Concierge */}
-      <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
+      <AnimatedSection id="concierge" className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium mb-4">
@@ -260,7 +533,7 @@ const AboutPage = () => {
             </p>
           </div>
 
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-8 text-white">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-8 text-white transform hover:shadow-2xl transition-shadow duration-300">
             <p className="text-center text-lg mb-4">
               This is concierge as it was always meant to be:<br />
               <strong>quietly present, deeply informed, and trusted over time.</strong>
@@ -271,10 +544,10 @@ const AboutPage = () => {
             </div>
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* Our Team (And Their Dogs) */}
-      <section className="py-20 bg-white">
+      <AnimatedSection id="team" className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium mb-4">
@@ -299,7 +572,7 @@ const AboutPage = () => {
           </div>
 
           <div className="text-center">
-            <Card className="inline-block px-8 py-4 bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200">
+            <Card className="inline-block px-8 py-4 bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200 transform hover:scale-105 transition-transform duration-300">
               <p className="text-lg font-semibold text-gray-900">
                 Our dogs are not mascots.<br />
                 <span className="text-orange-600">They are co-creators.</span>
@@ -307,10 +580,10 @@ const AboutPage = () => {
             </Card>
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* The People Behind the Philosophy */}
-      <section className="py-20 bg-gradient-to-b from-purple-50 to-white">
+      <AnimatedSection id="leaders" className="py-20 bg-white">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-4">
@@ -323,7 +596,7 @@ const AboutPage = () => {
           </div>
 
           {/* Leaders Table */}
-          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white transform hover:shadow-lg transition-shadow duration-300">
             <table className="w-full" data-testid="leaders-table">
               <thead className="bg-gradient-to-r from-purple-50 to-pink-50">
                 <tr>
@@ -333,10 +606,10 @@ const AboutPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                <tr className="hover:bg-gray-50 transition-colors">
+                <tr className="hover:bg-gray-50 transition-colors group">
                   <td className="px-6 py-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Heart className="w-6 h-6 text-white" />
                       </div>
                       <span className="font-bold text-gray-900 text-lg">Mira</span>
@@ -349,10 +622,10 @@ const AboutPage = () => {
                     The quiet spirit behind everything we build. She believed that care is shown not in grand gestures, but in <strong className="text-gray-900">noticing</strong>, <strong className="text-gray-900">remembering</strong>, and <strong className="text-gray-900">showing up without being asked</strong>. Mira is not just a name — she is the standard of care that guides The Doggy Company®.
                   </td>
                 </tr>
-                <tr className="hover:bg-gray-50 transition-colors">
+                <tr className="hover:bg-gray-50 transition-colors group">
                   <td className="px-6 py-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Crown className="w-6 h-6 text-white" />
                       </div>
                       <span className="font-bold text-gray-900 text-lg">Dipali</span>
@@ -365,10 +638,10 @@ const AboutPage = () => {
                     Brings decades of experience designing concierge ecosystems where relationships matter more than transactions. As the force behind <strong className="text-gray-900">Les Concierges®</strong> and <strong className="text-gray-900">Club Concierge®</strong>, she shaped service models built on memory, judgement, and anticipation. Her work is grounded in one truth: the best service is never reactive — it <strong className="text-gray-900">listens</strong>, <strong className="text-gray-900">remembers</strong>, and <strong className="text-gray-900">acts before the question is fully formed</strong>.
                   </td>
                 </tr>
-                <tr className="hover:bg-gray-50 transition-colors">
+                <tr className="hover:bg-gray-50 transition-colors group">
                   <td className="px-6 py-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <PawPrint className="w-6 h-6 text-white" />
                       </div>
                       <span className="font-bold text-gray-900 text-lg">Aditya</span>
@@ -391,14 +664,14 @@ const AboutPage = () => {
             </p>
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* Where We Are Today & Where We're Headed */}
-      <section className="py-20 bg-white">
+      <AnimatedSection id="future" className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-5xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-8">
             {/* Where We Are Today */}
-            <Card className="p-8 bg-gradient-to-br from-slate-50 to-gray-100 border-0">
+            <Card className="p-8 bg-gradient-to-br from-slate-50 to-gray-100 border-0 transform hover:scale-105 hover:shadow-xl transition-all duration-300">
               <div className="flex items-center gap-2 text-sm font-medium text-slate-600 mb-4">
                 <Globe className="w-4 h-4" />
                 Present
@@ -413,7 +686,7 @@ const AboutPage = () => {
             </Card>
 
             {/* Where We're Headed */}
-            <Card className="p-8 bg-gradient-to-br from-purple-50 to-indigo-100 border-0">
+            <Card className="p-8 bg-gradient-to-br from-purple-50 to-indigo-100 border-0 transform hover:scale-105 hover:shadow-xl transition-all duration-300">
               <div className="flex items-center gap-2 text-sm font-medium text-purple-600 mb-4">
                 <ArrowRight className="w-4 h-4" />
                 Future
@@ -425,7 +698,7 @@ const AboutPage = () => {
             </Card>
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* Our Core Belief */}
       <section className="py-20 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
@@ -435,7 +708,7 @@ const AboutPage = () => {
             Our Core Belief
           </div>
           
-          <Quote className="w-10 h-10 mx-auto text-purple-400 mb-6" />
+          <Quote className="w-10 h-10 mx-auto text-purple-400 mb-6 animate-pulse" />
           
           <div className="space-y-4 mb-8">
             <p className="text-2xl md:text-3xl font-medium leading-relaxed">
@@ -463,7 +736,7 @@ const AboutPage = () => {
             Join thousands of pet parents who've chosen a better way.
           </p>
           <Link to="/membership">
-            <Button className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-6 text-lg font-semibold" data-testid="about-cta-button">
+            <Button className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-6 text-lg font-semibold transform hover:scale-105 transition-transform duration-200" data-testid="about-cta-button">
               <PawPrint className="w-5 h-5 mr-2" />
               Explore Pet Life Pass
             </Button>
@@ -485,6 +758,38 @@ const AboutPage = () => {
           <p className="text-sm">© 2025 The Doggy Company®. All rights reserved.</p>
         </div>
       </footer>
+
+      {/* Global animations CSS */}
+      <style>{`
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes slide-up {
+          from { 
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to { 
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out forwards;
+        }
+        
+        .animate-slide-up {
+          animation: slide-up 0.6s ease-out forwards;
+          opacity: 0;
+        }
+        
+        html {
+          scroll-behavior: smooth;
+        }
+      `}</style>
     </div>
   );
 };
