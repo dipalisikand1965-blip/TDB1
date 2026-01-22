@@ -153,7 +153,7 @@ function MainLayout() {
         <Route path="/mira" element={<MiraPage />} />
         <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/membership" element={<Membership />} />
+        {/* Membership route is defined outside MainLayout for clean entry */}
         <Route path="/autoship" element={<ProtectedRoute><Autoship /></ProtectedRoute>} />
         <Route path="/autoship-products" element={<ProtectedRoute><ProductListing category="autoship" /></ProtectedRoute>} />
         <Route path="/admin/forgot-password" element={<ForgotPassword />} />
