@@ -1442,6 +1442,26 @@ I understand this is urgent. Let me help you immediately.
         except Exception as e:
             logger.warning(f"Error loading relationship memories: {e}")
     
+    # 6.5 DETECT CONCIERGE ACTION NEEDED & CREATE SERVICE DESK TICKET
+    concierge_action = detect_concierge_action_needed(user_message, pillar)
+    service_desk_ticket_id = None
+    
+    if concierge_action.get("action_needed"):
+        # Create service desk ticket for human concierge
+        service_desk_ticket_id = await create_service_desk_ticket(
+            session_id=session_id,
+            user=user,
+            pets=pets,
+            message=user_message,
+            action_details=concierge_action,
+            pillar=pillar
+        )
+        logger.info(f"Concierge action detected: {concierge_action.get('action_type')} | Service Desk Ticket: {service_desk_ticket_id}")
+        
+        # Update Pet Soul with travel/dining preferences
+        if member_id:
+            await update_pet_soul_travel_dining(pets, user_message, pillar, member_id)
+    
     # 7. Build prompt and call LLM
     try:
         from emergentintegrations.llm.chat import LlmChat, UserMessage
