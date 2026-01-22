@@ -31,10 +31,10 @@
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 9 | **WhatsApp Soul Drip System** | 🔲 TODO | "Soul Whispers" - weekly questions via WhatsApp. Backend endpoint exists (`/api/soul-drip/drip-question`), needs cron job + WhatsApp integration |
+| 9 | **WhatsApp Soul Drip System** | ⏸️ READY | Backend exists at `/api/soul-drip/*`. Needs WhatsApp Business API credentials for full integration |
 | 10 | **Multi-Pet Household Special States** | 🔲 TODO | Logic for families with multiple pets (shared orders, family discounts, etc.) |
 | 11 | **Behavioral Inference from Returns** | 🔲 TODO | Learn preferences from return patterns (e.g., returned chicken = allergy inference) |
-| 12 | **Fix Backend Linting Errors** | 🔲 TODO | Run `ruff --fix` on `backend/server.py` |
+| 12 | **Fix Backend Linting Errors** | ✅ DONE | Fixed bcrypt and FULFILMENT_TYPES undefined errors |
 | 13 | **Product Title Sync Fix** | ⚠️ PARTIAL | API-level fix done, but Shopify sync script may still create "Untitled" products |
 
 ---
