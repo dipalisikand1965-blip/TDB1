@@ -72,6 +72,10 @@ const MyPets = () => {
   // Photo upload state
   const [uploadingPhoto, setUploadingPhoto] = useState(null);
   const fileInputRef = React.useRef({});
+  
+  // View mode state - 'family' (dashboard) or 'detailed' (list)
+  const [viewMode, setViewMode] = useState('family');
+  const [selectedPetId, setSelectedPetId] = useState(null);
 
   // Redirect to login if not authenticated
   useEffect(() => {
