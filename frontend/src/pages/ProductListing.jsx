@@ -261,6 +261,36 @@ const ProductListing = ({ category = 'all' }) => {
 
   let filteredProducts = [...products];
 
+  // PET SOUL FILTERING - Filter out products based on pet's allergies/restrictions
+  // This implements the doctrine: "Commerce obeys Pet Soul"
+  const activePet = userPets[0]; // Use first pet for filtering
+  const petAllergies = activePet?.doggy_soul_answers?.food_allergies || 
+                       activePet?.preferences?.allergies || 
+                       activePet?.health?.allergies || [];
+  
+  if (Array.isArray(petAllergies) && petAllergies.length > 0 && !petAllergies.includes('No') && !petAllergies.includes('None')) {
+    const allergyKeywords = petAllergies.map(a => a.toLowerCase()).filter(a => a && a !== 'no' && a !== 'none' && a !== 'other');
+    
+    if (allergyKeywords.length > 0) {
+      filteredProducts = filteredProducts.filter(product => {
+        const productName = (product.name || product.title || '').toLowerCase();
+        const productDesc = (product.description || '').toLowerCase();
+        const productIngredients = (product.ingredients || '').toLowerCase();
+        const productTags = (product.tags || []).map(t => t.toLowerCase()).join(' ');
+        
+        // Check if product contains any allergen
+        const hasAllergen = allergyKeywords.some(allergen => 
+          productName.includes(allergen) || 
+          productDesc.includes(allergen) || 
+          productIngredients.includes(allergen) ||
+          productTags.includes(allergen)
+        );
+        
+        return !hasAllergen; // Keep products that DON'T have allergens
+      });
+    }
+  }
+
   // Filter by price range
   if (priceRange === 'under500') {
     filteredProducts = filteredProducts.filter(p => (p.price || p.minPrice || 0) < 500);
