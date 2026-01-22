@@ -1,7 +1,7 @@
 # The Doggy Company® - Product Requirements Document
 ## Pet Life Operating System
 
-**Last Updated:** January 22, 2026
+**Last Updated:** January 22, 2026 (Session 2)
 
 ---
 
@@ -105,11 +105,14 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
   - Send Test Email functionality
   - Intelligence rules display (1 msg/week limit, quiet hours)
 
-### ✅ Mira AI Concierge System
+### ✅ Mira AI Concierge System (VERIFIED Jan 22, 2026)
 - GPT-5.1 integration via Emergent LLM Key
-- Pet-first context loading
+- **Pet-first context loading** - Correctly fetches pets via member → pet ID lookup
+- **Multi-pet household support** - Asks which pet when user has multiple
+- **Personalized responses** - Uses pet name, breed, personality, preferences in EVERY response
+- **Allergy-safe recommendations** - Always checks allergies before suggesting food products
 - Pillar intent detection (all 12 pillars)
-- Never re-asks known information
+- Never re-asks known information (flavors, textures, allergies already in Pet Soul)
 - Soul enrichment from conversations
 - Research mode for factual queries
 - Context-aware quick prompts
