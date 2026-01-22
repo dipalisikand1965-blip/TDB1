@@ -833,14 +833,18 @@ from order_routes import (
 from user_routes import (
     user_router,
     set_database as set_user_db,
-    DOG_PERSONAS,
-    CELEBRATION_OCCASIONS,
+    DOG_PERSONAS as DOG_PERSONAS_LIST,
+    CELEBRATION_OCCASIONS as CELEBRATION_OCCASIONS_LIST,
     PetProfileCreate,
     PetProfileUpdate,
     PetCelebration,
     PetSoulProfile,
     PetPreferences
 )
+
+# Convert lists to dictionaries for easier lookup
+DOG_PERSONAS = {p["id"]: p for p in DOG_PERSONAS_LIST}
+CELEBRATION_OCCASIONS = {c["id"]: c for c in CELEBRATION_OCCASIONS_LIST}
 
 # Import dine routes (refactored)
 from dine_routes import (
