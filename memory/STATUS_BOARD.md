@@ -93,8 +93,8 @@
 |---------|--------|-------|
 | Full Soul View | 🟢 | `/pet-soul-journey/:petId` |
 | 8 Pillar Breakdown | 🟢 | Visual display |
-| Answer History | 🔴 | **NOT BUILT - need to show all Q&A** |
-| Edit Answers | 🔴 | **NOT BUILT** |
+| Answer History | 🟢 | **BUILT - All Q&A visible in "All Answers" tab** |
+| Edit Answers | 🟡 | **Placeholder - Button exists, modal TBD** |
 
 ---
 
