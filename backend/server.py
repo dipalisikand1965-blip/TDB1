@@ -1912,6 +1912,7 @@ async def chat_with_mira_legacy(request: ChatRequest):
             payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             user_email = payload.get("sub") or payload.get("email")
             user_id = payload.get("user_id")
+            logger.info(f"Mira chat: user_email={user_email}, user_id={user_id}")
             
             if user_email or user_id:
                 # First, try to get pets from member record
