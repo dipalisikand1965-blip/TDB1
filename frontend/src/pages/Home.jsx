@@ -1,115 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { testimonials, faqs } from '../mockData';
 import { Button } from '../components/ui/button';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import { Card } from '../components/ui/card';
-import { Star, Award, Clock, Shield, ArrowRight, Sparkles, Heart, Check, Crown, Phone, MessageCircle, Calendar, MapPin, Stethoscope, Plane, Brain, TrendingUp, Zap, PawPrint } from 'lucide-react';
-import { useInView, useCountUp } from '../hooks/useAnimations';
+import { 
+  Brain, Sparkles, Heart, ArrowRight, PawPrint, 
+  Eye, MessageCircle, Calendar, Shield, Star,
+  Zap, TrendingUp, Quote, ChevronRight, Check,
+  Clock, Users, Award
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import PersonalizedDashboard from '../components/PersonalizedDashboard';
 import { getApiUrl } from '../utils/api';
 
-// 12 Pillars of The Doggy Company
+// 12 Pillars of Pet Life
 const PILLARS = [
-  { name: 'Celebrate', icon: '🎂', desc: 'Cakes, treats & party supplies', link: '/celebrate' },
+  { name: 'Celebrate', icon: '🎂', desc: 'Birthdays & milestones', link: '/celebrate' },
   { name: 'Dine', icon: '🍽️', desc: 'Pet-friendly restaurants', link: '/dine' },
-  { name: 'Travel', icon: '✈️', desc: 'Pet relocation & travel', link: '/travel' },
-  { name: 'Stay', icon: '🏨', desc: 'Pet-friendly hotels & stays', link: '/stay' },
-  { name: 'Enjoy', icon: '🎾', desc: 'Experiences & activities', link: '/enjoy' },
-  { name: 'Care', icon: '💊', desc: 'Health, grooming & wellness', link: '/care' },
-  { name: 'Fit', icon: '🏃', desc: 'Fitness & training', link: '/fit' },
-  { name: 'Advisory', icon: '📋', desc: 'Expert consultations', link: '/advisory' },
-  { name: 'Club', icon: '👑', desc: 'Exclusive membership', link: '/membership' },
-  { name: 'Shop Assist', icon: '🛒', desc: 'Personal shopping help', link: '/shop-assist' },
-  { name: 'Paperwork', icon: '📄', desc: 'Documents & certificates', link: '/paperwork' },
-  { name: 'Emergency', icon: '🚨', desc: '24/7 emergency support', link: '/emergency' },
-];
-
-// Concierge Use Cases
-const CONCIERGE_USE_CASES = [
-  {
-    icon: <Calendar className="w-6 h-6" />,
-    title: "Book a Pet-Friendly Restaurant",
-    description: "Find and reserve tables at verified pet-friendly restaurants in seconds",
-    example: '"Mira, book a table for 2 with my dog at a pet-friendly cafe in Koramangala this Saturday"'
-  },
-  {
-    icon: <Plane className="w-6 h-6" />,
-    title: "Plan Pet Travel",
-    description: "Domestic & international pet relocation, airline bookings, pet taxis",
-    example: '"I need to fly my Golden Retriever from Bangalore to Mumbai next week"'
-  },
-  {
-    icon: <Stethoscope className="w-6 h-6" />,
-    title: "Coordinate Vet Appointments",
-    description: "Find specialists, book appointments, and manage health records",
-    example: '"Find a dermatologist for my dog who has skin allergies"'
-  },
-  {
-    icon: <MapPin className="w-6 h-6" />,
-    title: "Find Pet-Friendly Stays",
-    description: "Hotels, resorts, and home boarding options that welcome your furry friend",
-    example: '"Looking for a pet-friendly resort in Goa for a 3-day trip"'
-  },
-  {
-    icon: <MessageCircle className="w-6 h-6" />,
-    title: "Get Expert Advice",
-    description: "Nutrition guidance, behavior consultations, senior pet care",
-    example: '"My puppy is 6 months old, what should be his diet plan?"'
-  },
-  {
-    icon: <Phone className="w-6 h-6" />,
-    title: "24/7 Emergency Support",
-    description: "Lost pet alerts, medical emergencies, crisis coordination",
-    example: '"My dog ate something toxic, what should I do?"'
-  },
+  { name: 'Travel', icon: '✈️', desc: 'Pet relocation', link: '/travel' },
+  { name: 'Stay', icon: '🏨', desc: 'Pet-friendly stays', link: '/stay' },
+  { name: 'Enjoy', icon: '🎾', desc: 'Experiences', link: '/enjoy' },
+  { name: 'Care', icon: '💊', desc: 'Health & wellness', link: '/care' },
 ];
 
 const Home = () => {
   const { user, token } = useAuth();
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [statsRef, statsInView] = useInView({ threshold: 0.3 });
   const [userPets, setUserPets] = useState([]);
   const [loadingPets, setLoadingPets] = useState(true);
-  
-  const customersCount = useCountUp(45000, 2000, statsInView);
-  const citiesCount = useCountUp(15, 1500, statsInView);
-  const partnersCount = useCountUp(500, 1800, statsInView);
 
-  const heroSlides = [
-    {
-      title: 'Your Pet\'s Life',
-      subtitle: 'One Platform, Endless Care',
-      description: 'The complete Pet Life Operating System — Celebrate, Dine, Travel, Stay, Care & more',
-      image: 'https://images.unsplash.com/flagged/photo-1553802922-28e2f719977d?w=1200',
-      cta: 'Explore Pillars'
-    },
-    {
-      title: 'Meet Mira AI',
-      subtitle: 'Your Super Concierge®',
-      description: 'Get personalized recommendations, travel help, dining reservations & expert guidance 24/7',
-      image: 'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=1200',
-      cta: 'Chat with Mira'
-    },
-    {
-      title: 'Pet Soul™',
-      subtitle: 'We Remember Everything',
-      description: 'Every interaction enriches your pet\'s profile for truly personalized experiences',
-      image: 'https://images.unsplash.com/photo-1679067652135-324b9535d288?w=1200',
-      cta: 'Learn More'
-    }
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % heroSlides.length);
-    }, 5000);
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Fetch user's pets if logged in
   useEffect(() => {
     const fetchUserPets = async () => {
       if (!user?.email) {
@@ -136,7 +53,6 @@ const Home = () => {
     fetchUserPets();
   }, [user, token]);
 
-  // Handle opening Mira AI
   const handleOpenMira = () => {
     window.dispatchEvent(new CustomEvent('openMiraAI'));
   };
@@ -153,643 +69,382 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen" data-testid="home-page">
-      {/* Hero Section - Ultra Modern */}
-      <section className="relative h-screen overflow-hidden bg-black">
-        {/* Background Slides */}
-        {heroSlides.map((slide, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === activeSlide ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <img
-              src={slide.image}
-              alt={slide.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
-          </div>
-        ))}
+    <div className="min-h-screen bg-white" data-testid="home-page">
+      
+      {/* ========== HERO SECTION ========== */}
+      {/* Vision First - Answer: Why is this different? */}
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        {/* Background Elements */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-20 left-10 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-80 h-80 bg-pink-500 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-yellow-500 rounded-full blur-3xl opacity-50"></div>
+        </div>
 
-        {/* Content */}
-        <div className="relative h-full flex items-center z-10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <div className="max-w-3xl">
-              {heroSlides.map((slide, index) => (
-                <div
-                  key={index}
-                  className={`transition-all duration-700 ${
-                    index === activeSlide
-                      ? 'opacity-100 translate-y-0'
-                      : 'opacity-0 translate-y-10 absolute'
-                  }`}
-                >
-                  <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-md rounded-full mb-6 border border-white/20">
-                    <Sparkles className="w-4 h-4 text-yellow-400 mr-2" />
-                    <span className="text-white text-sm font-medium">45,000+ Happy Pet Parents</span>
+        <div className="relative max-w-6xl mx-auto px-4 py-20 text-center z-10">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-sm font-medium mb-8 border border-white/20">
+            <Brain className="w-4 h-4 text-yellow-400" />
+            <span>Pet Life Operating System</span>
+          </div>
+
+          {/* Main Headline - Answer the ONE question */}
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-white leading-tight mb-6">
+            A System That
+            <span className="block mt-2 bg-gradient-to-r from-pink-400 via-purple-400 to-yellow-400 bg-clip-text text-transparent">
+              Learns, Remembers & Cares
+            </span>
+          </h1>
+
+          {/* Subtext - Explain the difference */}
+          <p className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
+            From birthdays to vet visits, travel to daily routines — your pet&apos;s entire life, 
+            held in one intelligent system that grows smarter with every interaction.
+          </p>
+
+          {/* Single Clear CTA */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/pet-soul">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-10 py-7 text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105"
+                data-testid="hero-start-soul-btn"
+              >
+                <PawPrint className="w-5 h-5 mr-2" />
+                Start Your Pet&apos;s Soul
+              </Button>
+            </Link>
+            <Button 
+              size="lg" 
+              variant="ghost"
+              onClick={handleOpenMira}
+              className="text-white/80 hover:text-white hover:bg-white/10 px-8 py-7 text-lg rounded-full"
+              data-testid="hero-talk-mira-btn"
+            >
+              <Sparkles className="w-5 h-5 mr-2" />
+              Talk to Mira
+            </Button>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="mt-16 flex flex-wrap items-center justify-center gap-8 text-white/60 text-sm">
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              <span>45,000+ Pets Served</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Award className="w-4 h-4" />
+              <span>Les Concierges® Legacy</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              <span>Your Data, Your Control</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+          <ChevronRight className="w-6 h-6 text-white/50 rotate-90" />
+        </div>
+      </section>
+
+      {/* ========== PET SOUL EXPLAINER ========== */}
+      {/* Immediately after hero - explain the magic */}
+      <section className="py-24 bg-gradient-to-b from-white to-purple-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-6">
+              <Brain className="w-4 h-4" />
+              Pet Soul™ Technology
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Every Interaction Builds
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+                Your Pet&apos;s Living Profile
+              </span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              So you never have to explain them again.
+            </p>
+          </div>
+
+          {/* How Pet Soul Works - Visual Flow */}
+          <div className="grid md:grid-cols-4 gap-6 mb-16">
+            {[
+              { icon: <PawPrint className="w-8 h-8" />, title: 'Your Pet', desc: 'Start with who they are', color: 'from-pink-500 to-rose-500' },
+              { icon: <MessageCircle className="w-8 h-8" />, title: 'Interactions', desc: 'Orders, chats, bookings', color: 'from-purple-500 to-indigo-500' },
+              { icon: <Brain className="w-8 h-8" />, title: 'Memory', desc: 'We learn & remember', color: 'from-blue-500 to-cyan-500' },
+              { icon: <Heart className="w-8 h-8" />, title: 'Better Care', desc: 'Personalized everything', color: 'from-orange-500 to-amber-500' }
+            ].map((step, idx) => (
+              <div key={idx} className="relative">
+                <Card className="p-6 text-center h-full hover:shadow-xl transition-shadow bg-white">
+                  <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center text-white`}>
+                    {step.icon}
                   </div>
-                  
-                  <h1 className="text-6xl lg:text-7xl font-black text-white mb-4 leading-tight">
-                    {slide.title}
-                  </h1>
-                  <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-400 bg-clip-text text-transparent mb-6">
-                    {slide.subtitle}
-                  </h2>
-                  <p className="text-xl text-gray-200 mb-8 leading-relaxed">
-                    {slide.description}
-                  </p>
-                  
-                  <div className="flex flex-wrap gap-4">
-                    {slide.cta === 'Chat with Mira' ? (
-                      <Button
-                        size="lg"
-                        onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
-                        className="bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 hover:from-purple-700 hover:via-pink-700 hover:to-yellow-600 text-white text-lg px-8 py-7 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105"
-                        data-testid="hero-chat-mira-btn"
-                      >
-                        {slide.cta}
-                        <Sparkles className="w-5 h-5 ml-2" />
-                      </Button>
-                    ) : slide.cta === 'Explore Pillars' ? (
-                      <Button
-                        size="lg"
-                        onClick={() => document.getElementById('pillars-section')?.scrollIntoView({ behavior: 'smooth' })}
-                        className="bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 hover:from-purple-700 hover:via-pink-700 hover:to-yellow-600 text-white text-lg px-8 py-7 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105"
-                        data-testid="hero-explore-pillars-btn"
-                      >
-                        {slide.cta}
-                        <ArrowRight className="w-5 h-5 ml-2" />
-                      </Button>
-                    ) : (
-                      <Link to="/membership">
-                        <Button
-                          size="lg"
-                          className="bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 hover:from-purple-700 hover:via-pink-700 hover:to-yellow-600 text-white text-lg px-8 py-7 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105"
-                        >
-                          {slide.cta}
-                          <ArrowRight className="w-5 h-5 ml-2" />
-                        </Button>
-                      </Link>
-                    )}
-                    {/* Dynamic secondary CTA based on auth state */}
-                    {user ? (
-                      <Link to="/pets/add">
-                        <Button
-                          size="lg"
-                          variant="outline"
-                          className="border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-7"
-                          data-testid="hero-add-pet-btn"
-                        >
-                          Start Your Pet Soul
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Link to="/membership">
-                        <Button
-                          size="lg"
-                          variant="outline"
-                          className="border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-7"
-                          data-testid="hero-become-member-btn"
-                        >
-                          Become a Member
-                        </Button>
-                      </Link>
-                    )}
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">{step.title}</h3>
+                  <p className="text-sm text-gray-500">{step.desc}</p>
+                </Card>
+                {idx < 3 && (
+                  <ArrowRight className="hidden md:block absolute top-1/2 -right-3 w-6 h-6 text-gray-300 transform -translate-y-1/2" />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* What Pet Soul Captures */}
+          <Card className="p-8 bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-900 text-white">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <h3 className="text-2xl font-bold mb-4">What Gets Smarter Over Time</h3>
+                <ul className="space-y-3">
+                  {[
+                    'Dietary preferences & allergies',
+                    'Behavioral patterns & comfort zones',
+                    'Health history & vet preferences',
+                    'Travel readiness & anxiety triggers',
+                    'Favorite treats & activities',
+                    'Important dates & milestones'
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-center gap-3">
+                      <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                      <span className="text-white/90">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="text-center">
+                <div className="inline-block p-8 bg-white/10 backdrop-blur rounded-3xl">
+                  <div className="grid grid-cols-4 gap-3">
+                    {['🎭', '👨‍👩‍👧‍👦', '⏰', '🏠', '✈️', '🍖', '🎓', '🌅'].map((emoji, idx) => (
+                      <div key={idx} className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-2xl hover:scale-110 transition-transform">
+                        {emoji}
+                      </div>
+                    ))}
                   </div>
+                  <p className="text-sm text-purple-300 mt-4">8 Soul Pillars</p>
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
-        </div>
-
-        {/* Slide Indicators */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3 z-20">
-          {heroSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setActiveSlide(index)}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                index === activeSlide ? 'w-12 bg-white' : 'w-6 bg-white/40'
-              }`}
-            />
-          ))}
+          </Card>
         </div>
       </section>
 
-      {/* Trust Bar */}
-      <section className="bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 py-6" ref={statsRef}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-white text-center">
-            <div className="flex items-center justify-center gap-3">
-              <Award className="w-6 h-6" />
-              <div>
-                <p className="font-bold text-lg">{customersCount.toLocaleString()}+</p>
-                <p className="text-sm opacity-90">Happy Pet Parents</p>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3">
-              <Heart className="w-6 h-6" />
-              <div>
-                <p className="font-bold text-lg">12</p>
-                <p className="text-sm opacity-90">Pet Life Pillars</p>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3">
-              <MapPin className="w-6 h-6" />
-              <div>
-                <p className="font-bold text-lg">{citiesCount}+</p>
-                <p className="text-sm opacity-90">Cities Covered</p>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3">
-              <Shield className="w-6 h-6" />
-              <div>
-                <p className="font-bold text-lg">{partnersCount}+</p>
-                <p className="text-sm opacity-90">Verified Partners</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Mira AI Concierge® Spotlight - MAIN FOCUS */}
-      <section className="py-24 bg-gradient-to-br from-purple-50 via-pink-50 to-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-200 rounded-full opacity-20 blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-200 rounded-full opacity-20 blur-3xl"></div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+      {/* ========== MEET MIRA SECTION ========== */}
+      {/* Mira as Intelligence Layer, not just a chatbot */}
+      <section className="py-24 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <div className="inline-flex items-center px-4 py-2 bg-purple-100 rounded-full mb-6">
-                <Sparkles className="w-5 h-5 text-purple-600 mr-2" />
-                <span className="text-purple-600 text-sm font-semibold">Introducing Mira AI</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-full text-sm font-medium mb-6">
+                <Sparkles className="w-4 h-4" />
+                Meet Mira®
               </div>
-              <h2 className="text-5xl font-black text-gray-900 mb-6">
-                Your Super
-                <span className="block bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Pet Concierge®
+              
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+                Not a Chatbot.
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+                  Your Pet&apos;s Intelligence Layer.
                 </span>
               </h2>
-              <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-                Mira is your AI-powered assistant across all 12 pillars — book restaurants, plan travel, schedule grooming, get health advice, and more. 24/7 intelligent support for all your pet&apos;s needs.
-              </p>
-              
-              <div className="space-y-4 mb-8">
-                {[
-                  'Book dining, stays & travel with one chat',
-                  'Get personalized recommendations from Pet Soul™',
-                  'Schedule appointments & manage pet health',
-                  'Access emergency support anytime'
-                ].map((feature, idx) => (
-                  <div key={idx} className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="w-4 h-4 text-white" />
+
+              <div className="space-y-6 text-gray-600">
+                <p className="text-lg leading-relaxed">
+                  Mira isn&apos;t here to answer generic questions. She <strong className="text-gray-900">knows your pet</strong> — 
+                  their allergies, their fears, their favorite treats, their vet history.
+                </p>
+                
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4 p-4 bg-purple-50 rounded-xl">
+                    <Eye className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Memory Layer</h4>
+                      <p className="text-sm">She remembers every interaction. Never asks the same question twice.</p>
                     </div>
-                    <p className="text-gray-700 font-medium">{feature}</p>
                   </div>
-                ))}
+                  
+                  <div className="flex items-start gap-4 p-4 bg-pink-50 rounded-xl">
+                    <Brain className="w-6 h-6 text-pink-600 flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Judgement Layer</h4>
+                      <p className="text-sm">She doesn&apos;t fabricate. Every answer is grounded in your pet&apos;s actual data.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4 p-4 bg-orange-50 rounded-xl">
+                    <TrendingUp className="w-6 h-6 text-orange-600 flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Relationship Layer</h4>
+                      <p className="text-sm">She grows with your pet. The longer you stay, the smarter she becomes.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6 shadow-xl"
-                onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
-                data-testid="chat-with-mira-btn"
+              <Button 
+                onClick={handleOpenMira}
+                className="mt-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-8 py-6 text-lg"
+                data-testid="mira-section-cta"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
-                Chat with Mira Now
+                Talk to Mira Now
               </Button>
             </div>
 
             <div className="relative">
-              <div className="absolute -top-6 -right-6 w-full h-full bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl opacity-10 transform rotate-3"></div>
-              <Card className="relative p-8 shadow-2xl">
-                <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 rounded-t-2xl -mx-8 -mt-8 mb-6">
-                  <div className="flex items-center gap-3 text-white">
-                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                      <Sparkles className="w-6 h-6" />
+              <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-3xl p-8">
+                <Card className="p-6 bg-white shadow-xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-lg">Mira AI</h3>
-                      <p className="text-sm opacity-90">Super Concierge® • Online</p>
+                      <p className="font-semibold">Mira®</p>
+                      <p className="text-xs text-gray-500">Your Concierge</p>
                     </div>
                   </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="bg-white border-2 border-purple-100 rounded-2xl p-4 shadow-sm">
-                    <p className="text-sm text-gray-700">
-                      Hi! I&apos;m Mira, your Super Concierge®! I can help with restaurant bookings, travel planning, grooming appointments, vet coordination & more!
-                    </p>
-                  </div>
-                  <div className="flex justify-end">
-                    <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl p-4 shadow-sm max-w-[80%]">
-                      <p className="text-sm">
-                        I need a pet-friendly restaurant in Koramangala for this Saturday
+                  <div className="space-y-3">
+                    <div className="p-3 bg-gray-100 rounded-xl rounded-tl-none">
+                      <p className="text-sm text-gray-700">
+                        &quot;I see Bruno has a chicken allergy. I&apos;ve already filtered those products out. 
+                        Would you like me to suggest some grain-free treats he&apos;d love?&quot;
+                      </p>
+                    </div>
+                    <div className="p-3 bg-purple-100 rounded-xl rounded-tr-none ml-8">
+                      <p className="text-sm text-purple-800">Yes please!</p>
+                    </div>
+                    <div className="p-3 bg-gray-100 rounded-xl rounded-tl-none">
+                      <p className="text-sm text-gray-700">
+                        &quot;Based on his love for peanut butter and his medium size, here are 3 treats 
+                        that other Golden Retriever parents loved...&quot;
                       </p>
                     </div>
                   </div>
-                  <div className="bg-white border-2 border-purple-100 rounded-2xl p-4 shadow-sm">
-                    <p className="text-sm text-gray-700">
-                      Found 12 great options! I recommend &quot;Cafe Pawsome&quot; — they have a lovely garden area for pets. Shall I book a table?
-                    </p>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+                <p className="text-center text-sm text-purple-600 mt-4 font-medium">
+                  Real context. Real memory. Real care.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Concierge® Use Cases */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* ========== LIFE PILLARS SECTION ========== */}
+      {/* Commerce comes AFTER vision */}
+      <section id="pillars-section" className="py-24 bg-gradient-to-b from-purple-50 to-white">
+        <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-purple-100 rounded-full mb-6">
-              <MessageCircle className="w-5 h-5 text-purple-600 mr-2" />
-              <span className="text-purple-600 text-sm font-semibold">What Can Mira Do?</span>
-            </div>
-            <h2 className="text-5xl font-black text-gray-900 mb-4">
-              Your Concierge® Does It All
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              One System. Twelve Life Pillars.
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              From restaurant reservations to emergency support — one chat handles everything
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Everything your pet needs, connected to their Soul profile for truly personalized experiences.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {CONCIERGE_USE_CASES.map((useCase, idx) => (
-              <Card 
-                key={idx} 
-                className="p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group border-2 border-transparent hover:border-purple-200"
-                onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
-              >
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center text-purple-600 mb-4 group-hover:scale-110 transition-transform">
-                  {useCase.icon}
-                </div>
-                <h3 className="font-bold text-gray-900 text-lg mb-2">{useCase.title}</h3>
-                <p className="text-gray-600 text-sm mb-4">{useCase.description}</p>
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 italic">&quot;{useCase.example}&quot;</p>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6"
-              onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
-            >
-              <Sparkles className="w-5 h-5 mr-2" />
-              Try Mira Now — It&apos;s Free!
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* 12 Pillars Section */}
-      <section id="pillars-section" className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-purple-100 rounded-full mb-6">
-              <Crown className="w-5 h-5 text-purple-600 mr-2" />
-              <span className="text-purple-600 text-sm font-semibold">Pet Life Operating System</span>
-            </div>
-            <h2 className="text-5xl font-black text-gray-900 mb-4">
-              12 Pillars of Pet Life
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Everything your pet needs, under one roof. From celebrations to emergencies.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
             {PILLARS.map((pillar, idx) => (
               <Link key={idx} to={pillar.link}>
-                <Card className="group p-6 hover:shadow-xl transition-all duration-300 cursor-pointer h-full transform hover:scale-105 hover:border-purple-200 border-2 border-transparent">
-                  <div className="text-4xl mb-4">{pillar.icon}</div>
-                  <h3 className="font-bold text-gray-900 text-lg mb-2 group-hover:text-purple-600 transition-colors">{pillar.name}</h3>
-                  <p className="text-gray-600 text-sm">{pillar.desc}</p>
+                <Card className="p-4 text-center h-full hover:shadow-lg hover:border-purple-300 transition-all cursor-pointer group">
+                  <span className="text-3xl mb-2 block group-hover:scale-110 transition-transform">{pillar.icon}</span>
+                  <h3 className="font-semibold text-gray-900 text-sm">{pillar.name}</h3>
+                  <p className="text-xs text-gray-500 mt-1">{pillar.desc}</p>
                 </Card>
               </Link>
             ))}
           </div>
 
-          <div className="text-center mt-12">
-            {user ? (
-              <Link to="/pets/add">
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6"
-                >
-                  <PawPrint className="w-5 h-5 mr-2" />
-                  Add Your Pet to Unlock All Pillars
-                </Button>
-              </Link>
-            ) : (
-              <Link to="/membership">
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6"
-                >
-                  <Crown className="w-5 h-5 mr-2" />
-                  Unlock All Pillars with Membership
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Meet Pet Soul Section - NEW */}
-      <section className="py-24 bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-purple-500 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-80 h-80 bg-pink-500 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6 border border-white/20">
-              <Brain className="w-5 h-5 text-yellow-400 mr-2" />
-              <span className="text-white text-sm font-semibold">Introducing</span>
-            </div>
-            <h2 className="text-5xl font-black mb-4">
-              Meet Pet Soul™
-            </h2>
-            <p className="text-xl text-white/80 max-w-3xl mx-auto">
-              Your pet&apos;s evolving digital identity. Every interaction builds a smarter profile —
-              so we understand your pet better than anyone else.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-8 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <TrendingUp className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Progressive Learning</h3>
-              <p className="text-white/70">
-                Every order, every chat, every booking teaches us something new about your pet.
-                The longer you&apos;re with us, the less you need to explain.
-              </p>
-            </Card>
-
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-8 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Heart className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">True Personalization</h3>
-              <p className="text-white/70">
-                From allergies to favorite treats, from travel anxiety to celebration preferences —
-                we remember it all for a truly personalized experience.
-              </p>
-            </Card>
-
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-8 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-indigo-400 to-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Mira AI Companion</h3>
-              <p className="text-white/70">
-                Our AI concierge knows your pet personally. Ask her anything —
-                she&apos;ll give recommendations tailored to your pet&apos;s unique profile.
-              </p>
-            </Card>
-          </div>
-
           <div className="text-center">
-            <p className="text-white/60 mb-6 text-lg">
-              &quot;The world&apos;s most intelligent pet life platform, continuously learning and anticipating your pet&apos;s needs.&quot;
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/membership">
-                <Button size="lg" className="bg-white text-purple-900 hover:bg-purple-50 px-8 py-6 text-lg">
-                  <Zap className="w-5 h-5 mr-2" />
-                  Start Your Pet&apos;s Soul
-                </Button>
-              </Link>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg"
-                onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
-              >
-                <MessageCircle className="w-5 h-5 mr-2" />
-                Talk to Mira
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-pink-100 rounded-full mb-6">
-              <Heart className="w-5 h-5 text-pink-600 mr-2" />
-              <span className="text-pink-600 text-sm font-semibold">Pet Parent Reviews</span>
-            </div>
-            <h2 className="text-5xl font-black text-gray-900 mb-4">
-              Loved by Pet Parents
-            </h2>
-            <p className="text-xl text-gray-600">Real stories from our community</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonials.map((testimonial) => (
-              <Card key={testimonial.id} className="p-8 hover:shadow-xl transition-shadow duration-300">
-                <div className="flex items-center gap-4 mb-6">
-                  <img
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full border-2 border-purple-200"
-                  />
-                  <div>
-                    <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
-                    <p className="text-sm text-gray-500">{testimonial.location}</p>
-                    <p className="text-xs text-purple-600 font-medium">Pet: {testimonial.petName}</p>
-                  </div>
-                </div>
-                <div className="flex mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-gray-700 leading-relaxed">{testimonial.text}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pawsome Panel - Loyal Customers */}
-      <section className="py-24 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-200 rounded-full opacity-20 blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-200 rounded-full opacity-20 blur-3xl"></div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-yellow-100 rounded-full mb-6">
-              <Crown className="w-5 h-5 text-yellow-600 mr-2" />
-              <span className="text-yellow-600 text-sm font-semibold">The Pawsome Panel</span>
-            </div>
-            <h2 className="text-5xl font-black text-gray-900 mb-4">
-              Meet Our Loyal Patrons
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our cherished group of loyal members who have been with The Doggy Company from the start, celebrating countless special moments along the way.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-            {[
-              { name: 'Bruno', breed: 'Golden Retriever', img: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop' },
-              { name: 'Luna', breed: 'Labrador', img: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop' },
-              { name: 'Max', breed: 'Beagle', img: 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=200&h=200&fit=crop' },
-              { name: 'Bella', breed: 'Shih Tzu', img: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=200&h=200&fit=crop' },
-              { name: 'Rocky', breed: 'German Shepherd', img: 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=200&h=200&fit=crop' },
-              { name: 'Coco', breed: 'Pomeranian', img: 'https://images.unsplash.com/photo-1591856419156-ef0f0a1a5e2c?w=200&h=200&fit=crop' },
-              { name: 'Charlie', breed: 'Indie', img: 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=200&h=200&fit=crop' },
-              { name: 'Milo', breed: 'Pug', img: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=200&h=200&fit=crop' },
-              { name: 'Daisy', breed: 'Cocker Spaniel', img: 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?w=200&h=200&fit=crop' },
-              { name: 'Oscar', breed: 'Husky', img: 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=200&h=200&fit=crop' },
-              { name: 'Rosie', breed: 'Dachshund', img: 'https://images.unsplash.com/photo-1612536057832-2ff7ead58194?w=200&h=200&fit=crop' },
-              { name: 'Leo', breed: 'Chow Chow', img: 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=200&h=200&fit=crop' },
-            ].map((pet, idx) => (
-              <div key={idx} className="group text-center">
-                <div className="relative mb-3">
-                  <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg group-hover:border-yellow-400 transition-all duration-300 group-hover:scale-110">
-                    <img src={pet.img} alt={pet.name} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-xs font-bold px-2 py-0.5 rounded-full text-yellow-900">
-                    VIP
-                  </div>
-                </div>
-                <h4 className="font-bold text-gray-900">{pet.name}</h4>
-                <p className="text-xs text-gray-500">{pet.breed}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <p className="text-gray-600 mb-4">Want to join the Pawsome Panel?</p>
-            {user ? (
-              <Link to="/pets/add">
-                <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white">
-                  <PawPrint className="w-4 h-4 mr-2" />
-                  Add Your Pet
-                </Button>
-              </Link>
-            ) : (
-              <Link to="/membership">
-                <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white">
-                  <Crown className="w-4 h-4 mr-2" />
-                  Become a Member
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-black text-gray-900 mb-4">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-xl text-gray-600">Everything you need to know</p>
-          </div>
-
-          <Accordion type="single" collapsible className="space-y-4">
-            {faqs.slice(0, 5).map((faq) => (
-              <AccordionItem key={faq.id} value={faq.id} className="bg-white border-2 border-gray-100 rounded-xl px-6 hover:border-purple-200 transition-colors">
-                <AccordionTrigger className="text-left font-bold text-lg hover:text-purple-600">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 leading-relaxed">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-
-          <div className="text-center mt-12">
-            <Link to="/faqs">
-              <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50 mr-4">
-                View All FAQs
-                <ArrowRight className="w-4 h-4 ml-2" />
+            <p className="text-gray-500 text-sm mb-4">Plus: Fit, Advisory, Club, Shop Assist, Paperwork, Emergency</p>
+            <Link to="/membership">
+              <Button variant="outline" className="text-purple-600 border-purple-300 hover:bg-purple-50">
+                Explore All Pillars <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             </Link>
-            <Button 
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              Ask Mira AI
-            </Button>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative py-32 overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1679067652135-324b9535d288?w=1600"
-          alt="Happy dog"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/90 via-pink-900/90 to-purple-900/90"></div>
-        
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-5xl md:text-6xl font-black text-white mb-6">
-            Ready to Elevate Your Pet&apos;s Life?
-          </h2>
-          <p className="text-2xl text-white/90 mb-12">
-            Join 45,000+ pet parents who trust The Doggy Company for everything their fur babies need.
+      {/* ========== DOCTRINE QUOTE ========== */}
+      <section className="py-20 bg-gradient-to-r from-purple-600 to-pink-600">
+        <div className="max-w-4xl mx-auto px-4 text-center text-white">
+          <Quote className="w-10 h-10 mx-auto text-white/50 mb-6" />
+          <blockquote className="text-2xl sm:text-3xl font-medium leading-relaxed mb-6">
+            &quot;The longer a pet lives with us,
+            <span className="block text-yellow-300">the less their parent has to explain.&quot;</span>
+          </blockquote>
+          <p className="text-white/70">
+            This is our North Star. Every feature is measured against this simple truth.
           </p>
-          
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            {user ? (
-              <Link to="/pets/add">
-                <Button
-                  size="lg"
-                  className="bg-white text-purple-600 hover:bg-gray-100 text-xl px-10 py-8 shadow-2xl transform hover:scale-105 transition-all"
-                >
-                  Start Your Pet Soul
-                  <ArrowRight className="w-6 h-6 ml-2" />
-                </Button>
-              </Link>
-            ) : (
-              <Link to="/membership">
-                <Button
-                  size="lg"
-                  className="bg-white text-purple-600 hover:bg-gray-100 text-xl px-10 py-8 shadow-2xl transform hover:scale-105 transition-all"
-                >
-                  Become a Member
-                  <ArrowRight className="w-6 h-6 ml-2" />
-                </Button>
-              </Link>
-            )}
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm text-xl px-10 py-8"
-              onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
-            >
-              <Sparkles className="w-6 h-6 mr-2" />
-              Chat with Mira
-            </Button>
-          </div>
         </div>
       </section>
+
+      {/* ========== FOUNDING MEMBERS CTA ========== */}
+      <section className="py-24 bg-white">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-6">
+            <Star className="w-4 h-4" />
+            Founding Members
+          </div>
+          
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+            Help Us Build the Future of Pet Care
+          </h2>
+          
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+            Join our founding members and be part of building the world&apos;s first Pet Life Operating System. 
+            Not a discount — an invitation.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <Link to="/pet-soul">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-10 py-7 text-lg"
+              >
+                <PawPrint className="w-5 h-5 mr-2" />
+                Start Your Pet&apos;s Soul
+              </Button>
+            </Link>
+            <Link to="/membership">
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="border-purple-300 text-purple-600 hover:bg-purple-50 px-10 py-7 text-lg"
+              >
+                View Pet Life Pass
+              </Button>
+            </Link>
+          </div>
+
+          <p className="text-sm text-gray-500">
+            Founding Member pricing: ₹4,999/year or ₹499/month (+ GST)
+          </p>
+        </div>
+      </section>
+
+      {/* ========== FOOTER ========== */}
+      <footer className="bg-gray-900 text-gray-400 py-12">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-2">
+              <PawPrint className="w-6 h-6 text-purple-400" />
+              <span className="text-xl font-bold text-white">The Doggy Company®</span>
+            </div>
+            <div className="flex gap-6 text-sm">
+              <Link to="/about" className="hover:text-white transition-colors">About</Link>
+              <Link to="/membership" className="hover:text-white transition-colors">Pet Life Pass</Link>
+              <Link to="/policies" className="hover:text-white transition-colors">Policies</Link>
+              <Link to="/contact" className="hover:text-white transition-colors">Contact</Link>
+            </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm">
+            <p>© 2026 The Doggy Company®. Built with love for pets and their parents.</p>
+            <p className="mt-2 text-gray-500">Les Concierges® • Club Concierge® • The Doggy Bakery® • Mira®</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
