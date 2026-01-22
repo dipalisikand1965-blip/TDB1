@@ -619,44 +619,66 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
         format_known_fields_for_prompt = lambda x: ""
         get_known_fields = lambda x: {}
     
-    # Pet context section
+    # Pet context section - ENHANCED for personalized conversations
     pet_context = ""
     known_fields_section = ""
     
     if pets and len(pets) > 0:
-        pet_context = "\n\n🐾 **PET PARENT'S PET PROFILES (PET SOUL DATA)**:\n"
+        pet_context = "\n\n🐾 **PET PROFILES (Use this data naturally in EVERY response)**:\n"
         for pet in pets:
-            pet_context += f"""
-**{pet.get('name', 'Pet')}**
-- Breed: {pet.get('breed') or pet.get('identity', {}).get('breed', 'Not specified')}
-- Age: {pet.get('age') or pet.get('identity', {}).get('age', 'Not specified')}
-- Weight: {pet.get('identity', {}).get('weight', 'Not specified')}
-"""
-            # Add health info
+            identity = pet.get('identity', {})
+            soul = pet.get('soul', {})
+            preferences = pet.get('preferences', {})
             health = pet.get('health', {})
-            if health.get('allergies'):
-                pet_context += f"- Allergies: {', '.join(health['allergies'])}\n"
-            if health.get('medical_conditions'):
-                pet_context += f"- Medical Conditions: {', '.join(health['medical_conditions'])}\n"
             
-            # Add preferences
-            prefs = pet.get('preferences', {})
-            if prefs.get('favorite_treats'):
-                pet_context += f"- Favorite Treats: {', '.join(prefs['favorite_treats'])}\n"
+            pet_name = pet.get('name', 'Pet')
+            breed = identity.get('breed') or pet.get('breed', 'Unknown breed')
             
-            # Add personality
-            personality = pet.get('personality', {})
-            if personality.get('anxiety_triggers'):
-                pet_context += f"- Anxiety Triggers: {', '.join(personality['anxiety_triggers'])}\n"
+            pet_context += f"\n**{pet_name}** - {breed}\n"
+            pet_context += f"- Species: {pet.get('species', 'dog')}, Gender: {pet.get('gender', 'unknown')}\n"
+            pet_context += f"- Age: {identity.get('age') or pet.get('age') or pet.get('age_years', 'Not specified')}\n"
+            pet_context += f"- Weight: {identity.get('weight', 'Not specified')}\n"
             
-            # Add travel info
-            travel = pet.get('travel', {})
-            if travel.get('preferred_mode'):
-                pet_context += f"- Travel Style: {travel['preferred_mode']}\n"
-            if travel.get('crate_trained') is not None:
-                pet_context += f"- Crate Trained: {'Yes' if travel['crate_trained'] else 'No'}\n"
+            # CRITICAL: Allergies
+            allergies = preferences.get('allergies', []) or health.get('allergies', []) or pet.get('allergies', [])
+            if allergies:
+                if isinstance(allergies, list) and allergies:
+                    pet_context += f"- ⚠️ **ALLERGIES**: {', '.join(allergies)} — NEVER recommend products with these!\n"
+                elif isinstance(allergies, str) and allergies.lower() != 'none':
+                    pet_context += f"- ⚠️ **ALLERGIES**: {allergies} — NEVER recommend products with these!\n"
             
-            pet_context += "\n"
+            # Favorite flavors/treats
+            fav_flavors = preferences.get('favorite_flavors', [])
+            if fav_flavors:
+                flavors = ', '.join(fav_flavors) if isinstance(fav_flavors, list) else fav_flavors
+                pet_context += f"- Favorite flavors: {flavors}\n"
+            
+            fav_treats = preferences.get('favorite_treats', [])
+            if fav_treats:
+                treats = ', '.join(fav_treats) if isinstance(fav_treats, list) else fav_treats
+                pet_context += f"- Favorite treats: {treats}\n"
+            
+            # Texture preference
+            texture = preferences.get('treat_texture') or preferences.get('texture_preference')
+            if texture:
+                pet_context += f"- Prefers: {texture} treats\n"
+            
+            # Activity level
+            activity = preferences.get('activity_level')
+            if activity:
+                pet_context += f"- Activity level: {activity}\n"
+            
+            # Personality from soul
+            if soul:
+                persona = soul.get('persona')
+                if persona:
+                    pet_context += f"- Personality type: {persona.replace('_', ' ').title()}\n"
+                love_lang = soul.get('love_language')
+                if love_lang:
+                    pet_context += f"- Love language: {love_lang}\n"
+                personality_tag = soul.get('personality_tag')
+                if personality_tag:
+                    pet_context += f"- Known as: \"{personality_tag}\"\n"
     
     # CRITICAL: Add KNOWN FIELDS section for the selected pet
     if selected_pet:
@@ -668,7 +690,7 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
     user_context = ""
     if user:
         user_context = f"""
-**PET PARENT CONTEXT**:
+**PET PARENT**:
 - Name: {user.get('name', 'Valued Guest')}
 - Membership: {user.get('membership_tier', 'Free').title()}
 """
@@ -677,24 +699,47 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
     pillar_context = ""
     if pillar and pillar in PILLARS:
         p = PILLARS[pillar]
-        pillar_context = f"\n**CURRENT PILLAR CONTEXT**: {p['icon']} {p['name']}\n"
+        pillar_context = f"\n**CURRENT PILLAR**: {p['icon']} {p['name']}\n"
     
     system_prompt = f"""ROLE & IDENTITY
-You are Mira, The Doggy Company's distinguished Concierge — the intelligent front door to the Pet Life Operating System. You are not a chatbot. You are a memory-backed concierge layer that silently learns, remembers, and personalizes every interaction.
+You are Mira® — the intelligent heart of The Doggy Company's Pet Life Operating System. You are a Pet-First Concierge who KNOWS each pet personally through their Pet Soul™ profile.
 
-You speak with warmth, authority, and the quiet confidence of a trusted advisor who genuinely understands the bond between pet and guardian. You are professional yet personable, knowledgeable yet approachable, helpful yet never intrusive.
-
+🎯 YOUR SUPERPOWER: You remember EVERYTHING about each pet - their allergies, preferences, personality, favorite treats. Use this knowledge naturally in EVERY response.
 {user_context}
 {pet_context}
 {known_fields_section}
 {pillar_context}
 
+CRITICAL RULES FOR EVERY INTERACTION:
+1. When user mentions buying/shopping, IMMEDIATELY reference their pet's specific preferences and allergies
+2. NEVER ask questions you already know the answer to from Pet Soul data
+3. Speak as if you've known the pet for years - use their name, mention their personality
+4. When recommending products, ALWAYS check allergies first and explain why you're recommending something specific
+
+EXAMPLE CONVERSATION (This is how you MUST respond):
+User: "I want to buy some treats"
+Mira: "Hi Sahasra! Treats for Bruno? 🐾 I remember he's allergic to **chicken**, so I'll make sure to avoid those. Since he loves **peanut butter** and is a **Golden Retriever** (medium size), I'd recommend our Peanut Butter Training Bites - they're perfect for his size and completely chicken-free! Want me to add them to your cart?"
+
+PERSONALIZATION REQUIREMENTS:
+- If user has ONE pet: Address by pet name immediately ("Perfect choice for [Pet Name]!")
+- If user has MULTIPLE pets: Ask "Which furry friend is this for - [Pet1], [Pet2], or [Pet3]?"
+- Once pet is identified: Use their data in EVERY recommendation
+- Reference allergies BEFORE suggesting any food product
+- Mention breed when relevant (size, energy level, breed-specific needs)
+- Use personality traits to make conversation warm ("I know [Pet] is a mischief maker, so...")
+
+⚠️ MANDATORY ALLERGY CHECK:
+Before recommending ANY food product:
+1. Check if pet has allergies in their profile
+2. If allergies exist, EXPLICITLY state: "Since [Pet] is allergic to [allergen], I'm recommending [product] which is [allergen]-free"
+3. NEVER recommend products containing allergens
+
 THE 12 PILLARS (Your Knowledge Domains):
 1. **CELEBRATE** — Birthday cakes, custom treats, celebration packages
 2. **DINE** — Pet-friendly restaurants, reservations, dining experiences
 3. **STAY** — Pet-friendly hotels, boarding, pawcation properties
-4. **TRAVEL** — Pet relocation, travel documentation, transport (cab, train, flight)
-5. **CARE** — Veterinary services, grooming, wellness appointments, walking, sitting
+4. **TRAVEL** — Pet relocation, travel documentation, transport
+5. **CARE** — Veterinary services, grooming, wellness appointments
 6. **SHOP** — Premium pet products, nutrition, supplies
 7. **ENJOY** — Events, activities, trails, meetups, experiences
 8. **CLUB** — Membership benefits, community access
@@ -703,40 +748,21 @@ THE 12 PILLARS (Your Knowledge Domains):
 11. **PAPERWORK** — Documents, certifications, insurance, records
 12. **EMERGENCY** — Urgent help, lost pet, accidents (IMMEDIATE PRIORITY)
 
-COMMUNICATION STANDARDS:
-- Respond in the guest's language with cultural precision
-- Use formal yet warm English
-- **Bold** all venue names, cities, dates, times, and key details
-- NO emojis in conversation (only 🛎️ for confirmation line)
-- Keep responses concise — never verbose or robotic
-- ONE question at a time, never bundled
-- Never reveal backend processes or technical details
+COMMUNICATION STYLE:
+- Warm, knowledgeable, like a friend who knows your pet
+- Use pet's name multiple times
+- Reference specific details from their profile naturally
+- **Bold** all product names, key details using **text**
+- NO generic responses - every response should feel personalized
+- Keep responses focused and actionable
 
-PET-FIRST RULE:
-Before responding to any request:
-1. Identify which pet the conversation is about
-2. If multiple pets exist, ask ONCE: "Which pet is this for?"
-3. Lock context to that pet for the session
-4. NEVER ask for information already in Pet Soul
-5. If information is missing, ask only what is essential
-
-TICKET RULE (CRITICAL):
-Every interaction creates a Service Desk ticket. There is no "no-ticket" conversation.
-- **Advisory Ticket**: User is exploring/asking questions (Status: Exploring)
-- **Concierge Ticket**: User confirms action (Status: Acknowledged → In Progress → Confirmed)
-- **Emergency Ticket**: Emergency detected (Status: Immediate Action)
-
-MINIMUM QUESTION LOGIC:
-Ask ONLY what you need. For:
-- **Travel (Cab)**: Date/time, pickup/drop locations (pet size, anxiety from profile)
-- **Stay (Hotel)**: City, dates, adults (pet count, size from profile)
-- **Care (Grooming)**: Home or salon, time preference (sensitivity, coat type from profile)
-- **Emergency**: NO FORMS — immediate CTAs (Call now, WhatsApp now, Share location)
+TRAVEL-SPECIFIC RULE:
+When someone mentions travel/hotels/trips, ask: "Will [Pet Name] be joining you on this trip?"
 
 SERVICE FLOW:
 1. **Acknowledge** — Greet warmly, show you know them and their pet
 2. **Clarify** — Ask essential questions one at a time (max 5 total)
-3. **Curate** — Present verified, personalized options
+3. **Curate** — Present verified, personalized options (allergy-safe!)
 4. **Enhance** — Suggest relevant products when contextually appropriate
 5. **Confirm** — Summarize and obtain consent
 6. **Handoff** — Pass to live Concierge team for execution
