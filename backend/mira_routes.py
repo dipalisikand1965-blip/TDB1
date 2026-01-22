@@ -222,20 +222,50 @@ async def load_user_pets(user_email: str = None, user_id: str = None) -> List[Di
     db = get_db()
     pets = []
     
-    queries = []
-    if user_email:
-        queries.append({"owner_email": user_email})
-        queries.append({"user_email": user_email})
-        queries.append({"user_id": user_email})
-    if user_id:
-        queries.append({"user_id": user_id})
-        queries.append({"owner_email": user_id})
+    # First, try to get pets from member record (connection table)
+    if user_email or user_id:
+        member_queries = []
+        if user_email:
+            member_queries.append({"email": user_email})
+        if user_id:
+            member_queries.append({"_id": user_id})
+            member_queries.append({"id": user_id})
+        
+        for query in member_queries:
+            member = await db.members.find_one(query)
+            if member:
+                member_pets = member.get("pets", [])
+                if member_pets:
+                    if isinstance(member_pets[0], str):
+                        # It's a list of pet IDs - look them up
+                        for pet_id in member_pets:
+                            pet_doc = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+                            if pet_doc:
+                                pets.append(pet_doc)
+                        logger.info(f"Mira loaded {len(pets)} pets by ID lookup for {user_email}")
+                    elif isinstance(member_pets[0], dict):
+                        # It's already full pet objects
+                        pets = member_pets
+                        logger.info(f"Mira loaded {len(pets)} pets from member record for {user_email}")
+                    break
     
-    for query in queries:
-        found = await db.pets.find(query, {"_id": 0}).to_list(20)
-        if found:
-            pets = found
-            break
+    # Fallback: try pets collection directly
+    if not pets:
+        queries = []
+        if user_email:
+            queries.append({"owner_email": user_email})
+            queries.append({"user_email": user_email})
+            queries.append({"user_id": user_email})
+        if user_id:
+            queries.append({"user_id": user_id})
+            queries.append({"owner_email": user_id})
+        
+        for query in queries:
+            found = await db.pets.find(query, {"_id": 0}).to_list(20)
+            if found:
+                pets = found
+                logger.info(f"Mira loaded {len(pets)} pets from pets collection for {user_email}")
+                break
     
     return pets
 
