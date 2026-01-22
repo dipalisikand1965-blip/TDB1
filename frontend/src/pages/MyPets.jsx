@@ -320,7 +320,7 @@ const MyPets = () => {
           </h1>
           <p className="text-xl text-gray-600">
             {pets.length === 0 
-              ? "Let's add your first fur baby!" 
+              ? "Let&apos;s add your first fur baby!" 
               : `${pets.length} ${pets.length === 1 ? 'pet' : 'pets'} in your family`
             }
           </p>
@@ -744,7 +744,7 @@ const MyPets = () => {
                                 )}
                                 <MessageCircle className="w-8 h-8 text-purple-300 mx-auto mb-2" />
                                 <p className="text-purple-700 font-medium">Soul journey started!</p>
-                                <p className="text-sm text-purple-500">Answer more questions to discover {pet.name}'s full personality</p>
+                                <p className="text-sm text-purple-500">Answer more questions to discover {pet.name}&apos;s full personality</p>
                               </div>
                             );
                           })()}
@@ -787,7 +787,6 @@ const MyPets = () => {
               <p className="text-purple-800">
                 <Heart className="w-5 h-5 inline mr-2 text-pink-500" />
                 <strong>{pets.length} furry {pets.length === 1 ? 'soul' : 'souls'}</strong> counting on you for celebrations! 
-                🎂 Don't forget their special days!
               </p>
             </Card>
           </div>
