@@ -1739,6 +1739,11 @@ const Admin = () => {
           <CommunicationsManager authHeaders={getAuthHeaders()} />
         )}
 
+        {/* Automated Reminders Manager */}
+        {activeTab === 'reminders' && (
+          <AutomatedRemindersManager authHeaders={getAuthHeaders()} />
+        )}
+
         {/* Mira Memory Manager */}
         {activeTab === 'mira-memory' && (
           <MiraMemoryManager />
