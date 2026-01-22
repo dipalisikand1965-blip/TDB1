@@ -1502,35 +1502,54 @@ Carry forward any relevant context from the previous conversation.
         research_instruction = ""
         if research_context:
             research_instruction = f"""
-RESEARCH MODE ACTIVE - FACTUAL QUERY DETECTED:
-I have researched the following verified information. Use this to respond:
-
+RESEARCH CONTEXT (For your reference only):
 {research_context}
 
-CRITICAL RULES FOR RESEARCH RESPONSES:
-1. Clearly separate CONFIRMED FACTS from VARIABLE ITEMS
-2. Cite sources when available
-3. If any fact could not be verified, say "I could not verify this - please confirm directly"
-4. Provide concrete next steps the user can take
-5. Maintain your warm, concierge tone while being factually precise
-6. NEVER fabricate or assume facts about regulations, permissions, or policies
+NOTE: This research is for YOUR context. Do NOT share raw research with the user.
+Instead, use this info to inform your response while maintaining concierge ownership.
+"""
+        
+        # Concierge action instruction
+        concierge_action_instruction = ""
+        if concierge_action.get("action_needed"):
+            action_type = concierge_action.get("action_type", "request")
+            concierge_action_instruction = f"""
+🚨 CONCIERGE ACTION REQUIRED - THIS IS A REAL REQUEST
+Action Type: {action_type}
+Service Desk Ticket Created: {service_desk_ticket_id or 'pending'}
+
+YOUR RESPONSE MUST:
+1. TAKE FULL OWNERSHIP: "I'll take care of this for you"
+2. BE SPECIFIC: "I'm checking [MindEscapes] pet policy for [all 3 pets]"
+3. PROMISE FOLLOW-UP: "Our live concierge will confirm the details shortly"
+
+❌ DO NOT:
+- Tell them to call, message, or verify anything
+- Give them a script
+- Say "you might want to check"
+- Provide raw research facts for them to act on
+
+✅ DO:
+- Sound confident that YOU are handling this
+- Reference their specific pets by name
+- End with "Our live concierge will get back to you shortly"
 """
         
         full_prompt = f"""{history_text}
 {cross_pillar_note}
 {relationship_memory_prompt}
 {research_instruction}
+{concierge_action_instruction}
 
 CURRENT USER MESSAGE: {user_message}
 
-REMEMBER:
-- Never ask for information already in Pet Soul or Relationship Memory
-- If you remember something from past conversations, reference it naturally (e.g., "Last time you mentioned...")
-- Don't force memories - only surface when genuinely relevant
-- Ask ONE question at a time
-- Progress the conversation forward
-- Keep response concise and warm
-- If this is a factual query about rules/regulations, be precise and cite sources"""
+CRITICAL CONCIERGE DOCTRINE:
+- YOU are the concierge. YOU handle everything.
+- NEVER tell the user to call, message, or verify anything themselves.
+- If verification is needed, say "I'll verify this for you. Our live concierge will confirm shortly."
+- Reference their pets by name: {', '.join([p.get('name', 'pet') for p in pets]) if pets else 'their pets'}
+- Keep response warm, confident, and action-oriented.
+- End with a clear handoff: "Our live concierge will get back to you shortly."""
         
         chat = LlmChat(
             api_key=api_key,
