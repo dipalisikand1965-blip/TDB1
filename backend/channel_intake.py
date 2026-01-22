@@ -385,7 +385,7 @@ async def voice_order(
     """
     Process a voice order - transcribe and extract order details
     
-    Accepts audio files: mp3, mp4, mpeg, mpga, m4a, wav, webm (max 25MB)
+    Accepts audio files: mp3, mp4, mpeg, mpga, m4a, wav, webm (max 5MB)
     """
     # Validate file type
     allowed_types = ["mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"]
@@ -397,8 +397,10 @@ async def voice_order(
             detail=f"Invalid audio format. Supported: {', '.join(allowed_types)}"
         )
     
-    # Check file size (5MB limit for Cloudflare compatibility)
+    # Read file content once
     content = await audio.read()
+    
+    # Check file size (5MB limit for Cloudflare compatibility)
     max_size_mb = 5
     if len(content) > max_size_mb * 1024 * 1024:
         raise HTTPException(
@@ -406,11 +408,8 @@ async def voice_order(
             detail=f"Audio file too large ({len(content) / (1024*1024):.1f}MB). Maximum {max_size_mb}MB - try a shorter recording (max 30 seconds)."
         )
     
-    # Reset file position for transcription
-    await audio.seek(0)
-    
-    # Transcribe voice
-    transcription = await transcribe_voice(audio)
+    # Transcribe voice - pass content and filename
+    transcription = await transcribe_voice(content, audio.filename)
     
     # Process through unified intake
     request = ChannelRequest(
