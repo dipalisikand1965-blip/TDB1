@@ -605,7 +605,7 @@ const AgentManagement = ({ authHeaders }) => {
             </div>
           </div>
           
-          <DialogFooter>
+          <DialogFooter className="sticky bottom-0 bg-white z-10 pt-2 border-t">
             <Button variant="outline" onClick={() => setShowCreateModal(false)}>
               Cancel
             </Button>
@@ -722,7 +722,7 @@ const AgentManagement = ({ authHeaders }) => {
             </div>
           </div>
           
-          <DialogFooter>
+          <DialogFooter className="sticky bottom-0 bg-white z-10 pt-2 border-t">
             <Button variant="outline" onClick={() => setShowEditModal(false)}>
               Cancel
             </Button>
