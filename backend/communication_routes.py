@@ -383,4 +383,60 @@ def setup_communication_routes(app, db):
             "by_type": {item["_id"]: item["count"] for item in by_type}
         }
     
+    # ============================================
+    # TEST EMAIL ENDPOINT
+    # ============================================
+    
+    class TestEmailRequest(BaseModel):
+        to_email: str
+        subject: str = "Test Email from The Doggy Company"
+        body: str = "This is a test email from the Unified Reminder System."
+        pet_name: Optional[str] = None
+    
+    @app.post("/api/admin/communications/test-email")
+    async def send_test_email(data: TestEmailRequest):
+        """Send a test email to verify email configuration"""
+        result = await comm_engine.send_email(
+            to_email=data.to_email,
+            subject=data.subject,
+            body=data.body,
+            pet_name=data.pet_name
+        )
+        
+        # Log the test
+        await db.communication_log.insert_one({
+            "type": "test_email",
+            "channel": "email",
+            "to_email": data.to_email,
+            "subject": data.subject,
+            "status": "sent" if result.get("success") else "failed",
+            "send_result": result,
+            "sent_at": datetime.now(timezone.utc)
+        })
+        
+        return result
+    
+    @app.get("/api/admin/communications/config-status")
+    async def get_communication_config_status():
+        """Check the status of communication integrations"""
+        from communication_engine import RESEND_AVAILABLE, SENDER_EMAIL, WHATSAPP_NUMBER
+        
+        return {
+            "email": {
+                "provider": "resend",
+                "configured": RESEND_AVAILABLE,
+                "sender_email": SENDER_EMAIL
+            },
+            "whatsapp": {
+                "provider": "provisional (link-based)",
+                "configured": True,
+                "phone": WHATSAPP_NUMBER,
+                "note": "WhatsApp uses click-to-chat links until Business API is integrated"
+            },
+            "in_app": {
+                "provider": "internal",
+                "configured": True
+            }
+        }
+    
     return router
