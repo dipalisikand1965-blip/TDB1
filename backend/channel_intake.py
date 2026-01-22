@@ -72,7 +72,7 @@ class IntakeResponse(BaseModel):
 
 # ==================== VOICE TRANSCRIPTION ====================
 
-async def transcribe_voice(audio_file: UploadFile) -> VoiceTranscription:
+async def transcribe_voice(audio_content: bytes, filename: str) -> VoiceTranscription:
     """Transcribe voice audio using OpenAI Whisper"""
     if not EMERGENT_LLM_KEY:
         raise HTTPException(status_code=500, detail="Voice transcription not configured")
@@ -83,10 +83,12 @@ async def transcribe_voice(audio_file: UploadFile) -> VoiceTranscription:
         # Initialize Whisper
         stt = OpenAISpeechToText(api_key=EMERGENT_LLM_KEY)
         
-        # Save uploaded file temporarily
-        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{audio_file.filename.split('.')[-1]}") as tmp:
-            content = await audio_file.read()
-            tmp.write(content)
+        # Get file extension
+        file_ext = filename.split('.')[-1].lower() if filename else 'webm'
+        
+        # Save content to temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{file_ext}") as tmp:
+            tmp.write(audio_content)
             tmp_path = tmp.name
         
         # Transcribe with verbose output for segments
