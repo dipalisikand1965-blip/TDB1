@@ -7465,6 +7465,61 @@ async def delete_pet_profile(pet_id: str):
     return {"message": "Pet profile deleted"}
 
 
+@api_router.post("/pets/{pet_id}/photo")
+async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
+    """Upload or update a pet's photo"""
+    import base64
+    import os
+    
+    # Validate pet exists
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    # Validate file type
+    if not photo.content_type or not photo.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    # Read file content
+    content = await photo.read()
+    
+    # Validate file size (max 5MB)
+    if len(content) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Image must be less than 5MB")
+    
+    # Save to static directory
+    import hashlib
+    file_hash = hashlib.md5(content).hexdigest()[:10]
+    file_ext = photo.filename.split('.')[-1] if '.' in photo.filename else 'jpg'
+    filename = f"pet_{pet_id}_{file_hash}.{file_ext}"
+    
+    # Create uploads directory if needed
+    upload_dir = "/app/backend/static/uploads/pets"
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    # Save file
+    file_path = os.path.join(upload_dir, filename)
+    with open(file_path, 'wb') as f:
+        f.write(content)
+    
+    # Generate URL
+    photo_url = f"/static/uploads/pets/{filename}"
+    
+    # Update pet record
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$set": {"photo_url": photo_url, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    # Also update in member's pets array
+    await db.members.update_one(
+        {"pets.id": pet_id},
+        {"$set": {"pets.$.photo_url": photo_url}}
+    )
+    
+    return {"photo_url": photo_url, "message": "Photo uploaded successfully"}
+
+
 @api_router.post("/pets/{pet_id}/celebrations")
 async def add_pet_celebration(pet_id: str, celebration: PetCelebration):
     """Add a celebration date to a pet's profile"""
