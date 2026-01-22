@@ -562,10 +562,21 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden flex flex-col">
-          <TabsList className="px-6 py-2 bg-gray-50 border-b justify-start gap-2">
+          <TabsList className="px-6 py-2 bg-gray-50 border-b justify-start gap-2 flex-wrap">
             <TabsTrigger value="account"><User className="w-4 h-4 mr-1" /> Account</TabsTrigger>
             <TabsTrigger value="membership"><Crown className="w-4 h-4 mr-1" /> Membership</TabsTrigger>
             <TabsTrigger value="pets"><PawPrint className="w-4 h-4 mr-1" /> Pets & Soul</TabsTrigger>
+            <TabsTrigger value="tickets" className="relative">
+              <Briefcase className="w-4 h-4 mr-1" /> Tickets
+              {tickets.length > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full">
+                  {tickets.length}
+                </span>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="memories">
+              <History className="w-4 h-4 mr-1" /> Memories
+            </TabsTrigger>
             <TabsTrigger value="activity"><Activity className="w-4 h-4 mr-1" /> Activity</TabsTrigger>
             <TabsTrigger value="notes"><FileText className="w-4 h-4 mr-1" /> Notes</TabsTrigger>
           </TabsList>
