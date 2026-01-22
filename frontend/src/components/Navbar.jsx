@@ -192,8 +192,9 @@ const Navbar = () => {
   ];
 
   // Split pillars into visible and "more" sections
-  const visiblePillars = pillars.slice(0, 6);
-  const morePillars = pillars.slice(6);
+  const activePillars = pillars.filter(p => p.isActive !== false);
+  const visiblePillars = activePillars.slice(0, 6);
+  const morePillars = activePillars.slice(6);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
