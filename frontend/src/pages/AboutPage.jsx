@@ -309,13 +309,45 @@ const AboutPage = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Where We Come From — A Heritage of Care
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">
               Our foundation is rooted in lived experience and deep emotional understanding.
             </p>
           </div>
 
-          {/* Heritage Table */}
-          <div className="overflow-hidden rounded-xl border border-gray-200 mb-8 transform hover:shadow-lg transition-shadow duration-300">
+          {/* Heritage - Mobile Cards */}
+          <div className="md:hidden space-y-4 mb-8">
+            <Card className="p-5 bg-white border-2 border-purple-100">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center flex-shrink-0">
+                  <Crown className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-sm">Les Concierges® & Club Concierge®</h3>
+                  <span className="text-purple-600 font-semibold text-xs">1 Million+ Customers Globally</span>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Decades of concierge expertise — service defined by <strong className="text-gray-900">memory</strong>, <strong className="text-gray-900">anticipation</strong>, and <strong className="text-gray-900">quiet judgement</strong>.
+              </p>
+            </Card>
+            <Card className="p-5 bg-white border-2 border-amber-100">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0">
+                  <Heart className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-sm">The Doggy Bakery®</h3>
+                  <span className="text-amber-600 font-semibold text-xs">45,000+ Pets Fed</span>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                A real, on-ground understanding of what pet parents truly care about — built through <strong className="text-gray-900">birthdays</strong>, <strong className="text-gray-900">adoption milestones</strong>, and <strong className="text-gray-900">everyday joy moments</strong>.
+              </p>
+            </Card>
+          </div>
+
+          {/* Heritage Table - Desktop Only */}
+          <div className="hidden md:block overflow-hidden rounded-xl border border-gray-200 mb-8 transform hover:shadow-lg transition-shadow duration-300">
             <table className="w-full" data-testid="heritage-table">
               <thead className="bg-gradient-to-r from-purple-50 to-indigo-50">
                 <tr>
@@ -346,8 +378,8 @@ const AboutPage = () => {
             </table>
           </div>
 
-          <div className="bg-gradient-to-r from-slate-800 to-purple-900 rounded-xl p-8 text-center text-white transform hover:scale-[1.02] transition-transform duration-300">
-            <p className="text-lg leading-relaxed">
+          <div className="bg-gradient-to-r from-slate-800 to-purple-900 rounded-xl p-6 md:p-8 text-center text-white transform hover:scale-[1.02] transition-transform duration-300">
+            <p className="text-base md:text-lg leading-relaxed">
               These two worlds — <strong>concierge</strong> and <strong>lived pet experience</strong> — converge in The Doggy Company®.
             </p>
           </div>
