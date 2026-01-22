@@ -1446,6 +1446,7 @@ const Admin = () => {
           {[
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { id: 'inbox', label: '📥 Unified Inbox', icon: Inbox },
+            { id: 'communications', label: '📧 Communications', icon: Mail },
             { id: 'mis', label: '📊 Live MIS', icon: BarChart3 },
             { id: 'orders', label: 'Orders', icon: Package },
             { id: 'fulfilment', label: '📦 Fulfilment', icon: Truck },
