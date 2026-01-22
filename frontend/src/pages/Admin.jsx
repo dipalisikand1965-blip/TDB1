@@ -2354,39 +2354,85 @@ const Admin = () => {
               <div className="space-y-4">
                 {petProfiles.length === 0 ? (
                   <p className="text-gray-500 text-center py-8">No pet profiles yet. Customers can create them via Pet Soul.</p>
-                ) : petProfiles.map((pet) => (
-                  <div 
-                    key={pet.id} 
-                    className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-purple-50 cursor-pointer transition-colors border border-transparent hover:border-purple-200"
-                    onClick={() => setSelectedPetProfile(pet)}
-                  >
-                    <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden">
-                      {pet.photo_url ? (
-                        <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <PawPrint className="w-8 h-8 text-purple-600" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-semibold text-gray-900">{pet.name}</h4>
-                        {pet.soul?.persona && <Badge variant="outline" className="text-xs">{pet.soul.persona}</Badge>}
-                        {pet.source === 'shopify_embed' && (
-                          <Badge className="bg-green-100 text-green-700 text-xs">Shopify</Badge>
-                        )}
-                        {pet.source === 'direct' && (
-                          <Badge className="bg-blue-100 text-blue-700 text-xs">Direct</Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-500">{pet.breed} • {pet.gender}</p>
-                      <p className="text-xs text-gray-400">Owner: {pet.owner_name || pet.owner_email || 'Unknown'}</p>
-                    </div>
-                    <div className="text-right text-sm">
-                      {pet.birth_date && <p className="text-gray-600">🎂 {new Date(pet.birth_date).toLocaleDateString()}</p>}
-                      {pet.gotcha_date && <p className="text-gray-500">💝 Gotcha: {new Date(pet.gotcha_date).toLocaleDateString()}</p>}
-                    </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="text-left py-3 px-2 text-sm font-semibold text-gray-600">Pet</th>
+                          <th className="text-left py-3 px-2 text-sm font-semibold text-gray-600">Breed</th>
+                          <th className="text-left py-3 px-2 text-sm font-semibold text-gray-600 bg-purple-50">Pet Parent</th>
+                          <th className="text-left py-3 px-2 text-sm font-semibold text-gray-600">Birthday</th>
+                          <th className="text-left py-3 px-2 text-sm font-semibold text-gray-600">Source</th>
+                          <th className="text-left py-3 px-2 text-sm font-semibold text-gray-600">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {petProfiles.map((pet) => (
+                          <tr 
+                            key={pet.id} 
+                            className="border-b border-gray-100 hover:bg-purple-50 cursor-pointer transition-colors"
+                            onClick={() => setSelectedPetProfile(pet)}
+                          >
+                            <td className="py-3 px-2">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
+                                  {pet.photo_url ? (
+                                    <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
+                                  ) : (
+                                    <PawPrint className="w-5 h-5 text-purple-600" />
+                                  )}
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-gray-900">{pet.name}</p>
+                                  <p className="text-xs text-gray-500">{pet.gender}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-3 px-2">
+                              <span className="text-sm text-gray-600">{pet.breed || '-'}</span>
+                            </td>
+                            <td className="py-3 px-2 bg-purple-50/50">
+                              <div>
+                                <p className="font-medium text-purple-700">{pet.owner_name || 'Not specified'}</p>
+                                <p className="text-xs text-gray-500">{pet.owner_email || ''}</p>
+                              </div>
+                            </td>
+                            <td className="py-3 px-2">
+                              {pet.birth_date ? (
+                                <span className="text-sm text-gray-600">🎂 {new Date(pet.birth_date).toLocaleDateString()}</span>
+                              ) : (
+                                <span className="text-xs text-gray-400">Not set</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-2">
+                              {pet.source === 'shopify_embed' && (
+                                <Badge className="bg-green-100 text-green-700 text-xs">Shopify</Badge>
+                              )}
+                              {pet.source === 'direct' && (
+                                <Badge className="bg-blue-100 text-blue-700 text-xs">Direct</Badge>
+                              )}
+                              {!pet.source && <span className="text-xs text-gray-400">-</span>}
+                            </td>
+                            <td className="py-3 px-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(`/pet-soul-journey/${pet.id}`, '_blank');
+                                }}
+                                className="text-xs"
+                              >
+                                View Soul
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                ))}
+                )}
               </div>
             </Card>
           </div>
