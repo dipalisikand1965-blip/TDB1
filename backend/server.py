@@ -1914,7 +1914,7 @@ async def chat_with_mira_legacy(request: ChatRequest):
             user_id = payload.get("user_id")
             
             if user_email or user_id:
-                # First, try to get pets from member record (most complete data)
+                # First, try to get pets from member record
                 member_queries = []
                 if user_email:
                     member_queries.append({"email": user_email})
@@ -1929,12 +1929,26 @@ async def chat_with_mira_legacy(request: ChatRequest):
                         break
                 
                 pets = []
-                if member and member.get("pets"):
-                    pets = member.get("pets", [])
+                if member:
                     user_info = {"name": member.get("name"), "email": member.get("email")}
-                    logger.info(f"Mira found {len(pets)} pets from member record for {user_email}")
-                else:
-                    # Fallback: try pets collection
+                    member_pets = member.get("pets", [])
+                    
+                    # Member.pets might be list of IDs or list of objects
+                    if member_pets:
+                        if isinstance(member_pets[0], str):
+                            # It's a list of pet IDs - look them up
+                            for pet_id in member_pets:
+                                pet_doc = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+                                if pet_doc:
+                                    pets.append(pet_doc)
+                            logger.info(f"Mira loaded {len(pets)} pets by ID lookup for {user_email}")
+                        elif isinstance(member_pets[0], dict):
+                            # It's already full pet objects
+                            pets = member_pets
+                            logger.info(f"Mira loaded {len(pets)} pets from member record for {user_email}")
+                
+                # Fallback: try pets collection directly
+                if not pets:
                     pet_queries = []
                     if user_email:
                         pet_queries.append({"user_email": user_email})
