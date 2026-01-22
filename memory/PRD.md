@@ -309,8 +309,28 @@ A memory-driven communication system that:
 ---
 
 ## Bug Fixes (This Session)
-- ✅ **Agent Form Modal**: Fixed modal overflow issue - form now shows header, all fields, and buttons properly (added max-h-[90vh] overflow-y-auto to DialogContent, sticky header/footer)
-- ✅ **Pet Profile Modal**: Added "View Full Soul" and "Health Vault" buttons for better access to pet data
+- ✅ **Agent Form Modal**: Fixed modal overflow issue
+- ✅ **Pet Profile Modal**: Added "View Full Soul" and "Health Vault" buttons
+- ✅ **Travel Navigation**: Removed from public navbar (members-only)
+
+---
+
+## My Pets Page Enhancements (NEW)
+### Overview
+Completely redesigned pet profile cards with inline editing and expanded health/soul sections.
+
+### Features
+- **Pet Card Header**: Photo, name, breed, species, gender, persona badge
+- **Editable Fields**: Name, breed, species, gender, birthday, gotcha day - all inline editable
+- **Health Vault Expansion**: Shows vaccines (with due soon/overdue badges) and active medications
+- **Pet Soul Answers Expansion**: Shows soul progress bar and individual Q&A responses
+- **Action Buttons**: Edit (pencil), Delete (trash), Cancel (X), Save (✓)
+
+### UI Components
+- Expandable accordion sections for Health Vault and Pet Soul
+- Color-coded badges (orange for due soon, red for overdue, green for vaccines, purple for medications)
+- Progress bar for soul completion percentage
+- Date pickers for birthday and gotcha day
 
 ---
 
