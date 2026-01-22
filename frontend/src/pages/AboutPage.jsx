@@ -51,7 +51,7 @@ const AboutPage = () => {
           
           <div className="prose prose-lg mx-auto text-gray-600 leading-relaxed space-y-6">
             <p>
-              At the heart of Mira, The Doggy Bakery, and The Doggy Company is <strong className="text-gray-900">Mira — Dipali&apos;s mother</strong>.
+              At the heart of Mira®, The Doggy Bakery®, and The Doggy Company® is <strong className="text-gray-900">Mira — Dipali&apos;s mother</strong>.
             </p>
             
             <p>
@@ -74,7 +74,7 @@ const AboutPage = () => {
             </p>
             
             <p>
-              <strong className="text-gray-900">The Doggy Company</strong> brings these threads together. It takes the emotional intelligence learned through years of celebrating pets, and the discipline of concierge care, and builds a system designed to hold relationships over a lifetime.
+              <strong className="text-gray-900">The Doggy Company®</strong> brings these threads together. It takes the emotional intelligence learned through years of celebrating pets, and the discipline of concierge care, and builds a system designed to hold relationships over a lifetime.
             </p>
           </div>
         </div>
