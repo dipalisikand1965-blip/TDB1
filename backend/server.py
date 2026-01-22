@@ -9137,7 +9137,7 @@ async def import_members_csv(file: UploadFile = File(...)):
                 
                 # Generate temp password
                 temp_password = secrets.token_urlsafe(8)
-                hashed = bcrypt.hashpw(temp_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                hashed = pwd_context.hash(temp_password)
                 
                 new_member = {
                     "id": f"user-{uuid.uuid4().hex[:12]}",
