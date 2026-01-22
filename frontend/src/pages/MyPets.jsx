@@ -371,7 +371,7 @@ const MyPets = () => {
                               Health
                             </Button>
                           </Link>
-                          <Link to={`/pet-soul/${pet.id}`}>
+                          <Link to={`/pet-soul-journey/${pet.id}`}>
                             <Button size="sm" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs">
                               <Sparkles className="w-3 h-3 mr-1" />
                               {(pet.overall_score || 0) < 100 ? 'Build Soul' : 'View Soul'}
