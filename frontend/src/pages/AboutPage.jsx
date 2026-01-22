@@ -66,7 +66,7 @@ const AboutPage = () => {
             </p>
             
             <p>
-              That spirit first found expression in <strong className="text-gray-900">The Doggy Bakery</strong> — where celebrating pets was never about products alone, but about honouring moments, routines, and bonds. Serving over <strong className="text-gray-900">45,000 pets</strong>, the bakery grew not because of novelty, but because pet parents felt understood.
+              That spirit first found expression in <strong className="text-gray-900">The Doggy Bakery®</strong> — where celebrating pets was never about products alone, but about honouring moments, routines, and bonds. Serving over <strong className="text-gray-900">45,000 pets</strong>, the bakery grew not because of novelty, but because pet parents felt understood.
             </p>
             
             <p>
@@ -115,7 +115,7 @@ const AboutPage = () => {
                 <Crown className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900">Dipali</h3>
-              <p className="text-purple-600 font-medium text-sm mb-3">Creator, Les Concierge & Club Concierge</p>
+              <p className="text-purple-600 font-medium text-sm mb-3">Creator, Les Concierges® & Club Concierge®</p>
               <p className="text-gray-600 text-sm leading-relaxed">
                 Registered trademark holder with 30 years of understanding that true service is about memory, judgement, and showing up completely.
               </p>
@@ -127,9 +127,9 @@ const AboutPage = () => {
                 <Heart className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900">Aditya</h3>
-              <p className="text-purple-600 font-medium text-sm mb-3">Founder, The Doggy Bakery</p>
+              <p className="text-purple-600 font-medium text-sm mb-3">Founder, The Doggy Bakery®</p>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Built The Doggy Bakery to celebrate 45,000+ pets — not with products, but by honouring the moments and bonds that matter.
+                Built The Doggy Bakery® to celebrate 45,000+ pets — not with products, but by honouring the moments and bonds that matter.
               </p>
             </Card>
           </div>
