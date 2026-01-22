@@ -7944,8 +7944,8 @@ async def add_stay_to_pet_soul(pet_id: str, data: dict):
 def generate_celebration_message(pet: dict, celebration: dict, days_until: int) -> dict:
     """Generate personalized celebration message based on pet's soul"""
     soul = pet.get("soul", {}) or {}
-    persona = soul.get("persona", "shadow")
-    persona_info = DOG_PERSONAS.get(persona, DOG_PERSONAS["shadow"])
+    persona = soul.get("persona", "adventurer")
+    persona_info = DOG_PERSONAS.get(persona, {"id": "adventurer", "name": "The Adventurer", "description": "Loves outdoor activities"})
     preferences = pet.get("preferences", {}) or {}
     occasion_info = CELEBRATION_OCCASIONS.get(celebration.get("occasion", ""), {})
     
