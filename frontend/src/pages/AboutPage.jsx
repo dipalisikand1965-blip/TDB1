@@ -327,16 +327,16 @@ const AboutPage = () => {
                 <tr className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-5">
                     <div className="font-semibold text-gray-900">Les Concierges® & Club Concierge®</div>
-                    <div className="text-sm text-purple-600">Concierge Excellence</div>
+                    <div className="text-sm text-purple-600">1 Million+ Customers Globally</div>
                   </td>
                   <td className="px-6 py-5 text-gray-600">
-                    Decades of concierge expertise — service defined by <strong className="text-gray-900">memory</strong>, <strong className="text-gray-900">anticipation</strong>, and <strong className="text-gray-900">quiet judgement</strong>. The same discipline that underpins experiences for premium members in elite lifestyle ecosystems.
+                    Decades of concierge expertise — service defined by <strong className="text-gray-900">memory</strong>, <strong className="text-gray-900">anticipation</strong>, and <strong className="text-gray-900">quiet judgement</strong>. The same discipline that has served <strong className="text-gray-900">over 1 million customers</strong> across the globe in elite lifestyle ecosystems.
                   </td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-5">
                     <div className="font-semibold text-gray-900">The Doggy Bakery®</div>
-                    <div className="text-sm text-amber-600">45,000+ Pets Served</div>
+                    <div className="text-sm text-amber-600">45,000+ Pets Fed</div>
                   </td>
                   <td className="px-6 py-5 text-gray-600">
                     A real, on-ground understanding of what pet parents truly care about — built through <strong className="text-gray-900">birthdays</strong>, <strong className="text-gray-900">adoption milestones</strong>, and <strong className="text-gray-900">everyday joy moments</strong>.
