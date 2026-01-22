@@ -1,7 +1,7 @@
 # The Doggy Company® - Product Requirements Document
 ## Pet Life Operating System
 
-**Last Updated:** January 22, 2026 (Session 2)
+**Last Updated:** January 22, 2026 (Session 2 - Relationship Memory)
 
 ---
 
@@ -118,6 +118,41 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
 - Context-aware quick prompts
 - Voice input support
 - Chat history & session management
+
+### ✅ Mira Relationship Memory System (NEW - Jan 22, 2026)
+**"Store forever. Surface selectively."** — This is relationship memory, not session memory.
+
+**Memory Types:**
+- 🗓️ **Events & Milestones** - Birthdays, trips, adoption days (identity-level, resurface when relevant)
+- 🏥 **Health & Medical** - Symptoms, conditions, vet visits (longitudinal, never auto-delete)
+- 🛒 **Shopping & Preferences** - Product interests, brand preferences (weighted by recency)
+- 💬 **Life Context** - Living situation, lifestyle changes (surface only if relevant)
+
+**Surfacing Rules:**
+- Memories are NEVER auto-deleted (unless manually cleared)
+- Old preferences don't disappear, they just get lower priority
+- Critical memories can be flagged to always surface
+- Concierge can suppress specific memories from auto-recall
+
+**Admin Controls:**
+- View all memories by type for any member
+- Add concierge notes as memories
+- Flag memories as critical
+- Suppress/unsuppress auto-recall
+- Delete (soft delete) memories
+
+**Pet Parent Controls:**
+- View their own memory categories
+- Edit/correct memories
+- Clear specific items
+
+**API Endpoints:**
+- `GET /api/mira/memory/me` - Pet parent's own memories
+- `POST /api/mira/memory/me` - Add memory manually
+- `GET /api/mira/memory/admin/member/{email}` - Admin view of member memories
+- `PUT /api/mira/memory/admin/{id}/flag-critical` - Flag as critical
+- `PUT /api/mira/memory/admin/{id}/suppress` - Suppress from recall
+- `GET /api/mira/memory/stats` - Overall memory statistics
 
 ### ✅ Pet Soul Intelligence
 - 8 Pillars: Identity, Family, Rhythm, Home, Travel, Taste, Training, Long Horizon
