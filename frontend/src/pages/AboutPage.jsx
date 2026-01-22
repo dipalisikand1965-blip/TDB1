@@ -651,7 +651,7 @@ const AboutPage = () => {
                     <span className="text-amber-600 font-semibold">The Pet Parent's Lens</span>
                   </td>
                   <td className="px-6 py-6 text-gray-600">
-                    Brings a lived understanding of pet parents and their emotional rhythms. Through <strong className="text-gray-900">The Doggy Bakery®</strong>, he has served over <strong className="text-gray-900">45,000 pets</strong> across birthdays, adoption milestones, and everyday moments that matter. His experience shaped a simple belief: pets are cared for through <strong className="text-gray-900">presence</strong>, <strong className="text-gray-900">timing</strong>, and <strong className="text-gray-900">feeling seen</strong> — not transactions.
+                    Brings a lived understanding of pet parents and their emotional rhythms. Through <strong className="text-gray-900">The Doggy Bakery®</strong>, he has fed over <strong className="text-gray-900">45,000 pets</strong> across birthdays, adoption milestones, and everyday moments that matter. His experience shaped a simple belief: pets are cared for through <strong className="text-gray-900">presence</strong>, <strong className="text-gray-900">timing</strong>, and <strong className="text-gray-900">feeling seen</strong> — not transactions.
                   </td>
                 </tr>
               </tbody>
