@@ -448,7 +448,7 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="lg:hidden bg-white border-t border-gray-200 py-4">
             <div className="px-4 space-y-2">
-              {pillars.map((pillar) => {
+              {activePillars.map((pillar) => {
                 const Icon = pillar.icon;
                 return (
                   <div key={pillar.id}>
