@@ -7699,8 +7699,8 @@ async def get_all_upcoming_celebrations(days: int = 30):
     
     async for pet in db.pets.find({}, {"_id": 0}):
         soul = pet.get("soul", {}) or {}
-        persona = soul.get("persona", "shadow")
-        persona_info = DOG_PERSONAS.get(persona, DOG_PERSONAS["shadow"])
+        persona = soul.get("persona", "adventurer")
+        persona_info = DOG_PERSONAS.get(persona, {"id": "adventurer", "name": "The Adventurer", "description": "Loves outdoor activities"})
         preferences = pet.get("preferences", {}) or {}
         
         for celeb in pet.get("celebrations", []):
