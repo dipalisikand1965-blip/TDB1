@@ -282,16 +282,24 @@ A memory-driven communication system that:
 ### 🔴 Critical (Before Go-Live)
 - [ ] Re-enable ProtectedRoute.jsx for auth gating
 - [ ] Production Razorpay keys
+- [ ] Build Admin Panel UI for Unified Reminder System (template management, history view)
 
 ### 🟡 Medium Priority
-- [ ] WhatsApp Soul Drip (backend ready, needs WhatsApp Business API)
+- [ ] WhatsApp Business API integration (currently provisional with click-to-chat links)
 - [ ] Behavioral inference from returns
-- [ ] Backend code cleanup (remove duplicate function definitions)
+- [ ] Backend code cleanup (remove duplicate function definitions in server.py)
+- [ ] Health Vault Expansion (medication tracking & alerts)
+- [ ] Multi-Pet Household Frontend Integration
 
 ### 🔵 Backlog
-- [ ] Full WhatsApp Business API integration
 - [ ] Member analytics dashboard
 - [ ] Standardize all 12 pillar admin managers
+- [ ] Birthday email automation (scheduler integration)
+
+---
+
+## Bug Fixes (This Session)
+- ✅ **Agent Form Modal**: Fixed modal overflow issue - form now shows header, all fields, and buttons properly (added max-h-[90vh] overflow-y-auto to DialogContent, sticky header/footer)
 
 ---
 
