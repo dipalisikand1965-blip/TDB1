@@ -7766,8 +7766,8 @@ async def get_my_upcoming_celebrations(days: int = 30, current_user: dict = Depe
     # Only fetch pets belonging to the current user
     async for pet in db.pets.find({"owner_email": current_user["email"]}, {"_id": 0}):
         soul = pet.get("soul", {}) or {}
-        persona = soul.get("persona", "shadow")
-        persona_info = DOG_PERSONAS.get(persona, DOG_PERSONAS["shadow"])
+        persona = soul.get("persona", "adventurer")
+        persona_info = DOG_PERSONAS.get(persona, {"id": "adventurer", "name": "The Adventurer", "description": "Loves outdoor activities"})
         preferences = pet.get("preferences", {}) or {}
         
         for celeb in pet.get("celebrations", []):
