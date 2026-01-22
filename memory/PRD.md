@@ -154,6 +154,47 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
 - `PUT /api/mira/memory/admin/{id}/suppress` - Suppress from recall
 - `GET /api/mira/memory/stats` - Overall memory statistics
 
+### ✅ Family Dashboard (NEW - Jan 22, 2026)
+**"This is how a pet parent thinks"** — A household dashboard, not a list.
+
+**Features:**
+- **Family Header**: Shows all pets count + family discount badge when applicable
+- **Health Alerts**: Overdue vaccines highlighted with "Schedule Now" action
+- **Upcoming Moments**: 
+  - Birthdays (next 30 days)
+  - Gotcha Days (next 30 days)
+  - Vaccine Due Dates (next 14 days)
+- **Pet Cards** with:
+  - Photo (or placeholder)
+  - Persona badge (e.g., "mischief maker", "royal")
+  - Breed info
+  - Pet Soul™ completeness progress bar
+  - Birthday display
+- **Family Actions** (Bulk actions with intelligence):
+  - Book Grooming (for all pets)
+  - Order Treats (respects individual allergies)
+  - Vet Checkup (group booking)
+  - Set Reminders (sync schedules)
+- **Memory Timeline** - Shows family journey with relationship memories
+
+**View Modes:**
+- **Family Dashboard** - Default view, household-centric
+- **Detailed View** - Individual pet cards with full inline editing
+
+### ✅ Automated Reminders Admin UI (NEW - Jan 22, 2026)
+**Admin Panel to manage automated health and celebration reminders**
+
+**Features:**
+- **Stats Dashboard**: Pending, Total Sent, Last 7 Days, Scheduler Status
+- **Overview Tab**: Reminder types (Vaccination, Grooming, Birthday, Health Checkup)
+- **Pending Tab**: Queue of reminders with "Send Now" action
+- **History Tab**: Recent communications sent
+- **Intelligence Rules Display**:
+  - Max 1 message/week per pet
+  - Quiet Hours (9 PM - 8 AM IST)
+  - Health reminders priority over promotional
+- **Manual Trigger**: "Run Scheduler Now" button
+
 ### ✅ Pet Soul Intelligence
 - 8 Pillars: Identity, Family, Rhythm, Home, Travel, Taste, Training, Long Horizon
 - Progressive enrichment from:
