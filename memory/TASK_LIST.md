@@ -19,11 +19,11 @@
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 4 | **Commerce Filtering by Pet Soul** | 🔲 TODO | Hide products based on allergies/sensitivities (e.g., hide chicken products for chicken-allergic pets) |
-| 5 | **Link Pet Parent Directory → Full Profile** | 🔲 TODO | Wire "Full Profile" button in admin to dedicated pet profile page |
-| 6 | **Connect About/Membership to CMS** | 🔲 TODO | Pages should fetch from `/api/page-content/{page}` API (CMS already built) |
-| 7 | **Consolidate Duplicate Pages** | 🔲 TODO | Merge `Membership.jsx`/`MembershipPage.jsx` and `About.jsx`/`AboutPage.jsx` |
-| 8 | **Re-enable ProtectedRoute.jsx** | 🔲 TODO | Authentication gating on key routes before go-live |
+| 4 | **Commerce Filtering by Pet Soul** | ✅ DONE | Added allergy filtering in ProductListing.jsx with visual banner |
+| 5 | **Link Pet Parent Directory → Full Profile** | ✅ DONE | Created PetSoulJourneyPage.jsx, added route, wired buttons |
+| 6 | **Connect About/Membership to CMS** | ⏭️ SKIPPED | Keeping hardcoded authentic content (Mira's story) - CMS for other pages |
+| 7 | **Consolidate Duplicate Pages** | ✅ DONE | Deleted About.jsx & Membership.jsx, keeping *Page.jsx versions |
+| 8 | **Re-enable ProtectedRoute.jsx** | 🔲 TODO | Do when about to go live |
 
 ---
 
