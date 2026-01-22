@@ -5,6 +5,7 @@ import {
   MessageCircle, PawPrint, Sparkles, Brain, Heart
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Logo, { LogoCompact } from './Logo';
 
 const WHATSAPP_NUMBER = '919663185747';
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I'd like to know more about The Doggy Company 🐕")}`;
