@@ -571,6 +571,10 @@ Need help choosing? Chat with Mira, our Concierge®!"""
     return f"https://wa.me/{WHATSAPP_NUMBER}?text={encoded_message}"
 
 
+# Product fulfilment types
+FULFILMENT_TYPES = ["shipping", "store_pickup", "both"]
+
+
 async def force_initialize_database():
     """Force initialize database on every startup - ensures data survives deployments"""
     from passlib.context import CryptContext
