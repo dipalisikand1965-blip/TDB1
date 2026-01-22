@@ -1737,6 +1737,11 @@ const Admin = () => {
           <CommunicationsManager authHeaders={getAuthHeaders()} />
         )}
 
+        {/* Mira Memory Manager */}
+        {activeTab === 'mira-memory' && (
+          <MiraMemoryManager />
+        )}
+
         {/* Orders Tab */}
         {activeTab === 'orders' && (
           <OrdersTab 
