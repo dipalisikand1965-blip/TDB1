@@ -84,12 +84,13 @@ const CommunicationsManager = ({ authHeaders }) => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [templatesRes, analyticsRes, historyRes, pendingRes, configRes] = await Promise.all([
+      const [templatesRes, analyticsRes, historyRes, pendingRes, configRes, membersRes] = await Promise.all([
         axios.get(`${getApiUrl()}/api/admin/communications/templates`, { headers: authHeaders }),
         axios.get(`${getApiUrl()}/api/admin/communications/analytics`, { headers: authHeaders }),
         axios.get(`${getApiUrl()}/api/admin/communications/history?limit=50`, { headers: authHeaders }),
         axios.get(`${getApiUrl()}/api/admin/communications/pending?days_ahead=14`, { headers: authHeaders }),
-        axios.get(`${getApiUrl()}/api/admin/communications/config-status`, { headers: authHeaders })
+        axios.get(`${getApiUrl()}/api/admin/communications/config-status`, { headers: authHeaders }),
+        axios.get(`${getApiUrl()}/api/admin/members`, { headers: authHeaders }).catch(() => ({ data: { members: [] } }))
       ]);
       
       setTemplates(templatesRes.data.templates || []);
@@ -97,6 +98,7 @@ const CommunicationsManager = ({ authHeaders }) => {
       setHistory(historyRes.data.history || []);
       setPendingReminders(pendingRes.data.reminders || []);
       setConfigStatus(configRes.data);
+      setMembers(membersRes.data.members || []);
     } catch (error) {
       console.error('Failed to fetch communications data:', error);
       toast({ title: 'Error', description: 'Failed to load communications data', variant: 'destructive' });
@@ -108,6 +110,107 @@ const CommunicationsManager = ({ authHeaders }) => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Save template (create or update)
+  const handleSaveTemplate = async (isNew = false) => {
+    if (!templateForm.name || !templateForm.subject || !templateForm.body) {
+      toast({ title: 'Error', description: 'Please fill in all required fields', variant: 'destructive' });
+      return;
+    }
+    
+    setSavingTemplate(true);
+    try {
+      const endpoint = isNew 
+        ? `${getApiUrl()}/api/admin/communications/templates`
+        : `${getApiUrl()}/api/admin/communications/templates/${templateForm.id}`;
+      
+      const method = isNew ? 'post' : 'put';
+      
+      // Extract variables from body ({{variable_name}})
+      const variableMatches = templateForm.body.match(/\{\{(\w+)\}\}/g) || [];
+      const variables = [...new Set(variableMatches.map(v => v.replace(/\{\{|\}\}/g, '')))];
+      
+      await axios[method](endpoint, {
+        ...templateForm,
+        variables,
+        is_default: false
+      }, { headers: authHeaders });
+      
+      toast({ title: 'Success', description: `Template ${isNew ? 'created' : 'updated'} successfully` });
+      setShowEditTemplateModal(false);
+      setShowCreateTemplateModal(false);
+      setTemplateForm({ name: '', trigger_description: '', channel: 'email', priority: 'normal', subject: '', body: '', variables: [] });
+      fetchData();
+    } catch (error) {
+      console.error('Failed to save template:', error);
+      toast({ title: 'Error', description: error.response?.data?.detail || 'Failed to save template', variant: 'destructive' });
+    } finally {
+      setSavingTemplate(false);
+    }
+  };
+
+  // Delete template
+  const handleDeleteTemplate = async (templateId) => {
+    if (!window.confirm('Are you sure you want to delete this template?')) return;
+    
+    try {
+      await axios.delete(`${getApiUrl()}/api/admin/communications/templates/${templateId}`, { headers: authHeaders });
+      toast({ title: 'Deleted', description: 'Template deleted successfully' });
+      fetchData();
+    } catch (error) {
+      console.error('Failed to delete template:', error);
+      toast({ title: 'Error', description: error.response?.data?.detail || 'Failed to delete template', variant: 'destructive' });
+    }
+  };
+
+  // Schedule communication
+  const handleScheduleCommunication = async () => {
+    if (!scheduleForm.template_id || !scheduleForm.scheduled_date || !scheduleForm.scheduled_time) {
+      toast({ title: 'Error', description: 'Please select template, date and time', variant: 'destructive' });
+      return;
+    }
+    
+    setSending(true);
+    try {
+      const scheduledFor = new Date(`${scheduleForm.scheduled_date}T${scheduleForm.scheduled_time}`).toISOString();
+      
+      // Get recipients based on selection
+      let petIds = [];
+      if (scheduleForm.recipient_type === 'all') {
+        // Get all pets from members
+        petIds = members.flatMap(m => (m.pets || []).map(p => p.id));
+      } else if (scheduleForm.recipient_type === 'selected') {
+        petIds = scheduleForm.selected_pet_ids;
+      }
+      
+      // Create scheduled communications for each pet
+      const results = await Promise.all(
+        petIds.slice(0, 50).map(petId => // Limit to 50 at a time
+          axios.post(`${getApiUrl()}/api/admin/communications/send`, {
+            pet_id: petId,
+            template_id: scheduleForm.template_id,
+            channel: 'email',
+            scheduled_for: scheduledFor,
+            variables: {}
+          }, { headers: authHeaders }).catch(e => ({ error: true, petId }))
+        )
+      );
+      
+      const successful = results.filter(r => !r.error).length;
+      toast({ 
+        title: 'Scheduled!', 
+        description: `${successful} communications scheduled for ${new Date(scheduledFor).toLocaleString()}` 
+      });
+      setShowScheduleModal(false);
+      setScheduleForm({ template_id: '', scheduled_date: '', scheduled_time: '', recipient_type: 'all', selected_pet_ids: [] });
+      fetchData();
+    } catch (error) {
+      console.error('Failed to schedule communication:', error);
+      toast({ title: 'Error', description: 'Failed to schedule communication', variant: 'destructive' });
+    } finally {
+      setSending(false);
+    }
+  };
 
   const handleSendTestEmail = async () => {
     if (!testEmail.to_email) {
