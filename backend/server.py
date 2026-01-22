@@ -909,6 +909,9 @@ from celebrate_routes import router as celebrate_router
 from mira_routes import router as mira_router, set_mira_db
 from mira_intelligence import router as mira_intelligence_router, set_intelligence_db
 
+# Import Mira Relationship Memory System
+from mira_memory_routes import router as mira_memory_router, set_memory_routes_db
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
