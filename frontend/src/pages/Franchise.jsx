@@ -9,7 +9,7 @@ const benefits = [
   {
     icon: Store,
     title: 'Established Brand',
-    description: 'Partner with a trusted brand loved by 45,000+ pet parents across India.'
+    description: 'Partner with a trusted brand backed by 1M+ customers globally and 45,000+ pets fed.'
   },
   {
     icon: TrendingUp,

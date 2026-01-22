@@ -153,16 +153,16 @@ const Home = () => {
           {/* Proof Indicators (Not Claims) */}
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
             <div className="text-center p-4 bg-white/5 backdrop-blur rounded-xl border border-white/10">
+              <p className="text-2xl font-bold text-white">1M+</p>
+              <p className="text-xs text-white/60">Customers Served</p>
+            </div>
+            <div className="text-center p-4 bg-white/5 backdrop-blur rounded-xl border border-white/10">
               <p className="text-2xl font-bold text-white">45,000+</p>
-              <p className="text-xs text-white/60">Pets Served</p>
+              <p className="text-xs text-white/60">Pets Fed</p>
             </div>
             <div className="text-center p-4 bg-white/5 backdrop-blur rounded-xl border border-white/10">
-              <p className="text-2xl font-bold text-white">Since 2020</p>
-              <p className="text-xs text-white/60">The Doggy Bakery®</p>
-            </div>
-            <div className="text-center p-4 bg-white/5 backdrop-blur rounded-xl border border-white/10">
-              <p className="text-2xl font-bold text-white">Since 1998</p>
-              <p className="text-xs text-white/60">Concierge Legacy</p>
+              <p className="text-2xl font-bold text-white">Since 1990s</p>
+              <p className="text-xs text-white/60">Concierge Heritage</p>
             </div>
             <div className="text-center p-4 bg-white/5 backdrop-blur rounded-xl border border-white/10">
               <p className="text-2xl font-bold text-white">30+ Years</p>
@@ -487,7 +487,7 @@ const Home = () => {
                 <Heart className="w-8 h-8 text-orange-600" />
               </div>
               <h3 className="font-bold text-lg text-gray-900 mb-2">The Doggy Bakery®</h3>
-              <p className="text-sm text-gray-500 mb-4">45,000+ pets served since 2020 — Where it began</p>
+              <p className="text-sm text-gray-500 mb-4">45,000+ pets fed with love — Where it began</p>
               <a 
                 href="https://thedoggybakery.com" 
                 target="_blank" 

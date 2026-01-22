@@ -2801,6 +2801,8 @@ export const categories = [
 // STATS
 // ============================================
 export const stats = {
+  conciergeCustomers: 1000000, // 1M+ customers served globally through concierge
+  petsFed: 45000, // 45,000+ pets fed through The Doggy Bakery®
   happyCustomers: 45000,
   productsDelivered: 500000,
   citiesServed: 3,

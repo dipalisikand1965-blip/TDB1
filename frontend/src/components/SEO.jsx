@@ -12,7 +12,7 @@ const SEO = ({
 }) => {
   const siteName = 'The Doggy Company';
   const defaultTitle = 'Dog Cakes & Treats | Bengaluru | Mumbai | Gurgaon | The Doggy Company';
-  const defaultDescription = "India's #1 Dog Bakery! Premium dog birthday cakes, healthy treats & fresh meals. Same-day delivery in Mumbai, Bangalore & Gurgaon. 45,000+ happy pet parents.";
+  const defaultDescription = "India's Pet Life Operating System. 1M+ customers served globally through concierge excellence, 45,000+ pets fed through The Doggy Bakery®. Premium care, celebrations & more.";
   const defaultImage = 'https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png';
   const baseUrl = 'https://thedoggycompany.in';
   
