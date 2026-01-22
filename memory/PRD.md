@@ -295,13 +295,12 @@ A memory-driven communication system that:
 
 ### 🟡 Medium Priority
 - [ ] WhatsApp Business API integration (currently provisional with click-to-chat links)
-- [ ] Behavioral inference from returns
+- [ ] Member analytics dashboard
+- [ ] Export health records as PDF
 - [ ] Backend code cleanup (remove duplicate function definitions in server.py)
-- [ ] Health Vault Expansion (medication tracking & alerts)
-- [ ] Multi-Pet Household Frontend Integration
 
 ### 🔵 Backlog
-- [ ] Member analytics dashboard
+- [ ] Multi-pet household advanced features
 - [ ] Standardize all 12 pillar admin managers
 - [ ] Birthday email automation (scheduler integration)
 - [ ] Custom template creation UI in Communications Manager
