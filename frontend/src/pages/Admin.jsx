@@ -38,6 +38,7 @@ import CelebrationsCalendar from '../components/admin/CelebrationsCalendar';
 import BreedTagsManager from '../components/admin/BreedTagsManager';
 import AgentManagement from '../components/admin/AgentManagement';
 import CommunicationsManager from '../components/admin/CommunicationsManager';
+import MiraMemoryManager from '../components/admin/MiraMemoryManager';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
 import { API_URL } from '../utils/api';
 import {
