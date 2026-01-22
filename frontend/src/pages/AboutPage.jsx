@@ -678,7 +678,7 @@ const AboutPage = () => {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Where We Are Today</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Founded in <strong className="text-gray-900">2020</strong>, The Doggy Company® has served thousands of pet parents and been part of tens of thousands of pet moments — from everyday care to life celebrations.
+                Launching in <strong className="text-gray-900">2026</strong>, The Doggy Company® brings together decades of experience — <strong className="text-gray-900">1 million+ customers served</strong> through our concierge heritage and <strong className="text-gray-900">45,000+ pets fed</strong> through The Doggy Bakery®.
               </p>
               <p className="text-gray-600 leading-relaxed">
                 We are building not just experiences, but <strong className="text-purple-700">long-term relationships</strong> between pet, parent, and platform.
