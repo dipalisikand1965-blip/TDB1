@@ -308,6 +308,30 @@ A memory-driven communication system that:
 
 ## Bug Fixes (This Session)
 - ✅ **Agent Form Modal**: Fixed modal overflow issue - form now shows header, all fields, and buttons properly (added max-h-[90vh] overflow-y-auto to DialogContent, sticky header/footer)
+- ✅ **Pet Profile Modal**: Added "View Full Soul" and "Health Vault" buttons for better access to pet data
+
+---
+
+## Health Vault Feature (NEW)
+### Overview
+Comprehensive pet health management in Admin Panel:
+- **Vaccines**: Track vaccinations with due date reminders
+- **Medications**: Manage active and past medications
+- **Vet Visits**: Record visit history with diagnosis/treatment
+- **Weight History**: Monitor pet weight over time
+
+### Frontend Components (Admin.jsx)
+- Health Vault modal accessible from Pet Profile
+- Tabbed interface with record counts
+- Add Vaccine and Add Medication forms
+- Color-coded due date badges (blue=upcoming, red=overdue)
+
+### API Endpoints (pet_vault_routes.py)
+- `GET/POST /api/pet-vault/{pet_id}/vaccines`
+- `GET/POST /api/pet-vault/{pet_id}/medications`
+- `GET /api/pet-vault/{pet_id}/visits`
+- `GET/POST /api/pet-vault/{pet_id}/weight`
+- `GET /api/pet-vault/{pet_id}/summary`
 
 ---
 
