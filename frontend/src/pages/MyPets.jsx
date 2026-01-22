@@ -9,10 +9,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Label } from '../components/ui/label';
 import { 
   PawPrint, Plus, Calendar, Gift, Edit, Trash2, Save, X,
-  Search, Crown, Moon, Mountain, Sofa, Users, 
+  Search, Crown, Moon, Mountain, Sofa, Users, Camera,
   Utensils, Zap, Smile, ChevronRight, ChevronDown, ChevronUp,
   Heart, Sparkles, Stethoscope, Syringe, Pill, AlertCircle,
-  RefreshCw, Loader2, Check, MessageCircle
+  RefreshCw, Loader2, Check, MessageCircle, Upload
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { toast } from '../hooks/use-toast';
