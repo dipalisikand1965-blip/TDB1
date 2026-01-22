@@ -15,6 +15,22 @@ from typing import Optional, List, Dict, Any
 from enum import Enum
 import asyncio
 import logging
+import os
+
+# Email configuration
+try:
+    import resend
+    RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
+    if RESEND_API_KEY:
+        resend.api_key = RESEND_API_KEY
+        RESEND_AVAILABLE = True
+    else:
+        RESEND_AVAILABLE = False
+except ImportError:
+    RESEND_AVAILABLE = False
+
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggybakery.in")
+WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919663185747")
 
 logger = logging.getLogger(__name__)
 
