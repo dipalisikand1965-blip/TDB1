@@ -3678,6 +3678,232 @@ async def seed_page_content(username: str = Depends(verify_admin)):
     return {"success": True, "seeded": seeded, "total_pages": len(default_pages)}
 
 
+@admin_router.post("/pages/seed-all")
+async def seed_all_page_content(username: str = Depends(verify_admin)):
+    """Seed default content for ALL pages including pillars"""
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Pillar pages
+    pillar_pages = [
+        {"slug": "celebrate", "name": "Celebrate", "desc": "Birthday cakes, treats & parties for your pet", "icon": "🎂"},
+        {"slug": "dine", "name": "Dine", "desc": "Pet-friendly restaurants & cafes", "icon": "🍽️"},
+        {"slug": "travel", "name": "Travel", "desc": "Pet relocation & travel assistance", "icon": "✈️"},
+        {"slug": "stay", "name": "Stay", "desc": "Pet-friendly hotels & accommodations", "icon": "🏨"},
+        {"slug": "care", "name": "Care", "desc": "Grooming, walking, sitting services", "icon": "💊"},
+        {"slug": "enjoy", "name": "Enjoy", "desc": "Events & experiences for pets", "icon": "🎾"},
+        {"slug": "fit", "name": "Fit", "desc": "Exercise & wellness programs", "icon": "🏃"},
+        {"slug": "advisory", "name": "Advisory", "desc": "Expert consultations & guidance", "icon": "🧠"},
+        {"slug": "emergency", "name": "Emergency", "desc": "24/7 pet emergency support", "icon": "🚨"},
+        {"slug": "paperwork", "name": "Paperwork", "desc": "Health records & documentation", "icon": "📋"},
+        {"slug": "shop", "name": "Shop Assist", "desc": "Curated products via Mira", "icon": "🛍️"},
+        {"slug": "club", "name": "Club", "desc": "Community & rewards program", "icon": "👥"},
+    ]
+    
+    all_pages = []
+    
+    # Generate pillar pages
+    for pillar in pillar_pages:
+        all_pages.append({
+            "slug": pillar["slug"],
+            "title": pillar["name"],
+            "content": {
+                "hero": {
+                    "badge": f"{pillar['name']} Pillar",
+                    "title": pillar["name"],
+                    "highlight": "For Your Pet",
+                    "subtitle": pillar["desc"],
+                    "cta_primary": "Get Started",
+                    "cta_secondary": "Talk to Mira"
+                },
+                "sections": [
+                    {
+                        "id": f"{pillar['slug']}-intro",
+                        "title": f"About {pillar['name']}",
+                        "content": f"{pillar['desc']}. Our {pillar['name']} services are designed to make your pet's life easier and more enjoyable.",
+                        "type": "text"
+                    },
+                    {
+                        "id": f"{pillar['slug']}-features",
+                        "title": "What's Included",
+                        "content": "Edit this section to list all features and services available under this pillar.",
+                        "type": "text"
+                    }
+                ],
+                "seo": {
+                    "meta_title": f"{pillar['name']} | The Doggy Company®",
+                    "meta_description": pillar["desc"],
+                    "keywords": ["pet", "dog", pillar["slug"], pillar["name"].lower()]
+                }
+            },
+            "is_published": True
+        })
+    
+    # Add core pages
+    all_pages.extend([
+        {
+            "slug": "home",
+            "title": "Homepage",
+            "content": {
+                "hero": {
+                    "badge": "Pet Life Operating System",
+                    "title": "A System That",
+                    "highlight": "Learns, Remembers & Cares",
+                    "subtitle": "From birthdays to vet visits, travel to daily routines — your pet's entire life, held in one intelligent system.",
+                    "cta_primary": "Start Your Pet's Soul",
+                    "cta_secondary": "Talk to Mira"
+                },
+                "proof_blocks": [
+                    {"value": "45,000+", "label": "Pets Served"},
+                    {"value": "Since 2020", "label": "The Doggy Bakery®"},
+                    {"value": "Since 1998", "label": "Concierge Legacy"},
+                    {"value": "30+ Years", "label": "Service Excellence"}
+                ],
+                "outcome_statements": [
+                    {"icon": "✂️", "statement": "We remember how your dog reacts at the groomer.", "subtext": "Anxiety triggers, favorite handlers, special needs — all captured in their Soul."},
+                    {"icon": "✈️", "statement": "We plan travel without making you repeat paperwork.", "subtext": "Vaccination records, carrier preferences, anxiety levels — already known."},
+                    {"icon": "🎂", "statement": "We celebrate milestones without reminders.", "subtext": "Birthdays, gotcha days, vaccination due dates — we remember so you don't have to."}
+                ],
+                "sections": [],
+                "seo": {
+                    "meta_title": "The Doggy Company® | Pet Life Operating System",
+                    "meta_description": "A Pet Life Operating System that learns, remembers, and cares. From birthdays to vet visits, your pet's entire life in one intelligent system.",
+                    "keywords": ["pet", "dog", "pet care", "pet life", "pet operating system"]
+                }
+            },
+            "is_published": True
+        },
+        {
+            "slug": "faqs",
+            "title": "FAQs",
+            "content": {
+                "hero": {
+                    "title": "Frequently Asked Questions",
+                    "subtitle": "Find answers to common questions about The Doggy Company"
+                },
+                "sections": [
+                    {"title": "What is Pet Soul?", "content": "Pet Soul is your pet's living digital profile that captures their personality, preferences, health history, and more. It grows smarter with every interaction."},
+                    {"title": "Who is Mira?", "content": "Mira is our AI concierge that knows your pet personally. She remembers their allergies, preferences, and history to provide personalized recommendations."},
+                    {"title": "How does the Pet Life Pass work?", "content": "The Pet Life Pass gives you access to all 12 pillars of pet care — from grooming to travel, celebrations to emergency support — all connected to your pet's Soul profile."},
+                    {"title": "Is my data safe?", "content": "Absolutely. We use bank-grade encryption and never sell or share your pet's data. You can export or delete your data anytime."}
+                ],
+                "seo": {
+                    "meta_title": "FAQs | The Doggy Company®",
+                    "meta_description": "Frequently asked questions about The Doggy Company's Pet Life Operating System.",
+                    "keywords": ["faq", "help", "questions", "pet care"]
+                }
+            },
+            "is_published": True
+        },
+        {
+            "slug": "contact",
+            "title": "Contact",
+            "content": {
+                "hero": {
+                    "title": "Get in Touch",
+                    "subtitle": "We'd love to hear from you"
+                },
+                "contact_info": {
+                    "email": "hello@thedoggycompany.in",
+                    "phone": "+91 9876543210",
+                    "whatsapp": "+91 9876543210",
+                    "address": "Mumbai, India"
+                },
+                "sections": [],
+                "seo": {
+                    "meta_title": "Contact Us | The Doggy Company®",
+                    "meta_description": "Get in touch with The Doggy Company team.",
+                    "keywords": ["contact", "support", "help"]
+                }
+            },
+            "is_published": True
+        },
+        {
+            "slug": "refund",
+            "title": "Refund Policy",
+            "content": {
+                "hero": {
+                    "title": "Refund Policy",
+                    "subtitle": "Our commitment to your satisfaction"
+                },
+                "sections": [
+                    {"title": "Product Returns", "content": "Perishable items like cakes and treats cannot be returned due to health and safety reasons. Non-perishable items can be returned within 7 days if unused and in original packaging."},
+                    {"title": "Membership Refunds", "content": "Membership fees are non-refundable once the subscription period begins. You may cancel anytime to prevent future renewals."},
+                    {"title": "Service Cancellations", "content": "Bookings cancelled 24+ hours in advance receive a full refund. Cancellations within 24 hours may incur a 50% fee."},
+                    {"title": "How to Request", "content": "Contact us at support@thedoggycompany.in with your order details to initiate a refund request."}
+                ],
+                "seo": {
+                    "meta_title": "Refund Policy | The Doggy Company®",
+                    "meta_description": "Our refund and return policy for products and services.",
+                    "keywords": ["refund", "return", "policy", "cancellation"]
+                }
+            },
+            "is_published": True
+        }
+    ])
+    
+    seeded = 0
+    for page in all_pages:
+        existing = await db.page_content.find_one({"slug": page["slug"]})
+        if not existing:
+            page["created_at"] = now
+            page["updated_at"] = now
+            page["created_by"] = username
+            await db.page_content.insert_one(page)
+            seeded += 1
+        else:
+            # Update existing pages that are empty
+            if not existing.get("content") or not existing.get("content", {}).get("hero"):
+                await db.page_content.update_one(
+                    {"slug": page["slug"]},
+                    {"$set": {
+                        "content": page["content"],
+                        "updated_at": now,
+                        "updated_by": username
+                    }}
+                )
+                seeded += 1
+    
+    return {"success": True, "seeded": seeded, "total_pages": len(all_pages)}
+
+
+@admin_router.get("/pages/export")
+async def export_all_pages(username: str = Depends(verify_admin)):
+    """Export all page content as JSON"""
+    pages = await db.page_content.find({}, {"_id": 0}).to_list(100)
+    return {
+        "pages": pages,
+        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "exported_by": username
+    }
+
+
+@admin_router.post("/pages/import")
+async def import_pages(data: dict, username: str = Depends(verify_admin)):
+    """Import page content from JSON"""
+    pages = data.get("pages", [])
+    if not pages:
+        raise HTTPException(status_code=400, detail="No pages to import")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    imported = 0
+    
+    for page in pages:
+        if not page.get("slug"):
+            continue
+        
+        page["updated_at"] = now
+        page["imported_by"] = username
+        
+        await db.page_content.update_one(
+            {"slug": page["slug"]},
+            {"$set": page},
+            upsert=True
+        )
+        imported += 1
+    
+    return {"success": True, "imported": imported}
+
+
 # ==================== TESTIMONIALS CRUD ====================
 
 @admin_router.get("/testimonials")
