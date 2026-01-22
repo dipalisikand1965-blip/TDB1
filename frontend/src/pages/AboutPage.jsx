@@ -19,9 +19,9 @@ const timelineData = [
   },
   {
     year: '2010s',
-    title: 'Club Concierge® Expands',
-    description: 'Premium concierge services grow to serve elite lifestyle ecosystems across India.',
-    icon: Award,
+    title: '1 Million+ Customers Served',
+    description: 'Les Concierges® and Club Concierge® expand globally, serving over 1 million customers with premium concierge excellence.',
+    icon: Globe,
     color: 'from-purple-500 to-indigo-600'
   },
   {
@@ -32,22 +32,22 @@ const timelineData = [
     color: 'from-amber-500 to-orange-600'
   },
   {
-    year: '2019',
-    title: '45,000+ Pets Served',
+    year: '2024',
+    title: '45,000+ Pets Fed',
     description: 'The Doggy Bakery® becomes synonymous with celebrating pets across India — not just with products, but with meaning.',
     icon: Heart,
     color: 'from-pink-500 to-rose-600'
   },
   {
-    year: '2020',
-    title: 'The Doggy Company® Founded',
+    year: '2026',
+    title: 'The Doggy Company® Launches',
     description: 'Concierge expertise and lived pet experience converge into India\'s first Pet Life Operating System.',
     icon: Building2,
     color: 'from-violet-500 to-purple-600'
   },
   {
-    year: '2024',
-    title: 'Pet Soul™ & Mira® AI Launch',
+    year: '2026',
+    title: 'Pet Soul™ & Mira® AI Go Live',
     description: 'Revolutionary pet intelligence technology that remembers, learns, and anticipates — bringing Mira\'s spirit to life.',
     icon: Cpu,
     color: 'from-emerald-500 to-teal-600'
