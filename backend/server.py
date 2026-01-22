@@ -1914,20 +1914,40 @@ async def chat_with_mira_legacy(request: ChatRequest):
             user_id = payload.get("user_id")
             
             if user_email or user_id:
-                # Try multiple query patterns to find user's pets
-                queries_to_try = []
+                # First, try to get pets from member record (most complete data)
+                member_queries = []
                 if user_email:
-                    queries_to_try.append({"user_email": user_email})
-                    queries_to_try.append({"user_id": user_email})
+                    member_queries.append({"email": user_email})
                 if user_id:
-                    queries_to_try.append({"user_id": user_id})
+                    member_queries.append({"_id": user_id})
+                    member_queries.append({"id": user_id})
+                
+                member = None
+                for query in member_queries:
+                    member = await db.members.find_one(query)
+                    if member:
+                        break
                 
                 pets = []
-                for query in queries_to_try:
-                    found_pets = await db.pets.find(query, {"_id": 0}).to_list(10)
-                    if found_pets:
-                        pets = found_pets
-                        break
+                if member and member.get("pets"):
+                    pets = member.get("pets", [])
+                    user_info = {"name": member.get("name"), "email": member.get("email")}
+                    logger.info(f"Mira found {len(pets)} pets from member record for {user_email}")
+                else:
+                    # Fallback: try pets collection
+                    pet_queries = []
+                    if user_email:
+                        pet_queries.append({"user_email": user_email})
+                        pet_queries.append({"user_id": user_email})
+                    if user_id:
+                        pet_queries.append({"user_id": user_id})
+                    
+                    for query in pet_queries:
+                        found_pets = await db.pets.find(query, {"_id": 0}).to_list(10)
+                        if found_pets:
+                            pets = found_pets
+                            logger.info(f"Mira found {len(pets)} pets from pets collection for {user_email}")
+                            break
                 
                 if pets:
                     user_pets = pets
