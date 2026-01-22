@@ -416,7 +416,7 @@ const MyPets = () => {
                         <span className="text-2xl">{celeb.emoji}</span>
                         <div>
                           <p className="font-medium text-amber-900">
-                            {celeb.pet_name}'s {celeb.occasion_name}
+                            {celeb.pet_name}&apos;s {celeb.occasion_name}
                           </p>
                           <p className="text-sm text-amber-700">
                             {celeb.days_until === 0 ? '🎉 TODAY!' : 
