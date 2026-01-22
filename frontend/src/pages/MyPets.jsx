@@ -64,6 +64,10 @@ const MyPets = () => {
   const [editingPet, setEditingPet] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [saving, setSaving] = useState(false);
+  
+  // Photo upload state
+  const [uploadingPhoto, setUploadingPhoto] = useState(null);
+  const fileInputRef = React.useRef({});
 
   // Redirect to login if not authenticated
   useEffect(() => {
