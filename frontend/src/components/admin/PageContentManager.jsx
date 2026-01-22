@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -6,23 +6,51 @@ import { Badge } from '../ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { 
   FileText, Save, RefreshCw, Plus, Trash2, Edit2, X, Check,
-  Eye, EyeOff, ChevronDown, ChevronUp, Globe, Sparkles
+  Eye, ChevronDown, ChevronUp, Globe, Sparkles, Upload, Download,
+  Home, Info, CreditCard, Shield, FileCheck, Gift, Utensils, Plane,
+  Hotel, Heart, Dumbbell, Brain, Phone, BookOpen, ShoppingBag, Users, Star
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 
 const PageContentManager = ({ getAuthHeader }) => {
   const [pages, setPages] = useState([]);
-  const [activePage, setActivePage] = useState('about');
+  const [activePage, setActivePage] = useState('home');
   const [pageContent, setPageContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
+  const [activeTab, setActiveTab] = useState('pages');
+  const fileInputRef = useRef(null);
 
+  // Comprehensive page configurations covering ALL pages
   const PAGE_CONFIGS = {
-    about: { name: 'About Us', icon: '🏢' },
-    membership: { name: 'Membership', icon: '👑' },
-    terms: { name: 'Terms & Conditions', icon: '📜' },
-    privacy: { name: 'Privacy Policy', icon: '🔒' }
+    // Core Pages
+    home: { name: 'Homepage', icon: <Home className="w-4 h-4" />, category: 'core' },
+    about: { name: 'About Us', icon: <Info className="w-4 h-4" />, category: 'core' },
+    membership: { name: 'Pet Life Pass', icon: <CreditCard className="w-4 h-4" />, category: 'core' },
+    
+    // Legal Pages
+    terms: { name: 'Terms & Conditions', icon: <FileCheck className="w-4 h-4" />, category: 'legal' },
+    privacy: { name: 'Privacy Policy', icon: <Shield className="w-4 h-4" />, category: 'legal' },
+    refund: { name: 'Refund Policy', icon: <FileText className="w-4 h-4" />, category: 'legal' },
+    
+    // Pillar Pages
+    celebrate: { name: 'Celebrate', icon: <Gift className="w-4 h-4" />, category: 'pillar' },
+    dine: { name: 'Dine', icon: <Utensils className="w-4 h-4" />, category: 'pillar' },
+    travel: { name: 'Travel', icon: <Plane className="w-4 h-4" />, category: 'pillar' },
+    stay: { name: 'Stay', icon: <Hotel className="w-4 h-4" />, category: 'pillar' },
+    care: { name: 'Care', icon: <Heart className="w-4 h-4" />, category: 'pillar' },
+    enjoy: { name: 'Enjoy', icon: <Star className="w-4 h-4" />, category: 'pillar' },
+    fit: { name: 'Fit', icon: <Dumbbell className="w-4 h-4" />, category: 'pillar' },
+    advisory: { name: 'Advisory', icon: <Brain className="w-4 h-4" />, category: 'pillar' },
+    emergency: { name: 'Emergency', icon: <Phone className="w-4 h-4" />, category: 'pillar' },
+    paperwork: { name: 'Paperwork', icon: <BookOpen className="w-4 h-4" />, category: 'pillar' },
+    shop: { name: 'Shop Assist', icon: <ShoppingBag className="w-4 h-4" />, category: 'pillar' },
+    club: { name: 'Club', icon: <Users className="w-4 h-4" />, category: 'pillar' },
+    
+    // Other Pages
+    faqs: { name: 'FAQs', icon: <FileText className="w-4 h-4" />, category: 'other' },
+    contact: { name: 'Contact', icon: <Phone className="w-4 h-4" />, category: 'other' },
   };
 
   useEffect(() => {
@@ -58,12 +86,44 @@ const PageContentManager = ({ getAuthHeader }) => {
       if (response.ok) {
         const data = await response.json();
         setPageContent(data);
+      } else {
+        // Create default content for new page
+        setPageContent(getDefaultPageContent(slug));
       }
     } catch (error) {
       console.error('Failed to fetch page content:', error);
+      setPageContent(getDefaultPageContent(slug));
     } finally {
       setLoading(false);
     }
+  };
+
+  const getDefaultPageContent = (slug) => {
+    const config = PAGE_CONFIGS[slug];
+    const isPillar = config?.category === 'pillar';
+    
+    return {
+      slug,
+      title: config?.name || slug,
+      content: {
+        hero: {
+          badge: isPillar ? `${config?.name} Pillar` : '',
+          title: config?.name || 'Page Title',
+          highlight: 'Your Highlight Text Here',
+          subtitle: 'Describe what this page is about.',
+          cta_primary: 'Get Started',
+          cta_secondary: 'Learn More'
+        },
+        sections: [],
+        seo: {
+          meta_title: `${config?.name} | The Doggy Company®`,
+          meta_description: `${config?.name} services for your pet at The Doggy Company.`,
+          keywords: ['pet', 'dog', slug]
+        }
+      },
+      is_published: false,
+      updated_at: new Date().toISOString()
+    };
   };
 
   const savePageContent = async () => {
@@ -92,9 +152,11 @@ const PageContentManager = ({ getAuthHeader }) => {
     }
   };
 
-  const seedDefaultContent = async () => {
+  const seedAllDefaultContent = async () => {
+    if (!confirm('This will seed default content for ALL pages. Continue?')) return;
+    
     try {
-      const response = await fetch(`${API_URL}/api/admin/pages/seed`, {
+      const response = await fetch(`${API_URL}/api/admin/pages/seed-all`, {
         method: 'POST',
         headers: getAuthHeader()
       });
@@ -106,12 +168,62 @@ const PageContentManager = ({ getAuthHeader }) => {
       }
     } catch (error) {
       console.error('Failed to seed content:', error);
+      alert('Failed to seed content');
     }
+  };
+
+  const exportContent = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/pages/export`, {
+        headers: getAuthHeader()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `page-content-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+      }
+    } catch (error) {
+      console.error('Export failed:', error);
+    }
+  };
+
+  const importContent = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      
+      const response = await fetch(`${API_URL}/api/admin/pages/import`, {
+        method: 'POST',
+        headers: {
+          ...getAuthHeader(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Imported ${result.imported} pages!`);
+        fetchPages();
+      }
+    } catch (error) {
+      console.error('Import failed:', error);
+      alert('Failed to import: Invalid JSON format');
+    }
+    
+    event.target.value = '';
   };
 
   const updateContent = (path, value) => {
     setPageContent(prev => {
-      const newContent = { ...prev };
+      const newContent = JSON.parse(JSON.stringify(prev));
       const keys = path.split('.');
       let current = newContent;
       
@@ -132,494 +244,346 @@ const PageContentManager = ({ getAuthHeader }) => {
     }));
   };
 
+  const addSection = () => {
+    const newSection = {
+      id: `section-${Date.now()}`,
+      title: 'New Section',
+      content: '',
+      type: 'text'
+    };
+    
+    setPageContent(prev => ({
+      ...prev,
+      content: {
+        ...prev.content,
+        sections: [...(prev.content?.sections || []), newSection]
+      }
+    }));
+  };
+
+  const removeSection = (index) => {
+    setPageContent(prev => ({
+      ...prev,
+      content: {
+        ...prev.content,
+        sections: prev.content.sections.filter((_, i) => i !== index)
+      }
+    }));
+  };
+
   const renderEditor = () => {
-    if (!pageContent || !pageContent.content) {
+    if (loading) {
       return (
-        <div className="text-center py-12 text-gray-500">
-          <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No content found for this page.</p>
-          <Button onClick={seedDefaultContent} className="mt-4">
-            <Sparkles className="w-4 h-4 mr-2" /> Seed Default Content
-          </Button>
+        <div className="flex items-center justify-center py-12">
+          <RefreshCw className="w-6 h-6 animate-spin text-purple-600" />
         </div>
       );
     }
 
-    const content = pageContent.content;
+    if (!pageContent) {
+      return (
+        <div className="text-center py-12 text-gray-500">
+          <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+          <p>Select a page to edit</p>
+        </div>
+      );
+    }
+
+    const content = pageContent.content || {};
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
+        {/* Page Status */}
+        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          <div>
+            <h3 className="font-semibold">{PAGE_CONFIGS[activePage]?.name || activePage}</h3>
+            <p className="text-sm text-gray-500">Last updated: {new Date(pageContent.updated_at || Date.now()).toLocaleDateString()}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant={pageContent.is_published ? 'default' : 'secondary'}>
+              {pageContent.is_published ? 'Published' : 'Draft'}
+            </Badge>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setPageContent(prev => ({ ...prev, is_published: !prev.is_published }))}
+            >
+              {pageContent.is_published ? 'Unpublish' : 'Publish'}
+            </Button>
+          </div>
+        </div>
+
         {/* Hero Section */}
-        {content.hero && (
-          <Card className="p-4">
-            <button 
-              onClick={() => toggleSection('hero')}
-              className="w-full flex items-center justify-between text-left font-semibold mb-2"
-            >
-              <span>🎯 Hero Section</span>
-              {expandedSections.hero ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
-            {expandedSections.hero !== false && (
-              <div className="space-y-3 mt-4">
-                {content.hero.badge !== undefined && (
-                  <div>
-                    <label className="text-xs text-gray-500 uppercase">Badge Text</label>
-                    <Input
-                      value={content.hero.badge || ''}
-                      onChange={(e) => updateContent('content.hero.badge', e.target.value)}
-                      placeholder="Badge text"
-                    />
-                  </div>
-                )}
-                <div>
-                  <label className="text-xs text-gray-500 uppercase">Title</label>
-                  <Input
-                    value={content.hero.title || ''}
-                    onChange={(e) => updateContent('content.hero.title', e.target.value)}
-                    placeholder="Main title"
-                  />
-                </div>
-                {content.hero.highlight !== undefined && (
-                  <div>
-                    <label className="text-xs text-gray-500 uppercase">Highlight Text</label>
-                    <Input
-                      value={content.hero.highlight || ''}
-                      onChange={(e) => updateContent('content.hero.highlight', e.target.value)}
-                      placeholder="Highlighted text"
-                    />
-                  </div>
-                )}
-                {content.hero.subtitle !== undefined && (
-                  <div>
-                    <label className="text-xs text-gray-500 uppercase">Subtitle</label>
-                    <Input
-                      value={content.hero.subtitle || ''}
-                      onChange={(e) => updateContent('content.hero.subtitle', e.target.value)}
-                      placeholder="Subtitle"
-                    />
-                  </div>
-                )}
-                {content.hero.description !== undefined && (
-                  <div>
-                    <label className="text-xs text-gray-500 uppercase">Description</label>
-                    <textarea
-                      value={content.hero.description || ''}
-                      onChange={(e) => updateContent('content.hero.description', e.target.value)}
-                      className="w-full p-2 border rounded-md text-sm"
-                      rows={3}
-                      placeholder="Description text"
-                    />
-                  </div>
-                )}
+        <Card className="p-4">
+          <button 
+            onClick={() => toggleSection('hero')}
+            className="w-full flex items-center justify-between text-left font-semibold mb-2"
+          >
+            <span className="flex items-center gap-2">
+              <span className="text-lg">🎯</span> Hero Section
+            </span>
+            {expandedSections.hero ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+          {expandedSections.hero !== false && (
+            <div className="space-y-3 mt-4 pl-6 border-l-2 border-purple-200">
+              <div>
+                <label className="text-xs text-gray-500 uppercase">Badge Text</label>
+                <Input
+                  value={content.hero?.badge || ''}
+                  onChange={(e) => updateContent('content.hero.badge', e.target.value)}
+                  placeholder="e.g., Pet Life Operating System"
+                />
               </div>
-            )}
-          </Card>
-        )}
-
-        {/* Mission Section */}
-        {content.mission && (
-          <Card className="p-4">
-            <button 
-              onClick={() => toggleSection('mission')}
-              className="w-full flex items-center justify-between text-left font-semibold mb-2"
-            >
-              <span>🎯 Mission</span>
-              {expandedSections.mission ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
-            {expandedSections.mission !== false && (
-              <div className="space-y-3 mt-4">
+              <div>
+                <label className="text-xs text-gray-500 uppercase">Main Title</label>
+                <Input
+                  value={content.hero?.title || ''}
+                  onChange={(e) => updateContent('content.hero.title', e.target.value)}
+                  placeholder="Main headline"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 uppercase">Highlight (Colored text)</label>
+                <Input
+                  value={content.hero?.highlight || ''}
+                  onChange={(e) => updateContent('content.hero.highlight', e.target.value)}
+                  placeholder="Highlighted portion"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 uppercase">Subtitle</label>
+                <textarea
+                  value={content.hero?.subtitle || ''}
+                  onChange={(e) => updateContent('content.hero.subtitle', e.target.value)}
+                  placeholder="Description paragraph"
+                  className="w-full p-2 border rounded-md text-sm"
+                  rows={3}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-500 uppercase">Title</label>
+                  <label className="text-xs text-gray-500 uppercase">Primary CTA</label>
                   <Input
-                    value={content.mission.title || ''}
-                    onChange={(e) => updateContent('content.mission.title', e.target.value)}
+                    value={content.hero?.cta_primary || ''}
+                    onChange={(e) => updateContent('content.hero.cta_primary', e.target.value)}
+                    placeholder="Button text"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 uppercase">Text</label>
-                  <textarea
-                    value={content.mission.text || ''}
-                    onChange={(e) => updateContent('content.mission.text', e.target.value)}
-                    className="w-full p-2 border rounded-md text-sm"
-                    rows={4}
+                  <label className="text-xs text-gray-500 uppercase">Secondary CTA</label>
+                  <Input
+                    value={content.hero?.cta_secondary || ''}
+                    onChange={(e) => updateContent('content.hero.cta_secondary', e.target.value)}
+                    placeholder="Button text"
                   />
                 </div>
               </div>
-            )}
-          </Card>
-        )}
+            </div>
+          )}
+        </Card>
 
-        {/* Pillars Section */}
-        {content.pillars && (
-          <Card className="p-4">
-            <button 
-              onClick={() => toggleSection('pillars')}
-              className="w-full flex items-center justify-between text-left font-semibold mb-2"
-            >
-              <span>🏛️ Pillars ({content.pillars.length})</span>
-              {expandedSections.pillars ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
-            {expandedSections.pillars && (
-              <div className="space-y-3 mt-4">
-                {content.pillars.map((pillar, idx) => (
-                  <div key={idx} className="p-3 bg-gray-50 rounded-lg">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input
-                        value={pillar.name || ''}
-                        onChange={(e) => {
-                          const newPillars = [...content.pillars];
-                          newPillars[idx] = { ...pillar, name: e.target.value };
-                          updateContent('content.pillars', newPillars);
-                        }}
-                        placeholder="Name"
-                      />
-                      <Input
-                        value={pillar.description || ''}
-                        onChange={(e) => {
-                          const newPillars = [...content.pillars];
-                          newPillars[idx] = { ...pillar, description: e.target.value };
-                          updateContent('content.pillars', newPillars);
-                        }}
-                        placeholder="Description"
-                      />
-                    </div>
-                  </div>
-                ))}
+        {/* Custom Sections */}
+        <Card className="p-4">
+          <div className="flex items-center justify-between mb-4">
+            <span className="font-semibold flex items-center gap-2">
+              <span className="text-lg">📝</span> Content Sections
+            </span>
+            <Button size="sm" onClick={addSection}>
+              <Plus className="w-4 h-4 mr-1" /> Add Section
+            </Button>
+          </div>
+          
+          {(content.sections || []).map((section, idx) => (
+            <div key={section.id || idx} className="mb-4 p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between mb-3">
+                <Input
+                  value={section.title || ''}
+                  onChange={(e) => {
+                    const newSections = [...content.sections];
+                    newSections[idx].title = e.target.value;
+                    updateContent('content.sections', newSections);
+                  }}
+                  placeholder="Section title"
+                  className="font-medium"
+                />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-red-500"
+                  onClick={() => removeSection(idx)}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
               </div>
-            )}
-          </Card>
-        )}
-
-        {/* Benefits Section */}
-        {content.benefits && (
-          <Card className="p-4">
-            <button 
-              onClick={() => toggleSection('benefits')}
-              className="w-full flex items-center justify-between text-left font-semibold mb-2"
-            >
-              <span>✨ Benefits ({content.benefits.length})</span>
-              {expandedSections.benefits ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
-            {expandedSections.benefits && (
-              <div className="space-y-3 mt-4">
-                {content.benefits.map((benefit, idx) => (
-                  <div key={idx} className="p-3 bg-gray-50 rounded-lg">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input
-                        value={benefit.title || ''}
-                        onChange={(e) => {
-                          const newBenefits = [...content.benefits];
-                          newBenefits[idx] = { ...benefit, title: e.target.value };
-                          updateContent('content.benefits', newBenefits);
-                        }}
-                        placeholder="Title"
-                      />
-                      <Input
-                        value={benefit.description || ''}
-                        onChange={(e) => {
-                          const newBenefits = [...content.benefits];
-                          newBenefits[idx] = { ...benefit, description: e.target.value };
-                          updateContent('content.benefits', newBenefits);
-                        }}
-                        placeholder="Description"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
-        )}
-
-        {/* Pricing Section */}
-        {content.pricing && (
-          <Card className="p-4">
-            <button 
-              onClick={() => toggleSection('pricing')}
-              className="w-full flex items-center justify-between text-left font-semibold mb-2"
-            >
-              <span>💰 Pricing</span>
-              {expandedSections.pricing ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
-            {expandedSections.pricing !== false && (
-              <div className="space-y-3 mt-4">
-                <div>
-                  <label className="text-xs text-gray-500 uppercase">Heading</label>
-                  <Input
-                    value={content.pricing.heading || ''}
-                    onChange={(e) => updateContent('content.pricing.heading', e.target.value)}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-gray-500 uppercase">Annual Price (₹)</label>
-                    <Input
-                      type="number"
-                      value={content.pricing.annual?.price || 999}
-                      onChange={(e) => updateContent('content.pricing.annual.price', parseInt(e.target.value))}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-500 uppercase">Monthly Price (₹)</label>
-                    <Input
-                      type="number"
-                      value={content.pricing.monthly?.price || 99}
-                      onChange={(e) => updateContent('content.pricing.monthly.price', parseInt(e.target.value))}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-          </Card>
-        )}
-
-        {/* CTA Section */}
-        {content.cta && (
-          <Card className="p-4">
-            <button 
-              onClick={() => toggleSection('cta')}
-              className="w-full flex items-center justify-between text-left font-semibold mb-2"
-            >
-              <span>🚀 Call to Action</span>
-              {expandedSections.cta ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
-            {expandedSections.cta !== false && (
-              <div className="space-y-3 mt-4">
-                <div>
-                  <label className="text-xs text-gray-500 uppercase">Heading</label>
-                  <Input
-                    value={content.cta.heading || ''}
-                    onChange={(e) => updateContent('content.cta.heading', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase">Subheading</label>
-                  <Input
-                    value={content.cta.subheading || ''}
-                    onChange={(e) => updateContent('content.cta.subheading', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase">Button Text</label>
-                  <Input
-                    value={content.cta.button_text || ''}
-                    onChange={(e) => updateContent('content.cta.button_text', e.target.value)}
-                  />
-                </div>
-              </div>
-            )}
-          </Card>
-        )}
-
-        {/* Sections (for Terms/Privacy) */}
-        {content.sections && (
-          <Card className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <span className="font-semibold">📄 Sections ({content.sections.length})</span>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  const newSections = [...content.sections, { title: '', text: '' }];
+              <textarea
+                value={section.content || ''}
+                onChange={(e) => {
+                  const newSections = [...content.sections];
+                  newSections[idx].content = e.target.value;
                   updateContent('content.sections', newSections);
                 }}
-              >
-                <Plus className="w-4 h-4 mr-1" /> Add Section
-              </Button>
+                placeholder="Section content (supports markdown)"
+                className="w-full p-2 border rounded-md text-sm"
+                rows={4}
+              />
             </div>
-            <div className="space-y-4">
-              {content.sections.map((section, idx) => (
-                <div key={idx} className="p-4 bg-gray-50 rounded-lg relative">
-                  <button
-                    onClick={() => {
-                      const newSections = content.sections.filter((_, i) => i !== idx);
-                      updateContent('content.sections', newSections);
-                    }}
-                    className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                  <div className="space-y-2">
-                    <Input
-                      value={section.title || ''}
-                      onChange={(e) => {
-                        const newSections = [...content.sections];
-                        newSections[idx] = { ...section, title: e.target.value };
-                        updateContent('content.sections', newSections);
-                      }}
-                      placeholder="Section Title"
-                      className="font-medium"
-                    />
-                    <textarea
-                      value={section.text || ''}
-                      onChange={(e) => {
-                        const newSections = [...content.sections];
-                        newSections[idx] = { ...section, text: e.target.value };
-                        updateContent('content.sections', newSections);
-                      }}
-                      placeholder="Section content..."
-                      className="w-full p-2 border rounded-md text-sm"
-                      rows={3}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        )}
+          ))}
+          
+          {(!content.sections || content.sections.length === 0) && (
+            <p className="text-center text-gray-400 py-4">No custom sections yet. Click "Add Section" to create one.</p>
+          )}
+        </Card>
 
-        {/* Values Section */}
-        {content.values && (
-          <Card className="p-4">
-            <button 
-              onClick={() => toggleSection('values')}
-              className="w-full flex items-center justify-between text-left font-semibold mb-2"
-            >
-              <span>💎 Values ({content.values.length})</span>
-              {expandedSections.values ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
-            {expandedSections.values && (
-              <div className="space-y-3 mt-4">
-                {content.values.map((value, idx) => (
-                  <div key={idx} className="p-3 bg-gray-50 rounded-lg">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input
-                        value={value.title || ''}
-                        onChange={(e) => {
-                          const newValues = [...content.values];
-                          newValues[idx] = { ...value, title: e.target.value };
-                          updateContent('content.values', newValues);
-                        }}
-                        placeholder="Title"
-                      />
-                      <Input
-                        value={value.description || ''}
-                        onChange={(e) => {
-                          const newValues = [...content.values];
-                          newValues[idx] = { ...value, description: e.target.value };
-                          updateContent('content.values', newValues);
-                        }}
-                        placeholder="Description"
-                      />
-                    </div>
-                  </div>
-                ))}
+        {/* SEO Settings */}
+        <Card className="p-4">
+          <button 
+            onClick={() => toggleSection('seo')}
+            className="w-full flex items-center justify-between text-left font-semibold mb-2"
+          >
+            <span className="flex items-center gap-2">
+              <Globe className="w-4 h-4" /> SEO Settings
+            </span>
+            {expandedSections.seo ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+          {expandedSections.seo && (
+            <div className="space-y-3 mt-4 pl-6 border-l-2 border-blue-200">
+              <div>
+                <label className="text-xs text-gray-500 uppercase">Meta Title</label>
+                <Input
+                  value={content.seo?.meta_title || ''}
+                  onChange={(e) => updateContent('content.seo.meta_title', e.target.value)}
+                  placeholder="Page title for search engines"
+                />
               </div>
-            )}
-          </Card>
-        )}
+              <div>
+                <label className="text-xs text-gray-500 uppercase">Meta Description</label>
+                <textarea
+                  value={content.seo?.meta_description || ''}
+                  onChange={(e) => updateContent('content.seo.meta_description', e.target.value)}
+                  placeholder="Description for search results"
+                  className="w-full p-2 border rounded-md text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 uppercase">Keywords (comma-separated)</label>
+                <Input
+                  value={(content.seo?.keywords || []).join(', ')}
+                  onChange={(e) => updateContent('content.seo.keywords', e.target.value.split(',').map(k => k.trim()))}
+                  placeholder="pet, dog, care, etc."
+                />
+              </div>
+            </div>
+          )}
+        </Card>
+      </div>
+    );
+  };
+
+  const renderPageList = (category) => {
+    const categoryPages = Object.entries(PAGE_CONFIGS).filter(([_, cfg]) => cfg.category === category);
+    
+    return (
+      <div className="space-y-1">
+        {categoryPages.map(([slug, config]) => {
+          const isActive = activePage === slug;
+          const pageExists = pages.some(p => p.slug === slug);
+          
+          return (
+            <button
+              key={slug}
+              onClick={() => setActivePage(slug)}
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${
+                isActive 
+                  ? 'bg-purple-100 text-purple-700' 
+                  : 'hover:bg-gray-100'
+              }`}
+            >
+              {config.icon}
+              <span className="flex-1">{config.name}</span>
+              {!pageExists && (
+                <Badge variant="outline" className="text-xs">New</Badge>
+              )}
+            </button>
+          );
+        })}
       </div>
     );
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="page-content-manager">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Page Content Manager</h2>
-          <p className="text-gray-500 text-sm">Edit content for About, Membership, Terms, Privacy pages</p>
+          <h2 className="text-2xl font-bold text-gray-900">Content Manager</h2>
+          <p className="text-gray-500">Edit all page content across your site</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={seedDefaultContent}>
-            <Sparkles className="w-4 h-4 mr-2" /> Seed Defaults
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={importContent}
+            className="hidden"
+          />
+          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+            <Upload className="w-4 h-4 mr-2" /> Import
           </Button>
-          <Button variant="outline" onClick={() => fetchPageContent(activePage)}>
-            <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+          <Button variant="outline" size="sm" onClick={exportContent}>
+            <Download className="w-4 h-4 mr-2" /> Export
+          </Button>
+          <Button variant="outline" size="sm" onClick={seedAllDefaultContent}>
+            <Sparkles className="w-4 h-4 mr-2" /> Seed All Defaults
           </Button>
         </div>
       </div>
 
-      {/* Page Tabs */}
-      <Card className="p-4">
-        <div className="flex gap-2 flex-wrap">
-          {Object.entries(PAGE_CONFIGS).map(([slug, config]) => (
-            <button
-              key={slug}
-              onClick={() => setActivePage(slug)}
-              className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
-                activePage === slug
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              <span>{config.icon}</span>
-              <span>{config.name}</span>
-            </button>
-          ))}
-        </div>
-      </Card>
-
-      {/* Editor */}
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          {loading ? (
-            <Card className="p-8 text-center">
-              <RefreshCw className="w-8 h-8 mx-auto animate-spin text-gray-400" />
-              <p className="mt-2 text-gray-500">Loading content...</p>
-            </Card>
-          ) : (
-            renderEditor()
-          )}
+      <div className="grid grid-cols-4 gap-6">
+        {/* Page Navigation */}
+        <div className="col-span-1 space-y-4">
+          <Card className="p-4">
+            <h3 className="font-semibold text-sm text-gray-500 uppercase mb-3">Core Pages</h3>
+            {renderPageList('core')}
+          </Card>
+          
+          <Card className="p-4">
+            <h3 className="font-semibold text-sm text-gray-500 uppercase mb-3">12 Pillars</h3>
+            {renderPageList('pillar')}
+          </Card>
+          
+          <Card className="p-4">
+            <h3 className="font-semibold text-sm text-gray-500 uppercase mb-3">Legal</h3>
+            {renderPageList('legal')}
+          </Card>
+          
+          <Card className="p-4">
+            <h3 className="font-semibold text-sm text-gray-500 uppercase mb-3">Other</h3>
+            {renderPageList('other')}
+          </Card>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-4">
-          <Card className="p-4">
-            <h3 className="font-semibold mb-3">Page Settings</h3>
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs text-gray-500 uppercase">Page Title</label>
-                <Input
-                  value={pageContent?.title || ''}
-                  onChange={(e) => setPageContent(prev => ({ ...prev, title: e.target.value }))}
-                />
+        {/* Editor */}
+        <div className="col-span-3">
+          <Card className="p-6">
+            {renderEditor()}
+            
+            {pageContent && (
+              <div className="mt-6 pt-6 border-t flex justify-end gap-3">
+                <Button variant="outline" onClick={() => fetchPageContent(activePage)}>
+                  <RefreshCw className="w-4 h-4 mr-2" /> Reset
+                </Button>
+                <Button onClick={savePageContent} disabled={saving}>
+                  {saving ? (
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4 mr-2" />
+                  )}
+                  Save Changes
+                </Button>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Published</span>
-                <button
-                  onClick={() => setPageContent(prev => ({ ...prev, is_published: !prev?.is_published }))}
-                  className={`p-2 rounded-full ${pageContent?.is_published ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}
-                >
-                  {pageContent?.is_published ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
+            )}
           </Card>
-
-          <Card className="p-4">
-            <h3 className="font-semibold mb-3">Actions</h3>
-            <div className="space-y-2">
-              <Button 
-                className="w-full bg-purple-600 hover:bg-purple-700" 
-                onClick={savePageContent}
-                disabled={saving}
-              >
-                {saving ? (
-                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <Save className="w-4 h-4 mr-2" />
-                )}
-                Save Changes
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => window.open(`/${activePage}`, '_blank')}
-              >
-                <Globe className="w-4 h-4 mr-2" /> Preview Page
-              </Button>
-            </div>
-          </Card>
-
-          {pageContent?.updated_at && (
-            <Card className="p-4 bg-gray-50">
-              <p className="text-xs text-gray-500">
-                Last updated: {new Date(pageContent.updated_at).toLocaleString()}
-                {pageContent.updated_by && ` by ${pageContent.updated_by}`}
-              </p>
-            </Card>
-          )}
         </div>
       </div>
     </div>
