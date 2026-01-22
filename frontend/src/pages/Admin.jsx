@@ -84,7 +84,6 @@ import {
   Cookie,
   Phone,
   Mail,
-  Heart,
   Building,
   Sparkles,
   Utensils,
