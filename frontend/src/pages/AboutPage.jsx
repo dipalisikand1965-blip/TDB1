@@ -595,8 +595,59 @@ const AboutPage = () => {
             </h2>
           </div>
 
-          {/* Leaders Table */}
-          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white transform hover:shadow-lg transition-shadow duration-300">
+          {/* Leaders - Mobile Cards */}
+          <div className="md:hidden space-y-6" data-testid="leaders-mobile">
+            {/* Mira Card */}
+            <Card className="p-6 bg-white border-2 border-purple-100 hover:shadow-lg transition-shadow">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center flex-shrink-0">
+                  <Heart className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-xl">Mira</h3>
+                  <span className="text-purple-600 font-semibold text-sm">The Spirit</span>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                The quiet spirit behind everything we build. She believed that care is shown not in grand gestures, but in <strong className="text-gray-900">noticing</strong>, <strong className="text-gray-900">remembering</strong>, and <strong className="text-gray-900">showing up without being asked</strong>. Mira is not just a name — she is the standard of care that guides The Doggy Company®.
+              </p>
+            </Card>
+
+            {/* Dipali Card */}
+            <Card className="p-6 bg-white border-2 border-indigo-100 hover:shadow-lg transition-shadow">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center flex-shrink-0">
+                  <Crown className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-xl">Dipali</h3>
+                  <span className="text-indigo-600 font-semibold text-sm">The Concierge Mind</span>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Brings decades of experience designing concierge ecosystems where relationships matter more than transactions. As the force behind <strong className="text-gray-900">Les Concierges®</strong> and <strong className="text-gray-900">Club Concierge®</strong>, she has served <strong className="text-gray-900">over 1 million customers globally</strong>, shaping service models built on memory, judgement, and anticipation.
+              </p>
+            </Card>
+
+            {/* Aditya Card */}
+            <Card className="p-6 bg-white border-2 border-amber-100 hover:shadow-lg transition-shadow">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center flex-shrink-0">
+                  <PawPrint className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-xl">Aditya</h3>
+                  <span className="text-amber-600 font-semibold text-sm">The Pet Parent's Lens</span>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Brings a lived understanding of pet parents and their emotional rhythms. Through <strong className="text-gray-900">The Doggy Bakery®</strong>, he has fed over <strong className="text-gray-900">45,000 pets</strong> across birthdays, adoption milestones, and everyday moments that matter.
+              </p>
+            </Card>
+          </div>
+
+          {/* Leaders Table - Desktop Only */}
+          <div className="hidden md:block overflow-hidden rounded-xl border border-gray-200 bg-white transform hover:shadow-lg transition-shadow duration-300">
             <table className="w-full" data-testid="leaders-table">
               <thead className="bg-gradient-to-r from-purple-50 to-pink-50">
                 <tr>
@@ -659,7 +710,7 @@ const AboutPage = () => {
           </div>
 
           <div className="mt-8 text-center">
-            <p className="text-gray-600 text-lg">
+            <p className="text-gray-600 text-sm md:text-lg">
               Together, these perspectives shape a platform built not around services, but around <strong className="text-purple-700">relationships</strong> — with pets at the centre.
             </p>
           </div>
