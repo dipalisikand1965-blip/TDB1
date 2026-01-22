@@ -105,7 +105,9 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
   - Send Test Email functionality
   - Intelligence rules display (1 msg/week limit, quiet hours)
 
-### ✅ Mira AI Concierge System (VERIFIED Jan 22, 2026)
+### ✅ Mira AI Concierge System (UPDATED Jan 22, 2026)
+**"Mira is the CONCIERGE, not an advisor."**
+
 - GPT-5.1 integration via Emergent LLM Key
 - **Pet-first context loading** - Correctly fetches pets via member → pet ID lookup
 - **Multi-pet household support** - Asks which pet when user has multiple
@@ -114,10 +116,35 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
 - Pillar intent detection (all 12 pillars)
 - Never re-asks known information (flavors, textures, allergies already in Pet Soul)
 - Soul enrichment from conversations
-- Research mode for factual queries
+- Research mode for factual queries (used as context, not shared raw)
 - Context-aware quick prompts
 - Voice input support
 - Chat history & session management
+
+### ✅ Concierge Action Auto-Ticketing (NEW - Jan 22, 2026)
+**Mira NEVER tells member to call/verify/check anything themselves.**
+
+**Auto-Detection Triggers:**
+- **Dining**: restaurant, cafe, lunch, dinner, reservation, pet-friendly restaurant
+- **Stay**: hotel, accommodation, resort, pawcation, book a room
+- **Travel**: trip, flight, train, cab, transport, pet relocation
+- **Care**: vet, grooming, appointment, vaccination, checkup
+- **Verification**: "is it pet-friendly", "do they allow pets", "can I bring my dog"
+
+**Auto-Created Tickets:**
+- Service Desk Ticket (e.g., `DIN-20260122-0001`)
+- Routed to Unified Inbox
+- Visible in Mira AI Admin folder
+- Tagged with: action_type, priority, pillar, pet_count
+
+**Member Experience:**
+- Mira says: "I'll take care of this for you. I'm checking [specific details]. Our live concierge will confirm shortly."
+- Member NEVER instructed to call, message, or verify anything themselves
+
+**Priority by Request Type:**
+- HIGH: health, travel, emergency
+- MEDIUM: dining, stay, verification
+- LOW: general inquiry
 
 ### ✅ Mira Relationship Memory System (NEW - Jan 22, 2026)
 **"Store forever. Surface selectively."** — This is relationship memory, not session memory.
