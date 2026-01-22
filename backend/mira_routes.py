@@ -1082,7 +1082,34 @@ I understand this is urgent. Let me help you immediately.
         if research_result.get("success"):
             research_context = research_result.get("research_result")
     
-    # 6. Build prompt and call LLM
+    # 6. Load RELATIONSHIP MEMORY (Store forever, surface selectively)
+    relationship_memory_prompt = ""
+    member_id = user.get("email") or user.get("id") if user else None
+    
+    if member_id:
+        try:
+            from mira_memory import MiraMemory, format_memories_for_prompt
+            
+            # Get contextually relevant memories
+            relevant_memories = await MiraMemory.get_relevant_memories(
+                member_id=member_id,
+                current_context=user_message,
+                pet_id=selected_pet.get("id") if selected_pet else None,
+                limit=5
+            )
+            
+            if relevant_memories:
+                relationship_memory_prompt = format_memories_for_prompt(relevant_memories)
+                # Mark memories as surfaced
+                for mem in relevant_memories:
+                    await MiraMemory.surface_memory(mem.get("memory_id"))
+                logger.info(f"Surfacing {len(relevant_memories)} relationship memories for {member_id}")
+        except ImportError:
+            logger.warning("Relationship memory module not available")
+        except Exception as e:
+            logger.warning(f"Error loading relationship memories: {e}")
+    
+    # 7. Build prompt and call LLM
     try:
         from emergentintegrations.llm.chat import LlmChat, UserMessage
         
@@ -1138,12 +1165,15 @@ CRITICAL RULES FOR RESEARCH RESPONSES:
         
         full_prompt = f"""{history_text}
 {cross_pillar_note}
+{relationship_memory_prompt}
 {research_instruction}
 
 CURRENT USER MESSAGE: {user_message}
 
 REMEMBER:
-- Never ask for information already in Pet Soul
+- Never ask for information already in Pet Soul or Relationship Memory
+- If you remember something from past conversations, reference it naturally (e.g., "Last time you mentioned...")
+- Don't force memories - only surface when genuinely relevant
 - Ask ONE question at a time
 - Progress the conversation forward
 - Keep response concise and warm
