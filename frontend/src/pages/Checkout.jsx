@@ -618,11 +618,15 @@ _GST applicable on final invoice_
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) {
-      const missingFields = Object.keys(formErrors).join(', ');
+    const validation = validateForm();
+    if (!validation.isValid) {
+      const missingFields = Object.keys(validation.errors).map(key => {
+        // Convert camelCase to readable format
+        return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+      }).join(', ');
       toast({
         title: 'Please fill required fields',
-        description: `Missing: ${missingFields || 'Some required information'}`,
+        description: missingFields || 'Some required information is missing',
         variant: 'destructive'
       });
       return;
