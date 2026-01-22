@@ -96,7 +96,8 @@ const Navbar = () => {
       color: 'from-blue-500 to-indigo-500',
       description: 'Pet travel made easy',
       path: '/travel',
-      isActive: true,
+      isActive: false,  // Hidden from public navigation - members only
+      requiresAuth: true,
       subItems: [
         { name: '✈️ Airline Bookings', path: '/travel?type=airline' },
         { name: '🚗 Pet Taxi', path: '/travel?type=taxi' },
