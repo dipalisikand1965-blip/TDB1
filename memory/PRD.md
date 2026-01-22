@@ -97,9 +97,11 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
 - **Communications Manager** (NEW):
   - Integration status cards (Email ✅, WhatsApp provisional, In-App ✅)
   - Analytics dashboard (Total Sent, Last 7 Days, Templates count, Pending)
+  - **Template Management**: Create, Edit, Delete custom templates
+  - **Schedule Send**: Choose template, date/time, recipients (all or selected pets)
   - Templates view with preview modal
   - History view with sent/scheduled status
-  - Pending reminders view
+  - Pending reminders view with "Send Now" button
   - Send Test Email functionality
   - Intelligence rules display (1 msg/week limit, quiet hours)
 
