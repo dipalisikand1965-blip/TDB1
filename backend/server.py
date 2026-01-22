@@ -1931,21 +1931,58 @@ async def chat_with_mira_legacy(request: ChatRequest):
                 
                 if pets:
                     user_pets = pets
-                    pet_soul_context = "\n\n🐾 **USER'S PET PROFILES**:\n"
+                    pet_soul_context = "\n\n🐾 **USER'S PET PROFILES (Use this information naturally in conversation)**:\n"
                     for pet in pets:
                         identity = pet.get("identity", {})
-                        answers = pet.get("doggy_soul_answers", {})
+                        soul = pet.get("soul", {})
+                        preferences = pet.get("preferences", {})
+                        
+                        pet_name = pet.get('name', 'Pet')
+                        breed = identity.get('breed', pet.get('breed', 'Unknown'))
+                        species = pet.get('species', 'dog')
+                        
                         pet_soul_context += f"""
-**{pet.get('name', 'Pet')}** ({identity.get('breed', pet.get('breed', 'Unknown'))})
-- Age: {identity.get('age', pet.get('age', 'Unknown'))}
-- Weight: {identity.get('weight', 'Not specified')}
+**{pet_name}** - {breed} ({species})
+- Age: {identity.get('age', pet.get('age', pet.get('age_years', 'Unknown')))} 
+- Weight: {identity.get('weight', pet.get('weight', 'Not specified'))}
 """
-                        if answers:
-                            for field in ['food_allergies', 'favorite_treats', 'behavior_with_dogs']:
-                                if field in answers and answers[field]:
-                                    pet_soul_context += f"- {field.replace('_', ' ').title()}: {answers[field]}\n"
+                        # Add allergies (CRITICAL for recommendations)
+                        allergies = preferences.get('allergies', pet.get('allergies', []))
+                        if allergies:
+                            if isinstance(allergies, list) and allergies:
+                                pet_soul_context += f"- ⚠️ ALLERGIES: {', '.join(allergies)} - NEVER recommend products with these ingredients!\n"
+                            elif isinstance(allergies, str) and allergies and allergies.lower() != 'none':
+                                pet_soul_context += f"- ⚠️ ALLERGIES: {allergies} - NEVER recommend products with these ingredients!\n"
+                        
+                        # Add preferences (for personalized recommendations)
+                        if preferences:
+                            fav_flavors = preferences.get('favorite_flavors', [])
+                            if fav_flavors:
+                                pet_soul_context += f"- Favorite flavors: {', '.join(fav_flavors) if isinstance(fav_flavors, list) else fav_flavors}\n"
+                            treat_texture = preferences.get('treat_texture') or preferences.get('texture_preference')
+                            if treat_texture:
+                                pet_soul_context += f"- Prefers {treat_texture} treats\n"
+                            treat_size = preferences.get('treat_size')
+                            if treat_size:
+                                pet_soul_context += f"- Treat size: {treat_size}\n"
+                            activity = preferences.get('activity_level')
+                            if activity:
+                                pet_soul_context += f"- Activity level: {activity}\n"
+                        
+                        # Add personality (for engagement style)
+                        if soul:
+                            persona = soul.get('persona', '')
+                            if persona:
+                                pet_soul_context += f"- Personality: {persona.replace('_', ' ').title()}\n"
+                            love_lang = soul.get('love_language')
+                            if love_lang:
+                                pet_soul_context += f"- Love language: {love_lang}\n"
+                            personality_tag = soul.get('personality_tag')
+                            if personality_tag:
+                                pet_soul_context += f"- Known as: \"{personality_tag}\"\n"
+                        
                         pet_soul_context += "\n"
-                    logger.info(f"Mira loaded {len(user_pets)} pets for user")
+                    logger.info(f"Mira loaded {len(user_pets)} pets for user with full soul context")
                     
         except Exception as e:
             logger.warning(f"Mira Pet Soul fetch: {e}")
