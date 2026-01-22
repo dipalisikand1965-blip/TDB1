@@ -76,8 +76,8 @@
 | Basic Info (Name, Breed, DOB) | 🟢 | Captured in onboarding |
 | Health & Allergies | 🟢 | Captured |
 | Personality Traits | 🟢 | Captured |
-| **Clicking to See Individual Question Answers** | 🔴 | **NOT BUILT - User requested** |
-| **Expandable Q&A View** | 🔴 | **Need to show each question + answer** |
+| **Clicking to See Individual Question Answers** | 🟢 | **BUILT - PetSoulAnswers.jsx** |
+| **Expandable Q&A View** | 🟢 | **BUILT - Click pillar → see questions → click question → see answer** |
 
 ### Soul Drip System ("Soul Whispers")
 | Feature | Status | Notes |
