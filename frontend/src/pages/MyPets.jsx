@@ -422,8 +422,8 @@ const MyPets = () => {
                   <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50">
                     <div className="flex flex-col md:flex-row gap-6">
                       {/* Pet Photo */}
-                      <div className="relative flex-shrink-0">
-                        <div className="w-32 h-32 rounded-2xl bg-white shadow-sm overflow-hidden border-4 border-white">
+                      <div className="relative flex-shrink-0 group">
+                        <div className="w-32 h-32 rounded-2xl bg-white shadow-sm overflow-hidden border-4 border-white relative">
                           {pet.photo_url ? (
                             <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
                           ) : (
@@ -431,6 +431,28 @@ const MyPets = () => {
                               <PawPrint className="w-12 h-12 text-purple-300" />
                             </div>
                           )}
+                          {/* Photo upload overlay */}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            ref={(el) => fileInputRef.current[pet.id] = el}
+                            onChange={(e) => handlePhotoUpload(pet.id, e.target.files[0])}
+                          />
+                          <button
+                            onClick={() => fileInputRef.current[pet.id]?.click()}
+                            className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+                            disabled={uploadingPhoto === pet.id}
+                          >
+                            {uploadingPhoto === pet.id ? (
+                              <Loader2 className="w-8 h-8 text-white animate-spin" />
+                            ) : (
+                              <div className="text-center text-white">
+                                <Camera className="w-6 h-6 mx-auto mb-1" />
+                                <span className="text-xs">Change Photo</span>
+                              </div>
+                            )}
+                          </button>
                         </div>
                         <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white shadow-sm text-purple-700 border-purple-200">
                           {personaInfo.emoji} {personaInfo.name}
