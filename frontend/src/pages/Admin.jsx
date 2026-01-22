@@ -3096,6 +3096,25 @@ const Admin = () => {
                     {selectedPetProfile.soul?.persona && <Badge className="bg-purple-600">{selectedPetProfile.soul.persona}</Badge>}
                     <Badge variant="outline">Age: {selectedPetProfile.age_years || '?'}y {selectedPetProfile.age_months || '?'}m</Badge>
                   </div>
+                  <div className="flex gap-2 mt-3">
+                    <Button 
+                      size="sm" 
+                      className="bg-purple-600 hover:bg-purple-700"
+                      onClick={() => window.open(`/pet-soul-journey/${selectedPetProfile.id}`, '_blank')}
+                    >
+                      <Sparkles className="w-4 h-4 mr-1" /> View Full Soul
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedPetForHealth(selectedPetProfile);
+                        setShowHealthVaultModal(true);
+                      }}
+                    >
+                      <Heart className="w-4 h-4 mr-1" /> Health Vault
+                    </Button>
+                  </div>
                 </div>
               </div>
               <Button variant="ghost" size="icon" onClick={() => setSelectedPetProfile(null)}>
