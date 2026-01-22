@@ -9070,7 +9070,7 @@ async def add_member(request: AddMemberRequest):
         
         # Generate temporary password
         temp_password = secrets.token_urlsafe(8)
-        hashed_password = bcrypt.hashpw(temp_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        hashed_password = pwd_context.hash(temp_password)
         
         new_member = {
             "id": f"user-{uuid.uuid4().hex[:12]}",
