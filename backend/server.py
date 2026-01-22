@@ -165,7 +165,7 @@ try:
         minPoolSize=1,
     )
     db = client[db_name]
-    logger.info(f"MongoDB connection configured")
+    logger.info("MongoDB connection configured")
 except Exception as e:
     logger.error(f"MongoDB connection error: {e}")
     raise
@@ -2653,7 +2653,7 @@ async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
         async with httpx.AsyncClient() as client:
             # Fetch conversations from Chatbase
             response = await client.get(
-                f"https://www.chatbase.co/api/v1/get-conversations",
+                "https://www.chatbase.co/api/v1/get-conversations",
                 headers={
                     "Authorization": f"Bearer {api_key}",
                     "Content-Type": "application/json"
@@ -6797,7 +6797,7 @@ async def membership_onboard(data: MembershipOnboardModel):
         # Admin notification
         await create_admin_notification(
             notification_type="member",
-            title=f"🐾 New Membership Signup",
+            title="🐾 New Membership Signup",
             message=f"{data.parent.name} ({data.parent.email}) started membership with {len(data.pets)} pet(s). Awaiting payment.",
             category="general",
             related_id=user_id,
@@ -7443,7 +7443,7 @@ Haven't ordered yet? There's still time for same-day treats!"""
     else:
         # Shadow / Soulmate style
         if days_until == 7:
-            subject = f"A special milestone for your best friend... 🐾"
+            subject = "A special milestone for your best friend... 🐾"
             message = f"""Hi {owner_name}, just a quiet reminder from The Doggy Bakery.
 
 We noticed {pet_name}'s {occasion_name} is coming up in seven days! We know {pet_name} isn't just a pet—they are your '{persona_info['name']}' and your soulmate.
@@ -7520,7 +7520,7 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
             
             # Check for problematic products BEFORE transform
             if not raw_title or raw_title.strip() == "" or "untitled" in (raw_title or "").lower():
-                logger.warning(f"[SHOPIFY SYNC DEBUG] Problematic product detected:")
+                logger.warning("[SHOPIFY SYNC DEBUG] Problematic product detected:")
                 logger.warning(f"  - Shopify ID: {shopify_id}")
                 logger.warning(f"  - Raw Title: '{raw_title}'")
                 logger.warning(f"  - Handle: '{raw_handle}'")
@@ -7538,7 +7538,7 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
             
             # Verify transformation result
             if not transformed.get("name") or "untitled" in transformed.get("name", "").lower():
-                logger.error(f"[SHOPIFY SYNC ERROR] Product still untitled after transform:")
+                logger.error("[SHOPIFY SYNC ERROR] Product still untitled after transform:")
                 logger.error(f"  - Transformed name: '{transformed.get('name')}'")
                 logger.error(f"  - From Shopify ID: {shopify_id}")
             
@@ -7763,7 +7763,7 @@ async def import_products_csv(
                 }
                 
                 if not product["name"]:
-                    errors.append(f"Row skipped: empty name")
+                    errors.append("Row skipped: empty name")
                     continue
                 
                 # Check if product exists by name
