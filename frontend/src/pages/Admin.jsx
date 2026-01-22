@@ -1409,6 +1409,13 @@ const Admin = () => {
     }
   }, [isAuthenticated, activeTab, filterCity, filterStatus, productFilter, orderFilter]);
 
+  // Fetch health vault data when modal opens
+  useEffect(() => {
+    if (showHealthVaultModal && selectedPetForHealth) {
+      fetchHealthVaultData(selectedPetForHealth.id);
+    }
+  }, [showHealthVaultModal, selectedPetForHealth]);
+
   // Login Screen
   if (!isAuthenticated) {
     return (
