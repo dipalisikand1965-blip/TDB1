@@ -1627,6 +1627,11 @@ const Admin = () => {
           <AgentManagement authHeaders={getAuthHeaders()} />
         )}
 
+        {/* Communications Manager */}
+        {activeTab === 'communications' && (
+          <CommunicationsManager authHeaders={getAuthHeaders()} />
+        )}
+
         {/* Orders Tab */}
         {activeTab === 'orders' && (
           <OrdersTab 
