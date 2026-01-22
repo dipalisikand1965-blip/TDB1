@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pet-soul-system-1.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://doggy-compass.preview.emergentagent.com').rstrip('/')
 
 class TestDiscountCodes:
     """Discount code validation tests"""
