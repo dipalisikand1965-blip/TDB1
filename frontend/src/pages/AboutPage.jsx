@@ -440,7 +440,7 @@ const AboutPage = () => {
             <p className="text-xl font-medium mb-4">
               We created The Doggy Company® to change that.
             </p>
-            <p className="text-white/90 leading-relaxed">
+            <p className="text-white/90 leading-relaxed text-sm md:text-base">
               Here, care isn't a one-off service.<br />
               It is a <strong>relationship built on memory, context, and continuity</strong>.
             </p>
@@ -449,20 +449,78 @@ const AboutPage = () => {
       </AnimatedSection>
 
       {/* What Makes Us Different */}
-      <AnimatedSection id="difference" className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <AnimatedSection id="difference" className="py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8 md:mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium mb-4">
               <Sparkles className="w-4 h-4" />
               Our Difference
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
               What Makes Us Different
             </h2>
           </div>
 
-          {/* Differentiators Table */}
-          <div className="overflow-hidden rounded-xl border border-gray-200 transform hover:shadow-lg transition-shadow duration-300">
+          {/* Differentiators - Mobile Cards */}
+          <div className="md:hidden space-y-4">
+            <Card className="p-5 bg-white border-2 border-purple-100">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                  <Brain className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-sm">A Living Profile</h3>
+                  <span className="text-gray-500 text-xs">Not a Checklist</span>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Every interaction builds a <strong className="text-purple-700">Pet Soul™</strong> profile that never forgets. Pet parents don't repeat themselves.
+              </p>
+            </Card>
+            <Card className="p-5 bg-white border-2 border-blue-100">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <Users className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-sm">Human-Led</h3>
+                  <span className="text-gray-500 text-xs">Not Just Automated</span>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Driven by people with <strong className="text-gray-900">judgement</strong>, <strong className="text-gray-900">empathy</strong>, and <strong className="text-gray-900">context</strong> — supported by technology, never replaced by it.
+              </p>
+            </Card>
+            <Card className="p-5 bg-white border-2 border-pink-100">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0">
+                  <Heart className="w-5 h-5 text-pink-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-sm">Celebration as Culture</h3>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                From birthdays to adoption anniversaries, we treat moments with <strong className="text-gray-900">intention and meaning</strong> — not as transactions.
+              </p>
+            </Card>
+            <Card className="p-5 bg-white border-2 border-amber-100">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                  <Lightbulb className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-sm">Built by People Who've Lived It</h3>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Inspired by the spirit of <strong className="text-purple-700">Mira</strong> — the quiet standard behind everything we build.
+              </p>
+            </Card>
+          </div>
+
+          {/* Differentiators Table - Desktop Only */}
+          <div className="hidden md:block overflow-hidden rounded-xl border border-gray-200 transform hover:shadow-lg transition-shadow duration-300">
             <table className="w-full" data-testid="differentiators-table">
               <thead className="bg-gradient-to-r from-emerald-50 to-teal-50">
                 <tr>
