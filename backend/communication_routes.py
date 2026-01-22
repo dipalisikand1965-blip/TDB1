@@ -62,10 +62,11 @@ class SoulQuestionResponse(BaseModel):
 def setup_communication_routes(app, db):
     """Setup all communication routes with database access"""
     
-    from communication_engine import CommunicationEngine, CommunicationDecisionEngine, DEFAULT_TEMPLATES, SOUL_QUESTIONS
+    from communication_engine import CommunicationEngine, CommunicationDecisionEngine, VaccineReminderScheduler, DEFAULT_TEMPLATES, SOUL_QUESTIONS
     
     comm_engine = CommunicationEngine(db)
     decision_engine = CommunicationDecisionEngine(comm_engine)
+    vaccine_scheduler = VaccineReminderScheduler(db, comm_engine, decision_engine)
     
     @app.get("/api/admin/communications/templates")
     async def get_templates():
