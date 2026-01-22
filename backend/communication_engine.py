@@ -808,3 +808,224 @@ class CommunicationDecisionEngine:
             return preferred
         
         return template_channel
+
+
+# ============================================
+# VACCINE REMINDER SCHEDULER
+# ============================================
+
+class VaccineReminderScheduler:
+    """
+    Automated scheduler that checks for upcoming/overdue vaccinations
+    and sends reminders through the Communication Engine.
+    """
+    
+    def __init__(self, db, comm_engine: CommunicationEngine, decision_engine: CommunicationDecisionEngine):
+        self.db = db
+        self.comm_engine = comm_engine
+        self.decision_engine = decision_engine
+        self.logger = logging.getLogger(__name__)
+    
+    async def check_and_send_vaccine_reminders(self) -> Dict:
+        """
+        Main scheduler function - checks all pets for upcoming/overdue vaccines
+        and sends appropriate reminders.
+        
+        Returns: { checked: int, reminders_sent: int, skipped: int }
+        """
+        if self.db is None:
+            return {"error": "Database not initialized"}
+        
+        results = {
+            "checked": 0,
+            "reminders_sent": 0,
+            "skipped": 0,
+            "details": []
+        }
+        
+        now = datetime.now(timezone.utc)
+        
+        # Get all members with pets
+        members = await self.db.members.find({"pets": {"$exists": True, "$ne": []}}).to_list(None)
+        
+        for member in members:
+            member_id = str(member.get("_id", ""))
+            parent_email = member.get("email")
+            parent_name = member.get("name", member.get("first_name", "Pet Parent"))
+            
+            if not parent_email:
+                continue
+            
+            for pet in member.get("pets", []):
+                pet_id = pet.get("id")
+                pet_name = pet.get("name", "Your pet")
+                
+                if not pet_id:
+                    continue
+                
+                results["checked"] += 1
+                
+                # Get vaccine records for this pet
+                vaccines = await self.db.pet_vaccines.find({"pet_id": pet_id}).to_list(None)
+                
+                for vaccine in vaccines:
+                    next_due = vaccine.get("next_due_date")
+                    if not next_due:
+                        continue
+                    
+                    # Convert to datetime if string
+                    if isinstance(next_due, str):
+                        try:
+                            next_due = datetime.fromisoformat(next_due.replace("Z", "+00:00"))
+                        except:
+                            continue
+                    
+                    days_until = (next_due - now).days
+                    vaccine_name = vaccine.get("vaccine_name", "Vaccine")
+                    
+                    # Determine reminder type
+                    template_id = None
+                    priority = "normal"
+                    
+                    if days_until < 0:
+                        # Overdue
+                        template_id = "vaccination_overdue"
+                        priority = "high"
+                    elif days_until <= 7:
+                        # Due within 7 days
+                        template_id = "vaccination_upcoming"
+                        priority = "normal"
+                    elif days_until <= 14:
+                        # Due within 2 weeks (early reminder)
+                        template_id = "vaccination_upcoming"
+                        priority = "low"
+                    else:
+                        continue  # Not due yet
+                    
+                    # Check if we should send
+                    decision = await self.decision_engine.should_communicate(
+                        pet_id,
+                        template_id,
+                        {"priority": priority, "user_id": member_id}
+                    )
+                    
+                    if not decision["should_send"]:
+                        results["skipped"] += 1
+                        results["details"].append({
+                            "pet": pet_name,
+                            "vaccine": vaccine_name,
+                            "reason": decision["reason"]
+                        })
+                        continue
+                    
+                    # Send the reminder
+                    try:
+                        # Render the template
+                        rendered = await self.comm_engine.render_template(template_id, {
+                            "pet_name": pet_name,
+                            "pet_parent_name": parent_name,
+                            "vaccine_name": vaccine_name,
+                            "days_until": abs(days_until),
+                            "due_date": next_due.strftime("%B %d, %Y")
+                        })
+                        
+                        if rendered:
+                            # Send email
+                            send_result = await self.comm_engine.send_email(
+                                to_email=parent_email,
+                                subject=rendered["subject"],
+                                body=rendered["body"],
+                                pet_name=pet_name,
+                                parent_name=parent_name
+                            )
+                            
+                            # Log the communication
+                            await self.comm_engine.log_communication({
+                                "pet_id": pet_id,
+                                "pet_name": pet_name,
+                                "user_id": member_id,
+                                "parent_email": parent_email,
+                                "type": template_id,
+                                "channel": "email",
+                                "subject": rendered["subject"],
+                                "body": rendered["body"],
+                                "priority": priority,
+                                "status": "sent" if send_result.get("success") else "failed",
+                                "sent_at": now,
+                                "send_result": send_result,
+                                "trigger": "automated_scheduler"
+                            })
+                            
+                            if send_result.get("success"):
+                                results["reminders_sent"] += 1
+                                results["details"].append({
+                                    "pet": pet_name,
+                                    "vaccine": vaccine_name,
+                                    "status": "sent",
+                                    "email": parent_email
+                                })
+                                self.logger.info(f"Vaccine reminder sent for {pet_name}'s {vaccine_name} to {parent_email}")
+                            else:
+                                results["skipped"] += 1
+                                results["details"].append({
+                                    "pet": pet_name,
+                                    "vaccine": vaccine_name,
+                                    "status": "failed",
+                                    "error": send_result.get("error")
+                                })
+                    except Exception as e:
+                        self.logger.error(f"Error sending vaccine reminder: {e}")
+                        results["skipped"] += 1
+        
+        return results
+    
+    async def get_upcoming_vaccine_alerts(self, days_ahead: int = 14) -> List[Dict]:
+        """
+        Get a list of all upcoming vaccine alerts for admin dashboard.
+        """
+        if self.db is None:
+            return []
+        
+        now = datetime.now(timezone.utc)
+        alerts = []
+        
+        members = await self.db.members.find({"pets": {"$exists": True, "$ne": []}}).to_list(None)
+        
+        for member in members:
+            for pet in member.get("pets", []):
+                pet_id = pet.get("id")
+                if not pet_id:
+                    continue
+                
+                vaccines = await self.db.pet_vaccines.find({"pet_id": pet_id}).to_list(None)
+                
+                for vaccine in vaccines:
+                    next_due = vaccine.get("next_due_date")
+                    if not next_due:
+                        continue
+                    
+                    if isinstance(next_due, str):
+                        try:
+                            next_due = datetime.fromisoformat(next_due.replace("Z", "+00:00"))
+                        except:
+                            continue
+                    
+                    days_until = (next_due - now).days
+                    
+                    if days_until <= days_ahead:
+                        alerts.append({
+                            "pet_id": pet_id,
+                            "pet_name": pet.get("name"),
+                            "parent_name": member.get("name", member.get("email")),
+                            "parent_email": member.get("email"),
+                            "vaccine_name": vaccine.get("vaccine_name"),
+                            "due_date": next_due.isoformat(),
+                            "days_until": days_until,
+                            "status": "overdue" if days_until < 0 else "due_soon" if days_until <= 7 else "upcoming",
+                            "priority": "high" if days_until < 0 else "normal"
+                        })
+        
+        # Sort by days_until (overdue first)
+        alerts.sort(key=lambda x: x["days_until"])
+        
+        return alerts
