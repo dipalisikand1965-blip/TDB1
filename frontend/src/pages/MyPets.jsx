@@ -286,7 +286,6 @@ const MyPets = () => {
       setUploadingPhoto(null);
     }
   };
-  };
 
   const getPersonaInfo = (pet) => {
     const personaKey = pet.soul?.persona;
