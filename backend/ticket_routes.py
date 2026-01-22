@@ -463,6 +463,57 @@ async def list_tickets(
         "offset": offset
     }
 
+@router.get("/member/{member_email}/all")
+async def get_member_all_tickets(
+    member_email: str,
+    limit: int = Query(50, le=200)
+):
+    """
+    Get ALL tickets for a member from all sources:
+    - tickets collection (Service Desk)
+    - service_desk_tickets collection (Mira AI concierge actions)
+    """
+    db = get_db()
+    all_tickets = []
+    
+    # 1. Get from tickets collection (old tickets)
+    query1 = {"member.email": member_email}
+    cursor1 = db.tickets.find(query1).sort("created_at", -1).limit(limit)
+    old_tickets = await cursor1.to_list(length=limit)
+    for t in old_tickets:
+        serialized = serialize_ticket(t)
+        if serialized:
+            serialized["source_collection"] = "tickets"
+            all_tickets.append(serialized)
+    
+    # 2. Get from service_desk_tickets collection (Mira concierge actions)
+    query2 = {"member.email": member_email}
+    cursor2 = db.service_desk_tickets.find(query2, {"_id": 0}).sort("created_at", -1).limit(limit)
+    mira_tickets = await cursor2.to_list(length=limit)
+    for t in mira_tickets:
+        t["source_collection"] = "service_desk_tickets"
+        all_tickets.append(t)
+    
+    # 3. Get from mira_tickets if they have service desk references
+    query3 = {"member_email": member_email, "requires_concierge_action": True}
+    cursor3 = db.mira_tickets.find(query3, {"_id": 0}).sort("created_at", -1).limit(limit)
+    mira_conv_tickets = await cursor3.to_list(length=limit)
+    for t in mira_conv_tickets:
+        # Only add if not already present from service_desk_tickets
+        if t.get("service_desk_ticket_id"):
+            if not any(x.get("ticket_id") == t.get("service_desk_ticket_id") for x in all_tickets):
+                t["source_collection"] = "mira_tickets"
+                all_tickets.append(t)
+    
+    # Sort combined by created_at
+    all_tickets.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    
+    return {
+        "tickets": all_tickets[:limit],
+        "total": len(all_tickets),
+        "member_email": member_email
+    }
+
 @router.get("/stats")
 async def get_ticket_stats():
     """Get ticket statistics for dashboard"""
