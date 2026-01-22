@@ -552,10 +552,6 @@ const Home = () => {
               </Button>
             </Link>
           </div>
-
-          <p className="text-sm text-gray-500">
-            Founding Member pricing: ₹4,999/year or ₹499/month (+ GST)
-          </p>
         </div>
       </section>
 
