@@ -1,5 +1,7 @@
-# The Doggy Company - Product Requirements Document
+# The Doggy Company® - Product Requirements Document
 ## Pet Life Operating System
+
+**Last Updated:** January 22, 2026
 
 ---
 
@@ -19,291 +21,262 @@
 ---
 
 ## Original Problem Statement
-The Doggy Company is building a "Pet Life Operating System" with 12 business "Pillars". The core vision includes a deep "Pet Soul" profile for each pet, a "Unified Inbox," a mandatory "Membership" layer, and a central "Mira AI" concierge.
+The Doggy Company® is building a "Pet Life Operating System" with 12 business "Pillars". The core vision includes a deep "Pet Soul™" profile for each pet, a "Unified Inbox," a mandatory "Membership" layer, and a central "Mira® AI" concierge.
+
+---
+
+## Registered Trademarks
+- **The Doggy Company®**
+- **The Doggy Bakery®** (thedoggybakery.com)
+- **Les Concierges®** (lesconcierges.co.in) - Since 1998
+- **Club Concierge®** (clubconcierge.in)
+- **Mira®** - AI Concierge
+- **Pet Soul™** - Pet profile technology
 
 ---
 
 ## What's Been Implemented
 
-### Mira AI Concierge System - ENHANCED (January 21, 2026)
+### ✅ Homepage (Vision-First Design)
+- **Hero Section**: "A System That Learns, Remembers & Cares"
+- **Proof Blocks**: 45,000+ pets | Since 2020 | Since 1998 | 30+ Years
+- **Outcome Statements** (not feature tiles):
+  - "We remember how your dog reacts at the groomer"
+  - "We plan travel without making you repeat paperwork"
+  - "We celebrate milestones without reminders"
+  - "We suggest food they'll actually eat"
+  - "We know which vet they trust"
+  - "We anticipate before you ask"
+- **Pet Soul™ Explainer**: Visual flow (Pet → Interactions → Memory → Better Care)
+- **Meet Mira® Section**: Positioned as Intelligence Layer (Memory, Judgement, Relationship)
+- **Privacy & Data Safety**: "Pet Soul Data is Sacred"
+- **Concierge Lineage**: Links to Les Concierges®, Club Concierge®, The Doggy Bakery®
+- **Footer with Mira Dedication**: Popup modal honoring Dipali's mother
 
-#### Phase 1: Core Backend (`/app/backend/mira_routes.py`)
-- ✅ GPT-5.1 integration via Emergent LLM Key
-- ✅ Every interaction creates a Service Desk ticket (Advisory/Concierge/Emergency)
-- ✅ Pet-first context loading - always loads Pet Soul before responding
-- ✅ Pillar intent detection for all 12 pillars
-- ✅ Minimum question logic - never asks for info already in Pet Soul
-- ✅ Ticket upgrade capability (Advisory → Concierge)
-- ✅ Emergency detection with immediate escalation
-- ✅ Pet Soul progressive enrichment
-- ✅ **NEW: Research Mode** - Detects factual queries and provides sourced information
-- ✅ **NEW: Context-Aware Quick Prompts** - Pillar-specific suggestions
-- ✅ **NEW: Cross-Pillar Context** - Acknowledges pillar transitions
-- ✅ **NEW: Chat History & Session Management** - New conversation, history retrieval
-- ✅ **NEW: Known Fields Section** - Mira sees exactly what she knows, never re-asks
+### ✅ About Us Page
+- **Mira's Story**: The soul behind everything (Dipali's mother)
+- **Team**: Dipali (Les Concierges® & Club Concierge®), Aditya (The Doggy Bakery®)
+- **Doctrine Quote**: "Care before convenience, memory before automation, relationships before transactions"
+- **Pet Soul™ Section**: 8 pillars explained
+- **All registered trademarks (®) properly displayed**
 
-#### Phase 2: UI Placements - ALL 12 PILLARS
-- ✅ **Contextual Panel** (`MiraContextPanel.jsx`) on:
-  - Travel, Stay, Care, Dine, Enjoy, Fit, Advisory, Paperwork, Emergency, Celebrate
-- ✅ **Full-Screen Ask Mira** (`/ask-mira`) - Premium chat experience
-- ✅ **Global floating button** in MiraAI widget
-- ✅ **NEW: Voice Input** - Web Speech API integration for speech-to-text
-- ✅ **NEW: Pillar-Specific Quick Prompts** - Travel shows travel prompts, Care shows care prompts, etc.
-- ✅ **NEW: New Chat & History Buttons** - Visible in widget and full page
-- ✅ **NEW: Celebrate Page Hero** - Category-specific headers with dynamic images
+### ✅ Pet Life Pass (Membership)
+- **Rebranded**: "Membership" → "Pet Life Pass"
+- **Positioning**: "Founding Members" - Early invitation, not discount
+- **Pricing**:
+  - Annual: ₹4,999/year + GST (displayed FIRST with "FOUNDING MEMBER" badge)
+  - Monthly: ₹499/month + GST
+  - Additional pets: ₹2,499/year or ₹249/month + GST
+- **Benefits**: All 12 pillars, Mira AI, Pet Soul, Health Vault, Priority Support
 
-#### Phase 3: Intelligence Engine (`/app/backend/mira_intelligence.py`)
-- ✅ **Passive Learning** - Tracks browsing signals (views, clicks, filters, add-to-cart)
-- ✅ **Predictive Recommendations** - Based on Pet Soul + behavior patterns
-- ✅ **Cross-Pillar Intelligence** - Connects insights across service areas
-- ✅ **Learning from Outcomes** - Tracks accepted/rejected recommendations
-- ✅ **Proactive Triggers** - Birthday reminders, vaccine alerts, reorder suggestions
+### ✅ Membership Onboarding (`/pet-soul`)
+- Multi-step form capturing:
+  - Pet Parent Name, Email, Phone
+  - Communication preferences
+  - Soul Whispers (WhatsApp drip) opt-in
+  - Multiple pets support
+  - Terms & Privacy acceptance
+- Connected to `/api/membership/onboard` endpoint
 
-#### Phase 4: Soul Intelligence Engine (`/app/backend/soul_intelligence.py`) - NEW
-- ✅ **Known Fields Detection** - Tracks all known Pet Soul fields
-- ✅ **Advanced Enrichment Extraction** - Regex-based extraction from conversations
-- ✅ **Behavioral Inference** - Learn from orders, returns, patterns
-- ✅ **Intelligent Commerce Filtering** - Exclude products based on allergies, age, size
-- ✅ **Soul Completeness Calculation** - Weighted scoring of essential/important/nice fields
-- ✅ **Weekly Drip Question Selection** - Contextual, priority-based questions
+### ✅ Admin Panel Features
+- **Page Content Manager**: 
+  - Covers ALL pages (Core, 12 Pillars, Legal, Other)
+  - Hero section editor (badge, title, highlight, subtitle, CTAs)
+  - Custom sections with markdown
+  - SEO settings (meta title, description, keywords)
+  - Draft/Publish toggle
+  - Import/Export JSON
+  - Seed All Defaults button
+- **Pet Parent Directory**:
+  - Search by name/email
+  - Pet Soul view with 8-pillar breakdown
+  - Circular progress score
+  - View Full Soul button → opens `/pet-soul-journey/:petId`
+  - Send Soul Whisper button
+- **Product Manager**: CSV import/export, bulk edit
 
-#### Phase 5: Pet-First Gating (`/app/backend/pet_gate_routes.py`) - NEW
-- ✅ **Pet Requirement Check** - /api/pet-gate/check
-- ✅ **Action-Specific Messaging** - Different messages for checkout, chat, booking
-- ✅ **Soul Drip Endpoints** - /api/soul-drip/next-question, /api/soul-drip/respond
-- ✅ **Soul Completeness API** - /api/soul-drip/completeness/{pet_id}
-- ✅ **Commerce Filtering API** - /api/pet-gate/filter-products/{pet_id}
+### ✅ Mira AI Concierge System
+- GPT-5.1 integration via Emergent LLM Key
+- Pet-first context loading
+- Pillar intent detection (all 12 pillars)
+- Never re-asks known information
+- Soul enrichment from conversations
+- Research mode for factual queries
+- Context-aware quick prompts
+- Voice input support
+- Chat history & session management
 
-#### Frontend Components
-- ✅ `useMiraSignal.js` - Hook for passive learning signal tracking
-- ✅ `usePetGate.js` - Hook for pet-first gating
-- ✅ `PetGateModal.jsx` - "Add Your Pet First" modal
+### ✅ Pet Soul Intelligence
+- 8 Pillars: Identity, Family, Rhythm, Home, Travel, Taste, Training, Long Horizon
+- Progressive enrichment from:
+  - Onboarding form
+  - Mira conversations
+  - Order completion (behavioral inference)
+- Allergy-based product filtering
+- Soul completeness scoring
+- Weekly drip question selection
+
+### ✅ Multi-Pet Household Features
+- **Endpoints**:
+  - `GET /api/household/{email}` - Household info & benefits
+  - `POST /api/household/{email}/add-pet` - Add pet to family
+  - `GET /api/household/{email}/recommendations` - Products safe for ALL pets
+- **Benefits**:
+  - 10% family discount (2+ pets)
+  - Shared delivery
+  - Bulk pricing (3+ pets)
+  - Family events
+
+### ✅ Commerce Features
+- Product filtering by Pet Soul allergies
+- Visual banner: "Filtered for [Pet]'s safety"
+- Order-based soul enrichment
+- Autoship management
+
+### ✅ Bug Fixes (This Session)
+- Voice Order: Fixed file read issue
+- Checkout Form: Fixed async validation race condition
+- View Full Soul button: Now handles both `id` and `_id`
+- "Pet Parent Name" label on onboarding form
 
 ---
 
-## API Endpoints
+## API Endpoints Summary
 
-### Mira AI Endpoints
+### Authentication
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/mira/chat` | POST | Main chat - creates/updates tickets, includes research mode |
-| `/api/mira/context` | POST | Get personalized context for pillar pages |
-| `/api/mira/tickets` | GET | List all Mira tickets (admin) |
-| `/api/mira/session/{id}` | GET | Get session with ticket data |
-| `/api/mira/session/new` | POST | **NEW:** Create new conversation session |
-| `/api/mira/history` | GET | **NEW:** Get user's past conversation history |
-| `/api/mira/quick-prompts/{pillar}` | GET | **NEW:** Get pillar-specific quick prompts |
-| `/api/mira/pillars` | GET | Get pillar configurations |
+| `/api/auth/register` | POST | User registration |
+| `/api/auth/login` | POST | User login |
+| `/api/auth/me` | GET | Current user info |
 
-### Intelligence Engine Endpoints
+### Membership
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/mira/intelligence/signal` | POST | Record browsing behavior |
-| `/api/mira/intelligence/recommendations/{pet_id}` | GET | Get personalized recommendations |
-| `/api/mira/intelligence/cross-pillar/{user_id}` | GET | Cross-pillar insights |
-| `/api/mira/intelligence/feedback` | POST | Record recommendation feedback |
-| `/api/mira/intelligence/effectiveness` | GET | Recommendation metrics |
-| `/api/mira/intelligence/triggers/{user_id}` | GET | Proactive notification triggers |
+| `/api/membership/onboard` | POST | New member onboarding |
+| `/api/membership/upgrade` | POST | Upgrade membership tier |
+
+### Pets & Pet Soul
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/pets` | GET | List user's pets |
+| `/api/pets/{pet_id}` | GET | Get pet details |
+| `/api/pets/{pet_id}/soul` | GET | Get Pet Soul data |
+| `/api/pet-gate/filter-products/{pet_id}` | GET | Filter products by allergies |
+| `/api/soul-drip/next-question/{pet_id}` | GET | Get next soul question |
+
+### Household
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/household/{email}` | GET | Household info & benefits |
+| `/api/household/{email}/add-pet` | POST | Add pet to household |
+| `/api/household/{email}/recommendations` | GET | Safe products for all pets |
+
+### Mira AI
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/mira/chat` | POST | Chat with Mira |
+| `/api/mira/history` | GET | Chat history |
+| `/api/mira/signal` | POST | Track browsing signals |
+
+### Admin Pages
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/admin/pages` | GET | List all pages |
+| `/api/admin/pages/{slug}` | GET/PUT | Get/update page content |
+| `/api/admin/pages/seed-all` | POST | Seed all default content |
+| `/api/admin/pages/export` | GET | Export all pages as JSON |
+| `/api/admin/pages/import` | POST | Import pages from JSON |
 
 ---
 
-## Database Collections
+## File Structure
 
-### mira_tickets
-```javascript
-{
-  ticket_id: "CNC-20260121-0001",
-  mira_session_id: "mira-page-xxx",
-  ticket_type: "concierge",
-  pillar: "travel",
-  status: "acknowledged",
-  member: { id, name, email, phone },
-  pet: { id, name, breed },
-  pet_soul_snapshot: { /* Full Pet Soul */ },
-  messages: [{ id, type, content, sender, timestamp, research_mode }]
-}
 ```
-
-### mira_signals (Passive Learning)
-```javascript
-{
-  user_id: "user-xxx",
-  page: "travel",
-  action: "view_product",
-  target: "travel-kit-001",
-  metadata: { timestamp, url },
-  processed: false
-}
-```
-
-### mira_inferences (Learned Preferences)
-```javascript
-{
-  user_id: "user-xxx",
-  inferences: [{
-    field: "preferences.likely_flavor",
-    value: "chicken",
-    confidence: "low",
-    source: "inferred"
-  }]
-}
+/app
+├── backend/
+│   ├── server.py              # Main FastAPI app
+│   ├── mira_routes.py         # Mira AI endpoints
+│   ├── mira_intelligence.py   # AI intelligence engine
+│   ├── soul_intelligence.py   # Pet Soul engine
+│   ├── pet_gate_routes.py     # Pet-first gating
+│   ├── pet_soul_routes.py     # Soul management
+│   ├── channel_intake.py      # Voice/text order intake
+│   └── auth_routes.py         # Authentication
+│
+├── frontend/src/
+│   ├── pages/
+│   │   ├── Home.jsx           # Vision-first homepage
+│   │   ├── AboutPage.jsx      # Mira's story + team
+│   │   ├── MembershipPage.jsx # Pet Life Pass
+│   │   ├── MembershipOnboarding.jsx # /pet-soul form
+│   │   ├── PetSoulJourneyPage.jsx # Full soul view
+│   │   ├── ProductListing.jsx # With allergy filtering
+│   │   └── Checkout.jsx       # Fixed validation
+│   │
+│   ├── components/
+│   │   ├── admin/
+│   │   │   ├── PageContentManager.jsx # Full CMS
+│   │   │   └── MemberDirectory.jsx    # Pet Parent Directory
+│   │   ├── MiraAI.jsx         # Chat widget
+│   │   ├── PetSoulJourney.jsx # Soul visualization
+│   │   └── ui/                # Shadcn components
+│   │
+│   └── utils/
+│       └── api.js             # API URL config
+│
+└── memory/
+    ├── PRD.md                 # This file
+    ├── TASK_LIST.md           # Task tracking
+    └── DOCTRINE.md            # Core principles
 ```
 
 ---
 
-## Prioritized Backlog
+## Remaining Tasks
 
-### P0 - Critical (DONE)
-- ✅ Mira AI complete across all pillars
-- ✅ Intelligence Engine with passive learning
-- ✅ Personalized recommendations
-- ✅ **Pet Soul Journey for Logged-in Members** - COMPLETED Jan 21, 2026
+### 🔴 Critical (Before Go-Live)
+- [ ] Re-enable ProtectedRoute.jsx for auth gating
+- [ ] Production Razorpay keys
 
-### P1 - High Priority
-- [x] ~~Celebrate page hero section~~ - COMPLETED Jan 21, 2026
-- [x] ~~Admin Pets endpoint fix~~ - COMPLETED Jan 21, 2026
-- [x] ~~Add missing pillars to admin~~ - COMPLETED Jan 21, 2026
-- [x] ~~Membership page personalization~~ - COMPLETED Jan 21, 2026
-- [ ] WhatsApp Business API integration for Unified Inbox
-- [ ] Voice Order fix - "Connection failed" error
-- [ ] Shopify Sync fix - "Untitled" products issue
-- [ ] Checkout form validation feedback
+### 🟡 Medium Priority
+- [ ] WhatsApp Soul Drip (backend ready, needs WhatsApp Business API)
+- [ ] Behavioral inference from returns
+- [ ] Backend code cleanup (remove duplicate function definitions)
 
-### P2 - Medium Priority
-- [ ] Multi-channel Mira (Voice input, WhatsApp handoff)
-- [ ] Proactive outreach via WhatsApp/Email
-- [ ] Complete server.py refactoring
-- [ ] Consolidate Membership.jsx and MembershipPage.jsx
-
-### P3 - Future
-- [ ] Learning from Outcomes visualization (admin dashboard)
-- [ ] A/B testing for recommendations
-- [ ] Pet Soul Weekly Question via WhatsApp
-- [ ] Commerce filtering based on Pet Soul (allergies, age)
+### 🔵 Backlog
+- [ ] Full WhatsApp Business API integration
+- [ ] Member analytics dashboard
+- [ ] Standardize all 12 pillar admin managers
 
 ---
 
 ## Test Credentials
-- **Admin**: aditya / lola4304
-- **Test User**: dipali@clubconcierge.in / lola4304
-- **Test Pets**: Mojo (Indie), Mystique (Shihtzu)
+
+```
+Admin: aditya / lola4304
+Test User: dipali@clubconcierge.in / lola4304
+Test Pets: Mojo (36% soul), Mystique (0%), Luna (61%)
+```
 
 ---
 
 ## Technical Notes
 
-### Mira Intelligence Signal Types
-- `view_product` - User viewed a product page
-- `add_to_cart` - User added item to cart
-- `filter_used` - User applied a filter
-- `pillar_visit` - User visited a pillar page
-- `search` - User searched for something
+### Razorpay
+- Currently using TEST keys (not production)
 
-### Confidence Levels
-- **high** - User explicitly stated (in chat or form)
-- **medium** - User took action (purchase, booking)
-- **low** - User browsed but didn't act
+### Meilisearch
+- Not available in current environment (non-blocking warning)
 
-### Routes Without Navbar/Footer
-- `/ask-mira` - Full-screen Mira page
-- `/admin/service-desk` - Full-screen service desk
-- `/membership` - Membership landing
+### MongoDB Collections
+- `users` - User accounts
+- `pets` - Pet profiles with `doggy_soul_answers`
+- `orders` - Order history
+- `page_content` - CMS content
+- `products` - Product catalog
+- `service_desk_tickets` - Mira-created tickets
 
 ---
 
-## Changelog
-
-### January 21, 2026 (Session 5) - Pet Life Pass Update
-- ✅ **About Page Overhaul** - Restored beautiful team story:
-  - Hero: "Born from Love, Built for Every Pet Parent"
-  - **Mira** - "The Soul & Inspiration" (the dog who inspired everything)
-  - **Dipali** - "Keeper of the Concierge" (India's first registered Concierge license holder)
-  - **Aditya** - "Founder, The Doggy Bakery"
-  - Extended team: "+15 Pet Parents & Their Babies" from Mumbai, Delhi & Bangalore
-  - Pet Soul™ Technology section with 8 pillars
-  - Doctrine quote: "The longer a pet lives with us, the less their parent has to explain."
-
-- ✅ **Membership → Pet Life Pass** - Complete rebrand:
-  - Title renamed to "Pet Life Pass" (not "Membership")
-  - Badge: "Founding Members – Pet Life Pass"
-  - **Annual Plan FIRST** (₹4,999/year + GST) with "FOUNDING MEMBER" badge
-  - **Monthly Plan Second** (₹499/month + GST)
-  - Additional pets: ₹2,499/year or ₹249/month each (+ GST)
-  - Positioning: "An early invitation to help us build the world's first Pet Life Operating System"
-
-- ✅ **Pricing Backend Update** - server.py and MembershipOnboarding.jsx updated:
-  - Annual base: ₹4,999 (was ₹999)
-  - Monthly base: ₹499 (was ₹99)
-  - Additional pet annual: ₹2,499 (was ₹499)
-  - Additional pet monthly: ₹249 (was ₹49)
-
-- ✅ **Data Flow to Pet Soul** - Complete pipeline verified:
-  1. **Onboarding Form** → Writes to `doggy_soul_answers` and user profile
-  2. **Mira AI Conversations** → `save_soul_enrichment()` extracts and saves learnings
-  3. **Order Completion** → `infer_from_order()` called when order status = "delivered" or "completed"
-  4. **Admin Visibility** → Pet Parent Directory shows full Pet Soul Journey with 8 pillars
-  5. **Member Visibility** → PetSoulJourney component on `/membership` for logged-in users
-
-- ✅ **Admin Pet Parent Directory** - Enhanced with Pet Soul Journey view:
-  - Pet tabs to switch between pets (e.g., Mojo, Mystique, Luna)
-  - Circular progress score with percentage
-  - Tenure recognition (Early Journey, Growing Together, Well Known, Deeply Understood)
-  - 8-pillar breakdown with individual insights
-
-### January 21, 2026 (Session 4)
-- ✅ **Membership Page Doctrine Overhaul** - Complete redesign per user's detailed redline feedback:
-  - **Hero Section**: Softened copy to "a system that quietly learns, remembers, and adapts around your pet"
-  - **CTAs**: Clear hierarchy - "Start Your Pet's Soul" (primary), "Talk to Mira" (secondary ghost)
-  - **Removed**: "The world's most intelligent pet life platform" claim
-  - **Pillars**: Renamed to "A Complete Life System for Your Pet", shows 6 initially with "And more, as your journey grows" expand
-  - **Benefits**: Paw Rewards demoted to visually secondary position (smaller, muted colors)
-  - **Bruno's Profile**: Redesigned to focus on Identity, Preferences (allergies highlighted), and Life Milestones instead of stats/points
-  - **Tenure Recognition**: Replaced gamified levels with relationship-based naming (Early Journey → Growing Together → Well Known → Deeply Understood)
-  - **No Multipliers**: Removed points multiplier language entirely
-  - **Pricing**: Changed to "One Membership. One Pet Life System."
-  - **Final CTA**: Calmer tone - "Ready to begin your pet's journey with us?"
-
-- ✅ **Membership Onboarding Form** - New `/pet-soul` page for new member signup:
-  - **Step 1 (Pet Parent)**: Captures name, email, WhatsApp, address, city, pincode, password
-  - **Step 2 (Dog Info)**: Name, breed (autocomplete), gender, birth date, gotcha day, weight, neutered status
-  - **Multi-pet support**: Tabs for multiple dogs, "Add Another Dog" button
-  - **Step 3 (Review & Pay)**: Summary of parent + pets, order breakdown with GST
-  - **Backend**: `/api/membership/onboard` endpoint creates user, pets, and pending order
-  - **Data stored**: users, pets, membership_orders collections
-
-### January 21, 2026 (Session 3)
-- ✅ **Pet Soul Journey Redesign** - Complete redesign per user's "Living Portrait" spec:
-  - Stage-based display (0-20%, 20-50%, 50-80%, 80-100%)
-  - "How well we understand [Pet]" instead of completion percentage
-  - 8 Pillars show insights, not raw percentages
-  - "What We've Learned" timeline with source tags (From you, From behaviour, From Mira)
-  - Quiet achievements (only at Stage 3+, no gamification)
-  - Personalized care insights (NOT product pushes)
-  - Single gentle next step question
-- ✅ **Functional Gentle Next Step** - Answers save to Pet Soul and advance to next question
-- ✅ **Clickable Pillar Cards** - Click to expand and see pillar-wise preferences
-- ✅ **Pillar Preferences API** - `/api/pet-gate/pillar-preferences/{pet_id}` returns all data organized by pillar
-- ✅ **Journey Answer API** - `/api/soul-drip/journey-answer` saves answers from Journey page
-- ✅ **Service Desk AI Fix** - Fixed NoneType error in ticket AI draft when pet info is missing
-- ✅ **Ticket Click Handler** - Added missing onClick to ticket cards in Service Desk
-- ✅ **Soul Enrichment Fix** - Answers now save to both `doggy_soul_answers` and `soul_enrichments`
-- ✅ **Pet Parent Directory** - Renamed from "Member Directory", rows now clickable to open profile
-- ✅ **FAQs Backend Integration** - FAQs now fetch from backend API with category grouping
-
-### January 21, 2026 (Session 2)
-- ✅ **Celebrate Page Hero** - Added category-specific hero sections with dynamic backgrounds, badges, and MiraContextPanel placement
-- ✅ **Admin Pets Endpoint** - Fixed Pydantic validation error in `/api/admin/pets` (added `Depends(security)` to verify_admin)
-- ✅ **Admin Blog Posts** - Reseeded and verified 6 blog posts working
-- ✅ **Admin Mira Tickets** - Verified 73 open tickets visible in Service Desk
-- ✅ **Admin Pillars** - Added "Live MIS" and "Pricing, Shipping & Commercial Hub" to AgentManagement, PricingHub, ServiceDesk
-
-### January 21, 2026 (Session 1)
-- ✅ Production deployment fix with getApiUrl() workaround
-- ✅ Mira AI Research Mode
-- ✅ Context-aware quick prompts
-- ✅ Voice input UI
-- ✅ Session management for chat history
-
----
-
-*Last Updated: January 21, 2026 (Session 5 - Pet Life Pass Update)*
+*This document is automatically updated by the development agent.*
