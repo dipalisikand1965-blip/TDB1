@@ -489,11 +489,11 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
   const fetchMemberTickets = async () => {
     setTicketsLoading(true);
     try {
-      // Fetch from service desk tickets
-      const response = await fetch(`${API_URL}/api/admin/service-desk/tickets?member_email=${encodeURIComponent(member.email)}`);
+      // Fetch ALL tickets from combined endpoint
+      const response = await fetch(`${API_URL}/api/tickets/member/${encodeURIComponent(member.email)}/all`);
       if (response.ok) {
         const data = await response.json();
-        setTickets(data.tickets || data || []);
+        setTickets(data.tickets || []);
       }
     } catch (error) {
       console.error('Failed to fetch member tickets:', error);
