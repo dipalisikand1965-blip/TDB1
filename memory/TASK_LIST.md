@@ -45,7 +45,7 @@
 | # | Task | Status | Notes |
 |---|------|--------|-------|
 | 9 | **WhatsApp Soul Drip System** | ⏸️ READY | Backend exists at `/api/soul-drip/*`. Needs WhatsApp Business API credentials for full integration |
-| 10 | **Multi-Pet Household Special States** | 🔲 TODO | Logic for families with multiple pets (shared orders, family discounts, etc.) |
+| 10 | **Multi-Pet Household Special States** | ✅ DONE | Added `/api/household/{email}` endpoints: household info, add pet, recommendations |
 | 11 | **Behavioral Inference from Returns** | 🔲 TODO | Learn preferences from return patterns (e.g., returned chicken = allergy inference) |
 | 12 | **Fix Backend Linting Errors** | ✅ DONE | Fixed bcrypt and FULFILMENT_TYPES undefined errors |
 | 13 | **Product Title Sync Fix** | ⚠️ PARTIAL | API-level fix done, but Shopify sync script may still create "Untitled" products |
