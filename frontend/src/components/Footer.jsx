@@ -50,13 +50,8 @@ const Footer = () => {
             <p className="text-sm text-gray-400 mb-4 leading-relaxed">
               Your Pet&apos;s Life, Thoughtfully Orchestrated.
             </p>
-            <div className="flex items-center gap-2 mb-4">
-              <img 
-                src="https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png?v=1718969706" 
-                alt="The Doggy Company Logo"
-                className="h-8 w-auto"
-              />
-              <span className="text-xs text-gray-500">The Doggy Company</span>
+            <div className="mb-4">
+              <LogoCompact size="sm" className="text-white [&_span]:!text-white [&_span]:!bg-none" />
             </div>
             <div className="flex space-x-3">
               <a href="https://www.facebook.com/thedoggybakery" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors">
