@@ -207,33 +207,59 @@ def setup_communication_routes(app, db):
             raise HTTPException(404, "Pet not found")
         
         pet_info = next((p for p in member.get("pets", []) if p.get("id") == data.pet_id), None)
+        pet_name = pet_info.get("name") if pet_info else "Unknown"
+        parent_name = member.get("name", member.get("first_name", ""))
+        parent_email = member.get("email")
+        
+        # Actually send the communication
+        send_result = {"success": False, "provider": "none"}
+        whatsapp_link = None
+        
+        if not data.scheduled_for:  # Only send if not scheduled for later
+            if channel == "email" and parent_email:
+                # Send email via Resend
+                send_result = await comm_engine.send_email(
+                    to_email=parent_email,
+                    subject=rendered["subject"],
+                    body=rendered["body"],
+                    pet_name=pet_name,
+                    parent_name=parent_name
+                )
+            elif channel == "whatsapp":
+                # Generate WhatsApp link (provisional until API integration)
+                whatsapp_link = comm_engine.generate_whatsapp_link(
+                    message=f"{rendered['subject']}\n\n{rendered['body']}"
+                )
+                send_result = {"success": True, "provider": "whatsapp_link", "link": whatsapp_link}
         
         # Log the communication
         log_data = {
             "pet_id": data.pet_id,
-            "pet_name": pet_info.get("name") if pet_info else "Unknown",
+            "pet_name": pet_name,
             "user_id": str(member.get("_id", "")),
-            "parent_email": member.get("email"),
+            "parent_email": parent_email,
+            "parent_name": parent_name,
             "type": data.template_id,
             "channel": channel,
             "subject": rendered["subject"],
             "body": rendered["body"],
             "priority": rendered["priority"],
             "variables": data.variables,
-            "status": "scheduled" if data.scheduled_for else "sent",
-            "sent_at": data.scheduled_for or datetime.now(timezone.utc)
+            "status": "scheduled" if data.scheduled_for else ("sent" if send_result.get("success") else "failed"),
+            "sent_at": data.scheduled_for or datetime.now(timezone.utc),
+            "send_result": send_result,
+            "whatsapp_link": whatsapp_link
         }
         
         log_id = await comm_engine.log_communication(log_data)
         
-        # TODO: Actually send via channel (WhatsApp API, Email, etc.)
-        # For now, just log it
-        
         return {
-            "sent": True,
+            "sent": send_result.get("success", False),
             "log_id": log_id,
             "channel": channel,
-            "message": f"Communication {'scheduled' if data.scheduled_for else 'sent'} successfully"
+            "send_result": send_result,
+            "whatsapp_link": whatsapp_link,
+            "message": f"Communication {'scheduled' if data.scheduled_for else ('sent' if send_result.get('success') else 'logged (send failed)')}"
         }
     
     @app.post("/api/admin/communications/trigger-reminder")
