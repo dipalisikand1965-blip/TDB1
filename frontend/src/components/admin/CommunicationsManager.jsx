@@ -111,6 +111,62 @@ const CommunicationsManager = ({ authHeaders }) => {
     }
   };
 
+  const handleSendNow = async (reminder) => {
+    setSendingReminder(reminder.pet_id);
+    try {
+      // Map reminder type to template id
+      const templateMap = {
+        'vaccination': 'vaccination_upcoming',
+        'birthday': 'birthday_nudge',
+        'adoption_day': 'adoption_day_nudge',
+        'grooming': 'grooming_reminder',
+        'weekly_soul': 'weekly_soul_question'
+      };
+      
+      const templateId = templateMap[reminder.type] || reminder.type;
+      
+      const res = await axios.post(
+        `${getApiUrl()}/api/admin/communications/send`,
+        {
+          pet_id: reminder.pet_id,
+          template_id: templateId,
+          channel: 'email',
+          variables: {
+            pet_name: reminder.pet_name,
+            pet_parent_name: reminder.parent_name || 'Pet Parent',
+            event_date: reminder.event_date || new Date().toISOString(),
+            ...reminder.extra_data
+          }
+        },
+        { headers: authHeaders }
+      );
+      
+      if (res.data.sent) {
+        toast({ 
+          title: 'Sent!', 
+          description: `${reminder.type.replace(/_/g, ' ')} reminder sent for ${reminder.pet_name}` 
+        });
+        // Refresh data
+        fetchData();
+      } else {
+        toast({ 
+          title: 'Not Sent', 
+          description: res.data.reason || 'Communication was not sent (may be throttled)',
+          variant: 'warning'
+        });
+      }
+    } catch (error) {
+      console.error('Failed to send reminder:', error);
+      toast({ 
+        title: 'Error', 
+        description: error.response?.data?.detail || 'Failed to send reminder', 
+        variant: 'destructive' 
+      });
+    } finally {
+      setSendingReminder(null);
+    }
+  };
+
   const formatDate = (dateStr) => {
     if (!dateStr) return 'N/A';
     return new Date(dateStr).toLocaleDateString('en-IN', {
