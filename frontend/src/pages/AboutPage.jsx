@@ -812,35 +812,20 @@ const AboutPage = () => {
       {/* CTA Section */}
       <section className="py-16 bg-gradient-to-r from-purple-600 to-pink-600">
         <div className="max-w-3xl mx-auto px-4 text-center text-white">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
+          <h2 className="text-xl md:text-2xl font-bold mb-4">
             Ready to Experience Care That Remembers?
           </h2>
-          <p className="text-white/80 mb-8">
+          <p className="text-white/80 mb-8 text-sm md:text-base">
             Join thousands of pet parents who've chosen a better way.
           </p>
           <Link to="/membership">
-            <Button className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-6 text-lg font-semibold transform hover:scale-105 transition-transform duration-200" data-testid="about-cta-button">
+            <Button className="bg-white text-purple-700 hover:bg-gray-100 px-6 md:px-8 py-4 md:py-6 text-base md:text-lg font-semibold transform hover:scale-105 transition-transform duration-200" data-testid="about-cta-button">
               <PawPrint className="w-5 h-5 mr-2" />
               Explore Pet Life Pass
             </Button>
           </Link>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <PawPrint className="w-6 h-6 text-purple-400" />
-            <span className="text-xl font-bold text-white">The Doggy Company®</span>
-          </div>
-          <p className="mb-2">India's Pet Life Operating System</p>
-          <p className="text-sm text-gray-500 mb-4">
-            A convergence of Les Concierges®, Club Concierge® & The Doggy Bakery®
-          </p>
-          <p className="text-sm">© 2025 The Doggy Company®. All rights reserved.</p>
-        </div>
-      </footer>
 
       {/* Global animations CSS */}
       <style>{`
