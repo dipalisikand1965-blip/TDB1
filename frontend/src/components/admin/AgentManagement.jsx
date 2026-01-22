@@ -479,8 +479,8 @@ const AgentManagement = ({ authHeaders }) => {
 
       {/* Create Agent Modal */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="sticky top-0 bg-white z-10 pb-2 border-b">
             <DialogTitle className="flex items-center gap-2">
               <Plus className="w-5 h-5 text-purple-600" />
               Create New Agent
@@ -623,8 +623,8 @@ const AgentManagement = ({ authHeaders }) => {
 
       {/* Edit Agent Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="sticky top-0 bg-white z-10 pb-2 border-b">
             <DialogTitle className="flex items-center gap-2">
               <Edit className="w-5 h-5 text-purple-600" />
               Edit Agent: {selectedAgent?.name}
