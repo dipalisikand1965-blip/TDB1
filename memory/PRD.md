@@ -202,6 +202,8 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
 │   ├── pet_gate_routes.py     # Pet-first gating
 │   ├── pet_soul_routes.py     # Soul management
 │   ├── channel_intake.py      # Voice/text order intake
+│   ├── communication_engine.py # NEW: Unified Reminder System engine
+│   ├── communication_routes.py # NEW: Communication API endpoints
 │   └── auth_routes.py         # Authentication
 │
 ├── frontend/src/
@@ -217,7 +219,8 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
 │   ├── components/
 │   │   ├── admin/
 │   │   │   ├── PageContentManager.jsx # Full CMS
-│   │   │   └── MemberDirectory.jsx    # Pet Parent Directory
+│   │   │   ├── MemberDirectory.jsx    # Pet Parent Directory
+│   │   │   └── AgentManagement.jsx    # Agent portal management (fixed modal)
 │   │   ├── MiraAI.jsx         # Chat widget
 │   │   ├── PetSoulJourney.jsx # Soul visualization
 │   │   └── ui/                # Shadcn components
@@ -230,6 +233,47 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
     ├── TASK_LIST.md           # Task tracking
     └── DOCTRINE.md            # Core principles
 ```
+
+---
+
+## Unified Reminder & Mailing System (NEW)
+
+### Overview
+A memory-driven communication system that:
+- Remembers each pet via Pet Soul™
+- Decides when to speak (max 1 message/week per pet)
+- Chooses the right channel (Email via Resend, WhatsApp provisional)
+- Knows when to stay silent
+
+### API Endpoints
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/admin/communications/templates` | GET | All communication templates |
+| `/api/admin/communications/templates/defaults` | GET | Default system templates |
+| `/api/admin/communications/templates` | POST | Create custom template |
+| `/api/admin/communications/analytics` | GET | Communication analytics |
+| `/api/admin/communications/pending` | GET | Pending reminders |
+| `/api/admin/communications/send` | POST | Send/schedule communication |
+| `/api/admin/communications/soul-questions` | GET | Soul enrichment questions |
+| `/api/admin/communications/history` | GET | Communication history |
+| `/api/admin/communications/config-status` | GET | Integration status |
+| `/api/admin/communications/test-email` | POST | Send test email |
+
+### Default Templates (9)
+- `vaccination_upcoming` - 7 days before due
+- `vaccination_overdue` - 3 days after due
+- `birthday_nudge` - 5 days before birthday
+- `adoption_day_nudge` - 5 days before gotcha day
+- `grooming_reminder` - Based on coat type
+- `weekly_soul_question` - Progressive soul enrichment
+- `relationship_checkin` - 30-45 days inactivity
+- `travel_advisory` - Contextual travel tips
+- `celebration_followup` - Post-event follow-up
+
+### Channel Status
+- **Email**: ✅ Configured (Resend API, sender: woof@thedoggycompany.in)
+- **WhatsApp**: 🟡 PROVISIONAL (click-to-chat links until Business API integrated)
+- **In-App**: ✅ Ready
 
 ---
 
