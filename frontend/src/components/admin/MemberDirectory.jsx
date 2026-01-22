@@ -1052,8 +1052,11 @@ const PetSoulTabs = ({ pets }) => {
               className="flex-1 bg-white/10 hover:bg-white/20 text-white border-0"
               onClick={() => {
                 // Open member's Pet Soul Journey page in new tab
-                if (currentPet?.id) {
-                  window.open(`/pet-soul-journey/${currentPet.id}`, '_blank');
+                const petId = currentPet?.id || currentPet?._id;
+                if (petId) {
+                  window.open(`/pet-soul-journey/${petId}`, '_blank');
+                } else {
+                  alert('Pet ID not found. Unable to open full profile.');
                 }
               }}
             >
