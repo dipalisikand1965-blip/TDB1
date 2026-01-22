@@ -169,6 +169,7 @@ function MainLayout() {
         <Route path="/pet-soul/:petId" element={<PetSoulPage />} />
         <Route path="/pet-soul" element={<PetProfile />} />
         <Route path="/pet-soul-journey/:petId" element={<PetSoulJourneyPage />} />
+        <Route path="/pet-soul-demo" element={<PetSoulDemo />} />
         <Route path="/pet-vault/:petId" element={<ProtectedRoute><PetVault /></ProtectedRoute>} />
         
         {/* Policy Pages */}
