@@ -803,6 +803,304 @@ const CommunicationsManager = ({ authHeaders }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Template Modal */}
+      <Dialog open={showEditTemplateModal} onOpenChange={setShowEditTemplateModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="sticky top-0 bg-white z-10 pb-2 border-b">
+            <DialogTitle className="flex items-center gap-2">
+              <Edit className="w-5 h-5 text-purple-600" />
+              Edit Template
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <Label>Template Name *</Label>
+                <Input
+                  value={templateForm.name}
+                  onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })}
+                  placeholder="e.g., Welcome Email"
+                />
+              </div>
+              
+              <div className="col-span-2">
+                <Label>Trigger Description</Label>
+                <Input
+                  value={templateForm.trigger_description}
+                  onChange={(e) => setTemplateForm({ ...templateForm, trigger_description: e.target.value })}
+                  placeholder="e.g., Sent when a new pet is registered"
+                />
+              </div>
+              
+              <div>
+                <Label>Channel</Label>
+                <select
+                  value={templateForm.channel}
+                  onChange={(e) => setTemplateForm({ ...templateForm, channel: e.target.value })}
+                  className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white"
+                >
+                  <option value="email">Email</option>
+                  <option value="whatsapp">WhatsApp</option>
+                  <option value="in_app">In-App</option>
+                </select>
+              </div>
+              
+              <div>
+                <Label>Priority</Label>
+                <select
+                  value={templateForm.priority}
+                  onChange={(e) => setTemplateForm({ ...templateForm, priority: e.target.value })}
+                  className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white"
+                >
+                  <option value="critical">Critical</option>
+                  <option value="high">High</option>
+                  <option value="normal">Normal</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+              
+              <div className="col-span-2">
+                <Label>Subject *</Label>
+                <Input
+                  value={templateForm.subject}
+                  onChange={(e) => setTemplateForm({ ...templateForm, subject: e.target.value })}
+                  placeholder="e.g., 🐾 Welcome to The Doggy Company, {{pet_name}}!"
+                />
+              </div>
+              
+              <div className="col-span-2">
+                <Label>Message Body *</Label>
+                <Textarea
+                  value={templateForm.body}
+                  onChange={(e) => setTemplateForm({ ...templateForm, body: e.target.value })}
+                  rows={8}
+                  placeholder="Hi {{pet_parent_name}},&#10;&#10;Welcome to The Doggy Company! We're excited to have {{pet_name}} join our family..."
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Use {'{{variable_name}}'} for dynamic content. Common: pet_name, pet_parent_name, event_date
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter className="sticky bottom-0 bg-white z-10 pt-2 border-t">
+            <Button variant="outline" onClick={() => setShowEditTemplateModal(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => handleSaveTemplate(false)}
+              disabled={savingTemplate}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {savingTemplate ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <CheckCircle className="w-4 h-4 mr-2" />}
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Template Modal */}
+      <Dialog open={showCreateTemplateModal} onOpenChange={setShowCreateTemplateModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="sticky top-0 bg-white z-10 pb-2 border-b">
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="w-5 h-5 text-purple-600" />
+              Create New Template
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <Label>Template Name *</Label>
+                <Input
+                  value={templateForm.name}
+                  onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })}
+                  placeholder="e.g., Monthly Newsletter"
+                />
+              </div>
+              
+              <div className="col-span-2">
+                <Label>Trigger Description</Label>
+                <Input
+                  value={templateForm.trigger_description}
+                  onChange={(e) => setTemplateForm({ ...templateForm, trigger_description: e.target.value })}
+                  placeholder="e.g., Sent monthly to all members"
+                />
+              </div>
+              
+              <div>
+                <Label>Channel</Label>
+                <select
+                  value={templateForm.channel}
+                  onChange={(e) => setTemplateForm({ ...templateForm, channel: e.target.value })}
+                  className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white"
+                >
+                  <option value="email">Email</option>
+                  <option value="whatsapp">WhatsApp</option>
+                  <option value="in_app">In-App</option>
+                </select>
+              </div>
+              
+              <div>
+                <Label>Priority</Label>
+                <select
+                  value={templateForm.priority}
+                  onChange={(e) => setTemplateForm({ ...templateForm, priority: e.target.value })}
+                  className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white"
+                >
+                  <option value="critical">Critical</option>
+                  <option value="high">High</option>
+                  <option value="normal">Normal</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+              
+              <div className="col-span-2">
+                <Label>Subject *</Label>
+                <Input
+                  value={templateForm.subject}
+                  onChange={(e) => setTemplateForm({ ...templateForm, subject: e.target.value })}
+                  placeholder="e.g., 🐾 Special treat for {{pet_name}}!"
+                />
+              </div>
+              
+              <div className="col-span-2">
+                <Label>Message Body *</Label>
+                <Textarea
+                  value={templateForm.body}
+                  onChange={(e) => setTemplateForm({ ...templateForm, body: e.target.value })}
+                  rows={8}
+                  placeholder="Hi {{pet_parent_name}},&#10;&#10;We have something special for {{pet_name}}..."
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Use {'{{variable_name}}'} for dynamic content. Variables will be auto-extracted.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter className="sticky bottom-0 bg-white z-10 pt-2 border-t">
+            <Button variant="outline" onClick={() => setShowCreateTemplateModal(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => handleSaveTemplate(true)}
+              disabled={savingTemplate}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {savingTemplate ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+              Create Template
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Schedule Send Modal */}
+      <Dialog open={showScheduleModal} onOpenChange={setShowScheduleModal}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="sticky top-0 bg-white z-10 pb-2 border-b">
+            <DialogTitle className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-purple-600" />
+              Schedule Communication
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Select Template *</Label>
+              <select
+                value={scheduleForm.template_id}
+                onChange={(e) => setScheduleForm({ ...scheduleForm, template_id: e.target.value })}
+                className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white"
+              >
+                <option value="">-- Select Template --</option>
+                {templates.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Date *</Label>
+                <Input
+                  type="date"
+                  value={scheduleForm.scheduled_date}
+                  onChange={(e) => setScheduleForm({ ...scheduleForm, scheduled_date: e.target.value })}
+                  min={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+              <div>
+                <Label>Time *</Label>
+                <Input
+                  type="time"
+                  value={scheduleForm.scheduled_time}
+                  onChange={(e) => setScheduleForm({ ...scheduleForm, scheduled_time: e.target.value })}
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label>Recipients</Label>
+              <select
+                value={scheduleForm.recipient_type}
+                onChange={(e) => setScheduleForm({ ...scheduleForm, recipient_type: e.target.value })}
+                className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white"
+              >
+                <option value="all">All Pets ({members.reduce((acc, m) => acc + (m.pets?.length || 0), 0)} total)</option>
+                <option value="selected">Select Specific Pets</option>
+              </select>
+            </div>
+            
+            {scheduleForm.recipient_type === 'selected' && (
+              <div className="max-h-48 overflow-y-auto border rounded-lg p-2">
+                {members.flatMap(m => (m.pets || []).map(pet => (
+                  <label key={pet.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={scheduleForm.selected_pet_ids.includes(pet.id)}
+                      onChange={(e) => {
+                        const newIds = e.target.checked 
+                          ? [...scheduleForm.selected_pet_ids, pet.id]
+                          : scheduleForm.selected_pet_ids.filter(id => id !== pet.id);
+                        setScheduleForm({ ...scheduleForm, selected_pet_ids: newIds });
+                      }}
+                      className="rounded border-gray-300"
+                    />
+                    <PawPrint className="w-4 h-4 text-purple-400" />
+                    <span className="font-medium">{pet.name}</span>
+                    <span className="text-gray-500 text-sm">({m.name || m.email})</span>
+                  </label>
+                )))}
+              </div>
+            )}
+            
+            <Card className="p-3 bg-blue-50 border-blue-200">
+              <p className="text-sm text-blue-700">
+                <Clock className="w-4 h-4 inline mr-1" />
+                Communications will be sent at the scheduled time via {templates.find(t => t.id === scheduleForm.template_id)?.channel || 'email'}.
+              </p>
+            </Card>
+          </div>
+          
+          <DialogFooter className="sticky bottom-0 bg-white z-10 pt-2 border-t">
+            <Button variant="outline" onClick={() => setShowScheduleModal(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleScheduleCommunication}
+              disabled={sending || !scheduleForm.template_id || !scheduleForm.scheduled_date || !scheduleForm.scheduled_time}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Calendar className="w-4 h-4 mr-2" />}
+              Schedule Send
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
