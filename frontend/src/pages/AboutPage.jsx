@@ -635,7 +635,7 @@ const AboutPage = () => {
                     <span className="text-indigo-600 font-semibold">The Concierge Mind</span>
                   </td>
                   <td className="px-6 py-6 text-gray-600">
-                    Brings decades of experience designing concierge ecosystems where relationships matter more than transactions. As the force behind <strong className="text-gray-900">Les Concierges®</strong> and <strong className="text-gray-900">Club Concierge®</strong>, she shaped service models built on memory, judgement, and anticipation. Her work is grounded in one truth: the best service is never reactive — it <strong className="text-gray-900">listens</strong>, <strong className="text-gray-900">remembers</strong>, and <strong className="text-gray-900">acts before the question is fully formed</strong>.
+                    Brings decades of experience designing concierge ecosystems where relationships matter more than transactions. As the force behind <strong className="text-gray-900">Les Concierges®</strong> and <strong className="text-gray-900">Club Concierge®</strong>, she has served <strong className="text-gray-900">over 1 million customers globally</strong>, shaping service models built on memory, judgement, and anticipation. Her work is grounded in one truth: the best service is never reactive — it <strong className="text-gray-900">listens</strong>, <strong className="text-gray-900">remembers</strong>, and <strong className="text-gray-900">acts before the question is fully formed</strong>.
                   </td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors group">
