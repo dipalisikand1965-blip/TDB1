@@ -94,6 +94,14 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
   - View Full Soul button → opens `/pet-soul-journey/:petId`
   - Send Soul Whisper button
 - **Product Manager**: CSV import/export, bulk edit
+- **Communications Manager** (NEW):
+  - Integration status cards (Email ✅, WhatsApp provisional, In-App ✅)
+  - Analytics dashboard (Total Sent, Last 7 Days, Templates count, Pending)
+  - Templates view with preview modal
+  - History view with sent/scheduled status
+  - Pending reminders view
+  - Send Test Email functionality
+  - Intelligence rules display (1 msg/week limit, quiet hours)
 
 ### ✅ Mira AI Concierge System
 - GPT-5.1 integration via Emergent LLM Key
