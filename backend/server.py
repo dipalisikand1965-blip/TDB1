@@ -133,6 +133,9 @@ from stay_social_routes import (
     seed_sample_socials
 )
 
+# Communication System (Unified Reminder & Mailing)
+from communication_routes import setup_communication_routes
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
