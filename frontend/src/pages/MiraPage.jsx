@@ -507,49 +507,49 @@ const MiraPage = () => {
           )}
 
           {/* Input Area */}
-          <div className="p-4 bg-white border-t border-gray-100">
-            <form onSubmit={sendMessage} className="flex gap-3">
+          <div className="p-3 sm:p-4 bg-white border-t border-gray-100">
+            <form onSubmit={sendMessage} className="flex gap-2 sm:gap-3">
               <input
                 ref={inputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={isListening ? "Listening..." : "Type your message..."}
-                className={`flex-1 px-4 py-3 bg-gray-50 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                className={`flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-50 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm ${
                   isListening ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
                 }`}
                 disabled={isLoading}
                 data-testid="mira-input"
               />
-              {/* Voice Input Button */}
+              {/* Voice Input Button - Hidden on very small screens if no space */}
               {speechSupported && (
                 <Button
                   type="button"
                   onClick={toggleListening}
-                  className={`rounded-full px-4 ${
+                  className={`rounded-full w-10 h-10 sm:w-auto sm:px-4 p-0 sm:p-2 flex-shrink-0 flex items-center justify-center ${
                     isListening 
                       ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
                       : 'bg-gray-200 hover:bg-gray-300 text-gray-600'
                   }`}
                   data-testid="mira-voice-btn"
                 >
-                  {isListening ? <MicOff className="w-5 h-5 text-white" /> : <Mic className="w-5 h-5" />}
+                  {isListening ? <MicOff className="w-4 h-4 sm:w-5 sm:h-5 text-white" /> : <Mic className="w-4 h-4 sm:w-5 sm:h-5" />}
                 </Button>
               )}
               <Button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                className="rounded-full px-6 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                className="rounded-full w-10 h-10 sm:w-auto sm:px-6 p-0 sm:p-2 flex-shrink-0 flex items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                 data-testid="mira-send"
               >
                 {isLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
                 ) : (
-                  <Send className="w-5 h-5" />
+                  <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                 )}
               </Button>
             </form>
-            <p className="text-xs text-center text-gray-400 mt-2">
+            <p className="text-xs text-center text-gray-400 mt-2 hidden sm:block">
               Every conversation creates a service desk ticket for complete tracking
             </p>
           </div>
