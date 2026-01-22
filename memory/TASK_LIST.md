@@ -9,8 +9,8 @@
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 1 | **Voice Order Feature** | ❌ BROKEN | Connection failed error. Check `/frontend/src/pages/VoiceOrder.jsx` and `/backend/channel_intake.py` |
-| 2 | **Checkout Form Validation** | ❌ BROKEN | "Please fill required fields" error even when fields are filled |
+| 1 | **Voice Order Feature** | ✅ FIXED | Fixed file read issue - content now passed directly to transcribe |
+| 2 | **Checkout Form Validation** | ✅ FIXED | Fixed async state bug - validation errors now returned synchronously |
 | 3 | **Mira AI Timeout** | ⚠️ INTERMITTENT | Occasionally shows "brief pause" - may need retry logic or timeout increase |
 
 ---
