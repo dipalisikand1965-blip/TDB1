@@ -44,6 +44,7 @@ const CommunicationsManager = ({ authHeaders }) => {
   const [showSendModal, setShowSendModal] = useState(false);
   const [showTestEmailModal, setShowTestEmailModal] = useState(false);
   const [sending, setSending] = useState(false);
+  const [sendingReminder, setSendingReminder] = useState(null);
   
   // Test email form
   const [testEmail, setTestEmail] = useState({
