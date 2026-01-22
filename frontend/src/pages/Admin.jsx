@@ -116,6 +116,23 @@ const Admin = () => {
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
   const [memberDetails, setMemberDetails] = useState({ orders: [], pets: [] });
   
+  // Health Vault state
+  const [showHealthVaultModal, setShowHealthVaultModal] = useState(false);
+  const [selectedPetForHealth, setSelectedPetForHealth] = useState(null);
+  const [healthVaultData, setHealthVaultData] = useState({
+    vaccines: [],
+    medications: [],
+    vet_visits: [],
+    weight_history: [],
+    vets: []
+  });
+  const [loadingHealth, setLoadingHealth] = useState(false);
+  const [healthTab, setHealthTab] = useState('vaccines');
+  const [showAddVaccineModal, setShowAddVaccineModal] = useState(false);
+  const [showAddMedicationModal, setShowAddMedicationModal] = useState(false);
+  const [newVaccine, setNewVaccine] = useState({ vaccine_name: '', date_given: '', next_due_date: '', vet_name: '', notes: '' });
+  const [newMedication, setNewMedication] = useState({ medication_name: '', dosage: '', frequency: '', start_date: '', end_date: '', reason: '', notes: '' });
+  
   // Password change
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
