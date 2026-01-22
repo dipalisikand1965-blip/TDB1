@@ -240,6 +240,54 @@ const MyPets = () => {
     }
   };
 
+  // Upload pet photo
+  const handlePhotoUpload = async (petId, file) => {
+    if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({ title: 'Error', description: 'Please select an image file', variant: 'destructive' });
+      return;
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+      return;
+    }
+    
+    setUploadingPhoto(petId);
+    
+    try {
+      const formData = new FormData();
+      formData.append('photo', file);
+      
+      const response = await fetch(`${API_URL}/api/pets/${petId}/photo`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Update pet in local state with new photo URL
+        setPets(pets.map(p => p.id === petId ? { ...p, photo_url: data.photo_url } : p));
+        toast({ title: 'Photo Updated!', description: `${pets.find(p => p.id === petId)?.name}'s photo has been updated` });
+      } else {
+        const error = await response.json();
+        toast({ title: 'Error', description: error.detail || 'Failed to upload photo', variant: 'destructive' });
+      }
+    } catch (error) {
+      console.error('Failed to upload photo:', error);
+      toast({ title: 'Error', description: 'Failed to upload photo', variant: 'destructive' });
+    } finally {
+      setUploadingPhoto(null);
+    }
+  };
+  };
+
   const getPersonaInfo = (pet) => {
     const personaKey = pet.soul?.persona;
     if (!personaKey) return { name: 'Unknown', emoji: '🐾' };
