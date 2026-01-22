@@ -13,7 +13,7 @@ const SEO = ({
   const siteName = 'The Doggy Company';
   const defaultTitle = 'Dog Cakes & Treats | Bengaluru | Mumbai | Gurgaon | The Doggy Company';
   const defaultDescription = "India's Pet Life Operating System. 1M+ customers served globally through concierge excellence, 45,000+ pets fed through The Doggy Bakery®. Premium care, celebrations & more.";
-  const defaultImage = 'https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png';
+  const defaultImage = '/og-image.png'; // Will use site default or generated OG image
   const baseUrl = 'https://thedoggycompany.in';
   
   const seoTitle = title ? `${title} | ${siteName}` : defaultTitle;
