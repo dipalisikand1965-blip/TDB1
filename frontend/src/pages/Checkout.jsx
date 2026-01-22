@@ -473,7 +473,7 @@ const Checkout = () => {
     }
     
     setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    return { isValid: Object.keys(errors).length === 0, errors };
   };
 
   const handleAddOn = (addOn) => {
