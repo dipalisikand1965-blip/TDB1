@@ -408,6 +408,7 @@ async def list_tickets(
     assigned_to: Optional[str] = None,
     search: Optional[str] = None,
     source: Optional[str] = None,
+    member_email: Optional[str] = None,
     limit: int = Query(50, le=200),
     offset: int = 0,
     sort_by: str = "created_at",
@@ -435,6 +436,9 @@ async def list_tickets(
     
     if source:
         query["source"] = source
+    
+    if member_email:
+        query["member.email"] = member_email
     
     if search:
         query["$or"] = [
