@@ -166,9 +166,21 @@ const PillarBundlesSection = ({ getAuthHeader, formatCurrency }) => {
       const travelData = await travelRes.json();
       const travelBundles = (travelData.products || []).filter(p => p.bundle_type || p.tags?.includes('bundle'));
 
-      const careRes = await fetch(`${getApiUrl()}/api/admin/pricing/products?pillar=care&limit=50`, { headers: getAuthHeader() });
-      const careData = await careRes.json();
-      const careBundles = (careData.products || []).filter(p => p.bundle_type || p.tags?.includes('bundle'));
+      // Fetch Care bundles from dedicated care bundles endpoint
+      let careBundles = [];
+      try {
+        const careBundlesRes = await fetch(`${getApiUrl()}/api/care/bundles`);
+        if (careBundlesRes.ok) {
+          const careBundlesData = await careBundlesRes.json();
+          careBundles = careBundlesData.bundles || [];
+        }
+      } catch (e) { 
+        console.log('Care bundles not available from dedicated endpoint, trying products');
+        // Fallback to products with bundle tag
+        const careRes = await fetch(`${getApiUrl()}/api/admin/pricing/products?pillar=care&limit=50`, { headers: getAuthHeader() });
+        const careData = await careRes.json();
+        careBundles = (careData.products || []).filter(p => p.bundle_type || p.tags?.includes('bundle'));
+      }
 
       setBundles({
         celebrate: celebrateBundles,
