@@ -569,13 +569,39 @@ A memory-driven communication system that:
 - [ ] WhatsApp Business API integration (currently provisional with click-to-chat links)
 - [ ] Member analytics dashboard
 - [ ] Export health records as PDF
-- [ ] Backend code cleanup (remove duplicate function definitions in server.py)
+- [x] ~~Backend code cleanup (remove duplicate function definitions in server.py)~~ **IN PROGRESS** - Refactoring active
 
 ### 🔵 Backlog
 - [ ] Multi-pet household advanced features
 - [ ] Standardize all 12 pillar admin managers
 - [ ] Birthday email automation (scheduler integration)
 - [ ] Custom template creation UI in Communications Manager
+- [ ] Build Farewell & Adopt Pillar Pages
+
+---
+
+## Backend Refactoring Progress (January 2026)
+
+### Overview
+Major refactoring effort to break down the monolithic `server.py` into modular route files.
+
+### Completed Extractions
+| Module | File | Lines | Status |
+|--------|------|-------|--------|
+| FAQ Routes | `faq_routes.py` | ~150 | ✅ Done |
+| Content Routes (Blog/Testimonials) | `content_routes.py` | ~200 | ✅ Done |
+| Loyalty Routes (Paw Rewards) | `loyalty_routes.py` | 249 | ✅ Done |
+| Discount Routes | `discount_routes.py` | 204 | ✅ Done |
+| Abandoned Cart Routes | `cart_routes.py` | 676 | ✅ Done (Jan 23, 2026) |
+
+### Current server.py Status
+- **Before refactoring**: 11,569 lines
+- **Current**: 10,210 lines
+- **Total reduction**: ~1,359 lines (~12%)
+
+### Next Targets for Extraction
+- [ ] Shopify Sync routes
+- [ ] Additional pillar-specific routes
 
 ---
 
