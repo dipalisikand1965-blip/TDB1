@@ -736,6 +736,49 @@ Manage customer feedback.
 
 ---
 
+## 21b. Seed Production Data 🆕
+**Tab ID**: N/A (button - purple gradient)
+**Purpose**: One-click seeding of essential data for production environments.
+
+### What It Does
+- **Seeds 8 FAQs** across categories: Delivery, Products, Orders, Membership, Payment, Pet Soul, Mira AI
+- **Seeds 4 Collections**: Valentine's Day, Birthday Celebration, Healthy Bites, Diwali Special
+- **Seeds 5 Sample Tickets** for Command Center testing (editable, marked with `is_sample: true`)
+
+### When To Use
+- **After deploying to a new environment** (production, staging)
+- **When database is empty** (FAQs/Collections not showing)
+- **Testing Command Center** with realistic sample tickets
+
+### API
+`POST /api/admin/seed-production-data`
+
+### Response Example
+```json
+{
+  "success": true,
+  "message": "Production data seeded successfully!",
+  "results": {
+    "faqs": 8,
+    "collections": 4,
+    "tickets": 5
+  },
+  "note": "This data is editable - feel free to modify it as needed"
+}
+```
+
+### Important Notes
+- Uses **UPSERT** - safe to run multiple times without duplicates
+- All seeded data is **fully editable** via admin panel
+- Sample tickets are marked with `is_sample: true` for identification
+- Does NOT overwrite existing data
+
+### Location in Admin Panel
+- Found under **PILLAR TOOLS** section
+- Purple/pink gradient button labeled "Seed Production"
+
+---
+
 ## 22. Celebrate
 **Tab ID**: `celebrate`
 **File Location**: `/app/frontend/src/components/admin/CelebrateManager.jsx`
