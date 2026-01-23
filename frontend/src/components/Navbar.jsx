@@ -513,14 +513,16 @@ const Navbar = () => {
               
               <div className="border-t border-gray-200 my-3"></div>
               
+              {/* Mobile Pet Soul Score */}
               <Link
                 to={user ? "/my-pets" : "/pet-soul"}
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
               >
-                🐾 {user ? "My Pets" : "Pet Soul™"}
-                {user && petSoulScore !== null && (
-                  <span className="ml-auto bg-white/20 px-2 py-0.5 rounded-full text-xs font-bold">
+                <span className="text-lg">🐾</span>
+                <span className="flex-1">{user ? "My Pets" : "Pet Soul™"}</span>
+                {user && (
+                  <span className="bg-white/20 px-2.5 py-1 rounded-full text-sm font-bold">
                     {petSoulScore}%
                   </span>
                 )}
