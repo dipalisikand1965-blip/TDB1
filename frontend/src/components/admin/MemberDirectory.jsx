@@ -1392,9 +1392,16 @@ const PetSoulTabs = ({ pets }) => {
               <div className="flex-1">
                 <h2 className="text-2xl font-bold mb-1">{currentPet.name}'s Pet Soul Journey</h2>
                 <p className="text-purple-300 mb-2">{currentPet.breed} • {currentPet.gender}</p>
-                <Badge className="bg-purple-500/30 text-purple-200 border-purple-400/50">
-                  {getStageName(soulScore.total)}
-                </Badge>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Badge className="bg-purple-500/30 text-purple-200 border-purple-400/50">
+                    {getStageName(soulScore.total)}
+                  </Badge>
+                  {currentPet.pet_pass_number && (
+                    <Badge className="bg-white/10 text-white border-white/30 font-mono">
+                      🎫 {currentPet.pet_pass_number}
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
           </div>
