@@ -154,10 +154,12 @@ async def get_celebration_occasions():
 async def create_pet_profile(pet: PetProfileCreate):
     """Create a new pet profile"""
     pet_id = f"pet-{uuid.uuid4().hex[:12]}"
+    pet_pass_number = await generate_pet_pass_number()
     now = datetime.now(timezone.utc).isoformat()
 
     pet_data = {
         "id": pet_id,
+        "pet_pass_number": pet_pass_number,  # Pet's membership number
         **pet.model_dump(),
         "achievements": [],
         "order_history": [],
