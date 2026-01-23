@@ -565,6 +565,62 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
     });
   };
 
+  // Create new ticket
+  const createTicket = async () => {
+    if (!newTicket.subject.trim() || !newTicket.description.trim()) {
+      alert('Please fill in subject and description');
+      return;
+    }
+    
+    setCreating(true);
+    try {
+      const response = await fetch(`${API_URL}/api/concierge/ticket/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category: newTicket.pillar,
+          pillar: newTicket.pillar,
+          urgency: newTicket.urgency,
+          subject: newTicket.subject,
+          description: newTicket.description,
+          member_email: newTicket.member_email || null,
+          member_name: newTicket.member_name || null,
+          member_phone: newTicket.member_phone || null,
+          pet_name: newTicket.pet_name || null,
+          assigned_to: newTicket.assigned_to || null,
+          source: 'manual'
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        alert(`✅ Ticket created: ${result.ticket_id}`);
+        setShowCreateModal(false);
+        setNewTicket({
+          pillar: 'general',
+          urgency: 'medium',
+          subject: '',
+          description: '',
+          member_email: '',
+          member_name: '',
+          member_phone: '',
+          pet_name: '',
+          assigned_to: ''
+        });
+        loadQueue();
+        loadPillarStats();
+      } else {
+        const error = await response.json();
+        alert(`Failed to create ticket: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Create ticket failed:', error);
+      alert('Failed to create ticket');
+    } finally {
+      setCreating(false);
+    }
+  };
+
   // Render queue item
   const QueueItem = ({ item }) => {
     const sourceConfig = SOURCE_CONFIG[item.source_type] || SOURCE_CONFIG.ticket;
