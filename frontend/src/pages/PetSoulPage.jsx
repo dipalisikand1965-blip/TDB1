@@ -306,10 +306,10 @@ const PetSoulPage = () => {
                   </Button>
                 </Link>
               ) : (
-                <Link to="/signup">
+                <Link to="/membership">
                   <Button size="lg" className="bg-red-600 hover:bg-red-700">
                     <Heart className="w-5 h-5 mr-2" />
-                    Create Pet Profile
+                    Become a Member
                   </Button>
                 </Link>
               )}
