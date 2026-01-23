@@ -311,29 +311,5 @@ async def get_product_reviews(product_id: str):
     }
 
 
-@product_router.post("/reviews")
-async def submit_review(review: ReviewCreate):
-    """Submit a product review (public endpoint)"""
-    # Get product info
-    product = await db.products.find_one({"id": review.product_id}, {"_id": 0, "name": 1, "image": 1})
-
-    review_doc = {
-        "id": f"review_{uuid.uuid4().hex[:12]}",
-        "product_id": review.product_id,
-        "rating": review.rating,
-        "content": review.comment,
-        "title": review.title,
-        "author_name": review.reviewer_name or "Anonymous",
-        "user_email": review.reviewer_email,
-        "image_url": review.image_url,
-        "status": "pending",
-        "created_at": datetime.now(timezone.utc).isoformat()
-    }
-
-    if product:
-        review_doc["product_name"] = product.get("name")
-        review_doc["product_image"] = product.get("image")
-
-    await db.reviews.insert_one(review_doc)
-
-    return {"message": "Review submitted for approval", "review_id": review_doc["id"]}
+# NOTE: POST /api/reviews endpoint moved to review_routes.py (Phase 3 refactoring)
+# The review_routes.py version includes admin notifications and user association
