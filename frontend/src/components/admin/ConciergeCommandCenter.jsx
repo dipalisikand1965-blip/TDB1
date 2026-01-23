@@ -1619,11 +1619,26 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
           <div className="flex items-center justify-center h-40">
             <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
           </div>
+        ) : loadError ? (
+          <div className="text-center py-12 bg-red-50 border border-red-200 rounded-lg mx-4">
+            <AlertCircle className="w-16 h-16 mx-auto text-red-400 mb-4" />
+            <h3 className="text-xl font-medium text-red-700">Failed to load Command Center</h3>
+            <p className="text-red-600 mt-2 text-sm">{loadError}</p>
+            <Button 
+              variant="outline" 
+              className="mt-4"
+              onClick={() => { setLoadError(null); loadQueue(); }}
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Retry
+            </Button>
+          </div>
         ) : queue.length === 0 ? (
           <div className="text-center py-12">
             <CheckCircle className="w-16 h-16 mx-auto text-green-300 mb-4" />
             <h3 className="text-xl font-medium text-gray-600">All caught up!</h3>
             <p className="text-gray-500">No items matching your filters</p>
+            <p className="text-xs text-gray-400 mt-2">API: {API_URL || 'NOT SET'}</p>
           </div>
         ) : (
           <div className="space-y-3">
