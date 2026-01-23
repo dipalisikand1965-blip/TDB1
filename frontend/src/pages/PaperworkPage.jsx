@@ -11,13 +11,15 @@ import { Switch } from '../components/ui/switch';
 import { Progress } from '../components/ui/progress';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraContextPanel from '../components/MiraContextPanel';
+import ProductCard from '../components/ProductCard';
 import {
   Shield, Heart, Plane, FileText, Sparkles, Scale, Upload, Download,
   Folder, FolderOpen, File, Eye, Trash2, Bell, Calendar, Clock,
   CheckCircle, AlertCircle, Plus, ChevronRight, Lock, Search,
-  PawPrint, Star, Loader2, X, ExternalLink, ArrowRight
+  PawPrint, Star, Loader2, X, ExternalLink, ArrowRight, ShoppingBag
 } from 'lucide-react';
 
 // Document Categories with icons and colors
