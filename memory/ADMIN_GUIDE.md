@@ -1,8 +1,8 @@
 # 🐕 The Doggy Company - Admin Panel Complete Guide
 ## "Dummy's Guide" to Every Admin Feature
 
-**Last Updated**: January 23, 2026 (Added Command Center Intelligence Features)
-**Version**: 1.2
+**Last Updated**: January 23, 2026 (Added New Pillars: Learn, Adopt, Farewell, Community + Communication Preferences)
+**Version**: 1.3
 
 ---
 
