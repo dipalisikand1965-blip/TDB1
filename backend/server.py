@@ -7471,10 +7471,12 @@ async def get_public_pets(limit: int = 100, skip: int = 0):
 async def create_pet_profile_public(pet: PetProfileCreate):
     """Create a new pet profile without authentication (public form)"""
     pet_id = f"pet-{uuid.uuid4().hex[:12]}"
+    pet_pass_number = await generate_pet_pass_number_server()
     now = datetime.now(timezone.utc).isoformat()
     
     pet_data = {
         "id": pet_id,
+        "pet_pass_number": pet_pass_number,
         **pet.model_dump(),
         "owner_email": pet.owner_email,  # Use provided email
         "achievements": [],
