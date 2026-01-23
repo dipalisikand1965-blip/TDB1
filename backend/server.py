@@ -11315,6 +11315,202 @@ async def search_members(q: str, limit: int = 10):
     return {"members": enriched_members, "count": len(enriched_members)}
 
 
+# ==================== ADVANCED ANALYTICS ENDPOINTS ====================
+
+@api_router.get("/analytics/revenue")
+async def get_revenue_analytics(days: int = 30):
+    """Get revenue analytics for the specified period"""
+    from_date = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    
+    # Get orders in period
+    orders = await db.orders.find({
+        "created_at": {"$gte": from_date}
+    }).to_list(10000)
+    
+    total_revenue = sum(o.get("total", 0) for o in orders)
+    order_count = len(orders)
+    avg_order = int(total_revenue / order_count) if order_count > 0 else 0
+    
+    # Get unique customers
+    customer_emails = set(o.get("customer", {}).get("email") or o.get("customer_email") for o in orders)
+    customer_emails.discard(None)
+    
+    # Calculate revenue by pillar
+    pillar_revenue = {}
+    for order in orders:
+        pillar = order.get("pillar", "shop")
+        pillar_revenue[pillar] = pillar_revenue.get(pillar, 0) + order.get("total", 0)
+    
+    # Get previous period for trend comparison
+    prev_from = (datetime.now(timezone.utc) - timedelta(days=days*2)).isoformat()
+    prev_to = from_date
+    prev_orders = await db.orders.find({
+        "created_at": {"$gte": prev_from, "$lt": prev_to}
+    }).to_list(10000)
+    prev_revenue = sum(o.get("total", 0) for o in prev_orders)
+    
+    trend = 0
+    if prev_revenue > 0:
+        trend = int(((total_revenue - prev_revenue) / prev_revenue) * 100)
+    
+    return {
+        "total": total_revenue,
+        "orders": order_count,
+        "customers": len(customer_emails),
+        "average": avg_order,
+        "trend": trend,
+        "by_pillar": pillar_revenue,
+        "period_days": days
+    }
+
+
+@api_router.get("/analytics/tickets")
+async def get_ticket_analytics(days: int = 30):
+    """Get ticket/service analytics for the specified period"""
+    from_date = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    
+    # Get service desk tickets
+    tickets = await db.service_desk_tickets.find({
+        "created_at": {"$gte": from_date}
+    }).to_list(10000)
+    
+    total = len(tickets)
+    resolved = sum(1 for t in tickets if t.get("status") == "resolved")
+    open_tickets = sum(1 for t in tickets if t.get("status") in ["open", "in_progress", "pending"])
+    
+    # Calculate average resolution time (for resolved tickets)
+    resolution_times = []
+    for t in tickets:
+        if t.get("status") == "resolved" and t.get("resolved_at") and t.get("created_at"):
+            try:
+                created = datetime.fromisoformat(t["created_at"].replace('Z', '+00:00'))
+                resolved_at = datetime.fromisoformat(t["resolved_at"].replace('Z', '+00:00'))
+                hours = (resolved_at - created).total_seconds() / 3600
+                resolution_times.append(hours)
+            except:
+                pass
+    
+    avg_resolution = round(sum(resolution_times) / len(resolution_times), 1) if resolution_times else 0
+    
+    # SLA metrics
+    sla_hours = {"urgent": 2, "high": 4, "medium": 24, "low": 48}
+    sla_met = 0
+    sla_breached = 0
+    
+    for t in tickets:
+        if t.get("status") == "resolved" and t.get("resolved_at"):
+            try:
+                created = datetime.fromisoformat(t["created_at"].replace('Z', '+00:00'))
+                resolved_at = datetime.fromisoformat(t["resolved_at"].replace('Z', '+00:00'))
+                hours = (resolved_at - created).total_seconds() / 3600
+                priority = t.get("priority_bucket", t.get("urgency", "medium"))
+                sla_limit = sla_hours.get(priority, 24)
+                if hours <= sla_limit:
+                    sla_met += 1
+                else:
+                    sla_breached += 1
+            except:
+                pass
+    
+    compliance_rate = int((sla_met / (sla_met + sla_breached)) * 100) if (sla_met + sla_breached) > 0 else 100
+    
+    # By pillar breakdown
+    pillar_stats = {}
+    for t in tickets:
+        pillar = t.get("pillar", t.get("category", "general"))
+        if pillar not in pillar_stats:
+            pillar_stats[pillar] = {"id": pillar, "tickets": 0, "resolved": 0, "revenue": 0}
+        pillar_stats[pillar]["tickets"] += 1
+        if t.get("status") == "resolved":
+            pillar_stats[pillar]["resolved"] += 1
+    
+    return {
+        "total": total,
+        "resolved": resolved,
+        "open": open_tickets,
+        "avg_resolution": avg_resolution,
+        "sla": {
+            "met": sla_met,
+            "breaches": sla_breached,
+            "compliance_rate": compliance_rate,
+            "at_risk": sum(1 for t in tickets if t.get("status") == "open")
+        },
+        "by_pillar": list(pillar_stats.values()),
+        "period_days": days
+    }
+
+
+@api_router.get("/analytics/agents")
+async def get_agent_analytics(days: int = 30):
+    """Get agent performance analytics"""
+    from_date = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    
+    # Get resolved tickets with agent info
+    tickets = await db.service_desk_tickets.find({
+        "created_at": {"$gte": from_date},
+        "resolved_by": {"$ne": None}
+    }).to_list(10000)
+    
+    # Aggregate by agent
+    agent_stats = {}
+    sla_hours = {"urgent": 2, "high": 4, "medium": 24, "low": 48}
+    
+    for t in tickets:
+        agent = t.get("resolved_by") or t.get("assigned_to") or "Unknown"
+        if agent not in agent_stats:
+            agent_stats[agent] = {
+                "id": agent,
+                "name": agent,
+                "tickets_resolved": 0,
+                "resolution_times": [],
+                "sla_met": 0,
+                "sla_breached": 0
+            }
+        
+        agent_stats[agent]["tickets_resolved"] += 1
+        
+        # Calculate resolution time
+        if t.get("resolved_at") and t.get("created_at"):
+            try:
+                created = datetime.fromisoformat(t["created_at"].replace('Z', '+00:00'))
+                resolved_at = datetime.fromisoformat(t["resolved_at"].replace('Z', '+00:00'))
+                hours = (resolved_at - created).total_seconds() / 3600
+                agent_stats[agent]["resolution_times"].append(hours)
+                
+                priority = t.get("priority_bucket", t.get("urgency", "medium"))
+                sla_limit = sla_hours.get(priority, 24)
+                if hours <= sla_limit:
+                    agent_stats[agent]["sla_met"] += 1
+                else:
+                    agent_stats[agent]["sla_breached"] += 1
+            except:
+                pass
+    
+    # Calculate averages and format
+    agents = []
+    for agent_id, stats in agent_stats.items():
+        avg_time = round(sum(stats["resolution_times"]) / len(stats["resolution_times"]), 1) if stats["resolution_times"] else 0
+        total_sla = stats["sla_met"] + stats["sla_breached"]
+        compliance = int((stats["sla_met"] / total_sla) * 100) if total_sla > 0 else 100
+        
+        agents.append({
+            "id": agent_id,
+            "name": stats["name"],
+            "tickets_resolved": stats["tickets_resolved"],
+            "avg_resolution_time": avg_time,
+            "sla_compliance": compliance,
+            "nps_score": None  # Would need to link to NPS data
+        })
+    
+    # Sort by tickets resolved
+    agents.sort(key=lambda x: x["tickets_resolved"], reverse=True)
+    
+    return {
+        "agents": agents,
+        "period_days": days
+    }
+
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
