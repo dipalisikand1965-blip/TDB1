@@ -520,12 +520,12 @@ const LearnManager = ({ getAuthHeader }) => {
                 <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <Select value={typeFilter || "all"} onValueChange={(v) => setTypeFilter(v === "all" ? "" : v)}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="All Types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 {Object.entries(LEARN_TYPES).map(([key, name]) => (
                   <SelectItem key={key} value={key}>{name}</SelectItem>
                 ))}
