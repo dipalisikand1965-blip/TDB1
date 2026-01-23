@@ -1558,6 +1558,7 @@ const Admin = () => {
             { id: 'mis', label: '📊 Live MIS', icon: BarChart3 },
             { id: 'orders', label: 'Orders', icon: Package },
             { id: 'fulfilment', label: '📦 Fulfilment', icon: Truck },
+            { id: 'command-center', label: '🎯 Command Center', icon: Headphones },
             { id: 'member-directory', label: '👥 Pet Parent Directory', icon: Users },
             { id: 'membership', label: '👑 Membership', icon: Crown },
             { id: 'members', label: 'Customers', icon: Users },
