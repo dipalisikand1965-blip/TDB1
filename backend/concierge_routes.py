@@ -993,7 +993,16 @@ Do NOT include:
 
 def calculate_sla_status(item: Dict) -> Dict:
     """Calculate SLA status with countdown timer info."""
-    priority = item.get("priority", "medium").lower()
+    priority = item.get("priority", "medium")
+    # Handle various priority formats
+    if isinstance(priority, int):
+        priority_map = {1: "urgent", 2: "high", 3: "medium", 4: "low"}
+        priority = priority_map.get(priority, "medium")
+    elif isinstance(priority, str):
+        priority = priority.lower()
+    else:
+        priority = "medium"
+    
     sla_hours = SLA_HOURS.get(priority, 24)
     
     created_at = item.get("created_at")
