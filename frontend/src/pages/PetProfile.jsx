@@ -564,6 +564,186 @@ const PetProfile = ({ isEmbed = false }) => {
     </div>
   );
 
+  // Step 1c: Health Information (NEW)
+  const renderStepHealth = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Stethoscope className="w-10 h-10 text-red-600" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900">{formData.name}'s Health Profile</h2>
+        <p className="text-gray-600 mt-2">Important health information for better care</p>
+        <p className="text-sm text-purple-600 mt-1">💡 This info is stored securely and visible in your My Account area</p>
+      </div>
+
+      <div className="space-y-5">
+        {/* Vet Information */}
+        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-5">
+          <Label className="flex items-center gap-2 text-blue-700 font-semibold mb-3">
+            <Stethoscope className="w-4 h-4" />
+            Primary Veterinarian
+          </Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <Label className="text-sm text-gray-600">Vet's Name</Label>
+              <Input
+                placeholder="Dr. Smith"
+                value={formData.health?.vet_name || ''}
+                onChange={(e) => updateHealth('vet_name', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label className="text-sm text-gray-600">Clinic Name</Label>
+              <Input
+                placeholder="Pawsome Pet Clinic"
+                value={formData.health?.vet_clinic || ''}
+                onChange={(e) => updateHealth('vet_clinic', e.target.value)}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label className="text-sm text-gray-600">Vet Contact Number</Label>
+              <Input
+                placeholder="+91 98765 43210"
+                value={formData.health?.vet_phone || ''}
+                onChange={(e) => updateHealth('vet_phone', e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Medical Conditions */}
+        <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-5">
+          <Label className="flex items-center gap-2 text-orange-700 font-semibold mb-2">
+            <AlertCircle className="w-4 h-4" />
+            Medical Conditions
+          </Label>
+          <p className="text-sm text-gray-600 mb-3">Any chronic conditions, past surgeries, or health concerns</p>
+          <Textarea
+            placeholder="e.g., Hip dysplasia, Heart murmur, Recovering from ACL surgery..."
+            value={formData.health?.medical_conditions || ''}
+            onChange={(e) => updateHealth('medical_conditions', e.target.value)}
+            rows={3}
+          />
+        </div>
+
+        {/* Current Medications */}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-5">
+          <Label className="flex items-center gap-2 text-purple-700 font-semibold mb-2">
+            <Pill className="w-4 h-4" />
+            Current Medications
+          </Label>
+          <p className="text-sm text-gray-600 mb-3">Include dosage and frequency if known</p>
+          <Textarea
+            placeholder="e.g., Apoquel 16mg daily, Heartgard monthly, Joint supplements..."
+            value={formData.health?.current_medications || ''}
+            onChange={(e) => updateHealth('current_medications', e.target.value)}
+            rows={3}
+          />
+        </div>
+
+        {/* Dietary Restrictions */}
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-5">
+          <Label className="flex items-center gap-2 text-green-700 font-semibold mb-2">
+            <Utensils className="w-4 h-4" />
+            Dietary Restrictions
+          </Label>
+          <p className="text-sm text-gray-600 mb-3">Beyond allergies - any special diet requirements</p>
+          <Input
+            placeholder="e.g., Low protein diet, No raw food, Prescription diet only..."
+            value={formData.health?.dietary_restrictions || ''}
+            onChange={(e) => updateHealth('dietary_restrictions', e.target.value)}
+          />
+        </div>
+
+        {/* Quick Health Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white border rounded-xl p-4">
+            <Label className="text-gray-700 font-semibold mb-3 block">Spayed/Neutered?</Label>
+            <div className="flex gap-3">
+              {['Yes', 'No', 'Not Sure'].map((option) => (
+                <button
+                  key={option}
+                  onClick={() => updateHealth('spayed_neutered', option.toLowerCase().replace(' ', '_'))}
+                  className={`px-4 py-2 rounded-lg text-sm transition-all ${
+                    formData.health?.spayed_neutered === option.toLowerCase().replace(' ', '_')
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white border rounded-xl p-4">
+            <Label className="text-gray-700 font-semibold mb-3 block">Microchipped?</Label>
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.health?.microchipped || false}
+                  onChange={(e) => updateHealth('microchipped', e.target.checked)}
+                  className="w-4 h-4 text-purple-600 rounded"
+                />
+                <span className="text-sm">Yes, they are microchipped</span>
+              </label>
+            </div>
+            {formData.health?.microchipped && (
+              <Input
+                placeholder="Microchip Number (optional)"
+                value={formData.health?.microchip_number || ''}
+                onChange={(e) => updateHealth('microchip_number', e.target.value)}
+                className="mt-2"
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Insurance */}
+        <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-5">
+          <Label className="flex items-center gap-2 text-indigo-700 font-semibold mb-2">
+            <FileText className="w-4 h-4" />
+            Pet Insurance (Optional)
+          </Label>
+          <Input
+            placeholder="Insurance provider name (if any)"
+            value={formData.health?.insurance_provider || ''}
+            onChange={(e) => updateHealth('insurance_provider', e.target.value)}
+          />
+        </div>
+
+        {/* Emergency Contact */}
+        <div className="bg-gradient-to-r from-red-50 to-rose-50 rounded-xl p-5">
+          <Label className="flex items-center gap-2 text-red-700 font-semibold mb-3">
+            <Phone className="w-4 h-4" />
+            Emergency Contact (Other than you)
+          </Label>
+          <p className="text-sm text-gray-600 mb-3">Who should we contact if we can't reach you?</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <Input
+              placeholder="Name"
+              value={formData.health?.emergency_contact_name || ''}
+              onChange={(e) => updateHealth('emergency_contact_name', e.target.value)}
+            />
+            <Input
+              placeholder="Phone Number"
+              value={formData.health?.emergency_contact_phone || ''}
+              onChange={(e) => updateHealth('emergency_contact_phone', e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-purple-50 rounded-xl p-4 mt-4">
+        <p className="text-sm text-purple-700">
+          <strong>🔒 Your pet's health data is secure.</strong> This information helps our Care, Stay, and Travel teams 
+          provide better service. You can view and update it anytime in your My Account → My Pets section.
+        </p>
+      </div>
+    </div>
+  );
+
   // Step 2: Soul Persona Selection
   const renderStep2 = () => (
     <div className="space-y-6">
