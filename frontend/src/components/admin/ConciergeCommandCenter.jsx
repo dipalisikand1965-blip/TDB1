@@ -121,6 +121,7 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
   // Queue state
   const [queue, setQueue] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [attention, setAttention] = useState({});
   const [buckets, setBuckets] = useState({});
   const [pillarStats, setPillarStats] = useState({});
