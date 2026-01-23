@@ -8675,6 +8675,16 @@ app.include_router(orders_router)  # Public orders API
 app.include_router(autoship_router)  # User autoship endpoints
 app.include_router(autoship_admin_router)  # Admin autoship management
 
+# Admin Member Routes (Refactored)
+app.include_router(admin_member_router)  # Admin member management
+
+# Household Routes (Refactored)
+app.include_router(household_router)  # Multi-pet household features
+
+# Review Routes (Refactored)
+app.include_router(review_router)  # User review endpoints
+app.include_router(admin_review_router)  # Admin review management
+
 # Auto Ticket Creation System
 set_auto_ticket_db(db)  # Initialize auto-ticket creation with database
 
