@@ -1560,6 +1560,424 @@ async def send_email_reply(
                 <p style="color: #374151; font-size: 16px;">Hi {member_name},</p>
                 <div style="color: #374151; font-size: 16px; line-height: 1.6; white-space: pre-wrap;">
 {message}
+
+
+# ============== MANUAL ASSIGNMENT ==============
+
+class ManualAssignRequest(BaseModel):
+    agent_username: str
+    reason: Optional[str] = None
+
+
+@router.post("/item/{ticket_id}/manual-assign")
+async def manual_assign_ticket(ticket_id: str, request: ManualAssignRequest):
+    """Manually assign ticket to a specific agent."""
+    db = get_db()
+    
+    # Verify agent exists
+    agent = await db.admin_credentials.find_one({"username": request.agent_username}, {"_id": 0})
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    
+    # Find ticket in various collections
+    for collection_name in ["service_desk_tickets", "tickets"]:
+        collection = getattr(db, collection_name)
+        result = await collection.update_one(
+            {"ticket_id": ticket_id},
+            {
+                "$set": {
+                    "assigned_to": request.agent_username,
+                    "assigned_at": datetime.now(timezone.utc).isoformat(),
+                    "manual_assigned": True
+                },
+                "$push": {
+                    "timeline": {
+                        "action": "manual_assigned",
+                        "by": "admin",
+                        "to": request.agent_username,
+                        "reason": request.reason,
+                        "at": datetime.now(timezone.utc).isoformat()
+                    }
+                }
+            }
+        )
+        if result.modified_count > 0:
+            return {
+                "success": True,
+                "assigned_to": request.agent_username,
+                "reason": "manual_assignment"
+            }
+    
+    raise HTTPException(status_code=404, detail="Ticket not found")
+
+
+# ============== TICKET CRUD OPERATIONS ==============
+
+class CreateTicketRequest(BaseModel):
+    category: str = "general"
+    pillar: Optional[str] = None
+    urgency: str = "medium"
+    subject: str
+    description: str
+    member_email: Optional[str] = None
+    member_name: Optional[str] = None
+    member_phone: Optional[str] = None
+    pet_name: Optional[str] = None
+    assigned_to: Optional[str] = None
+    source: str = "internal"
+
+
+@router.post("/ticket/create")
+async def create_ticket(request: CreateTicketRequest):
+    """Create a new ticket manually."""
+    db = get_db()
+    
+    # Generate ticket ID
+    import uuid
+    ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
+    
+    # Build ticket document
+    ticket = {
+        "ticket_id": ticket_id,
+        "category": request.category,
+        "pillar": request.pillar or request.category,
+        "urgency": request.urgency,
+        "status": "open",
+        "subject": request.subject,
+        "original_request": request.description,
+        "description": request.description,
+        "source": request.source,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "assigned_to": request.assigned_to,
+        "member": {
+            "name": request.member_name,
+            "email": request.member_email,
+            "phone": request.member_phone
+        } if request.member_email else None,
+        "pet": {"name": request.pet_name} if request.pet_name else None,
+        "timeline": [{
+            "action": "created",
+            "by": "admin",
+            "at": datetime.now(timezone.utc).isoformat()
+        }],
+        "communications": []
+    }
+    
+    await db.service_desk_tickets.insert_one(ticket)
+    
+    return {
+        "success": True,
+        "ticket_id": ticket_id,
+        "ticket": {k: v for k, v in ticket.items() if k != "_id"}
+    }
+
+
+class UpdateTicketRequest(BaseModel):
+    category: Optional[str] = None
+    pillar: Optional[str] = None
+    urgency: Optional[str] = None
+    status: Optional[str] = None
+    subject: Optional[str] = None
+    description: Optional[str] = None
+    assigned_to: Optional[str] = None
+
+
+@router.put("/ticket/{ticket_id}")
+async def update_ticket(ticket_id: str, request: UpdateTicketRequest):
+    """Update an existing ticket."""
+    db = get_db()
+    
+    update_data = {}
+    if request.category:
+        update_data["category"] = request.category
+    if request.pillar:
+        update_data["pillar"] = request.pillar
+    if request.urgency:
+        update_data["urgency"] = request.urgency
+    if request.status:
+        update_data["status"] = request.status
+    if request.subject:
+        update_data["subject"] = request.subject
+    if request.description:
+        update_data["description"] = request.description
+        update_data["original_request"] = request.description
+    if request.assigned_to:
+        update_data["assigned_to"] = request.assigned_to
+    
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    # Try both collections
+    for collection_name in ["service_desk_tickets", "tickets"]:
+        collection = getattr(db, collection_name)
+        result = await collection.update_one(
+            {"ticket_id": ticket_id},
+            {
+                "$set": update_data,
+                "$push": {
+                    "timeline": {
+                        "action": "updated",
+                        "by": "admin",
+                        "changes": list(update_data.keys()),
+                        "at": datetime.now(timezone.utc).isoformat()
+                    }
+                }
+            }
+        )
+        if result.modified_count > 0:
+            return {"success": True, "ticket_id": ticket_id, "updated_fields": list(update_data.keys())}
+    
+    raise HTTPException(status_code=404, detail="Ticket not found")
+
+
+@router.delete("/ticket/{ticket_id}")
+async def delete_ticket(ticket_id: str, permanent: bool = False):
+    """Delete or archive a ticket."""
+    db = get_db()
+    
+    for collection_name in ["service_desk_tickets", "tickets"]:
+        collection = getattr(db, collection_name)
+        
+        if permanent:
+            result = await collection.delete_one({"ticket_id": ticket_id})
+            if result.deleted_count > 0:
+                return {"success": True, "action": "deleted", "ticket_id": ticket_id}
+        else:
+            # Soft delete (archive)
+            result = await collection.update_one(
+                {"ticket_id": ticket_id},
+                {
+                    "$set": {
+                        "status": "archived",
+                        "archived_at": datetime.now(timezone.utc).isoformat()
+                    }
+                }
+            )
+            if result.modified_count > 0:
+                return {"success": True, "action": "archived", "ticket_id": ticket_id}
+    
+    raise HTTPException(status_code=404, detail="Ticket not found")
+
+
+# ============== CSV EXPORT ==============
+
+@router.get("/export/csv")
+async def export_queue_to_csv(
+    source: Optional[str] = None,
+    priority: Optional[str] = None,
+    pillar: Optional[str] = None,
+    status: Optional[str] = None
+):
+    """Export command center queue to CSV format."""
+    db = get_db()
+    
+    # Get queue data using existing function
+    queue_data = await get_command_center_queue(
+        source=source,
+        priority=priority,
+        pillar=pillar,
+        status=status,
+        limit=500
+    )
+    
+    items = queue_data.get("items", [])
+    
+    # Build CSV
+    import io
+    import csv
+    
+    output = io.StringIO()
+    fieldnames = [
+        "ticket_id", "source_type", "source_label", "pillar", "priority_bucket",
+        "status", "original_request", "member_name", "member_email", "member_phone",
+        "assigned_to", "created_at", "sla_breached"
+    ]
+    
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+    
+    for item in items:
+        member = item.get("member") or {}
+        row = {
+            "ticket_id": item.get("ticket_id", ""),
+            "source_type": item.get("source_type", ""),
+            "source_label": item.get("source_label", ""),
+            "pillar": item.get("pillar", item.get("category", "")),
+            "priority_bucket": item.get("priority_bucket", ""),
+            "status": item.get("status", ""),
+            "original_request": (item.get("original_request", "") or "")[:200],
+            "member_name": member.get("name", ""),
+            "member_email": member.get("email", ""),
+            "member_phone": member.get("phone", ""),
+            "assigned_to": item.get("assigned_to", ""),
+            "created_at": item.get("created_at", ""),
+            "sla_breached": "Yes" if item.get("sla_breached") else "No"
+        }
+        writer.writerow(row)
+    
+    csv_content = output.getvalue()
+    
+    from fastapi.responses import Response
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename=command_center_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        }
+    )
+
+
+# ============== QUICK ACTIONS ==============
+
+class QuickActionRequest(BaseModel):
+    action: str  # claim, unclaim, change_status, change_priority, escalate
+    agent_id: Optional[str] = None
+    new_status: Optional[str] = None
+    new_priority: Optional[str] = None
+    note: Optional[str] = None
+
+
+@router.post("/item/{ticket_id}/quick-action")
+async def ticket_quick_action(ticket_id: str, request: QuickActionRequest):
+    """Perform quick action on ticket without opening detail view."""
+    db = get_db()
+    
+    update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    timeline_entry = {
+        "action": request.action,
+        "at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    if request.action == "claim":
+        if not request.agent_id:
+            raise HTTPException(status_code=400, detail="agent_id required for claim")
+        update_data["assigned_to"] = request.agent_id
+        update_data["status"] = "claimed"
+        timeline_entry["by"] = request.agent_id
+        
+    elif request.action == "unclaim":
+        update_data["assigned_to"] = None
+        update_data["status"] = "open"
+        timeline_entry["by"] = request.agent_id or "system"
+        
+    elif request.action == "change_status":
+        if not request.new_status:
+            raise HTTPException(status_code=400, detail="new_status required")
+        update_data["status"] = request.new_status
+        timeline_entry["new_status"] = request.new_status
+        
+    elif request.action == "change_priority":
+        if not request.new_priority:
+            raise HTTPException(status_code=400, detail="new_priority required")
+        update_data["priority"] = request.new_priority
+        update_data["urgency"] = request.new_priority
+        timeline_entry["new_priority"] = request.new_priority
+        
+    elif request.action == "escalate":
+        update_data["priority"] = "urgent"
+        update_data["urgency"] = "critical"
+        update_data["escalated"] = True
+        update_data["escalated_at"] = datetime.now(timezone.utc).isoformat()
+        timeline_entry["escalated"] = True
+        if request.note:
+            timeline_entry["reason"] = request.note
+    
+    else:
+        raise HTTPException(status_code=400, detail=f"Unknown action: {request.action}")
+    
+    # Try both collections
+    for collection_name in ["service_desk_tickets", "tickets"]:
+        collection = getattr(db, collection_name)
+        result = await collection.update_one(
+            {"ticket_id": ticket_id},
+            {
+                "$set": update_data,
+                "$push": {"timeline": timeline_entry}
+            }
+        )
+        if result.modified_count > 0:
+            return {
+                "success": True,
+                "ticket_id": ticket_id,
+                "action": request.action,
+                "changes": update_data
+            }
+    
+    raise HTTPException(status_code=404, detail="Ticket not found")
+
+
+@router.post("/bulk-action")
+async def bulk_ticket_action(
+    ticket_ids: List[str],
+    action: str,
+    agent_id: Optional[str] = None,
+    new_status: Optional[str] = None,
+    new_priority: Optional[str] = None
+):
+    """Perform bulk action on multiple tickets."""
+    results = []
+    
+    for ticket_id in ticket_ids:
+        try:
+            request = QuickActionRequest(
+                action=action,
+                agent_id=agent_id,
+                new_status=new_status,
+                new_priority=new_priority
+            )
+            result = await ticket_quick_action(ticket_id, request)
+            results.append({"ticket_id": ticket_id, "success": True})
+        except Exception as e:
+            results.append({"ticket_id": ticket_id, "success": False, "error": str(e)})
+    
+    return {
+        "total": len(ticket_ids),
+        "successful": len([r for r in results if r["success"]]),
+        "failed": len([r for r in results if not r["success"]]),
+        "results": results
+    }
+
+
+# ============== PILLAR STATS ==============
+
+@router.get("/pillar-stats")
+async def get_pillar_stats():
+    """Get ticket counts by pillar for filtering."""
+    db = get_db()
+    
+    pillar_counts = {
+        "celebrate": 0, "dine": 0, "stay": 0, "travel": 0,
+        "care": 0, "shop": 0, "club": 0, "enjoy": 0,
+        "fit": 0, "advisory": 0, "paperwork": 0, "emergency": 0,
+        "mira": 0, "general": 0
+    }
+    
+    # Count from service_desk_tickets
+    pipeline = [
+        {"$match": {"status": {"$nin": ["resolved", "closed", "archived"]}}},
+        {"$group": {"_id": {"$ifNull": ["$pillar", "$category"]}, "count": {"$sum": 1}}}
+    ]
+    
+    async for doc in db.service_desk_tickets.aggregate(pipeline):
+        pillar = doc["_id"] or "general"
+        if pillar in pillar_counts:
+            pillar_counts[pillar] += doc["count"]
+        else:
+            pillar_counts["general"] += doc["count"]
+    
+    # Count from tickets
+    async for doc in db.tickets.aggregate(pipeline):
+        pillar = doc["_id"] or "general"
+        if pillar in pillar_counts:
+            pillar_counts[pillar] += doc["count"]
+        else:
+            pillar_counts["general"] += doc["count"]
+    
+    return {
+        "pillars": pillar_counts,
+        "total": sum(pillar_counts.values())
+    }
+
                 </div>
                 <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
                     <p style="color: #6b7280; font-size: 14px;">Reference: #{ticket_id}</p>
