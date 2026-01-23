@@ -1599,6 +1599,7 @@ const Admin = () => {
             { id: 'agents', label: '👤 Agents', icon: Users },
             { id: 'loyalty', label: '⭐ Loyalty', icon: Star },
             { id: 'reports', label: '📊 Reports', icon: BarChart3 },
+            { id: 'analytics', label: '📈 Analytics', icon: TrendingUp },
             { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
             { id: 'reviews', label: 'Reviews', icon: MessageCircle },
           ].map((tab) => (
