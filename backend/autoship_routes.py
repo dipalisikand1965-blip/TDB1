@@ -152,11 +152,8 @@ def calculate_autoship_discount(order_count: int, original_price: float, product
 # ==================== USER AUTOSHIP ROUTES ====================
 
 @autoship_router.get("/autoship/my-subscriptions")
-async def get_my_autoship_subscriptions(current_user: dict = Depends(lambda: get_current_user)):
+async def get_my_autoship_subscriptions(current_user: dict = Depends(get_current_user_from_token)):
     """Get all autoship subscriptions for the current user"""
-    if get_current_user:
-        current_user = await get_current_user()
-    
     subscriptions = []
     async for sub in db.autoship_subscriptions.find(
         {"user_email": current_user["email"], "status": {"$ne": "cancelled"}},
@@ -174,12 +171,9 @@ async def get_my_autoship_subscriptions(current_user: dict = Depends(lambda: get
 @autoship_router.post("/autoship/create")
 async def create_autoship_subscription(
     data: AutoshipCreate,
-    current_user: dict = Depends(lambda: get_current_user)
+    current_user: dict = Depends(get_current_user_from_token)
 ):
     """Create a new autoship subscription"""
-    if get_current_user:
-        current_user = await get_current_user()
-    
     # Get product details
     product = await db.products.find_one({"id": data.product_id}, {"_id": 0})
     if not product:
@@ -224,11 +218,8 @@ async def create_autoship_subscription(
 
 
 @autoship_router.put("/autoship/{subscription_id}/pause")
-async def pause_autoship(subscription_id: str, current_user: dict = Depends(lambda: get_current_user)):
+async def pause_autoship(subscription_id: str, current_user: dict = Depends(get_current_user_from_token)):
     """Pause an autoship subscription"""
-    if get_current_user:
-        current_user = await get_current_user()
-    
     result = await db.autoship_subscriptions.update_one(
         {"id": subscription_id, "user_email": current_user["email"], "status": "active"},
         {"$set": {"status": "paused", "updated_at": datetime.now(timezone.utc).isoformat()}}
@@ -239,11 +230,8 @@ async def pause_autoship(subscription_id: str, current_user: dict = Depends(lamb
 
 
 @autoship_router.put("/autoship/{subscription_id}/resume")
-async def resume_autoship(subscription_id: str, current_user: dict = Depends(lambda: get_current_user)):
+async def resume_autoship(subscription_id: str, current_user: dict = Depends(get_current_user_from_token)):
     """Resume a paused autoship subscription"""
-    if get_current_user:
-        current_user = await get_current_user()
-    
     sub = await db.autoship_subscriptions.find_one(
         {"id": subscription_id, "user_email": current_user["email"], "status": "paused"}
     )
@@ -265,11 +253,8 @@ async def resume_autoship(subscription_id: str, current_user: dict = Depends(lam
 
 
 @autoship_router.put("/autoship/{subscription_id}/cancel")
-async def cancel_autoship(subscription_id: str, current_user: dict = Depends(lambda: get_current_user)):
+async def cancel_autoship(subscription_id: str, current_user: dict = Depends(get_current_user_from_token)):
     """Cancel an autoship subscription"""
-    if get_current_user:
-        current_user = await get_current_user()
-    
     result = await db.autoship_subscriptions.update_one(
         {"id": subscription_id, "user_email": current_user["email"]},
         {"$set": {"status": "cancelled", "updated_at": datetime.now(timezone.utc).isoformat()}}
@@ -284,12 +269,9 @@ async def update_autoship(
     subscription_id: str,
     frequency: Optional[int] = None,
     next_shipment_date: Optional[str] = None,
-    current_user: dict = Depends(lambda: get_current_user)
+    current_user: dict = Depends(get_current_user_from_token)
 ):
     """Update autoship frequency or next shipment date"""
-    if get_current_user:
-        current_user = await get_current_user()
-    
     update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
     if frequency:
         update_data["frequency"] = frequency
@@ -306,7 +288,7 @@ async def update_autoship(
 
 
 @autoship_router.put("/autoship/{subscription_id}/skip")
-async def skip_next_autoship(subscription_id: str, current_user: dict = Depends(lambda: get_current_user)):
+async def skip_next_autoship(subscription_id: str, current_user: dict = Depends(get_current_user_from_token)):
     """Skip the next autoship delivery"""
     if get_current_user:
         current_user = await get_current_user()
