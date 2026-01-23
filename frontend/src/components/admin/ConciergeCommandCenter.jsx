@@ -1085,10 +1085,44 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
           <h1 className="text-xl font-bold flex items-center gap-2">
             🎯 Concierge Command Center
           </h1>
-          <Button onClick={loadQueue} variant="outline" size="sm">
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
+          <div className="flex items-center gap-2">
+            <Button onClick={() => setShowCreateModal(true)} variant="outline" size="sm">
+              <Plus className="w-4 h-4 mr-1" /> New Ticket
+            </Button>
+            <Button onClick={exportToCSV} variant="outline" size="sm">
+              <Download className="w-4 h-4 mr-1" /> Export CSV
+            </Button>
+            <Button onClick={loadQueue} variant="outline" size="sm">
+              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
+        </div>
+
+        {/* Pillar Filter Tabs */}
+        <div className="flex items-center gap-1 mb-4 overflow-x-auto pb-2">
+          <Button
+            variant={!filters.pillar ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setFilters({ ...filters, pillar: null })}
+          >
+            All Pillars
           </Button>
+          {PILLARS.map(pillar => (
+            <Button
+              key={pillar.id}
+              variant={filters.pillar === pillar.id ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setFilters({ ...filters, pillar: filters.pillar === pillar.id ? null : pillar.id })}
+              className="flex items-center gap-1"
+            >
+              <span>{pillar.icon}</span>
+              <span>{pillar.name}</span>
+              {pillarStats[pillar.id] > 0 && (
+                <Badge variant="secondary" className="ml-1 text-xs">{pillarStats[pillar.id]}</Badge>
+              )}
+            </Button>
+          ))}
         </div>
 
         {/* Priority Buckets */}
@@ -1111,8 +1145,8 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
           ))}
         </div>
 
-        {/* Filters */}
-        <div className="flex items-center gap-2">
+        {/* Filters & Bulk Actions */}
+        <div className="flex items-center gap-2 flex-wrap">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
@@ -1135,17 +1169,40 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
             <option value="health">💉 Health Alerts</option>
             <option value="celebration">🎂 Birthdays</option>
             <option value="tickets">🎫 Service Desk</option>
+            <option value="membership">👑 Memberships</option>
+            <option value="voice_order">🎤 Voice Orders</option>
+            <option value="autoship">🔄 Autoship</option>
+            <option value="stay">🏨 Stay Bookings</option>
+            <option value="dine">🍽️ Dine Reservations</option>
+            <option value="travel">✈️ Travel</option>
+            <option value="care">🏥 Care</option>
           </select>
 
-          {(filters.priority || filters.source !== 'all' || filters.search) && (
+          {(filters.priority || filters.source !== 'all' || filters.search || filters.pillar) && (
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setFilters({ source: 'all', priority: null, status: null, search: '' })}
+              onClick={() => setFilters({ source: 'all', priority: null, status: null, pillar: null, search: '' })}
             >
               <X className="w-4 h-4 mr-1" />
               Clear
             </Button>
+          )}
+          
+          {/* Bulk Actions (show when tickets selected) */}
+          {selectedTickets.size > 0 && (
+            <div className="flex items-center gap-2 ml-auto bg-purple-50 px-3 py-1 rounded-lg">
+              <Badge>{selectedTickets.size} selected</Badge>
+              <Button size="sm" variant="outline" onClick={() => bulkAction('claim')}>
+                Claim All
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => bulkAction('change_status', { new_status: 'resolved' })}>
+                Resolve All
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => setSelectedTickets(new Set())}>
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
           )}
         </div>
       </div>
