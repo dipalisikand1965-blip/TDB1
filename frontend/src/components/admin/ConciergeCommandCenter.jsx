@@ -1143,7 +1143,7 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
 
   // Main Queue View
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col bg-gray-50 relative">
       {/* Attention Strip */}
       {(attention.sla_breaching > 0 || attention.high_unclaimed > 0 || attention.health_overdue > 0) && (
         <div className="bg-gradient-to-r from-red-500 to-orange-500 px-4 py-2 flex items-center gap-4 text-white text-sm">
