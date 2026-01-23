@@ -14,6 +14,9 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
+# Import shared models
+from models import PetProfileCreate, PetProfileUpdate, PetHealthInfo
+
 logger = logging.getLogger(__name__)
 
 # Create router
