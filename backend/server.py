@@ -7041,8 +7041,10 @@ async def membership_onboard(data: MembershipOnboardModel):
         # Create pet profiles first
         for pet_data in data.pets:
             pet_id = str(uuid.uuid4())
+            pet_pass_number = await generate_pet_pass_number_server()
             pet_doc = {
                 "id": pet_id,
+                "pet_pass_number": pet_pass_number,
                 "name": pet_data.name,
                 "breed": pet_data.breed,
                 "species": pet_data.species,
@@ -7068,7 +7070,7 @@ async def membership_onboard(data: MembershipOnboardModel):
             }
             await db.pets.insert_one(pet_doc)
             pet_ids.append(pet_id)
-            logger.info(f"Created pet profile: {pet_data.name} ({pet_id})")
+            logger.info(f"Created pet profile: {pet_data.name} ({pet_id}) - Pet Pass: {pet_pass_number}")
         
         # Create user account (pending membership until payment)
         user_doc = {
