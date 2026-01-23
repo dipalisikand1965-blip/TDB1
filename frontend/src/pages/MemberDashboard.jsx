@@ -1457,28 +1457,91 @@ const MemberDashboard = () => {
               </Card>
 
               <div className="space-y-6">
+                {/* Communication Channels */}
                 <Card className="p-6">
                   <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                    <Bell className="w-5 h-5 text-purple-600" /> Preferences
+                    <MessageCircle className="w-5 h-5 text-purple-600" /> Communication Channels
+                    {settingsLoading && <span className="text-xs text-gray-400 ml-2">Saving...</span>}
+                    {settingsSaved && <span className="text-xs text-green-500 ml-2">✓ Saved</span>}
                   </h3>
+                  <p className="text-sm text-gray-500 mb-4">Choose how you'd like to hear from us</p>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <label className="text-sm font-medium text-gray-900">WhatsApp Notifications</label>
-                        <p className="text-xs text-gray-500">Order updates & reminders</p>
+                        <label className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                          <Mail className="w-4 h-4 text-blue-500" /> Email
+                        </label>
+                        <p className="text-xs text-gray-500">Order confirmations & updates</p>
                       </div>
-                      <Switch checked={settings.whatsappOptIn} onCheckedChange={() => handleSettingChange('whatsappOptIn')} />
+                      <Switch checked={settings.email} onCheckedChange={() => handleSettingChange('email')} />
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <label className="text-sm font-medium text-gray-900">Email Promotions</label>
-                        <p className="text-xs text-gray-500">Exclusive offers & new launches</p>
+                        <label className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                          <MessageCircle className="w-4 h-4 text-green-500" /> WhatsApp
+                        </label>
+                        <p className="text-xs text-gray-500">Quick updates & reminders</p>
                       </div>
-                      <Switch checked={settings.emailPromo} onCheckedChange={() => handleSettingChange('emailPromo')} />
+                      <Switch checked={settings.whatsapp} onCheckedChange={() => handleSettingChange('whatsapp')} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <label className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                          <Phone className="w-4 h-4 text-purple-500" /> SMS
+                        </label>
+                        <p className="text-xs text-gray-500">Text message alerts</p>
+                      </div>
+                      <Switch checked={settings.sms} onCheckedChange={() => handleSettingChange('sms')} />
                     </div>
                   </div>
                 </Card>
 
+                {/* Notification Types */}
+                <Card className="p-6">
+                  <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                    <Bell className="w-5 h-5 text-purple-600" /> Notification Preferences
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-4">What would you like to be notified about?</p>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <label className="text-sm font-medium text-gray-900">📦 Order Updates</label>
+                        <p className="text-xs text-gray-500">Shipping, delivery & status changes</p>
+                      </div>
+                      <Switch checked={settings.order_updates} onCheckedChange={() => handleSettingChange('order_updates')} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <label className="text-sm font-medium text-gray-900">🎁 Promotions & Offers</label>
+                        <p className="text-xs text-gray-500">Exclusive deals & new launches</p>
+                      </div>
+                      <Switch checked={settings.promotional} onCheckedChange={() => handleSettingChange('promotional')} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <label className="text-sm font-medium text-gray-900">🎂 Celebration Reminders</label>
+                        <p className="text-xs text-gray-500">Pet birthdays & gotcha days</p>
+                      </div>
+                      <Switch checked={settings.celebration_reminders} onCheckedChange={() => handleSettingChange('celebration_reminders')} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <label className="text-sm font-medium text-gray-900">💊 Health Reminders</label>
+                        <p className="text-xs text-gray-500">Vaccination & vet appointment reminders</p>
+                      </div>
+                      <Switch checked={settings.health_reminders} onCheckedChange={() => handleSettingChange('health_reminders')} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <label className="text-sm font-medium text-gray-900">🐾 Community Updates</label>
+                        <p className="text-xs text-gray-500">Events, meetups & pawrent activities</p>
+                      </div>
+                      <Switch checked={settings.community_updates} onCheckedChange={() => handleSettingChange('community_updates')} />
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Privacy & Security */}
                 <Card className="p-6">
                   <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                     <Shield className="w-5 h-5 text-purple-600" /> Privacy & Security
@@ -1487,7 +1550,7 @@ const MemberDashboard = () => {
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <label className="text-sm font-medium text-gray-900">Share Pet Data</label>
-                        <p className="text-xs text-gray-500">Allow detailed personalization</p>
+                        <p className="text-xs text-gray-500">Allow Mira to personalize recommendations</p>
                       </div>
                       <Switch checked={settings.shareData} onCheckedChange={() => handleSettingChange('shareData')} />
                     </div>
