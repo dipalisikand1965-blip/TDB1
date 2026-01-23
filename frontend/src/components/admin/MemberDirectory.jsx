@@ -17,6 +17,7 @@ import {
   ShoppingCart, Syringe, Weight, Stethoscope, Send
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
+import HealthVaultTab from './HealthVaultTab';
 
 // Member statuses
 const MEMBER_STATUSES = {
