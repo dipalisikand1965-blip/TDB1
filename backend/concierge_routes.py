@@ -1930,11 +1930,12 @@ class CreateTicketRequest(BaseModel):
     pet_name: Optional[str] = None
     assigned_to: Optional[str] = None
     source: str = "internal"
+    send_acknowledgment: bool = True  # Send auto-acknowledgment email
 
 
 @router.post("/ticket/create")
 async def create_ticket(request: CreateTicketRequest):
-    """Create a new ticket manually."""
+    """Create a new ticket manually with sentiment analysis and auto-acknowledgment."""
     db = get_db()
     
     # Generate ticket ID
@@ -1969,12 +1970,35 @@ async def create_ticket(request: CreateTicketRequest):
         "communications": []
     }
     
+    # Enrich ticket with AI intelligence (sentiment analysis)
+    try:
+        ticket = await enrich_ticket_with_intelligence(ticket)
+        logger.info(f"Ticket {ticket_id} enriched with sentiment: {ticket.get('sentiment', {}).get('sentiment', 'unknown')}")
+    except Exception as e:
+        logger.warning(f"Failed to enrich ticket with intelligence: {e}")
+    
     await db.service_desk_tickets.insert_one(ticket)
+    
+    # Send auto-acknowledgment email if member email provided
+    acknowledgment_sent = False
+    if request.send_acknowledgment and request.member_email:
+        try:
+            acknowledgment_sent = await send_ticket_acknowledgment(
+                member_email=request.member_email,
+                member_name=request.member_name or "Pet Parent",
+                ticket_id=ticket_id,
+                subject=request.subject,
+                pillar=request.pillar or request.category
+            )
+        except Exception as e:
+            logger.warning(f"Failed to send acknowledgment email: {e}")
     
     return {
         "success": True,
         "ticket_id": ticket_id,
-        "ticket": {k: v for k, v in ticket.items() if k != "_id"}
+        "ticket": {k: v for k, v in ticket.items() if k != "_id"},
+        "sentiment": ticket.get("sentiment"),
+        "acknowledgment_sent": acknowledgment_sent
     }
 
 
