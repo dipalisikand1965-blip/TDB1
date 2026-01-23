@@ -673,62 +673,129 @@ const MyPets = () => {
                             <div className="flex items-center justify-center py-8">
                               <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
                             </div>
-                          ) : health ? (
-                            <div className="grid md:grid-cols-2 gap-4">
-                              {/* Vaccines */}
-                              <div className="bg-green-50 rounded-xl p-4">
-                                <div className="flex items-center gap-2 mb-3">
-                                  <Syringe className="w-5 h-5 text-green-600" />
-                                  <h4 className="font-semibold text-green-800">Vaccinations ({health.vaccines?.length || 0})</h4>
-                                </div>
-                                {health.vaccines?.length > 0 ? (
-                                  <div className="space-y-2">
-                                    {health.vaccines.slice(0, 3).map((v, idx) => {
-                                      const dueDate = v.next_due_date ? new Date(v.next_due_date) : null;
-                                      const isOverdue = dueDate && dueDate < new Date();
-                                      const isDueSoon = dueDate && !isOverdue && (dueDate - new Date()) / (1000*60*60*24) <= 30;
-                                      
-                                      return (
-                                        <div key={idx} className="bg-white rounded-lg p-2 text-sm flex items-center justify-between">
-                                          <span className="font-medium">{v.vaccine_name}</span>
-                                          {dueDate && (
-                                            <Badge className={isOverdue ? 'bg-red-100 text-red-700' : isDueSoon ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-600'}>
-                                              {isOverdue ? 'Overdue' : isDueSoon ? 'Due soon' : dueDate.toLocaleDateString()}
-                                            </Badge>
-                                          )}
-                                        </div>
-                                      );
-                                    })}
-                                    {health.vaccines.length > 3 && (
-                                      <p className="text-xs text-green-600 mt-2">+{health.vaccines.length - 3} more</p>
+                          ) : (
+                            <>
+                              {/* Basic Health Info from Pet Registration */}
+                              {(pet.health?.vet_name || pet.health?.medical_conditions || pet.health?.current_medications) && (
+                                <div className="bg-blue-50 rounded-xl p-4 mb-4">
+                                  <h4 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                                    <Stethoscope className="w-4 h-4" />
+                                    Health Profile
+                                  </h4>
+                                  <div className="grid md:grid-cols-2 gap-3 text-sm">
+                                    {pet.health?.vet_name && (
+                                      <div className="bg-white rounded-lg p-3">
+                                        <p className="text-xs text-gray-500 mb-1">Primary Vet</p>
+                                        <p className="font-medium text-gray-900">{pet.health.vet_name}</p>
+                                        {pet.health.vet_clinic && <p className="text-gray-600">{pet.health.vet_clinic}</p>}
+                                        {pet.health.vet_phone && <p className="text-blue-600">{pet.health.vet_phone}</p>}
+                                      </div>
+                                    )}
+                                    {pet.health?.medical_conditions && (
+                                      <div className="bg-white rounded-lg p-3">
+                                        <p className="text-xs text-gray-500 mb-1">Medical Conditions</p>
+                                        <p className="text-gray-900">{pet.health.medical_conditions}</p>
+                                      </div>
+                                    )}
+                                    {pet.health?.current_medications && (
+                                      <div className="bg-white rounded-lg p-3">
+                                        <p className="text-xs text-gray-500 mb-1">Current Medications</p>
+                                        <p className="text-gray-900">{pet.health.current_medications}</p>
+                                      </div>
+                                    )}
+                                    {pet.health?.dietary_restrictions && (
+                                      <div className="bg-white rounded-lg p-3">
+                                        <p className="text-xs text-gray-500 mb-1">Dietary Restrictions</p>
+                                        <p className="text-gray-900">{pet.health.dietary_restrictions}</p>
+                                      </div>
+                                    )}
+                                    {pet.health?.spayed_neutered && (
+                                      <div className="bg-white rounded-lg p-3">
+                                        <p className="text-xs text-gray-500 mb-1">Spayed/Neutered</p>
+                                        <p className="text-gray-900 capitalize">{pet.health.spayed_neutered.replace('_', ' ')}</p>
+                                      </div>
+                                    )}
+                                    {pet.health?.microchipped && (
+                                      <div className="bg-white rounded-lg p-3">
+                                        <p className="text-xs text-gray-500 mb-1">Microchipped</p>
+                                        <p className="text-green-600 font-medium">Yes {pet.health.microchip_number ? `(${pet.health.microchip_number})` : ''}</p>
+                                      </div>
+                                    )}
+                                    {pet.health?.insurance_provider && (
+                                      <div className="bg-white rounded-lg p-3">
+                                        <p className="text-xs text-gray-500 mb-1">Insurance</p>
+                                        <p className="text-gray-900">{pet.health.insurance_provider}</p>
+                                      </div>
+                                    )}
+                                    {pet.health?.emergency_contact_name && (
+                                      <div className="bg-white rounded-lg p-3 md:col-span-2">
+                                        <p className="text-xs text-gray-500 mb-1">Emergency Contact</p>
+                                        <p className="text-gray-900">{pet.health.emergency_contact_name} {pet.health.emergency_contact_phone && `• ${pet.health.emergency_contact_phone}`}</p>
+                                      </div>
                                     )}
                                   </div>
-                                ) : (
-                                  <p className="text-sm text-green-600">No vaccines recorded</p>
-                                )}
-                              </div>
-                              
-                              {/* Medications */}
-                              <div className="bg-purple-50 rounded-xl p-4">
-                                <div className="flex items-center gap-2 mb-3">
-                                  <Pill className="w-5 h-5 text-purple-600" />
-                                  <h4 className="font-semibold text-purple-800">Active Medications ({health.activeMeds?.length || 0})</h4>
                                 </div>
-                                {health.activeMeds?.length > 0 ? (
-                                  <div className="space-y-2">
-                                    {health.activeMeds.slice(0, 3).map((m, idx) => (
-                                      <div key={idx} className="bg-white rounded-lg p-2 text-sm">
-                                        <p className="font-medium">{m.medication_name}</p>
-                                        <p className="text-xs text-gray-500">{m.dosage} • {m.frequency}</p>
+                              )}
+
+                              {/* Vaccines & Medications from Vault */}
+                              {health ? (
+                                <div className="grid md:grid-cols-2 gap-4">
+                                  {/* Vaccines */}
+                                  <div className="bg-green-50 rounded-xl p-4">
+                                    <div className="flex items-center gap-2 mb-3">
+                                      <Syringe className="w-5 h-5 text-green-600" />
+                                      <h4 className="font-semibold text-green-800">Vaccinations ({health.vaccines?.length || 0})</h4>
+                                    </div>
+                                    {health.vaccines?.length > 0 ? (
+                                      <div className="space-y-2">
+                                        {health.vaccines.slice(0, 3).map((v, idx) => {
+                                          const dueDate = v.next_due_date ? new Date(v.next_due_date) : null;
+                                          const isOverdue = dueDate && dueDate < new Date();
+                                          const isDueSoon = dueDate && !isOverdue && (dueDate - new Date()) / (1000*60*60*24) <= 30;
+                                          
+                                          return (
+                                            <div key={idx} className="bg-white rounded-lg p-2 text-sm flex items-center justify-between">
+                                              <span className="font-medium">{v.vaccine_name}</span>
+                                              {dueDate && (
+                                                <Badge className={isOverdue ? 'bg-red-100 text-red-700' : isDueSoon ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-600'}>
+                                                  {isOverdue ? 'Overdue' : isDueSoon ? 'Due soon' : dueDate.toLocaleDateString()}
+                                                </Badge>
+                                              )}
+                                            </div>
+                                          );
+                                        })}
+                                        {health.vaccines.length > 3 && (
+                                          <p className="text-xs text-green-600 mt-2">+{health.vaccines.length - 3} more</p>
+                                        )}
                                       </div>
-                                    ))}
+                                    ) : (
+                                      <p className="text-sm text-green-600">No vaccines recorded</p>
+                                    )}
                                   </div>
-                                ) : (
-                                  <p className="text-sm text-purple-600">No active medications</p>
-                                )}
-                              </div>
-                            </div>
-                          ) : null}
+                                  
+                                  {/* Medications */}
+                                  <div className="bg-purple-50 rounded-xl p-4">
+                                    <div className="flex items-center gap-2 mb-3">
+                                      <Pill className="w-5 h-5 text-purple-600" />
+                                      <h4 className="font-semibold text-purple-800">Active Medications ({health.activeMeds?.length || 0})</h4>
+                                    </div>
+                                    {health.activeMeds?.length > 0 ? (
+                                      <div className="space-y-2">
+                                        {health.activeMeds.slice(0, 3).map((m, idx) => (
+                                          <div key={idx} className="bg-white rounded-lg p-2 text-sm">
+                                            <p className="font-medium">{m.medication_name}</p>
+                                            <p className="text-xs text-gray-500">{m.dosage} • {m.frequency}</p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <p className="text-sm text-purple-600">No active medications</p>
+                                    )}
+                                  </div>
+                                </div>
+                              ) : null}
+                            </>
+                          )}
                           
                           <Link to={`/pet-vault/${pet.id}`}>
                             <Button variant="outline" className="w-full border-red-200 text-red-700 hover:bg-red-50">
