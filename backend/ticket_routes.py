@@ -74,7 +74,7 @@ def get_resend():
     return None
 
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
-BUSINESS_EMAIL = os.environ.get("REACT_APP_BUSINESS_EMAIL", "woof@thedoggybakery.in")
+BUSINESS_EMAIL = os.environ.get("REACT_APP_BUSINESS_EMAIL", "woof@thedoggycompany.in")
 
 async def send_ticket_notification(ticket: dict, notification_type: str = "created"):
     """Send email notification for ticket events"""

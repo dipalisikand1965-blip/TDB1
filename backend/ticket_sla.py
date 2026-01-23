@@ -31,7 +31,7 @@ def get_resend():
     return None
 
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
-BUSINESS_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.in")
+BUSINESS_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.in")
 
 # ============== MODELS ==============
 

@@ -1074,7 +1074,7 @@ async def seed_sample_socials(db_instance):
             "max_participants": 10,
             "current_participants": 0,
             "host_name": "The Doggy Company",
-            "host_email": "woof@thedoggybakery.in",
+            "host_email": "woof@thedoggycompany.in",
             "status": "active",
             "image": prop.get("photos", [None])[0],
             "created_at": now.isoformat(),

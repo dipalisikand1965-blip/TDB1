@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
-BUSINESS_EMAIL = os.environ.get("BUSINESS_EMAIL", "orders@thedoggybakery.in")
+BUSINESS_EMAIL = os.environ.get("BUSINESS_EMAIL", "orders@thedoggycompany.in")
 
 # WhatsApp config (for future integration)
 WHATSAPP_API_URL = os.environ.get("WHATSAPP_API_URL", "")

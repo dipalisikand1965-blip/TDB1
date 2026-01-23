@@ -29,7 +29,7 @@ try:
 except ImportError:
     RESEND_AVAILABLE = False
 
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggybakery.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
 WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919663185747")
 
 logger = logging.getLogger(__name__)

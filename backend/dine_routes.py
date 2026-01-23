@@ -63,7 +63,7 @@ ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 
 # Resend configuration
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggybakery.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "woof2025")
@@ -347,7 +347,7 @@ async def create_reservation(reservation: ReservationRequest):
                         </p>
                     </div>
                     <div style="background: #1f2937; padding: 20px; text-align: center;">
-                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggybakery.in</p>
+                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggycompany.in</p>
                     </div>
                 </div>
                 """
@@ -359,7 +359,7 @@ async def create_reservation(reservation: ReservationRequest):
     # Send notification email to admin
     if RESEND_API_KEY:
         try:
-            notification_email = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.in")
+            notification_email = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.in")
             pet_info = f"<p><strong>🐕 Pet:</strong> {reservation.pet_name}{f' ({reservation.pet_breed})' if reservation.pet_breed else ''}</p>" if reservation.pet_name else ""
             pet_about = f"<p><strong>About Pet:</strong> {reservation.pet_about}</p>" if reservation.pet_about else ""
             
@@ -1173,7 +1173,7 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
                         </p>
                     </div>
                     <div style="background: #1f2937; padding: 20px; text-align: center;">
-                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggybakery.in</p>
+                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggycompany.in</p>
                     </div>
                 </div>
                 """

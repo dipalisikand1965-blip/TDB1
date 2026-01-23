@@ -177,8 +177,8 @@ except Exception as e:
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggybakery.in")
-NOTIFICATION_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+NOTIFICATION_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.in")
 WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919663185747")
 
 # Razorpay configuration
@@ -529,7 +529,7 @@ async def send_celebration_email(to_email: str, owner_name: str, pet_name: str,
                 </div>
                 <div class="footer">
                     <p>The Doggy Bakery | Baking happiness for your furry friends</p>
-                    <p>📞 +91 96631 85747 | 📧 woof@thedoggybakery.in</p>
+                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.in</p>
                     <p style="font-size: 11px; color: #9ca3af;">
                         You're receiving this because you enabled celebration reminders for {pet_name}. 
                         <a href="https://thedoggycompany.in/my-pets" style="color: #9333ea;">Manage preferences</a>
@@ -3486,7 +3486,7 @@ async def get_site_content(username: str = Depends(verify_admin)):
             ],
             "bannerText": "Enjoy the convenience of SAME DAY DELIVERY in Mumbai, Bangalore & Gurgaon for all orders placed by 6:00 PM",
             "whatsappNumber": "+91 96631 85747",
-            "contactEmail": "woof@thedoggybakery.in"
+            "contactEmail": "woof@thedoggycompany.in"
         }
     return content
 
@@ -5944,12 +5944,12 @@ async def send_abandoned_cart_email(to_email: str, name: str, items: list,
                     </div>
                     
                     <p style="color: #6b7280; font-size: 14px;">
-                        Questions? Chat with Mira, our Concierge®, or contact us at woof@thedoggybakery.in
+                        Questions? Chat with Mira, our Concierge®, or contact us at woof@thedoggycompany.in
                     </p>
                 </div>
                 <div class="footer">
                     <p>The Doggy Bakery | Baking happiness for your furry friends</p>
-                    <p>📞 +91 96631 85747 | 📧 woof@thedoggybakery.in</p>
+                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.in</p>
                     <p style="font-size: 11px; color: #9ca3af;">
                         <a href="https://thedoggycompany.in/unsubscribe?cart={cart_id}" style="color: #9333ea;">Unsubscribe from cart reminders</a>
                     </p>
@@ -8397,7 +8397,7 @@ async def submit_franchise_inquiry(inquiry: dict):
     try:
         params = {
             "from": SENDER_EMAIL,
-            "to": os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.in"),  # Resend expects a string
+            "to": os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.in"),  # Resend expects a string
             "subject": f"New Franchise Inquiry from {inquiry_doc['name']} - {inquiry_doc['city']}",
             "html": f"""
             <h2>New Franchise Inquiry!</h2>
@@ -9186,7 +9186,7 @@ async def send_admin_email(to_email: str, subject: str, html_content: str):
     try:
         resend.api_key = RESEND_API_KEY
         resend.Emails.send({
-            "from": "The Doggy Company <woof@thedoggybakery.in>",
+            "from": "The Doggy Company <woof@thedoggycompany.in>",
             "to": to_email,
             "subject": subject,
             "html": html_content

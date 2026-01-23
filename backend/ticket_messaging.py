@@ -35,7 +35,7 @@ def get_resend():
     return None
 
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
-BUSINESS_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggybakery.in")
+BUSINESS_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.in")
 WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919663185747")
 WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "tdb-webhook-secret-2025")
 
