@@ -654,8 +654,16 @@ const LearnPage = () => {
           </DialogHeader>
           
           <div className="space-y-6 py-4">
+            {/* Login prompt for non-logged in users */}
+            {!user && (
+              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-blue-800 font-medium mb-2">Please sign in to submit a training request</p>
+                <p className="text-sm text-blue-600">You'll need to add your pet profile first to request personalized training.</p>
+              </div>
+            )}
+            
             {/* Pet Selection */}
-            {userPets.length > 0 && (
+            {user && userPets.length > 0 && (
               <div>
                 <Label className="text-sm font-medium">Select Pet</Label>
                 <div className="grid grid-cols-2 gap-3 mt-2">
@@ -677,6 +685,14 @@ const LearnPage = () => {
                     </Card>
                   ))}
                 </div>
+              </div>
+            )}
+            
+            {/* No pets message */}
+            {user && userPets.length === 0 && (
+              <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <p className="text-amber-800 font-medium mb-2">No pets found</p>
+                <p className="text-sm text-amber-600">Please add your pet profile first to request training.</p>
               </div>
             )}
 
