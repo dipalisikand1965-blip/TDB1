@@ -12,7 +12,7 @@ import { Button } from './ui/button';
 import { 
   ChevronDown, ChevronRight, Check, HelpCircle, 
   Edit2, Brain, Heart, Home, Plane, Utensils, 
-  GraduationCap, Clock, Users, AlertCircle, Sparkles
+  GraduationCap, Clock, Users, AlertCircle, Sparkles, Plus
 } from 'lucide-react';
 
 // All possible questions organized by pillar
