@@ -1054,7 +1054,7 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
               <HealthVaultTab 
                 pets={pets} 
                 memberEmail={member?.email}
-                onRefresh={() => fetchMemberProfile(member?.email)}
+                onRefresh={fetchMemberDetails}
               />
             </TabsContent>
 
