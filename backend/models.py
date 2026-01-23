@@ -281,6 +281,22 @@ class PetPreferences(BaseModel):
     goals: Optional[str] = Field(default=None, description="Health/lifestyle goals")
 
 
+class PetHealthInfo(BaseModel):
+    """Pet health information"""
+    vet_name: Optional[str] = Field(default=None, description="Primary veterinarian name")
+    vet_clinic: Optional[str] = Field(default=None, description="Clinic name")
+    vet_phone: Optional[str] = Field(default=None, description="Vet contact number")
+    medical_conditions: Optional[str] = Field(default=None, description="Chronic conditions, surgeries, etc.")
+    current_medications: Optional[str] = Field(default=None, description="Current medications with dosage")
+    dietary_restrictions: Optional[str] = Field(default=None, description="Special diet requirements")
+    spayed_neutered: Optional[str] = Field(default=None, description="yes, no, not_sure")
+    microchipped: bool = Field(default=False, description="Whether pet is microchipped")
+    microchip_number: Optional[str] = Field(default=None, description="Microchip number")
+    insurance_provider: Optional[str] = Field(default=None, description="Pet insurance provider")
+    emergency_contact_name: Optional[str] = Field(default=None, description="Emergency contact name")
+    emergency_contact_phone: Optional[str] = Field(default=None, description="Emergency contact phone")
+
+
 class PetProfileCreate(BaseModel):
     """Create a new pet profile"""
     name: str = Field(description="Pet's name")
