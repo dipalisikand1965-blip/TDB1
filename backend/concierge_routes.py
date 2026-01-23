@@ -454,16 +454,33 @@ async def get_item_detail(ticket_id: str):
         if item:
             source_collection = "tickets"
     
-    # Check orders
+    # Check orders - handle both ORD-{uuid} and ORD-ORD-{date} patterns
     if not item and ticket_id.startswith("ORD-"):
-        order_id = ticket_id.replace("ORD-", "")
+        # Try multiple patterns
+        search_id = ticket_id.replace("ORD-", "", 1)  # Remove first ORD- prefix
+        
+        # Search by id field, order_id field, or reconstructed order_id
         item = await db.orders.find_one(
-            {"$or": [{"order_id": order_id}, {"id": order_id}]}, 
+            {"$or": [
+                {"id": search_id},
+                {"order_id": search_id},
+                {"id": ticket_id.replace("ORD-", "", 1)},
+                {"order_id": ticket_id.replace("ORD-", "", 1)}
+            ]}, 
             {"_id": 0}
         )
         if item:
             source_collection = "orders"
             item["ticket_id"] = ticket_id
+            # Transform order to standard item format
+            if not item.get("original_request"):
+                item["original_request"] = f"Order #{item.get('order_id', item.get('id', 'N/A'))} - ₹{item.get('total', 0)}"
+            if item.get("customer") and not item.get("member"):
+                item["member"] = {
+                    "name": item["customer"].get("name"),
+                    "email": item["customer"].get("email"),
+                    "phone": item["customer"].get("phone")
+                }
     
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
