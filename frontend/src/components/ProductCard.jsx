@@ -307,6 +307,7 @@ const ProductCard = ({ product, pillar = 'celebrate' }) => {
       {showModal && createPortal(
         <ProductDetailModal 
           product={product} 
+          pillar={pillar}
           onClose={() => setShowModal(false)} 
         />,
         document.body
@@ -315,7 +316,7 @@ const ProductCard = ({ product, pillar = 'celebrate' }) => {
   );
 };
 
-const ProductDetailModal = ({ product, onClose }) => {
+const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
   // Extract options from product (e.g., Base, Flavour, Weight)
   const productOptions = product.options || [];
   const variants = product.variants || [];
