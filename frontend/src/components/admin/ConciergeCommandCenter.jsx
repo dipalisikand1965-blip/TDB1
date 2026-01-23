@@ -5,6 +5,8 @@ import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
+import { Label } from '../ui/label';
 import {
   ArrowLeft, Search, Filter, RefreshCw, Clock, User, PawPrint,
   AlertCircle, CheckCircle, MessageCircle, Mail, Phone, Crown,
