@@ -1321,6 +1321,11 @@ const PetSoulTabs = ({ pets }) => {
                       <div>
                         <p className="font-bold text-lg">{pet.name}</p>
                         <p className="text-sm text-gray-500">{pet.breed} • {pet.gender}</p>
+                        {pet.pet_pass_number && (
+                          <p className="text-xs font-mono bg-purple-100 text-purple-700 px-2 py-0.5 rounded mt-1 inline-block">
+                            {pet.pet_pass_number}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
