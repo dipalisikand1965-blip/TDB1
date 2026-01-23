@@ -448,6 +448,7 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
   const [notes, setNotes] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [memories, setMemories] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [newNote, setNewNote] = useState('');
   const [loading, setLoading] = useState(true);
   const [ticketsLoading, setTicketsLoading] = useState(false);
