@@ -76,7 +76,7 @@ const ReportsManager = ({ authHeaders }) => {
   const [reviewsReport, setReviewsReport] = useState(null);
   const [financialReport, setFinancialReport] = useState(null);
   
-  // Pillar Reports data - ALL 12 PILLARS
+  // Pillar Reports data - ALL PILLARS
   const [pillarSummary, setPillarSummary] = useState(null);
   const [celebrateReport, setCelebrateReport] = useState(null);
   const [dineReport, setDineReport] = useState(null);
@@ -90,6 +90,7 @@ const ReportsManager = ({ authHeaders }) => {
   const [adoptReport, setAdoptReport] = useState(null);
   const [insureReport, setInsureReport] = useState(null);
   const [farewellReport, setFarewellReport] = useState(null);
+  const [communityReport, setCommunityReport] = useState(null);
   const [pillarComparison, setPillarComparison] = useState(null);
   const [selectedPillar, setSelectedPillar] = useState('summary');
   
