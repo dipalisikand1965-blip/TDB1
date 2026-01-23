@@ -10188,6 +10188,9 @@ set_memory_routes_db(db)  # Initialize Memory with database
 app.include_router(concierge_command_router)  # Command Center at /api/concierge/*
 set_command_center_db(db)  # Initialize Command Center with database
 
+# Auto Ticket Creation System
+set_auto_ticket_db(db)  # Initialize auto-ticket creation with database
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
