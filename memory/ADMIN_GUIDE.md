@@ -1,8 +1,8 @@
 # 🐕 The Doggy Company - Admin Panel Complete Guide
 ## "Dummy's Guide" to Every Admin Feature
 
-**Last Updated**: January 23, 2026 (Added Seed Production Data button)
-**Version**: 1.1
+**Last Updated**: January 23, 2026 (Added Command Center Intelligence Features)
+**Version**: 1.2
 
 ---
 
