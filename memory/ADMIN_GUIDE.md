@@ -1,8 +1,8 @@
 # 🐕 The Doggy Company - Admin Panel Complete Guide
 ## "Dummy's Guide" to Every Admin Feature
 
-**Last Updated**: January 23, 2026 (Added Advanced Analytics, NPS Feedback, Communication Preferences, Smart Recommendations)
-**Version**: 1.4
+**Last Updated**: January 23, 2026 (Session 10 - Learn Admin Manager, Pet Soul Page, NPS Paw Ratings, Footer Updates)
+**Version**: 1.5
 
 ---
 
@@ -27,7 +27,7 @@
    - [Agents](#16-agents)
    - [Loyalty](#17-loyalty-paw-rewards)
    - [Reports](#18-reports)
-   - [Analytics](#18b-advanced-analytics) 🆕
+   - [Analytics](#18b-advanced-analytics)
    - [Mira Chats](#19-mira-chats)
    - [Reviews](#20-reviews)
 
@@ -43,10 +43,7 @@
    - [Care](#28-care)
    - [Enjoy](#29-enjoy)
    - [Fit](#30-fit)
-   - [Learn](#30b-learn) 🆕
-   - [Adopt](#30c-adopt) 🆕
-   - [Farewell](#30d-farewell) 🆕
-   - [Community](#30e-community) 🆕
+   - [Learn](#30b-learn) ✅
    - [Advisory](#31-advisory)
    - [Paperwork](#32-paperwork)
    - [Emergency](#33-emergency)
