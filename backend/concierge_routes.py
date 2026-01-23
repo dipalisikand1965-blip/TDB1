@@ -383,6 +383,167 @@ async def get_command_center_queue(
                 except:
                     pass
     
+    # 7. Membership Purchases/Renewals
+    if source in [None, "all", "membership"]:
+        # Get recent membership purchases (last 30 days that need follow-up)
+        thirty_days_ago = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
+        membership_query = {
+            "created_at": {"$gte": thirty_days_ago},
+            "status": {"$in": ["pending", "active", "expiring_soon"]}
+        }
+        
+        cursor = db.memberships.find(membership_query, {"_id": 0}).limit(50)
+        async for item in cursor:
+            item["ticket_id"] = f"MEM-{item.get('id', item.get('membership_id', 'N/A'))}"
+            item["source_type"] = "membership"
+            item["source_label"] = "Membership"
+            item["source_icon"] = "👑"
+            item["original_request"] = f"Membership: {item.get('plan_name', 'Plan')} - {item.get('status', 'pending')}"
+            item["action_type"] = "membership_followup"
+            item["pillar"] = "club"
+            
+            # Get member info
+            user = await db.users.find_one({"email": item.get("email")}, {"_id": 0, "password": 0})
+            if user:
+                item["member"] = {
+                    "name": user.get("name"),
+                    "email": user.get("email"),
+                    "phone": user.get("phone")
+                }
+            
+            item["priority_score"] = 35 if item.get("status") == "expiring_soon" else 25
+            item["priority_bucket"] = "medium" if item.get("status") == "expiring_soon" else "low"
+            item["sla_breached"] = False
+            all_items.append(item)
+    
+    # 8. Voice Orders (from Mira voice ordering)
+    if source in [None, "all", "voice_order"]:
+        voice_query = {
+            "type": "voice_order",
+            "status": {"$nin": ["completed", "cancelled"]}
+        }
+        
+        cursor = db.voice_orders.find(voice_query, {"_id": 0}).limit(50)
+        async for item in cursor:
+            item["ticket_id"] = f"VOICE-{item.get('id', item.get('order_id', 'N/A'))}"
+            item["source_type"] = "voice_order"
+            item["source_label"] = "Voice Order"
+            item["source_icon"] = "🎤"
+            item["original_request"] = f"Voice Order: {item.get('transcript', item.get('items_summary', 'Voice command'))}"
+            item["action_type"] = "voice_order_processing"
+            item["pillar"] = "shop"
+            
+            item["priority_score"] = calculate_priority_score(item)
+            item["priority_bucket"] = get_priority_bucket(item["priority_score"])
+            item["sla_breached"] = check_sla_breach(item)
+            all_items.append(item)
+    
+    # 9. Autoship Subscriptions (renewals, failures, updates)
+    if source in [None, "all", "autoship"]:
+        autoship_query = {
+            "$or": [
+                {"status": "renewal_due"},
+                {"status": "payment_failed"},
+                {"needs_attention": True}
+            ]
+        }
+        
+        cursor = db.autoship.find(autoship_query, {"_id": 0}).limit(50)
+        async for item in cursor:
+            item["ticket_id"] = f"AUTO-{item.get('id', item.get('subscription_id', 'N/A'))}"
+            item["source_type"] = "autoship"
+            item["source_label"] = "Autoship"
+            item["source_icon"] = "🔄"
+            item["original_request"] = f"Autoship: {item.get('product_name', 'Subscription')} - {item.get('status', 'pending')}"
+            item["action_type"] = "autoship_management"
+            item["pillar"] = "shop"
+            
+            item["priority_score"] = 55 if item.get("status") == "payment_failed" else 30
+            item["priority_bucket"] = "high" if item.get("status") == "payment_failed" else "medium"
+            item["sla_breached"] = item.get("status") == "payment_failed"
+            all_items.append(item)
+    
+    # 10. Stay Bookings (boarding, daycare)
+    if source in [None, "all", "stay"]:
+        stay_query = {"status": {"$in": ["pending", "confirmed", "check_in_today", "checked_in"]}}
+        
+        cursor = db.stay_bookings.find(stay_query, {"_id": 0}).limit(50)
+        async for item in cursor:
+            item["ticket_id"] = f"STAY-{item.get('id', item.get('booking_id', 'N/A'))}"
+            item["source_type"] = "stay_booking"
+            item["source_label"] = "Stay Booking"
+            item["source_icon"] = "🏨"
+            item["original_request"] = f"Stay: {item.get('facility_name', 'Boarding')} - {item.get('status', 'pending')}"
+            item["action_type"] = "stay_booking"
+            item["pillar"] = "stay"
+            
+            item["priority_score"] = 45 if item.get("status") == "check_in_today" else 30
+            item["priority_bucket"] = "high" if item.get("status") == "check_in_today" else "medium"
+            item["sla_breached"] = check_sla_breach(item)
+            all_items.append(item)
+    
+    # 11. Dine Reservations
+    if source in [None, "all", "dine"]:
+        dine_query = {"status": {"$in": ["pending", "confirmed", "today"]}}
+        
+        cursor = db.dine_reservations.find(dine_query, {"_id": 0}).limit(50)
+        async for item in cursor:
+            item["ticket_id"] = f"DINE-{item.get('id', item.get('reservation_id', 'N/A'))}"
+            item["source_type"] = "dine_reservation"
+            item["source_label"] = "Dine Reservation"
+            item["source_icon"] = "🍽️"
+            item["original_request"] = f"Dine: {item.get('restaurant_name', 'Restaurant')} - {item.get('date', 'Date TBD')}"
+            item["action_type"] = "dine_reservation"
+            item["pillar"] = "dine"
+            
+            item["priority_score"] = 45 if item.get("status") == "today" else 30
+            item["priority_bucket"] = "high" if item.get("status") == "today" else "medium"
+            item["sla_breached"] = check_sla_breach(item)
+            all_items.append(item)
+    
+    # 12. Travel Requests
+    if source in [None, "all", "travel"]:
+        travel_query = {"status": {"$in": ["pending", "in_progress", "confirmed"]}}
+        
+        cursor = db.travel_requests.find(travel_query, {"_id": 0}).limit(50)
+        async for item in cursor:
+            item["ticket_id"] = f"TRAVEL-{item.get('id', item.get('request_id', 'N/A'))}"
+            item["source_type"] = "travel_request"
+            item["source_label"] = "Travel Request"
+            item["source_icon"] = "✈️"
+            item["original_request"] = f"Travel: {item.get('destination', 'Destination TBD')} - {item.get('dates', 'Dates TBD')}"
+            item["action_type"] = "travel_request"
+            item["pillar"] = "travel"
+            
+            item["priority_score"] = calculate_priority_score(item)
+            item["priority_bucket"] = get_priority_bucket(item["priority_score"])
+            item["sla_breached"] = check_sla_breach(item)
+            all_items.append(item)
+    
+    # 13. Care Appointments (vet, grooming)
+    if source in [None, "all", "care"]:
+        care_query = {"status": {"$in": ["pending", "scheduled", "confirmed"]}}
+        
+        cursor = db.care_appointments.find(care_query, {"_id": 0}).limit(50)
+        async for item in cursor:
+            item["ticket_id"] = f"CARE-{item.get('id', item.get('appointment_id', 'N/A'))}"
+            item["source_type"] = "care_appointment"
+            item["source_label"] = "Care Appointment"
+            item["source_icon"] = "🏥"
+            item["original_request"] = f"Care: {item.get('service_type', 'Appointment')} - {item.get('date', 'Date TBD')}"
+            item["action_type"] = "care_appointment"
+            item["pillar"] = "care"
+            
+            item["priority_score"] = calculate_priority_score(item)
+            item["priority_bucket"] = get_priority_bucket(item["priority_score"])
+            item["sla_breached"] = check_sla_breach(item)
+            all_items.append(item)
+    
+    # Apply pillar filter (if provided)
+    pillar = None  # TODO: Add pillar parameter to function signature
+    if pillar:
+        all_items = [item for item in all_items if item.get("pillar") == pillar]
+    
     # Apply priority filter
     if priority:
         all_items = [item for item in all_items if item.get("priority_bucket") == priority]
