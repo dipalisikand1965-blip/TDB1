@@ -243,6 +243,8 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
   // Load queue
   const loadQueue = useCallback(async () => {
     setLoading(true);
+    debugLog('Loading queue with filters:', filters);
+    debugLog('API_URL:', API_URL);
     try {
       const params = new URLSearchParams();
       if (filters.source && filters.source !== 'all') params.append('source', filters.source);
@@ -251,15 +253,30 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
       if (filters.pillar) params.append('pillar', filters.pillar);
       if (filters.search) params.append('search', filters.search);
       
-      const response = await fetch(`${API_URL}/api/concierge/queue?${params}`);
+      const url = `${API_URL}/api/concierge/queue?${params}`;
+      debugLog('Fetching from:', url);
+      
+      const response = await fetch(url);
+      debugLog('Response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        debugLog('Queue data received:', {
+          itemCount: data.items?.length || 0,
+          attention: data.attention,
+          buckets: data.buckets
+        });
         setQueue(data.items || []);
         setAttention(data.attention || {});
         setBuckets(data.buckets || {});
+      } else {
+        debugLog('Response not OK:', response.status, response.statusText);
+        const errorText = await response.text();
+        debugLog('Error response:', errorText);
       }
     } catch (error) {
       console.error('Failed to load queue:', error);
+      debugLog('Fetch error:', error.message);
     } finally {
       setLoading(false);
     }
