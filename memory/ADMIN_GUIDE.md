@@ -32,6 +32,7 @@
 
 2. [PILLAR TOOLS](#pillar-tools)
    - [Seed All](#21-seed-all)
+   - [Seed Production Data](#21b-seed-production-data) 🆕
    - [Celebrate](#22-celebrate)
    - [Collections](#23-collections)
    - [Custom Cakes](#24-custom-cakes)
