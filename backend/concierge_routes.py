@@ -204,17 +204,20 @@ class AddNoteRequest(BaseModel):
 
 @router.get("/queue")
 async def get_command_center_queue(
-    source: Optional[str] = None,  # mira, order, inbox, health, all
+    source: Optional[str] = None,  # mira, order, inbox, health, membership, voice_order, autoship, stay, dine, travel, care, all
     priority: Optional[str] = None,  # urgent, high, medium, low
     status: Optional[str] = None,  # pending, claimed, in_progress
     assigned_to: Optional[str] = None,
+    pillar: Optional[str] = None,  # celebrate, dine, stay, travel, care, shop, club, enjoy, fit, advisory, paperwork, emergency
     search: Optional[str] = None,
     limit: int = Query(100, le=500),
     offset: int = 0
 ):
     """
-    Get unified command center queue from all sources.
-    Merges: service_desk_tickets, tickets, orders, unified_inbox, health alerts
+    Get unified command center queue from ALL sources.
+    Merges: service_desk_tickets, tickets, orders, unified_inbox, health alerts,
+            memberships, voice_orders, autoship, stay_bookings, dine_reservations,
+            travel_requests, care_appointments
     """
     db = get_db()
     all_items = []
