@@ -1092,6 +1092,48 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
               </Button>
             </div>
           </div>
+        {/* NPS Testimonials Section - Happy Customers */}
+        {testimonials.length > 0 && (
+          <div className="border-t bg-gradient-to-br from-green-50 to-emerald-50 p-6" data-testid="nps-testimonials">
+            <h3 className="font-bold text-gray-900 flex items-center gap-2 mb-4">
+              <Award className="w-5 h-5 text-green-600" />
+              What Our Members Say
+              <Badge className="bg-green-100 text-green-700 text-xs ml-2">NPS 9-10</Badge>
+            </h3>
+            <div className="space-y-3">
+              {testimonials.slice(0, 3).map((testimonial) => (
+                <div key={testimonial.id} className="bg-white p-4 rounded-xl border border-green-200 shadow-sm">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                        <span className="text-lg">😊</span>
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-gray-900">{testimonial.member_name}</span>
+                        {testimonial.pet_name && (
+                          <span className="text-xs text-gray-500">with {testimonial.pet_name}</span>
+                        )}
+                        <div className="ml-auto flex items-center gap-1">
+                          <span className="text-sm font-bold text-green-600">{testimonial.score}/10</span>
+                          <Star className="w-4 h-4 text-green-500 fill-green-500" />
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-600 italic">"{testimonial.feedback}"</p>
+                      {testimonial.responded_at && (
+                        <p className="text-xs text-gray-400 mt-2">
+                          {new Date(testimonial.responded_at).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
         {/* Reviews Section */}
         <div className="border-t bg-gray-50 p-6" data-testid="reviews-section">
             <div className="flex justify-between items-center mb-4">
