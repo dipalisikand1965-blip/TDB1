@@ -73,6 +73,7 @@ import VoiceOrder from "./pages/VoiceOrder";
 import AgentPortal from "./pages/AgentPortal";
 import ServiceDeskPage from "./pages/ServiceDeskPage";
 import MyTickets from "./pages/MyTickets";
+import AdminDocs from "./pages/AdminDocs";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
