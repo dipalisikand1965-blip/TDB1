@@ -1182,6 +1182,35 @@ async def get_nps_stats(days: int = 30):
     }
 
 
+@router.get("/nps/testimonials")
+async def get_nps_testimonials(limit: int = 10):
+    """Get approved NPS testimonials for display on product pages."""
+    db = get_db()
+    
+    # Get completed surveys with high scores (9-10 = promoters) and allow_publish = true
+    testimonials = await db.nps_surveys.find({
+        "status": "completed",
+        "score": {"$gte": 9},  # Only promoters
+        "allow_publish": True,  # Only those who opted in
+        "feedback": {"$exists": True, "$ne": None, "$ne": ""}  # Must have feedback
+    }, {"_id": 0}).sort("responded_at", -1).limit(limit).to_list(limit)
+    
+    # Format testimonials for display
+    formatted = []
+    for t in testimonials:
+        formatted.append({
+            "id": t.get("id") or t.get("ticket_id"),
+            "score": t.get("score"),
+            "feedback": t.get("feedback"),
+            "member_name": t.get("member_name", "Happy Customer"),
+            "pet_name": t.get("pet_name"),
+            "responded_at": t.get("responded_at"),
+            "pillar": t.get("pillar")
+        })
+    
+    return {"testimonials": formatted, "count": len(formatted)}
+
+
 # ============== TICKET MERGE ==============
 
 class MergeTicketsRequest(BaseModel):
