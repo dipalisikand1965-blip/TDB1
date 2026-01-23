@@ -751,6 +751,16 @@ async def lifespan(app: FastAPI):
     set_shopify_db(db)
     logger.info("Shopify sync module initialized")
     
+    # Initialize orders routes database connection
+    set_orders_db(db)
+    set_orders_deps(get_current_user, create_admin_notification, notify_order_status_change, on_order_placed)
+    logger.info("Orders routes initialized")
+    
+    # Initialize autoship routes database connection
+    set_autoship_db(db)
+    set_autoship_deps(get_current_user)
+    logger.info("Autoship routes initialized")
+    
     # Initialize search service in background (non-blocking)
     # This prevents slow Meilisearch connection from blocking app startup
     async def init_search_background():
