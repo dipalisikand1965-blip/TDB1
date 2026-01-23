@@ -1288,6 +1288,7 @@ const PetProfile = ({ isEmbed = false }) => {
     switch (step) {
       case 1: return formData.name.trim() !== '';
       case 1.5: return true; // Lifestyle step - all optional
+      case 1.75: return true; // Health step - all optional
       case 2: return formData.soul.persona !== '';
       case 3: return true;
       case 4: return true;
