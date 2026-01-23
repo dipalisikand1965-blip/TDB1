@@ -5304,6 +5304,14 @@ Special Instructions: {order.get('specialInstructions', 'None')}"""
     except Exception as e:
         logger.error(f"Pet Soul auto-learn failed: {e}")
     
+    # Auto-create ticket for Command Center
+    try:
+        ticket_result = await on_order_placed(order)
+        if ticket_result.get("success"):
+            logger.info(f"Auto-created ticket {ticket_result.get('ticket_id')} for order {order.get('orderId')}")
+    except Exception as e:
+        logger.error(f"Auto-ticket creation failed for order: {e}")
+    
     return {"message": "Order created", "orderId": order.get("orderId"), "id": order["id"], "ticket_id": order.get("orderId") if has_cake_items else None}
 
 
