@@ -926,6 +926,13 @@ from faq_routes import (
     set_database as set_faq_db
 )
 
+# Import content routes (refactored - Testimonials & Blog)
+from content_routes import (
+    content_router,
+    content_admin_router,
+    set_database as set_content_db
+)
+
 # Import ticket routes (Service Desk)
 from ticket_routes import router as ticket_router
 from ticket_messaging import router as ticket_messaging_router
