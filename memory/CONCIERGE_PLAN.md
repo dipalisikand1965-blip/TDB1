@@ -377,15 +377,19 @@ Pre-built responses for common resolutions:
 
 ### Short Term (Next 2 Weeks)
 5. [ ] Ticket claim/resolve workflow
-6. [ ] Member notification on resolution
-7. [ ] Unified queue with all sources
-8. [ ] Priority calculation engine
+6. [ ] **🧠 MIRA AS CONCIERGE ASSISTANT** ← CRITICAL
+   - Auto-research on ticket open
+   - Order history + sizes
+   - Auto-draft response
+7. [ ] Member notification on resolution
+8. [ ] Unified queue with all sources
 
 ### Medium Term (Next Month)
-9. [ ] Auto-assignment
-10. [ ] SLA tracking
-11. [ ] Resolution templates
-12. [ ] WhatsApp integration
+9. [ ] Priority calculation engine
+10. [ ] Auto-assignment
+11. [ ] SLA tracking
+12. [ ] Resolution templates
+13. [ ] WhatsApp integration
 
 ---
 
