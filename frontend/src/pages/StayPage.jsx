@@ -9,6 +9,7 @@ import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import MiraContextPanel from '../components/MiraContextPanel';
+import ProductCard from '../components/ProductCard';
 import {
   Search, Filter, MapPin, Star, Heart, Dog, Calendar, Phone, Globe, 
   ChevronRight, Sparkles, Shield, TreePine, Sun, Waves, Mountain,
