@@ -214,13 +214,19 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
   // Load pillar stats
   const loadPillarStats = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/api/concierge/pillar-stats`);
+      const url = `${API_URL}/api/concierge/pillar-stats`;
+      debugLog('Fetching pillar stats from:', url);
+      const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
+        debugLog('Pillar stats received:', data);
         setPillarStats(data.pillars || {});
+      } else {
+        debugLog('Pillar stats response not OK:', response.status);
       }
     } catch (error) {
       console.error('Failed to load pillar stats:', error);
+      debugLog('Pillar stats fetch error:', error.message);
     }
   }, []);
 
