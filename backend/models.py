@@ -336,6 +336,7 @@ class PetProfileUpdate(BaseModel):
     soul: Optional[PetSoul] = None
     celebrations: Optional[List[PetCelebration]] = None
     preferences: Optional[PetPreferences] = None
+    health: Optional[PetHealthInfo] = None
     owner_email: Optional[str] = None
     owner_phone: Optional[str] = None
     owner_name: Optional[str] = None
