@@ -1236,6 +1236,89 @@ async def get_nps_testimonials(limit: int = 10):
     return {"testimonials": formatted, "count": len(formatted)}
 
 
+@router.get("/nps/responses")
+async def get_nps_responses(limit: int = 100, skip: int = 0):
+    """Get all NPS responses with full details for admin view."""
+    db = get_db()
+    
+    # Get all completed surveys with full details
+    surveys = await db.nps_surveys.find(
+        {"status": "completed"},
+        {"_id": 0}
+    ).sort("responded_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    total = await db.nps_surveys.count_documents({"status": "completed"})
+    
+    responses = []
+    for s in surveys:
+        responses.append({
+            "id": s.get("id") or s.get("ticket_id"),
+            "ticket_id": s.get("ticket_id"),
+            "score": s.get("score"),
+            "feedback": s.get("feedback"),
+            "customer_name": s.get("member_name", "Anonymous"),
+            "email": s.get("member_email"),
+            "pet_name": s.get("pet_name"),
+            "product_name": s.get("product_name"),
+            "product_id": s.get("product_id"),
+            "pillar": s.get("pillar"),
+            "allow_publish": s.get("allow_publish", False),
+            "created_at": s.get("responded_at") or s.get("created_at")
+        })
+    
+    return {"responses": responses, "total": total}
+
+
+@router.get("/nps/by-product")
+async def get_nps_by_product():
+    """Get NPS scores grouped by product for admin dashboard."""
+    db = get_db()
+    
+    # Aggregate NPS by product
+    pipeline = [
+        {"$match": {"status": "completed", "product_id": {"$exists": True, "$ne": None}}},
+        {"$group": {
+            "_id": "$product_id",
+            "product_name": {"$first": "$product_name"},
+            "avg_score": {"$avg": "$score"},
+            "responses_count": {"$sum": 1},
+            "promoters": {"$sum": {"$cond": [{"$gte": ["$score", 9]}, 1, 0]}},
+            "passives": {"$sum": {"$cond": [{"$and": [{"$gte": ["$score", 7]}, {"$lt": ["$score", 9]}]}, 1, 0]}},
+            "detractors": {"$sum": {"$cond": [{"$lt": ["$score", 7]}, 1, 0]}},
+            "latest_feedback": {"$last": "$feedback"}
+        }},
+        {"$sort": {"responses_count": -1}}
+    ]
+    
+    products = await db.nps_surveys.aggregate(pipeline).to_list(100)
+    
+    # Enrich with product images if available
+    enriched = []
+    for p in products:
+        product_id = p.get("_id")
+        product_info = await db.products.find_one({"id": product_id}, {"_id": 0, "images": 1, "name": 1})
+        
+        nps_score = None
+        if p.get("responses_count", 0) > 0:
+            total = p["responses_count"]
+            nps_score = round(((p["promoters"] - p["detractors"]) / total) * 100, 1)
+        
+        enriched.append({
+            "product_id": product_id,
+            "name": p.get("product_name") or (product_info.get("name") if product_info else "Unknown"),
+            "image_url": (product_info.get("images", [None])[0] if product_info else None),
+            "avg_score": round(p.get("avg_score", 0), 1),
+            "nps_score": nps_score,
+            "responses_count": p.get("responses_count", 0),
+            "promoters": p.get("promoters", 0),
+            "passives": p.get("passives", 0),
+            "detractors": p.get("detractors", 0),
+            "latest_feedback": p.get("latest_feedback")
+        })
+    
+    return {"products": enriched}
+
+
 # ============== TICKET MERGE ==============
 
 class MergeTicketsRequest(BaseModel):
