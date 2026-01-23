@@ -429,7 +429,7 @@ const MiraAI = () => {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-[60] bg-gradient-to-r from-purple-600 to-pink-600 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-2 group"
+        className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-[200] bg-gradient-to-r from-purple-600 to-pink-600 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-2 group"
         data-testid="mira-fab-button"
       >
         <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
