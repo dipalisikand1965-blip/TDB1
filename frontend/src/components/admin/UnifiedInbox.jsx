@@ -69,10 +69,16 @@ const PILLARS = {
   stay: { icon: Building, color: 'bg-blue-500', label: '🏨 Stay', description: 'Hotels, Resorts' },
   travel: { icon: Car, color: 'bg-cyan-500', label: '✈️ Travel', description: 'Transport, Relocation' },
   care: { icon: Heart, color: 'bg-red-500', label: '💊 Care', description: 'Vets, Groomers' },
-  fit: { icon: Dumbbell, color: 'bg-green-500', label: '🏃 Fit', description: 'Activities, Fitness' },
-  work: { icon: Briefcase, color: 'bg-slate-500', label: '💼 Work', description: 'Pet at Work' },
+  shop: { icon: ShoppingBag, color: 'bg-orange-500', label: '🛍️ Shop', description: 'Products, Supplies' },
+  club: { icon: Crown, color: 'bg-yellow-500', label: '👑 Club', description: 'Membership' },
   enjoy: { icon: PartyPopper, color: 'bg-violet-500', label: '🎉 Enjoy', description: 'Events, Fun' },
-  advisory: { icon: FileText, color: 'bg-indigo-500', label: '📋 Advisory', description: 'Guidance' },
+  fit: { icon: Dumbbell, color: 'bg-green-500', label: '🏃 Fit', description: 'Activities, Fitness' },
+  learn: { icon: BookOpen, color: 'bg-teal-500', label: '📚 Learn', description: 'Training, Courses' },
+  adopt: { icon: PawPrint, color: 'bg-purple-500', label: '🐾 Adopt', description: 'Pet Adoption' },
+  insure: { icon: Shield, color: 'bg-emerald-500', label: '🛡️ Insure', description: 'Pet Insurance' },
+  farewell: { icon: Heart, color: 'bg-rose-400', label: '🌈 Farewell', description: 'End-of-Life Services' },
+  community: { icon: Users, color: 'bg-indigo-500', label: '🤝 Community', description: 'Pet Community' },
+  advisory: { icon: FileText, color: 'bg-slate-500', label: '📋 Advisory', description: 'Guidance' },
   general: { icon: Inbox, color: 'bg-gray-500', label: '📥 General', description: 'Unassigned' }
 };
 
