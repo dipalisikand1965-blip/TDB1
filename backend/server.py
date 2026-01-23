@@ -900,8 +900,6 @@ from user_routes import (
     set_database as set_user_db,
     DOG_PERSONAS as DOG_PERSONAS_LIST,
     CELEBRATION_OCCASIONS as CELEBRATION_OCCASIONS_LIST,
-    PetProfileCreate,
-    PetProfileUpdate,
     PetCelebration,
     PetSoulProfile,
     PetPreferences
