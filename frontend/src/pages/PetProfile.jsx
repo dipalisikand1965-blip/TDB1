@@ -9,7 +9,8 @@ import { Badge } from '../components/ui/badge';
 import { 
   PawPrint, Heart, Calendar, Camera, Sparkles, Gift, 
   ChevronRight, ChevronLeft, Check, Plus, X, Crown,
-  Moon, Mountain, Sofa, Users, Utensils, Zap, Smile
+  Moon, Mountain, Sofa, Users, Utensils, Zap, Smile,
+  Stethoscope, Syringe, Pill, AlertCircle, Phone, FileText
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
