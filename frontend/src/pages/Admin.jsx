@@ -1664,6 +1664,7 @@ const Admin = () => {
             { id: 'care', label: '💝 Care', icon: Heart },
             { id: 'enjoy', label: '🎉 Enjoy', icon: PartyPopper },
             { id: 'fit', label: '💪 Fit', icon: Dumbbell },
+            { id: 'learn', label: '🎓 Learn', icon: GraduationCap },
             { id: 'advisory', label: '🧠 Advisory', icon: Brain },
             { id: 'paperwork', label: '📄 Paperwork', icon: FileText },
             { id: 'emergency', label: '🚨 Emergency', icon: Bell },
