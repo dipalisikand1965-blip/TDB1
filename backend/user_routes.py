@@ -136,6 +136,119 @@ class PetProfileUpdate(BaseModel):
     celebrations: Optional[List[PetCelebration]] = None
 
 
+# ==================== COMMUNICATION PREFERENCES ====================
+
+class CommunicationPreferences(BaseModel):
+    """Member's preferred communication channels"""
+    email: bool = True  # Email notifications
+    whatsapp: bool = False  # WhatsApp messages
+    sms: bool = False  # SMS notifications
+    # Specific notification types
+    order_updates: bool = True
+    promotional: bool = True
+    celebration_reminders: bool = True
+    health_reminders: bool = True
+    community_updates: bool = False
+
+
+class MemberProfileUpdate(BaseModel):
+    """Update member profile including communication preferences"""
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    city: Optional[str] = None
+    address: Optional[str] = None
+    communication_preferences: Optional[CommunicationPreferences] = None
+
+
+# ==================== MEMBER PROFILE ROUTES ====================
+
+@user_router.get("/member/profile")
+async def get_member_profile(user_email: str):
+    """Get member profile including communication preferences"""
+    user = await db.users.find_one({"email": user_email}, {"_id": 0, "password": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Member not found")
+    
+    # Ensure communication_preferences exists with defaults
+    if "communication_preferences" not in user:
+        user["communication_preferences"] = {
+            "email": True,
+            "whatsapp": False,
+            "sms": False,
+            "order_updates": True,
+            "promotional": True,
+            "celebration_reminders": True,
+            "health_reminders": True,
+            "community_updates": False
+        }
+    
+    return user
+
+
+@user_router.put("/member/profile")
+async def update_member_profile(user_email: str, update: MemberProfileUpdate):
+    """Update member profile including communication preferences"""
+    update_data = {k: v for k, v in update.model_dump().items() if v is not None}
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No update data provided")
+    
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.users.update_one(
+        {"email": user_email},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Member not found")
+    
+    return {"success": True, "message": "Profile updated successfully"}
+
+
+@user_router.put("/member/communication-preferences")
+async def update_communication_preferences(user_email: str, preferences: CommunicationPreferences):
+    """Update member's communication preferences"""
+    result = await db.users.update_one(
+        {"email": user_email},
+        {
+            "$set": {
+                "communication_preferences": preferences.model_dump(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Member not found")
+    
+    return {"success": True, "message": "Communication preferences updated"}
+
+
+@user_router.get("/member/communication-preferences")
+async def get_communication_preferences(user_email: str):
+    """Get member's communication preferences"""
+    user = await db.users.find_one(
+        {"email": user_email}, 
+        {"communication_preferences": 1, "_id": 0}
+    )
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="Member not found")
+    
+    # Return defaults if not set
+    return user.get("communication_preferences", {
+        "email": True,
+        "whatsapp": False,
+        "sms": False,
+        "order_updates": True,
+        "promotional": True,
+        "celebration_reminders": True,
+        "health_reminders": True,
+        "community_updates": False
+    })
+
+
 # ==================== PETS ROUTES ====================
 
 @user_router.get("/pets/personas")
