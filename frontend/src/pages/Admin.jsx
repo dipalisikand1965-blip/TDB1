@@ -105,7 +105,8 @@ import {
   Headphones,
   ExternalLink,
   Crown,
-  Database
+  Database,
+  TrendingUp
 } from 'lucide-react';
 
 const Admin = () => {
