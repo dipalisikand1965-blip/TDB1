@@ -679,6 +679,21 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
               <Badge className={`text-xs ${priorityConfig.bg} ${priorityConfig.text} border-0`}>
                 {item.priority_bucket}
               </Badge>
+              {/* Sentiment Badge */}
+              {item.sentiment && (
+                <Badge 
+                  variant="outline" 
+                  className={`text-xs ${
+                    item.sentiment.color === 'red' ? 'bg-red-100 text-red-700 border-red-300' :
+                    item.sentiment.color === 'orange' ? 'bg-orange-100 text-orange-700 border-orange-300' :
+                    item.sentiment.color === 'green' ? 'bg-green-100 text-green-700 border-green-300' :
+                    'bg-gray-100 text-gray-700 border-gray-300'
+                  }`}
+                  title={item.sentiment.summary || ''}
+                >
+                  {item.sentiment.emoji} {item.sentiment.sentiment}
+                </Badge>
+              )}
               {item.pillar && (
                 <Badge variant="outline" className="text-xs">
                   {PILLARS.find(p => p.id === item.pillar)?.icon || '📋'} {item.pillar}
