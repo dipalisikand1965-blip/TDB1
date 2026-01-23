@@ -15,6 +15,16 @@ from bson import ObjectId
 import logging
 import os
 
+# Import ticket intelligence features
+from ticket_intelligence import (
+    analyze_sentiment,
+    send_ticket_acknowledgment,
+    enrich_ticket_with_intelligence,
+    send_nps_survey,
+    record_nps_response,
+    set_intelligence_db
+)
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/concierge", tags=["concierge"])
@@ -25,6 +35,8 @@ _db = None
 def set_concierge_db(db):
     global _db
     _db = db
+    # Also set db for intelligence module
+    set_intelligence_db(db)
 
 def get_db():
     if _db is None:
