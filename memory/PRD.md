@@ -222,6 +222,63 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
   - Health reminders priority over promotional
 - **Manual Trigger**: "Run Scheduler Now" button
 
+### ✅ Concierge Command Center (NEW - Jan 23, 2026)
+**"Everything opens into it, nothing pulls you away from it."** — The concierge's unified workstation.
+
+**Features:**
+- **Unified Queue**: Aggregates actionable items from ALL sources:
+  - Mira AI Action Requests (service_desk_tickets)
+  - Service Desk Tickets
+  - Orders (pending fulfillment)
+  - Unified Inbox (unread messages)
+  - Health Alerts (overdue vaccines)
+  - Upcoming Birthdays (next 3 days)
+  
+- **Priority System**:
+  - Real-time priority scoring based on type, age, member tier, escalation status
+  - Four buckets: Urgent (🔴), High (🟠), Medium (🟡), Low (🟢)
+  - SLA breach detection and warnings
+  
+- **Attention Strip** (Top banner):
+  - SLA breaching count (clickable filter)
+  - High priority unclaimed count
+  - Health alerts overdue
+  - Upcoming birthdays
+  
+- **Smart Filters**:
+  - Source filter (Mira, Orders, Inbox, Health, Birthdays, Service Desk)
+  - Priority bucket filter
+  - Search by ticket ID, member name, email, or request content
+  - "Clear" button to reset all filters
+  
+- **Slide-in Detail Panel** (4 vertical zones per spec):
+  1. **Member & Pet Snapshot**: Name, tier, contact info, all pets with allergies highlighted
+  2. **The Request**: Original request text with timestamp
+  3. **Mira's Intelligence**: Past orders, memories, Pet Soul insights, AI draft generation
+  4. **Actions Panel**: Claim/unclaim, escalate, resolve with send options
+  
+- **Actions Available**:
+  - **Claim**: Agent takes ownership
+  - **Unclaim**: Release back to queue
+  - **Escalate**: Flag as high priority with reason
+  - **Add Note**: Internal or member-facing notes
+  - **Resolve**: Close with resolution notes, send via Mira thread or Email
+  - **Generate AI Draft**: Uses member history to auto-draft response
+  
+- **State Preservation**: 
+  - Scroll position saved when viewing item
+  - Filters persist when navigating back
+
+**API Endpoints:**
+- `GET /api/concierge/queue` - Unified priority queue with filters
+- `GET /api/concierge/item/{ticket_id}` - Full detail with Mira intelligence
+- `POST /api/concierge/item/{ticket_id}/claim` - Claim item
+- `POST /api/concierge/item/{ticket_id}/unclaim` - Release item
+- `POST /api/concierge/item/{ticket_id}/resolve` - Resolve and notify
+- `POST /api/concierge/item/{ticket_id}/escalate` - Escalate priority
+- `POST /api/concierge/item/{ticket_id}/add-note` - Add concierge notes
+- `POST /api/concierge/item/{ticket_id}/generate-draft` - AI draft generation
+
 ### ✅ Pet Soul Intelligence
 - 8 Pillars: Identity, Family, Rhythm, Home, Travel, Taste, Training, Long Horizon
 - Progressive enrichment from:
