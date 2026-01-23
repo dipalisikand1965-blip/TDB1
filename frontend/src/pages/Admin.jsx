@@ -25,6 +25,7 @@ import TravelManager from '../components/admin/TravelManager';
 import CareManager from '../components/admin/CareManager';
 import EnjoyManager from '../components/admin/EnjoyManager';
 import FitManager from '../components/admin/FitManager';
+import LearnManager from '../components/admin/LearnManager';
 import AdvisoryManager from '../components/admin/AdvisoryManager';
 import PaperworkManager from '../components/admin/PaperworkManager';
 import EmergencyManager from '../components/admin/EmergencyManager';
