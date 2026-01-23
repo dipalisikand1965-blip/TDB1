@@ -1001,6 +1001,180 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
                 </div>
               </Card>
             </TabsContent>
+
+            {/* Health Vault Tab */}
+            <TabsContent value="health" className="space-y-4 mt-0">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-red-500" />
+                  Health Vault
+                </h3>
+                <Button variant="outline" size="sm">
+                  <Download className="w-4 h-4 mr-1" /> Export PDF
+                </Button>
+              </div>
+              
+              {pets.map((pet, idx) => (
+                <Card key={idx} className="p-4">
+                  <div className="flex items-center gap-3 mb-4 pb-3 border-b">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-lg font-bold">
+                      {pet.name?.charAt(0)}
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">{pet.name}</h4>
+                      <p className="text-sm text-gray-500">{pet.breed} • {pet.birthday ? `Born ${new Date(pet.birthday).toLocaleDateString()}` : ''}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Weight Chart Placeholder */}
+                  <div className="mb-4">
+                    <h5 className="text-sm font-medium text-gray-600 mb-2 flex items-center gap-1">
+                      <TrendingUp className="w-4 h-4" /> Weight History
+                    </h5>
+                    <div className="h-32 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400">
+                      {pet.current_weight ? `Current: ${pet.current_weight} kg` : 'No weight data recorded'}
+                    </div>
+                  </div>
+                  
+                  {/* Vaccines */}
+                  <div className="mb-4">
+                    <h5 className="text-sm font-medium text-gray-600 mb-2 flex items-center gap-1">
+                      <Syringe className="w-4 h-4" /> Vaccinations
+                    </h5>
+                    {pet.vaccines?.length > 0 ? (
+                      <div className="space-y-2">
+                        {pet.vaccines.slice(0, 5).map((v, vIdx) => (
+                          <div key={vIdx} className="flex justify-between items-center p-2 bg-green-50 rounded">
+                            <span className="text-sm">{v.name}</span>
+                            <span className="text-xs text-gray-500">{v.date ? new Date(v.date).toLocaleDateString() : 'N/A'}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-400">No vaccines recorded</p>
+                    )}
+                  </div>
+                  
+                  {/* Health Records */}
+                  <div>
+                    <h5 className="text-sm font-medium text-gray-600 mb-2 flex items-center gap-1">
+                      <FileText className="w-4 h-4" /> Recent Records
+                    </h5>
+                    {pet.health_records?.length > 0 ? (
+                      <div className="space-y-2">
+                        {pet.health_records.slice(0, 3).map((r, rIdx) => (
+                          <div key={rIdx} className="p-2 bg-blue-50 rounded">
+                            <span className="text-sm font-medium">{r.type}</span>
+                            <span className="text-xs text-gray-500 ml-2">{r.date ? new Date(r.date).toLocaleDateString() : ''}</span>
+                            {r.notes && <p className="text-xs text-gray-600 mt-1">{r.notes}</p>}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-400">No health records</p>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </TabsContent>
+
+            {/* Orders Tab */}
+            <TabsContent value="orders" className="space-y-4 mt-0">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <ShoppingCart className="w-5 h-5 text-green-500" />
+                  Order History
+                </h3>
+                <div className="flex items-center gap-4">
+                  <Badge className="bg-green-100 text-green-700">
+                    Total Spent: ₹{orders.reduce((sum, o) => sum + (o.total || 0), 0).toLocaleString()}
+                  </Badge>
+                  <Button variant="outline" size="sm">
+                    <Download className="w-4 h-4 mr-1" /> Export
+                  </Button>
+                </div>
+              </div>
+              
+              {orders.length > 0 ? (
+                <div className="space-y-3">
+                  {orders.map((order, idx) => (
+                    <Card key={idx} className="p-4 hover:shadow-md cursor-pointer transition-shadow">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-sm">#{order.order_id || order.id}</span>
+                            <Badge className={order.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}>
+                              {order.status}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-gray-500 mt-1">
+                            {order.items?.length || 0} items • {order.created_at ? new Date(order.created_at).toLocaleDateString() : 'N/A'}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-lg">₹{order.total?.toLocaleString() || 0}</p>
+                          <Button variant="ghost" size="sm">
+                            <Eye className="w-4 h-4 mr-1" /> View
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Card className="p-8 text-center">
+                  <ShoppingCart className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                  <p className="text-gray-500">No orders yet</p>
+                </Card>
+              )}
+            </TabsContent>
+
+            {/* Paw Rewards Tab */}
+            <TabsContent value="rewards" className="space-y-4 mt-0">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Star className="w-5 h-5 text-yellow-500" />
+                  Paw Rewards
+                </h3>
+              </div>
+              
+              {/* Rewards Summary */}
+              <div className="grid grid-cols-3 gap-4">
+                <Card className="p-4 text-center bg-gradient-to-br from-purple-50 to-pink-50">
+                  <p className="text-3xl font-bold text-purple-600">{memberData.loyalty_points || 0}</p>
+                  <p className="text-sm text-gray-500">Current Balance</p>
+                </Card>
+                <Card className="p-4 text-center bg-green-50">
+                  <p className="text-2xl font-bold text-green-600">{memberData.total_points_earned || 0}</p>
+                  <p className="text-sm text-gray-500">Total Earned</p>
+                </Card>
+                <Card className="p-4 text-center bg-blue-50">
+                  <p className="text-2xl font-bold text-blue-600">{memberData.total_points_redeemed || 0}</p>
+                  <p className="text-sm text-gray-500">Total Redeemed</p>
+                </Card>
+              </div>
+              
+              {/* Value Display */}
+              <Card className="p-4 bg-yellow-50 border-yellow-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium">Rewards Value</h4>
+                    <p className="text-sm text-gray-600">10 points = ₹1 discount</p>
+                  </div>
+                  <p className="text-2xl font-bold text-yellow-600">
+                    ₹{Math.floor((memberData.loyalty_points || 0) / 10)}
+                  </p>
+                </div>
+              </Card>
+              
+              {/* Transactions */}
+              <Card className="p-4">
+                <h4 className="font-semibold mb-3">Recent Transactions</h4>
+                <div className="text-sm text-gray-400 text-center py-4">
+                  No transactions recorded
+                </div>
+              </Card>
+            </TabsContent>
           </div>
         </Tabs>
       </Card>
