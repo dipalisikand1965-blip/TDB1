@@ -9233,6 +9233,280 @@ async def seed_sample_tickets():
     }
 
 
+@api_router.post("/admin/seed-production-data")
+async def seed_production_data():
+    """
+    Comprehensive seeder for production environment.
+    Seeds: FAQs, Collections, Sample Tickets
+    Uses UPSERT - safe to run multiple times without duplicates.
+    """
+    import uuid
+    results = {"faqs": 0, "collections": 0, "tickets": 0}
+    
+    # ==================== SEED FAQs ====================
+    sample_faqs = [
+        {
+            "id": "faq-delivery-1",
+            "question": "What are the delivery areas and timelines?",
+            "answer": "We deliver freshly baked treats across Bangalore within 24-48 hours. Pan-India shipping is available for select products with 3-5 day delivery.",
+            "category": "Delivery",
+            "order": 1
+        },
+        {
+            "id": "faq-delivery-2",
+            "question": "Are your products safe for dogs?",
+            "answer": "Absolutely! All our products are made with 100% dog-safe, human-grade ingredients. We never use artificial sweeteners, chocolate, xylitol, or any ingredients harmful to pets.",
+            "category": "Products",
+            "order": 2
+        },
+        {
+            "id": "faq-order-1",
+            "question": "How do I place a custom cake order?",
+            "answer": "You can use our Custom Cake Designer or chat with Mira, our AI concierge, who will help you create the perfect cake for your furry friend. Custom cakes require 48-72 hours advance notice.",
+            "category": "Orders",
+            "order": 3
+        },
+        {
+            "id": "faq-membership-1",
+            "question": "What are the membership tiers?",
+            "answer": "We offer three tiers: Free (basic access), Gold (10% off, priority support), and Platinum (15% off, exclusive perks, concierge service). Visit our Membership page for details.",
+            "category": "Membership",
+            "order": 4
+        },
+        {
+            "id": "faq-allergy-1",
+            "question": "Can you accommodate food allergies?",
+            "answer": "Yes! We can customize products to avoid specific allergens. Please mention any allergies when ordering, or add them to your pet's profile for automatic recommendations.",
+            "category": "Products",
+            "order": 5
+        },
+        {
+            "id": "faq-payment-1",
+            "question": "What payment methods do you accept?",
+            "answer": "We accept all major credit/debit cards, UPI, net banking, and wallets through our secure Razorpay gateway.",
+            "category": "Payment",
+            "order": 6
+        },
+        {
+            "id": "faq-pet-soul-1",
+            "question": "What is Pet Soul™?",
+            "answer": "Pet Soul™ is your pet's unique digital profile that captures their personality, preferences, health data, and celebrations. It helps us personalize every experience for your furry family member.",
+            "category": "Pet Soul",
+            "order": 7
+        },
+        {
+            "id": "faq-mira-1",
+            "question": "Who is Mira® and how can she help?",
+            "answer": "Mira® is our AI-powered concierge who knows your pet personally. She can help with product recommendations, booking services, answering questions, and coordinating your pet's life across all our pillars.",
+            "category": "Mira AI",
+            "order": 8
+        }
+    ]
+    
+    for faq in sample_faqs:
+        await db.faqs.update_one(
+            {"id": faq["id"]},
+            {"$set": faq},
+            upsert=True
+        )
+        results["faqs"] += 1
+    
+    # ==================== SEED COLLECTIONS ====================
+    sample_collections = [
+        {
+            "id": "valentines-day",
+            "slug": "valentines-day",
+            "name": "Valentine's Day Collection",
+            "title": "Valentine's Day Treats",
+            "description": "Show your furry valentine some love with our special Valentine's Day collection! Heart-shaped treats, pink frosted cakes, and love-themed goodies.",
+            "banner_image": "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1200",
+            "is_active": True,
+            "display_order": 1,
+            "products": [],
+            "tags": ["valentine", "love", "hearts", "seasonal"],
+            "start_date": "2025-02-01",
+            "end_date": "2025-02-28",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "birthday-celebration",
+            "slug": "birthday-celebration",
+            "name": "Birthday Celebration",
+            "title": "Pawsome Birthday Treats",
+            "description": "Make your pet's birthday unforgettable with our celebration collection. Custom cakes, party treats, and special hampers!",
+            "banner_image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200",
+            "is_active": True,
+            "display_order": 2,
+            "products": [],
+            "tags": ["birthday", "celebration", "party", "cakes"],
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "healthy-bites",
+            "slug": "healthy-bites",
+            "name": "Healthy Bites",
+            "title": "Nutritious & Delicious",
+            "description": "Health-conscious treats for fitness-focused pets. Low-calorie, grain-free, and packed with nutrition.",
+            "banner_image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200",
+            "is_active": True,
+            "display_order": 3,
+            "products": [],
+            "tags": ["healthy", "grain-free", "low-calorie", "nutritious"],
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "diwali-special",
+            "slug": "diwali-special",
+            "name": "Diwali Special",
+            "title": "Festival of Lights Treats",
+            "description": "Celebrate Diwali with pet-safe sweets and festive hampers. Traditional flavors made safe for your furry friends!",
+            "banner_image": "https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?w=1200",
+            "is_active": True,
+            "display_order": 4,
+            "products": [],
+            "tags": ["diwali", "festive", "indian", "celebration"],
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+    
+    for collection in sample_collections:
+        await db.collections.update_one(
+            {"slug": collection["slug"]},
+            {"$set": collection},
+            upsert=True
+        )
+        results["collections"] += 1
+    
+    # ==================== SEED EDITABLE SAMPLE TICKETS ====================
+    sample_tickets = [
+        {
+            "ticket_id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
+            "title": "Custom birthday cake inquiry - Luna",
+            "original_request": "Hi! I want to order a custom birthday cake for my Golden Retriever Luna. She's turning 3 next Saturday. She loves peanut butter but is allergic to chicken. Can you help?",
+            "category": "celebrate",
+            "pillar": "celebrate",
+            "status": "open",
+            "priority": "high",
+            "customer_name": "Priya Sharma",
+            "customer_email": "priya.sharma@email.com",
+            "customer_phone": "9876543210",
+            "source": "mira",
+            "member": {
+                "name": "Priya Sharma",
+                "email": "priya.sharma@email.com",
+                "phone": "9876543210",
+                "membership_tier": "gold"
+            },
+            "pets_mentioned": ["Luna - Golden Retriever"],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "is_sample": True
+        },
+        {
+            "ticket_id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
+            "title": "Pet-friendly restaurant recommendation",
+            "original_request": "Looking for a nice pet-friendly restaurant in Indiranagar for a dinner date. We have a well-behaved Beagle. Any recommendations with outdoor seating?",
+            "category": "dine",
+            "pillar": "dine",
+            "status": "open",
+            "priority": "medium",
+            "customer_name": "Rahul Menon",
+            "customer_email": "rahul.menon@email.com",
+            "customer_phone": "9876543211",
+            "source": "website",
+            "member": {
+                "name": "Rahul Menon",
+                "email": "rahul.menon@email.com",
+                "phone": "9876543211",
+                "membership_tier": "free"
+            },
+            "pets_mentioned": ["Beagle"],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "is_sample": True
+        },
+        {
+            "ticket_id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
+            "title": "Urgent: Pet boarding for emergency travel",
+            "original_request": "I have an urgent family emergency and need to fly out tomorrow. Need reliable boarding for my 2 cats (siblings, 4 years old) for about a week. They've never been boarded before so somewhere calm would be ideal.",
+            "category": "stay",
+            "pillar": "stay",
+            "status": "open",
+            "priority": "urgent",
+            "customer_name": "Ananya Krishnan",
+            "customer_email": "ananya.k@email.com",
+            "customer_phone": "9876543212",
+            "source": "phone",
+            "member": {
+                "name": "Ananya Krishnan",
+                "email": "ananya.k@email.com",
+                "phone": "9876543212",
+                "membership_tier": "platinum"
+            },
+            "pets_mentioned": ["2 cats - siblings, 4 years old"],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "is_sample": True
+        },
+        {
+            "ticket_id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
+            "title": "Dog relocation Delhi to Bangalore",
+            "original_request": "We're relocating from Delhi to Bangalore next month. Need help arranging safe transport for our German Shepherd (5 years, 35kg). He's never flown before. What are the requirements and options?",
+            "category": "travel",
+            "pillar": "travel",
+            "status": "open",
+            "priority": "high",
+            "customer_name": "Vikram Singh",
+            "customer_email": "vikram.s@email.com",
+            "customer_phone": "9876543213",
+            "source": "mira",
+            "member": {
+                "name": "Vikram Singh",
+                "email": "vikram.s@email.com",
+                "phone": "9876543213",
+                "membership_tier": "gold"
+            },
+            "pets_mentioned": ["German Shepherd - 5 years, 35kg"],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "is_sample": True
+        },
+        {
+            "ticket_id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
+            "title": "Vaccination schedule help",
+            "original_request": "Just adopted a 3-month-old indie puppy! Can you help me understand what vaccinations she needs and recommend a good vet in Koramangala? Also want to get her microchipped.",
+            "category": "care",
+            "pillar": "care",
+            "status": "open",
+            "priority": "medium",
+            "customer_name": "Meera Nair",
+            "customer_email": "meera.nair@email.com",
+            "customer_phone": "9876543214",
+            "source": "website",
+            "member": {
+                "name": "Meera Nair",
+                "email": "meera.nair@email.com",
+                "phone": "9876543214",
+                "membership_tier": "free"
+            },
+            "pets_mentioned": ["3-month-old indie puppy"],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "is_sample": True
+        }
+    ]
+    
+    # Only insert if collection is empty (to avoid duplicates)
+    existing_sample_count = await db.service_desk_tickets.count_documents({"is_sample": True})
+    if existing_sample_count == 0:
+        result = await db.service_desk_tickets.insert_many(sample_tickets)
+        results["tickets"] = len(result.inserted_ids)
+    else:
+        results["tickets"] = f"Skipped (already have {existing_sample_count} sample tickets)"
+    
+    return {
+        "success": True,
+        "message": "Production data seeded successfully!",
+        "results": results,
+        "note": "This data is editable - feel free to modify it as needed"
+    }
+
+
 # ==================== PET PASS NUMBER MIGRATION ====================
 
 @admin_router.post("/migrate/pet-pass-numbers")
