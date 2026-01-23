@@ -9117,6 +9117,13 @@ app.include_router(cart_admin_router)  # Admin at /api/admin/abandoned-carts/*
 app.include_router(shopify_router)  # Public cron endpoint
 app.include_router(shopify_admin_router)  # Admin sync management
 
+# Orders Routes (Refactored)
+app.include_router(orders_router)  # Public orders API
+
+# Autoship Routes (Refactored)
+app.include_router(autoship_router)  # User autoship endpoints
+app.include_router(autoship_admin_router)  # Admin autoship management
+
 # Auto Ticket Creation System
 set_auto_ticket_db(db)  # Initialize auto-ticket creation with database
 
