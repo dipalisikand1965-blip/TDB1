@@ -10520,6 +10520,14 @@ app.include_router(faq_admin_router)  # Admin FAQs at /api/admin/faqs
 app.include_router(content_router)  # Public content at /api/testimonials, /api/blog-posts
 app.include_router(content_admin_router)  # Admin content at /api/admin/testimonials, /api/admin/blog-posts
 
+# Loyalty Routes (Refactored)
+app.include_router(loyalty_router)  # Public at /api/loyalty/*
+app.include_router(loyalty_admin_router)  # Admin at /api/admin/loyalty/*
+
+# Discount Routes (Refactored)
+app.include_router(discount_router)  # Public at /api/discount-codes/*
+app.include_router(discount_admin_router)  # Admin at /api/admin/discount-codes/*
+
 # Auto Ticket Creation System
 set_auto_ticket_db(db)  # Initialize auto-ticket creation with database
 
