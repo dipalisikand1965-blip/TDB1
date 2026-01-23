@@ -719,6 +719,7 @@ async def get_item_detail(ticket_id: str):
                 async for pet in cursor:
                     pets_snapshot.append({
                         "id": pet.get("id"),
+                        "pet_pass_number": pet.get("pet_pass_number"),
                         "name": pet.get("name"),
                         "breed": pet.get("breed") or pet.get("identity", {}).get("breed"),
                         "species": pet.get("species", "dog"),
