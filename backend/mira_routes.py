@@ -719,11 +719,13 @@ async def create_service_desk_ticket(
     # Pet summary for ticket
     pet_summary = []
     for pet in pets:
+        pet_identity = pet.get("identity") or {}
+        pet_prefs = pet.get("preferences") or {}
         pet_summary.append({
             "id": pet.get("id"),
             "name": pet.get("name"),
-            "breed": pet.get("breed") or pet.get("identity", {}).get("breed"),
-            "allergies": pet.get("allergies") or pet.get("preferences", {}).get("allergies", [])
+            "breed": pet.get("breed") or pet_identity.get("breed"),
+            "allergies": pet.get("allergies") or pet_prefs.get("allergies", [])
         })
     
     ticket_doc = {
