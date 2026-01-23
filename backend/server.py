@@ -761,6 +761,21 @@ async def lifespan(app: FastAPI):
     set_autoship_deps(get_current_user)
     logger.info("Autoship routes initialized")
     
+    # Initialize admin member routes database connection
+    set_admin_member_db(db)
+    set_admin_member_deps(verify_admin)
+    logger.info("Admin member routes initialized")
+    
+    # Initialize household routes database connection
+    set_household_db(db)
+    set_household_deps(generate_pet_pass_number_server)
+    logger.info("Household routes initialized")
+    
+    # Initialize review routes database connection
+    set_review_db(db)
+    set_review_deps(get_current_user, get_current_user_optional, verify_admin, create_admin_notification)
+    logger.info("Review routes initialized")
+    
     # Initialize search service in background (non-blocking)
     # This prevents slow Meilisearch connection from blocking app startup
     async def init_search_background():
