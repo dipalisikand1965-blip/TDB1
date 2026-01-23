@@ -253,9 +253,9 @@ const PaperworkPage = () => {
                 <Button 
                   size="lg" 
                   className="bg-white text-blue-900 hover:bg-blue-50"
-                  onClick={() => window.location.href = '/login?redirect=/paperwork'}
+                  onClick={() => setShowUploadModal(true)}
                 >
-                  <Lock className="w-5 h-5 mr-2" /> Login to Access Vault
+                  <FileText className="w-5 h-5 mr-2" /> Access Document Vault
                 </Button>
               )}
               <Button 
