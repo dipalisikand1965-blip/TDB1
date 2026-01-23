@@ -442,6 +442,9 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [newReview, setNewReview] = useState({ rating: 5, title: '', content: '', author_name: '' });
   const [submittingReview, setSubmittingReview] = useState(false);
+  
+  // NPS Testimonials state
+  const [testimonials, setTestimonials] = useState([]);
 
   // Find matching variant based on selected options
   const findMatchingVariant = () => {
