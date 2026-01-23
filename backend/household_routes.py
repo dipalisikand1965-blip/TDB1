@@ -52,7 +52,6 @@ async def get_household_info(user_email: str):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    pet_ids = user.get("pet_ids", [])
     pets = await db.pets.find({"owner_email": user_email}).to_list(length=20)
     
     # Calculate household benefits
@@ -69,7 +68,6 @@ async def get_household_info(user_email: str):
     
     # Calculate shared preferences (what all pets have in common)
     shared_allergies = set()
-    shared_preferences = set()
     
     for pet in pets:
         soul = pet.get("doggy_soul_answers", {})
