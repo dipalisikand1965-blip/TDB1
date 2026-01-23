@@ -580,3 +580,415 @@ async def record_skill_learned(pet_id: str, skill_data: dict):
     )
     
     return {"success": True, "message": f"Skill '{skill['skill_name']}' recorded!"}
+
+
+# ==================== ADMIN ENDPOINTS ====================
+
+@router.put("/requests/{request_id}")
+async def update_training_request(request_id: str, update_data: dict):
+    """Update a training request status"""
+    db = get_db()
+    
+    update_fields = {
+        "status": update_data.get("status"),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    if update_data.get("assigned_to"):
+        update_fields["assigned_to"] = update_data.get("assigned_to")
+    if update_data.get("trainer_id"):
+        update_fields["trainer_id"] = update_data.get("trainer_id")
+    
+    result = await db.learn_requests.update_one(
+        {"id": request_id},
+        {"$set": {k: v for k, v in update_fields.items() if v is not None}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    return {"success": True, "message": "Request updated"}
+
+
+@router.post("/admin/programs")
+async def create_program(program_data: dict):
+    """Create a new training program"""
+    db = get_db()
+    
+    program_id = f"prog_{uuid.uuid4().hex[:8]}"
+    
+    program = {
+        "id": program_id,
+        **program_data,
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.learn_programs.insert_one({k: v for k, v in program.items() if k != "_id"})
+    return {"success": True, "id": program_id}
+
+
+@router.put("/admin/programs/{program_id}")
+async def update_program(program_id: str, program_data: dict):
+    """Update a training program"""
+    db = get_db()
+    
+    program_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.learn_programs.update_one(
+        {"id": program_id},
+        {"$set": {k: v for k, v in program_data.items() if k != "_id"}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Program not found")
+    
+    return {"success": True, "message": "Program updated"}
+
+
+@router.delete("/admin/programs/{program_id}")
+async def delete_program(program_id: str):
+    """Delete a training program"""
+    db = get_db()
+    
+    result = await db.learn_programs.delete_one({"id": program_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Program not found")
+    
+    return {"success": True, "message": "Program deleted"}
+
+
+@router.post("/admin/trainers")
+async def create_trainer(trainer_data: dict):
+    """Create a new trainer profile"""
+    db = get_db()
+    
+    trainer_id = f"trainer_{uuid.uuid4().hex[:8]}"
+    
+    trainer = {
+        "id": trainer_id,
+        **trainer_data,
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.learn_trainers.insert_one({k: v for k, v in trainer.items() if k != "_id"})
+    return {"success": True, "id": trainer_id}
+
+
+@router.put("/admin/trainers/{trainer_id}")
+async def update_trainer(trainer_id: str, trainer_data: dict):
+    """Update a trainer profile"""
+    db = get_db()
+    
+    trainer_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.learn_trainers.update_one(
+        {"id": trainer_id},
+        {"$set": {k: v for k, v in trainer_data.items() if k != "_id"}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Trainer not found")
+    
+    return {"success": True, "message": "Trainer updated"}
+
+
+@router.delete("/admin/trainers/{trainer_id}")
+async def delete_trainer(trainer_id: str):
+    """Delete a trainer profile"""
+    db = get_db()
+    
+    result = await db.learn_trainers.delete_one({"id": trainer_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Trainer not found")
+    
+    return {"success": True, "message": "Trainer deleted"}
+
+
+@router.post("/admin/products")
+async def create_learn_product(product_data: dict):
+    """Create a new learning product"""
+    db = get_db()
+    
+    product_id = f"learn_prod_{uuid.uuid4().hex[:8]}"
+    
+    product = {
+        "id": product_id,
+        "pillar": "learn",
+        **product_data,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.learn_products.insert_one({k: v for k, v in product.items() if k != "_id"})
+    return {"success": True, "id": product_id}
+
+
+@router.put("/admin/products/{product_id}")
+async def update_learn_product(product_id: str, product_data: dict):
+    """Update a learning product"""
+    db = get_db()
+    
+    product_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.learn_products.update_one(
+        {"id": product_id},
+        {"$set": {k: v for k, v in product_data.items() if k != "_id"}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"success": True, "message": "Product updated"}
+
+
+@router.delete("/admin/products/{product_id}")
+async def delete_learn_product(product_id: str):
+    """Delete a learning product"""
+    db = get_db()
+    
+    result = await db.learn_products.delete_one({"id": product_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"success": True, "message": "Product deleted"}
+
+
+@router.post("/admin/bundles")
+async def create_learn_bundle(bundle_data: dict):
+    """Create a new learning bundle"""
+    db = get_db()
+    
+    bundle_id = f"learn_bundle_{uuid.uuid4().hex[:8]}"
+    
+    bundle = {
+        "id": bundle_id,
+        "pillar": "learn",
+        **bundle_data,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.learn_bundles.insert_one({k: v for k, v in bundle.items() if k != "_id"})
+    return {"success": True, "id": bundle_id}
+
+
+@router.put("/admin/bundles/{bundle_id}")
+async def update_learn_bundle(bundle_id: str, bundle_data: dict):
+    """Update a learning bundle"""
+    db = get_db()
+    
+    bundle_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.learn_bundles.update_one(
+        {"id": bundle_id},
+        {"$set": {k: v for k, v in bundle_data.items() if k != "_id"}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    return {"success": True, "message": "Bundle updated"}
+
+
+@router.delete("/admin/bundles/{bundle_id}")
+async def delete_learn_bundle(bundle_id: str):
+    """Delete a learning bundle"""
+    db = get_db()
+    
+    result = await db.learn_bundles.delete_one({"id": bundle_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    return {"success": True, "message": "Bundle deleted"}
+
+
+@router.post("/admin/seed")
+async def seed_learn_data():
+    """Seed sample Learn pillar data"""
+    db = get_db()
+    
+    programs_seeded = 0
+    products_seeded = 0
+    trainers_seeded = 0
+    bundles_seeded = 0
+    
+    # Seed sample programs
+    sample_programs = [
+        {
+            "id": "prog_basic_obedience",
+            "name": "Basic Obedience Training",
+            "learn_type": "basic_obedience",
+            "description": "Essential commands and manners for your dog - sit, stay, come, heel, and leash walking.",
+            "duration": "6 weeks",
+            "sessions": 12,
+            "price": 15000,
+            "skill_level": "beginner",
+            "is_featured": True,
+            "is_active": True,
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "includes": ["12 one-on-one sessions", "Training manual", "Progress tracking", "WhatsApp support"],
+            "suitable_for": ["Puppies", "Adult dogs", "First-time owners"]
+        },
+        {
+            "id": "prog_puppy_foundation",
+            "name": "Puppy Foundation Program",
+            "learn_type": "puppy_training",
+            "description": "Perfect start for puppies 8-16 weeks. Socialization, bite inhibition, and house training.",
+            "duration": "8 weeks",
+            "sessions": 16,
+            "price": 20000,
+            "skill_level": "beginner",
+            "is_featured": True,
+            "is_active": True,
+            "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800",
+            "includes": ["16 sessions", "Socialization outings", "Puppy pack", "Lifetime phone support"],
+            "suitable_for": ["Puppies 8-16 weeks"]
+        },
+        {
+            "id": "prog_behavior_mod",
+            "name": "Behavior Modification",
+            "learn_type": "behavior_modification",
+            "description": "Address specific behavioral issues like aggression, anxiety, or excessive barking.",
+            "duration": "8-12 weeks",
+            "sessions": 16,
+            "price": 25000,
+            "skill_level": "all_levels",
+            "is_featured": True,
+            "is_active": True,
+            "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800",
+            "includes": ["Behavior assessment", "Custom modification plan", "16 sessions", "Follow-up support"],
+            "suitable_for": ["Dogs with behavioral issues"]
+        }
+    ]
+    
+    for prog in sample_programs:
+        result = await db.learn_programs.update_one(
+            {"id": prog["id"]},
+            {"$set": prog},
+            upsert=True
+        )
+        if result.upserted_id:
+            programs_seeded += 1
+    
+    # Seed sample trainers
+    sample_trainers = [
+        {
+            "id": "trainer_001",
+            "name": "Priya Sharma",
+            "title": "Certified Professional Dog Trainer",
+            "description": "Specializing in positive reinforcement training for over 10 years.",
+            "specializations": ["basic_obedience", "puppy_training", "behavior_modification"],
+            "experience_years": 10,
+            "rating": 4.9,
+            "reviews_count": 156,
+            "city": "Bangalore",
+            "contact_email": "priya@thedoggycompany.in",
+            "image": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400",
+            "is_featured": True,
+            "is_active": True
+        },
+        {
+            "id": "trainer_002",
+            "name": "Raj Malhotra",
+            "title": "Behavior Specialist",
+            "description": "Expert in reactive dog training and behavior rehabilitation.",
+            "specializations": ["behavior_modification", "aggression_management", "anxiety_training"],
+            "experience_years": 8,
+            "rating": 4.8,
+            "reviews_count": 98,
+            "city": "Mumbai",
+            "contact_email": "raj@thedoggycompany.in",
+            "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
+            "is_featured": True,
+            "is_active": True
+        }
+    ]
+    
+    for trainer in sample_trainers:
+        result = await db.learn_trainers.update_one(
+            {"id": trainer["id"]},
+            {"$set": trainer},
+            upsert=True
+        )
+        if result.upserted_id:
+            trainers_seeded += 1
+    
+    # Seed sample products
+    sample_products = [
+        {
+            "id": "learn_prod_clicker",
+            "name": "Professional Training Clicker",
+            "description": "High-quality clicker for positive reinforcement training.",
+            "price": 299,
+            "compare_price": 499,
+            "learn_type": "training_tool",
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400",
+            "tags": ["training", "clicker", "positive reinforcement"],
+            "in_stock": True,
+            "paw_reward_points": 15,
+            "pillar": "learn"
+        },
+        {
+            "id": "learn_prod_treat_pouch",
+            "name": "Training Treat Pouch",
+            "description": "Convenient pouch with quick-access opening for training treats.",
+            "price": 599,
+            "compare_price": 899,
+            "learn_type": "accessory",
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400",
+            "tags": ["training", "treats", "accessory"],
+            "in_stock": True,
+            "paw_reward_points": 30,
+            "pillar": "learn"
+        }
+    ]
+    
+    for prod in sample_products:
+        result = await db.learn_products.update_one(
+            {"id": prod["id"]},
+            {"$set": prod},
+            upsert=True
+        )
+        if result.upserted_id:
+            products_seeded += 1
+    
+    # Seed sample bundles
+    sample_bundles = [
+        {
+            "id": "learn_bundle_starter",
+            "name": "Puppy Training Starter Kit",
+            "description": "Everything you need to start training your new puppy at home.",
+            "items": ["Training Clicker", "Treat Pouch", "Long Training Lead", "Puppy Training Guide"],
+            "price": 1499,
+            "original_price": 2299,
+            "paw_reward_points": 75,
+            "is_recommended": True,
+            "pillar": "learn"
+        }
+    ]
+    
+    for bundle in sample_bundles:
+        result = await db.learn_bundles.update_one(
+            {"id": bundle["id"]},
+            {"$set": bundle},
+            upsert=True
+        )
+        if result.upserted_id:
+            bundles_seeded += 1
+    
+    return {
+        "success": True,
+        "programs_seeded": programs_seeded,
+        "trainers_seeded": trainers_seeded,
+        "products_seeded": products_seeded,
+        "bundles_seeded": bundles_seeded
+    }
+
