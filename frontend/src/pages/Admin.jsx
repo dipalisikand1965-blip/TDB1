@@ -1634,6 +1634,22 @@ const Admin = () => {
             )}
           </Button>
           
+          {/* Seed Production Data Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-gradient-to-r from-purple-500 to-pink-600 text-white border-0 hover:from-purple-600 hover:to-pink-700 text-xs"
+            onClick={seedProductionData}
+            disabled={seedingProduction}
+            data-testid="seed-production-btn"
+          >
+            {seedingProduction ? (
+              <><RefreshCw className="w-3 h-3 mr-1 animate-spin" /> Seeding...</>
+            ) : (
+              <><Database className="w-3 h-3 mr-1" /> Seed Production</>
+            )}
+          </Button>
+          
           {[
             { id: 'products', label: '🎂 Celebrate', icon: Package },
             { id: 'collections', label: 'Collections', icon: Layers },
