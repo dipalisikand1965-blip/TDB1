@@ -309,6 +309,7 @@ const PetProfile = ({ isEmbed = false }) => {
         soul: formData.soul,
         celebrations,
         preferences: formData.preferences,
+        health: formData.health,
         owner_name: formData.owner_name,
         owner_email: formData.owner_email,
         owner_phone: formData.owner_phone,
