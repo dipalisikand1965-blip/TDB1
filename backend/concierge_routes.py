@@ -302,19 +302,20 @@ async def get_command_center_queue(
         cursor = db.orders.find(order_query, {"_id": 0}).limit(limit)
         async for item in cursor:
             # Transform order to queue item format
-            item["ticket_id"] = f"ORD-{item.get('order_id', item.get('id', 'N/A'))}"
+            item["ticket_id"] = f"ORD-{item.get('order_id', item.get('orderId', item.get('id', 'N/A')))}"
             item["source_type"] = "order"
             item["source_label"] = "Order"
             item["source_icon"] = "📦"
-            item["original_request"] = f"Order #{item.get('order_id', 'N/A')} - ₹{item.get('total', 0)}"
+            item["original_request"] = f"Order #{item.get('orderId', item.get('order_id', 'N/A'))} - ₹{item.get('total', 0)}"
             item["action_type"] = "order_fulfillment"
             
-            # Map order customer to member format
-            if item.get("customer"):
+            # Map order customer to member format - handle parentName field from checkout
+            customer = item.get("customer", {})
+            if customer:
                 item["member"] = {
-                    "name": item["customer"].get("name"),
-                    "email": item["customer"].get("email"),
-                    "phone": item["customer"].get("phone")
+                    "name": customer.get("parentName") or customer.get("name") or "Customer",
+                    "email": customer.get("email"),
+                    "phone": customer.get("phone") or customer.get("whatsappNumber")
                 }
             
             item["priority_score"] = calculate_priority_score(item)
