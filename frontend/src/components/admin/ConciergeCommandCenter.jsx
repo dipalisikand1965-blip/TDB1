@@ -250,8 +250,16 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
   // Load queue
   const loadQueue = useCallback(async () => {
     setLoading(true);
+    setLoadError(null);
     debugLog('Loading queue with filters:', filters);
     debugLog('API_URL:', API_URL);
+    
+    if (!API_URL) {
+      setLoadError('API_URL is not configured. Please check REACT_APP_BACKEND_URL environment variable.');
+      setLoading(false);
+      return;
+    }
+    
     try {
       const params = new URLSearchParams();
       if (filters.source && filters.source !== 'all') params.append('source', filters.source);
@@ -277,13 +285,14 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
         setAttention(data.attention || {});
         setBuckets(data.buckets || {});
       } else {
-        debugLog('Response not OK:', response.status, response.statusText);
         const errorText = await response.text();
-        debugLog('Error response:', errorText);
+        debugLog('Response not OK:', response.status, errorText);
+        setLoadError(`Server error: ${response.status} - ${errorText.substring(0, 100)}`);
       }
     } catch (error) {
       console.error('Failed to load queue:', error);
       debugLog('Fetch error:', error.message);
+      setLoadError(`Network error: ${error.message}. API_URL: ${API_URL}`);
     } finally {
       setLoading(false);
     }
