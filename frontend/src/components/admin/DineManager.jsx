@@ -205,7 +205,31 @@ const DineManager = ({ credentials }) => {
     else if (activeTab === 'visits') fetchVisits();
     else if (activeTab === 'meetups') fetchMeetups();
     else if (activeTab === 'bundles') fetchBundles();
+    else if (activeTab === 'products') fetchProducts();
   }, [activeTab, reservationFilter, visitFilter, meetupFilter]);
+  
+  // Fetch products
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/dine/products`, {
+        headers: { 'Authorization': getAuthHeader() }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(data.products || []);
+        setProductStats({
+          total: data.total || 0,
+          in_stock: (data.products || []).filter(p => p.in_stock).length,
+          out_of_stock: (data.products || []).filter(p => !p.in_stock).length
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   // Fetch bundles
   const fetchBundles = async () => {
