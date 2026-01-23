@@ -354,7 +354,7 @@ Warehouse and logistics management.
 ## 9. Command Center ⭐
 **Tab ID**: `command-center`
 **File Location**: `/app/frontend/src/components/admin/ConciergeCommandCenter.jsx`
-**Backend**: `/app/backend/concierge_routes.py`
+**Backend**: `/app/backend/concierge_routes.py`, `/app/backend/ticket_intelligence.py`
 
 ### What It Contains
 - **Unified Queue**: ALL tickets from all sources in one place
@@ -362,6 +362,9 @@ Warehouse and logistics management.
 - **360° Member Profile**: Complete customer view (clickable)
 - **Mira's Intelligence**: AI-powered insights per ticket
 - **Omni-Channel Reply**: Respond via Mira, Email, WhatsApp
+- **Sentiment Analysis** 🆕: AI analyzes incoming requests (😊 Positive, 😐 Neutral, 😠 Frustrated, 🆘 Urgent, 😡 Angry)
+- **Ticket Merge** 🆕: Merge duplicate tickets from same member
+- **NPS Surveys** 🆕: Automatic satisfaction surveys on resolution
 
 ### Purpose
 THE central hub for concierge operations - the "All-Seeing Eye" of the business.
@@ -371,6 +374,7 @@ THE central hub for concierge operations - the "All-Seeing Eye" of the business.
 - `GET /api/concierge/item/{ticket_id}` - Ticket details with member snapshot
 - `GET /api/concierge/event-stream` - Live activity feed
 - `GET /api/concierge/member-profile/{email}` - Full 360° profile
+- `GET /api/concierge/nps/stats` 🆕 - NPS statistics
 
 ### Ticket Sources
 1. **Mira Requests** (`service_desk_tickets`) - AI concierge requests
@@ -390,6 +394,7 @@ THE central hub for concierge operations - the "All-Seeing Eye" of the business.
 - **Priority Score**: Calculated based on SLA, membership tier, order value
 - **Auto-ticket Creation**: New orders, memberships, Pet Soul updates auto-create tickets
 - **Pillar Filtering**: Filter by Celebrate, Dine, Stay, Travel, Care, etc.
+- **Sentiment-based Priority** 🆕: Urgent/angry sentiment auto-elevates priority
 
 ### What Can Be Done
 - View all tickets from all sources
@@ -398,8 +403,41 @@ THE central hub for concierge operations - the "All-Seeing Eye" of the business.
 - Claim/assign tickets
 - Resolve with Mira/Email/WhatsApp
 - Bulk actions (assign, close, escalate)
+- **Merge Tickets** 🆕: Select 2+ tickets, click "Merge"
 - Export to CSV
 - Create manual tickets
+
+### New Features (Jan 2026)
+
+#### Sentiment Analysis 🆕
+- **What**: AI analyzes every incoming request
+- **Categories**: 😊 Positive, 😐 Neutral, 😠 Frustrated, 🆘 Urgent, 😡 Angry
+- **Auto-action**: Urgent/angry sentiment auto-elevates priority
+- **Display**: Badge shown in queue and ticket detail
+- **API**: `POST /api/concierge/analyze-sentiment?text=...`
+
+#### Ticket Merge 🆕
+- **What**: Merge duplicate tickets from same member
+- **How**: Select 2+ tickets → Click "Merge" button
+- **Behavior**: 
+  - First selected ticket = Primary (remains open)
+  - Others = Secondary (marked as "merged")
+  - All history preserved on primary ticket
+- **API**: `POST /api/concierge/tickets/merge`
+
+#### NPS (Net Pawmoter Score) 🆕
+- **What**: Satisfaction survey sent after resolution
+- **Flow**: Resolve ticket → NPS email sent → Member rates 0-10
+- **Categories**: Detractor (0-6), Passive (7-8), Promoter (9-10)
+- **Reviews**: Score 9+ with feedback → Goes to Reviews for admin approval
+- **API**: 
+  - `POST /api/concierge/nps/respond` - Submit response
+  - `GET /api/concierge/nps/stats` - Get NPS statistics
+
+#### Auto-Acknowledgment Emails 🆕
+- **What**: Instant email confirmation when ticket created
+- **Contains**: Ticket ID, subject, pillar-specific message
+- **Toggle**: `send_acknowledgment` parameter in ticket creation
 
 ### Key Features
 | Feature | Description |
@@ -410,6 +448,8 @@ THE central hub for concierge operations - the "All-Seeing Eye" of the business.
 | Mira Intelligence | Past orders, memories, Pet Soul insights |
 | Generate AI Draft | Auto-generate response using GPT |
 | Event Stream | Slide-out panel with live activity |
+| Sentiment Badge 🆕 | Shows customer sentiment (emoji + label) |
+| Merge Button 🆕 | Merge 2+ selected tickets |
 
 ### To Modify
 - UI: Edit `ConciergeCommandCenter.jsx`
@@ -417,6 +457,8 @@ THE central hub for concierge operations - the "All-Seeing Eye" of the business.
 - Add new source: Add to `get_command_center_queue()` aggregation
 - SLA times: Edit `SLA_HOURS` constant
 - Priority calc: Edit `calculate_priority_score()`
+- Sentiment analysis: Edit `ticket_intelligence.py`
+- NPS templates: Edit `send_nps_survey()` in `ticket_intelligence.py`
 
 ---
 
