@@ -598,9 +598,25 @@ Major refactoring effort to break down the monolithic `server.py` into modular r
 | **Autoship System** | `autoship_routes.py` | ~330 | ✅ Done (Jan 23, 2026) |
 
 ### Current server.py Status
-- **Before refactoring**: 11,569 lines
-- **Current**: 9,376 lines
-- **Total reduction**: ~2,193 lines (~19%)
+- **Before refactoring (initial)**: 11,569 lines
+- **Before this session**: 9,376 lines
+- **Current**: 8,914 lines
+- **Total reduction**: ~2,655 lines (~23%)
+
+### Extracted Modules (Phase 1-3)
+| Module | File | Lines | Status |
+|--------|------|-------|--------|
+| FAQ Routes | `faq_routes.py` | 106 | ✅ Verified |
+| Content Routes | `content_routes.py` | 206 | ✅ Verified |
+| Loyalty Routes | `loyalty_routes.py` | 249 | ✅ Verified |
+| Discount Routes | `discount_routes.py` | 204 | ✅ Verified |
+| Cart Routes | `cart_routes.py` | 676 | ✅ Verified |
+| Shopify Sync | `shopify_sync_routes.py` | 626 | ✅ Verified |
+| Orders Routes | `orders_routes.py` | 268 | ✅ Verified |
+| Autoship Routes | `autoship_routes.py` | 407 | ✅ Verified |
+| Admin Members | `admin_member_routes.py` | 244 | ✅ Verified (Jan 23) |
+| Household Routes | `household_routes.py` | 208 | ✅ Verified (Jan 23) |
+| Review Routes | `review_routes.py` | 308 | ✅ Verified (Jan 23) |
 
 ### Remaining Candidates for Extraction
 - [ ] Product Management routes
