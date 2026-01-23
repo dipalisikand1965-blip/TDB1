@@ -437,7 +437,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
   
   const { addToCart } = useCart();
   
-  // Reviews state - declared at component level
+  // Reviews state - declared at component level (legacy, keeping for reference)
   const [reviews, setReviews] = useState([]);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [newReview, setNewReview] = useState({ rating: 5, title: '', content: '', author_name: '' });
@@ -445,6 +445,8 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
   
   // NPS Testimonials state
   const [testimonials, setTestimonials] = useState([]);
+  const [npsScore, setNpsScore] = useState(null);
+  const [npsTestimonials, setNpsTestimonials] = useState([]);
 
   // Find matching variant based on selected options
   const findMatchingVariant = () => {
