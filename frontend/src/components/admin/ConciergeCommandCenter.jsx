@@ -795,8 +795,8 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
               {/* LEFT COLUMN: Member & Pet Snapshot + Request */}
               <div className="lg:col-span-1 space-y-4">
                 
-                {/* A. Member & Pet Snapshot */}
-                <Card>
+                {/* A. Member Snapshot - CLICKABLE */}
+                <Card className="hover:shadow-lg transition-shadow">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm flex items-center gap-2">
                       <User className="w-4 h-4" />
@@ -806,12 +806,21 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
                   <CardContent className="space-y-3">
                     {itemDetail?.member_snapshot ? (
                       <>
-                        <div className="flex items-center gap-3">
+                        <div 
+                          className="flex items-center gap-3 cursor-pointer hover:bg-purple-50 p-2 rounded-lg -mx-2 transition-colors"
+                          onClick={() => {
+                            const email = itemDetail.member_snapshot.email;
+                            if (email) {
+                              window.open(`/admin?tab=members&email=${encodeURIComponent(email)}`, '_blank');
+                            }
+                          }}
+                          title="Click to view full 360° profile"
+                        >
                           <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
                             <User className="w-5 h-5 text-purple-600" />
                           </div>
-                          <div>
-                            <p className="font-medium">{itemDetail.member_snapshot.name}</p>
+                          <div className="flex-1">
+                            <p className="font-medium text-purple-700 hover:underline">{itemDetail.member_snapshot.name}</p>
                             <div className="flex items-center gap-2">
                               <Badge variant="outline" className="text-xs">
                                 <Crown className="w-3 h-3 mr-1" />
@@ -819,6 +828,7 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
                               </Badge>
                             </div>
                           </div>
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
                         </div>
                         <div className="text-xs text-gray-500 space-y-1">
                           <p className="flex items-center gap-1">
@@ -837,21 +847,30 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
                       <p className="text-sm text-gray-500">No member info</p>
                     )}
                     
-                    {/* Pets */}
+                    {/* Pets - with Pet Pass Numbers */}
                     {itemDetail?.pets_snapshot?.length > 0 && (
                       <div className="border-t pt-3 mt-3">
-                        <p className="text-xs font-medium text-gray-600 mb-2">Pets</p>
+                        <p className="text-xs font-medium text-gray-600 mb-2">🐾 Pets ({itemDetail.pets_snapshot.length})</p>
                         <div className="space-y-2">
                           {itemDetail.pets_snapshot.map((pet, idx) => (
-                            <div key={idx} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                              <PawPrint className="w-4 h-4 text-purple-500" />
-                              <div className="flex-1">
-                                <p className="font-medium text-sm">{pet.name}</p>
-                                <p className="text-xs text-gray-500">{pet.breed}</p>
+                            <div key={idx} className="flex items-center gap-2 p-2 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100">
+                              <div className="w-8 h-8 bg-purple-200 rounded-full flex items-center justify-center text-sm">
+                                {pet.name?.charAt(0)}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-sm truncate">{pet.name}</p>
+                                <div className="flex items-center gap-2 text-xs text-gray-500">
+                                  <span>{pet.breed}</span>
+                                  {pet.pet_pass_number && (
+                                    <span className="font-mono bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded">
+                                      {pet.pet_pass_number}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                               {pet.allergies?.length > 0 && (
                                 <Badge variant="destructive" className="text-xs">
-                                  Allergies
+                                  ⚠️ Allergies
                                 </Badge>
                               )}
                             </div>
