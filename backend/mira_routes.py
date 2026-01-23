@@ -1922,21 +1922,32 @@ async def get_mira_context(
         pet_soul = await load_pet_soul(pets[0].get("id") or pets[0].get("name"))
         response["selected_pet"] = pet_soul
     
-    # Generate pillar-specific note
+    # Generate pillar-specific note with user's name
+    user_name = user.get("name", "there").split()[0]  # First name only
+    
     if current_pillar and response["selected_pet"]:
         pet = response["selected_pet"]
         pet_name = pet.get("name", "your pet")
+        breed = pet.get("breed", "")
         
         pillar_notes = {
-            "travel": f"I see you're planning travel with **{pet_name}**. Based on their profile, I can help arrange pet-friendly transport.",
-            "stay": f"Looking for a stay with **{pet_name}**? I'll find options that suit their needs.",
-            "care": f"Need care services for **{pet_name}**? I can help book grooming or vet visits.",
-            "dine": f"Planning to dine with **{pet_name}**? Let me find pet-friendly restaurants nearby.",
-            "celebrate": f"Want to celebrate with **{pet_name}**? I can help arrange the perfect cake and treats.",
-            "enjoy": f"Looking for activities for **{pet_name}**? I can find events and experiences they'll love."
+            "travel": f"Hi **{user_name}**! Planning travel with **{pet_name}**? I have {pet_name}'s profile ready to find the perfect pet-friendly options.",
+            "stay": f"Hello **{user_name}**! Looking for a stay with **{pet_name}**? I'll match accommodations to their comfort needs.",
+            "care": f"Hi **{user_name}**! Need care services for **{pet_name}**? I can help with grooming, vet visits, or wellness check-ups.",
+            "dine": f"Hello **{user_name}**! Planning to dine with **{pet_name}**? Let me find the best pet-friendly restaurants.",
+            "celebrate": f"Hi **{user_name}**! Ready to celebrate with **{pet_name}**? I'll help arrange the perfect treats and party.",
+            "enjoy": f"Hello **{user_name}**! Looking for fun activities for **{pet_name}**? I have some great suggestions!",
+            "shop": f"Hi **{user_name}**! Shopping for **{pet_name}**? I've curated recommendations based on their preferences.",
+            "fit": f"Hello **{user_name}**! Want to keep **{pet_name}** active? Let me suggest fitness activities.",
+            "advisory": f"Hi **{user_name}**! Need guidance for **{pet_name}**? I'm here to help with any questions.",
+            "paperwork": f"Hello **{user_name}**! Managing **{pet_name}**'s documents? I can help organize everything.",
+            "emergency": f"Hi **{user_name}**! I have **{pet_name}**'s health records ready for quick access."
         }
         
-        response["pillar_note"] = pillar_notes.get(current_pillar, f"How can I help you with **{pet_name}** today?")
+        response["pillar_note"] = pillar_notes.get(current_pillar, f"Hi **{user_name}**! How can I help you with **{pet_name}** today?")
+    elif response.get("user"):
+        # User logged in but no pets
+        response["pillar_note"] = f"Hi **{user_name}**! Add your pet to get personalized recommendations across all our services."
     
     # Get product suggestions based on pillar and pet
     if current_pillar and response["selected_pet"]:
