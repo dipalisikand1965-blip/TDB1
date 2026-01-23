@@ -103,7 +103,8 @@ import {
   Bell,
   Headphones,
   ExternalLink,
-  Crown
+  Crown,
+  Database
 } from 'lucide-react';
 
 const Admin = () => {
