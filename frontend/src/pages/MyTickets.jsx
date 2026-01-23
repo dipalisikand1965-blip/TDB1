@@ -92,8 +92,9 @@ const MyTickets = () => {
   const [replyMessage, setReplyMessage] = useState('');
   const [sending, setSending] = useState(false);
   
-  // Get user email from localStorage
-  const userEmail = localStorage.getItem('userEmail') || '';
+  // Get user from auth context
+  const { user, loading: authLoading } = useAuth();
+  const userEmail = user?.email || '';
   
   // Fetch tickets
   const fetchTickets = async () => {
