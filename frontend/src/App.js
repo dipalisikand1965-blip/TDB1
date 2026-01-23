@@ -166,6 +166,9 @@ function MainLayout() {
         <Route path="/admin/docs" element={<AdminDocs />} />
         <Route path="/voice-order" element={<ProtectedRoute><VoiceOrder /></ProtectedRoute>} />
         
+        {/* NPS Feedback - Public access */}
+        <Route path="/feedback" element={<NPSFeedbackPage />} />
+        
         {/* Pet Profile - Accessible without login */}
         <Route path="/pet-profile" element={<PetProfile />} />
         <Route path="/my-pets" element={<ProtectedRoute><MyPets /></ProtectedRoute>} />
