@@ -7479,6 +7479,14 @@ async def create_pet_profile_public(pet: PetProfileCreate):
     # Remove MongoDB _id before returning
     pet_data.pop("_id", None)
     
+    # Auto-create ticket for Command Center
+    try:
+        from ticket_auto_creation import on_pet_added
+        user = await db.users.find_one({"email": pet.owner_email}, {"_id": 0, "password": 0})
+        await on_pet_added(pet_data, user or {"email": pet.owner_email, "name": pet.owner_name})
+    except Exception as e:
+        logger.error(f"Auto-ticket for pet addition failed: {e}")
+    
     logger.info(f"Created public pet profile: {pet_id} - {pet.name}")
     return {"message": "Pet profile created", "pet": pet_data}
 
