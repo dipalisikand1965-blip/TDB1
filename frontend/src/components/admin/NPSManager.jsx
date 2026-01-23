@@ -179,36 +179,36 @@ const NPSManager = ({ getAuthHeader }) => {
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm text-green-600">Promoters</span>
-                  <span className="text-sm font-medium">{stats.promoters_pct || 0}%</span>
+                  <span className="text-sm font-medium">{stats.promoters_percent || stats.promoters_pct || 0}%</span>
                 </div>
                 <div className="h-4 bg-gray-100 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-green-500 rounded-full transition-all"
-                    style={{ width: `${stats.promoters_pct || 0}%` }}
+                    style={{ width: `${stats.promoters_percent || stats.promoters_pct || 0}%` }}
                   />
                 </div>
               </div>
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm text-yellow-600">Passives</span>
-                  <span className="text-sm font-medium">{stats.passives_pct || 0}%</span>
+                  <span className="text-sm font-medium">{stats.passives_percent || stats.passives_pct || 0}%</span>
                 </div>
                 <div className="h-4 bg-gray-100 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-yellow-500 rounded-full transition-all"
-                    style={{ width: `${stats.passives_pct || 0}%` }}
+                    style={{ width: `${stats.passives_percent || stats.passives_pct || 0}%` }}
                   />
                 </div>
               </div>
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm text-red-600">Detractors</span>
-                  <span className="text-sm font-medium">{stats.detractors_pct || 0}%</span>
+                  <span className="text-sm font-medium">{stats.detractors_percent || stats.detractors_pct || 0}%</span>
                 </div>
                 <div className="h-4 bg-gray-100 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-red-500 rounded-full transition-all"
-                    style={{ width: `${stats.detractors_pct || 0}%` }}
+                    style={{ width: `${stats.detractors_percent || stats.detractors_pct || 0}%` }}
                   />
                 </div>
               </div>
