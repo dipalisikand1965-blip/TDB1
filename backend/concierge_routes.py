@@ -1108,6 +1108,246 @@ async def escalate_item(ticket_id: str, request: AddNoteRequest):
     raise HTTPException(status_code=404, detail="Item not found")
 
 
+# ============== NPS (NET PAWMOTER SCORE) ==============
+
+class NPSResponseRequest(BaseModel):
+    score: int  # 0-10
+    feedback: Optional[str] = None
+    allow_publish: bool = False  # Allow review to be published
+
+
+@router.post("/nps/respond")
+async def submit_nps_response(
+    ticket_id: str,
+    token: str,
+    request: NPSResponseRequest
+):
+    """Submit NPS survey response."""
+    result = await record_nps_response(
+        ticket_id=ticket_id,
+        survey_token=token,
+        score=request.score,
+        feedback=request.feedback,
+        allow_publish=request.allow_publish
+    )
+    
+    if not result.get("success"):
+        raise HTTPException(status_code=400, detail=result.get("error", "Failed to record response"))
+    
+    return result
+
+
+@router.get("/nps/stats")
+async def get_nps_stats(days: int = 30):
+    """Get NPS statistics for reporting."""
+    db = get_db()
+    
+    from_date = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    
+    # Get completed surveys
+    surveys = await db.nps_surveys.find({
+        "status": "completed",
+        "responded_at": {"$gte": from_date}
+    }).to_list(1000)
+    
+    if not surveys:
+        return {
+            "total_responses": 0,
+            "nps_score": None,
+            "promoters": 0,
+            "passives": 0,
+            "detractors": 0,
+            "average_score": None
+        }
+    
+    promoters = sum(1 for s in surveys if s.get("score", 0) >= 9)
+    passives = sum(1 for s in surveys if 7 <= s.get("score", 0) <= 8)
+    detractors = sum(1 for s in surveys if s.get("score", 0) <= 6)
+    
+    total = len(surveys)
+    nps_score = ((promoters - detractors) / total) * 100 if total > 0 else 0
+    average_score = sum(s.get("score", 0) for s in surveys) / total if total > 0 else 0
+    
+    return {
+        "total_responses": total,
+        "nps_score": round(nps_score, 1),
+        "promoters": promoters,
+        "promoters_percent": round((promoters / total) * 100, 1) if total > 0 else 0,
+        "passives": passives,
+        "passives_percent": round((passives / total) * 100, 1) if total > 0 else 0,
+        "detractors": detractors,
+        "detractors_percent": round((detractors / total) * 100, 1) if total > 0 else 0,
+        "average_score": round(average_score, 1),
+        "period_days": days
+    }
+
+
+# ============== TICKET MERGE ==============
+
+class MergeTicketsRequest(BaseModel):
+    primary_ticket_id: str  # The ticket that will remain
+    secondary_ticket_ids: List[str]  # Tickets to merge into primary
+    agent_name: str
+    merge_reason: Optional[str] = None
+
+
+@router.post("/tickets/merge")
+async def merge_tickets(request: MergeTicketsRequest):
+    """
+    Merge multiple tickets from the same member into one.
+    Secondary tickets are marked as merged and closed.
+    All history is preserved on the primary ticket.
+    """
+    db = get_db()
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Find primary ticket
+    primary = await db.service_desk_tickets.find_one({"ticket_id": request.primary_ticket_id})
+    if not primary:
+        primary = await db.tickets.find_one({"ticket_id": request.primary_ticket_id})
+    
+    if not primary:
+        raise HTTPException(status_code=404, detail=f"Primary ticket {request.primary_ticket_id} not found")
+    
+    merged_count = 0
+    merged_tickets = []
+    
+    for secondary_id in request.secondary_ticket_ids:
+        # Find secondary ticket
+        secondary = await db.service_desk_tickets.find_one({"ticket_id": secondary_id})
+        collection = db.service_desk_tickets
+        if not secondary:
+            secondary = await db.tickets.find_one({"ticket_id": secondary_id})
+            collection = db.tickets
+        
+        if not secondary:
+            continue  # Skip if not found
+        
+        # Collect data to merge
+        merge_data = {
+            "merged_from": secondary_id,
+            "merged_at": now,
+            "original_request": secondary.get("original_request"),
+            "description": secondary.get("description"),
+            "subject": secondary.get("subject"),
+            "notes": secondary.get("concierge_notes", []),
+            "communications": secondary.get("communications", []),
+            "timeline": secondary.get("timeline", []),
+            "audit_trail": secondary.get("audit_trail", [])
+        }
+        
+        # Update primary ticket
+        await db.service_desk_tickets.update_one(
+            {"ticket_id": request.primary_ticket_id},
+            {
+                "$push": {
+                    "merged_tickets": merge_data,
+                    "audit_trail": {
+                        "action": "ticket_merged",
+                        "timestamp": now,
+                        "performed_by": request.agent_name,
+                        "merged_ticket_id": secondary_id,
+                        "reason": request.merge_reason
+                    }
+                },
+                "$set": {"updated_at": now}
+            },
+            upsert=False
+        )
+        
+        # Also try tickets collection
+        await db.tickets.update_one(
+            {"ticket_id": request.primary_ticket_id},
+            {
+                "$push": {
+                    "merged_tickets": merge_data,
+                    "audit_trail": {
+                        "action": "ticket_merged",
+                        "timestamp": now,
+                        "performed_by": request.agent_name,
+                        "merged_ticket_id": secondary_id,
+                        "reason": request.merge_reason
+                    }
+                },
+                "$set": {"updated_at": now}
+            },
+            upsert=False
+        )
+        
+        # Close secondary ticket
+        await collection.update_one(
+            {"ticket_id": secondary_id},
+            {
+                "$set": {
+                    "status": "merged",
+                    "merged_into": request.primary_ticket_id,
+                    "merged_at": now,
+                    "merged_by": request.agent_name,
+                    "updated_at": now
+                },
+                "$push": {
+                    "audit_trail": {
+                        "action": "merged_into",
+                        "timestamp": now,
+                        "performed_by": request.agent_name,
+                        "primary_ticket_id": request.primary_ticket_id
+                    }
+                }
+            }
+        )
+        
+        merged_count += 1
+        merged_tickets.append(secondary_id)
+    
+    return {
+        "success": True,
+        "primary_ticket_id": request.primary_ticket_id,
+        "merged_count": merged_count,
+        "merged_tickets": merged_tickets,
+        "message": f"Merged {merged_count} ticket(s) into {request.primary_ticket_id}"
+    }
+
+
+@router.get("/tickets/mergeable/{member_email}")
+async def get_mergeable_tickets(member_email: str):
+    """Get all open tickets for a member that could be merged."""
+    db = get_db()
+    
+    # Find all open tickets for this member
+    service_tickets = await db.service_desk_tickets.find({
+        "$or": [
+            {"member.email": member_email},
+            {"customer_email": member_email}
+        ],
+        "status": {"$nin": ["resolved", "closed", "merged"]}
+    }, {"_id": 0}).to_list(50)
+    
+    regular_tickets = await db.tickets.find({
+        "$or": [
+            {"member.email": member_email},
+            {"customer.email": member_email}
+        ],
+        "status": {"$nin": ["resolved", "closed", "merged"]}
+    }, {"_id": 0}).to_list(50)
+    
+    all_tickets = service_tickets + regular_tickets
+    
+    return {
+        "member_email": member_email,
+        "mergeable_count": len(all_tickets),
+        "tickets": all_tickets
+    }
+
+
+# ============== SENTIMENT ANALYSIS ENDPOINT ==============
+
+@router.post("/analyze-sentiment")
+async def analyze_text_sentiment(text: str):
+    """Analyze sentiment of text (for testing/preview)."""
+    result = await analyze_sentiment(text)
+    return result
+
+
 # ============== GENERATE AI DRAFT ==============
 
 @router.post("/item/{ticket_id}/generate-draft")
