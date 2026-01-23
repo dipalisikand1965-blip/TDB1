@@ -39,7 +39,7 @@ from models import (
     Collection, CollectionCreate, CollectionUpdate,
     ShippingThreshold, AppSettings, UpdateAppSettings,
     MembershipUser, UserRegister, UserLogin, MembershipUpgrade,
-    PetSoul, PetCelebration, PetPreferences, PetProfileCreate, PetProfileUpdate, CelebrationReminder,
+    PetSoul, PetCelebration, PetPreferences, PetHealthInfo, PetProfileCreate, PetProfileUpdate, CelebrationReminder,
     CartItem, CartSnapshot,
     CreateOrderRequest, VerifyPaymentRequest,
     AddMemberRequest, BulkActionRequest, CSVImportRequest, ProductCSVImportRequest,
