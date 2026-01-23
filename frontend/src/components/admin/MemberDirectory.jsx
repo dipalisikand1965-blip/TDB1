@@ -489,6 +489,13 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
     }
   }, [activeTab]);
 
+  // Fetch orders when Orders tab is selected
+  useEffect(() => {
+    if (activeTab === 'orders' && orders.length === 0) {
+      fetchMemberOrders();
+    }
+  }, [activeTab]);
+
   const fetchMemberTickets = async () => {
     setTicketsLoading(true);
     try {
