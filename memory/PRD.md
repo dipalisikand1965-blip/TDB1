@@ -436,8 +436,10 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
 ### Pets & Pet Soul
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/pets` | GET | List user's pets |
-| `/api/pets/{pet_id}` | GET | Get pet details |
+| `/api/pets` | GET | List user's pets (includes health data) |
+| `/api/pets` | POST | Create pet with health info (authenticated) |
+| `/api/pets/public` | POST | Create pet with health info (public) |
+| `/api/pets/{pet_id}` | GET | Get pet details (includes health data) |
 | `/api/pets/{pet_id}/soul` | GET | Get Pet Soul data |
 | `/api/pet-gate/filter-products/{pet_id}` | GET | Filter products by allergies |
 | `/api/soul-drip/next-question/{pet_id}` | GET | Get next soul question |
