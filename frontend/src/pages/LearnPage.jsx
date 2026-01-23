@@ -861,6 +861,83 @@ const LearnPage = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Trainer Profile Modal */}
+      <Dialog open={showTrainerModal} onOpenChange={setShowTrainerModal}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="w-6 h-6 text-blue-600" />
+              Trainer Profile
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedTrainer && (
+            <div className="space-y-4 py-4">
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 rounded-full bg-gray-100 overflow-hidden flex-shrink-0">
+                  {selectedTrainer.image ? (
+                    <img src={selectedTrainer.image} alt={selectedTrainer.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Users className="w-10 h-10 text-gray-300" />
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">{selectedTrainer.name}</h3>
+                  <p className="text-blue-600">{selectedTrainer.title}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                    <span className="font-medium">{selectedTrainer.rating}</span>
+                    <span className="text-gray-400">({selectedTrainer.reviews_count} reviews)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <MapPin className="w-4 h-4" />
+                <span>{selectedTrainer.city}</span>
+                <span className="mx-2">•</span>
+                <span>{selectedTrainer.experience_years}+ years experience</span>
+              </div>
+
+              {selectedTrainer.description && (
+                <p className="text-gray-600">{selectedTrainer.description}</p>
+              )}
+
+              {selectedTrainer.specializations && selectedTrainer.specializations.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium text-gray-500 mb-2">Specializations</p>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedTrainer.specializations.map((spec, i) => (
+                      <Badge key={i} className="bg-blue-100 text-blue-700">
+                        {spec.replace(/_/g, ' ')}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-4 border-t">
+                <Button 
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  onClick={() => {
+                    setShowTrainerModal(false);
+                    setShowRequestModal(true);
+                  }}
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Request Training
+                </Button>
+                <Button variant="outline" onClick={() => setShowTrainerModal(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
