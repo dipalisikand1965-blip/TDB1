@@ -666,6 +666,13 @@ const DineManager = ({ credentials }) => {
           <Sparkles className="w-4 h-4 mr-2" /> Dine Bundles
         </Button>
         <Button 
+          variant={activeTab === 'products' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('products')}
+          className={activeTab === 'products' ? 'bg-blue-500 hover:bg-blue-600' : ''}
+        >
+          <ShoppingBag className="w-4 h-4 mr-2" /> Products
+        </Button>
+        <Button 
           variant={activeTab === 'settings' ? 'default' : 'ghost'}
           onClick={() => setActiveTab('settings')}
           className={activeTab === 'settings' ? 'bg-gray-700 hover:bg-gray-800' : ''}
