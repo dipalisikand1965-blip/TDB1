@@ -1,0 +1,785 @@
+import React, { useState } from 'react';
+import { 
+  Book, Search, ChevronDown, ChevronRight, Home, Inbox, Bell, Brain,
+  ShoppingBag, Package, Command, Users, Crown, PawPrint, Cake, Headphones,
+  Users2, Heart, BarChart3, MessageSquare, Star, Sparkles, Gift, UtensilsCrossed,
+  Building, Plane, Stethoscope, PartyPopper, Dumbbell, FileText, AlertTriangle,
+  FileEdit, Quote, HelpCircle, Info, Tags, Dog, Percent, ShoppingCart, Repeat,
+  HandHeart, Store, Settings, Megaphone, Handshake, DollarSign, Database,
+  ArrowLeft, ExternalLink, Copy, Check
+} from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Badge } from '../components/ui/badge';
+import { Card } from '../components/ui/card';
+
+const AdminDocs = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [expandedSections, setExpandedSections] = useState(['core-tools']);
+  const [selectedDoc, setSelectedDoc] = useState('command-center');
+  const [copied, setCopied] = useState(false);
+
+  const toggleSection = (section) => {
+    setExpandedSections(prev => 
+      prev.includes(section) 
+        ? prev.filter(s => s !== section)
+        : [...prev, section]
+    );
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const sections = {
+    'core-tools': {
+      title: 'Core Tools',
+      icon: Command,
+      color: 'bg-purple-500',
+      items: [
+        { id: 'dashboard', title: 'Dashboard', icon: Home },
+        { id: 'unified-inbox', title: 'Unified Inbox', icon: Inbox },
+        { id: 'communications', title: 'Communications', icon: Bell },
+        { id: 'reminders', title: 'Reminders', icon: Bell },
+        { id: 'mira-memory', title: 'Mira Memory', icon: Brain },
+        { id: 'live-mis', title: 'Live MIS', icon: BarChart3 },
+        { id: 'orders', title: 'Orders', icon: ShoppingBag },
+        { id: 'fulfilment', title: 'Fulfilment', icon: Package },
+        { id: 'command-center', title: 'Command Center ⭐', icon: Command },
+        { id: 'member-directory', title: 'Pet Parent Directory', icon: Users },
+        { id: 'membership', title: 'Membership', icon: Crown },
+        { id: 'customers', title: 'Customers', icon: Users2 },
+        { id: 'pet-profiles', title: 'Pet Profiles', icon: PawPrint },
+        { id: 'celebrations', title: 'Celebrations', icon: Cake },
+        { id: 'service-desk', title: 'Service Desk', icon: Headphones },
+        { id: 'agents', title: 'Agents', icon: Users2 },
+        { id: 'loyalty', title: 'Loyalty (Paw Rewards)', icon: Heart },
+        { id: 'reports', title: 'Reports', icon: BarChart3 },
+        { id: 'mira-chats', title: 'Mira Chats', icon: MessageSquare },
+        { id: 'reviews', title: 'Reviews', icon: Star },
+      ]
+    },
+    'pillar-tools': {
+      title: 'Pillar Tools',
+      icon: Sparkles,
+      color: 'bg-pink-500',
+      items: [
+        { id: 'seed-all', title: 'Seed All', icon: Database },
+        { id: 'celebrate', title: 'Celebrate', icon: Gift },
+        { id: 'collections', title: 'Collections', icon: Sparkles },
+        { id: 'custom-cakes', title: 'Custom Cakes', icon: Cake },
+        { id: 'dine', title: 'Dine', icon: UtensilsCrossed },
+        { id: 'stay', title: 'Stay', icon: Building },
+        { id: 'travel', title: 'Travel', icon: Plane },
+        { id: 'care', title: 'Care', icon: Stethoscope },
+        { id: 'enjoy', title: 'Enjoy', icon: PartyPopper },
+        { id: 'fit', title: 'Fit', icon: Dumbbell },
+        { id: 'advisory', title: 'Advisory', icon: FileText },
+        { id: 'paperwork', title: 'Paperwork', icon: FileText },
+        { id: 'emergency', title: 'Emergency', icon: AlertTriangle },
+        { id: 'blog', title: 'Blog', icon: FileEdit },
+        { id: 'testimonials', title: 'Testimonials', icon: Quote },
+        { id: 'faqs', title: 'FAQs', icon: HelpCircle },
+        { id: 'about', title: 'About Page', icon: Info },
+        { id: 'page-cms', title: 'Page CMS', icon: FileEdit },
+      ]
+    },
+    'operations': {
+      title: 'Operations',
+      icon: Settings,
+      color: 'bg-blue-500',
+      items: [
+        { id: 'product-tags', title: 'Product Tags', icon: Tags },
+        { id: 'breed-tags', title: 'Breed Tags', icon: Dog },
+        { id: 'discounts', title: 'Discounts', icon: Percent },
+        { id: 'abandoned', title: 'Abandoned Carts', icon: ShoppingCart },
+        { id: 'autoship', title: 'Autoship', icon: Repeat },
+        { id: 'streaties', title: 'Streaties', icon: HandHeart },
+        { id: 'franchise', title: 'Franchise', icon: Store },
+      ]
+    },
+    'config': {
+      title: 'Config',
+      icon: Settings,
+      color: 'bg-gray-500',
+      items: [
+        { id: 'pillars-config', title: 'Pillars Config', icon: Settings },
+        { id: 'campaigns', title: 'Campaigns', icon: Megaphone },
+        { id: 'partners', title: 'Partners', icon: Handshake },
+        { id: 'pricing-hub', title: 'Pricing Hub', icon: DollarSign },
+        { id: 'data-migration', title: 'Data Migration', icon: Database },
+      ]
+    }
+  };
+
+  // Documentation content for each section
+  const docs = {
+    'command-center': {
+      title: 'Command Center',
+      subtitle: 'The "All-Seeing Eye" - Central Hub for Concierge Operations',
+      badge: '⭐ Most Important',
+      files: {
+        frontend: '/app/frontend/src/components/admin/ConciergeCommandCenter.jsx',
+        backend: '/app/backend/concierge_routes.py'
+      },
+      sections: [
+        {
+          title: 'What It Contains',
+          content: `• **Unified Queue**: ALL tickets from all sources in one place
+• **Real-time Event Stream**: Live business activity feed (slide-out panel)
+• **360° Member Profile**: Complete customer view (clickable)
+• **Mira's Intelligence**: AI-powered insights per ticket
+• **Omni-Channel Reply**: Respond via Mira, Email, WhatsApp
+• **SLA Timers**: Real-time countdown with breach alerts
+• **Bulk Actions**: Select multiple tickets for mass operations`
+        },
+        {
+          title: 'Ticket Sources',
+          content: `| Source | Collection | Description |
+|--------|------------|-------------|
+| Mira Requests | \`service_desk_tickets\` | AI concierge escalations |
+| Manual Tickets | \`tickets\` | Staff-created tickets |
+| Orders | \`orders\` | Pending/processing orders |
+| Stay Bookings | \`stay_requests\` | Boarding/hotel requests |
+| Travel Requests | \`travel_requests\` | Pet travel requests |
+| Care Requests | \`care_requests\` | Vet/grooming requests |
+| Celebrations | \`celebrations\` | Upcoming birthdays |`
+        },
+        {
+          title: 'SLA Configuration',
+          content: `| Priority | Time Limit | Color |
+|----------|-----------|-------|
+| Urgent | 2 hours | 🔴 Red |
+| High | 4 hours | 🟠 Orange |
+| Medium | 24 hours | 🟡 Yellow |
+| Low | 48 hours | 🟢 Green |`
+        },
+        {
+          title: 'Key Features',
+          content: `• **Member Snapshot**: Click member name → Opens 360° profile in new tab
+• **Pet Pass Display**: Shows TDC-XXXXXX for each pet
+• **Generate AI Draft**: Auto-generate response using GPT
+• **Pillar Filtering**: Filter by Celebrate, Dine, Stay, Travel, Care, etc.
+• **CSV Export**: Download current queue view
+• **Manual Ticket Creation**: Create tickets from modal`
+        },
+        {
+          title: 'API Endpoints',
+          content: `\`\`\`
+GET  /api/concierge/queue                    # Main ticket queue
+GET  /api/concierge/item/{ticket_id}         # Ticket details with member snapshot
+GET  /api/concierge/event-stream             # Live activity feed
+GET  /api/concierge/member-profile/{email}   # Full 360° profile
+POST /api/concierge/ticket/create            # Create manual ticket
+POST /api/concierge/item/{id}/resolve        # Resolve ticket
+POST /api/concierge/bulk-action              # Bulk operations
+GET  /api/concierge/export-csv               # Export to CSV
+\`\`\``
+        },
+        {
+          title: 'How to Modify',
+          content: `• **UI Changes**: Edit \`ConciergeCommandCenter.jsx\`
+• **Queue Logic**: Edit \`concierge_routes.py\` → \`get_command_center_queue()\`
+• **Add New Source**: Add to aggregation in \`get_command_center_queue()\`
+• **Change SLA Times**: Edit \`SLA_HOURS\` constant
+• **Priority Calculation**: Edit \`calculate_priority_score()\``
+        }
+      ]
+    },
+    'member-directory': {
+      title: 'Pet Parent Directory',
+      subtitle: 'Complete 360° CRM View - Like Zoho/Salesforce but Pet-Centric',
+      badge: '⭐ Key Feature',
+      files: {
+        frontend: '/app/frontend/src/components/admin/MemberDirectory.jsx',
+        backend: '/app/backend/concierge_routes.py'
+      },
+      sections: [
+        {
+          title: 'What It Contains',
+          content: `• **Complete Member List**: All registered pet parents
+• **360° Profile View**: Full customer profile with tabs
+• **Pet Soul Journey**: Pet personality insights with scores
+• **Multi-Pet Support**: See all pets per household`
+        },
+        {
+          title: 'Profile Tabs',
+          content: `| Tab | Contents |
+|-----|----------|
+| Overview | Contact info, membership status, quick stats |
+| Tickets | All support tickets for this member |
+| Orders | Complete order history |
+| Paw Rewards | Loyalty points earned/redeemed |
+| Health Vault | Pet health records (coming soon) |
+| Pet Soul Q&A | All Pet Soul questionnaire answers |`
+        },
+        {
+          title: 'Pet Pass Number',
+          content: `• **Format**: TDC-XXXXXX (6 alphanumeric characters)
+• **Generated**: Automatically on pet creation
+• **Unique**: Each pet has one, never changes
+• **Searchable**: Works in Command Center search`
+        },
+        {
+          title: 'API Endpoints',
+          content: `\`\`\`
+GET /api/admin/members/directory           # Member list
+GET /api/concierge/member-profile/{email}  # Full 360° profile
+\`\`\``
+        }
+      ]
+    },
+    'orders': {
+      title: 'Orders',
+      subtitle: 'Complete Order Lifecycle Management',
+      files: {
+        frontend: '/app/frontend/src/components/admin/OrdersTab.jsx',
+        backend: '/app/backend/server.py'
+      },
+      sections: [
+        {
+          title: 'What It Contains',
+          content: `• All orders (pending, processing, fulfilled, cancelled)
+• Order details with line items
+• Customer info
+• Payment status (Razorpay)
+• Delivery tracking`
+        },
+        {
+          title: 'Order Status Flow',
+          content: `\`\`\`
+pending → processing → fulfilled → delivered
+    ↓
+cancelled
+\`\`\`
+
+• Auto-notification sent on each status change
+• Creates Command Center ticket on new order`
+        },
+        {
+          title: 'Actions Available',
+          content: `• View order details
+• Update order status
+• Add tracking info
+• Issue refunds
+• Print invoice
+• Contact customer`
+        }
+      ]
+    },
+    'pet-profiles': {
+      title: 'Pet Profiles',
+      subtitle: 'Manage All Registered Pets',
+      files: {
+        frontend: '/app/frontend/src/pages/Admin.jsx',
+        backend: '/app/backend/server.py'
+      },
+      sections: [
+        {
+          title: 'What It Contains',
+          content: `• All registered pets
+• Pet details (name, breed, gender, DOB)
+• **Pet Pass Number** (TDC-XXXXXX)
+• Pet parent info
+• Pet Soul completion status`
+        },
+        {
+          title: 'Pet Pass Number System',
+          content: `• **Format**: TDC-XXXXXX
+• **Generation**: \`generate_pet_pass_number()\` in server.py
+• **Storage**: \`pet_pass_number\` field in pets collection
+• **Migration**: Run \`POST /api/admin/migrate/pet-pass-numbers\` for existing pets`
+        },
+        {
+          title: 'Pet Soul Score',
+          content: `Score = (Answered Questions / Total Questions) × 100%
+
+Categories:
+• Identity & Temperament
+• Family & Pack
+• Rhythm & Routine
+• Food & Nutrition
+• Health & Wellness
+• Adventures & Experiences
+• Quirks & Preferences`
+        }
+      ]
+    },
+    'collections': {
+      title: 'Collections',
+      subtitle: 'Campaign Pages & Curated Product Collections',
+      files: {
+        frontend: '/app/frontend/src/components/admin/CollectionManager.jsx',
+        backend: '/app/backend/collection_routes.py'
+      },
+      sections: [
+        {
+          title: 'What It Contains',
+          content: `• Curated product collections
+• Campaign pages (Valentine's, Diwali, etc.)
+• Custom sections with products
+• Navbar display settings`
+        },
+        {
+          title: 'Collection Structure',
+          content: `\`\`\`json
+{
+  "name": "Valentine's Day 2026",
+  "slug": "valentines-2025",
+  "sections": [
+    {
+      "title": "Valentine's Specials",
+      "layout": "featured|grid|carousel",
+      "items": [product_ids]
+    }
+  ],
+  "visibility": {
+    "is_published": true,
+    "end_date": "2026-02-15"
+  },
+  "display_locations": {
+    "show_in_navbar": true
+  }
+}
+\`\`\``
+        },
+        {
+          title: 'API Endpoints',
+          content: `\`\`\`
+# Public
+GET /api/campaign/collections              # List published collections
+GET /api/campaign/collections/navbar       # Navbar collections
+GET /api/campaign/collections/{slug}       # Single collection
+
+# Admin
+GET  /api/admin/enhanced-collections       # All collections
+POST /api/admin/enhanced-collections       # Create
+PUT  /api/admin/enhanced-collections/{id}  # Update
+\`\`\``
+        }
+      ]
+    },
+    'faqs': {
+      title: 'FAQs',
+      subtitle: 'Multi-Pillar Help Center Management',
+      files: {
+        frontend: '/app/frontend/src/pages/Admin.jsx',
+        backend: '/app/backend/server.py'
+      },
+      sections: [
+        {
+          title: 'What It Contains',
+          content: `• FAQ management interface
+• Multi-pillar categories
+• Featured FAQs
+• Search functionality`
+        },
+        {
+          title: 'Categories',
+          content: `• Concierge & Mira AI
+• Membership & Club
+• Celebrate
+• Dine
+• Stay
+• Care
+• Orders & Delivery
+• Payments & Refunds
+• Emergency Support`
+        },
+        {
+          title: 'API Endpoints',
+          content: `\`\`\`
+GET    /api/faqs                # Public FAQ list
+GET    /api/admin/faqs          # Admin FAQ list
+POST   /api/admin/faqs          # Create FAQ
+PUT    /api/admin/faqs/{id}     # Update FAQ
+DELETE /api/admin/faqs/{id}     # Delete FAQ
+\`\`\``
+        }
+      ]
+    },
+    'loyalty': {
+      title: 'Loyalty (Paw Rewards)',
+      subtitle: 'Customer Loyalty Program Management',
+      files: {
+        backend: '/app/backend/paw_rewards_routes.py'
+      },
+      sections: [
+        {
+          title: 'Earning Rules',
+          content: `| Action | Points |
+|--------|--------|
+| Order ₹100 | 10 points |
+| Birthday order | 2x points |
+| Referral | 100 points |
+| Pet Soul completion | 50 points |`
+        },
+        {
+          title: 'Redemption',
+          content: `• 100 points = ₹10 discount
+• Minimum redemption: 50 points
+• Points expire: 12 months`
+        }
+      ]
+    },
+    'membership': {
+      title: 'Membership',
+      subtitle: 'Membership Tier Management',
+      files: {
+        frontend: '/app/frontend/src/components/admin/MembershipManager.jsx',
+        backend: '/app/backend/membership_routes.py'
+      },
+      sections: [
+        {
+          title: 'Membership Tiers',
+          content: `| Tier | Price | Key Benefits |
+|------|-------|--------------|
+| Free | ₹0 | Basic access, 3 Mira chats/day |
+| Monthly | ₹99/mo | Full Mira access, 5% rewards |
+| Annual | ₹999/yr | Priority support, 10% rewards |
+| Family | ₹1,499/yr | Multiple pets, 15% rewards |`
+        },
+        {
+          title: 'Rules',
+          content: `• Auto-renewal via Razorpay
+• Grace period: 7 days after expiry
+• Downgrade to free if not renewed`
+        }
+      ]
+    },
+    'stay': {
+      title: 'Stay',
+      subtitle: 'Pet Accommodation Services',
+      files: {
+        frontend: '/app/frontend/src/components/admin/StayManager.jsx',
+        backend: '/app/backend/stay_routes.py'
+      },
+      sections: [
+        {
+          title: 'Service Types',
+          content: `• Pet Hotels
+• Home Boarding Hosts
+• Day Care Centers`
+        },
+        {
+          title: 'Booking Flow',
+          content: `1. Request submitted
+2. Availability checked
+3. Booking confirmed
+4. Pre-stay checklist
+5. Check-in
+6. Stay updates
+7. Check-out`
+        }
+      ]
+    },
+    'dine': {
+      title: 'Dine',
+      subtitle: 'Pet-Friendly Restaurant Management',
+      files: {
+        frontend: '/app/frontend/src/components/admin/DineManager.jsx',
+        backend: '/app/backend/dine_routes.py'
+      },
+      sections: [
+        {
+          title: 'What It Contains',
+          content: `• Pet-friendly restaurant database
+• Reservation system
+• Restaurant partnerships
+• Dine request management`
+        },
+        {
+          title: 'Rules',
+          content: `• Restaurants must be verified pet-friendly
+• Reservations include pet count
+• Partner restaurants get priority listing`
+        }
+      ]
+    },
+    'travel': {
+      title: 'Travel',
+      subtitle: 'Pet Travel Services',
+      files: {
+        frontend: '/app/frontend/src/pages/TravelPage.jsx',
+        backend: '/app/backend/travel_routes.py'
+      },
+      sections: [
+        {
+          title: 'Travel Types',
+          content: `• Cab/Road Travel
+• Train/Bus
+• Domestic Flight
+• International (Pet Relocation)`
+        },
+        {
+          title: 'Rules',
+          content: `• Page accessible without login
+• Booking requires login
+• Creates Command Center ticket on submission`
+        }
+      ]
+    },
+    'care': {
+      title: 'Care',
+      subtitle: 'Pet Healthcare Services',
+      files: {
+        frontend: '/app/frontend/src/pages/CarePage.jsx',
+        backend: '/app/backend/care_routes.py'
+      },
+      sections: [
+        {
+          title: 'Service Types',
+          content: `• Vet visit coordination
+• Grooming appointment
+• Vaccination reminder
+• Health record management`
+        },
+        {
+          title: 'Health Vault (Coming Soon)',
+          content: `• Weight tracking graphs
+• Vaccination records
+• Vet visit history
+• PDF export of health records`
+        }
+      ]
+    },
+    'dashboard': {
+      title: 'Dashboard',
+      subtitle: 'Business Overview & Quick Actions',
+      files: {
+        frontend: '/app/frontend/src/components/admin/DashboardTab.jsx'
+      },
+      sections: [
+        {
+          title: 'What It Contains',
+          content: `• Overview statistics (total members, orders, revenue)
+• Quick action cards
+• Recent activity feed
+• Key metrics at a glance`
+        },
+        {
+          title: 'Data Refresh',
+          content: `• Stats refresh every 60 seconds
+• Shows today's orders, pending fulfillments
+• Revenue calculated from completed orders only`
+        }
+      ]
+    }
+  };
+
+  // Get current doc or default
+  const currentDoc = docs[selectedDoc] || docs['command-center'];
+
+  // Filter items based on search
+  const filteredSections = Object.entries(sections).map(([key, section]) => ({
+    ...section,
+    key,
+    items: section.items.filter(item => 
+      item.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  })).filter(section => section.items.length > 0);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-white hover:bg-white/20"
+              onClick={() => window.location.href = '/admin'}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Admin
+            </Button>
+            <div className="h-6 w-px bg-white/30" />
+            <div className="flex items-center gap-2">
+              <Book className="w-6 h-6" />
+              <h1 className="text-xl font-bold">Admin Panel Documentation</h1>
+            </div>
+          </div>
+          <Badge className="bg-white/20 text-white">
+            The Doggy Company®
+          </Badge>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto flex">
+        {/* Sidebar */}
+        <div className="w-72 bg-white border-r min-h-screen p-4 sticky top-0">
+          {/* Search */}
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input 
+              placeholder="Search docs..." 
+              className="pl-9"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          {/* Navigation */}
+          <nav className="space-y-2">
+            {filteredSections.map(section => (
+              <div key={section.key}>
+                <button
+                  onClick={() => toggleSection(section.key)}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left font-medium transition-colors ${
+                    expandedSections.includes(section.key) 
+                      ? 'bg-purple-50 text-purple-700' 
+                      : 'hover:bg-gray-100'
+                  }`}
+                >
+                  <div className={`w-6 h-6 rounded ${section.color} flex items-center justify-center`}>
+                    <section.icon className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="flex-1">{section.title}</span>
+                  {expandedSections.includes(section.key) 
+                    ? <ChevronDown className="w-4 h-4" />
+                    : <ChevronRight className="w-4 h-4" />
+                  }
+                </button>
+                
+                {expandedSections.includes(section.key) && (
+                  <div className="ml-4 mt-1 space-y-1">
+                    {section.items.map(item => (
+                      <button
+                        key={item.id}
+                        onClick={() => setSelectedDoc(item.id)}
+                        className={`w-full flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors ${
+                          selectedDoc === item.id
+                            ? 'bg-purple-100 text-purple-700 font-medium'
+                            : 'hover:bg-gray-100 text-gray-600'
+                        }`}
+                      >
+                        <item.icon className="w-4 h-4" />
+                        {item.title}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </nav>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 p-8">
+          <div className="max-w-4xl">
+            {/* Doc Header */}
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-3xl font-bold text-gray-900">{currentDoc.title}</h1>
+                {currentDoc.badge && (
+                  <Badge className="bg-yellow-100 text-yellow-800">{currentDoc.badge}</Badge>
+                )}
+              </div>
+              <p className="text-lg text-gray-600">{currentDoc.subtitle}</p>
+            </div>
+
+            {/* File References */}
+            {currentDoc.files && (
+              <Card className="p-4 mb-6 bg-gray-50">
+                <h3 className="font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  File References
+                </h3>
+                <div className="space-y-1">
+                  {currentDoc.files.frontend && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Badge variant="outline" className="text-xs">Frontend</Badge>
+                      <code className="bg-white px-2 py-0.5 rounded text-purple-600 flex-1">
+                        {currentDoc.files.frontend}
+                      </code>
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => copyToClipboard(currentDoc.files.frontend)}
+                      >
+                        {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                      </Button>
+                    </div>
+                  )}
+                  {currentDoc.files.backend && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Badge variant="outline" className="text-xs">Backend</Badge>
+                      <code className="bg-white px-2 py-0.5 rounded text-blue-600 flex-1">
+                        {currentDoc.files.backend}
+                      </code>
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => copyToClipboard(currentDoc.files.backend)}
+                      >
+                        {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
+
+            {/* Doc Sections */}
+            <div className="space-y-6">
+              {currentDoc.sections?.map((section, idx) => (
+                <Card key={idx} className="p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-bold">
+                      {idx + 1}
+                    </div>
+                    {section.title}
+                  </h2>
+                  <div className="prose prose-sm max-w-none">
+                    <pre className="whitespace-pre-wrap font-sans text-gray-700 bg-gray-50 p-4 rounded-lg">
+                      {section.content}
+                    </pre>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* Quick Reference */}
+            <Card className="p-6 mt-8 bg-gradient-to-r from-purple-50 to-pink-50">
+              <h2 className="text-xl font-semibold mb-4">📚 Quick Reference</h2>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <h3 className="font-medium text-gray-700 mb-2">Key Constants</h3>
+                  <code className="block bg-white p-3 rounded text-xs">
+{`// SLA Hours
+SLA_HOURS = {
+  urgent: 2,
+  high: 4,
+  medium: 24,
+  low: 48
+}
+
+// Pet Pass Format
+PET_PASS = "TDC-XXXXXX"`}
+                  </code>
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-700 mb-2">Important Collections</h3>
+                  <code className="block bg-white p-3 rounded text-xs">
+{`users              # Members
+pets               # Pet profiles
+orders             # Orders
+tickets            # Manual tickets
+service_desk_tickets  # Mira tickets
+mira_memories      # AI memories
+enhanced_collections  # Campaigns`}
+                  </code>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AdminDocs;
