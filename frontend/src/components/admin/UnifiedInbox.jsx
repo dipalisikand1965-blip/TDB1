@@ -43,7 +43,12 @@ import {
   Dumbbell,
   Briefcase,
   PartyPopper,
-  FileText
+  FileText,
+  ShoppingBag,
+  Crown,
+  BookOpen,
+  Shield,
+  Users
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 
