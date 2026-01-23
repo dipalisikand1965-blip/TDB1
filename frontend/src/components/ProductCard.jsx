@@ -1179,6 +1179,9 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
                         ))}
                     </div>
                     <p className="text-sm text-gray-500 mt-2">No ratings yet</p>
+                    <p className="text-xs text-amber-600 italic mt-1">
+                        Purchase this product and share your experience!
+                    </p>
                 </div>
             )}
             
