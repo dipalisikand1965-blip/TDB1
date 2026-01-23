@@ -66,72 +66,13 @@ class AutoshipCreate(BaseModel):
 
 
 # ==================== ORDER ROUTES ====================
+# NOTE: Order routes have been moved to orders_routes.py
+# The following routes are kept for backward compatibility but should use orders_routes.py
 
-@order_router.get("/orders/my-orders")
-async def get_my_orders(authorization: Optional[str] = None):
-    """Get orders for the logged-in user"""
-    if not get_current_user:
-        raise HTTPException(status_code=500, detail="Auth not configured")
-    
-    from fastapi import Header
-    # This will be properly handled when integrated
-    # For now, this is a placeholder that will work with the main server
-    return {"orders": [], "message": "Use main server endpoint"}
-
-
-@order_router.post("/orders")
-async def create_order(order: dict):
-    """Create a new order"""
-    order["id"] = str(uuid.uuid4())
-    order["created_at"] = datetime.now(timezone.utc).isoformat()
-    order["updated_at"] = datetime.now(timezone.utc).isoformat()
-
-    await db.orders.insert_one(order)
-
-    # Log the order
-    try:
-        items_summary = ", ".join([f"{item['name']} x{item['quantity']}" for item in order.get("items", [])])
-        logger.info(f"New order: {order.get('orderId')} - Items: {items_summary}")
-    except Exception as e:
-        logger.error(f"Order logging failed: {e}")
-    
-    # Auto-create Service Desk ticket for cake order
-    try:
-        # Check if order contains cakes (for now, create ticket for all orders)
-        customer = order.get("customer", {})
-        delivery = order.get("delivery", {})
-        
-        ticket_id = await create_ticket_from_event(db, "cake_order", {
-            "order_id": order.get("orderId") or order["id"],
-            "customer_name": customer.get("parentName") or customer.get("name") or "Customer",
-            "customer_email": customer.get("email") or order.get("email"),
-            "customer_phone": customer.get("phone") or customer.get("whatsappNumber") or order.get("phone"),
-            "city": delivery.get("city") or order.get("shipping_address", {}).get("city"),
-            "items": order.get("items", []),
-            "total": order.get("total") or order.get("subtotal", 0),
-            "delivery_date": delivery.get("date") or order.get("delivery_date"),
-            "delivery_address": f"{delivery.get('address', '')} {delivery.get('landmark', '')} {delivery.get('city', '')} {delivery.get('pincode', '')}".strip(),
-            "special_instructions": order.get("specialInstructions") or order.get("note"),
-            "delivery_method": delivery.get("method", "delivery"),
-            "pickup_location": delivery.get("pickupLocation")
-        })
-        logger.info(f"Auto-created ticket {ticket_id} for order {order.get('orderId')}")
-    except Exception as e:
-        logger.error(f"Failed to auto-create ticket for order: {e}")
-
-    return {"message": "Order created", "orderId": order.get("orderId"), "id": order["id"]}
-
-
-@order_router.get("/orders/{order_id}")
-async def get_order(order_id: str):
-    """Get order by ID"""
-    order = await db.orders.find_one(
-        {"$or": [{"id": order_id}, {"orderId": order_id}]},
-        {"_id": 0}
-    )
-    if not order:
-        raise HTTPException(status_code=404, detail="Order not found")
-    return order
+# Removed duplicate routes:
+# - GET /orders/my-orders (now in orders_routes.py)
+# - POST /orders (now in orders_routes.py)
+# - GET /orders/{order_id} (now in orders_routes.py)
 
 
 # ==================== CART ROUTES ====================
