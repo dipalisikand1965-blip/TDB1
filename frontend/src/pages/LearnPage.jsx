@@ -161,7 +161,16 @@ const LearnPage = () => {
   };
 
   const handleSubmitRequest = async () => {
-    if (!user || !selectedPet) {
+    if (!user) {
+      toast({ 
+        title: 'Please sign in', 
+        description: 'You need to be logged in to submit a training request',
+        variant: 'destructive' 
+      });
+      return;
+    }
+    
+    if (!selectedPet) {
       toast({ title: 'Please select a pet', variant: 'destructive' });
       return;
     }
