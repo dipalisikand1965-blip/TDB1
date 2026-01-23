@@ -8,7 +8,7 @@ import { ArrowLeft, PawPrint, AlertCircle, Brain, FileText, Sparkles, Check } fr
 import { getApiUrl } from '../utils/api';
 import PetSoulJourney from '../components/PetSoulJourney';
 import PetSoulAnswers from '../components/PetSoulAnswers';
-import { useToast } from '../components/ui/use-toast';
+import { useToast } from '../hooks/use-toast';
 import { useAuth } from '../context/AuthContext';
 
 // Question options for each question ID
