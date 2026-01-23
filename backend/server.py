@@ -7600,24 +7600,16 @@ async def create_pet_profile_public(pet: PetProfileCreate):
     pet_pass_number = await generate_pet_pass_number_server()
     now = datetime.now(timezone.utc).isoformat()
     
-    # Debug: Log the incoming health field
-    logger.info(f"Pet creation - Health field received: {pet.health}")
-    
-    dumped_data = pet.model_dump()
-    logger.info(f"Pet creation - model_dump health: {dumped_data.get('health')}")
-    
     pet_data = {
         "id": pet_id,
         "pet_pass_number": pet_pass_number,
-        **dumped_data,
+        **pet.model_dump(),
         "owner_email": pet.owner_email,  # Use provided email
         "achievements": [],
         "order_history": [],
         "created_at": now,
         "updated_at": now
     }
-    
-    logger.info(f"Pet creation - pet_data health: {pet_data.get('health')}")
     
     # Auto-add birthday and gotcha day to celebrations if dates provided
     celebrations = list(pet.celebrations) if pet.celebrations else []
