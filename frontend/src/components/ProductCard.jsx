@@ -471,11 +471,11 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
     }));
   };
 
-  // Fetch related products
+  // Fetch related products - pillar-aware
   React.useEffect(() => {
     const fetchRelated = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/products/${product.id}/related?limit=4`);
+        const response = await fetch(`${API_URL}/api/products/${product.id}/related?limit=4&pillar=${pillar}`);
         if (response.ok) {
           const data = await response.json();
           setRelatedProducts(data.related || []);
@@ -486,7 +486,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
       setLoadingRelated(false);
     };
     fetchRelated();
-  }, [product.id, API_URL]);
+  }, [product.id, pillar]);
 
   // Fetch bundle products (cakes and toys) for hamper products
   React.useEffect(() => {
