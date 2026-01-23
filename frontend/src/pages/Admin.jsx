@@ -1995,6 +1995,11 @@ const Admin = () => {
           </div>
         )}
 
+        {/* NPS/Pawmoter Score Tab */}
+        {activeTab === 'nps' && (
+          <NPSManager getAuthHeader={getAuthHeaders} />
+        )}
+
         {/* Testimonials Tab */}
         {activeTab === 'testimonials' && (
           <div className="space-y-6">
