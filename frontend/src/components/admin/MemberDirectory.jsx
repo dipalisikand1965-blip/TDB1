@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Textarea } from '../ui/textarea';
 import { 
   Users, Crown, Search, Filter, Download, Upload, Plus, Edit2, 
   Trash2, Gift, Calendar, CreditCard, PawPrint, Star, Award,
@@ -11,7 +12,8 @@ import {
   ChevronRight, X, Check, AlertCircle, RefreshCw, Eye, History,
   MessageSquare, Heart, Zap, Target, Home, Plane, Utensils,
   FileText, UserPlus, Settings, MoreHorizontal, ExternalLink,
-  User, Activity, Package, DollarSign, Tag, Building, Briefcase
+  User, Activity, Package, DollarSign, Tag, Building, Briefcase,
+  ShoppingCart, Syringe, Weight, Stethoscope, Send
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 
