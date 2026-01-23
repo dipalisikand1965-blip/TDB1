@@ -10,10 +10,78 @@ import {
   AlertCircle, CheckCircle, MessageCircle, Mail, Phone, Crown,
   Package, Inbox, Heart, Cake, Utensils, Plane, Home, Briefcase,
   ChevronRight, Send, Edit, Flag, Link2, Bell, History, Brain,
-  ShoppingBag, Tag, Calendar, X, Check, Loader2, Sparkles
+  ShoppingBag, Tag, Calendar, X, Check, Loader2, Sparkles,
+  Timer, TrendingUp, BarChart3, Users, Zap, ExternalLink
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// SLA Configuration (must match backend)
+const SLA_HOURS = {
+  urgent: 2,
+  high: 4,
+  medium: 24,
+  low: 48
+};
+
+// SLA Timer Component - Real-time countdown
+const SLATimer = ({ createdAt, priority, compact = false }) => {
+  const [timeLeft, setTimeLeft] = useState(null);
+  
+  useEffect(() => {
+    const slaHours = SLA_HOURS[priority] || 24;
+    
+    const calculateTimeLeft = () => {
+      if (!createdAt) return null;
+      
+      const created = new Date(createdAt);
+      const deadline = new Date(created.getTime() + slaHours * 60 * 60 * 1000);
+      const now = new Date();
+      const diff = deadline - now;
+      
+      return {
+        total: diff,
+        hours: Math.floor(Math.abs(diff) / (1000 * 60 * 60)),
+        minutes: Math.floor((Math.abs(diff) % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((Math.abs(diff) % (1000 * 60)) / 1000),
+        breached: diff < 0,
+        warning: diff > 0 && diff < 60 * 60 * 1000 // Less than 1 hour
+      };
+    };
+    
+    setTimeLeft(calculateTimeLeft());
+    const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
+    return () => clearInterval(timer);
+  }, [createdAt, priority]);
+  
+  if (!timeLeft) return null;
+  
+  const { hours, minutes, seconds, breached, warning } = timeLeft;
+  
+  if (compact) {
+    return (
+      <span className={`text-xs font-mono ${breached ? 'text-red-600 font-bold' : warning ? 'text-orange-500' : 'text-gray-500'}`}>
+        {breached ? '⚠️ ' : '⏱️ '}
+        {hours}h {minutes}m {breached ? 'over' : ''}
+      </span>
+    );
+  }
+  
+  return (
+    <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+      breached ? 'bg-red-100 text-red-700 animate-pulse' : 
+      warning ? 'bg-orange-100 text-orange-700' : 
+      'bg-gray-100 text-gray-700'
+    }`}>
+      <Timer className="w-4 h-4" />
+      <span className="font-mono font-medium">
+        {breached ? 'OVERDUE: ' : 'SLA: '}
+        {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+      </span>
+      {breached && <AlertCircle className="w-4 h-4 animate-bounce" />}
+    </div>
+  );
+};
 
 // Source icons and colors
 const SOURCE_CONFIG = {
