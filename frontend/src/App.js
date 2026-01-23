@@ -64,6 +64,7 @@ import TravelPage from "./pages/TravelPage";
 import CarePage from "./pages/CarePage";
 import EnjoyPage from "./pages/EnjoyPage";
 import FitPage from "./pages/FitPage";
+import LearnPage from "./pages/LearnPage";
 import AdvisoryPage from "./pages/AdvisoryPage";
 import PaperworkPage from "./pages/PaperworkPage";
 import EmergencyPage from "./pages/EmergencyPage";
