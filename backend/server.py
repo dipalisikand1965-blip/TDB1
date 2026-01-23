@@ -747,6 +747,10 @@ async def lifespan(app: FastAPI):
     set_escalation_db(db)
     logger.info("Escalation engine initialized")
     
+    # Initialize Shopify sync database connection
+    set_shopify_db(db)
+    logger.info("Shopify sync module initialized")
+    
     # Initialize search service in background (non-blocking)
     # This prevents slow Meilisearch connection from blocking app startup
     async def init_search_background():
