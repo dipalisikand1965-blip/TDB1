@@ -1177,6 +1177,14 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
             🎯 Concierge Command Center
           </h1>
           <div className="flex items-center gap-2">
+            <Button 
+              onClick={() => { setShowEventStream(!showEventStream); if (!showEventStream) loadEventStream(); }}
+              variant={showEventStream ? 'default' : 'outline'} 
+              size="sm"
+              className={showEventStream ? 'bg-purple-600' : ''}
+            >
+              <Activity className="w-4 h-4 mr-1" /> Event Stream
+            </Button>
             <Button onClick={() => setShowCreateModal(true)} variant="outline" size="sm">
               <Plus className="w-4 h-4 mr-1" /> New Ticket
             </Button>
