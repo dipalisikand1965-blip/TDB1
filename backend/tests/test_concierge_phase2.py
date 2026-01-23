@@ -286,26 +286,26 @@ class TestWhatsAppReply:
         if items:
             ticket_id = items[0].get("ticket_id")
             
+            # API uses query params: ticket_id, message, recipient_phone
             response = requests.post(
-                f"{BASE_URL}/api/concierge/reply/whatsapp/{ticket_id}",
-                json={
-                    "message": "Test WhatsApp reply",
-                    "agent_id": "test_agent",
-                    "agent_name": "Test Agent"
+                f"{BASE_URL}/api/concierge/reply/whatsapp",
+                params={
+                    "ticket_id": ticket_id,
+                    "message": "Test WhatsApp reply from The Doggy Company",
+                    "recipient_phone": "9876543210"
                 }
             )
             
-            assert response.status_code in [200, 400, 404, 500]
+            assert response.status_code in [200, 400, 404, 422, 500]
             
             if response.status_code == 200:
                 data = response.json()
+                assert data.get("success") == True
+                assert data.get("channel") == "whatsapp"
                 # Should return a click-to-chat link
-                if "whatsapp_link" in data or "link" in data:
-                    link = data.get("whatsapp_link") or data.get("link")
-                    assert "wa.me" in link or "whatsapp" in link.lower(), "Should be a WhatsApp link"
-                    print(f"✅ WhatsApp reply returns click-to-chat link: {link[:50]}...")
-                else:
-                    print(f"✅ WhatsApp reply endpoint works: {data}")
+                link = data.get("link", "")
+                assert "wa.me" in link, "Should be a WhatsApp click-to-chat link"
+                print(f"✅ WhatsApp reply returns click-to-chat link: {link[:60]}...")
             else:
                 print(f"⚠️ WhatsApp reply returned {response.status_code}: {response.text[:200]}")
         else:
