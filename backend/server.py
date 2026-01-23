@@ -10841,6 +10841,10 @@ set_health_vault_db(db)  # Initialize Health Vault with database
 app.include_router(analytics_router, prefix="/api")  # Analytics at /api/analytics/*
 set_analytics_db(db)  # Initialize Analytics with database
 
+# FAQ Routes (Refactored)
+app.include_router(faq_router)  # Public FAQs at /api/faqs
+app.include_router(faq_admin_router)  # Admin FAQs at /api/admin/faqs
+
 # Auto Ticket Creation System
 set_auto_ticket_db(db)  # Initialize auto-ticket creation with database
 
