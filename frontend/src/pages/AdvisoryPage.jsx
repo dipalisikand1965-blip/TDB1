@@ -9,13 +9,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraContextPanel from '../components/MiraContextPanel';
+import ProductCard from '../components/ProductCard';
 import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
   ArrowRight, Play, ChevronDown, Users, Calendar, MapPin, Award,
-  Phone, Video, MessageCircle, Mail, Clock, PawPrint, Shield
+  Phone, Video, MessageCircle, Mail, Clock, PawPrint, Shield, ShoppingBag
 } from 'lucide-react';
 
 // Advisory Type Configuration - Violet/Purple theme
