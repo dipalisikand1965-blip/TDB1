@@ -49,6 +49,32 @@ const LearnManager = ({ getAuthHeader }) => {
   const [bundles, setBundles] = useState([]);
   const [stats, setStats] = useState({});
   
+  // Settings
+  const [settings, setSettings] = useState({
+    paw_rewards: {
+      points_per_request: 30,
+      points_per_session: 10,
+      points_per_completion: 100,
+      milestone_bonus: 50
+    },
+    birthday_perks: {
+      discount_percent: 15,
+      valid_days: 7
+    },
+    notifications: {
+      email_enabled: true,
+      whatsapp_enabled: false,
+      sms_enabled: false,
+      training_reminder: true,
+      weekly_progress: false
+    },
+    service_desk: {
+      auto_create_tickets: true,
+      route_to_trainers: false,
+      default_sla: 48
+    }
+  });
+  
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
