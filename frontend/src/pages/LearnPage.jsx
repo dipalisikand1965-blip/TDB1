@@ -71,7 +71,9 @@ const LearnPage = () => {
   const [selectedType, setSelectedType] = useState(null);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showEnrollModal, setShowEnrollModal] = useState(false);
+  const [showTrainerModal, setShowTrainerModal] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState(null);
+  const [selectedTrainer, setSelectedTrainer] = useState(null);
   const [userPets, setUserPets] = useState([]);
   const [selectedPet, setSelectedPet] = useState(null);
   const [submitting, setSubmitting] = useState(false);
