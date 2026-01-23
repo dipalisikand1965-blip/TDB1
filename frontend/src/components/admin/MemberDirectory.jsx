@@ -460,6 +460,19 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
   const fetchMemberDetails = async () => {
     setLoading(true);
     try {
+      // Try the concierge full-profile endpoint first (more comprehensive)
+      const fullProfileResponse = await fetch(`${API_URL}/api/concierge/member/${encodeURIComponent(member.email)}/full-profile`);
+      if (fullProfileResponse.ok) {
+        const data = await fullProfileResponse.json();
+        setMemberData(data.member || member);
+        setPets(data.pets || []);
+        setActivity(data.activity || []);
+        setNotes(data.notes || []);
+        setOrders(data.orders?.list || []);
+        return;
+      }
+      
+      // Fallback to admin endpoint
       const response = await fetch(`${API_URL}/api/admin/members/${member.id}/full-profile`);
       if (response.ok) {
         const data = await response.json();
