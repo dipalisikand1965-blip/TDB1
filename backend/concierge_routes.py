@@ -960,10 +960,20 @@ async def add_note(ticket_id: str, request: AddNoteRequest):
     raise HTTPException(status_code=404, detail="Item not found")
 
 
+class ResolveRequest(BaseModel):
+    agent_name: str
+    agent_id: Optional[str] = None
+    resolution_notes: str
+    internal_notes: Optional[str] = None
+    send_via: str = "email"  # email, whatsapp, mira
+    send_nps_survey: bool = True  # Send NPS survey after resolution
+
+
 @router.post("/item/{ticket_id}/resolve")
 async def resolve_item(ticket_id: str, request: ResolveRequest):
     """
     Resolve a queue item. MUST communicate to member.
+    Optionally sends NPS (Net Pawmoter Score) survey.
     """
     db = get_db()
     now = datetime.now(timezone.utc).isoformat()
@@ -1010,7 +1020,9 @@ async def resolve_item(ticket_id: str, request: ResolveRequest):
     
     # Send notification to member
     member_email = item.get("member", {}).get("email")
+    member_name = item.get("member", {}).get("name")
     notification_sent = False
+    nps_sent = False
     
     if member_email and request.send_via == "email":
         # Send email
@@ -1045,11 +1057,25 @@ async def resolve_item(ticket_id: str, request: ResolveRequest):
             )
             notification_sent = True
     
+    # Send NPS survey if requested and member email exists
+    if request.send_nps_survey and member_email:
+        try:
+            nps_sent = await send_nps_survey(
+                member_email=member_email,
+                member_name=member_name or "Pet Parent",
+                ticket_id=ticket_id,
+                resolved_by=request.agent_name
+            )
+            logger.info(f"NPS survey sent for ticket {ticket_id}: {nps_sent}")
+        except Exception as e:
+            logger.warning(f"Failed to send NPS survey: {e}")
+    
     return {
         "success": True,
         "message": "Resolved and member notified",
         "notification_sent": notification_sent,
-        "send_via": request.send_via
+        "send_via": request.send_via,
+        "nps_survey_sent": nps_sent
     }
 
 
