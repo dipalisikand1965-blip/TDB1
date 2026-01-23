@@ -104,39 +104,8 @@ class PetCelebration(BaseModel):
     notes: Optional[str] = None
 
 
-class PetProfileCreate(BaseModel):
-    name: str
-    species: str = "dog"
-    breed: Optional[str] = None
-    birth_date: Optional[str] = None
-    gotcha_date: Optional[str] = None
-    weight: Optional[float] = None
-    gender: Optional[str] = None
-    photo_url: Optional[str] = None
-    owner_name: str
-    owner_email: str
-    owner_phone: Optional[str] = None
-    city: Optional[str] = None
-    soul: Optional[PetSoulProfile] = None
-    preferences: Optional[PetPreferences] = None
-    celebrations: Optional[List[PetCelebration]] = []
-
-
-class PetProfileUpdate(BaseModel):
-    name: Optional[str] = None
-    breed: Optional[str] = None
-    birth_date: Optional[str] = None
-    gotcha_date: Optional[str] = None
-    weight: Optional[float] = None
-    gender: Optional[str] = None
-    photo_url: Optional[str] = None
-    owner_name: Optional[str] = None
-    owner_email: Optional[str] = None
-    owner_phone: Optional[str] = None
-    city: Optional[str] = None
-    soul: Optional[PetSoulProfile] = None
-    preferences: Optional[PetPreferences] = None
-    celebrations: Optional[List[PetCelebration]] = None
+# PetProfileCreate and PetProfileUpdate are imported from models.py
+# PetCelebration and PetSoulProfile are defined below for backward compatibility
 
 
 # ==================== COMMUNICATION PREFERENCES ====================
