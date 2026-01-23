@@ -338,6 +338,68 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
 - `/api/concierge/reply/whatsapp` - Generate WhatsApp click-to-chat link
 - UI: 4 send options (Mira Thread, Email, WhatsApp, Resolve Only)
 
+### ✅ Pet Health Information Collection (NEW - Jan 23, 2026)
+**"Know your pet's health needs from day one."** — Health data integrated into Pet Soul.
+
+**Implementation:**
+- **New Health Step in Pet Registration** (Step 3 of 7):
+  - Added between Lifestyle (Step 2) and Soul Persona (Step 4)
+  - All 12 health fields are OPTIONAL
+  - Secure messaging: "Your pet's health data is secure"
+  
+- **Health Information Fields:**
+  1. Primary Veterinarian (name, clinic, phone)
+  2. Medical Conditions (chronic issues, surgeries)
+  3. Current Medications (with dosage/frequency)
+  4. Dietary Restrictions (beyond allergies)
+  5. Spayed/Neutered status (Yes/No/Not Sure)
+  6. Microchipped status (checkbox + number)
+  7. Insurance Provider
+  8. Emergency Contact (name + phone)
+
+- **Backend Model (`PetHealthInfo` in models.py):**
+  - All fields Optional with sensible defaults
+  - Integrated into `PetProfileCreate` and `PetProfileUpdate`
+  - Stored in MongoDB `pets` collection
+
+- **API Endpoints Updated:**
+  - `POST /api/pets` - Accepts health data (authenticated)
+  - `POST /api/pets/public` - Accepts health data (public)
+  - `GET /api/pets/{pet_id}` - Returns health data
+  - `GET /api/pets` - Returns pets with health data
+
+- **My Pets Health Profile Display:**
+  - New "Health Profile" section in Health Vault expandable area
+  - Shows: Primary Vet, Medical Conditions, Medications, Dietary Restrictions
+  - Shows: Spayed/Neutered, Microchipped status, Insurance, Emergency Contact
+  - Only displays fields that have data
+
+- **Files Modified:**
+  - `models.py` - Added `PetHealthInfo` class, updated `PetProfileCreate/Update`
+  - `server.py` - Fixed duplicate model import from user_routes.py
+  - `user_routes.py` - Now imports from models.py (removed duplicate classes)
+  - `PetProfile.jsx` - Added `renderStepHealth()`, updated navigation
+  - `MyPets.jsx` - Added Health Profile display in Health Vault section
+
+### ✅ Pet Soul Page 14 Pillars (VERIFIED - Jan 23, 2026)
+**All 14 official pillars displayed correctly:**
+1. Celebrate - Birthday parties, special occasions
+2. Dine - Pet-friendly restaurants, special menus
+3. Stay - Boarding, daycare, pet hotels
+4. Travel - Pet relocation, documentation
+5. Care - Veterinary care, grooming, health
+6. Enjoy - Toys, accessories, enrichment
+7. Fit - Exercise programs, swimming
+8. Learn - Training, behavior modification
+9. Paperwork - Registration, licenses
+10. Advisory - Legal advice, insurance
+11. Emergency - 24/7 emergency care
+12. Farewell - End-of-life care, memorials
+13. Adopt - Adoption, foster, rescue
+14. Shop - Pet supplies, food, treats
+
+**Note:** "Community" is a future feature, NOT a pillar.
+
 ### ✅ Self-Service Portal (NEW - Jan 23, 2026)
 **Member-facing ticket tracker at `/my-tickets`**
 
