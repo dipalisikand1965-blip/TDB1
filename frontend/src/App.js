@@ -195,52 +195,52 @@ function MainLayout() {
         <Route path="/franchise" element={<Franchise />} />
         <Route path="/contact" element={<Contact />} />
         
-        {/* ALL Life Pillars - Protected (require login/membership to access) */}
+        {/* ALL Life Pillars - Open for browsing (login required only at checkout) */}
         {/* Celebrate Pillar - Products from The Doggy Bakery (supplier) */}
-        <Route path="/celebrate" element={<ProtectedRoute><ProductListing category="cakes" /></ProtectedRoute>} />
-        <Route path="/celebrate/cakes" element={<ProtectedRoute><ProductListing category="cakes" /></ProtectedRoute>} />
-        <Route path="/celebrate/birthday-cakes" element={<ProtectedRoute><ProductListing category="Birthdays" /></ProtectedRoute>} />
-        <Route path="/celebrate/breed-cakes" element={<ProtectedRoute><ProductListing category="breed" /></ProtectedRoute>} />
-        <Route path="/celebrate/pupcakes" element={<ProtectedRoute><ProductListing category="Pupcakes" /></ProtectedRoute>} />
-        <Route path="/celebrate/treats" element={<ProtectedRoute><ProductListing category="Treats" /></ProtectedRoute>} />
-        <Route path="/celebrate/valentine" element={<ProtectedRoute><ProductListing category="valentine" /></ProtectedRoute>} />
-        <Route path="/celebrate/desi" element={<ProtectedRoute><ProductListing category="desi" /></ProtectedRoute>} />
-        <Route path="/celebrate/hampers" element={<ProtectedRoute><ProductListing category="hampers" /></ProtectedRoute>} />
-        <Route path="/celebrate/cat" element={<ProtectedRoute><ProductListing category="cat" /></ProtectedRoute>} />
-        <Route path="/celebrate/accessories" element={<ProtectedRoute><ProductListing category="Accessories" /></ProtectedRoute>} />
-        <Route path="/celebrate/:category" element={<ProtectedRoute><ProductListing /></ProtectedRoute>} />
+        <Route path="/celebrate" element={<ProductListing category="cakes" />} />
+        <Route path="/celebrate/cakes" element={<ProductListing category="cakes" />} />
+        <Route path="/celebrate/birthday-cakes" element={<ProductListing category="Birthdays" />} />
+        <Route path="/celebrate/breed-cakes" element={<ProductListing category="breed" />} />
+        <Route path="/celebrate/pupcakes" element={<ProductListing category="Pupcakes" />} />
+        <Route path="/celebrate/treats" element={<ProductListing category="Treats" />} />
+        <Route path="/celebrate/valentine" element={<ProductListing category="valentine" />} />
+        <Route path="/celebrate/desi" element={<ProductListing category="desi" />} />
+        <Route path="/celebrate/hampers" element={<ProductListing category="hampers" />} />
+        <Route path="/celebrate/cat" element={<ProductListing category="cat" />} />
+        <Route path="/celebrate/accessories" element={<ProductListing category="Accessories" />} />
+        <Route path="/celebrate/:category" element={<ProductListing />} />
         
-        {/* Other Product Routes - Also Protected */}
-        <Route path="/cakes" element={<ProtectedRoute><ProductListing category="cakes" /></ProtectedRoute>} />
-        <Route path="/mini-cakes" element={<ProtectedRoute><ProductListing category="mini-cakes" /></ProtectedRoute>} />
-        <Route path="/treats" element={<ProtectedRoute><ProductListing category="treats" /></ProtectedRoute>} />
-        <Route path="/meals" element={<ProtectedRoute><ProductListing category="fresh-meals" /></ProtectedRoute>} />
-        <Route path="/pan-india" element={<ProtectedRoute><ProductListing category="pan-india" /></ProtectedRoute>} />
-        <Route path="/breed-cakes" element={<ProtectedRoute><ProductListing category="breed-cakes" /></ProtectedRoute>} />
-        <Route path="/custom" element={<ProtectedRoute><ProductListing category="breed-cakes" /></ProtectedRoute>} />
-        <Route path="/pupcakes-dognuts" element={<ProtectedRoute><ProductListing category="dognuts" /></ProtectedRoute>} />
-        <Route path="/desi" element={<ProtectedRoute><ProductListing category="desi-treats" /></ProtectedRoute>} />
-        <Route path="/frozen" element={<ProtectedRoute><ProductListing category="frozen-treats" /></ProtectedRoute>} />
-        <Route path="/nut-butters" element={<ProtectedRoute><ProductListing category="nut-butters" /></ProtectedRoute>} />
-        <Route path="/cat-treats" element={<ProtectedRoute><ProductListing category="cat-treats" /></ProtectedRoute>} />
-        <Route path="/accessories" element={<ProtectedRoute><ProductListing category="accessories" /></ProtectedRoute>} />
-        <Route path="/merchandise" element={<ProtectedRoute><ProductListing category="merchandise" /></ProtectedRoute>} />
-        <Route path="/hampers" element={<ProtectedRoute><ProductListing category="hampers" /></ProtectedRoute>} />
-        <Route path="/gift-hampers" element={<ProtectedRoute><ProductListing category="hampers" /></ProtectedRoute>} />
-        <Route path="/all" element={<ProtectedRoute><ProductListing category="all" /></ProtectedRoute>} />
+        {/* Other Product Routes - Open for browsing */}
+        <Route path="/cakes" element={<ProductListing category="cakes" />} />
+        <Route path="/mini-cakes" element={<ProductListing category="mini-cakes" />} />
+        <Route path="/treats" element={<ProductListing category="treats" />} />
+        <Route path="/meals" element={<ProductListing category="fresh-meals" />} />
+        <Route path="/pan-india" element={<ProductListing category="pan-india" />} />
+        <Route path="/breed-cakes" element={<ProductListing category="breed-cakes" />} />
+        <Route path="/custom" element={<ProductListing category="breed-cakes" />} />
+        <Route path="/pupcakes-dognuts" element={<ProductListing category="dognuts" />} />
+        <Route path="/desi" element={<ProductListing category="desi-treats" />} />
+        <Route path="/frozen" element={<ProductListing category="frozen-treats" />} />
+        <Route path="/nut-butters" element={<ProductListing category="nut-butters" />} />
+        <Route path="/cat-treats" element={<ProductListing category="cat-treats" />} />
+        <Route path="/accessories" element={<ProductListing category="accessories" />} />
+        <Route path="/merchandise" element={<ProductListing category="merchandise" />} />
+        <Route path="/hampers" element={<ProductListing category="hampers" />} />
+        <Route path="/gift-hampers" element={<ProductListing category="hampers" />} />
+        <Route path="/all" element={<ProductListing category="all" />} />
         
-        {/* Service Pillars - Most are browsable without login */}
-        <Route path="/dine" element={<ProtectedRoute><DinePage /></ProtectedRoute>} />
-        <Route path="/stay" element={<ProtectedRoute><StayPage /></ProtectedRoute>} />
+        {/* Service Pillars - Open for browsing */}
+        <Route path="/dine" element={<DinePage />} />
+        <Route path="/stay" element={<StayPage />} />
         <Route path="/travel" element={<TravelPage />} />
         <Route path="/care" element={<CarePage />} />
         <Route path="/enjoy" element={<EnjoyPage />} />
         <Route path="/fit" element={<FitPage />} />
         <Route path="/learn" element={<LearnPage />} />
-        <Route path="/advisory" element={<ProtectedRoute><AdvisoryPage /></ProtectedRoute>} />
-        <Route path="/paperwork" element={<ProtectedRoute><PaperworkPage /></ProtectedRoute>} />
-        <Route path="/emergency" element={<ProtectedRoute><EmergencyPage /></ProtectedRoute>} />
-        <Route path="/pillar/:pillarId" element={<ProtectedRoute><PillarPage /></ProtectedRoute>} />
+        <Route path="/advisory" element={<AdvisoryPage />} />
+        <Route path="/paperwork" element={<PaperworkPage />} />
+        <Route path="/emergency" element={<EmergencyPage />} />
+        <Route path="/pillar/:pillarId" element={<PillarPage />} />
         
         {/* Campaign Collections */}
         <Route path="/collections/:slug" element={<CollectionPage />} />
