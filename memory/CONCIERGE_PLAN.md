@@ -171,6 +171,170 @@ function calculatePriority(item) {
 
 ### Phase 4: Advanced Features
 
+#### 4.0 🧠 MIRA AS CONCIERGE'S AI ASSISTANT (CRITICAL)
+
+**The Vision:**
+When concierge opens ANY ticket, Mira has already:
+1. ✅ Reviewed all past tickets for this member
+2. ✅ Checked order history (sizes, products, preferences)
+3. ✅ Loaded relationship memories
+4. ✅ Analyzed the current request
+5. ✅ **Auto-drafted a response ready to send**
+
+**Example Flow:**
+```
+TICKET: DIN-20260122-0003
+Member: Rahul (rahul@example.com)
+Request: "I need a new jacket for my dog, the last one was perfect"
+
+┌─────────────────────────────────────────────────────────────┐
+│ 🧠 MIRA'S RESEARCH (Auto-generated)                         │
+├─────────────────────────────────────────────────────────────┤
+│ 📦 PAST ORDERS:                                             │
+│   • Order #ORD-1234 (Dec 15, 2025)                         │
+│     - Canine Creek Winter Jacket - Size: LARGE             │
+│     - Color: Navy Blue                                      │
+│     - ₹1,299                                                │
+│                                                             │
+│ 🐕 PET PROFILE:                                             │
+│   • Bruno - Golden Retriever, Male, 3 years                │
+│   • Weight: 32 kg → Size: LARGE                            │
+│   • No allergies                                            │
+│                                                             │
+│ 🧠 MEMORIES:                                                │
+│   • "Prefers outdoor activities" (Nov 2025)                │
+│   • "Lives in Bangalore - mild winters" (Dec 2025)         │
+├─────────────────────────────────────────────────────────────┤
+│ ✉️ AUTO-DRAFT RESPONSE:                                     │
+│ ─────────────────────────────────────────────────────────── │
+│ Hi Rahul!                                                   │
+│                                                             │
+│ Great to hear the Canine Creek Winter Jacket worked well   │
+│ for Bruno! Since he's still a size LARGE (32 kg), here     │
+│ are some options in the same fit:                          │
+│                                                             │
+│ 1. Canine Creek All-Weather Jacket (Navy) - ₹1,499        │
+│ 2. Pawsome Fleece Hoodie (Grey) - ₹999                    │
+│ 3. Adventure Dog Raincoat (Green) - ₹1,199                │
+│                                                             │
+│ Would you like me to place an order for any of these?      │
+│                                                             │
+│ [EDIT DRAFT] [SEND AS EMAIL] [SEND VIA WHATSAPP]          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**What Mira Researches Automatically:**
+
+| Data Source | What It Extracts |
+|-------------|------------------|
+| `orders` | Past purchases, sizes, colors, prices, frequency |
+| `pets` | Species, breed, weight → size mapping, allergies |
+| `mira_memories` | Preferences, lifestyle, location context |
+| `tickets` | Past requests, resolutions, issues |
+| `mira_tickets` | Conversation history, stated preferences |
+| `reviews` | Feedback on past purchases |
+
+**Size Intelligence:**
+```javascript
+const SIZE_MAPPING = {
+  dog: {
+    "0-5kg": "XS",
+    "5-10kg": "S", 
+    "10-20kg": "M",
+    "20-35kg": "L",
+    "35kg+": "XL"
+  }
+};
+
+// Auto-detect from pet weight
+function getPetSize(pet) {
+  const weight = pet.weight_kg || pet.identity?.weight;
+  // Returns: "LARGE" for a 32kg dog
+}
+```
+
+**Auto-Draft Generation:**
+```javascript
+async function generateConciergeDraft(ticket) {
+  // 1. Load all context
+  const member = await getMemberProfile(ticket.member.email);
+  const orders = await getOrderHistory(ticket.member.email);
+  const pets = await getPetProfiles(ticket.member.email);
+  const memories = await getRelationshipMemories(ticket.member.email);
+  const pastTickets = await getPastTickets(ticket.member.email);
+  
+  // 2. Build context prompt
+  const context = buildResearchContext({
+    member, orders, pets, memories, pastTickets,
+    currentRequest: ticket.original_request
+  });
+  
+  // 3. Generate draft with LLM
+  const draft = await miraLLM.generateDraft({
+    systemPrompt: CONCIERGE_ASSISTANT_PROMPT,
+    context: context,
+    tone: "warm, helpful, action-oriented",
+    includeRecommendations: true
+  });
+  
+  return {
+    research_summary: context,
+    draft_response: draft,
+    suggested_products: extractProductSuggestions(draft),
+    ready_to_send: true
+  };
+}
+```
+
+**Concierge Workflow with AI Assistant:**
+```
+[Ticket Arrives] 
+     ↓
+[Mira Auto-Researches] ← Background job
+     ↓
+[Concierge Opens Ticket]
+     ↓
+[Sees: Research + Auto-Draft]
+     ↓
+[Edit if needed] → [Send via Email/WhatsApp/Mira Thread]
+     ↓
+[Ticket Resolved]
+```
+
+**Components Needed:**
+- [ ] `MiraResearchPanel.jsx` - Shows auto-research in ticket view
+- [ ] `DraftEditor.jsx` - Edit and send auto-drafted response
+- [ ] `ProductSuggestions.jsx` - AI-suggested products based on history
+
+**Backend Needed:**
+- [ ] `POST /api/concierge/research/{ticket_id}` - Generate research + draft
+- [ ] `GET /api/member/{email}/purchase-history` - Order history with sizes
+- [ ] `POST /api/concierge/send-draft` - Send via email/whatsapp/mira
+
+**Database Addition:**
+```javascript
+// Add to service_desk_tickets
+{
+  ...existing_fields,
+  
+  mira_research: {
+    generated_at: "2026-01-22T...",
+    order_history: [...],
+    pet_sizes: { "Bruno": "LARGE" },
+    memories_surfaced: [...],
+    past_tickets_summary: "...",
+  },
+  
+  auto_draft: {
+    content: "Hi Rahul! Great to hear...",
+    generated_at: "2026-01-22T...",
+    edited_by: null,
+    sent_at: null,
+    sent_via: null // email, whatsapp, mira_thread
+  }
+}
+```
+
 #### 4.1 Auto-Assignment
 - [ ] Round-robin assignment to available concierge
 - [ ] Skill-based routing (travel expert, dining specialist)
