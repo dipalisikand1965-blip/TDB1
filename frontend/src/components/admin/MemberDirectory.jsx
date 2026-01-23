@@ -545,10 +545,11 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
 
   const fetchMemberOrders = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/orders/customer/${encodeURIComponent(member.email)}`);
+      // Use the concierge full-profile endpoint to get orders
+      const response = await fetch(`${API_URL}/api/concierge/member/${encodeURIComponent(member.email)}/full-profile`);
       if (response.ok) {
         const data = await response.json();
-        setOrders(data.orders || []);
+        setOrders(data.orders?.list || []);
       }
     } catch (error) {
       console.error('Failed to fetch member orders:', error);
