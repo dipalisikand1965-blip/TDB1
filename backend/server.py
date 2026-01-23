@@ -649,11 +649,57 @@ async def force_initialize_database():
         product_count = await db.products.count_documents({})
         logger.info(f"✓ Products in database: {product_count}")
         
+        # 4. AUTO-SEED CRITICAL DATA ON STARTUP
+        # This ensures FAQs, Collections, and base data survive deployments
+        await auto_seed_critical_data()
+        
         logger.info("=== DATABASE INITIALIZATION COMPLETE ===")
         
     except Exception as e:
         logger.error(f"Database initialization error: {e}")
         # Continue anyway - don't block startup
+
+
+async def auto_seed_critical_data():
+    """Auto-seed critical data that should persist across deployments"""
+    try:
+        # Seed FAQs if none exist
+        faq_count = await db.faqs.count_documents({})
+        if faq_count == 0:
+            logger.info("Seeding FAQs...")
+            sample_faqs = [
+                {"id": "faq-delivery-1", "question": "What are the delivery areas and timelines?", "answer": "We deliver freshly baked treats across Bangalore within 24-48 hours. Pan-India shipping is available for select products with 3-5 day delivery.", "category": "Delivery", "order": 1},
+                {"id": "faq-delivery-2", "question": "Are your products safe for dogs?", "answer": "Absolutely! All our products are made with 100% dog-safe, human-grade ingredients. We never use artificial sweeteners, chocolate, xylitol, or any ingredients harmful to pets.", "category": "Products", "order": 2},
+                {"id": "faq-order-1", "question": "How do I place a custom cake order?", "answer": "You can use our Custom Cake Designer or chat with Mira, our AI concierge, who will help you create the perfect cake for your furry friend. Custom cakes require 48-72 hours advance notice.", "category": "Orders", "order": 3},
+                {"id": "faq-membership-1", "question": "What are the membership tiers?", "answer": "We offer three tiers: Free (basic access), Gold (10% off, priority support), and Platinum (15% off, exclusive perks, concierge service). Visit our Membership page for details.", "category": "Membership", "order": 4},
+                {"id": "faq-allergy-1", "question": "Can you accommodate food allergies?", "answer": "Yes! We can customize products to avoid specific allergens. Please mention any allergies when ordering, or add them to your pet's profile for automatic recommendations.", "category": "Products", "order": 5},
+                {"id": "faq-payment-1", "question": "What payment methods do you accept?", "answer": "We accept all major credit/debit cards, UPI, net banking, and wallets through our secure Razorpay gateway.", "category": "Payment", "order": 6},
+                {"id": "faq-pet-soul-1", "question": "What is Pet Soul™?", "answer": "Pet Soul™ is your pet's unique digital profile that captures their personality, preferences, health data, and celebrations. It helps us personalize every experience for your furry family member.", "category": "Pet Soul", "order": 7},
+                {"id": "faq-mira-1", "question": "Who is Mira® and how can she help?", "answer": "Mira® is our AI-powered concierge who knows your pet personally. She can help with product recommendations, booking services, answering questions, and coordinating your pet's life across all our pillars.", "category": "Mira AI", "order": 8},
+            ]
+            for faq in sample_faqs:
+                await db.faqs.update_one({"id": faq["id"]}, {"$set": faq}, upsert=True)
+            logger.info(f"✓ AUTO-SEEDED {len(sample_faqs)} FAQs")
+        else:
+            logger.info(f"✓ FAQs exist: {faq_count}")
+        
+        # Seed Collections if none exist
+        collection_count = await db.enhanced_collections.count_documents({})
+        if collection_count == 0:
+            logger.info("Seeding Collections...")
+            sample_collections = [
+                {"id": "col-valentine", "name": "Valentine's Day Special", "slug": "valentines-day", "description": "Celebrate love with your furry friend!", "image": "https://images.unsplash.com/photo-1518882605630-8eb723e8e0b4?w=800", "status": "active", "is_featured": True, "products": [], "created_at": datetime.now(timezone.utc).isoformat()},
+                {"id": "col-birthday", "name": "Birthday Celebration", "slug": "birthday-celebration", "description": "Make every birthday special with treats and cakes!", "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800", "status": "active", "is_featured": True, "products": [], "created_at": datetime.now(timezone.utc).isoformat()},
+                {"id": "col-healthy", "name": "Healthy Bites", "slug": "healthy-bites", "description": "Nutritious treats for health-conscious pet parents", "image": "https://images.unsplash.com/photo-1601758124096-1fd661873b95?w=800", "status": "active", "is_featured": False, "products": [], "created_at": datetime.now(timezone.utc).isoformat()},
+            ]
+            for col in sample_collections:
+                await db.enhanced_collections.update_one({"id": col["id"]}, {"$set": col}, upsert=True)
+            logger.info(f"✓ AUTO-SEEDED {len(sample_collections)} Collections")
+        else:
+            logger.info(f"✓ Collections exist: {collection_count}")
+        
+    except Exception as e:
+        logger.error(f"Auto-seed critical data error: {e}")
 
 
 @asynccontextmanager
