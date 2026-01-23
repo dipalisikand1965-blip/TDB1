@@ -1396,17 +1396,37 @@ When a product modal opens on any pillar page, the "You May Also Like" section s
 
 ---
 
-## Communication Preferences (Backend Ready)
-**Status**: Backend API ready, frontend UI pending
+## Communication Preferences ✅ COMPLETE
+**Status**: Fully implemented - Backend API + Frontend UI
+
+### Location
+Member Dashboard → Settings Tab → Communication Channels & Notification Preferences
+
+### Communication Channels
+| Channel | Description |
+|---------|-------------|
+| ✉️ Email | Order confirmations & updates |
+| 💬 WhatsApp | Quick updates & reminders |
+| 📱 SMS | Text message alerts |
+
+### Notification Types
+| Type | Description |
+|------|-------------|
+| 📦 Order Updates | Shipping, delivery & status changes |
+| 🎁 Promotions & Offers | Exclusive deals & new launches |
+| 🎂 Celebration Reminders | Pet birthdays & gotcha days |
+| 💊 Health Reminders | Vaccination & vet appointment reminders |
+| 🐾 Community Updates | Events, meetups & pawrent activities |
 
 ### API Endpoints
-- `PUT /api/member/communication-preferences` - Update preferences
-- `GET /api/member/communication-preferences` - Get current settings
+- `GET /api/member/communication-preferences?user_email={email}` - Get preferences
+- `PUT /api/member/communication-preferences?user_email={email}` - Update preferences
 
-### Preference Options
-- ✉️ Email notifications
-- 📱 SMS notifications  
-- 💬 WhatsApp notifications
+### Features
+- Auto-save on toggle (no save button needed)
+- Toast notification confirms save
+- Preferences loaded on page load
+- Defaults applied for new users
 
 ---
 
