@@ -69,9 +69,9 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* COLUMN 2 — THE 12 PILLARS */}
+          {/* COLUMN 2 — THE PILLARS */}
           <div>
-            <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">The 12 Pillars</h3>
+            <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Pillars</h3>
             <ul className="space-y-2 text-sm">
               <li><Link to="/celebrate" className="hover:text-pink-400 transition-colors">🎂 Celebrate</Link></li>
               <li><Link to="/dine" className="hover:text-pink-400 transition-colors">🍽️ Dine</Link></li>
@@ -89,9 +89,9 @@ const Footer = () => {
               <li><Link to="/fit" className="hover:text-pink-400 transition-colors">🏃 Fit</Link></li>
               <li><Link to="/travel" className="hover:text-pink-400 transition-colors">✈️ Travel</Link></li>
               <li><Link to="/advisory" className="hover:text-pink-400 transition-colors">📋 Advisory</Link></li>
-              <li><Link to="/paperwork" className="hover:text-pink-400 transition-colors">📄 Paperwork</Link></li>
-              <li><Link to="/emergency" className="hover:text-pink-400 transition-colors">🚨 Emergency</Link></li>
-              <li><Link to="/community" className="hover:text-pink-400 transition-colors">👥 Community</Link></li>
+              <li><Link to="/learn" className="hover:text-pink-400 transition-colors">🎓 Learn</Link></li>
+              <li><Link to="/adopt" className="hover:text-pink-400 transition-colors">🐾 Adopt</Link></li>
+              <li><Link to="/farewell" className="hover:text-pink-400 transition-colors">🌈 Farewell</Link></li>
             </ul>
           </div>
 
