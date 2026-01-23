@@ -362,6 +362,67 @@ PUT  /api/admin/enhanced-collections/{id}  # Update
         }
       ]
     },
+    'seed-production': {
+      title: 'Seed Production Data',
+      subtitle: 'One-Click Seeding for Production Environments',
+      badge: '🆕 New',
+      files: {
+        frontend: '/app/frontend/src/pages/Admin.jsx',
+        backend: '/app/backend/server.py'
+      },
+      sections: [
+        {
+          title: 'What It Does',
+          content: `• **Seeds 8 FAQs**: Delivery, Products, Orders, Membership, Payment, Pet Soul, Mira AI categories
+• **Seeds 4 Collections**: Valentine's Day, Birthday Celebration, Healthy Bites, Diwali Special
+• **Seeds 5 Sample Tickets**: Realistic, editable tickets for Command Center testing`
+        },
+        {
+          title: 'When To Use',
+          content: `| Scenario | Use This Button |
+|----------|-----------------|
+| After deploying to new environment | ✅ Yes |
+| Database is empty | ✅ Yes |
+| FAQs/Collections not showing | ✅ Yes |
+| Testing Command Center | ✅ Yes |
+| Already have data | Safe to run (UPSERT) |`
+        },
+        {
+          title: 'API Endpoint',
+          content: `\`\`\`
+POST /api/admin/seed-production-data
+\`\`\`
+
+**Response:**
+\`\`\`json
+{
+  "success": true,
+  "message": "Production data seeded successfully!",
+  "results": {
+    "faqs": 8,
+    "collections": 4,
+    "tickets": 5
+  },
+  "note": "This data is editable"
+}
+\`\`\``
+        },
+        {
+          title: 'Important Notes',
+          content: `• Uses **UPSERT** - safe to run multiple times
+• All seeded data is **fully editable** via admin panel
+• Sample tickets marked with \`is_sample: true\`
+• Does NOT overwrite existing data`
+        },
+        {
+          title: 'Location in Admin',
+          content: `Found under **PILLAR TOOLS** section:
+• Purple/pink gradient button
+• Labeled "Seed Production"
+• Next to green "Seed All" button`
+        }
+      ]
+    },
     'faqs': {
       title: 'FAQs',
       subtitle: 'Multi-Pillar Help Center Management',
