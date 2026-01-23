@@ -150,6 +150,18 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
   
   // Create ticket modal
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newTicket, setNewTicket] = useState({
+    pillar: 'general',
+    urgency: 'medium',
+    subject: '',
+    description: '',
+    member_email: '',
+    member_name: '',
+    member_phone: '',
+    pet_name: '',
+    assigned_to: ''
+  });
+  const [creating, setCreating] = useState(false);
   
   // Pillar configuration
   const PILLARS = [
