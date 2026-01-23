@@ -539,7 +539,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
     fetchReviews();
   }, [product.id, API_URL]);
 
-  // Fetch NPS Testimonials
+  // Fetch NPS Testimonials - modal is always open when this component renders
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
@@ -550,10 +550,8 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
         }
       } catch (e) { console.error('Failed to fetch testimonials:', e); }
     };
-    if (isOpen) {
-      fetchTestimonials();
-    }
-  }, [isOpen, API_URL]);
+    fetchTestimonials();
+  }, [API_URL]);
 
   const submitReview = async () => {
       if (!newReview.content || !newReview.author_name) {
