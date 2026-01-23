@@ -503,7 +503,15 @@ const LearnPage = () => {
                   </div>
                 )}
 
-                <Button variant="outline" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    setSelectedTrainer(trainer);
+                    setShowTrainerModal(true);
+                  }}
+                  data-testid={`view-profile-${trainer.id}`}
+                >
                   View Profile
                 </Button>
               </Card>
