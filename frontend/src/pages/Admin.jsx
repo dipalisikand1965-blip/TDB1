@@ -149,6 +149,7 @@ const Admin = () => {
   const [showPasswords, setShowPasswords] = useState({ current: false, new: false, confirm: false });
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [seedingAll, setSeedingAll] = useState(false);
+  const [seedingProduction, setSeedingProduction] = useState(false);
 
   // Seed All function - uses UPSERT so existing data is preserved
   const seedAllPillars = async () => {
@@ -171,6 +172,34 @@ const Admin = () => {
       toast({ title: 'Error', description: 'Failed to seed data', variant: 'destructive' });
     } finally {
       setSeedingAll(false);
+    }
+  };
+
+  // Seed Production Data - FAQs, Collections, Sample Tickets
+  const seedProductionData = async () => {
+    setSeedingProduction(true);
+    try {
+      const response = await fetch(`${API_URL}/api/admin/seed-production-data`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: '✅ Production Data Seeded!',
+          description: `${data.results.faqs} FAQs, ${data.results.collections} Collections, ${typeof data.results.tickets === 'number' ? data.results.tickets : 0} Tickets added`,
+          duration: 5000
+        });
+        // Refresh dashboard to show new data
+        fetchDashboard();
+      } else {
+        const errorData = await response.json();
+        toast({ title: 'Error', description: errorData.detail || 'Failed to seed production data', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to seed production data', variant: 'destructive' });
+    } finally {
+      setSeedingProduction(false);
     }
   };
 
