@@ -151,10 +151,7 @@ const EnjoyPage = () => {
   };
 
   const handleRsvp = (experience) => {
-    if (!user) {
-      window.location.href = '/login?redirect=/enjoy';
-      return;
-    }
+    // Open for all - no login required
     setSelectedExperience(experience);
     setSelectedPet(null);
     setShowRsvpModal(true);

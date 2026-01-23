@@ -142,10 +142,7 @@ const FitPage = () => {
   };
 
   const handleStartRequest = (fitType = 'assessment') => {
-    if (!user) {
-      window.location.href = '/login?redirect=/fit';
-      return;
-    }
+    // Open for all - no login required
     setRequestForm({ ...requestForm, fit_type: fitType });
     setSelectedPet(null);
     setShowRequestModal(true);

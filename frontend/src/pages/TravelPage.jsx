@@ -167,10 +167,7 @@ const TravelPage = () => {
   };
 
   const handleStartPlanning = () => {
-    if (!user) {
-      window.location.href = '/login?redirect=/travel';
-      return;
-    }
+    // Open for all - no login required
     setShowWizard(true);
     setWizardStep(1);
   };

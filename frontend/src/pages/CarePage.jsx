@@ -197,10 +197,7 @@ const CarePage = () => {
   };
 
   const handleStartCare = () => {
-    if (!user) {
-      window.location.href = '/login?redirect=/care';
-      return;
-    }
+    // Open for all - no login required
     setShowWizard(true);
     setWizardStep(1);
   };
