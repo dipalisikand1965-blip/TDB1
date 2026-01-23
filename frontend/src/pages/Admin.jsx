@@ -2495,6 +2495,7 @@ const Admin = () => {
                       <thead>
                         <tr className="border-b border-gray-200">
                           <th className="text-left py-3 px-2 text-sm font-semibold text-gray-600">Pet</th>
+                          <th className="text-left py-3 px-2 text-sm font-semibold text-gray-600">Pet Pass</th>
                           <th className="text-left py-3 px-2 text-sm font-semibold text-gray-600">Breed</th>
                           <th className="text-left py-3 px-2 text-sm font-semibold text-gray-600 bg-purple-50">Pet Parent</th>
                           <th className="text-left py-3 px-2 text-sm font-semibold text-gray-600">Birthday</th>
