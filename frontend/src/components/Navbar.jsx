@@ -146,6 +146,21 @@ const Navbar = () => {
       ]
     },
     { 
+      id: 'learn',
+      name: 'Learn', 
+      icon: GraduationCap,
+      color: 'from-blue-500 to-indigo-500',
+      description: 'Training & Education',
+      path: '/learn',
+      isActive: true,
+      subItems: [
+        { name: '🎓 Basic Obedience', path: '/learn?type=basic_obedience' },
+        { name: '🐕 Puppy Training', path: '/learn?type=puppy_training' },
+        { name: '🧠 Behavior Modification', path: '/learn?type=behavior_modification' },
+        { name: '🏆 Advanced Training', path: '/learn?type=advanced_training' },
+      ]
+    },
+    { 
       id: 'advisory',
       name: 'Advisory', 
       icon: Brain,
