@@ -14,11 +14,41 @@ const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [showMorePillars, setShowMorePillars] = useState(false);
   const [navbarCollections, setNavbarCollections] = useState([]);
+  const [petSoulScore, setPetSoulScore] = useState(null);
   const pillarRef = useRef(null);
   const moreRef = useRef(null);
   const { getCartCount, setIsCartOpen } = useCart();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const location = useLocation();
+
+  // Fetch Pet Soul score when user is logged in
+  useEffect(() => {
+    const fetchPetSoulScore = async () => {
+      if (!user || !token) {
+        setPetSoulScore(null);
+        return;
+      }
+      try {
+        const res = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const pets = data.pets || [];
+          if (pets.length > 0) {
+            // Calculate average soul score across all pets
+            const avgScore = pets.reduce((sum, pet) => sum + (pet.soul_score || 0), 0) / pets.length;
+            setPetSoulScore(Math.round(avgScore));
+          } else {
+            setPetSoulScore(0);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch pet soul score:', error);
+      }
+    };
+    fetchPetSoulScore();
+  }, [user, token]);
 
   // Fetch collections that should appear in navbar
   useEffect(() => {
