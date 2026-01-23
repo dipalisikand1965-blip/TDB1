@@ -2461,6 +2461,11 @@ const Admin = () => {
           <FitManager getAuthHeader={getAuthHeaders} />
         )}
 
+        {/* Learn Tab */}
+        {activeTab === 'learn' && (
+          <LearnManager getAuthHeader={getAuthHeaders} />
+        )}
+
         {/* Advisory Tab */}
         {activeTab === 'advisory' && (
           <AdvisoryManager getAuthHeader={getAuthHeaders} />
