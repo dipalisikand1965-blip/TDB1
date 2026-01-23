@@ -164,7 +164,7 @@ async def admin_gift_membership(user_id: str, gift: dict, username: str = Depend
             else:
                 # Start from now
                 new_expires = datetime.now(timezone.utc) + timedelta(days=duration_months * 30)
-        except:
+        except Exception:
             new_expires = datetime.now(timezone.utc) + timedelta(days=duration_months * 30)
     else:
         new_expires = datetime.now(timezone.utc) + timedelta(days=duration_months * 30)
@@ -227,7 +227,7 @@ async def get_membership_stats(username: str = Depends(verify_admin)):
                         stats["expiring_soon"] += 1
                 elif days_diff >= -30:
                     stats["recently_expired"] += 1
-            except:
+            except Exception:
                 pass
     
     return stats
