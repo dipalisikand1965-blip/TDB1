@@ -198,12 +198,7 @@ class ClaimRequest(BaseModel):
     agent_id: str
     agent_name: str
 
-class ResolveRequest(BaseModel):
-    resolution_notes: str  # Member-facing
-    internal_notes: Optional[str] = None
-    send_via: str = "mira"  # mira, email, whatsapp
-    agent_id: str
-    agent_name: str
+# ResolveRequest is defined later with enhanced NPS survey support
 
 class AddNoteRequest(BaseModel):
     note: str
