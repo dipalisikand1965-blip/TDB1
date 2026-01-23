@@ -67,6 +67,7 @@ const AdminDocs = () => {
       color: 'bg-pink-500',
       items: [
         { id: 'seed-all', title: 'Seed All', icon: Database },
+        { id: 'seed-production', title: 'Seed Production 🆕', icon: Database },
         { id: 'celebrate', title: 'Celebrate', icon: Gift },
         { id: 'collections', title: 'Collections', icon: Sparkles },
         { id: 'custom-cakes', title: 'Custom Cakes', icon: Cake },
