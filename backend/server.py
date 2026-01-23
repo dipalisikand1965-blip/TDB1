@@ -7403,10 +7403,12 @@ async def get_celebration_occasions():
 async def create_pet_profile(pet: PetProfileCreate, current_user: dict = Depends(get_current_user)):
     """Create a new pet profile linked to the authenticated user"""
     pet_id = f"pet-{uuid.uuid4().hex[:12]}"
+    pet_pass_number = await generate_pet_pass_number_server()
     now = datetime.now(timezone.utc).isoformat()
     
     pet_data = {
         "id": pet_id,
+        "pet_pass_number": pet_pass_number,
         **pet.model_dump(),
         "owner_email": current_user["email"],  # Link to authenticated user
         "achievements": [],
