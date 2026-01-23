@@ -728,6 +728,9 @@ async def lifespan(app: FastAPI):
     set_role_db(db)
     logger.info("Role management initialized")
     
+    # Initialize FAQ database connection
+    set_faq_db(db)
+    
     # Initialize escalation database connection
     set_escalation_db(db)
     logger.info("Escalation engine initialized")
