@@ -956,6 +956,14 @@ from discount_routes import (
     set_database as set_discount_db
 )
 
+# Import cart routes (refactored)
+from cart_routes import (
+    cart_router,
+    cart_admin_router,
+    set_database as set_cart_db,
+    check_abandoned_carts
+)
+
 # Import ticket routes (Service Desk)
 from ticket_routes import router as ticket_router
 from ticket_messaging import router as ticket_messaging_router
