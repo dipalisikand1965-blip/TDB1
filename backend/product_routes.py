@@ -65,78 +65,15 @@ class ReviewCreate(BaseModel):
 
 
 # ==================== PUBLIC PRODUCT ROUTES ====================
+# NOTE: Main product routes are in server.py (api_router)
+# The routes below are kept for reference but commented out to avoid conflicts
+# In a future refactor, move server.py product routes here
 
-@product_router.get("/products")
-async def get_public_products(
-    category: Optional[str] = None,
-    collection: Optional[str] = None,
-    pan_india: Optional[bool] = None,
-    search: Optional[str] = None
-):
-    """Public endpoint for products"""
-    import logging
-    logger = logging.getLogger("uvicorn.error")
-    logger.info(f"get_public_products called: category={category}, collection={collection}")
-    
-    query = {}
+# These routes are DISABLED - server.py has the comprehensive versions:
+# - GET /products (server.py has pillar-aware, better search)
+# - GET /products/{product_id}/related (server.py has pillar-aware recommendations)
 
-    # Handle collection-based filtering (e.g., valentine)
-    if collection:
-        logger.info(f"Fetching collection: {collection}")
-        # Fetch collection to get product IDs
-        coll = await db.collections.find_one(
-            {"$or": [{"id": collection}, {"slug": collection}]},
-            {"_id": 0, "product_ids": 1}
-        )
-        logger.info(f"Collection found: {coll is not None}, product_ids: {len(coll.get('product_ids', [])) if coll else 0}")
-        if coll and coll.get("product_ids"):
-            query["id"] = {"$in": coll["product_ids"]}
-
-    # Search logic
-    if search:
-        search_regex = {"$regex": search, "$options": "i"}
-        search_query = {
-            "$or": [
-                {"name": search_regex},
-                {"tags": search_regex},
-                {"category": search_regex},
-                {"description": search_regex},
-                {"sizes.name": search_regex},
-                {"flavors.name": search_regex}
-            ]
-        }
-        if query:
-            query = {"$and": [query, search_query]}
-        else:
-            query = search_query
-
-    # Special handling for pan-india category
-    if category == "pan-india" or pan_india:
-        pan_india_query = {
-            "$or": [
-                {"category": "pan-india"},
-                {"is_pan_india_shippable": True},
-                {"category": {"$in": ["treats", "nut-butters", "desi-treats", "gift-cards"]}}
-            ]
-        }
-        if query:
-            query = {"$and": [query, pan_india_query]}
-        else:
-            query = pan_india_query
-    elif category and not collection:
-        # Only filter by category if collection not specified
-        if query:
-            query = {"$and": [query, {"category": category}]}
-        else:
-            query["category"] = category
-
-    products = await db.products.find(query, {"_id": 0}).to_list(500)
-    return {"products": products}
-
-
-@product_router.get("/products/{product_id}/related")
-async def get_related_products(product_id: str, limit: int = 4):
-    """Get products that go well with the specified product"""
+# ==================== SEARCH ROUTES (Active) ====================
 
     # Find the current product
     product = await db.products.find_one(
