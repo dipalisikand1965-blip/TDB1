@@ -936,6 +936,20 @@ from content_routes import (
     set_database as set_content_db
 )
 
+# Import loyalty routes (refactored)
+from loyalty_routes import (
+    loyalty_router,
+    loyalty_admin_router,
+    set_database as set_loyalty_db
+)
+
+# Import discount routes (refactored)
+from discount_routes import (
+    discount_router,
+    discount_admin_router,
+    set_database as set_discount_db
+)
+
 # Import ticket routes (Service Desk)
 from ticket_routes import router as ticket_router
 from ticket_messaging import router as ticket_messaging_router
