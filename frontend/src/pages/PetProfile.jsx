@@ -241,6 +241,16 @@ const PetProfile = ({ isEmbed = false }) => {
     }));
   };
 
+  const updateHealth = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      health: {
+        ...prev.health,
+        [field]: value
+      }
+    }));
+  };
+
   const toggleOccasion = (occasionKey) => {
     setFormData(prev => {
       const selected = prev.selectedOccasions.includes(occasionKey)
