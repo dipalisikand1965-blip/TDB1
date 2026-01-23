@@ -1307,6 +1307,83 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
         </div>
       </div>
 
+      {/* Event Stream Panel (Slide-in from right) */}
+      {showEventStream && (
+        <div className="absolute right-0 top-0 h-full w-96 bg-white border-l shadow-lg z-20 flex flex-col">
+          <div className="p-4 border-b flex items-center justify-between bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+            <h3 className="font-bold flex items-center gap-2">
+              <Activity className="w-5 h-5" />
+              Live Event Stream
+            </h3>
+            <Button variant="ghost" size="sm" onClick={() => setShowEventStream(false)} className="text-white hover:bg-white/20">
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+          
+          <div className="flex-1 overflow-auto p-4 space-y-3">
+            {loadingEvents ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+              </div>
+            ) : eventStream.length > 0 ? (
+              eventStream.map((event, idx) => (
+                <div 
+                  key={event.id || idx} 
+                  className={`p-3 rounded-lg border cursor-pointer hover:shadow-md transition-shadow ${
+                    event.action_required ? 'bg-orange-50 border-orange-200' : 'bg-gray-50 border-gray-200'
+                  }`}
+                  onClick={() => {
+                    if (event.type === 'ticket') {
+                      setSelectedItem({ ticket_id: event.id });
+                      loadItemDetail(event.id);
+                      setShowEventStream(false);
+                    }
+                  }}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge className={`text-xs ${
+                      event.pillar === 'shop' ? 'bg-green-100 text-green-700' :
+                      event.pillar === 'care' ? 'bg-red-100 text-red-700' :
+                      event.pillar === 'club' ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-purple-100 text-purple-700'
+                    }`}>
+                      {event.pillar || 'general'}
+                    </Badge>
+                    <span className="text-xs text-gray-400">
+                      {event.timestamp ? new Date(event.timestamp).toLocaleTimeString() : 'Now'}
+                    </span>
+                    {event.auto_created && (
+                      <Badge className="text-xs bg-blue-100 text-blue-700">Auto</Badge>
+                    )}
+                  </div>
+                  <p className="text-sm font-medium text-gray-800 truncate">
+                    {event.title}
+                  </p>
+                  {event.member?.name && (
+                    <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                      <User className="w-3 h-3" />
+                      {event.member.name}
+                    </p>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-400">
+                <Activity className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                <p>No recent events</p>
+              </div>
+            )}
+          </div>
+          
+          <div className="p-3 border-t">
+            <Button onClick={loadEventStream} variant="outline" className="w-full" size="sm">
+              <RefreshCw className={`w-4 h-4 mr-2 ${loadingEvents ? 'animate-spin' : ''}`} />
+              Refresh Events
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Queue */}
       <div ref={scrollRef} className="flex-1 overflow-auto p-4">
         {loading ? (
