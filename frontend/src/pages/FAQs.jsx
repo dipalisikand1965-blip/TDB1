@@ -215,11 +215,30 @@ const FAQs = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               type="text"
-              placeholder="Search for answers..."
+              placeholder="Search FAQs or type to search the whole site..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && searchQuery.trim()) {
+                  // If no FAQ results, redirect to global search
+                  const hasResults = displayFaqs.some(cat => 
+                    cat.faqs.some(faq => 
+                      faq.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      faq.a.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                  );
+                  if (!hasResults) {
+                    window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
+                  }
+                }
+              }}
               className="w-full pl-12 pr-4 py-4 text-lg bg-white text-gray-900 rounded-xl border-0 shadow-lg"
             />
+            {searchQuery && (
+              <p className="text-xs text-white/60 mt-2">
+                Press Enter to search the whole site if no FAQs match
+              </p>
+            )}
           </div>
         </div>
       </section>
