@@ -164,9 +164,49 @@ const MemberDashboard = () => {
     )
     .slice(0, 3);
 
-  const handleSettingChange = (key) => {
-    setSettings(prev => ({ ...prev, [key]: !prev[key] }));
-    toast({ title: 'Settings Saved', description: 'Your preferences have been updated.' });
+  // Fetch communication preferences on load
+  useEffect(() => {
+    const fetchCommunicationPreferences = async () => {
+      if (!user?.email || !token) return;
+      
+      try {
+        const response = await axios.get(
+          `${API_URL}/api/member/communication-preferences?user_email=${user.email}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setSettings(prev => ({ ...prev, ...response.data }));
+      } catch (error) {
+        console.error('Failed to fetch communication preferences:', error);
+      }
+    };
+    
+    fetchCommunicationPreferences();
+  }, [user?.email, token, API_URL]);
+
+  const handleSettingChange = async (key) => {
+    const newValue = !settings[key];
+    setSettings(prev => ({ ...prev, [key]: newValue }));
+    setSettingsSaved(false);
+    
+    // Auto-save to backend
+    try {
+      setSettingsLoading(true);
+      await axios.put(
+        `${API_URL}/api/member/communication-preferences?user_email=${user.email}`,
+        { ...settings, [key]: newValue },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setSettingsSaved(true);
+      toast({ title: '✓ Saved', description: 'Your preference has been updated.' });
+      setTimeout(() => setSettingsSaved(false), 2000);
+    } catch (error) {
+      console.error('Failed to save preference:', error);
+      // Revert on error
+      setSettings(prev => ({ ...prev, [key]: !newValue }));
+      toast({ title: 'Error', description: 'Failed to save preference. Please try again.', variant: 'destructive' });
+    } finally {
+      setSettingsLoading(false);
+    }
   };
 
   // Review functions
