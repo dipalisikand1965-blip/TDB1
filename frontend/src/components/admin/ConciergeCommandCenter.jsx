@@ -556,27 +556,42 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
     const sourceConfig = SOURCE_CONFIG[item.source_type] || SOURCE_CONFIG.ticket;
     const priorityConfig = PRIORITY_CONFIG[item.priority_bucket] || PRIORITY_CONFIG.medium;
     const SourceIcon = sourceConfig.icon;
+    const isSelected = selectedTickets.has(item.ticket_id);
     
     return (
       <div
-        onClick={() => openItem(item)}
-        className={`p-4 bg-white rounded-lg border hover:shadow-md cursor-pointer transition-all ${
-          item.sla_breached ? 'border-red-400 bg-red-50' : 'border-gray-200'
+        className={`p-4 bg-white rounded-lg border hover:shadow-md transition-all ${
+          item.sla_breached ? 'border-red-400 bg-red-50' : isSelected ? 'border-purple-400 bg-purple-50' : 'border-gray-200'
         }`}
       >
         <div className="flex items-start gap-3">
+          {/* Checkbox for bulk selection */}
+          <div className="pt-1" onClick={(e) => e.stopPropagation()}>
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => toggleTicketSelection(item.ticket_id)}
+              className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+            />
+          </div>
+          
           {/* Source Icon */}
-          <div className={`p-2 rounded-lg ${sourceConfig.bg}`}>
+          <div className={`p-2 rounded-lg ${sourceConfig.bg}`} onClick={() => openItem(item)}>
             <SourceIcon className={`w-5 h-5 text-${sourceConfig.color}-600`} />
           </div>
           
-          {/* Content */}
-          <div className="flex-1 min-w-0">
+          {/* Content - Clickable to open detail */}
+          <div className="flex-1 min-w-0 cursor-pointer" onClick={() => openItem(item)}>
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span className="font-mono text-xs text-gray-500">{item.ticket_id}</span>
               <Badge className={`text-xs ${priorityConfig.bg} ${priorityConfig.text} border-0`}>
                 {item.priority_bucket}
               </Badge>
+              {item.pillar && (
+                <Badge variant="outline" className="text-xs">
+                  {PILLARS.find(p => p.id === item.pillar)?.icon || '📋'} {item.pillar}
+                </Badge>
+              )}
               {item.sla_breached && (
                 <Badge variant="destructive" className="text-xs">SLA BREACH</Badge>
               )}
@@ -610,8 +625,44 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
             </div>
           </div>
           
-          {/* Arrow */}
-          <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+          {/* Quick Actions Dropdown */}
+          <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+            {/* Quick Claim */}
+            {!item.assigned_to && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-green-600 hover:bg-green-50"
+                onClick={() => quickAction(item.ticket_id, 'claim')}
+                title="Quick Claim"
+              >
+                <Check className="w-4 h-4" />
+              </Button>
+            )}
+            
+            {/* Manual Assign Dropdown */}
+            <select
+              className="h-8 text-xs border rounded px-1 bg-white"
+              value={item.assigned_to || ''}
+              onChange={(e) => e.target.value && manualAssign(item.ticket_id, e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <option value="">Assign...</option>
+              {agents.map(a => (
+                <option key={a.username} value={a.username}>{a.username}</option>
+              ))}
+            </select>
+            
+            {/* Open Detail */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2"
+              onClick={() => openItem(item)}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
     );
