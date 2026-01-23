@@ -563,6 +563,53 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
     }
   };
 
+  // Merge tickets
+  const handleMergeTickets = async () => {
+    if (selectedTickets.size < 2) {
+      alert('Select at least 2 tickets to merge');
+      return;
+    }
+    
+    const ticketIds = Array.from(selectedTickets);
+    const primaryTicketId = ticketIds[0]; // First selected ticket becomes primary
+    const secondaryTicketIds = ticketIds.slice(1);
+    
+    const confirmMerge = window.confirm(
+      `Merge ${secondaryTicketIds.length} ticket(s) into ${primaryTicketId}?\n\n` +
+      `Primary (will remain): ${primaryTicketId}\n` +
+      `Secondary (will be marked as merged): ${secondaryTicketIds.join(', ')}\n\n` +
+      `All history will be preserved.`
+    );
+    
+    if (!confirmMerge) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/concierge/tickets/merge`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          primary_ticket_id: primaryTicketId,
+          secondary_ticket_ids: secondaryTicketIds,
+          agent_name: agentName || 'Admin',
+          merge_reason: 'Merged via Command Center'
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        alert(`✅ ${result.message}`);
+        setSelectedTickets(new Set());
+        loadQueue();
+      } else {
+        const error = await response.json();
+        alert(`Failed to merge: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Merge failed:', error);
+      alert('Failed to merge tickets');
+    }
+  };
+
   // Export to CSV
   const exportToCSV = () => {
     const params = new URLSearchParams();
