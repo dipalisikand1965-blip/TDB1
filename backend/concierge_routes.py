@@ -269,19 +269,20 @@ async def get_command_center_queue(
             item["source_icon"] = "🎫"
             
             # Normalize member info - ensure member object exists and has name
-            if not item.get("member") or not item.get("member", {}).get("name"):
+            existing_member = item.get("member") or {}
+            if not existing_member.get("name"):
                 # Try to get member info from various sources
                 member_name = (
-                    item.get("member", {}).get("name") or
+                    existing_member.get("name") or
                     item.get("customer_name") or
                     "Customer"
                 )
                 member_email = (
-                    item.get("member", {}).get("email") or
+                    existing_member.get("email") or
                     item.get("customer_email")
                 )
                 member_phone = (
-                    item.get("member", {}).get("phone") or
+                    existing_member.get("phone") or
                     item.get("customer_phone")
                 )
                 item["member"] = {
