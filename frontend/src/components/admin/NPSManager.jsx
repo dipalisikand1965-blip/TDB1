@@ -308,28 +308,76 @@ const NPSManager = ({ getAuthHeader }) => {
         {/* Products Tab */}
         <TabsContent value="products" className="space-y-4">
           <Card className="p-4">
-            <h3 className="font-semibold mb-4">NPS by Product</h3>
+            <h3 className="font-semibold mb-4 flex items-center gap-2">
+              <PawPrint className="w-5 h-5 text-amber-500" />
+              NPS by Product
+            </h3>
             {productScores.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">No product scores yet</p>
+              <div className="text-center py-12">
+                <PawPrint className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                <p className="text-gray-500">No product scores yet</p>
+                <p className="text-sm text-gray-400 mt-2">
+                  NPS scores appear after customers complete satisfaction surveys
+                </p>
+              </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {productScores.map((product, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      {product.image_url && (
-                        <img src={product.image_url} alt={product.name} className="w-12 h-12 object-cover rounded" />
-                      )}
-                      <div>
-                        <p className="font-medium">{product.name}</p>
-                        <p className="text-xs text-gray-500">{product.responses_count} reviews</p>
+                  <div key={idx} className="border rounded-lg overflow-hidden">
+                    <div className="flex items-center justify-between p-4 bg-gray-50 border-b">
+                      <div className="flex items-center gap-3">
+                        {product.image_url ? (
+                          <img src={product.image_url} alt={product.name} className="w-14 h-14 object-cover rounded-lg" />
+                        ) : (
+                          <div className="w-14 h-14 bg-amber-100 rounded-lg flex items-center justify-center">
+                            <PawPrint className="w-6 h-6 text-amber-500" />
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-semibold text-gray-900">{product.name}</p>
+                          <p className="text-xs text-gray-500">{product.responses_count} review{product.responses_count !== 1 ? 's' : ''}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        {renderPawScore(product.avg_score || 0)}
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-lg font-bold text-amber-600">
+                            {(product.avg_score || 0).toFixed(1)}/10
+                          </span>
+                          {product.nps_score !== null && (
+                            <Badge className={`${product.nps_score >= 50 ? 'bg-green-100 text-green-700' : product.nps_score >= 0 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
+                              NPS: {product.nps_score}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      {renderPawScore(product.avg_score || 0)}
-                      <p className="text-sm text-gray-600 mt-1">
-                        {(product.avg_score || 0).toFixed(1)}/10
-                      </p>
+                    
+                    {/* Score Breakdown */}
+                    <div className="p-4 flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-1">
+                        <ThumbsUp className="w-4 h-4 text-green-500" />
+                        <span className="text-green-700">{product.promoters} Promoters</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Minus className="w-4 h-4 text-yellow-500" />
+                        <span className="text-yellow-700">{product.passives} Passives</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <ThumbsDown className="w-4 h-4 text-red-500" />
+                        <span className="text-red-700">{product.detractors} Detractors</span>
+                      </div>
                     </div>
+                    
+                    {/* Latest Feedback */}
+                    {product.latest_feedback && (
+                      <div className="px-4 pb-4">
+                        <p className="text-xs text-gray-500 mb-1">Latest feedback:</p>
+                        <p className="text-sm text-gray-700 italic bg-gray-50 p-3 rounded-lg">
+                          "{product.latest_feedback}"
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
