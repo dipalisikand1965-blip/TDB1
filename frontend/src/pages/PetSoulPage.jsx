@@ -84,13 +84,58 @@ const PetSoulPage = () => {
   const { user, token } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [expandedHealth, setExpandedHealth] = useState(false);
+  const [userPets, setUserPets] = useState([]);
+  const [loadingPets, setLoadingPets] = useState(false);
+
+  // Fetch user's pets if logged in
+  useEffect(() => {
+    const fetchUserPets = async () => {
+      if (!user || !token) return;
+      setLoadingPets(true);
+      try {
+        const res = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUserPets(data.pets || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch pets:', error);
+      } finally {
+        setLoadingPets(false);
+      }
+    };
+    fetchUserPets();
+  }, [user, token]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white" data-testid="pet-soul-page">
-      {/* Mira Context Panel */}
-      <div className="hidden lg:block fixed right-4 top-24 w-72 z-30">
+      {/* Mira Context Panel - Fixed higher z-index */}
+      <div className="hidden lg:block fixed right-4 top-24 w-72 z-[60]">
         <MiraContextPanel pillar="general" />
       </div>
+
+      {/* Logged-in User's Pets Banner */}
+      {user && userPets.length > 0 && (
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-4">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <PawPrint className="w-6 h-6" />
+              <div>
+                <p className="font-medium">Welcome back, {user.name?.split(' ')[0]}!</p>
+                <p className="text-sm text-purple-200">You have {userPets.length} pet(s) registered</p>
+              </div>
+            </div>
+            <Link to="/my-pets">
+              <Button className="bg-white text-purple-700 hover:bg-purple-100">
+                View My Pets
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
