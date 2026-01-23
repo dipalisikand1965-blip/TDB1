@@ -270,27 +270,33 @@ const Home = () => {
                 </Link>
               </div>
               <div className="text-center">
-                <div className="inline-block p-6 bg-white/10 backdrop-blur rounded-3xl">
-                  <div className="grid grid-cols-4 gap-3">
+                <div className="inline-block p-4 bg-white/10 backdrop-blur rounded-3xl">
+                  <div className="grid grid-cols-7 gap-2">
                     {[
                       { icon: '🎂', label: 'Celebrate' },
                       { icon: '🍽️', label: 'Dine' },
                       { icon: '🏨', label: 'Stay' },
                       { icon: '✈️', label: 'Travel' },
                       { icon: '💊', label: 'Care' },
+                      { icon: '🎾', label: 'Enjoy' },
+                      { icon: '🏃', label: 'Fit' },
                       { icon: '🎓', label: 'Learn' },
+                      { icon: '📄', label: 'Paperwork' },
+                      { icon: '📋', label: 'Advisory' },
+                      { icon: '🚨', label: 'Emergency' },
+                      { icon: '🌈', label: 'Farewell' },
                       { icon: '🐾', label: 'Adopt' },
-                      { icon: '🌈', label: 'Farewell' }
+                      { icon: '🛒', label: 'Shop' }
                     ].map((pillar, idx) => (
                       <div key={idx} className="group relative">
-                        <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-2xl hover:scale-110 hover:bg-white/20 transition-all cursor-pointer">
+                        <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center text-xl hover:scale-110 hover:bg-white/20 transition-all cursor-pointer">
                           {pillar.icon}
                         </div>
-                        <span className="text-xs text-purple-300 mt-1 block">{pillar.label}</span>
+                        <span className="text-[10px] text-purple-300 mt-1 block truncate">{pillar.label}</span>
                       </div>
                     ))}
                   </div>
-                  <p className="text-sm text-purple-300 mt-4">Pet Soul™ Pillars</p>
+                  <p className="text-sm text-purple-300 mt-4">14 Life Pillars</p>
                 </div>
               </div>
             </div>
