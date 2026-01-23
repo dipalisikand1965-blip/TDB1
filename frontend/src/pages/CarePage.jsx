@@ -561,57 +561,7 @@ const CarePage = () => {
           {careProducts.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {careProducts.map((product) => (
-                <Card 
-                  key={product.id} 
-                  className="group overflow-hidden hover:shadow-lg transition-all"
-                  data-testid={`product-${product.id}`}
-                >
-                  {/* Product Image */}
-                  <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-50 relative overflow-hidden">
-                    {product.image ? (
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-12 h-12 text-gray-300" />
-                      </div>
-                    )}
-                    {product.is_birthday_perk && (
-                      <Badge className="absolute top-2 left-2 bg-pink-500 text-white text-xs">
-                        <Gift className="w-3 h-3 mr-1" /> Birthday Perk
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  {/* Product Info */}
-                  <div className="p-3">
-                    <h4 className="font-medium text-sm text-gray-900 line-clamp-2 min-h-[2.5rem] mb-2">
-                      {product.name}
-                    </h4>
-                    <div className="flex items-baseline gap-2 mb-2">
-                      <span className="text-lg font-bold text-pink-600">₹{product.price?.toLocaleString()}</span>
-                      {product.compare_price && (
-                        <span className="text-xs text-gray-400 line-through">₹{product.compare_price}</span>
-                      )}
-                    </div>
-                    {product.paw_reward_points > 0 && (
-                      <p className="text-xs text-purple-500 mb-2">
-                        <PawPrint className="w-3 h-3 inline mr-1" />
-                        {product.paw_reward_points} pts
-                      </p>
-                    )}
-                    <Button 
-                      size="sm" 
-                      className="w-full"
-                      onClick={() => handleAddToCart(product)}
-                    >
-                      Add to Cart
-                    </Button>
-                  </div>
-                </Card>
+                <ProductCard key={product.id} product={product} pillar="care" />
               ))}
             </div>
           ) : (
