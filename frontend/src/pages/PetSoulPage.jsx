@@ -115,10 +115,10 @@ const PetSoulPage = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/signup">
+            <Link to="/membership">
               <Button size="lg" className="bg-white text-purple-900 hover:bg-purple-100">
                 <PawPrint className="w-5 h-5 mr-2" />
-                Create Your Pet's Soul
+                Become a Member
               </Button>
             </Link>
             {user && (
