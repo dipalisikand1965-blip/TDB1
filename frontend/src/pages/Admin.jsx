@@ -107,7 +107,8 @@ import {
   ExternalLink,
   Crown,
   Database,
-  TrendingUp
+  TrendingUp,
+  GraduationCap
 } from 'lucide-react';
 
 const Admin = () => {
