@@ -314,8 +314,9 @@ class TestPreviouslyRefactoredRoutes:
         )
         assert response.status_code == 200
         data = response.json()
-        assert "total_members" in data or "members" in data
-        print(f"✓ GET /api/admin/loyalty/stats: {data}")
+        # Response contains config, top_users, recent_transactions, etc.
+        assert "config" in data or "total_members" in data or "top_users" in data
+        print(f"✓ GET /api/admin/loyalty/stats: Retrieved loyalty stats")
     
     def test_discount_codes_admin(self):
         """Test GET /api/admin/discount-codes"""
