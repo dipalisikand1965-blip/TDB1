@@ -123,7 +123,7 @@ const AdminDocs = () => {
       badge: '⭐ Most Important',
       files: {
         frontend: '/app/frontend/src/components/admin/ConciergeCommandCenter.jsx',
-        backend: '/app/backend/concierge_routes.py'
+        backend: '/app/backend/concierge_routes.py, /app/backend/ticket_intelligence.py'
       },
       sections: [
         {
@@ -134,7 +134,10 @@ const AdminDocs = () => {
 • **Mira's Intelligence**: AI-powered insights per ticket
 • **Omni-Channel Reply**: Respond via Mira, Email, WhatsApp
 • **SLA Timers**: Real-time countdown with breach alerts
-• **Bulk Actions**: Select multiple tickets for mass operations`
+• **Bulk Actions**: Select multiple tickets for mass operations
+• **Sentiment Analysis** 🆕: AI analyzes incoming requests (😊😐😠🆘😡)
+• **Ticket Merge** 🆕: Merge duplicate tickets from same member
+• **NPS Surveys** 🆕: Automatic satisfaction surveys on resolution`
         },
         {
           title: 'Ticket Sources',
@@ -158,13 +161,38 @@ const AdminDocs = () => {
 | Low | 48 hours | 🟢 Green |`
         },
         {
+          title: 'New Features (Jan 2026)',
+          content: `**Sentiment Analysis 🆕**
+• AI analyzes every incoming request
+• Categories: 😊 Positive, 😐 Neutral, 😠 Frustrated, 🆘 Urgent, 😡 Angry
+• Auto-elevates priority for urgent/angry sentiment
+• Badge shown in queue and ticket detail
+
+**Ticket Merge 🆕**
+• Select 2+ tickets → Click "Merge" button
+• First selected = Primary (stays open)
+• Others = Secondary (marked as merged)
+• All history preserved
+
+**NPS (Net Pawmoter Score) 🆕**
+• Survey sent after ticket resolution
+• Member rates 0-10
+• Score 9+ with feedback → Creates review for approval
+
+**Auto-Acknowledgment Emails 🆕**
+• Instant confirmation when ticket created
+• Contains ticket ID, subject, pillar message`
+        },
+        {
           title: 'Key Features',
           content: `• **Member Snapshot**: Click member name → Opens 360° profile in new tab
 • **Pet Pass Display**: Shows TDC-XXXXXX for each pet
 • **Generate AI Draft**: Auto-generate response using GPT
 • **Pillar Filtering**: Filter by Celebrate, Dine, Stay, Travel, Care, etc.
 • **CSV Export**: Download current queue view
-• **Manual Ticket Creation**: Create tickets from modal`
+• **Manual Ticket Creation**: Create tickets from modal
+• **Sentiment Badge** 🆕: Shows customer sentiment
+• **Merge Button** 🆕: Merge 2+ selected tickets`
         },
         {
           title: 'API Endpoints',
@@ -174,8 +202,12 @@ GET  /api/concierge/item/{ticket_id}         # Ticket details with member snapsh
 GET  /api/concierge/event-stream             # Live activity feed
 GET  /api/concierge/member-profile/{email}   # Full 360° profile
 POST /api/concierge/ticket/create            # Create manual ticket
-POST /api/concierge/item/{id}/resolve        # Resolve ticket
+POST /api/concierge/item/{id}/resolve        # Resolve ticket (sends NPS)
 POST /api/concierge/bulk-action              # Bulk operations
+POST /api/concierge/tickets/merge            # Merge tickets 🆕
+POST /api/concierge/analyze-sentiment        # Analyze text sentiment 🆕
+GET  /api/concierge/nps/stats                # NPS statistics 🆕
+POST /api/concierge/nps/respond              # Submit NPS response 🆕
 GET  /api/concierge/export-csv               # Export to CSV
 \`\`\``
         },
