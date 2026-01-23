@@ -112,12 +112,14 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
   const [loading, setLoading] = useState(true);
   const [attention, setAttention] = useState({});
   const [buckets, setBuckets] = useState({});
+  const [pillarStats, setPillarStats] = useState({});
   
   // Filters (preserved on back navigation)
   const [filters, setFilters] = useState({
     source: 'all',
     priority: null,
     status: null,
+    pillar: null,
     search: ''
   });
   
@@ -136,6 +138,58 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
   const [draft, setDraft] = useState('');
   const [internalNotes, setInternalNotes] = useState('');
   const [resolutionNotes, setResolutionNotes] = useState('');
+  
+  // Bulk selection
+  const [selectedTickets, setSelectedTickets] = useState(new Set());
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  
+  // Agents list for manual assignment
+  const [agents, setAgents] = useState([]);
+  
+  // Create ticket modal
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  
+  // Pillar configuration
+  const PILLARS = [
+    { id: 'celebrate', name: 'Celebrate', icon: '🎂' },
+    { id: 'dine', name: 'Dine', icon: '🍽️' },
+    { id: 'stay', name: 'Stay', icon: '🏨' },
+    { id: 'travel', name: 'Travel', icon: '✈️' },
+    { id: 'care', name: 'Care', icon: '🏥' },
+    { id: 'shop', name: 'Shop', icon: '🛍️' },
+    { id: 'club', name: 'Club', icon: '👑' },
+    { id: 'enjoy', name: 'Enjoy', icon: '🎉' },
+    { id: 'fit', name: 'Fit', icon: '💪' },
+    { id: 'advisory', name: 'Advisory', icon: '📋' },
+    { id: 'paperwork', name: 'Paperwork', icon: '📄' },
+    { id: 'emergency', name: 'Emergency', icon: '🚨' }
+  ];
+
+  // Load agents for assignment dropdown
+  const loadAgents = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/concierge/agents`);
+      if (response.ok) {
+        const data = await response.json();
+        setAgents(data.agents || []);
+      }
+    } catch (error) {
+      console.error('Failed to load agents:', error);
+    }
+  }, []);
+
+  // Load pillar stats
+  const loadPillarStats = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/concierge/pillar-stats`);
+      if (response.ok) {
+        const data = await response.json();
+        setPillarStats(data.pillars || {});
+      }
+    } catch (error) {
+      console.error('Failed to load pillar stats:', error);
+    }
+  }, []);
 
   // Load queue
   const loadQueue = useCallback(async () => {
@@ -145,6 +199,7 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
       if (filters.source && filters.source !== 'all') params.append('source', filters.source);
       if (filters.priority) params.append('priority', filters.priority);
       if (filters.status) params.append('status', filters.status);
+      if (filters.pillar) params.append('pillar', filters.pillar);
       if (filters.search) params.append('search', filters.search);
       
       const response = await fetch(`${API_URL}/api/concierge/queue?${params}`);
