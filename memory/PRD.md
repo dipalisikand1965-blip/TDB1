@@ -581,11 +581,31 @@ Test Pets: Mojo (36% soul), Mystique (0%), Luna (61%)
 
 ### MongoDB Collections
 - `users` - User accounts
-- `pets` - Pet profiles with `doggy_soul_answers`
+- `pets` - Pet profiles with `doggy_soul_answers` and `pet_pass_number`
 - `orders` - Order history
 - `page_content` - CMS content
 - `products` - Product catalog
 - `service_desk_tickets` - Mira-created tickets
+- `tickets` - Manual tickets
+- `mira_memories` - AI memory storage
+- `paw_rewards_earned` - Loyalty points
+- `enhanced_collections` - Campaign collections
+- `faqs` - Help center content
+
+---
+
+## 📚 Documentation
+
+### Admin Panel Guide
+A comprehensive "Dummy's Guide" for every admin feature is available at:
+**`/app/memory/ADMIN_GUIDE.md`**
+
+This guide includes:
+- What each tab contains
+- Purpose and data sources
+- Rules and business logic
+- What can be done
+- How to modify
 
 ---
 
