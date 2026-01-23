@@ -296,16 +296,46 @@ const PetSoulJourneyPage = () => {
             </div>
           </div>
           
-          {/* Tab Navigation - Mobile friendly */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-auto">
-            <TabsList className="grid grid-cols-2 w-[240px]">
-              <TabsTrigger value="journey" className="flex items-center gap-1.5 text-xs sm:text-sm">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Soul</span> Journey
+          {/* Progress and Start Flow Button */}
+          <div className="flex items-center gap-3">
+            {/* Progress indicator */}
+            <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600">
+              <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500"
+                  style={{ width: `${completionPercent}%` }}
+                />
+              </div>
+              <span className="font-medium">{completionPercent}%</span>
+            </div>
+            
+            {/* Start Flow Button */}
+            {unansweredCount > 0 && (
+              <Button 
+                onClick={startFlowMode}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                size="sm"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Answer {unansweredCount} Questions
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Tab Navigation - Below header */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-2 w-[280px]">
+              <TabsTrigger value="journey" className="flex items-center gap-1.5 text-sm">
+                <Sparkles className="w-4 h-4" />
+                Soul Journey
               </TabsTrigger>
-              <TabsTrigger value="answers" className="flex items-center gap-1.5 text-xs sm:text-sm">
-                <FileText className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">All</span> Answers
+              <TabsTrigger value="answers" className="flex items-center gap-1.5 text-sm">
+                <FileText className="w-4 h-4" />
+                All Answers
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -333,7 +363,7 @@ const PetSoulJourneyPage = () => {
         )}
       </div>
       
-      {/* Edit Answer Modal */}
+      {/* Edit Answer Modal (Single question) */}
       <Dialog open={editModal.open} onOpenChange={(open) => !open && setEditModal({ open: false, questionId: null })}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -366,6 +396,135 @@ const PetSoulJourneyPage = () => {
               </Button>
             ))}
           </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Flow Mode Modal - Seamless question answering */}
+      <Dialog open={flowMode} onOpenChange={(open) => !open && setFlowMode(false)}>
+        <DialogContent className="max-w-lg sm:max-w-xl">
+          {currentFlowQuestion && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center justify-between">
+                  <DialogTitle className="flex items-center gap-2 text-xl">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                      <PawPrint className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="text-gray-900">{pet?.name}'s Pet Soul™</span>
+                      <p className="text-xs text-gray-500 font-normal mt-0.5">
+                        Question {currentQuestionIndex + 1} of {ALL_QUESTIONS.length}
+                      </p>
+                    </div>
+                  </DialogTitle>
+                </div>
+                
+                {/* Progress bar */}
+                <div className="mt-4">
+                  <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500 ease-out"
+                      style={{ width: `${((answeredCount) / ALL_QUESTIONS.length) * 100}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1 text-right">{answeredCount} answered</p>
+                </div>
+              </DialogHeader>
+              
+              <div className="py-6">
+                {/* Category badge */}
+                <div className="mb-4">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                    {currentFlowQuestion.category}
+                  </span>
+                </div>
+                
+                {/* Question */}
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                  {currentFlowQuestion.label.replace(/_/g, ' ')}
+                </h3>
+                
+                {/* Options - Beautiful grid layout */}
+                <div className="grid gap-3">
+                  {(QUESTION_OPTIONS[currentFlowQuestion.id] || ['Yes', 'No', 'Sometimes']).map((option, idx) => (
+                    <button
+                      key={option}
+                      className={`
+                        relative flex items-center justify-between w-full p-4 rounded-xl border-2 transition-all duration-200
+                        ${pet?.doggy_soul_answers?.[currentFlowQuestion.id] === option 
+                          ? 'border-purple-500 bg-purple-50 shadow-md shadow-purple-100' 
+                          : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50/50'
+                        }
+                        ${savingAnswer ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                      `}
+                      disabled={savingAnswer}
+                      onClick={() => handleSaveAnswer(currentFlowQuestion.id, option, true)}
+                    >
+                      <span className="flex items-center gap-3">
+                        <span className={`
+                          w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+                          ${pet?.doggy_soul_answers?.[currentFlowQuestion.id] === option 
+                            ? 'bg-purple-500 text-white' 
+                            : 'bg-gray-100 text-gray-600'
+                          }
+                        `}>
+                          {pet?.doggy_soul_answers?.[currentFlowQuestion.id] === option 
+                            ? <Check className="w-4 h-4" />
+                            : String.fromCharCode(65 + idx)
+                          }
+                        </span>
+                        <span className={`text-sm font-medium ${
+                          pet?.doggy_soul_answers?.[currentFlowQuestion.id] === option 
+                            ? 'text-purple-700' 
+                            : 'text-gray-700'
+                        }`}>
+                          {option}
+                        </span>
+                      </span>
+                      
+                      {savingAnswer && pet?.doggy_soul_answers?.[currentFlowQuestion.id] !== option && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-white/50 rounded-xl">
+                          <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Navigation */}
+              <div className="flex items-center justify-between pt-4 border-t">
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    if (currentQuestionIndex > 0) {
+                      setCurrentQuestionIndex(currentQuestionIndex - 1);
+                    }
+                  }}
+                  disabled={currentQuestionIndex === 0 || savingAnswer}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Previous
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    // Skip to next unanswered
+                    const nextIndex = findNextUnansweredIndex(currentQuestionIndex + 1, pet?.doggy_soul_answers);
+                    if (nextIndex !== -1) {
+                      setCurrentQuestionIndex(nextIndex);
+                    } else if (currentQuestionIndex < ALL_QUESTIONS.length - 1) {
+                      setCurrentQuestionIndex(currentQuestionIndex + 1);
+                    }
+                  }}
+                  disabled={savingAnswer}
+                >
+                  Skip
+                </Button>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>
