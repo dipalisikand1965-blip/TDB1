@@ -962,21 +962,61 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
                   </CardContent>
                 </Card>
 
-                {/* B. The Request */}
-                <Card>
+                {/* B. The Request - EXPANDED & PROMINENT */}
+                <Card className="border-2 border-blue-200 bg-blue-50/30">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <MessageCircle className="w-4 h-4" />
-                      The Request
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm flex items-center gap-2 text-blue-700">
+                        <MessageCircle className="w-4 h-4" />
+                        Customer Request
+                      </CardTitle>
+                      <Badge className={TYPE_CONFIG[selectedItem.type]?.bg}>
+                        {TYPE_CONFIG[selectedItem.type]?.label || selectedItem.type}
+                      </Badge>
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-gray-800 whitespace-pre-wrap">
-                      {selectedItem.original_request || 'No request details'}
-                    </p>
-                    <div className="flex items-center gap-2 mt-3 text-xs text-gray-500">
+                  <CardContent className="space-y-3">
+                    {/* Ticket ID & Source */}
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">
+                        {selectedItem.ticket_id}
+                      </span>
+                      {selectedItem.source && (
+                        <Badge variant="outline" className="text-xs">
+                          via {selectedItem.source}
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    {/* Request Content - More Prominent */}
+                    <div className="bg-white rounded-lg p-3 border">
+                      <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+                        {selectedItem.original_request || 'No request details available'}
+                      </p>
+                    </div>
+                    
+                    {/* Subject line if available */}
+                    {selectedItem.subject && (
+                      <div className="text-xs">
+                        <span className="text-gray-500">Subject: </span>
+                        <span className="font-medium">{selectedItem.subject}</span>
+                      </div>
+                    )}
+                    
+                    {/* Sentiment indicator if available */}
+                    {selectedItem.sentiment && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{selectedItem.sentiment.emoji || '🔵'}</span>
+                        <span className="text-xs text-gray-600 capitalize">
+                          {selectedItem.sentiment.sentiment} sentiment
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Timestamp */}
+                    <div className="flex items-center gap-2 text-xs text-gray-500 pt-2 border-t">
                       <Clock className="w-3 h-3" />
-                      {selectedItem.created_at && new Date(selectedItem.created_at).toLocaleString()}
+                      Received: {selectedItem.created_at && new Date(selectedItem.created_at).toLocaleString()}
                     </div>
                   </CardContent>
                 </Card>
