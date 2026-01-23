@@ -210,6 +210,22 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
     }
   }, []);
 
+  // Load event stream
+  const loadEventStream = useCallback(async () => {
+    setLoadingEvents(true);
+    try {
+      const response = await fetch(`${API_URL}/api/concierge/event-stream?limit=30`);
+      if (response.ok) {
+        const data = await response.json();
+        setEventStream(data.events || []);
+      }
+    } catch (error) {
+      console.error('Failed to load event stream:', error);
+    } finally {
+      setLoadingEvents(false);
+    }
+  }, []);
+
   // Load queue
   const loadQueue = useCallback(async () => {
     setLoading(true);
