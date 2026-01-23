@@ -274,7 +274,7 @@ const ProductTagsManager = ({ credentials }) => {
     });
   };
 
-  const pillars = ['celebrate', 'dine', 'stay', 'travel', 'care', 'enjoy', 'fit', 'advisory', 'paperwork', 'emergency'];
+  const pillars = ['celebrate', 'dine', 'stay', 'travel', 'care', 'shop', 'club', 'enjoy', 'fit', 'learn', 'adopt', 'insure', 'farewell', 'community', 'advisory', 'paperwork', 'emergency'];
 
   return (
     <div className="space-y-6" data-testid="product-tags-manager">
