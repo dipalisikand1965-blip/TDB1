@@ -981,6 +981,22 @@ from shopify_sync_routes import (
     check_product_matches
 )
 
+# Import orders routes (refactored)
+from orders_routes import (
+    orders_router,
+    set_database as set_orders_db,
+    set_dependencies as set_orders_deps
+)
+
+# Import autoship routes (refactored)
+from autoship_routes import (
+    autoship_router,
+    autoship_admin_router,
+    set_database as set_autoship_db,
+    set_dependencies as set_autoship_deps,
+    calculate_autoship_discount
+)
+
 # Import ticket routes (Service Desk)
 from ticket_routes import router as ticket_router
 from ticket_messaging import router as ticket_messaging_router
