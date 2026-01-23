@@ -27,6 +27,7 @@ import {
 const CATEGORY_ICONS = {
   celebrate: '🎂', dine: '🍽️', travel: '✈️', stay: '🏨', enjoy: '🎉',
   club: '👑', care: '💊', shop: '🛒', work: '💼', fit: '🏃',
+  learn: '📚', adopt: '🐾', insure: '🛡️', farewell: '🌈', community: '🤝',
   exclusive: '⭐', emergency: '🚨', advisory: '📋', paperwork: '📄', referrals: '🤝'
 };
 
@@ -40,7 +41,7 @@ const DEFAULT_VIEWS = [
   { id: 'today', name: "Today's Tickets", icon: '📅', filter: { today: true } },
 ];
 
-// Pillar-specific views - ALL 12 PILLARS + Special Views
+// Pillar-specific views - ALL PILLARS + Special Views
 const PILLAR_VIEWS = [
   { id: 'celebrate', name: 'Celebrate', icon: '🎂', filter: { category: 'celebrate' } },
   { id: 'dine', name: 'Dine', icon: '🍽️', filter: { category: 'dine' } },
@@ -50,6 +51,11 @@ const PILLAR_VIEWS = [
   { id: 'shop', name: 'Shop', icon: '🛍️', filter: { category: 'shop' } },
   { id: 'enjoy', name: 'Enjoy', icon: '🎉', filter: { category: 'enjoy' } },
   { id: 'fit', name: 'Fit', icon: '💪', filter: { category: 'fit' } },
+  { id: 'learn', name: 'Learn', icon: '📚', filter: { category: 'learn' } },
+  { id: 'adopt', name: 'Adopt', icon: '🐾', filter: { category: 'adopt' } },
+  { id: 'insure', name: 'Insure', icon: '🛡️', filter: { category: 'insure' } },
+  { id: 'farewell', name: 'Farewell', icon: '🌈', filter: { category: 'farewell' } },
+  { id: 'community', name: 'Community', icon: '🤝', filter: { category: 'community' } },
   { id: 'advisory', name: 'Advisory', icon: '📋', filter: { category: 'advisory' } },
   { id: 'paperwork', name: 'Paperwork', icon: '📄', filter: { category: 'paperwork' } },
   { id: 'emergency', name: 'Emergency', icon: '🚨', filter: { category: 'emergency' } },
