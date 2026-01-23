@@ -92,6 +92,10 @@ from data_migration import (
     set_migration_db,
     set_migration_admin_verify
 )
+from health_vault_routes import (
+    health_vault_router,
+    set_database as set_health_vault_db
+)
 from pet_soul_routes import (
     pet_soul_router,
     pet_soul_admin_router,
