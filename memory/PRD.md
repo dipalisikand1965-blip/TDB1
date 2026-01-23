@@ -311,6 +311,48 @@ The Doggy Company® is building a "Pet Life Operating System" with 12 business "
 - Checkout Form: Fixed async validation race condition
 - View Full Soul button: Now handles both `id` and `_id`
 - "Pet Parent Name" label on onboarding form
+- Email domain: Updated from thedoggybakery.in to thedoggycompany.in across codebase
+
+### ✅ Command Center Phase 2 (NEW - Jan 23, 2026)
+**SLA Timers, Auto-Assignment, Reporting, Omni-Channel Replies**
+
+**SLA System:**
+- Real-time countdown timers (⏱️ HH:MM:SS format)
+- SLA times: Urgent=2h, High=4h, Medium=24h, Low=48h
+- Visual alerts: Red for breached, Orange for warning (<1h)
+- `/api/concierge/sla-status/{ticket_id}` - Get SLA status for ticket
+- `/api/concierge/sla-breaches` - Get all breached/warning tickets
+
+**Auto-Assignment:**
+- Load-balanced assignment (assigns to agent with least active tickets)
+- `/api/concierge/agents` - List agents with workload
+- `/api/concierge/auto-assign/{ticket_id}` - Auto-assign single ticket
+- `/api/concierge/bulk-auto-assign` - Auto-assign multiple unassigned tickets
+
+**Reporting:**
+- `/api/concierge/reports/overview` - Dashboard stats (total, open, SLA breaches, agent performance)
+- `/api/concierge/reports/daily` - 7-day ticket history (created vs resolved)
+
+**Omni-Channel Replies:**
+- `/api/concierge/reply/email` - Send via Resend (woof@thedoggycompany.in)
+- `/api/concierge/reply/whatsapp` - Generate WhatsApp click-to-chat link
+- UI: 4 send options (Mira Thread, Email, WhatsApp, Resolve Only)
+
+### ✅ Self-Service Portal (NEW - Jan 23, 2026)
+**Member-facing ticket tracker at `/my-tickets`**
+
+**Features:**
+- View all open and resolved tickets
+- Stats dashboard (Total, Open, Resolved counts)
+- Ticket detail with conversation timeline
+- Add replies to open tickets
+- Status badges (Open, In Progress, Resolved, Closed)
+- New Reply indicator
+
+**API Endpoints:**
+- `GET /api/concierge/member/tickets?email=` - Get member's tickets
+- `GET /api/concierge/member/ticket/{id}?email=` - Get ticket detail (ownership verified)
+- `POST /api/concierge/member/ticket/{id}/reply?email=` - Add member reply
 
 ---
 
