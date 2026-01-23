@@ -288,7 +288,7 @@ async def send_abandoned_cart_email(to_email: str, name: str, items: list,
             "html": html_content
         }
         
-        email_response = resend.Emails.send(params)
+        resend.Emails.send(params)
         logger.info(f"Abandoned cart email (reminder #{reminder_config.get('reminder_num', '?')}) sent to {to_email}")
         return True
         
