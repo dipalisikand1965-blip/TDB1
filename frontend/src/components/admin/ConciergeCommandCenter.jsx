@@ -711,23 +711,40 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
                     {/* Send Options */}
                     <div className="pt-2 border-t">
                       <p className="text-xs font-medium text-gray-600 mb-2">Resolve & Send via:</p>
-                      <div className="flex gap-2">
+                      <div className="grid grid-cols-2 gap-2">
                         <Button
                           onClick={() => resolveItem('mira')}
                           disabled={actionLoading === 'resolve' || !resolutionNotes.trim()}
                           size="sm"
-                          className="flex-1 bg-purple-600 hover:bg-purple-700"
+                          className="bg-purple-600 hover:bg-purple-700"
                         >
-                          <Brain className="w-4 h-4 mr-1" /> Mira
+                          <Brain className="w-4 h-4 mr-1" /> Mira Thread
                         </Button>
                         <Button
-                          onClick={() => resolveItem('email')}
+                          onClick={() => sendViaEmail()}
+                          disabled={actionLoading === 'email' || !resolutionNotes.trim()}
+                          size="sm"
+                          variant="outline"
+                        >
+                          {actionLoading === 'email' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4 mr-1" />}
+                          Email
+                        </Button>
+                        <Button
+                          onClick={() => sendViaWhatsApp()}
+                          disabled={!resolutionNotes.trim()}
+                          size="sm"
+                          variant="outline"
+                          className="bg-green-50 hover:bg-green-100 text-green-700 border-green-300"
+                        >
+                          <ExternalLink className="w-4 h-4 mr-1" /> WhatsApp
+                        </Button>
+                        <Button
+                          onClick={() => resolveItem('internal')}
                           disabled={actionLoading === 'resolve' || !resolutionNotes.trim()}
                           size="sm"
                           variant="outline"
-                          className="flex-1"
                         >
-                          <Mail className="w-4 h-4 mr-1" /> Email
+                          <Check className="w-4 h-4 mr-1" /> Resolve Only
                         </Button>
                       </div>
                       {actionLoading === 'resolve' && (
