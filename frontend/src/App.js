@@ -74,6 +74,7 @@ import AgentPortal from "./pages/AgentPortal";
 import ServiceDeskPage from "./pages/ServiceDeskPage";
 import MyTickets from "./pages/MyTickets";
 import AdminDocs from "./pages/AdminDocs";
+import NPSFeedbackPage from "./pages/NPSFeedbackPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
