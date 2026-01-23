@@ -234,8 +234,8 @@ function MainLayout() {
         <Route path="/stay" element={<ProtectedRoute><StayPage /></ProtectedRoute>} />
         <Route path="/travel" element={<TravelPage />} />
         <Route path="/care" element={<CarePage />} />
-        <Route path="/enjoy" element={<ProtectedRoute><EnjoyPage /></ProtectedRoute>} />
-        <Route path="/fit" element={<ProtectedRoute><FitPage /></ProtectedRoute>} />
+        <Route path="/enjoy" element={<EnjoyPage />} />
+        <Route path="/fit" element={<FitPage />} />
         <Route path="/learn" element={<LearnPage />} />
         <Route path="/advisory" element={<ProtectedRoute><AdvisoryPage /></ProtectedRoute>} />
         <Route path="/paperwork" element={<ProtectedRoute><PaperworkPage /></ProtectedRoute>} />
