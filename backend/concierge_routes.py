@@ -543,9 +543,8 @@ async def get_command_center_queue(
             all_items.append(item)
     
     # Apply pillar filter (if provided)
-    pillar = None  # TODO: Add pillar parameter to function signature
     if pillar:
-        all_items = [item for item in all_items if item.get("pillar") == pillar]
+        all_items = [item for item in all_items if item.get("pillar") == pillar or item.get("category") == pillar]
     
     # Apply priority filter
     if priority:
