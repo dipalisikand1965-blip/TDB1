@@ -2526,6 +2526,15 @@ const Admin = () => {
                               </div>
                             </td>
                             <td className="py-3 px-2">
+                              {pet.pet_pass_number ? (
+                                <span className="font-mono text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
+                                  {pet.pet_pass_number}
+                                </span>
+                              ) : (
+                                <span className="text-xs text-gray-400">-</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-2">
                               <span className="text-sm text-gray-600">{pet.breed || '-'}</span>
                             </td>
                             <td className="py-3 px-2 bg-purple-50/50">
