@@ -648,6 +648,56 @@ All pillar pages now use a unified `ProductCard` component that provides a consi
 
 ---
 
+## 📊 Advanced Analytics Dashboard (NEW - Jan 23, 2026)
+
+### Overview
+Full-featured analytics dashboard with 6 tabs providing insights into revenue, tickets, agent performance, SLA compliance, and NPS.
+
+### Tabs
+1. **📊 Overview** - KPI cards (Revenue, Tickets, NPS, SLA) + Quick Stats
+2. **💰 Revenue** - Revenue by pillar with bar charts and distribution
+3. **👥 Agent Performance** - Leaderboard with rankings and metrics
+4. **⏱️ SLA Compliance** - Met/Breached/At Risk counts, compliance by priority
+5. **⭐ NPS & Satisfaction** - NPS score breakdown, promoter/passive/detractor counts
+6. **🏛️ Pillar Breakdown** - All 14 pillars with individual metrics
+
+### API Endpoints
+- `GET /api/analytics/revenue?days=30` - Revenue metrics
+- `GET /api/analytics/tickets?days=30` - Ticket/SLA metrics
+- `GET /api/analytics/agents?days=30` - Agent performance
+- `GET /api/analytics/nps/stats?days=30` - NPS statistics
+
+### Features
+- Date range filter (7/30/90/365 days)
+- CSV export functionality
+- Real-time data refresh
+
+---
+
+## ⭐ NPS (Net Pawmoter Score) System (NEW - Jan 23, 2026)
+
+### Flow
+1. Ticket resolved in Command Center → NPS survey email sent automatically
+2. Customer clicks score (0-10) in email → Opens feedback page
+3. Customer can add comments → Optionally allow review to be featured
+4. Data aggregated in Analytics → NPS tab
+
+### NPS Categories
+- **Promoters (9-10)** 🎉 - Loyal enthusiasts
+- **Passives (7-8)** 😊 - Satisfied but unenthusiastic
+- **Detractors (0-6)** 😔 - Unhappy customers
+
+### NPS Score Formula
+```
+NPS = % Promoters - % Detractors
+Range: -100 to +100
+```
+
+### Feedback Page URL
+`/feedback?ticket={ticket_id}&token={survey_token}&score={optional_prescore}`
+
+---
+
 ## 🌐 Production Data Seeding (Updated Jan 23, 2026)
 
 ### New Endpoint: `/api/admin/seed-production-data`
