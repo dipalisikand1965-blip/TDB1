@@ -390,10 +390,17 @@ const MiraAI = () => {
       }
     } catch (error) {
       console.error('[Mira] Chat error:', error);
+      let errorContent = "I apologise — I am experiencing a brief connection difficulty. Please try again in a moment, or reach us directly at woof@thedoggycompany.in";
+      
+      // More specific error for timeout
+      if (error.name === 'AbortError') {
+        errorContent = "I'm taking a bit longer to think about this one. Please try again — if this persists, our concierge team at woof@thedoggycompany.in is ready to help you!";
+      }
+      
       const errorMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "I apologise — I am experiencing a brief connection difficulty. Please try again in a moment, or reach us directly at woof@thedoggycompany.in"
+        content: errorContent
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
