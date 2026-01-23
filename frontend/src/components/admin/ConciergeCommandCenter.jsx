@@ -340,7 +340,7 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
           
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span className="font-mono text-xs text-gray-500">{item.ticket_id}</span>
               <Badge className={`text-xs ${priorityConfig.bg} ${priorityConfig.text} border-0`}>
                 {item.priority_bucket}
@@ -348,6 +348,8 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
               {item.sla_breached && (
                 <Badge variant="destructive" className="text-xs">SLA BREACH</Badge>
               )}
+              {/* SLA Timer */}
+              <SLATimer createdAt={item.created_at} priority={item.priority_bucket} compact={true} />
             </div>
             
             <p className="font-medium text-gray-800 truncate">
@@ -367,10 +369,10 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
                   {item.pets.map(p => p.name).join(', ')}
                 </span>
               )}
-              {item.created_at && (
-                <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {new Date(item.created_at).toLocaleString()}
+              {item.assigned_to && (
+                <span className="flex items-center gap-1 text-purple-600">
+                  <Users className="w-3 h-3" />
+                  {item.assigned_to}
                 </span>
               )}
             </div>
