@@ -11,16 +11,18 @@ import MiraContextPanel from '../components/MiraContextPanel';
 
 const SOUL_PILLARS = [
   { icon: '🎂', name: 'Celebrate', desc: 'Birthday parties, special occasions, custom cakes', color: 'from-pink-500 to-rose-500' },
-  { icon: '🍽️', name: 'Dine', desc: 'Pet-friendly restaurants, special menus, dining experiences', color: 'from-orange-500 to-amber-500' },
+  { icon: '🍽️', name: 'Dine', desc: 'Pet-friendly restaurants, special menus, dining', color: 'from-orange-500 to-amber-500' },
   { icon: '🏨', name: 'Stay', desc: 'Boarding, daycare, pet hotels, home sitters', color: 'from-blue-500 to-cyan-500' },
-  { icon: '✈️', name: 'Travel', desc: 'Pet relocation, travel documentation, transport', color: 'from-indigo-500 to-purple-500' },
+  { icon: '✈️', name: 'Travel', desc: 'Pet relocation, documentation, transport', color: 'from-indigo-500 to-purple-500' },
   { icon: '💊', name: 'Care', desc: 'Veterinary care, grooming, health monitoring', color: 'from-green-500 to-emerald-500' },
-  { icon: '🏃', name: 'Fit', desc: 'Exercise programs, swimming, agility training', color: 'from-teal-500 to-cyan-500' },
-  { icon: '🎓', name: 'Learn', desc: 'Training programs, behavior modification, puppy classes', color: 'from-blue-600 to-indigo-600' },
-  { icon: '🐾', name: 'Adopt', desc: 'Adoption services, foster programs, rescue support', color: 'from-amber-500 to-orange-500' },
-  { icon: '🌈', name: 'Farewell', desc: 'End-of-life care, cremation, memorial services', color: 'from-purple-500 to-pink-500' },
   { icon: '🎾', name: 'Enjoy', desc: 'Toys, accessories, enrichment activities', color: 'from-yellow-500 to-amber-500' },
-  { icon: '📋', name: 'Advisory', desc: 'Legal advice, insurance, pet planning', color: 'from-slate-500 to-gray-500' },
+  { icon: '🏃', name: 'Fit', desc: 'Exercise programs, swimming, agility', color: 'from-teal-500 to-cyan-500' },
+  { icon: '🎓', name: 'Learn', desc: 'Training programs, behavior modification', color: 'from-blue-600 to-indigo-600' },
+  { icon: '📄', name: 'Paperwork', desc: 'Registration, licenses, certificates', color: 'from-gray-500 to-slate-500' },
+  { icon: '📋', name: 'Advisory', desc: 'Legal advice, insurance, pet planning', color: 'from-slate-500 to-gray-600' },
+  { icon: '🚨', name: 'Emergency', desc: '24/7 emergency care, poison control', color: 'from-red-500 to-orange-500' },
+  { icon: '🌈', name: 'Farewell', desc: 'End-of-life care, cremation, memorials', color: 'from-purple-500 to-pink-500' },
+  { icon: '🐾', name: 'Adopt', desc: 'Adoption services, foster, rescue support', color: 'from-amber-500 to-orange-500' },
   { icon: '🛒', name: 'Shop', desc: 'Pet supplies, food, treats, essentials', color: 'from-green-600 to-teal-600' }
 ];
 
