@@ -734,6 +734,12 @@ async def lifespan(app: FastAPI):
     # Initialize content database connection
     set_content_db(db)
     
+    # Initialize loyalty database connection
+    set_loyalty_db(db)
+    
+    # Initialize discount database connection
+    set_discount_db(db)
+    
     # Initialize escalation database connection
     set_escalation_db(db)
     logger.info("Escalation engine initialized")
