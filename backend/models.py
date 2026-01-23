@@ -313,6 +313,7 @@ class PetProfileCreate(BaseModel):
     soul: Optional[PetSoul] = Field(default=None)
     celebrations: List[PetCelebration] = Field(default_factory=list)
     preferences: Optional[PetPreferences] = Field(default=None)
+    health: Optional[PetHealthInfo] = Field(default=None, description="Pet health information")
     owner_email: Optional[str] = Field(default=None)
     owner_phone: Optional[str] = Field(default=None)
     owner_name: Optional[str] = Field(default=None)
