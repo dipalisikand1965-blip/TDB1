@@ -334,6 +334,7 @@ const SearchResults = () => {
                 <ProductCard 
                   key={product.id} 
                   product={product}
+                  pillar={product.pillar || product.category || 'shop'}
                   viewMode={viewMode}
                 />
               ))}
