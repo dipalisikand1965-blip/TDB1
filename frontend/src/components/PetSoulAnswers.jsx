@@ -212,6 +212,20 @@ const QuestionItem = ({ question, answer, color, onEdit }) => {
           {hasAnswer && (
             <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''}`} />
           )}
+          {/* Fill Now button for unanswered questions */}
+          {!hasAnswer && onEdit && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-6 text-xs px-2 bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(question.id);
+              }}
+            >
+              <Plus className="w-3 h-3 mr-1" /> Fill
+            </Button>
+          )}
         </div>
       </div>
       
