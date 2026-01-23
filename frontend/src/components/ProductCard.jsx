@@ -527,32 +527,38 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
     fetchBundleProducts();
   }, [isHamperProduct, API_URL]);
 
-  // Fetch reviews
+  // Fetch NPS Score and Testimonials
   useEffect(() => {
-    const fetchReviews = async () => {
-        try {
-            const res = await fetch(`${API_URL}/api/products/${product.id}/reviews`);
-            if (res.ok) {
-                const data = await res.json();
-                setReviews(data.reviews || []);
-            }
-        } catch (e) { console.error(e); }
-    };
-    fetchReviews();
-  }, [product.id, API_URL]);
-
-  // Fetch NPS Testimonials - modal is always open when this component renders
-  useEffect(() => {
-    const fetchTestimonials = async () => {
+    const fetchNPSData = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/concierge/nps/testimonials?limit=5`);
-        if (res.ok) {
-          const data = await res.json();
-          setTestimonials(data.testimonials || []);
+        // Fetch NPS testimonials  
+        const testimonialsRes = await fetch(`${API_URL}/api/concierge/nps/testimonials?limit=5`);
+        if (testimonialsRes.ok) {
+          const data = await testimonialsRes.json();
+          setNpsTestimonials(data.testimonials || []);
+          
+          // Calculate average score from testimonials
+          if (data.testimonials?.length > 0) {
+            const avgScore = Math.round(
+              data.testimonials.reduce((sum, t) => sum + (t.score || 0), 0) / data.testimonials.length
+            );
+            setNpsScore(avgScore);
+          }
         }
-      } catch (e) { console.error('Failed to fetch testimonials:', e); }
+        
+        // Try to get overall NPS stats
+        const statsRes = await fetch(`${API_URL}/api/analytics/nps-summary`);
+        if (statsRes.ok) {
+          const statsData = await statsRes.json();
+          if (statsData.average_score) {
+            setNpsScore(Math.round(statsData.average_score));
+          }
+        }
+      } catch (e) { 
+        console.error('Failed to fetch NPS data:', e); 
+      }
     };
-    fetchTestimonials();
+    fetchNPSData();
   }, [API_URL]);
 
   const submitReview = async () => {
