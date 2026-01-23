@@ -39,13 +39,23 @@ const MemberDashboard = () => {
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '', name: '' });
   const [editingReview, setEditingReview] = useState(null);
   
-  // Settings State
+  // Settings State - Communication Preferences
   const [settings, setSettings] = useState({
-    whatsappOptIn: true,
-    emailPromo: true,
-    shareData: false,
-    termsAccepted: true
+    // Communication Channels
+    email: true,
+    whatsapp: false,
+    sms: false,
+    // Notification Types
+    order_updates: true,
+    promotional: true,
+    celebration_reminders: true,
+    health_reminders: true,
+    community_updates: false,
+    // Privacy
+    shareData: false
   });
+  const [settingsLoading, setSettingsLoading] = useState(false);
+  const [settingsSaved, setSettingsSaved] = useState(false);
 
   // Redirect to login if not authenticated (after auth check completes)
   useEffect(() => {
