@@ -51,6 +51,12 @@ const DineManager = ({ credentials }) => {
   const [isAddingBundle, setIsAddingBundle] = useState(false);
   const [importingBundles, setImportingBundles] = useState(false);
   
+  // Products state
+  const [products, setProducts] = useState([]);
+  const [productStats, setProductStats] = useState({});
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [isAddingProduct, setIsAddingProduct] = useState(false);
+  
   const fileInputRef = useRef(null);
   const petMenuInputRef = useRef(null);
   const csvInputRef = useRef(null);
