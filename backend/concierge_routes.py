@@ -987,3 +987,642 @@ Do NOT include:
     except Exception as e:
         logger.error(f"Draft generation failed: {e}")
         return {"draft": None, "error": str(e)}
+
+
+# ============== PHASE 2: SLA & AUTO-ASSIGNMENT ==============
+
+def calculate_sla_status(item: Dict) -> Dict:
+    """Calculate SLA status with countdown timer info."""
+    priority = item.get("priority", "medium").lower()
+    sla_hours = SLA_HOURS.get(priority, 24)
+    
+    created_at = item.get("created_at")
+    if not created_at:
+        return {"status": "unknown", "remaining_seconds": 0, "breached": False}
+    
+    try:
+        if isinstance(created_at, str):
+            created = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+        else:
+            created = created_at
+        
+        deadline = created + timedelta(hours=sla_hours)
+        now = datetime.now(timezone.utc)
+        remaining = (deadline - now).total_seconds()
+        
+        return {
+            "status": "breached" if remaining < 0 else "warning" if remaining < 3600 else "ok",
+            "remaining_seconds": max(0, remaining),
+            "remaining_formatted": format_time_remaining(remaining),
+            "deadline": deadline.isoformat(),
+            "sla_hours": sla_hours,
+            "breached": remaining < 0,
+            "breach_by_seconds": abs(remaining) if remaining < 0 else 0
+        }
+    except Exception as e:
+        logger.error(f"SLA calculation error: {e}")
+        return {"status": "unknown", "remaining_seconds": 0, "breached": False}
+
+
+def format_time_remaining(seconds: float) -> str:
+    """Format remaining seconds into human-readable string."""
+    if seconds < 0:
+        abs_seconds = abs(seconds)
+        if abs_seconds < 3600:
+            return f"⚠️ {int(abs_seconds // 60)}m overdue"
+        elif abs_seconds < 86400:
+            return f"⚠️ {int(abs_seconds // 3600)}h {int((abs_seconds % 3600) // 60)}m overdue"
+        else:
+            return f"⚠️ {int(abs_seconds // 86400)}d overdue"
+    
+    if seconds < 3600:
+        return f"⏱️ {int(seconds // 60)}m remaining"
+    elif seconds < 86400:
+        return f"⏱️ {int(seconds // 3600)}h {int((seconds % 3600) // 60)}m remaining"
+    else:
+        return f"⏱️ {int(seconds // 86400)}d {int((seconds % 86400) // 3600)}h remaining"
+
+
+@router.get("/sla-status/{ticket_id}")
+async def get_ticket_sla_status(ticket_id: str):
+    """Get real-time SLA status for a specific ticket."""
+    db = get_db()
+    
+    # Find ticket in various collections
+    ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    if not ticket:
+        ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    return calculate_sla_status(ticket)
+
+
+@router.get("/sla-breaches")
+async def get_sla_breaches(limit: int = 50):
+    """Get all tickets that have breached or are about to breach SLA."""
+    db = get_db()
+    now = datetime.now(timezone.utc)
+    
+    breaches = []
+    warnings = []
+    
+    # Check service_desk_tickets
+    tickets = await db.service_desk_tickets.find(
+        {"status": {"$nin": ["resolved", "closed"]}},
+        {"_id": 0}
+    ).to_list(500)
+    
+    for ticket in tickets:
+        sla = calculate_sla_status(ticket)
+        ticket["sla"] = sla
+        
+        if sla["breached"]:
+            breaches.append(ticket)
+        elif sla["status"] == "warning":
+            warnings.append(ticket)
+    
+    # Check regular tickets
+    regular_tickets = await db.tickets.find(
+        {"status": {"$nin": ["resolved", "closed"]}},
+        {"_id": 0}
+    ).to_list(500)
+    
+    for ticket in regular_tickets:
+        sla = calculate_sla_status(ticket)
+        ticket["sla"] = sla
+        
+        if sla["breached"]:
+            breaches.append(ticket)
+        elif sla["status"] == "warning":
+            warnings.append(ticket)
+    
+    # Sort by severity
+    breaches.sort(key=lambda x: x["sla"].get("breach_by_seconds", 0), reverse=True)
+    warnings.sort(key=lambda x: x["sla"].get("remaining_seconds", 0))
+    
+    return {
+        "breaches": breaches[:limit],
+        "breaches_count": len(breaches),
+        "warnings": warnings[:limit],
+        "warnings_count": len(warnings),
+        "total_at_risk": len(breaches) + len(warnings)
+    }
+
+
+# ============== AUTO-ASSIGNMENT ==============
+
+class AutoAssignmentRule(BaseModel):
+    pillar: Optional[str] = None
+    priority: Optional[str] = None
+    assign_to: str
+    is_active: bool = True
+
+
+@router.get("/agents")
+async def get_available_agents():
+    """Get list of available agents for assignment."""
+    db = get_db()
+    
+    # Get agents from admin_credentials
+    agents = await db.admin_credentials.find(
+        {},
+        {"_id": 0, "username": 1, "role": 1}
+    ).to_list(100)
+    
+    # Get workload for each agent
+    for agent in agents:
+        assigned_count = await db.service_desk_tickets.count_documents({
+            "assigned_to": agent["username"],
+            "status": {"$nin": ["resolved", "closed"]}
+        })
+        agent["active_tickets"] = assigned_count
+    
+    return {"agents": agents}
+
+
+@router.post("/auto-assign/{ticket_id}")
+async def auto_assign_ticket(ticket_id: str):
+    """Auto-assign ticket based on rules (load-balanced)."""
+    db = get_db()
+    
+    # Get ticket
+    ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    if ticket.get("assigned_to"):
+        return {"message": "Ticket already assigned", "assigned_to": ticket["assigned_to"]}
+    
+    # Get agents with workload
+    agents_response = await get_available_agents()
+    agents = agents_response["agents"]
+    
+    if not agents:
+        return {"message": "No agents available", "assigned_to": None}
+    
+    # Load-balanced assignment: pick agent with least active tickets
+    agents.sort(key=lambda x: x.get("active_tickets", 0))
+    selected_agent = agents[0]["username"]
+    
+    # Assign the ticket
+    await db.service_desk_tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$set": {
+                "assigned_to": selected_agent,
+                "assigned_at": datetime.now(timezone.utc).isoformat(),
+                "auto_assigned": True
+            },
+            "$push": {
+                "timeline": {
+                    "action": "auto_assigned",
+                    "by": "system",
+                    "to": selected_agent,
+                    "at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        }
+    )
+    
+    return {
+        "success": True,
+        "assigned_to": selected_agent,
+        "reason": "load_balanced"
+    }
+
+
+@router.post("/bulk-auto-assign")
+async def bulk_auto_assign(max_tickets: int = 10):
+    """Auto-assign multiple unassigned tickets."""
+    db = get_db()
+    
+    # Get unassigned tickets
+    unassigned = await db.service_desk_tickets.find(
+        {
+            "assigned_to": {"$exists": False},
+            "status": {"$nin": ["resolved", "closed"]}
+        },
+        {"ticket_id": 1, "_id": 0}
+    ).limit(max_tickets).to_list(max_tickets)
+    
+    results = []
+    for ticket in unassigned:
+        result = await auto_assign_ticket(ticket["ticket_id"])
+        results.append({"ticket_id": ticket["ticket_id"], **result})
+    
+    return {
+        "assigned_count": len([r for r in results if r.get("success")]),
+        "results": results
+    }
+
+
+# ============== REPORTING & ANALYTICS ==============
+
+@router.get("/reports/overview")
+async def get_command_center_overview():
+    """Get overview statistics for the command center."""
+    db = get_db()
+    now = datetime.now(timezone.utc)
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    week_start = today_start - timedelta(days=7)
+    
+    # Service desk tickets stats
+    total_tickets = await db.service_desk_tickets.count_documents({})
+    open_tickets = await db.service_desk_tickets.count_documents({
+        "status": {"$nin": ["resolved", "closed"]}
+    })
+    resolved_today = await db.service_desk_tickets.count_documents({
+        "status": "resolved",
+        "resolved_at": {"$gte": today_start.isoformat()}
+    })
+    
+    # SLA stats
+    sla_data = await get_sla_breaches(limit=1000)
+    
+    # Agent performance
+    agents = await db.admin_credentials.find({}, {"username": 1, "_id": 0}).to_list(100)
+    agent_stats = []
+    
+    for agent in agents:
+        username = agent["username"]
+        assigned = await db.service_desk_tickets.count_documents({
+            "assigned_to": username,
+            "status": {"$nin": ["resolved", "closed"]}
+        })
+        resolved_by_agent = await db.service_desk_tickets.count_documents({
+            "resolved_by": username,
+            "resolved_at": {"$gte": week_start.isoformat()}
+        })
+        agent_stats.append({
+            "username": username,
+            "active_tickets": assigned,
+            "resolved_this_week": resolved_by_agent
+        })
+    
+    # Average response time (approximate)
+    resolved_tickets = await db.service_desk_tickets.find(
+        {"status": "resolved", "resolved_at": {"$exists": True}},
+        {"created_at": 1, "resolved_at": 1, "_id": 0}
+    ).limit(100).to_list(100)
+    
+    avg_resolution_hours = 0
+    if resolved_tickets:
+        total_hours = 0
+        count = 0
+        for t in resolved_tickets:
+            try:
+                created = datetime.fromisoformat(t["created_at"].replace("Z", "+00:00"))
+                resolved = datetime.fromisoformat(t["resolved_at"].replace("Z", "+00:00"))
+                total_hours += (resolved - created).total_seconds() / 3600
+                count += 1
+            except:
+                pass
+        if count > 0:
+            avg_resolution_hours = total_hours / count
+    
+    return {
+        "overview": {
+            "total_tickets": total_tickets,
+            "open_tickets": open_tickets,
+            "resolved_today": resolved_today,
+            "sla_breaches": sla_data["breaches_count"],
+            "sla_warnings": sla_data["warnings_count"]
+        },
+        "performance": {
+            "avg_resolution_hours": round(avg_resolution_hours, 1),
+            "agent_stats": agent_stats
+        },
+        "generated_at": now.isoformat()
+    }
+
+
+@router.get("/reports/daily")
+async def get_daily_report(days: int = 7):
+    """Get daily ticket statistics."""
+    db = get_db()
+    now = datetime.now(timezone.utc)
+    
+    daily_stats = []
+    for i in range(days):
+        day = now - timedelta(days=i)
+        day_start = day.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = day_start + timedelta(days=1)
+        
+        created = await db.service_desk_tickets.count_documents({
+            "created_at": {
+                "$gte": day_start.isoformat(),
+                "$lt": day_end.isoformat()
+            }
+        })
+        
+        resolved = await db.service_desk_tickets.count_documents({
+            "resolved_at": {
+                "$gte": day_start.isoformat(),
+                "$lt": day_end.isoformat()
+            }
+        })
+        
+        daily_stats.append({
+            "date": day_start.strftime("%Y-%m-%d"),
+            "day": day_start.strftime("%a"),
+            "created": created,
+            "resolved": resolved
+        })
+    
+    daily_stats.reverse()
+    
+    return {"daily_stats": daily_stats}
+
+
+# ============== OMNI-CHANNEL REPLIES ==============
+
+class OmniChannelReply(BaseModel):
+    ticket_id: str
+    message: str
+    channel: str  # "email", "whatsapp", "mira"
+    recipient_email: Optional[str] = None
+    recipient_phone: Optional[str] = None
+
+
+@router.post("/reply/email")
+async def send_email_reply(
+    ticket_id: str,
+    message: str,
+    recipient_email: str,
+    subject: Optional[str] = None
+):
+    """Send email reply to customer via Resend."""
+    db = get_db()
+    
+    # Get ticket for context
+    ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    if not ticket:
+        ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    # Get member info for personalization
+    member = ticket.get("member", {}) or {}
+    member_name = member.get("name", "there")
+    
+    # Prepare email
+    try:
+        import resend
+        api_key = os.environ.get("RESEND_API_KEY")
+        if not api_key:
+            raise HTTPException(status_code=500, detail="Email not configured")
+        
+        resend.api_key = api_key
+        
+        email_subject = subject or f"Re: Your Request #{ticket_id}"
+        
+        html_content = f"""
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #8B5CF6, #EC4899); padding: 20px; text-align: center;">
+                <h1 style="color: white; margin: 0; font-size: 24px;">🐕 The Doggy Company</h1>
+            </div>
+            <div style="padding: 30px; background: #ffffff;">
+                <p style="color: #374151; font-size: 16px;">Hi {member_name},</p>
+                <div style="color: #374151; font-size: 16px; line-height: 1.6; white-space: pre-wrap;">
+{message}
+                </div>
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                    <p style="color: #6b7280; font-size: 14px;">Reference: #{ticket_id}</p>
+                </div>
+            </div>
+            <div style="background: #f9fafb; padding: 20px; text-align: center;">
+                <p style="color: #9ca3af; margin: 0; font-size: 12px;">
+                    🐾 The Doggy Company | woof@thedoggycompany.in
+                </p>
+            </div>
+        </div>
+        """
+        
+        response = resend.Emails.send({
+            "from": "The Doggy Company <woof@thedoggycompany.in>",
+            "to": [recipient_email],
+            "subject": email_subject,
+            "html": html_content
+        })
+        
+        # Log the communication
+        await db.service_desk_tickets.update_one(
+            {"ticket_id": ticket_id},
+            {
+                "$push": {
+                    "communications": {
+                        "channel": "email",
+                        "to": recipient_email,
+                        "subject": email_subject,
+                        "message": message,
+                        "sent_at": datetime.now(timezone.utc).isoformat(),
+                        "status": "sent",
+                        "email_id": response.get("id") if isinstance(response, dict) else str(response)
+                    }
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "channel": "email",
+            "recipient": recipient_email,
+            "message": "Email sent successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Email send failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Email failed: {str(e)}")
+
+
+@router.post("/reply/whatsapp")
+async def send_whatsapp_reply(
+    ticket_id: str,
+    message: str,
+    recipient_phone: str
+):
+    """Generate WhatsApp click-to-chat link."""
+    db = get_db()
+    
+    # Clean phone number
+    phone = recipient_phone.replace(" ", "").replace("-", "").replace("+", "")
+    if not phone.startswith("91") and len(phone) == 10:
+        phone = "91" + phone
+    
+    # URL encode the message
+    import urllib.parse
+    encoded_message = urllib.parse.quote(message)
+    
+    whatsapp_link = f"https://wa.me/{phone}?text={encoded_message}"
+    
+    # Log the communication intent
+    await db.service_desk_tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {
+                "communications": {
+                    "channel": "whatsapp",
+                    "to": recipient_phone,
+                    "message": message,
+                    "link": whatsapp_link,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "status": "link_generated"
+                }
+            }
+        }
+    )
+    
+    return {
+        "success": True,
+        "channel": "whatsapp",
+        "link": whatsapp_link,
+        "phone": phone,
+        "message": "Click the link to open WhatsApp"
+    }
+
+
+# ============== SELF-SERVICE PORTAL ==============
+
+@router.get("/member/tickets")
+async def get_member_tickets(email: str):
+    """Get all tickets for a member (self-service portal)."""
+    db = get_db()
+    
+    # Search across collections
+    service_tickets = await db.service_desk_tickets.find(
+        {"$or": [
+            {"member.email": email},
+            {"member_email": email},
+            {"customer.email": email}
+        ]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    regular_tickets = await db.tickets.find(
+        {"$or": [
+            {"customer.email": email},
+            {"member_email": email}
+        ]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    # Add SLA info to each ticket
+    all_tickets = []
+    for ticket in service_tickets:
+        ticket["source"] = "service_desk"
+        ticket["sla"] = calculate_sla_status(ticket)
+        all_tickets.append(ticket)
+    
+    for ticket in regular_tickets:
+        ticket["source"] = "regular"
+        ticket["sla"] = calculate_sla_status(ticket)
+        all_tickets.append(ticket)
+    
+    # Sort by created_at
+    all_tickets.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    
+    # Stats
+    open_count = len([t for t in all_tickets if t.get("status") not in ["resolved", "closed"]])
+    resolved_count = len([t for t in all_tickets if t.get("status") in ["resolved", "closed"]])
+    
+    return {
+        "tickets": all_tickets,
+        "stats": {
+            "total": len(all_tickets),
+            "open": open_count,
+            "resolved": resolved_count
+        }
+    }
+
+
+@router.get("/member/ticket/{ticket_id}")
+async def get_member_ticket_detail(ticket_id: str, email: str):
+    """Get ticket detail for a member (with email verification)."""
+    db = get_db()
+    
+    # Find ticket
+    ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    if not ticket:
+        ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    # Verify ownership
+    ticket_email = (
+        ticket.get("member", {}).get("email") or 
+        ticket.get("member_email") or 
+        ticket.get("customer", {}).get("email")
+    )
+    
+    if ticket_email != email:
+        raise HTTPException(status_code=403, detail="Not authorized to view this ticket")
+    
+    # Add SLA info
+    ticket["sla"] = calculate_sla_status(ticket)
+    
+    # Get communications (filter internal notes)
+    communications = ticket.get("communications", [])
+    public_comms = [c for c in communications if not c.get("internal")]
+    ticket["communications"] = public_comms
+    
+    return ticket
+
+
+class MemberTicketReply(BaseModel):
+    message: str
+
+
+@router.post("/member/ticket/{ticket_id}/reply")
+async def member_reply_to_ticket(ticket_id: str, email: str, reply: MemberTicketReply):
+    """Allow member to add a reply to their ticket."""
+    db = get_db()
+    
+    # Verify ownership first
+    ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    if not ticket:
+        ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    ticket_email = (
+        ticket.get("member", {}).get("email") or 
+        ticket.get("member_email") or 
+        ticket.get("customer", {}).get("email")
+    )
+    
+    if ticket_email != email:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Add reply
+    reply_doc = {
+        "type": "member_reply",
+        "message": reply.message,
+        "from": email,
+        "at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Update in appropriate collection
+    collection = db.service_desk_tickets if await db.service_desk_tickets.find_one({"ticket_id": ticket_id}) else db.tickets
+    
+    await collection.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"communications": reply_doc},
+            "$set": {
+                "status": "open",  # Re-open if resolved
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "has_new_reply": True
+            }
+        }
+    )
+    
+    return {
+        "success": True,
+        "message": "Reply added successfully"
+    }
+
