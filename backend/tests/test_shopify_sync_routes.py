@@ -250,10 +250,11 @@ class TestPublicEndpoints:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
-        # FAQs should return a list
-        assert isinstance(data, list), "FAQs should return a list"
+        # FAQs returns an object with faqs list and categories
+        assert "faqs" in data, "Response should contain faqs"
+        assert isinstance(data["faqs"], list), "FAQs should be a list"
         
-        print(f"✓ GET /api/faqs - Returned {len(data)} FAQs")
+        print(f"✓ GET /api/faqs - Returned {len(data['faqs'])} FAQs")
     
     def test_health_endpoint(self):
         """Test GET /api/health - health check endpoint"""
