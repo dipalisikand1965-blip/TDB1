@@ -970,8 +970,8 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
                         <MessageCircle className="w-4 h-4" />
                         Customer Request
                       </CardTitle>
-                      <Badge className={TYPE_CONFIG[selectedItem.type]?.bg}>
-                        {TYPE_CONFIG[selectedItem.type]?.label || selectedItem.type}
+                      <Badge className={SOURCE_CONFIG[selectedItem.source_type]?.bg || 'bg-gray-100'}>
+                        {SOURCE_CONFIG[selectedItem.source_type]?.label || selectedItem.type || 'Request'}
                       </Badge>
                     </div>
                   </CardHeader>
