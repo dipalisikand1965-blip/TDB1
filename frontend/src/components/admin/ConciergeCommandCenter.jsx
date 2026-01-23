@@ -1352,6 +1352,17 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
               <Button size="sm" variant="outline" onClick={() => bulkAction('change_status', { new_status: 'resolved' })}>
                 Resolve All
               </Button>
+              {selectedTickets.size >= 2 && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="bg-orange-100 hover:bg-orange-200 text-orange-700"
+                  onClick={handleMergeTickets}
+                >
+                  <GitMerge className="w-4 h-4 mr-1" />
+                  Merge ({selectedTickets.size})
+                </Button>
+              )}
               <Button size="sm" variant="ghost" onClick={() => setSelectedTickets(new Set())}>
                 <X className="w-4 h-4" />
               </Button>
