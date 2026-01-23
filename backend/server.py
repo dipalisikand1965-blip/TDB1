@@ -556,6 +556,21 @@ async def send_celebration_email(to_email: str, owner_name: str, pet_name: str,
         return False
 
 
+async def generate_pet_pass_number_server() -> str:
+    """
+    Generate a unique Pet Pass Number for a pet.
+    Format: TDC-XXXXXX (6 alphanumeric characters)
+    """
+    import random
+    import string
+    while True:
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        pet_pass = f"TDC-{code}"
+        existing = await db.pets.find_one({"pet_pass_number": pet_pass})
+        if not existing:
+            return pet_pass
+
+
 def generate_whatsapp_reminder_link(pet_name: str, celebration: dict, owner_name: str) -> str:
     """Generate a WhatsApp click-to-chat link with celebration reminder"""
     days_text = "tomorrow" if celebration["days_until"] == 1 else f"in {celebration['days_until']} days"
