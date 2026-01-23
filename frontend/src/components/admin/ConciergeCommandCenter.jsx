@@ -1297,6 +1297,151 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
           </div>
         )}
       </div>
+
+      {/* Create Ticket Modal */}
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="w-5 h-5" />
+              Create New Ticket
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {/* Pillar & Urgency Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Pillar / Category *</Label>
+                <select
+                  value={newTicket.pillar}
+                  onChange={(e) => setNewTicket({ ...newTicket, pillar: e.target.value })}
+                  className="w-full mt-1 px-3 py-2 border rounded-md"
+                >
+                  <option value="general">General</option>
+                  {PILLARS.map(p => (
+                    <option key={p.id} value={p.id}>{p.icon} {p.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <Label>Urgency *</Label>
+                <select
+                  value={newTicket.urgency}
+                  onChange={(e) => setNewTicket({ ...newTicket, urgency: e.target.value })}
+                  className="w-full mt-1 px-3 py-2 border rounded-md"
+                >
+                  <option value="low">🟢 Low (48h SLA)</option>
+                  <option value="medium">🟡 Medium (24h SLA)</option>
+                  <option value="high">🟠 High (4h SLA)</option>
+                  <option value="urgent">🔴 Urgent (2h SLA)</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Subject */}
+            <div>
+              <Label>Subject *</Label>
+              <Input
+                value={newTicket.subject}
+                onChange={(e) => setNewTicket({ ...newTicket, subject: e.target.value })}
+                placeholder="Brief summary of the request..."
+                className="mt-1"
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <Label>Description *</Label>
+              <Textarea
+                value={newTicket.description}
+                onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })}
+                placeholder="Full details of the request..."
+                rows={4}
+                className="mt-1"
+              />
+            </div>
+
+            {/* Member Info Section */}
+            <div className="border-t pt-4">
+              <h4 className="text-sm font-medium text-gray-600 mb-3">Member Information (Optional)</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Member Name</Label>
+                  <Input
+                    value={newTicket.member_name}
+                    onChange={(e) => setNewTicket({ ...newTicket, member_name: e.target.value })}
+                    placeholder="Pet parent name..."
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>Email</Label>
+                  <Input
+                    type="email"
+                    value={newTicket.member_email}
+                    onChange={(e) => setNewTicket({ ...newTicket, member_email: e.target.value })}
+                    placeholder="email@example.com"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>Phone</Label>
+                  <Input
+                    value={newTicket.member_phone}
+                    onChange={(e) => setNewTicket({ ...newTicket, member_phone: e.target.value })}
+                    placeholder="9876543210"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>Pet Name</Label>
+                  <Input
+                    value={newTicket.pet_name}
+                    onChange={(e) => setNewTicket({ ...newTicket, pet_name: e.target.value })}
+                    placeholder="Pet's name..."
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Assignment */}
+            <div className="border-t pt-4">
+              <Label>Assign To (Optional)</Label>
+              <select
+                value={newTicket.assigned_to}
+                onChange={(e) => setNewTicket({ ...newTicket, assigned_to: e.target.value })}
+                className="w-full mt-1 px-3 py-2 border rounded-md"
+              >
+                <option value="">Leave unassigned</option>
+                {agents.map(a => (
+                  <option key={a.username} value={a.username}>
+                    {a.name || a.username} ({a.active_tickets || 0} active)
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateModal(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={createTicket} 
+              disabled={creating || !newTicket.subject.trim() || !newTicket.description.trim()}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {creating ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Creating...</>
+              ) : (
+                <><Plus className="w-4 h-4 mr-2" /> Create Ticket</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
