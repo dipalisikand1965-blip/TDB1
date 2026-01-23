@@ -11,13 +11,13 @@ const Logo = ({
   variant = 'full',
   className = '' 
 }) => {
-  // Size configurations - MUCH LARGER icon sizes for better visibility
+  // Size configurations - EXTRA LARGE icon sizes for maximum visibility
   const sizes = {
-    xs: { img: 'h-12 w-12', text: 'text-sm', subtext: 'text-xs', container: 'gap-2' },
-    sm: { img: 'h-14 w-14', text: 'text-base', subtext: 'text-sm', container: 'gap-2' },
-    default: { img: 'h-16 w-16', text: 'text-lg', subtext: 'text-base', container: 'gap-3' },
-    lg: { img: 'h-20 w-20', text: 'text-xl', subtext: 'text-lg', container: 'gap-3' },
-    xl: { img: 'h-28 w-28', text: 'text-2xl', subtext: 'text-xl', container: 'gap-4' },
+    xs: { img: 'h-14 w-14', text: 'text-sm', subtext: 'text-xs', container: 'gap-2' },
+    sm: { img: 'h-16 w-16', text: 'text-base', subtext: 'text-sm', container: 'gap-2' },
+    default: { img: 'h-20 w-20', text: 'text-lg', subtext: 'text-base', container: 'gap-3' },
+    lg: { img: 'h-24 w-24', text: 'text-xl', subtext: 'text-lg', container: 'gap-3' },
+    xl: { img: 'h-32 w-32', text: 'text-2xl', subtext: 'text-xl', container: 'gap-4' },
   };
 
   const config = sizes[size] || sizes.default;
