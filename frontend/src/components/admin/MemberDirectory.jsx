@@ -1050,78 +1050,11 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
 
             {/* Health Vault Tab */}
             <TabsContent value="health" className="space-y-4 mt-0">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-red-500" />
-                  Health Vault
-                </h3>
-                <Button variant="outline" size="sm">
-                  <Download className="w-4 h-4 mr-1" /> Export PDF
-                </Button>
-              </div>
-              
-              {pets.map((pet, idx) => (
-                <Card key={idx} className="p-4">
-                  <div className="flex items-center gap-3 mb-4 pb-3 border-b">
-                    <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-lg font-bold">
-                      {pet.name?.charAt(0)}
-                    </div>
-                    <div>
-                      <h4 className="font-semibold">{pet.name}</h4>
-                      <p className="text-sm text-gray-500">{pet.breed} • {pet.birthday ? `Born ${new Date(pet.birthday).toLocaleDateString()}` : ''}</p>
-                    </div>
-                  </div>
-                  
-                  {/* Weight Chart Placeholder */}
-                  <div className="mb-4">
-                    <h5 className="text-sm font-medium text-gray-600 mb-2 flex items-center gap-1">
-                      <TrendingUp className="w-4 h-4" /> Weight History
-                    </h5>
-                    <div className="h-32 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400">
-                      {pet.current_weight ? `Current: ${pet.current_weight} kg` : 'No weight data recorded'}
-                    </div>
-                  </div>
-                  
-                  {/* Vaccines */}
-                  <div className="mb-4">
-                    <h5 className="text-sm font-medium text-gray-600 mb-2 flex items-center gap-1">
-                      <Syringe className="w-4 h-4" /> Vaccinations
-                    </h5>
-                    {pet.vaccines?.length > 0 ? (
-                      <div className="space-y-2">
-                        {pet.vaccines.slice(0, 5).map((v, vIdx) => (
-                          <div key={vIdx} className="flex justify-between items-center p-2 bg-green-50 rounded">
-                            <span className="text-sm">{v.name}</span>
-                            <span className="text-xs text-gray-500">{v.date ? new Date(v.date).toLocaleDateString() : 'N/A'}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-400">No vaccines recorded</p>
-                    )}
-                  </div>
-                  
-                  {/* Health Records */}
-                  <div>
-                    <h5 className="text-sm font-medium text-gray-600 mb-2 flex items-center gap-1">
-                      <FileText className="w-4 h-4" /> Recent Records
-                    </h5>
-                    {pet.health_records?.length > 0 ? (
-                      <div className="space-y-2">
-                        {pet.health_records.slice(0, 3).map((r, rIdx) => (
-                          <div key={rIdx} className="p-2 bg-blue-50 rounded">
-                            <span className="text-sm font-medium">{r.type}</span>
-                            <span className="text-xs text-gray-500 ml-2">{r.date ? new Date(r.date).toLocaleDateString() : ''}</span>
-                            {r.notes && <p className="text-xs text-gray-600 mt-1">{r.notes}</p>}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-400">No health records</p>
-                    )}
-                  </div>
-                </Card>
-              ))}
+              <HealthVaultTab 
+                pets={pets} 
+                memberEmail={selectedMember?.email}
+                onRefresh={() => fetchMemberProfile(selectedMember?.email)}
+              />
             </TabsContent>
 
             {/* Orders Tab */}
