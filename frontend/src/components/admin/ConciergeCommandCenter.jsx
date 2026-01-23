@@ -705,7 +705,12 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
               {item.pets && item.pets.length > 0 && (
                 <span className="flex items-center gap-1">
                   <PawPrint className="w-3 h-3" />
-                  {item.pets.map(p => p.name).join(', ')}
+                  {item.pets.map(p => p.pet_pass_number ? `${p.name} (${p.pet_pass_number})` : p.name).join(', ')}
+                </span>
+              )}
+              {item.pet_pass_number && !item.pets?.length && (
+                <span className="flex items-center gap-1 font-mono text-purple-600">
+                  🎫 {item.pet_pass_number}
                 </span>
               )}
               {item.assigned_to && (
