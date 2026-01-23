@@ -1820,8 +1820,17 @@ async def manual_assign_ticket(ticket_id: str, request: ManualAssignRequest):
     """Manually assign ticket to a specific agent."""
     db = get_db()
     
-    # Verify agent exists
-    agent = await db.admin_credentials.find_one({"username": request.agent_username}, {"_id": 0})
+    # Verify agent exists in agents collection or admin_users
+    agent = await db.agents.find_one({"username": request.agent_username}, {"_id": 0})
+    if not agent:
+        # Check admin_users by email prefix
+        agent = await db.admin_users.find_one(
+            {"$or": [
+                {"email": {"$regex": f"^{request.agent_username}@", "$options": "i"}},
+                {"name": {"$regex": f"^{request.agent_username}$", "$options": "i"}}
+            ]},
+            {"_id": 0}
+        )
     if not agent:
         raise HTTPException(status_code=404, detail="Agent not found")
     
