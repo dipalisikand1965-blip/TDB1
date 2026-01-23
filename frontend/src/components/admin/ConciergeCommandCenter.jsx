@@ -19,6 +19,14 @@ import {
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
+// Debug logging for production issues
+const DEBUG_MODE = true;
+const debugLog = (...args) => {
+  if (DEBUG_MODE) {
+    console.log('[CommandCenter]', ...args);
+  }
+};
+
 // SLA Configuration (must match backend)
 const SLA_HOURS = {
   urgent: 2,
