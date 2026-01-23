@@ -1,9 +1,9 @@
 import React from 'react';
 
 // The Doggy Company Logo Component
-// Paw icon image + company name text on the side
+// New colorful paw + concierge bell icon with branded text colors
 
-const PAW_ICON_URL = '/doggy-paw-icon.png';
+const PAW_ICON_URL = '/logo-new.png';
 
 const Logo = ({ 
   size = 'default', 
@@ -37,19 +37,19 @@ const Logo = ({
 
   return (
     <div className={`flex items-center ${config.container} ${className}`} data-testid="logo">
-      {/* Paw Icon Image */}
+      {/* Paw Icon Image - New colorful logo */}
       <img 
         src={PAW_ICON_URL} 
         alt="The Doggy Company" 
         className={`${config.img} object-contain flex-shrink-0`}
       />
       
-      {/* Company Name on the side */}
+      {/* Company Name on the side - Colors match the logo */}
       {showText && (
         <div className="flex flex-col leading-tight">
           <span className={`${config.text} font-bold`}>
-            <span className="text-cyan-500">the</span>
-            <span className="text-amber-500">doggy</span>
+            <span className="text-amber-500">the</span>
+            <span className="text-teal-500">doggy</span>
           </span>
           <span className={`${config.subtext} font-bold text-purple-600 -mt-0.5`}>
             company<sup className="text-[0.6em] ml-0.5">®</sup>
@@ -79,8 +79,8 @@ export const LogoCompact = ({ size = 'default', className = '' }) => {
         className={`${config.img} object-contain`}
       />
       <span className={`${config.text} font-bold`}>
-        <span className="text-cyan-500">the</span>
-        <span className="text-amber-500">doggy</span>
+        <span className="text-amber-500">the</span>
+        <span className="text-teal-500">doggy</span>
         <span className="text-purple-600"> company</span>
         <sup className="text-[0.6em] text-purple-600">®</sup>
       </span>
