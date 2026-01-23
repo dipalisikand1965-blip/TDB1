@@ -495,6 +495,15 @@ async def save_bulk_answers(pet_id: str, answers: Dict[str, Any]):
         "updated_at": datetime.now(timezone.utc).isoformat()
     }})
     
+    # Auto-create ticket for Command Center
+    try:
+        from ticket_auto_creation import on_pet_soul_updated
+        # Get owner info
+        owner = await db.users.find_one({"email": pet.get("owner_email")}, {"_id": 0, "password": 0})
+        await on_pet_soul_updated(pet, owner or {}, answers)
+    except Exception as e:
+        logger.error(f"Auto-ticket for Pet Soul update failed: {e}")
+    
     return {
         "success": True,
         "answers_saved": len(answers),
