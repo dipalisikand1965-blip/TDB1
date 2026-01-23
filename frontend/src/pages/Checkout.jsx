@@ -1256,7 +1256,7 @@ _GST applicable on final invoice_
                 {loadingPetSoul && (
                   <div className="mt-4 flex items-center gap-2 text-sm text-purple-600">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Looking up {formData.petName}'s profile...</span>
+                    <span>Looking up {formData.petName}&apos;s profile...</span>
                   </div>
                 )}
                 
@@ -1325,7 +1325,7 @@ _GST applicable on final invoice_
                     </div>
                     
                     <p className="text-xs text-purple-500 mt-3 text-center">
-                      We'll use this to make sure your order is perfect for {petSoulInsights.pet?.name}
+                      We&apos;ll use this to make sure your order is perfect for {petSoulInsights.pet?.name}
                     </p>
                   </div>
                 )}
