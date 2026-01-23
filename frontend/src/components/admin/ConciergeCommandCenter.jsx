@@ -796,6 +796,20 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
           <Badge className={SOURCE_CONFIG[selectedItem.source_type]?.bg || 'bg-gray-100'}>
             {selectedItem.source_label || selectedItem.source_type}
           </Badge>
+          {/* Sentiment Badge */}
+          {selectedItem.sentiment && (
+            <Badge 
+              className={`${
+                selectedItem.sentiment.color === 'red' ? 'bg-red-100 text-red-700' :
+                selectedItem.sentiment.color === 'orange' ? 'bg-orange-100 text-orange-700' :
+                selectedItem.sentiment.color === 'green' ? 'bg-green-100 text-green-700' :
+                'bg-gray-100 text-gray-700'
+              }`}
+              title={`Sentiment: ${selectedItem.sentiment.summary || selectedItem.sentiment.sentiment}`}
+            >
+              {selectedItem.sentiment.emoji} {selectedItem.sentiment.sentiment}
+            </Badge>
+          )}
           <span className="font-mono text-sm text-gray-500">{selectedItem.ticket_id}</span>
         </div>
 
