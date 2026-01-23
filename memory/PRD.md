@@ -21,7 +21,10 @@
 ---
 
 ## Original Problem Statement
-The Doggy Company® is building a "Pet Life Operating System" with 12 business "Pillars". The core vision includes a deep "Pet Soul™" profile for each pet, a "Unified Inbox," a mandatory "Membership" layer, and a central "Mira® AI" concierge.
+The Doggy Company® is building a "Pet Life Operating System" with **14 business "Pillars"**:
+1. Celebrate, 2. Dine, 3. Stay, 4. Travel, 5. Care, 6. Enjoy, 7. Fit, 8. Learn, 9. Paperwork, 10. Advisory, 11. Emergency, 12. Farewell, 13. Adopt, 14. Shop
+
+The core vision includes a deep "Pet Soul™" profile for each pet, a "Unified Inbox," a mandatory "Membership" layer, and a central "Mira® AI" concierge.
 
 ---
 
