@@ -75,10 +75,11 @@ const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li><Link to="/celebrate" className="hover:text-pink-400 transition-colors">🎂 Celebrate</Link></li>
               <li><Link to="/dine" className="hover:text-pink-400 transition-colors">🍽️ Dine</Link></li>
-              <li><Link to="/shop" className="hover:text-pink-400 transition-colors">🛒 Shop</Link></li>
               <li><Link to="/stay" className="hover:text-pink-400 transition-colors">🏨 Stay</Link></li>
-              <li><Link to="/enjoy" className="hover:text-pink-400 transition-colors">🎾 Enjoy</Link></li>
+              <li><Link to="/travel" className="hover:text-pink-400 transition-colors">✈️ Travel</Link></li>
               <li><Link to="/care" className="hover:text-pink-400 transition-colors">💊 Care</Link></li>
+              <li><Link to="/enjoy" className="hover:text-pink-400 transition-colors">🎾 Enjoy</Link></li>
+              <li><Link to="/fit" className="hover:text-pink-400 transition-colors">🏃 Fit</Link></li>
             </ul>
           </div>
 
@@ -86,12 +87,13 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider opacity-0">More</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/fit" className="hover:text-pink-400 transition-colors">🏃 Fit</Link></li>
-              <li><Link to="/travel" className="hover:text-pink-400 transition-colors">✈️ Travel</Link></li>
-              <li><Link to="/advisory" className="hover:text-pink-400 transition-colors">📋 Advisory</Link></li>
               <li><Link to="/learn" className="hover:text-pink-400 transition-colors">🎓 Learn</Link></li>
-              <li><Link to="/adopt" className="hover:text-pink-400 transition-colors">🐾 Adopt</Link></li>
+              <li><Link to="/paperwork" className="hover:text-pink-400 transition-colors">📄 Paperwork</Link></li>
+              <li><Link to="/advisory" className="hover:text-pink-400 transition-colors">📋 Advisory</Link></li>
+              <li><Link to="/emergency" className="hover:text-pink-400 transition-colors">🚨 Emergency</Link></li>
               <li><Link to="/farewell" className="hover:text-pink-400 transition-colors">🌈 Farewell</Link></li>
+              <li><Link to="/adopt" className="hover:text-pink-400 transition-colors">🐾 Adopt</Link></li>
+              <li><Link to="/shop" className="hover:text-pink-400 transition-colors">🛒 Shop</Link></li>
             </ul>
           </div>
 
