@@ -471,6 +471,86 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
     }
   };
 
+  // Quick Actions (without opening detail panel)
+  const quickAction = async (ticketId, action, extraData = {}) => {
+    try {
+      const response = await fetch(`${API_URL}/api/concierge/item/${ticketId}/quick-action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, agent_id: agentId, ...extraData })
+      });
+      if (response.ok) {
+        loadQueue();
+      }
+    } catch (error) {
+      console.error('Quick action failed:', error);
+    }
+  };
+
+  // Manual assign
+  const manualAssign = async (ticketId, agentUsername) => {
+    try {
+      const response = await fetch(`${API_URL}/api/concierge/item/${ticketId}/manual-assign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agent_username: agentUsername })
+      });
+      if (response.ok) {
+        loadQueue();
+        if (selectedItem?.ticket_id === ticketId) {
+          loadItemDetail(ticketId);
+        }
+      }
+    } catch (error) {
+      console.error('Manual assign failed:', error);
+    }
+  };
+
+  // Bulk actions
+  const bulkAction = async (action, extraData = {}) => {
+    if (selectedTickets.size === 0) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/concierge/bulk-action?action=${action}&agent_id=${agentId}${extraData.new_status ? `&new_status=${extraData.new_status}` : ''}${extraData.new_priority ? `&new_priority=${extraData.new_priority}` : ''}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Array.from(selectedTickets))
+      });
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Bulk action completed: ${result.successful}/${result.total} successful`);
+        setSelectedTickets(new Set());
+        loadQueue();
+      }
+    } catch (error) {
+      console.error('Bulk action failed:', error);
+    }
+  };
+
+  // Export to CSV
+  const exportToCSV = () => {
+    const params = new URLSearchParams();
+    if (filters.source && filters.source !== 'all') params.append('source', filters.source);
+    if (filters.priority) params.append('priority', filters.priority);
+    if (filters.pillar) params.append('pillar', filters.pillar);
+    if (filters.status) params.append('status', filters.status);
+    
+    window.open(`${API_URL}/api/concierge/export/csv?${params}`, '_blank');
+  };
+
+  // Toggle ticket selection
+  const toggleTicketSelection = (ticketId) => {
+    setSelectedTickets(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(ticketId)) {
+        newSet.delete(ticketId);
+      } else {
+        newSet.add(ticketId);
+      }
+      return newSet;
+    });
+  };
+
   // Render queue item
   const QueueItem = ({ item }) => {
     const sourceConfig = SOURCE_CONFIG[item.source_type] || SOURCE_CONFIG.ticket;
