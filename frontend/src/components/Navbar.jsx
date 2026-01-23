@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import SearchBar from './SearchBar';
 import { API_URL } from '../utils/api';
 import Logo from './Logo';
+import PetSoulScore from './PetSoulScore';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,7 +15,7 @@ const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [showMorePillars, setShowMorePillars] = useState(false);
   const [navbarCollections, setNavbarCollections] = useState([]);
-  const [petSoulScore, setPetSoulScore] = useState(null);
+  const [petSoulScore, setPetSoulScore] = useState(0);
   const pillarRef = useRef(null);
   const moreRef = useRef(null);
   const { getCartCount, setIsCartOpen } = useCart();
