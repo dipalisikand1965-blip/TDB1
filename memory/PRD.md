@@ -1,7 +1,40 @@
 # The Doggy Company® - Product Requirements Document
 ## Pet Life Operating System
 
-**Last Updated:** January 23, 2026 (Session 14 - Backend Refactoring Phase 3: Admin Members, Household, Reviews Extracted)
+**Last Updated:** January 23, 2026 (Session 15 - Mira Personalization, Pet Soul Animation, Backend Refactoring Phase 3)
+
+---
+
+## Recent Changes (Session 15)
+
+### ✅ Completed This Session
+
+1. **Mira AI Personalization Fix** (P1)
+   - Fixed static "Sign in" message that showed even when user was logged in
+   - Now shows personalized greeting: "Hi **Dipali**! Planning travel with **Mojo**?"
+   - Each pillar has tailored welcome messages for both guests and logged-in users
+   - File: `/app/backend/mira_routes.py` (lines 1872-1960)
+
+2. **Pet Soul Animated Score Component** (New)
+   - Created circular progress ring with paw icon in header
+   - Shows completion percentage (color-coded: green 80%+, amber 50%+, purple <50%)
+   - Animated pulse/glow effect for incomplete profiles (<70%) to encourage completion
+   - Tooltip: "Complete your Pet Soul for better recommendations!"
+   - File: `/app/frontend/src/components/PetSoulScore.jsx`
+
+3. **PricingHub Care Bundles Fix** (Bug Fix)
+   - Fixed Care bundles showing "0" in admin PricingHub
+   - Now fetches from dedicated `/api/care/bundles` endpoint
+   - File: `/app/frontend/src/components/PricingHub.jsx`
+
+4. **Backend Refactoring Phase 3** (P0)
+   - Extracted Admin Members routes → `admin_member_routes.py` (244 lines)
+   - Extracted Multi-Pet Household routes → `household_routes.py` (208 lines)
+   - Extracted Reviews routes → `review_routes.py` (308 lines)
+   - server.py reduced: 9,376 → **8,914 lines** (~23% total reduction from original 11,569)
+
+### ⚠️ Known Issues
+- **Command Center not loading on production (thedoggycompany.in)** - Works fine in preview. This is a deployment issue, not code.
 
 ---
 
