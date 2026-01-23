@@ -403,6 +403,18 @@ async def verify_payment(request: PaymentVerifyRequest):
     
     logger.info(f"Membership activated: {request.membership_id} for {membership['user_email']}")
     
+    # Auto-create ticket for Command Center
+    try:
+        from ticket_auto_creation import on_membership_event
+        await on_membership_event("purchased", user, {
+            "id": request.membership_id,
+            "plan_name": membership.get("plan", {}).get("name"),
+            "amount": membership.get("amount"),
+            "expires_at": expires_at.isoformat()
+        })
+    except Exception as e:
+        logger.error(f"Auto-ticket for membership failed: {e}")
+    
     return {
         "success": True,
         "message": "Membership activated successfully!",
