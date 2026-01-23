@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://doggy-compass.preview.emergentagent.com
+**Preview URL:** https://petlifeops-1.preview.emergentagent.com
 
 ---
 
