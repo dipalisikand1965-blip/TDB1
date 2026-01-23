@@ -923,6 +923,7 @@ from care_routes import router as care_router
 # Import Enjoy Pillar
 from enjoy_routes import router as enjoy_router
 from fit_routes import router as fit_router
+from learn_routes import router as learn_router
 from advisory_routes import router as advisory_router
 from paperwork_routes import router as paperwork_router
 from emergency_routes import router as emergency_router
