@@ -8,6 +8,7 @@ import {
   ChevronRight, ArrowLeft, Send, Timer, RefreshCw, PawPrint,
   Inbox, Package, Brain, Heart
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
