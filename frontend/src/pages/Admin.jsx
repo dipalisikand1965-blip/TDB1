@@ -1746,6 +1746,11 @@ const Admin = () => {
           <ReportsManager authHeaders={getAuthHeaders()} />
         )}
 
+        {/* Advanced Analytics Tab */}
+        {activeTab === 'analytics' && (
+          <AdvancedAnalyticsDashboard authHeaders={getAuthHeaders()} />
+        )}
+
         {/* Product Tags Tab */}
         {activeTab === 'product-tags' && (
           <ProductTagsManager credentials={{ username, password }} />
