@@ -59,6 +59,8 @@ const AdminDocs = () => {
         { id: 'reports', title: 'Reports', icon: BarChart3 },
         { id: 'mira-chats', title: 'Mira Chats', icon: MessageSquare },
         { id: 'reviews', title: 'Reviews', icon: Star },
+        { id: 'nps', title: 'Net Pawmoter Score (NPS) 🆕', icon: Star },
+        { id: 'mira-rules', title: 'Mira LLM Rules 🆕', icon: Brain },
       ]
     },
     'pillar-tools': {
