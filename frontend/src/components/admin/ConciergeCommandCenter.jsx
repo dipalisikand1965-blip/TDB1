@@ -1169,10 +1169,13 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
                       <Textarea
                         value={resolutionNotes}
                         onChange={(e) => setResolutionNotes(e.target.value)}
-                        placeholder="This will be sent to the member..."
+                        placeholder="Type your response here... (required to resolve)"
                         rows={4}
                         className="mt-1 text-sm"
                       />
+                      {!resolutionNotes.trim() && (
+                        <p className="text-xs text-orange-600 mt-1">⚠️ Enter a message to enable resolve buttons</p>
+                      )}
                       {draft && !resolutionNotes && (
                         <Button 
                           variant="ghost" 
@@ -1182,6 +1185,35 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
                         >
                           <Sparkles className="w-3 h-3 mr-1" /> Use AI Draft
                         </Button>
+                      )}
+                      {/* Quick Resolution Templates */}
+                      {!resolutionNotes && (
+                        <div className="flex gap-2 mt-2 flex-wrap">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-xs h-7"
+                            onClick={() => setResolutionNotes("Thank you for reaching out! Your request has been processed successfully. Please let us know if you need any further assistance. 🐾")}
+                          >
+                            ✅ Standard
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-xs h-7"
+                            onClick={() => setResolutionNotes("We've noted your request and our team is working on it. We'll update you shortly with more details.")}
+                          >
+                            ⏳ In Progress
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-xs h-7"
+                            onClick={() => setResolutionNotes("We've passed your request to our specialized team. They will reach out directly within 24 hours.")}
+                          >
+                            📞 Escalated
+                          </Button>
+                        </div>
                       )}
                     </div>
 
