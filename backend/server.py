@@ -9145,6 +9145,94 @@ async def seed_all_pillars():
     }
 
 
+@api_router.post("/admin/seed-sample-tickets")
+async def seed_sample_tickets():
+    """Seed sample tickets for Command Center testing"""
+    import uuid
+    
+    sample_tickets = [
+        {
+            "ticket_id": f"TKT-SAMPLE-{uuid.uuid4().hex[:6].upper()}",
+            "title": "Birthday cake inquiry",
+            "original_request": "I want to order a custom birthday cake for my dog Luna's 3rd birthday next week",
+            "category": "celebrate",
+            "pillar": "celebrate",
+            "status": "open",
+            "priority": "high",
+            "customer_name": "Test Customer",
+            "customer_email": "test@example.com",
+            "customer_phone": "9876543210",
+            "source": "mira",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "ticket_id": f"TKT-SAMPLE-{uuid.uuid4().hex[:6].upper()}",
+            "title": "Pet-friendly restaurant booking",
+            "original_request": "Need to book a table for 4 people with 2 dogs at a nice restaurant in Bangalore for dinner",
+            "category": "dine",
+            "pillar": "dine",
+            "status": "open",
+            "priority": "medium",
+            "customer_name": "Dine Tester",
+            "customer_email": "dine@example.com",
+            "customer_phone": "9876543211",
+            "source": "mira",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "ticket_id": f"TKT-SAMPLE-{uuid.uuid4().hex[:6].upper()}",
+            "title": "Pet boarding inquiry",
+            "original_request": "Looking for a reliable pet boarding place for my Labrador for 5 days while I travel",
+            "category": "stay",
+            "pillar": "stay",
+            "status": "open",
+            "priority": "high",
+            "customer_name": "Stay Tester",
+            "customer_email": "stay@example.com",
+            "customer_phone": "9876543212",
+            "source": "mira",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "ticket_id": f"TKT-SAMPLE-{uuid.uuid4().hex[:6].upper()}",
+            "title": "Pet travel assistance",
+            "original_request": "Need help arranging pet travel from Delhi to Mumbai by flight for my German Shepherd",
+            "category": "travel",
+            "pillar": "travel",
+            "status": "open",
+            "priority": "urgent",
+            "customer_name": "Travel Tester",
+            "customer_email": "travel@example.com",
+            "customer_phone": "9876543213",
+            "source": "mira",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "ticket_id": f"TKT-SAMPLE-{uuid.uuid4().hex[:6].upper()}",
+            "title": "Vet appointment coordination",
+            "original_request": "Can you help schedule a vet checkup for my cat? She's been sneezing a lot lately",
+            "category": "care",
+            "pillar": "care",
+            "status": "open",
+            "priority": "high",
+            "customer_name": "Care Tester",
+            "customer_email": "care@example.com",
+            "customer_phone": "9876543214",
+            "source": "mira",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+    
+    # Insert tickets
+    result = await db.service_desk_tickets.insert_many(sample_tickets)
+    
+    return {
+        "success": True,
+        "message": f"Created {len(result.inserted_ids)} sample tickets",
+        "ticket_ids": [t["ticket_id"] for t in sample_tickets]
+    }
+
+
 # ==================== PET PASS NUMBER MIGRATION ====================
 
 @admin_router.post("/migrate/pet-pass-numbers")
