@@ -1455,6 +1455,7 @@ const PetProfile = ({ isEmbed = false }) => {
           {step === 0 && renderMyPets()}
           {step === 1 && renderStep1()}
           {step === 1.5 && renderStep1b()}
+          {step === 1.75 && renderStepHealth()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
           {step === 4 && renderStep4()}
