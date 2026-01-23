@@ -245,7 +245,7 @@ const Home = () => {
             ))}
           </div>
 
-          {/* 8 Soul Pillars */}
+          {/* Soul Pillars Grid - What Pet Soul™ Tracks */}
           <Card className="p-8 bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-900 text-white">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
@@ -265,17 +265,32 @@ const Home = () => {
                     </li>
                   ))}
                 </ul>
+                <Link to="/pet-soul" className="inline-flex items-center gap-2 mt-6 text-purple-300 hover:text-white transition-colors">
+                  Learn more about Pet Soul™ <ChevronRight className="w-4 h-4" />
+                </Link>
               </div>
               <div className="text-center">
-                <div className="inline-block p-8 bg-white/10 backdrop-blur rounded-3xl">
+                <div className="inline-block p-6 bg-white/10 backdrop-blur rounded-3xl">
                   <div className="grid grid-cols-4 gap-3">
-                    {['🎭', '👨‍👩‍👧‍👦', '⏰', '🏠', '✈️', '🍖', '🎓', '🌅'].map((emoji, idx) => (
-                      <div key={idx} className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-2xl hover:scale-110 transition-transform">
-                        {emoji}
+                    {[
+                      { icon: '🎂', label: 'Celebrate' },
+                      { icon: '🍽️', label: 'Dine' },
+                      { icon: '🏨', label: 'Stay' },
+                      { icon: '✈️', label: 'Travel' },
+                      { icon: '💊', label: 'Care' },
+                      { icon: '🎓', label: 'Learn' },
+                      { icon: '🐾', label: 'Adopt' },
+                      { icon: '🌈', label: 'Farewell' }
+                    ].map((pillar, idx) => (
+                      <div key={idx} className="group relative">
+                        <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-2xl hover:scale-110 hover:bg-white/20 transition-all cursor-pointer">
+                          {pillar.icon}
+                        </div>
+                        <span className="text-xs text-purple-300 mt-1 block">{pillar.label}</span>
                       </div>
                     ))}
                   </div>
-                  <p className="text-sm text-purple-300 mt-4">8 Soul Pillars</p>
+                  <p className="text-sm text-purple-300 mt-4">Pet Soul™ Pillars</p>
                 </div>
               </div>
             </div>
