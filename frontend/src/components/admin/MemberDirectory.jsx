@@ -566,6 +566,7 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
             <TabsTrigger value="account"><User className="w-4 h-4 mr-1" /> Account</TabsTrigger>
             <TabsTrigger value="membership"><Crown className="w-4 h-4 mr-1" /> Membership</TabsTrigger>
             <TabsTrigger value="pets"><PawPrint className="w-4 h-4 mr-1" /> Pets & Soul</TabsTrigger>
+            <TabsTrigger value="health"><Heart className="w-4 h-4 mr-1" /> Health Vault</TabsTrigger>
             <TabsTrigger value="tickets" className="relative">
               <Briefcase className="w-4 h-4 mr-1" /> Tickets
               {tickets.length > 0 && (
@@ -574,6 +575,8 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
                 </span>
               )}
             </TabsTrigger>
+            <TabsTrigger value="orders"><ShoppingCart className="w-4 h-4 mr-1" /> Orders</TabsTrigger>
+            <TabsTrigger value="rewards"><Star className="w-4 h-4 mr-1" /> Paw Rewards</TabsTrigger>
             <TabsTrigger value="memories">
               <History className="w-4 h-4 mr-1" /> Memories
             </TabsTrigger>
