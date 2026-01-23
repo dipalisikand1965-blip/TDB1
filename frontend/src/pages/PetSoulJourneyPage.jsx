@@ -292,7 +292,7 @@ const PetSoulJourneyPage = () => {
             <div className="h-6 w-px bg-gray-200 hidden sm:block" />
             <div className="hidden sm:flex items-center gap-2">
               <PawPrint className="w-5 h-5 text-purple-500" />
-              <span className="font-semibold text-purple-600">{pet.name}'s Pet Soul™</span>
+              <span className="font-semibold text-purple-600">{pet.name}&apos;s Pet Soul™</span>
             </div>
           </div>
           
@@ -369,7 +369,7 @@ const PetSoulJourneyPage = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <PawPrint className="w-5 h-5 text-purple-600" />
-              {pet?.name}'s Pet Soul™
+              {pet?.name}&apos;s Pet Soul™
             </DialogTitle>
             <DialogDescription>
               {editModal.questionId?.replace(/_/g, ' ')?.replace(/\b\w/g, l => l.toUpperCase())}
@@ -411,7 +411,7 @@ const PetSoulJourneyPage = () => {
                       <PawPrint className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <span className="text-gray-900">{pet?.name}'s Pet Soul™</span>
+                      <span className="text-gray-900">{pet?.name}&apos;s Pet Soul™</span>
                       <p className="text-xs text-gray-500 font-normal mt-0.5">
                         Question {currentQuestionIndex + 1} of {ALL_QUESTIONS.length}
                       </p>
