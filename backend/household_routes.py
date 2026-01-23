@@ -183,13 +183,13 @@ async def get_household_recommendations(user_email: str):
     # Find products safe for all pets
     query = {}
     if all_allergies:
-        # Exclude products containing any allergen
-        allergen_patterns = [{"$regex": allergen, "$options": "i"} for allergen in all_allergies]
-        query["$nor"] = [
-            {"name": {"$in": allergen_patterns}},
-            {"description": {"$in": allergen_patterns}},
-            {"ingredients": {"$in": allergen_patterns}}
-        ]
+        # Exclude products containing any allergen using $nor with individual regex checks
+        nor_conditions = []
+        for allergen in all_allergies:
+            nor_conditions.append({"name": {"$regex": allergen, "$options": "i"}})
+            nor_conditions.append({"description": {"$regex": allergen, "$options": "i"}})
+            nor_conditions.append({"ingredients": {"$regex": allergen, "$options": "i"}})
+        query["$nor"] = nor_conditions
     
     # Get safe products
     safe_products = await db.products.find(query).limit(20).to_list(length=20)
