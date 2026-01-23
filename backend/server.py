@@ -10275,6 +10275,7 @@ set_memory_routes_db(db)  # Initialize Memory with database
 
 # Concierge Command Center
 app.include_router(concierge_command_router)  # Command Center at /api/concierge/*
+app.include_router(health_vault_router)  # Health Vault at /api/health-vault/*
 set_command_center_db(db)  # Initialize Command Center with database
 
 # Auto Ticket Creation System
