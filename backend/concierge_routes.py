@@ -1297,11 +1297,22 @@ async def get_available_agents():
     """Get list of available agents for assignment."""
     db = get_db()
     
-    # Get agents from admin_credentials
-    agents = await db.admin_credentials.find(
-        {},
-        {"_id": 0, "username": 1, "role": 1}
+    # Get agents from agents collection (primary) and admin_users (fallback)
+    agents = await db.agents.find(
+        {"is_active": True},
+        {"_id": 0, "username": 1, "name": 1, "email": 1}
     ).to_list(100)
+    
+    # Also include admin users
+    admin_users = await db.admin_users.find(
+        {"is_active": True},
+        {"_id": 0, "name": 1, "email": 1, "role": 1}
+    ).to_list(100)
+    
+    # Add admin users with username derived from email
+    for admin in admin_users:
+        admin["username"] = admin.get("email", "").split("@")[0] if admin.get("email") else admin.get("name", "admin")
+        agents.append(admin)
     
     # Get workload for each agent
     for agent in agents:
