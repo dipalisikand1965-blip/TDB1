@@ -281,31 +281,40 @@ async def load_pet_soul(pet_id: str) -> Dict:
     if not pet:
         return {}
     
-    # Compile full Pet Soul profile
+    # Compile full Pet Soul profile - safely handle None values
+    identity = pet.get("identity") or {}
+    health = pet.get("health") or {}
+    preferences = pet.get("preferences") or {}
+    personality = pet.get("personality") or {}
+    care = pet.get("care") or {}
+    travel = pet.get("travel") or {}
+    soul_data = pet.get("soul") or {}
+    doggy_soul = pet.get("doggy_soul_answers") or {}
+    
     soul = {
         "id": pet.get("id"),
         "name": pet.get("name"),
-        "breed": pet.get("identity", {}).get("breed") or pet.get("breed"),
-        "age": pet.get("identity", {}).get("age") or pet.get("age"),
-        "weight": pet.get("identity", {}).get("weight"),
-        "size": pet.get("identity", {}).get("size"),
-        "gender": pet.get("identity", {}).get("gender") or pet.get("gender"),
+        "breed": identity.get("breed") or pet.get("breed"),
+        "age": identity.get("age") or pet.get("age"),
+        "weight": identity.get("weight"),
+        "size": identity.get("size"),
+        "gender": identity.get("gender") or pet.get("gender"),
         "photo_url": pet.get("photo_url"),
-        "allergies": pet.get("health", {}).get("allergies", []) or pet.get("preferences", {}).get("allergies", []),
-        "medical_conditions": pet.get("health", {}).get("medical_conditions", []),
-        "dietary_restrictions": pet.get("health", {}).get("dietary_restrictions", []),
-        "favorite_treats": pet.get("preferences", {}).get("favorite_treats", []),
-        "dislikes": pet.get("preferences", {}).get("dislikes", []),
-        "anxiety_triggers": pet.get("personality", {}).get("anxiety_triggers", []),
-        "behavior_with_dogs": pet.get("personality", {}).get("behavior_with_dogs") or pet.get("doggy_soul_answers", {}).get("behavior_with_dogs"),
-        "behavior_with_humans": pet.get("personality", {}).get("behavior_with_humans"),
-        "handling_sensitivity": pet.get("care", {}).get("handling_sensitivity") or pet.get("doggy_soul_answers", {}).get("handling_comfort"),
-        "grooming_notes": pet.get("care", {}).get("grooming_notes"),
-        "travel_style": pet.get("travel", {}).get("preferred_mode") or pet.get("doggy_soul_answers", {}).get("usual_travel"),
-        "crate_trained": pet.get("travel", {}).get("crate_trained") or pet.get("doggy_soul_answers", {}).get("crate_trained"),
-        "persona": pet.get("soul", {}).get("persona"),
+        "allergies": health.get("allergies", []) or preferences.get("allergies", []),
+        "medical_conditions": health.get("medical_conditions", []),
+        "dietary_restrictions": health.get("dietary_restrictions", []),
+        "favorite_treats": preferences.get("favorite_treats", []),
+        "dislikes": preferences.get("dislikes", []),
+        "anxiety_triggers": personality.get("anxiety_triggers", []),
+        "behavior_with_dogs": personality.get("behavior_with_dogs") or doggy_soul.get("behavior_with_dogs"),
+        "behavior_with_humans": personality.get("behavior_with_humans"),
+        "handling_sensitivity": care.get("handling_sensitivity") or doggy_soul.get("handling_comfort"),
+        "grooming_notes": care.get("grooming_notes"),
+        "travel_style": travel.get("preferred_mode") or doggy_soul.get("usual_travel"),
+        "crate_trained": travel.get("crate_trained") or doggy_soul.get("crate_trained"),
+        "persona": soul_data.get("persona"),
         # Doggy Soul answers (full)
-        "soul_answers": pet.get("doggy_soul_answers", {})
+        "soul_answers": doggy_soul
     }
     
     return {k: v for k, v in soul.items() if v}  # Remove empty values
