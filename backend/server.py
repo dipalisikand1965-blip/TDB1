@@ -9141,6 +9141,45 @@ async def seed_all_pillars():
     }
 
 
+# ==================== PET PASS NUMBER MIGRATION ====================
+
+@admin_router.post("/migrate/pet-pass-numbers")
+async def migrate_pet_pass_numbers(credentials: HTTPBasicCredentials = Depends(security)):
+    """Backfill Pet Pass Numbers for existing pets that don't have one"""
+    verify_admin(credentials)
+    
+    # Find all pets without pet_pass_number
+    pets_without_pass = await db.pets.find(
+        {"pet_pass_number": {"$exists": False}},
+        {"_id": 1, "id": 1, "name": 1}
+    ).to_list(1000)
+    
+    updated_count = 0
+    for pet in pets_without_pass:
+        pet_pass_number = await generate_pet_pass_number_server()
+        await db.pets.update_one(
+            {"_id": pet["_id"]},
+            {"$set": {"pet_pass_number": pet_pass_number}}
+        )
+        updated_count += 1
+        logger.info(f"Assigned Pet Pass {pet_pass_number} to {pet.get('name', 'Unknown')} ({pet.get('id', 'N/A')})")
+    
+    return {
+        "success": True,
+        "message": f"Assigned Pet Pass Numbers to {updated_count} pets",
+        "updated_count": updated_count
+    }
+
+
+@api_router.get("/pets/lookup/{pet_pass_number}")
+async def lookup_pet_by_pass_number(pet_pass_number: str):
+    """Look up a pet by their Pet Pass Number"""
+    pet = await db.pets.find_one({"pet_pass_number": pet_pass_number.upper()}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found with this Pet Pass Number")
+    return {"pet": pet}
+
+
 # ==================== APP SETUP ====================
 
 app.add_middleware(
