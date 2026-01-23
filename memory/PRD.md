@@ -609,4 +609,29 @@ This guide includes:
 
 ---
 
+## 🌐 Production Data Seeding (Updated Jan 23, 2026)
+
+### New Endpoint: `/api/admin/seed-production-data`
+A comprehensive seeder for production environments that seeds:
+- **FAQs** (8 pre-configured questions across categories: Delivery, Products, Orders, Membership, Payment, Pet Soul, Mira AI)
+- **Collections** (4 campaign collections: Valentine's Day, Birthday Celebration, Healthy Bites, Diwali Special)
+- **Sample Tickets** (5 realistic, editable tickets for Command Center testing)
+
+**Usage:**
+```bash
+curl -X POST https://thedoggycompany.in/api/admin/seed-production-data
+```
+
+**Features:**
+- Uses UPSERT - safe to run multiple times without duplicates
+- All seeded data is fully editable via admin panel
+- Sample tickets marked with `is_sample: true` for identification
+
+### Important Notes for Production Deployment:
+1. **Database Isolation**: Production and preview environments have separate databases
+2. After redeployment, call the seed endpoint to populate the production database
+3. The Command Center will show live data feeds once tickets exist in the database
+
+---
+
 *This document is automatically updated by the development agent.*
