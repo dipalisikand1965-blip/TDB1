@@ -102,7 +102,7 @@ const Footer = () => {
             <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Intelligence</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/membership" className="hover:text-purple-400 transition-colors flex items-center gap-1">
+                <Link to="/pet-soul/about" className="hover:text-purple-400 transition-colors flex items-center gap-1">
                   <PawPrint className="w-3 h-3" /> Pet Soul™
                 </Link>
               </li>
