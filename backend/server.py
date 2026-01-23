@@ -916,6 +916,13 @@ from dine_routes import (
     set_admin_notification_handler
 )
 
+# Import FAQ routes (refactored)
+from faq_routes import (
+    faq_router,
+    faq_admin_router,
+    set_database as set_faq_db
+)
+
 # Import ticket routes (Service Desk)
 from ticket_routes import router as ticket_router
 from ticket_messaging import router as ticket_messaging_router
