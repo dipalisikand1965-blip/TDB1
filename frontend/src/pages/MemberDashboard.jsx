@@ -10,7 +10,7 @@ import { Switch } from '../components/ui/switch';
 import { Textarea } from '../components/ui/textarea';
 import { 
   ShoppingBag, PawPrint, Star, User, LogOut, Package, 
-  MapPin, Settings, Lock, Bell, Shield, Phone, Mail,
+  MapPin, Settings, Lock, Bell, Shield, Phone, Mail, MessageCircle,
   RefreshCw, Calendar, Pause, Play, X, MessageSquare, Edit2, Trash2, Loader2,
   UtensilsCrossed, Users, Clock, Stethoscope, Sparkles, Home, Plane, Cake, Gift
 } from 'lucide-react';
