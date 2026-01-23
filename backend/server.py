@@ -967,6 +967,16 @@ from cart_routes import (
     check_abandoned_carts
 )
 
+# Import Shopify sync routes (refactored)
+from shopify_sync_routes import (
+    shopify_router,
+    shopify_admin_router,
+    set_database as set_shopify_db,
+    fetch_shopify_products,
+    transform_shopify_product,
+    check_product_matches
+)
+
 # Import ticket routes (Service Desk)
 from ticket_routes import router as ticket_router
 from ticket_messaging import router as ticket_messaging_router
