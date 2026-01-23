@@ -593,15 +593,17 @@ Major refactoring effort to break down the monolithic `server.py` into modular r
 | Loyalty Routes (Paw Rewards) | `loyalty_routes.py` | 249 | ✅ Done |
 | Discount Routes | `discount_routes.py` | 204 | ✅ Done |
 | Abandoned Cart Routes | `cart_routes.py` | 676 | ✅ Done (Jan 23, 2026) |
+| **Shopify Sync Routes** | `shopify_sync_routes.py` | 627 | ✅ Done (Jan 23, 2026) |
 
 ### Current server.py Status
 - **Before refactoring**: 11,569 lines
-- **Current**: 10,210 lines
-- **Total reduction**: ~1,359 lines (~12%)
+- **Current**: 9,829 lines
+- **Total reduction**: ~1,740 lines (~15%)
 
-### Next Targets for Extraction
-- [ ] Shopify Sync routes
+### Remaining Candidates for Extraction
+- [ ] Product routes (large section in server.py)
 - [ ] Additional pillar-specific routes
+- [ ] Email/notification routes
 
 ---
 
