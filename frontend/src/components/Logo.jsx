@@ -1,28 +1,28 @@
 import React from 'react';
 
 // The Doggy Company Logo Component
-// Uses the official brand logo image
+// Uses the official brand logo image with paw icon and "the doggy company" text
 
 const LOGO_URL = '/doggy-logo.png';
 
 const Logo = ({ 
   size = 'default', 
-  showText = true, 
+  showText = true, // Not used since logo image contains text
   variant = 'full',
   className = '' 
 }) => {
-  // Size configurations
+  // Size configurations - height includes space for the text in the logo
   const sizes = {
-    xs: { img: 'h-8', text: 'text-sm', container: 'gap-1.5' },
-    sm: { img: 'h-10', text: 'text-base', container: 'gap-2' },
-    default: { img: 'h-12', text: 'text-lg', container: 'gap-2' },
-    lg: { img: 'h-14', text: 'text-xl', container: 'gap-3' },
-    xl: { img: 'h-20', text: 'text-2xl', container: 'gap-3' },
+    xs: { img: 'h-10' },
+    sm: { img: 'h-12' },  // 48px - good for navbar
+    default: { img: 'h-14' },  // 56px
+    lg: { img: 'h-16' },  // 64px
+    xl: { img: 'h-24' },  // 96px - for hero sections
   };
 
   const config = sizes[size] || sizes.default;
 
-  // Icon only variant - just the logo image
+  // Icon only variant - just the logo image (same as full since image contains everything)
   if (variant === 'icon') {
     return (
       <div className={`relative ${className}`}>
@@ -36,36 +36,24 @@ const Logo = ({
   }
 
   return (
-    <div className={`flex items-center ${config.container} ${className}`} data-testid="logo">
-      {/* Logo Image */}
+    <div className={`flex items-center ${className}`} data-testid="logo">
+      {/* Logo Image - contains both paw icon and "the doggy company" text */}
       <img 
         src={LOGO_URL} 
         alt="The Doggy Company" 
         className={`${config.img} w-auto object-contain`}
       />
-      
-      {/* Logo Text - only show if needed and image is small */}
-      {showText && size === 'xs' && (
-        <div className="flex flex-col leading-none">
-          <span className={`${config.text} font-bold text-cyan-500`}>
-            The Doggy
-          </span>
-          <span className={`${config.text} font-bold text-purple-600 -mt-0.5`}>
-            Company<sup className="text-[0.5em] ml-0.5">®</sup>
-          </span>
-        </div>
-      )}
     </div>
   );
 };
 
-// Compact single-line version
+// Compact single-line version - same as main Logo since image has text
 export const LogoCompact = ({ size = 'default', className = '' }) => {
   const sizes = {
-    xs: { img: 'h-5' },
-    sm: { img: 'h-6' },
-    default: { img: 'h-8' },
-    lg: { img: 'h-10' },
+    xs: { img: 'h-8' },
+    sm: { img: 'h-10' },
+    default: { img: 'h-12' },
+    lg: { img: 'h-14' },
   };
 
   const config = sizes[size] || sizes.default;
@@ -81,34 +69,24 @@ export const LogoCompact = ({ size = 'default', className = '' }) => {
   );
 };
 
-// White version for dark backgrounds - uses filter to make logo visible
+// White version for dark backgrounds - uses filter to make logo visible on dark backgrounds
 export const LogoWhite = ({ size = 'default', showText = true, className = '' }) => {
   const sizes = {
-    xs: { img: 'h-6', text: 'text-sm', container: 'gap-1.5' },
-    sm: { img: 'h-8', text: 'text-base', container: 'gap-2' },
-    default: { img: 'h-10', text: 'text-lg', container: 'gap-2' },
-    lg: { img: 'h-12', text: 'text-xl', container: 'gap-3' },
+    xs: { img: 'h-8' },
+    sm: { img: 'h-10' },
+    default: { img: 'h-12' },
+    lg: { img: 'h-14' },
   };
 
   const config = sizes[size] || sizes.default;
 
   return (
-    <div className={`flex items-center ${config.container} ${className}`} data-testid="logo-white">
+    <div className={`flex items-center ${className}`} data-testid="logo-white">
       <img 
         src={LOGO_URL} 
         alt="The Doggy Company" 
         className={`${config.img} w-auto object-contain brightness-0 invert`}
       />
-      {showText && (
-        <div className="flex flex-col leading-none">
-          <span className={`${config.text} font-bold text-white`}>
-            The Doggy
-          </span>
-          <span className={`${config.text} font-bold text-white/90 -mt-0.5`}>
-            Company<sup className="text-[0.5em] ml-0.5">®</sup>
-          </span>
-        </div>
-      )}
     </div>
   );
 };
