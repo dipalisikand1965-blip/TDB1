@@ -7420,6 +7420,13 @@ async def create_pet_profile(pet: PetProfileCreate, current_user: dict = Depends
     # Remove MongoDB _id before returning
     pet_data.pop("_id", None)
     
+    # Auto-create ticket for Command Center
+    try:
+        from ticket_auto_creation import on_pet_added
+        await on_pet_added(pet_data, current_user)
+    except Exception as e:
+        logger.error(f"Auto-ticket for pet addition failed: {e}")
+    
     logger.info(f"Created pet profile: {pet_id} - {pet.name}")
     return {"message": "Pet profile created", "pet": pet_data}
 
