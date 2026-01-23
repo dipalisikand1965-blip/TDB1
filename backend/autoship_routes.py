@@ -9,10 +9,11 @@ import secrets
 import logging
 from datetime import datetime, timezone, timedelta
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorDatabase
+import jwt
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +29,12 @@ ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "woof2025")
 security = HTTPBasic()
 
+# JWT Settings
+SECRET_KEY = os.environ.get("JWT_SECRET", "tdb_super_secret_key_2025_woof")
+ALGORITHM = "HS256"
+
 # Dependencies will be injected
-get_current_user = None
+_get_current_user_func = None
 
 
 def set_database(database: AsyncIOMotorDatabase):
@@ -39,8 +44,28 @@ def set_database(database: AsyncIOMotorDatabase):
 
 def set_dependencies(current_user_func):
     """Inject dependencies from server.py"""
-    global get_current_user
-    get_current_user = current_user_func
+    global _get_current_user_func
+    _get_current_user_func = current_user_func
+
+
+async def get_current_user_from_token(authorization: str = Header(None)):
+    """Extract and validate user from JWT token"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    token = authorization.split(" ")[1]
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not found")
+    return user
 
 
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):

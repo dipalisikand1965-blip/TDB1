@@ -8,8 +8,9 @@ import uuid
 import logging
 from datetime import datetime, timezone
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
 from motor.motor_asyncio import AsyncIOMotorDatabase
+import jwt
 
 logger = logging.getLogger(__name__)
 
@@ -20,10 +21,14 @@ orders_router = APIRouter(prefix="/api", tags=["Orders"])
 db: AsyncIOMotorDatabase = None
 
 # Dependencies will be injected
-get_current_user = None
+_get_current_user_func = None
 create_admin_notification = None
 notify_order_status_change = None
 on_order_placed = None
+
+# JWT Settings (will be set from server.py)
+SECRET_KEY = os.environ.get("JWT_SECRET", "tdb_super_secret_key_2025_woof")
+ALGORITHM = "HS256"
 
 
 def set_database(database: AsyncIOMotorDatabase):
@@ -38,21 +43,38 @@ def set_dependencies(
     order_placed_func
 ):
     """Inject dependencies from server.py"""
-    global get_current_user, create_admin_notification, notify_order_status_change, on_order_placed
-    get_current_user = current_user_func
+    global _get_current_user_func, create_admin_notification, notify_order_status_change, on_order_placed
+    _get_current_user_func = current_user_func
     create_admin_notification = admin_notification_func
     notify_order_status_change = order_status_notification_func
     on_order_placed = order_placed_func
 
 
+async def get_current_user_from_token(authorization: str = Header(None)):
+    """Extract and validate user from JWT token"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    token = authorization.split(" ")[1]
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not found")
+    return user
+
+
 # ==================== ORDERS API ====================
 
 @orders_router.get("/orders/my-orders")
-async def get_my_orders(current_user: dict = Depends(lambda: get_current_user)):
+async def get_my_orders(current_user: dict = Depends(get_current_user_from_token)):
     """Get orders for the logged-in user"""
-    if get_current_user:
-        current_user = await get_current_user()
-    
     query = {"customer.email": current_user["email"]}
     orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
     return {"orders": orders}
