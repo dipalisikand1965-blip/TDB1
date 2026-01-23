@@ -110,6 +110,7 @@ const calculateSoulScore = (pet) => {
 
 // Member Directory Component
 const MemberDirectory = () => {
+  const [searchParams] = useSearchParams();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -133,13 +134,23 @@ const MemberDirectory = () => {
         // Extract unique cities
         const uniqueCities = [...new Set(data.members?.map(m => m.city).filter(Boolean))];
         setCities(uniqueCities);
+        
+        // Auto-select member if email is in URL params
+        const emailParam = searchParams.get('email');
+        if (emailParam && data.members) {
+          const memberToSelect = data.members.find(m => m.email === emailParam);
+          if (memberToSelect) {
+            setSelectedMember(memberToSelect);
+            setShowProfileConsole(true);
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to fetch members:', error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     fetchMembers();
