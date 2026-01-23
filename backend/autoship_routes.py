@@ -290,9 +290,6 @@ async def update_autoship(
 @autoship_router.put("/autoship/{subscription_id}/skip")
 async def skip_next_autoship(subscription_id: str, current_user: dict = Depends(get_current_user_from_token)):
     """Skip the next autoship delivery"""
-    if get_current_user:
-        current_user = await get_current_user()
-    
     sub = await db.autoship_subscriptions.find_one(
         {"id": subscription_id, "user_email": current_user["email"], "status": "active"}
     )
