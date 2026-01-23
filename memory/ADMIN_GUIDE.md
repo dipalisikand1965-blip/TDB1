@@ -1,8 +1,8 @@
 # 🐕 The Doggy Company - Admin Panel Complete Guide
 ## "Dummy's Guide" to Every Admin Feature
 
-**Last Updated**: January 23, 2026 (Added New Pillars: Learn, Adopt, Farewell, Community + Communication Preferences)
-**Version**: 1.3
+**Last Updated**: January 23, 2026 (Added Advanced Analytics, NPS Feedback, Communication Preferences, Smart Recommendations)
+**Version**: 1.4
 
 ---
 
@@ -27,12 +27,13 @@
    - [Agents](#16-agents)
    - [Loyalty](#17-loyalty-paw-rewards)
    - [Reports](#18-reports)
+   - [Analytics](#18b-advanced-analytics) 🆕
    - [Mira Chats](#19-mira-chats)
    - [Reviews](#20-reviews)
 
 2. [PILLAR TOOLS](#pillar-tools)
    - [Seed All](#21-seed-all)
-   - [Seed Production Data](#21b-seed-production-data) 🆕
+   - [Seed Production Data](#21b-seed-production-data)
    - [Celebrate](#22-celebrate)
    - [Collections](#23-collections)
    - [Custom Cakes](#24-custom-cakes)
@@ -42,12 +43,23 @@
    - [Care](#28-care)
    - [Enjoy](#29-enjoy)
    - [Fit](#30-fit)
+   - [Learn](#30b-learn) 🆕
+   - [Adopt](#30c-adopt) 🆕
+   - [Farewell](#30d-farewell) 🆕
+   - [Community](#30e-community) 🆕
    - [Advisory](#31-advisory)
    - [Paperwork](#32-paperwork)
    - [Emergency](#33-emergency)
    - [Blog](#34-blog)
    - [Testimonials](#35-testimonials)
    - [FAQs](#36-faqs)
+
+3. [NEW FEATURES (Jan 2026)](#new-features-jan-2026)
+   - [NPS Feedback System](#nps-feedback-system) 🆕
+   - [Communication Preferences](#communication-preferences) 🆕
+   - [Smart Product Recommendations](#smart-product-recommendations) 🆕
+   - [Sentiment Analysis](#sentiment-analysis) 🆕
+   - [Ticket Merge](#ticket-merge) 🆕
    - [About Page](#37-about-page)
    - [Page CMS](#38-page-cms)
 
