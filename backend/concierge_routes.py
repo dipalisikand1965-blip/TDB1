@@ -564,13 +564,18 @@ async def get_command_center_queue(
         for item in all_items:
             member = item.get("member") or {}
             customer = item.get("customer") or {}
+            pets = item.get("pets") or []
             member_name = member.get("name", "") if member else ""
             member_email = member.get("email", "") if member else ""
             customer_name = customer.get("name") or customer.get("parentName") or item.get("customer_name") or ""
             customer_email = customer.get("email") or item.get("customer_email") or ""
             customer_phone = customer.get("phone") or item.get("customer_phone") or ""
             
-            # Search across all relevant fields
+            # Get pet pass numbers if available
+            pet_pass_numbers = " ".join([p.get("pet_pass_number", "") for p in pets if p.get("pet_pass_number")])
+            pet_names = " ".join([p.get("name", "") for p in pets])
+            
+            # Search across all relevant fields including Pet Pass Number
             searchable_text = " ".join([
                 str(item.get("original_request", "")),
                 str(member_name),
@@ -580,7 +585,10 @@ async def get_command_center_queue(
                 str(customer_phone),
                 str(item.get("ticket_id", "")),
                 str(item.get("title", "")),
-                str(item.get("description", ""))
+                str(item.get("description", "")),
+                str(item.get("pet_pass_number", "")),
+                str(pet_pass_numbers),
+                str(pet_names)
             ]).lower()
             
             if search_lower in searchable_text:
