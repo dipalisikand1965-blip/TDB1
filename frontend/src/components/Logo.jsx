@@ -3,7 +3,7 @@ import React from 'react';
 // The Doggy Company Logo Component
 // Uses the official brand logo image with paw icon and "the doggy company" text
 
-const LOGO_URL = '/doggy-logo.png';
+const LOGO_URL = '/doggy-logo-transparent.png';
 
 const Logo = ({ 
   size = 'default', 
