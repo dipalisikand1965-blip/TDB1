@@ -13,11 +13,11 @@ const Logo = ({
 }) => {
   // Size configurations
   const sizes = {
-    xs: { img: 'h-6', text: 'text-sm', container: 'gap-1.5' },
-    sm: { img: 'h-8', text: 'text-base', container: 'gap-2' },
-    default: { img: 'h-10', text: 'text-lg', container: 'gap-2' },
-    lg: { img: 'h-12', text: 'text-xl', container: 'gap-3' },
-    xl: { img: 'h-16', text: 'text-2xl', container: 'gap-3' },
+    xs: { img: 'h-8', text: 'text-sm', container: 'gap-1.5' },
+    sm: { img: 'h-10', text: 'text-base', container: 'gap-2' },
+    default: { img: 'h-12', text: 'text-lg', container: 'gap-2' },
+    lg: { img: 'h-14', text: 'text-xl', container: 'gap-3' },
+    xl: { img: 'h-20', text: 'text-2xl', container: 'gap-3' },
   };
 
   const config = sizes[size] || sizes.default;
