@@ -77,6 +77,22 @@ const PetProfile = ({ isEmbed = false }) => {
       treat_size: ''
     },
     
+    // Health Information
+    health: {
+      vet_name: '',
+      vet_clinic: '',
+      vet_phone: '',
+      medical_conditions: '',
+      current_medications: '',
+      dietary_restrictions: '',
+      spayed_neutered: '',
+      microchipped: false,
+      microchip_number: '',
+      insurance_provider: '',
+      emergency_contact_name: '',
+      emergency_contact_phone: ''
+    },
+    
     // Owner Info
     owner_name: '',
     owner_email: '',
