@@ -222,11 +222,11 @@ function MainLayout() {
         <Route path="/gift-hampers" element={<ProtectedRoute><ProductListing category="hampers" /></ProtectedRoute>} />
         <Route path="/all" element={<ProtectedRoute><ProductListing category="all" /></ProtectedRoute>} />
         
-        {/* Service Pillars - Protected (require login to request services) */}
+        {/* Service Pillars - Most are browsable without login */}
         <Route path="/dine" element={<ProtectedRoute><DinePage /></ProtectedRoute>} />
         <Route path="/stay" element={<ProtectedRoute><StayPage /></ProtectedRoute>} />
-        <Route path="/travel" element={<ProtectedRoute><TravelPage /></ProtectedRoute>} />
-        <Route path="/care" element={<ProtectedRoute><CarePage /></ProtectedRoute>} />
+        <Route path="/travel" element={<TravelPage />} />
+        <Route path="/care" element={<CarePage />} />
         <Route path="/enjoy" element={<ProtectedRoute><EnjoyPage /></ProtectedRoute>} />
         <Route path="/fit" element={<ProtectedRoute><FitPage /></ProtectedRoute>} />
         <Route path="/advisory" element={<ProtectedRoute><AdvisoryPage /></ProtectedRoute>} />
