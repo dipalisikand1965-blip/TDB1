@@ -609,6 +609,45 @@ This guide includes:
 
 ---
 
+## 🛍️ Universal Pillar-Aware Product Experience (NEW - Jan 23, 2026)
+
+### Overview
+All pillar pages now use a unified `ProductCard` component that provides a consistent, pillar-aware shopping experience with dynamic cross-sell titles.
+
+### Implementation
+- **`ProductCard.jsx`** - Centralized component accepting a `pillar` prop
+- **Dynamic Cross-Sell Titles** - Each pillar shows contextual upsell messaging:
+  - `celebrate` → "Complete the Celebration!"
+  - `dine` → "Complete the Dining Experience!"
+  - `stay` → "Complete the Stay!"
+  - `travel` → "Complete the Trip!"
+  - `care` → "Complete the Care Package!"
+  - `shop` → "Complete Your Order!"
+  - `enjoy` → "Add More Fun!"
+  - `fit` → "Complete the Fitness Pack!"
+  - `learn` → "Enhance the Learning!"
+  - `adopt` → "Welcome Home Essentials!"
+  - `insure` → "Add More Coverage!"
+  - `farewell` → "Memorial Additions"
+  - `community` → "Community Favorites!"
+
+### Pages Refactored
+| Page | Status | Pillar Prop |
+|------|--------|-------------|
+| TravelPage.jsx | ✅ Complete | `pillar="travel"` |
+| CarePage.jsx | ✅ Complete | `pillar="care"` |
+| DinePage.jsx | ✅ Complete | `pillar="dine"` |
+| StayPage.jsx | Bundles only (no individual products) | N/A |
+
+### Product Modal Features
+- Smart related product recommendations based on pillar
+- Pillar-specific cross-sell section title
+- Consistent UI across all pillar pages
+- Reviews section
+- Add to Cart with autoship options
+
+---
+
 ## 🌐 Production Data Seeding (Updated Jan 23, 2026)
 
 ### New Endpoint: `/api/admin/seed-production-data`
