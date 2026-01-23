@@ -563,13 +563,27 @@ async def get_command_center_queue(
         filtered_items = []
         for item in all_items:
             member = item.get("member") or {}
+            customer = item.get("customer") or {}
             member_name = member.get("name", "") if member else ""
             member_email = member.get("email", "") if member else ""
+            customer_name = customer.get("name") or customer.get("parentName") or item.get("customer_name") or ""
+            customer_email = customer.get("email") or item.get("customer_email") or ""
+            customer_phone = customer.get("phone") or item.get("customer_phone") or ""
             
-            if (search_lower in str(item.get("original_request", "")).lower()
-                or search_lower in str(member_name).lower()
-                or search_lower in str(member_email).lower()
-                or search_lower in str(item.get("ticket_id", "")).lower()):
+            # Search across all relevant fields
+            searchable_text = " ".join([
+                str(item.get("original_request", "")),
+                str(member_name),
+                str(member_email),
+                str(customer_name),
+                str(customer_email),
+                str(customer_phone),
+                str(item.get("ticket_id", "")),
+                str(item.get("title", "")),
+                str(item.get("description", ""))
+            ]).lower()
+            
+            if search_lower in searchable_text:
                 filtered_items.append(item)
         all_items = filtered_items
     
