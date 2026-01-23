@@ -218,7 +218,9 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
 
   useEffect(() => {
     loadQueue();
-  }, [loadQueue]);
+    loadAgents();
+    loadPillarStats();
+  }, [loadQueue, loadAgents, loadPillarStats]);
 
   // Load item detail
   const loadItemDetail = async (ticketId) => {
