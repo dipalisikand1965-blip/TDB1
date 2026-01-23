@@ -10199,6 +10199,10 @@ app.include_router(loyalty_admin_router)  # Admin at /api/admin/loyalty/*
 app.include_router(discount_router)  # Public at /api/discount-codes/*
 app.include_router(discount_admin_router)  # Admin at /api/admin/discount-codes/*
 
+# Cart Routes (Refactored)
+app.include_router(cart_router)  # Public at /api/cart/*
+app.include_router(cart_admin_router)  # Admin at /api/admin/abandoned-carts/*
+
 # Auto Ticket Creation System
 set_auto_ticket_db(db)  # Initialize auto-ticket creation with database
 
