@@ -539,6 +539,22 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
     fetchReviews();
   }, [product.id, API_URL]);
 
+  // Fetch NPS Testimonials
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/concierge/nps/testimonials?limit=5`);
+        if (res.ok) {
+          const data = await res.json();
+          setTestimonials(data.testimonials || []);
+        }
+      } catch (e) { console.error('Failed to fetch testimonials:', e); }
+    };
+    if (isOpen) {
+      fetchTestimonials();
+    }
+  }, [isOpen, API_URL]);
+
   const submitReview = async () => {
       if (!newReview.content || !newReview.author_name) {
           toast({ title: "Error", description: "Please fill all fields", variant: "destructive" });
