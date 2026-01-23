@@ -41,6 +41,7 @@ import CommunicationsManager from '../components/admin/CommunicationsManager';
 import MiraMemoryManager from '../components/admin/MiraMemoryManager';
 import AutomatedRemindersManager from '../components/admin/AutomatedRemindersManager';
 import ConciergeCommandCenter from '../components/admin/ConciergeCommandCenter';
+import AdvancedAnalyticsDashboard from '../components/admin/AdvancedAnalyticsDashboard';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
 import { API_URL } from '../utils/api';
 import {
