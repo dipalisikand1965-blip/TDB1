@@ -266,7 +266,7 @@ const Navbar = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-              <Logo size="sm" showText={true} />
+              <Logo size="default" showText={true} />
             </Link>
 
             {/* Desktop Navigation - Life Pillars */}
