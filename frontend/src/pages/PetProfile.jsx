@@ -1469,7 +1469,8 @@ const PetProfile = ({ isEmbed = false }) => {
                 variant="outline"
                 onClick={() => {
                   if (step === 1.5) setStep(1);
-                  else if (step === 2) setStep(1.5);
+                  else if (step === 1.75) setStep(1.5);
+                  else if (step === 2) setStep(1.75);
                   else setStep(s => s - 1);
                 }}
                 disabled={step === 1}
@@ -1483,7 +1484,8 @@ const PetProfile = ({ isEmbed = false }) => {
                 <Button
                   onClick={() => {
                     if (step === 1) setStep(1.5);
-                    else if (step === 1.5) setStep(2);
+                    else if (step === 1.5) setStep(1.75);
+                    else if (step === 1.75) setStep(2);
                     else setStep(s => s + 1);
                   }}
                   disabled={!canProceed()}
