@@ -189,7 +189,25 @@ const AutoshipCalculator = ({ cartInput, setCartInput, currentPrice, product }) 
   );
 };
 
-const ProductCard = ({ product }) => {
+// Pillar-specific cross-sell titles
+const PILLAR_CROSS_SELL_TITLES = {
+  celebrate: "Complete the Celebration!",
+  dine: "Complete the Dining Experience!",
+  stay: "Complete the Stay!",
+  travel: "Complete the Trip!",
+  care: "Complete the Care Package!",
+  shop: "Complete Your Order!",
+  enjoy: "Add More Fun!",
+  fit: "Complete the Fitness Pack!",
+  learn: "Enhance the Learning!",
+  adopt: "Welcome Home Essentials!",
+  insure: "Add More Coverage!",
+  farewell: "Memorial Additions",
+  community: "Community Favorites!",
+  default: "You May Also Like"
+};
+
+const ProductCard = ({ product, pillar = 'celebrate' }) => {
   const [showModal, setShowModal] = useState(false);
   const { user, token } = useAuth();
   
