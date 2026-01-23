@@ -7257,8 +7257,10 @@ async def add_pet_to_household(user_email: str, pet_data: dict):
         raise HTTPException(status_code=404, detail="User not found")
     
     pet_id = str(uuid.uuid4())
+    pet_pass_number = await generate_pet_pass_number_server()
     pet_doc = {
         "id": pet_id,
+        "pet_pass_number": pet_pass_number,
         "name": pet_data.get("name"),
         "breed": pet_data.get("breed"),
         "species": pet_data.get("species", "dog"),
