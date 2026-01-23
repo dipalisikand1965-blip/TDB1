@@ -68,6 +68,37 @@ const QUESTION_OPTIONS = {
   weight_status: ['Underweight', 'Ideal', 'Overweight']
 };
 
+// All questions in order for flow mode
+const ALL_QUESTIONS = [
+  { id: 'temperament', label: 'Temperament', category: 'Identity' },
+  { id: 'energy_level', label: 'Energy Level', category: 'Identity' },
+  { id: 'social_with_dogs', label: 'Social with Dogs', category: 'Family' },
+  { id: 'social_with_people', label: 'Social with People', category: 'Family' },
+  { id: 'primary_bond', label: 'Most Attached To', category: 'Family' },
+  { id: 'other_pets', label: 'Other Pets', category: 'Family' },
+  { id: 'kids_at_home', label: 'Kids at Home', category: 'Family' },
+  { id: 'morning_routine', label: 'Morning Routine', category: 'Routine' },
+  { id: 'feeding_times', label: 'Feeding Schedule', category: 'Routine' },
+  { id: 'exercise_needs', label: 'Exercise Needs', category: 'Routine' },
+  { id: 'favorite_spot', label: 'Favorite Spot', category: 'Home' },
+  { id: 'alone_time_comfort', label: 'Alone Time', category: 'Home' },
+  { id: 'noise_sensitivity', label: 'Noise Sensitivity', category: 'Home' },
+  { id: 'favorite_toy_type', label: 'Favorite Toys', category: 'Home' },
+  { id: 'car_comfort', label: 'Car Rides', category: 'Travel' },
+  { id: 'travel_readiness', label: 'Travel Readiness', category: 'Travel' },
+  { id: 'food_motivation', label: 'Food Motivation', category: 'Taste' },
+  { id: 'favorite_protein', label: 'Favorite Protein', category: 'Taste' },
+  { id: 'treat_preference', label: 'Treat Preference', category: 'Taste' },
+  { id: 'food_allergies', label: 'Food Allergies', category: 'Taste' },
+  { id: 'training_level', label: 'Training Level', category: 'Training' },
+  { id: 'motivation_type', label: 'Training Motivation', category: 'Training' },
+  { id: 'behavior_issues', label: 'Behavior Issues', category: 'Training' },
+  { id: 'health_conditions', label: 'Health Conditions', category: 'Health' },
+  { id: 'vet_comfort', label: 'Vet Comfort', category: 'Health' },
+  { id: 'grooming_tolerance', label: 'Grooming Tolerance', category: 'Health' },
+  { id: 'life_stage', label: 'Life Stage', category: 'Health' },
+];
+
 const PetSoulJourneyPage = () => {
   const { petId } = useParams();
   const navigate = useNavigate();
@@ -78,6 +109,10 @@ const PetSoulJourneyPage = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('journey');
   const [editModal, setEditModal] = useState({ open: false, questionId: null });
+  
+  // Flow mode state - for seamless question answering
+  const [flowMode, setFlowMode] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [savingAnswer, setSavingAnswer] = useState(false);
 
   useEffect(() => {
