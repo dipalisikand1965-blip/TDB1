@@ -11,7 +11,7 @@ import {
   Package, Inbox, Heart, Cake, Utensils, Plane, Home, Briefcase,
   ChevronRight, Send, Edit, Flag, Link2, Bell, History, Brain,
   ShoppingBag, Tag, Calendar, X, Check, Loader2, Sparkles,
-  Timer, TrendingUp, BarChart3, Users, Zap, ExternalLink
+  Timer, TrendingUp, BarChart3, Users, Zap, ExternalLink, Plus, Download
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
