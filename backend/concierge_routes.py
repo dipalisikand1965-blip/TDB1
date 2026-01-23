@@ -267,6 +267,29 @@ async def get_command_center_queue(
             item["source_type"] = "ticket"
             item["source_label"] = "Service Desk"
             item["source_icon"] = "🎫"
+            
+            # Normalize member info - ensure member object exists and has name
+            if not item.get("member") or not item.get("member", {}).get("name"):
+                # Try to get member info from various sources
+                member_name = (
+                    item.get("member", {}).get("name") or
+                    item.get("customer_name") or
+                    "Customer"
+                )
+                member_email = (
+                    item.get("member", {}).get("email") or
+                    item.get("customer_email")
+                )
+                member_phone = (
+                    item.get("member", {}).get("phone") or
+                    item.get("customer_phone")
+                )
+                item["member"] = {
+                    "name": member_name,
+                    "email": member_email,
+                    "phone": member_phone
+                }
+            
             item["priority_score"] = calculate_priority_score(item)
             item["priority_bucket"] = get_priority_bucket(item["priority_score"])
             item["sla_breached"] = check_sla_breach(item)
