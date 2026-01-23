@@ -1007,6 +1007,28 @@ from autoship_routes import (
     calculate_autoship_discount
 )
 
+# Import admin member routes (refactored)
+from admin_member_routes import (
+    admin_member_router,
+    set_database as set_admin_member_db,
+    set_dependencies as set_admin_member_deps
+)
+
+# Import household routes (refactored)
+from household_routes import (
+    household_router,
+    set_database as set_household_db,
+    set_dependencies as set_household_deps
+)
+
+# Import review routes (refactored)
+from review_routes import (
+    review_router,
+    admin_review_router,
+    set_database as set_review_db,
+    set_dependencies as set_review_deps
+)
+
 # Import ticket routes (Service Desk)
 from ticket_routes import router as ticket_router
 from ticket_messaging import router as ticket_messaging_router
