@@ -110,14 +110,18 @@ const PetSoulJourneyPage = () => {
   const handleSaveAnswer = async (questionId, value) => {
     setSavingAnswer(true);
     try {
-      const response = await fetch(`${getApiUrl()}/api/pets/${petId}/soul-answers`, {
-        method: 'PATCH',
+      // Use the soul-drip journey-answer endpoint
+      const response = await fetch(`${getApiUrl()}/api/soul-drip/journey-answer`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify({
-          answers: { [questionId]: value }
+          pet_id: petId,
+          question_type: questionId,
+          answer: value,
+          source: 'pet_soul_journey'
         })
       });
       
