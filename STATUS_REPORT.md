@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://pawcenter.preview.emergentagent.com
+**Preview URL:** https://petuniverse.preview.emergentagent.com
 
 ---
 
