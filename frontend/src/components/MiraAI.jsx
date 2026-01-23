@@ -442,7 +442,7 @@ const MiraAI = () => {
 
   return (
     <div 
-      className={`fixed z-[70] bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 flex flex-col ${
+      className={`fixed z-[9999] bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 flex flex-col ${
         isMinimized 
           ? 'bottom-20 right-4 sm:bottom-6 sm:right-6 w-72 h-14' 
           : 'bottom-0 right-0 left-0 top-0 sm:bottom-6 sm:right-6 sm:left-auto sm:top-auto sm:w-[400px] sm:h-[600px] sm:max-h-[calc(100vh-100px)] sm:rounded-2xl rounded-none'
