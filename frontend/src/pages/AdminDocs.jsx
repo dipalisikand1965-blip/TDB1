@@ -524,6 +524,192 @@ DELETE /api/admin/faqs/{id}     # Delete FAQ
         }
       ]
     },
+    'nps': {
+      title: 'Net Pawmoter Score (NPS)',
+      subtitle: 'Customer Satisfaction Tracking & Product Feedback System',
+      badge: '🆕 New Feature',
+      files: {
+        frontend: '/app/frontend/src/components/admin/NPSManager.jsx, /app/frontend/src/pages/NPSFeedbackPage.jsx',
+        backend: '/app/backend/concierge_routes.py (nps/* endpoints)'
+      },
+      sections: [
+        {
+          title: 'What It Measures',
+          content: `**Net Pawmoter Score™** is the pet-world equivalent of NPS:
+• Score range: 0-10 (paw rating)
+• **Promoters**: 9-10 (loyal advocates)
+• **Passives**: 7-8 (satisfied but unenthusiastic)
+• **Detractors**: 0-6 (unhappy customers)
+
+**Formula**: NPS = % Promoters - % Detractors
+• Range: -100 to +100
+• Above 50 = Excellent`
+        },
+        {
+          title: 'When Surveys Are Sent',
+          content: `Surveys are automatically sent when:
+1. **Ticket Resolution**: After a service desk ticket is marked resolved
+2. **Order Delivery**: After order status changes to "delivered"
+
+**Survey contains**:
+• 10-paw rating scale
+• Optional feedback comment
+• Option to allow review publication`
+        },
+        {
+          title: 'Admin Dashboard Features',
+          content: `**Overview Tab**:
+• Total responses count
+• Overall NPS score
+• Promoter/Passive/Detractor breakdown with visual bars
+
+**Responses Tab**:
+• All individual responses with customer details
+• Score, feedback, product, and pet info
+• Filter by date range
+
+**By Product Tab** 🆕:
+• NPS breakdown per product
+• Shows promoters/passives/detractors per product
+• Latest customer feedback excerpt
+• Product image and average score`
+        },
+        {
+          title: 'API Endpoints',
+          content: `| Endpoint | Method | Description |
+|----------|--------|-------------|
+| \`/api/concierge/nps/stats\` | GET | Overall NPS statistics |
+| \`/api/concierge/nps/responses\` | GET | All individual responses |
+| \`/api/concierge/nps/by-product\` | GET | Product-wise NPS breakdown |
+| \`/api/concierge/nps/submit\` | POST | Submit customer survey response |
+| \`/api/concierge/nps/testimonials\` | GET | Get publishable testimonials |`
+        },
+        {
+          title: 'Data Collected',
+          content: `Each NPS response captures:
+• **Customer Info**: Name, email, pet name
+• **Score**: 0-10 rating
+• **Feedback**: Optional comment
+• **Product**: Product ID and name (if applicable)
+• **Pillar**: Which pillar the interaction was for
+• **Ticket ID**: Related service ticket
+• **Allow Publish**: Whether customer allows review publication`
+        }
+      ]
+    },
+    'mira-rules': {
+      title: 'Mira LLM Rules',
+      subtitle: 'AI Concierge Configuration & Behavior Guidelines',
+      badge: '🆕 Critical Config',
+      files: {
+        frontend: '/app/frontend/src/components/MiraAI.jsx',
+        backend: '/app/backend/mira_routes.py, /app/backend/server.py (system prompts)'
+      },
+      sections: [
+        {
+          title: 'Mira\'s Core Identity',
+          content: `**Mira® AI** is The Doggy Company's intelligent concierge:
+• **Personality**: Warm, knowledgeable, pet-obsessed
+• **Voice**: Friendly but professional, uses pet puns sparingly
+• **Expertise**: All 14 pillars of pet life
+• **Memory**: Remembers pet profiles, preferences, past interactions
+
+**Brand Voice Guidelines**:
+• Never say "I'm just an AI" - Mira IS the concierge
+• Use pet names, not "your pet"
+• Reference pet's health info when relevant (allergies, conditions)
+• Always offer personalized recommendations`
+        },
+        {
+          title: 'System Prompt Structure',
+          content: `The Mira system prompt includes:
+
+1. **Pet Context Block**
+   - Pet name, breed, age, weight
+   - Health conditions & allergies
+   - Dietary restrictions
+   - Past orders & preferences
+
+2. **Member Context Block**
+   - Parent name, membership tier
+   - Address & delivery preferences
+   - Order history summary
+
+3. **Product Knowledge**
+   - Current menu items
+   - Seasonal specials
+   - Allergen information
+
+4. **Operational Rules**
+   - Pricing guidelines
+   - Delivery zones
+   - Order cutoff times`
+        },
+        {
+          title: 'Response Rules',
+          content: `**MUST DO**:
+• Personalize every response with pet name
+• Check allergies before recommending food
+• Offer alternatives for dietary restrictions
+• Include pricing when discussing products
+• Provide clear delivery/pickup options
+
+**MUST NOT**:
+• Make medical diagnoses (refer to vet)
+• Promise specific delivery times (give ranges)
+• Share other customer information
+• Use competitor brand names
+• Make claims about health benefits`
+        },
+        {
+          title: 'Escalation Triggers',
+          content: `Mira should **escalate to human** when:
+
+| Trigger | Action |
+|---------|--------|
+| Customer expresses anger/frustration | Create urgent ticket |
+| Refund or complaint requested | Tag for review |
+| Complex health question | Redirect to Care pillar |
+| Custom cake over ₹5000 | Flag for manager approval |
+| Emergency situation | Provide emergency contacts immediately |
+| Repeated question (3+ times) | Human takeover |`
+        },
+        {
+          title: 'Admin Configuration',
+          content: `**Mira Memory Settings** (Admin → Mira Memory):
+• View all conversation history
+• Edit/delete specific memories
+• Set pet-specific preferences
+• Override AI recommendations
+
+**Chat Limits by Tier**:
+| Tier | Daily Chats | Features |
+|------|------------|----------|
+| Free | 3 | Basic Q&A |
+| Monthly | Unlimited | Full product recs |
+| Annual | Unlimited | Priority response |
+| VIP | Unlimited | Custom styling |`
+        },
+        {
+          title: 'Technical Details',
+          content: `**LLM Integration**:
+• Model: GPT-4o via Emergent LLM Key
+• Timeout: 60 seconds
+• Max tokens: 2000
+• Temperature: 0.7
+
+**Context Window**:
+• Pet profile: Always included
+• Last 10 messages: Included
+• Order history: Last 5 orders
+
+**Error Handling**:
+• Timeout → "Let me think about that..."
+• API error → Graceful fallback message
+• Invalid input → Request clarification`
+        }
+      ]
+    },
     'membership': {
       title: 'Membership',
       subtitle: 'Membership Tier Management',
