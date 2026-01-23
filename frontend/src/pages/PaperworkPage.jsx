@@ -723,8 +723,8 @@ const PaperworkPage = () => {
                 Submit Request
               </Button>
             ) : (
-              <Button onClick={() => window.location.href = '/login?redirect=/paperwork'}>
-                Login to Request
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                Submit Request
               </Button>
             )}
           </div>
