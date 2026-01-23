@@ -4435,78 +4435,57 @@ async def get_related_products(product_id: str, limit: int = 4, pillar: str = No
         return {"related": [], "bundles": []}
     
     current_category = product.get("category", "")
+    current_subcategory = product.get("subcategory", "")
     current_price = product.get("price", 0)
-    product_pillar = pillar or product.get("pillar", "celebrate")
+    product_pillar = pillar or product.get("pillar", current_category) or "celebrate"
     
     # ==================== PILLAR-SPECIFIC UPSELL MAPS ====================
+    # These map categories/subcategories to complementary items
     pillar_upsell_map = {
         "celebrate": {
-            "cakes": ["treats", "accessories", "bandanas", "party-supplies"],
+            "cakes": ["treats", "accessories", "bandanas"],
             "pupcakes": ["treats", "accessories", "bandanas"],
             "dognuts": ["treats", "cakes", "accessories"],
-            "treats": ["cakes", "nut-butters", "accessories"],
-            "desi-treats": ["cakes", "treats", "accessories"],
-            "hampers": ["cakes", "treats", "accessories"],
+            "treats": ["cakes", "accessories"],
             "default": ["treats", "cakes", "accessories"]
         },
         "travel": {
-            "travel-crates": ["travel-accessories", "calming-treats", "travel-bowls"],
-            "travel-bowls": ["travel-accessories", "calming-treats", "carriers"],
-            "carriers": ["travel-bowls", "calming-treats", "travel-accessories"],
-            "calming-treats": ["carriers", "travel-bowls", "travel-crates"],
-            "travel-accessories": ["calming-treats", "travel-bowls", "carriers"],
-            "default": ["travel-accessories", "calming-treats", "carriers"]
+            "crate": ["calming", "accessory", "carrier"],
+            "carrier": ["calming", "accessory", "safety"],
+            "harness": ["calming", "accessory", "safety"],
+            "calming": ["carrier", "accessory", "safety"],
+            "accessory": ["calming", "carrier", "safety"],
+            "safety": ["calming", "accessory", "carrier"],
+            "comfort": ["calming", "accessory"],
+            "default": ["calming", "accessory", "carrier"]
         },
         "stay": {
-            "boarding-kits": ["calming-treats", "comfort-items", "travel-bowls"],
-            "comfort-items": ["treats", "toys", "blankets"],
-            "default": ["treats", "comfort-items", "toys"]
+            "comfort": ["calming", "accessory"],
+            "default": ["comfort", "calming"]
         },
         "dine": {
-            "fresh-meals": ["treats", "supplements", "bowls"],
-            "supplements": ["fresh-meals", "treats", "health-items"],
-            "bowls": ["fresh-meals", "treats", "accessories"],
-            "default": ["fresh-meals", "treats", "bowls"]
+            "fresh": ["treats", "supplements"],
+            "meals": ["treats", "supplements"],
+            "default": ["treats", "supplements"]
         },
         "care": {
-            "grooming": ["supplements", "hygiene", "care-treats"],
-            "supplements": ["grooming", "health-items", "care-treats"],
-            "hygiene": ["grooming", "supplements", "care-accessories"],
-            "health-items": ["supplements", "grooming", "care-treats"],
-            "default": ["supplements", "grooming", "health-items"]
+            "grooming": ["supplements", "hygiene"],
+            "supplements": ["grooming", "hygiene"],
+            "hygiene": ["grooming", "supplements"],
+            "default": ["supplements", "grooming"]
         },
         "shop": {
-            "toys": ["treats", "accessories", "beds"],
-            "beds": ["blankets", "toys", "comfort-items"],
-            "accessories": ["toys", "treats", "apparel"],
-            "default": ["treats", "toys", "accessories"]
-        },
-        "learn": {
-            "training-treats": ["training-tools", "clickers", "leashes"],
-            "training-tools": ["training-treats", "clickers", "toys"],
-            "default": ["training-treats", "training-tools", "toys"]
-        },
-        "adopt": {
-            "starter-kits": ["bowls", "beds", "toys", "treats"],
-            "essentials": ["food", "treats", "accessories"],
-            "default": ["starter-kits", "bowls", "treats"]
-        },
-        "farewell": {
-            "memorial": ["keepsakes", "urns", "paw-prints"],
-            "keepsakes": ["memorial", "photo-frames", "jewelry"],
-            "default": ["keepsakes", "memorial"]
-        },
-        "community": {
-            "meetup-supplies": ["treats", "toys", "accessories"],
-            "default": ["treats", "toys", "accessories"]
+            "toys": ["treats", "accessories"],
+            "accessories": ["toys", "treats"],
+            "default": ["treats", "accessories"]
         }
     }
     
     # Get the upsell map for this pillar
-    upsell_map = pillar_upsell_map.get(product_pillar, pillar_upsell_map["celebrate"])
+    upsell_map = pillar_upsell_map.get(product_pillar, pillar_upsell_map.get("celebrate", {}))
     
-    # Get complementary categories
-    complementary_cats = upsell_map.get(current_category, upsell_map.get("default", ["treats", "accessories"]))
+    # Get complementary subcategories based on current subcategory or category
+    complementary = upsell_map.get(current_subcategory) or upsell_map.get(current_category) or upsell_map.get("default", ["treats", "accessories"])
     
     related_products = []
     
@@ -4517,31 +4496,50 @@ async def get_related_products(product_id: str, limit: int = 4, pillar: str = No
             {"_id": 0}
         ).limit(limit).to_list(limit)
         related_products.extend(pan_india_products)
-        
-        if len(related_products) < limit:
-            remaining = limit - len(related_products)
-            treats = await db.products.find(
-                {"category": {"$in": ["treats", "nut-butters", "desi-treats"]}},
-                {"_id": 0}
-            ).limit(remaining).to_list(remaining)
-            related_products.extend(treats)
     else:
-        # Fetch products from complementary categories
-        for comp_cat in complementary_cats:
-            cat_products = await db.products.find(
-                {"category": comp_cat},
+        # Strategy 1: Find products in same pillar with complementary subcategories
+        for comp_subcat in complementary:
+            subcat_products = await db.products.find(
+                {
+                    "$or": [
+                        {"category": product_pillar, "subcategory": comp_subcat},
+                        {"subcategory": comp_subcat},
+                        {"category": comp_subcat}
+                    ],
+                    "id": {"$ne": product_id}
+                },
                 {"_id": 0}
             ).limit(3).to_list(3)
-            related_products.extend(cat_products)
+            related_products.extend(subcat_products)
         
-        # If not enough, try pillar-specific products
+        # Strategy 2: If not enough, get more from same pillar
         if len(related_products) < limit:
             remaining = limit - len(related_products)
+            existing_ids = {product_id} | {p.get("id") for p in related_products}
             pillar_products = await db.products.find(
-                {"pillar": product_pillar, "id": {"$ne": product_id}},
+                {
+                    "$or": [
+                        {"pillar": product_pillar},
+                        {"category": product_pillar}
+                    ],
+                    "id": {"$nin": list(existing_ids)}
+                },
                 {"_id": 0}
             ).limit(remaining).to_list(remaining)
             related_products.extend(pillar_products)
+        
+        # Strategy 3: If still not enough, get popular products
+        if len(related_products) < limit:
+            remaining = limit - len(related_products)
+            existing_ids = {product_id} | {p.get("id") for p in related_products}
+            popular = await db.products.find(
+                {
+                    "id": {"$nin": list(existing_ids)},
+                    "category": {"$in": ["treats", "accessories"]}
+                },
+                {"_id": 0}
+            ).limit(remaining).to_list(remaining)
+            related_products.extend(popular)
     
     # Also get similar products from same category (different price range)
     similar = await db.products.find(
@@ -4582,37 +4580,24 @@ async def get_related_products(product_id: str, limit: int = 4, pillar: str = No
             })
     
     elif product_pillar == "travel":
-        calming = await db.products.find_one({"category": {"$in": ["calming-treats", "treats"]}}, {"_id": 0})
-        bowl = await db.products.find_one({"category": {"$in": ["travel-bowls", "bowls"]}}, {"_id": 0})
-        if calming and bowl:
-            bundle_price = current_price + calming.get("price", 0) + bowl.get("price", 0)
+        calming = await db.products.find_one({"subcategory": "calming"}, {"_id": 0})
+        accessory = await db.products.find_one({"subcategory": "accessory"}, {"_id": 0})
+        if calming and accessory:
+            bundle_price = current_price + calming.get("price", 0) + accessory.get("price", 0)
             bundles.append({
                 "name": "✈️ Travel Ready Bundle",
                 "description": "Everything for a stress-free trip!",
-                "items": [product, calming, bowl],
+                "items": [product, calming, accessory],
                 "originalPrice": bundle_price,
                 "bundlePrice": int(bundle_price * 0.85),
                 "savings": int(bundle_price * 0.15)
-            })
-    
-    elif product_pillar == "care":
-        supplement = await db.products.find_one({"category": "supplements"}, {"_id": 0})
-        grooming = await db.products.find_one({"category": "grooming"}, {"_id": 0})
-        if supplement and grooming:
-            bundle_price = current_price + supplement.get("price", 0) + grooming.get("price", 0)
-            bundles.append({
-                "name": "💊 Wellness Bundle",
-                "description": "Complete care for your furry friend!",
-                "items": [product, supplement, grooming],
-                "originalPrice": bundle_price,
-                "bundlePrice": int(bundle_price * 0.88),
-                "savings": int(bundle_price * 0.12)
             })
     
     return {
         "related": unique_related,
         "bundles": bundles,
         "category": current_category,
+        "subcategory": current_subcategory,
         "pillar": product_pillar
     }
 
