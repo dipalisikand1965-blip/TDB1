@@ -6,6 +6,8 @@ Handles user profiles, pet profiles, and celebrations
 import os
 import logging
 import uuid
+import random
+import string
 from datetime import datetime, timezone, timedelta
 from typing import Optional, List
 from fastapi import APIRouter, HTTPException, Depends
@@ -27,6 +29,19 @@ get_current_user = None
 def set_database(database: AsyncIOMotorDatabase):
     global db
     db = database
+
+
+async def generate_pet_pass_number() -> str:
+    """
+    Generate a unique Pet Pass Number for a pet.
+    Format: TDC-XXXXXX (6 alphanumeric characters)
+    """
+    while True:
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        pet_pass = f"TDC-{code}"
+        existing = await db.pets.find_one({"pet_pass_number": pet_pass})
+        if not existing:
+            return pet_pass
 
 
 def set_auth_dependencies(get_user_func):
