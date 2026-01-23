@@ -235,6 +235,13 @@ async def get_command_center_queue(
             item["source_type"] = "mira"
             item["source_label"] = "Mira Request"
             item["source_icon"] = "🤖"
+            # Normalize member info from customer fields if member not set
+            if not item.get("member"):
+                item["member"] = {
+                    "name": item.get("customer_name"),
+                    "email": item.get("customer_email"),
+                    "phone": item.get("customer_phone")
+                }
             item["priority_score"] = calculate_priority_score(item)
             item["priority_bucket"] = get_priority_bucket(item["priority_score"])
             item["sla_breached"] = check_sla_breach(item)
