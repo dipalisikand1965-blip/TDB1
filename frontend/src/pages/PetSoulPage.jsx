@@ -485,9 +485,9 @@ const PetSoulPage = () => {
               </>
             ) : (
               <>
-                <Link to="/signup">
+                <Link to="/membership">
                   <Button size="lg" className="bg-purple-600 hover:bg-purple-700">
-                    Create Free Account
+                    Become a Member
                   </Button>
                 </Link>
                 <Link to="/login">
