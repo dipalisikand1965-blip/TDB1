@@ -132,6 +132,13 @@ const MiraContextPanel = ({
       bgColor: 'bg-teal-50',
       borderColor: 'border-teal-200'
     },
+    learn: {
+      icon: '🎓',
+      name: 'Learn',
+      color: 'from-blue-600 to-indigo-600',
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200'
+    },
     advisory: {
       icon: '📋',
       name: 'Advisory',
