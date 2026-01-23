@@ -938,6 +938,9 @@ from mira_memory_routes import router as mira_memory_router, set_memory_routes_d
 # Import Concierge Command Center routes
 from concierge_routes import router as concierge_command_router, set_concierge_db as set_command_center_db
 
+# Import Analytics routes
+from analytics_routes import router as analytics_router, set_database as set_analytics_db
+
 # Import Auto Ticket Creation System
 from ticket_auto_creation import set_auto_ticket_db, create_event_ticket, on_order_placed
 
