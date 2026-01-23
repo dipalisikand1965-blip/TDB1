@@ -3,10 +3,13 @@ Admin Member Routes for The Doggy Company
 Handles member management, points adjustment, membership gifting, and stats
 """
 
+import os
 import uuid
+import secrets
 import logging
 from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, HTTPException, Depends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 logger = logging.getLogger(__name__)
@@ -17,8 +20,10 @@ admin_member_router = APIRouter(prefix="/api/admin", tags=["Admin Members"])
 # Database reference
 db: AsyncIOMotorDatabase = None
 
-# Dependencies
-_verify_admin_func = None
+# Admin credentials
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "woof2025")
+security = HTTPBasic()
 
 
 def set_database(database: AsyncIOMotorDatabase):
@@ -27,16 +32,22 @@ def set_database(database: AsyncIOMotorDatabase):
 
 
 def set_dependencies(verify_admin_func):
-    """Inject dependencies from server.py"""
-    global _verify_admin_func
-    _verify_admin_func = verify_admin_func
+    """Accept dependencies from server.py - kept for API compatibility"""
+    # We now use our own verify_admin implementation
+    pass
 
 
-async def verify_admin(username: str = Depends(lambda: None)):
-    """Wrapper for admin verification"""
-    if _verify_admin_func:
-        return await _verify_admin_func(username)
-    raise HTTPException(status_code=500, detail="Admin verification not configured")
+def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
+    """Verify admin credentials"""
+    correct_username = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
+    correct_password = secrets.compare_digest(credentials.password, ADMIN_PASSWORD)
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
 
 
 @admin_member_router.get("/members")

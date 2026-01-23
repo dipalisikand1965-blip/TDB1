@@ -3,13 +3,17 @@ Review Routes for The Doggy Company
 Handles product reviews - user submission, admin moderation, and display
 """
 
+import os
 import uuid
+import secrets
 import logging
 from datetime import datetime, timezone
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorDatabase
+import jwt
 
 logger = logging.getLogger(__name__)
 
@@ -20,10 +24,16 @@ admin_review_router = APIRouter(prefix="/api/admin", tags=["Admin Reviews"])
 # Database reference
 db: AsyncIOMotorDatabase = None
 
+# Admin credentials
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "woof2025")
+security = HTTPBasic()
+
+# JWT Settings
+SECRET_KEY = os.environ.get("JWT_SECRET", "tdb_super_secret_key_2025_woof")
+ALGORITHM = "HS256"
+
 # Dependencies
-_get_current_user_func = None
-_get_current_user_optional_func = None
-_verify_admin_func = None
 _create_admin_notification_func = None
 
 
@@ -71,32 +81,59 @@ def set_dependencies(
     create_admin_notification_func
 ):
     """Inject dependencies from server.py"""
-    global _get_current_user_func, _get_current_user_optional_func, _verify_admin_func, _create_admin_notification_func
-    _get_current_user_func = get_current_user_func
-    _get_current_user_optional_func = get_current_user_optional_func
-    _verify_admin_func = verify_admin_func
+    global _create_admin_notification_func
     _create_admin_notification_func = create_admin_notification_func
 
 
-async def get_current_user(authorization: str = None):
-    """Wrapper for current user"""
-    if _get_current_user_func:
-        return await _get_current_user_func(authorization)
-    raise HTTPException(status_code=401, detail="Authentication required")
+def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
+    """Verify admin credentials"""
+    correct_username = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
+    correct_password = secrets.compare_digest(credentials.password, ADMIN_PASSWORD)
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
 
 
-async def get_current_user_optional(authorization: str = None):
-    """Wrapper for optional current user"""
-    if _get_current_user_optional_func:
-        return await _get_current_user_optional_func(authorization)
-    return None
+async def get_current_user_from_token(authorization: str = Header(None)):
+    """Extract and validate user from JWT token"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    token = authorization.split(" ")[1]
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not found")
+    return user
 
 
-async def verify_admin(username: str = None):
-    """Wrapper for admin verification"""
-    if _verify_admin_func:
-        return await _verify_admin_func(username)
-    raise HTTPException(status_code=500, detail="Admin verification not configured")
+async def get_current_user_optional(authorization: str = Header(None)):
+    """Get current user if authenticated, otherwise return None"""
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    
+    token = authorization.split(" ")[1]
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            return None
+    except jwt.PyJWTError:
+        return None
+    
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    return user
 
 
 async def create_admin_notification(**kwargs):
@@ -151,7 +188,7 @@ async def create_review(review: ReviewCreate, current_user: dict = Depends(get_c
 
 
 @review_router.get("/reviews/my-reviews")
-async def get_my_reviews(current_user: dict = Depends(get_current_user)):
+async def get_my_reviews(current_user: dict = Depends(get_current_user_from_token)):
     """Get reviews submitted by the logged-in user"""
     reviews = await db.reviews.find(
         {"user_email": current_user["email"]},
@@ -171,7 +208,7 @@ async def get_my_reviews(current_user: dict = Depends(get_current_user)):
 
 
 @review_router.put("/reviews/{review_id}")
-async def update_user_review(review_id: str, update: ReviewCreate, current_user: dict = Depends(get_current_user)):
+async def update_user_review(review_id: str, update: ReviewCreate, current_user: dict = Depends(get_current_user_from_token)):
     """Update a review (only by the owner)"""
     review = await db.reviews.find_one({"id": review_id})
     if not review:
@@ -196,7 +233,7 @@ async def update_user_review(review_id: str, update: ReviewCreate, current_user:
 
 
 @review_router.delete("/reviews/{review_id}")
-async def delete_user_review(review_id: str, current_user: dict = Depends(get_current_user)):
+async def delete_user_review(review_id: str, current_user: dict = Depends(get_current_user_from_token)):
     """Delete a review (only by the owner)"""
     review = await db.reviews.find_one({"id": review_id})
     if not review:
