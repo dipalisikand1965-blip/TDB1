@@ -384,13 +384,18 @@ async def get_command_center_queue(
     # Apply search filter
     if search:
         search_lower = search.lower()
-        all_items = [
-            item for item in all_items
-            if search_lower in str(item.get("original_request", "")).lower()
-            or search_lower in str(item.get("member", {}).get("name", "")).lower()
-            or search_lower in str(item.get("member", {}).get("email", "")).lower()
-            or search_lower in str(item.get("ticket_id", "")).lower()
-        ]
+        filtered_items = []
+        for item in all_items:
+            member = item.get("member") or {}
+            member_name = member.get("name", "") if member else ""
+            member_email = member.get("email", "") if member else ""
+            
+            if (search_lower in str(item.get("original_request", "")).lower()
+                or search_lower in str(member_name).lower()
+                or search_lower in str(member_email).lower()
+                or search_lower in str(item.get("ticket_id", "")).lower()):
+                filtered_items.append(item)
+        all_items = filtered_items
     
     # Sort by priority score (descending)
     all_items.sort(key=lambda x: x.get("priority_score", 0), reverse=True)
