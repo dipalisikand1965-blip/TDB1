@@ -906,10 +906,10 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
     if pets and len(pets) > 0:
         pet_context = "\n\n🐾 PET PROFILES:\n"
         for pet in pets:
-            identity = pet.get('identity', {})
-            soul = pet.get('soul', {})
-            preferences = pet.get('preferences', {})
-            health = pet.get('health', {})
+            identity = pet.get('identity') or {}
+            soul = pet.get('soul') or {}
+            preferences = pet.get('preferences') or {}
+            health = pet.get('health') or {}
             
             pet_name = pet.get('name', 'Pet')
             breed = identity.get('breed') or pet.get('breed', 'Unknown breed')
