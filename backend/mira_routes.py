@@ -1892,7 +1892,21 @@ async def get_mira_context(
     }
     
     if not user:
-        response["pillar_note"] = "Sign in to get personalized recommendations for your pet."
+        # Provide a welcoming message for guests
+        pillar_greetings = {
+            "travel": "Welcome to our Travel services! Sign in to get pet-specific travel recommendations.",
+            "stay": "Welcome to our Stay services! Sign in to find perfect accommodations for your pet.",
+            "care": "Welcome to our Care services! Sign in for personalized health and grooming options.",
+            "dine": "Welcome to Dine! Sign in to discover pet-friendly restaurants near you.",
+            "celebrate": "Welcome to Celebrate! Sign in to plan the perfect celebration for your pet.",
+            "enjoy": "Welcome to Enjoy! Sign in to find activities your pet will love.",
+            "shop": "Welcome to our Shop! Sign in for recommendations tailored to your pet.",
+            "fit": "Welcome to Fit! Sign in for fitness and activity suggestions for your pet.",
+            "advisory": "Welcome to Advisory! Sign in for personalized guidance for your pet.",
+            "paperwork": "Welcome to Paperwork! Sign in to manage your pet's documents.",
+            "emergency": "Need emergency assistance? Sign in for quick access to your pet's health records."
+        }
+        response["pillar_note"] = pillar_greetings.get(current_pillar, "Welcome! Sign in for personalized recommendations for your pet.")
         return response
     
     pets = await load_user_pets(user.get("email"), user.get("user_id"))
