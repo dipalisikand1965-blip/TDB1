@@ -14,15 +14,18 @@ The user's primary goal is to create a world-class, unified **Concierge Command 
 **User's preferred language**: English
 
 **what currently exists?**
--   A full-stack application with a React frontend and FastAPI backend.
--   A new comprehensive Pet Health Information feature has been implemented, including a new step in the pet registration flow, updates to backend models, and display in the My Pets area.
--   A large number of user-reported bugs have been fixed, including incorrect links, increasing logo size, removing login requirements on pillar pages, and seeding data for missing pillars.
--   The Mira AI chat interface was made more robust with a longer timeout and better error handling.
--   New admin features were added: a Products tab in the Dine Manager and a dedicated Net Pawmoter Score dashboard.
--   A major backend refactoring effort is underway to modularize the massive  file. FAQ, Content (Blog/Testimonials), Loyalty, and Discount routes have been successfully extracted into their own files.
+A full-stack application with a React frontend and FastAPI backend. A major backend refactoring initiative is well underway, having successfully modularized a significant portion of the original monolithic  into discrete route files for FAQs, content, loyalty, discounts, carts, Shopify sync, orders, and autoship.
+
+Several user-reported issues were resolved, including:
+-   Fixing a z-index issue where the header obscured the Mira AI chat.
+-   Implementing a new user-provided logo and brand colors.
+-   Making the header Pet Soul link dynamic to show a user's pet score.
+-   Adding extensive documentation for NPS and Mira AI to the admin panel.
+-   Removing a login requirement from the public FAQs page and seeding it with comprehensive data for all 14 pillars.
+-   A complete overhaul of the Mira AI system prompt based on detailed user specifications, significantly enhancing its personalization, memory, and conversational flow. Multiple critical backend bugs related to this were also fixed.
 
 **Last working item**:
--   Last item agent was working: The agent was in the middle of Phase 2 of a major backend refactoring. It successfully created  and , moved the relevant code from  into them, and updated  to use these new routers. The next step was to restart the backend and test these changes.
+-   Last item agent was working: The agent was continuing the major backend refactoring. It had successfully extracted the Orders and Autoship modules and was in the process of planning the next extraction, having identified the **Admin Members**, **Multi-Pet Household**, and **Reviews** sections in  as the next targets.
 -   Status: IN PROGRESS
 -   Agent Testing Done: N
 -   Which testing method agent to use? backend testing agent
@@ -31,52 +34,43 @@ The user's primary goal is to create a world-class, unified **Concierge Command 
 **All Pending/In progress Issue list**:
 -   Issue 1: Service Desk / Command Center data integrity (P1)
 -   Issue 2: Root cause of Untitled products from Shopify sync (P2)
--   Issue 3: Incomplete FAQ seeding by pillar (P2)
 
 **Issues Detail**:
 -   **Issue 1: Service Desk / Command Center data integrity**
-    -   **Description**: The user has repeatedly reported that new orders or customer interactions do not appear correctly in the Command Center or Service Desk, sometimes showing as Unknown Customer. While the agent has verified ticket creation through API tests, the user's recurring reports suggest an underlying data consistency or frontend refresh issue.
-    -   **Attempted fixes**: The agent has verified the  logic and  data normalization multiple times. Placed test orders which successfully created tickets.
+    -   **Description**: The user has repeatedly reported that new orders or customer interactions do not appear correctly in the Command Center, stating it never works on deployment. While API tests on the production domain were successful, the recurring reports suggest an underlying data consistency or frontend refresh/configuration issue specific to the production environment ().
+    -   **Attempted fixes**: The agent verified the backend API endpoints for the command center are active and return data on the production domain.
     -   **Next debug checklist**:
-        1.  Verify the frontend polling/WebSocket mechanism for the Command Center and Service Desk to ensure they update in real-time without requiring a hard refresh.
-        2.  Trace a new order from creation () through ticket creation () to display in the Command Center queue ().
-        3.  Add comprehensive logging at each step to track the , , and  to see if it gets dropped.
+        1.  Investigate the frontend implementation of the Command Center ( or similar) to check how it fetches and displays data, especially on the production site.
+        2.  Check for console errors in the browser's developer tools when visiting the Command Center page on the live production site.
+        3.  Verify that the  is being correctly utilized by the frontend components responsible for the Command Center.
+        4.  Trace a new order from creation through to the Command Center UI to see where the breakdown occurs.
     -   **Why fix this issue and what will be achieved with the fix?**: This is a core function of the application. Fixing it will ensure operational reliability and build user trust.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Both
 -   **Issue 2: The root cause of Untitled products from Shopify sync may still exist.**
-    -   **Attempted fixes**: None in this session.
-    -   **Next debug checklist**: 1. Locate the Shopify sync script/routes in . 2. Trace the data mapping for products. 3. Identify why the  field is sometimes missing during the sync.
-    -   **Why fix this issue and what will be achieved with the fix?**: Ensures data integrity and removes technical debt.
+    -   **Attempted fixes**: None directly, but the relevant code has been isolated into , which will make debugging easier.
+    -   **Next debug checklist**: 1. Review . 2. Trace the data mapping for products during the sync process. 3. Identify why the  field is sometimes missing or null.
+    -   **Why fix this issue and what will be achieved with the fix?**: Ensures data integrity for e-commerce operations.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: Y
-    -   **Should Test frontend/backend/both after fix?**: Backend
--   **Issue 3: Incomplete FAQ seeding by pillar**
-    -   **Attempted fixes**: None. Agent noted the issue.
-    -   **Next debug checklist**: 1. Review the existing FAQ seeding function. 2. Create sample FAQs for each of the 14 pillars. 3. Update the seed script to include these new FAQs, categorized by pillar.
-    -   **Why fix this issue and what will be achieved with the fix?**: Provides comprehensive user support and content for every pillar.
-    -   **Status**: NOT STARTED
-    -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Backend
 
 **In progress Task List**:
 -   **Task 1: Continue Backend Refactoring (P0)**
-    -   **Where to resume**: The agent just extracted Loyalty and Discount routes.
-        1.  Restart the backend backend: stopped
-backend: started.
-        2.  Test the loyalty and discount API endpoints to ensure they work correctly after extraction.
-        3.  Proceed to the next refactoring target: **Abandoned Cart** routes (approx. lines 5424-6352 in ).
-    -   **What will be achieved with this?**: This will further reduce the size of the monolithic , improving code organization and maintainability.
+    -   **Where to resume**: The agent just finished extracting Orders and Autoship routes. The user has approved continuing the refactoring.
+        1.  Create new files: , , and .
+        2.  Extract the corresponding logic for Admin Members (approx. lines 4687-4880), Multi-Pet Households (approx. lines 6223-6433), and Reviews (approx. lines 6586-6800) from  into these new files.
+        3.  Update  to import and use the new routers.
+        4.  Restart and thoroughly test the extracted endpoints.
+    -   **What will be achieved with this?**: This will further reduce the size of  from 9,376 lines, improving code organization and maintainability.
     -   **Status**: IN PROGRESS
     -   **Should Test frontend/backend/both after fix?**: Backend
     -   **Blocked on something**: None.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   **(P0) Complete Backend Refactoring - Phase 2**: Extract the remaining large modules from .
-    -   Extract **Abandoned Cart** routes into .
-    -   Extract **Shopify Sync** routes and functions into .
+-   **(P0) Complete Backend Refactoring - Phase 3**: Extract remaining large modules from  (e.g., Product Management, App Settings, Admin Notifications).
 -   **(P1) Build Farewell & Adopt Pillar Pages**: Create the frontend pages and backend support for these two missing pillars.
 -   **(P2) WhatsApp Business API Integration**: Replace the provisional click-to-chat links with a true API integration.
 
@@ -86,26 +80,28 @@ backend: started.
 -   Multi-Pet Discount Calculator.
 -   Member-facing analytics dashboard.
 -   Re-enable  for go-live on necessary pages.
--   Implement the Net Pawmoter Score folder in the admin panel.
 
 **Completed work in this session**
--   **Pet Health Feature**: Implemented a Health Information step in the pet creation flow () and updated the backend  model in  to store the data.
--   **Critical Bug Fix**: Resolved a persistent  by discovering and removing a duplicate, outdated  model definition in  that was overriding the correct one from .
--   **Multiple User-Requested Fixes**:
-    -   Changed Create Free Account to Become a Member on .
-    -   Significantly increased the logo/paw size by modifying  and increasing the  height.
-    -   Removed login requirements from Enjoy, Travel, Care, and Paperwork pages as per user's temporary request.
-    -   Fixed the footer link to .
-    -   Seeded product data for the Paperwork pillar.
-    -   Improved Mira AI stability by adding a 60-second timeout and better error handling in .
--   **New Admin Features**:
-    -   Added a Products tab with full CRUD functionality to .
-    -   Created and integrated a new  component to serve as the Pawmoter Score admin dashboard.
--   **Backend Refactoring (Phase 1 & 2 Started)**:
-    -   Reduced  from **11,569 lines** to **11,238 lines** (and counting).
-    -   Created  and moved FAQ CRUD logic into it.
-    -   Created  and moved Blog and Testimonial logic into it.
-    -   Created  and  and moved the respective logic into them.
+-   **Major Backend Refactoring (P0 Priority Task)**:
+    -   Extracted **Abandoned Cart** logic into .
+    -   Extracted **Shopify Sync** logic into .
+    -   Extracted **Orders API** logic into .
+    -   Extracted **Autoship System** logic into .
+    -   Reduced  from **11,238 lines** down to **9,376 lines** (a ~19% reduction).
+    -   All refactored modules were verified with the testing agent (, , ).
+-   **Mira AI Personalization & System Prompt Overhaul**:
+    -   Replaced the entire system prompt in  with the user's comprehensive guidelines, focusing on conversational flow, memory, and safety.
+    -   Significantly enhanced Mira's personalization to use pet parent/pet names and recall past conversations.
+    -   Fixed multiple critical  bugs in  to handle  data from the database gracefully.
+    -   Successfully tested multiple conversational edge cases (Emergency, Travel, Dine, Guest User).
+-   **UI/UX Fixes and Enhancements**:
+    -   **New Logo**: Implemented a new user-provided logo, favicon, and brand text colors site-wide (, ).
+    -   **Mira AI Visibility**: Fixed a  issue where the header was covering the Mira AI chat window ().
+    -   **Dynamic Header Link**: Updated the Pet Soul link in  to direct to  and show a pet score when the user is logged in.
+-   **Feature Enhancements**:
+    -   **NPS Admin Dashboard**: Enhanced  to show detailed product-wise NPS data with customer comments, supported by a new backend endpoint.
+    -   **FAQs Page**: Fixed a bug that required login, making the page public. Seeded the database with 58 comprehensive FAQs for all 14 pillars.
+    -   **Admin Docs**: Added detailed documentation for the Net Pawmoter Score system and Mira LLM Rules in .
 
 **Earlier issues found/mentioned but not fixed**
 -   The root cause of Shopify Sync creates Untitled Products remains unresolved. This is captured in the All Pending/In progress Issue list.
@@ -119,64 +115,71 @@ backend: started.
 
 
 **Key Technical Concepts**
--   **Backend Refactoring (Modularization)**: Actively breaking down a monolithic  by extracting domains (FAQs, Content, Loyalty, Discounts) into their own  files. This improves maintainability and separation of concerns.
--   **Pydantic Model Resolution**: Debugged and fixed a critical issue where a duplicate model definition in  was overriding the intended model from , preventing schema changes from being applied. This was resolved by removing the duplicate and centralizing model imports.
--   **Robust Asynchronous Operations**: Improved the frontend stability of the Mira AI feature by wrapping the  call in a  with a  to handle potential long response times from the LLM.
--   **Dynamic Admin UI**: Extended the admin panel by adding a new Products tab to the existing  component and creating an entirely new  dashboard, demonstrating the pattern for adding new management tools.
+-   **Backend Refactoring (Modularization)**: The primary activity was breaking down the monolithic  by extracting domains (Cart, Shopify, Orders, Autoship) into their own  files, significantly improving maintainability.
+-   **Comprehensive LLM System Prompt Engineering**: A complete overhaul of the Mira AI system prompt in  based on highly detailed user specifications, including complex rules for conversation flow, product recommendations, memory usage, and web lookups.
+-   **Robust Data Handling & Defensive Programming**: Fixed multiple  bugs by adding checks for / values returned from MongoDB, making the application more resilient to incomplete data.
+-   **Z-Index Debugging**: Solved a critical UI overlap issue between the fixed navbar and a floating action button component by adjusting CSS  properties.
+-   **Dynamic Frontend State**: Implemented logic in  to fetch user-specific data (pet soul score) and conditionally render UI elements based on login status.
+-   **Data Seeding & Mocking**: Populated the database with test data for FAQs and NPS to validate new features and UI components.
 
 **key DB schema**
--   **pets**:
-    -   :  - A new nested object to store health information, matching the  Pydantic model. Includes , , , etc.
+-   No schema changes were made in this session.
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--    (The main file being refactored)
--    (Newly created)
--    (Newly created)
--    (Modified to add products tab)
--    (Newly created)
--    (Modified to integrate new admin components)
--    (Modified for health info step)
--    (Modified for new health model)
--    (Modified to fix model duplication bug)
+-   **/app/backend/server.py**: The main file being refactored.
+-   **/app/backend/mira_routes.py**: Contains the critical, newly updated Mira AI system prompt.
+-   **/app/backend/cart_routes.py**: Newly created.
+-   **/app/backend/shopify_sync_routes.py**: Newly created.
+-   **/app/backend/orders_routes.py**: Newly created.
+-   **/app/backend/autoship_routes.py**: Newly created.
+-   **/app/frontend/src/components/Navbar.jsx**: Contains fixes for z-index and dynamic Pet Soul link.
+-   **/app/frontend/src/components/MiraAI.jsx**: Contains the z-index fix.
+-   **/app/frontend/src/pages/FAQs.jsx**: Contains the API endpoint fix.
+-   **/app/frontend/src/components/admin/NPSManager.jsx**: Contains the enhanced NPS dashboard UI.
+-   **/app/frontend/src/pages/AdminDocs.jsx**: Contains new documentation.
 
 **Areas that need refactoring**:
--    is still critically large at **11,238 lines**. The refactoring effort must continue with high priority. The next targets are Abandoned Cart and Shopify Sync sections.
+-    is still large at **9,376 lines**. The refactoring effort must continue with high priority. The next identified targets are Admin Members, Multi-Pet Household, and Reviews.
 
 **key api endpoints**
 -   : (NEW) Extracted to .
 -   : (NEW) Extracted to .
 -   : (NEW) Extracted to .
 -   : (NEW) Extracted to .
--   : Used by the new Products tab in .
--   : Used by the new .
+-   : (NEW) Created in  for the enhanced NPS admin dashboard.
+-   : (EXISTING/PUBLIC) The  page was updated to use this public endpoint instead of the admin one.
 
 **Critical Info for New Agent**
--   **Your immediate task is to continue the backend refactoring**. The user has approved it, and it's in progress. Start by testing the recent extraction of Loyalty and Discount routes, then proceed to extract the Abandoned Cart logic from .
--   The user has explicitly requested to keep pillar pages (Enjoy, Travel, etc.) **open without a login requirement** for now. Do not re-implement authentication gates on them.
--   The Unknown Customer / Order not in Service Desk issue is a high-priority, recurring complaint from the user. Even if API tests pass, be prepared to investigate this from a frontend/data-freshness perspective if the user reports it again.
--   A critical bug was caused by a duplicate Pydantic model in  overriding . Be aware of this pattern if you encounter issues with model changes not applying after a hot reload.
+-   **Your immediate task is to continue the backend refactoring**. The user has approved it, and it's the highest priority task (P0). The next targets are Admin Members, Multi-Pet Household, and Reviews.
+-   The user is highly focused on **Mira AI's personalization and memory**. The AI's ability to recall pet/parent details and conversation history is a critical feature. The current implementation in  and  is the source of truth.
+-   The Command Center not working on deployment issue is a high-priority, recurring complaint. This likely requires frontend debugging on the production URL, as backend APIs appear to be working.
+-   The Shopify Untitled product bug is now easier to tackle since the code has been isolated in .
 
 **documents and test reports created in this job**
--    (Updated)
--   
+-   /app/memory/PRD.md (Updated)
+-   /app/test_reports/iteration_55.json
+-   /app/test_reports/iteration_56.json
+-   /app/test_reports/iteration_57.json
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Continued the refactoring (Phase 2).
-2.  **Agent**: Completed Phase B, C, D features, provided a summary.
-3.  **User**: Let's do B, C, and D (features) first, then A (refactoring).
-4.  **Agent**: Proposed a plan to continue with more refactoring or work on features while the app redeploys.
-5.  **User**: My site is redeploying, what should we do?
-6.  **Agent**: Finished refactoring FAQs and Content, summarized progress.
-7.  **User**: Yes, start Phase 1 refactoring.
-8.  **Agent**: Proposed a detailed, multi-phase plan to refactor  and asked for approval to start.
-9.  **User**: will it affect my site - Expressed concern about data loss or downtime from refactoring.
-10. **Agent**: Reassured the user about the safety of refactoring and asked for confirmation.
+1.  **User**: Asks to continue refactoring. (Completed: Agent extracted Orders & Autoship).
+2.  **Agent**: Summarized refactoring and asked to continue or switch tasks.
+3.  **User**: Asks to continue refactoring. (Completed: Agent is planning the next set of extractions).
+4.  **Agent**: Summarized Mira AI edge case testing and asked to continue refactoring or build pillar pages.
+5.  **User**: Confirms to test more edge cases for Mira and then refactor. (Completed: Agent tested edge cases and found/fixed bugs).
+6.  **Agent**: Summarized Mira AI personalization and asked for next steps.
+7.  **User**: Emphasized that Mira AI personalization is P2 priority because it needs to be a highly personalized pet companion. (Completed: Agent investigated and enhanced the personalization and memory systems).
+8.  **Agent**: Summarized the Mira visibility fix and the new system prompt.
+9.  **User**: Pointed out Mira AI chat is still hidden and provided a comprehensive new system prompt. (Completed: Agent fixed the final visibility issue and implemented the new prompt).
+10. **User**: Confirmed they want to use the new logo and specified text color requirements. (Completed: Agent implemented the new logo and colors).
 
 **Project Health Check:**
--   **Broken**:  remains a significant technical debt and maintainability risk due to its size (>11,000 lines).
+-   **Broken**:
+    -    remains a significant technical debt and maintainability risk due to its size (9,376 lines).
+    -   The user reports the **Concierge Command Center is non-functional on the production deployment**, suggesting a critical frontend or configuration issue.
 -   **Mocked**: WhatsApp Integration (remains a click-to-chat link).
 
 **3rd Party Integrations**
@@ -187,9 +190,9 @@ backend: started.
 -   **ReportLab**: For server-side PDF generation.
 
 **Testing status**
--   Testing agent used after significant changes: YES ( was generated and passed).
+-   Testing agent used after significant changes: YES (, ,  were generated).
 -   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created: None manually.
+-   Test files created: None manually, but the testing agent generated tests.
 -   Known regressions: None.
 
 **Credentials to test flow:**
@@ -199,5 +202,4 @@ backend: started.
 -   **Test User Password**: 
 
 **What agent forgot to execute**
--   The agent was in the middle of extracting  and . It edited all the files but did not get to restart and test the backend to confirm the extraction was successful before the session ended. The next agent's first step should be to run backend: stopped
-backend: started and test the related API endpoints.</analysis>
+-   The agent's work on refactoring was a natural stopping point. It had planned the next extraction (Admin Members, Multi-Pet Household, Reviews) but had not yet begun creating the files or moving the code. This is the correct place for the next agent to resume.</analysis>
