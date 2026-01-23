@@ -643,6 +643,114 @@ DELETE /api/admin/faqs/{id}     # Delete FAQ
         }
       ]
     },
+    'learn': {
+      title: 'Learn',
+      subtitle: 'Pet Training & Education Programs',
+      files: {
+        frontend: '/app/frontend/src/pages/LearnPage.jsx',
+        backend: '/app/backend/learn_routes.py',
+        admin: '/app/frontend/src/components/admin/LearnManager.jsx'
+      },
+      sections: [
+        {
+          title: 'What It Contains',
+          content: `• Training programs (puppy, basic, advanced)
+• Certified trainers directory
+• Training products & bundles
+• Program bookings & management`
+        },
+        {
+          title: 'Admin Features',
+          content: `• Manage Programs: Create/edit/delete training programs
+• Manage Trainers: CRUD operations on trainers
+• Settings Tab: Paw Rewards, Birthday perks, Service Desk integration`
+        },
+        {
+          title: 'API Endpoints',
+          content: `GET  /api/learn/programs         # List programs
+POST /api/learn/admin/programs   # Create program
+GET  /api/learn/trainers         # List trainers
+POST /api/learn/admin/trainers   # Create trainer
+POST /api/learn/admin/seed       # Seed sample data`
+        }
+      ]
+    },
+    'farewell': {
+      title: 'Farewell',
+      subtitle: 'End-of-Life Care & Memorial Services',
+      files: {
+        frontend: '/app/frontend/src/pages/FarewellPage.jsx',
+        backend: '/app/backend/farewell_routes.py (if exists)'
+      },
+      sections: [
+        {
+          title: 'Services',
+          content: `• Grief support & counseling
+• Memorial services
+• Cremation arrangements
+• Memory keepsakes (paw prints, etc.)
+• Rainbow Bridge tributes`
+        },
+        {
+          title: 'Sensitive Handling',
+          content: `• All requests handled with utmost care
+• Auto-assigned to trained concierge
+• Extended SLA timelines
+• Follow-up support scheduling`
+        }
+      ]
+    },
+    'adopt': {
+      title: 'Adopt',
+      subtitle: 'Pet Adoption & Foster Programs',
+      files: {
+        frontend: '/app/frontend/src/pages/AdoptPage.jsx',
+        backend: '/app/backend/adopt_routes.py (if exists)'
+      },
+      sections: [
+        {
+          title: 'Services',
+          content: `• Adoption matching
+• Foster programs
+• Shelter partnerships
+• Rescue coordination
+• Post-adoption support`
+        },
+        {
+          title: 'Process',
+          content: `• Browse available pets
+• Submit adoption application
+• Home check scheduling
+• Match approval & handover
+• Post-adoption check-ins`
+        }
+      ]
+    },
+    'shop': {
+      title: 'Shop',
+      subtitle: 'Pet Products & Supplies Store',
+      files: {
+        frontend: '/app/frontend/src/pages/ShopPage.jsx',
+        backend: '/app/backend/server.py (products routes)'
+      },
+      sections: [
+        {
+          title: 'Features',
+          content: `• Browse products by category
+• Filter by breed, life stage, allergies
+• Pet Soul™ personalized recommendations
+• Cart & checkout
+• Order tracking`
+        },
+        {
+          title: 'Integration',
+          content: `• Every order creates Command Center ticket
+• Customer recognized automatically
+• Paw Rewards integration
+• Autoship for recurring orders`
+        }
+      ]
+    },
     'dashboard': {
       title: 'Dashboard',
       subtitle: 'Business Overview & Quick Actions',
