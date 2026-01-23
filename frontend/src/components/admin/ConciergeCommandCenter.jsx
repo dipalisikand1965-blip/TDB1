@@ -811,7 +811,7 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
                           onClick={() => {
                             const email = itemDetail.member_snapshot.email;
                             if (email) {
-                              window.open(`/admin?tab=members&email=${encodeURIComponent(email)}`, '_blank');
+                              window.open(`/admin?tab=member-directory&email=${encodeURIComponent(email)}`, '_blank');
                             }
                           }}
                           title="Click to view full 360° profile"
