@@ -9,13 +9,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraContextPanel from '../components/MiraContextPanel';
+import ProductCard from '../components/ProductCard';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
   ChevronRight, Sparkles, Star, Loader2, Send, ArrowRight, Play,
   ChevronDown, Users, Shield, Wind, Skull, CloudLightning, ShieldAlert,
-  CheckCircle, PawPrint, PhoneCall, Siren, Radio, AlertCircle
+  CheckCircle, PawPrint, PhoneCall, Siren, Radio, AlertCircle, ShoppingBag
 } from 'lucide-react';
 
 // Emergency Type Configuration - Red/Urgent theme
