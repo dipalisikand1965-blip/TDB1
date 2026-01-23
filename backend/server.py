@@ -9300,6 +9300,69 @@ async def seed_production_data():
             "answer": "Mira® is our AI-powered concierge who knows your pet personally. She can help with product recommendations, booking services, answering questions, and coordinating your pet's life across all our pillars.",
             "category": "Mira AI",
             "order": 8
+        },
+        # Pillar-specific FAQs
+        {
+            "id": "faq-celebrate-1",
+            "question": "How do I order a custom birthday cake for my pet?",
+            "answer": "Visit our Celebrate section or chat with Mira! We offer custom cakes in various sizes and flavors. Place orders at least 48 hours in advance. You can personalize with your pet's name, age, and favorite colors.",
+            "category": "Celebrate",
+            "pillar": "celebrate",
+            "order": 9
+        },
+        {
+            "id": "faq-dine-1",
+            "question": "Which restaurants are pet-friendly?",
+            "answer": "All restaurants listed in our Dine section welcome pets! We verify each venue for pet-friendly policies, outdoor seating, and water bowls. Filter by location, cuisine, and amenities.",
+            "category": "Dine",
+            "pillar": "dine",
+            "order": 10
+        },
+        {
+            "id": "faq-dine-2",
+            "question": "Can I bring my large dog to pet-friendly restaurants?",
+            "answer": "Most restaurants accept dogs of all sizes, but some may have space constraints. Check the venue details or ask Mira for specific recommendations based on your pet's size.",
+            "category": "Dine",
+            "pillar": "dine",
+            "order": 11
+        },
+        {
+            "id": "faq-stay-1",
+            "question": "How do I book pet boarding?",
+            "answer": "Browse verified boarding facilities in the Stay section. View amenities, read reviews, and book directly. Mira can also recommend based on your pet's needs and preferences.",
+            "category": "Stay",
+            "pillar": "stay",
+            "order": 12
+        },
+        {
+            "id": "faq-travel-1",
+            "question": "Can you help relocate my pet to another city?",
+            "answer": "Yes! Our Travel pillar offers pet relocation services including flights, ground transport, documentation, and compliance. Start planning with Mira for a customized travel solution.",
+            "category": "Travel",
+            "pillar": "travel",
+            "order": 13
+        },
+        {
+            "id": "faq-care-1",
+            "question": "Do you offer vet consultations?",
+            "answer": "Our Care pillar connects you with verified veterinary partners. Book appointments, access telemedicine, and store health records in your pet's Health Vault.",
+            "category": "Care",
+            "pillar": "care",
+            "order": 14
+        },
+        {
+            "id": "faq-mira-2",
+            "question": "Is Mira available 24/7?",
+            "answer": "Yes! Mira is always available to assist you. For complex requests, she'll escalate to our human concierge team who respond within 24 hours.",
+            "category": "Mira AI",
+            "order": 15
+        },
+        {
+            "id": "faq-mira-3",
+            "question": "How does Mira remember my pet's preferences?",
+            "answer": "Mira uses your Pet Soul™ profile to remember everything - favorite treats, allergies, past orders, and even your pet's personality traits. The more you interact, the smarter she gets!",
+            "category": "Mira AI",
+            "order": 16
         }
     ]
     
