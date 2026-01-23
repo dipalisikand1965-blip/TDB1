@@ -1435,13 +1435,17 @@ const PetProfile = ({ isEmbed = false }) => {
         {step > 0 && step < 6 && (
           <div className="mb-8 bg-white rounded-xl p-4 shadow-md">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-600">Step {step === 1.5 ? '2' : step > 1.5 ? Math.floor(step) + 1 : step} of 6</span>
-              <span className="text-sm font-medium text-purple-600">{Math.round(((step === 1.5 ? 2 : step > 1.5 ? step + 1 : step) / 6) * 100)}%</span>
+              <span className="text-sm font-medium text-gray-600">
+                Step {step === 1.5 ? '2' : step === 1.75 ? '3' : step > 1.75 ? Math.floor(step) + 2 : step} of 7
+              </span>
+              <span className="text-sm font-medium text-purple-600">
+                {Math.round((step === 1.5 ? 2 : step === 1.75 ? 3 : step > 1.75 ? step + 2 : step) / 7 * 100)}%
+              </span>
             </div>
             <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
               <div 
                 className="h-full bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 transition-all duration-500 ease-out"
-                style={{ width: `${((step === 1.5 ? 2 : step > 1.5 ? step + 1 : step) / 6) * 100}%` }}
+                style={{ width: `${((step === 1.5 ? 2 : step === 1.75 ? 3 : step > 1.75 ? step + 2 : step) / 7) * 100}%` }}
               />
             </div>
           </div>
