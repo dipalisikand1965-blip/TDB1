@@ -2238,3 +2238,421 @@ async def get_pillar_stats():
         "total": sum(pillar_counts.values())
     }
 
+
+
+# ============== EVENT STREAM ==============
+
+@router.get("/event-stream")
+async def get_event_stream(limit: int = 50):
+    """Get real-time event stream of all recent activities."""
+    db = get_db()
+    
+    events = []
+    
+    # Recent tickets (auto-created and manual)
+    recent_tickets = await db.service_desk_tickets.find(
+        {},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    for t in recent_tickets:
+        events.append({
+            "id": t.get("ticket_id"),
+            "type": "ticket",
+            "event_type": t.get("event_type", "ticket"),
+            "pillar": t.get("pillar", t.get("category", "general")),
+            "title": t.get("subject", t.get("original_request", "")[:50]),
+            "description": t.get("original_request", "")[:100],
+            "member": t.get("member", {}),
+            "pet": t.get("pet", {}),
+            "status": t.get("status"),
+            "auto_created": t.get("auto_created", False),
+            "action_required": t.get("action_required", True),
+            "timestamp": t.get("created_at"),
+            "source": t.get("source", "manual")
+        })
+    
+    # Recent orders
+    recent_orders = await db.orders.find(
+        {},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(20).to_list(20)
+    
+    for o in recent_orders:
+        customer = o.get("customer", {}) or {}
+        events.append({
+            "id": o.get("order_id") or o.get("id"),
+            "type": "order",
+            "event_type": "order_placed",
+            "pillar": "shop",
+            "title": f"Order #{o.get('order_id', 'N/A')} - ₹{o.get('total', 0)}",
+            "description": f"{len(o.get('items', []))} items",
+            "member": {"name": customer.get("name"), "email": customer.get("email")},
+            "status": o.get("status", "pending"),
+            "auto_created": False,
+            "action_required": True,
+            "timestamp": o.get("created_at"),
+            "source": "checkout"
+        })
+    
+    # Recent memberships
+    recent_memberships = await db.memberships.find(
+        {},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(10).to_list(10)
+    
+    for m in recent_memberships:
+        events.append({
+            "id": m.get("id") or m.get("membership_id"),
+            "type": "membership",
+            "event_type": "membership_" + m.get("status", "created"),
+            "pillar": "club",
+            "title": f"Membership: {m.get('plan', {}).get('name', 'Plan')}",
+            "description": m.get("user_email", ""),
+            "member": {"email": m.get("user_email")},
+            "status": m.get("status"),
+            "auto_created": False,
+            "action_required": m.get("status") == "pending",
+            "timestamp": m.get("created_at"),
+            "source": "membership"
+        })
+    
+    # Sort all events by timestamp
+    events.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+    
+    return {
+        "events": events[:limit],
+        "total": len(events)
+    }
+
+
+# ============== COMPREHENSIVE MEMBER PROFILE ==============
+
+@router.get("/member/{email}/full-profile")
+async def get_member_full_profile(email: str):
+    """Get comprehensive 360° member profile with all data."""
+    db = get_db()
+    
+    # 1. Basic member info
+    member = await db.users.find_one({"email": email}, {"_id": 0, "password": 0})
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+    
+    # 2. All pets with full Pet Soul data
+    pets = await db.pets.find({"owner_email": email}, {"_id": 0}).to_list(20)
+    
+    # Enrich each pet with health records and tickets
+    for pet in pets:
+        pet_id = pet.get("id")
+        
+        # Health records for this pet
+        pet["health_records"] = await db.pet_health_records.find(
+            {"pet_id": pet_id},
+            {"_id": 0}
+        ).sort("date", -1).to_list(50)
+        
+        # Vaccines
+        pet["vaccines"] = await db.pet_vaccines.find(
+            {"pet_id": pet_id},
+            {"_id": 0}
+        ).to_list(50)
+        
+        # Tickets specific to this pet
+        pet["tickets"] = await db.service_desk_tickets.find(
+            {"$or": [
+                {"pet.id": pet_id},
+                {"pet.name": pet.get("name")},
+                {"pets": {"$elemMatch": {"id": pet_id}}}
+            ]},
+            {"_id": 0, "ticket_id": 1, "subject": 1, "status": 1, "pillar": 1, "created_at": 1}
+        ).sort("created_at", -1).to_list(50)
+        
+        # Pet Soul answers (all responses)
+        pet["soul_answers"] = pet.get("doggy_soul_answers", {})
+    
+    # 3. Membership details
+    membership = await db.memberships.find_one(
+        {"user_email": email, "status": {"$in": ["active", "pending"]}},
+        {"_id": 0}
+    )
+    
+    # Membership history
+    membership_history = await db.memberships.find(
+        {"user_email": email},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(20)
+    
+    # 4. Paw Rewards / Loyalty
+    loyalty_balance = member.get("loyalty_points", 0)
+    loyalty_transactions = await db.loyalty_transactions.find(
+        {"user_email": email},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    
+    total_earned = sum([t.get("points", 0) for t in loyalty_transactions if t.get("type") == "earn"])
+    total_redeemed = sum([t.get("points", 0) for t in loyalty_transactions if t.get("type") == "redeem"])
+    
+    # 5. All tickets (across all pets)
+    all_tickets = await db.service_desk_tickets.find(
+        {"$or": [
+            {"member.email": email},
+            {"member_email": email},
+            {"customer.email": email}
+        ]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    # Also get from regular tickets collection
+    regular_tickets = await db.tickets.find(
+        {"$or": [
+            {"customer.email": email},
+            {"member_email": email}
+        ]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    all_tickets.extend(regular_tickets)
+    
+    # Group tickets by pillar
+    tickets_by_pillar = {}
+    for t in all_tickets:
+        pillar = t.get("pillar", t.get("category", "general"))
+        if pillar not in tickets_by_pillar:
+            tickets_by_pillar[pillar] = []
+        tickets_by_pillar[pillar].append(t)
+    
+    # Group tickets by pet
+    tickets_by_pet = {"unassigned": []}
+    for t in all_tickets:
+        pet_info = t.get("pet", {})
+        pet_name = pet_info.get("name") if pet_info else None
+        if pet_name:
+            if pet_name not in tickets_by_pet:
+                tickets_by_pet[pet_name] = []
+            tickets_by_pet[pet_name].append(t)
+        else:
+            tickets_by_pet["unassigned"].append(t)
+    
+    # 6. Orders
+    orders = await db.orders.find(
+        {"customer.email": email},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    
+    total_spent = sum([o.get("total", 0) for o in orders])
+    
+    # 7. Bookings (stay, dine, travel, care)
+    bookings = {
+        "stay": await db.stay_bookings.find({"customer_email": email}, {"_id": 0}).to_list(20),
+        "dine": await db.dine_reservations.find({"customer_email": email}, {"_id": 0}).to_list(20),
+        "travel": await db.travel_requests.find({"customer_email": email}, {"_id": 0}).to_list(20),
+        "care": await db.care_appointments.find({"customer_email": email}, {"_id": 0}).to_list(20)
+    }
+    
+    # 8. Mira memories
+    memories = await db.mira_memories.find(
+        {"member_id": email},
+        {"_id": 0}
+    ).sort("timestamp", -1).to_list(100)
+    
+    # 9. Communications history
+    communications = []
+    for t in all_tickets:
+        comms = t.get("communications", [])
+        for c in comms:
+            c["ticket_id"] = t.get("ticket_id")
+            communications.append(c)
+    communications.sort(key=lambda x: x.get("at", x.get("sent_at", "")), reverse=True)
+    
+    # 10. Activity timeline (recent actions)
+    activity = []
+    
+    for t in all_tickets[:20]:
+        activity.append({
+            "type": "ticket",
+            "action": "created",
+            "title": t.get("subject", t.get("original_request", "")[:50]),
+            "timestamp": t.get("created_at"),
+            "pillar": t.get("pillar"),
+            "id": t.get("ticket_id")
+        })
+    
+    for o in orders[:10]:
+        activity.append({
+            "type": "order",
+            "action": "placed",
+            "title": f"Order #{o.get('order_id')} - ₹{o.get('total', 0)}",
+            "timestamp": o.get("created_at"),
+            "pillar": "shop",
+            "id": o.get("order_id")
+        })
+    
+    activity.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+    
+    # 11. Notes (internal)
+    notes = await db.member_notes.find(
+        {"member_email": email},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    
+    return {
+        "member": member,
+        "pets": pets,
+        "membership": {
+            "current": membership,
+            "history": membership_history,
+            "membership_number": membership.get("id") if membership else None,
+            "plan_name": membership.get("plan", {}).get("name") if membership else "Free",
+            "expires_at": membership.get("expires_at") if membership else None,
+            "status": membership.get("status") if membership else "free"
+        },
+        "paw_rewards": {
+            "balance": loyalty_balance,
+            "total_earned": total_earned,
+            "total_redeemed": total_redeemed,
+            "transactions": loyalty_transactions[:20]
+        },
+        "tickets": {
+            "all": all_tickets,
+            "by_pillar": tickets_by_pillar,
+            "by_pet": tickets_by_pet,
+            "total": len(all_tickets),
+            "open": len([t for t in all_tickets if t.get("status") not in ["resolved", "closed"]])
+        },
+        "orders": {
+            "list": orders,
+            "total_count": len(orders),
+            "total_spent": total_spent
+        },
+        "bookings": bookings,
+        "memories": memories,
+        "communications": communications[:50],
+        "activity": activity[:50],
+        "notes": notes,
+        "stats": {
+            "total_pets": len(pets),
+            "total_tickets": len(all_tickets),
+            "total_orders": len(orders),
+            "total_spent": total_spent,
+            "member_since": member.get("created_at"),
+            "last_activity": activity[0].get("timestamp") if activity else None
+        }
+    }
+
+
+# ============== MEMBER NOTES CRUD ==============
+
+class MemberNote(BaseModel):
+    content: str
+    note_type: str = "general"  # general, follow_up, important, misc
+
+
+@router.post("/member/{email}/notes")
+async def add_member_note(email: str, note: MemberNote, added_by: str = "concierge"):
+    """Add a note to member profile."""
+    db = get_db()
+    
+    import uuid
+    note_doc = {
+        "id": f"NOTE-{uuid.uuid4().hex[:8].upper()}",
+        "member_email": email,
+        "content": note.content,
+        "note_type": note.note_type,
+        "added_by": added_by,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.member_notes.insert_one(note_doc)
+    note_doc.pop("_id", None)
+    
+    return {"success": True, "note": note_doc}
+
+
+@router.get("/member/{email}/notes")
+async def get_member_notes(email: str):
+    """Get all notes for a member."""
+    db = get_db()
+    
+    notes = await db.member_notes.find(
+        {"member_email": email},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return {"notes": notes}
+
+
+@router.delete("/member/{email}/notes/{note_id}")
+async def delete_member_note(email: str, note_id: str):
+    """Delete a member note."""
+    db = get_db()
+    
+    result = await db.member_notes.delete_one({"id": note_id, "member_email": email})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Note not found")
+    
+    return {"success": True}
+
+
+# ============== HEALTH VAULT INTEGRATION ==============
+
+@router.get("/member/{email}/health-vault")
+async def get_member_health_vault(email: str):
+    """Get complete health vault for all pets of a member."""
+    db = get_db()
+    
+    # Get all pets
+    pets = await db.pets.find({"owner_email": email}, {"_id": 0}).to_list(20)
+    
+    health_data = []
+    
+    for pet in pets:
+        pet_id = pet.get("id")
+        pet_name = pet.get("name")
+        
+        # Health records
+        records = await db.pet_health_records.find(
+            {"pet_id": pet_id},
+            {"_id": 0}
+        ).sort("date", -1).to_list(100)
+        
+        # Vaccines
+        vaccines = await db.pet_vaccines.find(
+            {"pet_id": pet_id},
+            {"_id": 0}
+        ).to_list(50)
+        
+        # Weight history
+        weights = await db.pet_weights.find(
+            {"pet_id": pet_id},
+            {"_id": 0}
+        ).sort("date", -1).to_list(100)
+        
+        # Medications
+        medications = await db.pet_medications.find(
+            {"pet_id": pet_id},
+            {"_id": 0}
+        ).to_list(50)
+        
+        # Vet visits
+        vet_visits = await db.pet_vet_visits.find(
+            {"pet_id": pet_id},
+            {"_id": 0}
+        ).sort("date", -1).to_list(50)
+        
+        health_data.append({
+            "pet_id": pet_id,
+            "pet_name": pet_name,
+            "pet_breed": pet.get("breed"),
+            "pet_birthday": pet.get("birthday"),
+            "records": records,
+            "vaccines": vaccines,
+            "weights": weights,
+            "medications": medications,
+            "vet_visits": vet_visits,
+            "current_weight": weights[0].get("weight") if weights else None,
+            "next_vaccine_due": None  # Calculate from vaccines
+        })
+    
+    return {"health_vault": health_data}
+
