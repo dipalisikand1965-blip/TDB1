@@ -484,13 +484,15 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
   if (selectedItem) {
     return (
       <div className="h-full flex flex-col bg-gray-50">
-        {/* Back Header */}
-        <div className="bg-white border-b px-4 py-3 flex items-center gap-3">
+        {/* Back Header with SLA Timer */}
+        <div className="bg-white border-b px-4 py-3 flex items-center gap-3 flex-wrap">
           <Button variant="ghost" size="sm" onClick={closePanel}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Command Center
           </Button>
           <div className="flex-1" />
+          {/* SLA Timer - Full version in header */}
+          <SLATimer createdAt={selectedItem.created_at} priority={selectedItem.priority_bucket} />
           <Badge className={SOURCE_CONFIG[selectedItem.source_type]?.bg || 'bg-gray-100'}>
             {selectedItem.source_label || selectedItem.source_type}
           </Badge>
