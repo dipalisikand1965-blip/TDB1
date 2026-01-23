@@ -162,6 +162,7 @@ function MainLayout() {
         <Route path="/admin/forgot-password" element={<ForgotPassword />} />
         <Route path="/admin/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/docs" element={<AdminDocs />} />
         <Route path="/voice-order" element={<ProtectedRoute><VoiceOrder /></ProtectedRoute>} />
         
         {/* Pet Profile - Accessible without login */}
