@@ -10803,6 +10803,10 @@ set_analytics_db(db)  # Initialize Analytics with database
 app.include_router(faq_router)  # Public FAQs at /api/faqs
 app.include_router(faq_admin_router)  # Admin FAQs at /api/admin/faqs
 
+# Content Routes (Refactored - Testimonials & Blog)
+app.include_router(content_router)  # Public content at /api/testimonials, /api/blog-posts
+app.include_router(content_admin_router)  # Admin content at /api/admin/testimonials, /api/admin/blog-posts
+
 # Auto Ticket Creation System
 set_auto_ticket_db(db)  # Initialize auto-ticket creation with database
 
