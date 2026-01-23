@@ -96,7 +96,8 @@ const FAQs = () => {
   useEffect(() => {
     const fetchFaqs = async () => {
       try {
-        const response = await fetch(`${getApiUrl()}/api/admin/faqs`);
+        // Use public endpoint, not admin endpoint
+        const response = await fetch(`${getApiUrl()}/api/faqs`);
         if (response.ok) {
           const data = await response.json();
           const faqs = data.faqs || [];
