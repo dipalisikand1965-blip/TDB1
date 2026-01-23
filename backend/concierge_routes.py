@@ -1424,8 +1424,13 @@ async def get_command_center_overview():
     # SLA stats
     sla_data = await get_sla_breaches(limit=1000)
     
-    # Agent performance
-    agents = await db.admin_credentials.find({}, {"username": 1, "_id": 0}).to_list(100)
+    # Agent performance - get from agents collection
+    agents = await db.agents.find({"is_active": True}, {"username": 1, "_id": 0}).to_list(100)
+    # Also include admin users
+    admin_users = await db.admin_users.find({"is_active": True}, {"email": 1, "_id": 0}).to_list(100)
+    for admin in admin_users:
+        agents.append({"username": admin.get("email", "").split("@")[0]})
+    
     agent_stats = []
     
     for agent in agents:
