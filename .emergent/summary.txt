@@ -9,100 +9,103 @@ The user's primary goal is to create a world-class, unified **Concierge Command 
 -   **D. Data-Driven Operations**: Advanced analytics and reporting.
 -   **E. Net Pawmoter Score (NPS) System**: A post-resolution satisfaction survey system.
 -   **F. Expanded Pillars**: The system must fully support all 14 pillars. Community is a future feature, not a pillar.
+-   **G. Refactor Backend**: Break down the monolithic  for improved maintainability.
 
 **User's preferred language**: English
 
 **what currently exists?**
 -   A full-stack application with a React frontend and FastAPI backend.
--   **Critical Bugs Fixed**: Three major bugs were resolved: 1) Production data now auto-seeds on startup, fixing data loss on redeployment. 2) New orders now correctly generate tickets in the Command Center. 3) Tickets no longer show Unknown Customer due to data normalization fixes.
--   **Learn Pillar Admin**: A complete admin UI () has been built for the Learn pillar, including a comprehensive settings tab with features for Paw Rewards, birthday perks, notifications, and service desk integration, mirroring the Fit pillar's admin.
--   **Pillar Standardization**: The application has been updated to recognize **14 official pillars**. The Homepage () and Footer () now correctly display all 14.
--   **UI/UX Enhancements**:
-    -   A new informational page for Pet Soul has been created at .
-    -   The Command Center is fully functional, and clicking a ticket now correctly opens the detailed view.
-    -   Product pages () now display a Net Pawmoter Score with paw icons instead of a generic star-based review system.
-    -   The main logo in the navbar has been enlarged for better visibility.
--   **Documentation**:  and  have been updated to reflect all the recent changes and the correct 14-pillar structure.
+-   A new comprehensive Pet Health Information feature has been implemented, including a new step in the pet registration flow, updates to backend models, and display in the My Pets area.
+-   A large number of user-reported bugs have been fixed, including incorrect links, increasing logo size, removing login requirements on pillar pages, and seeding data for missing pillars.
+-   The Mira AI chat interface was made more robust with a longer timeout and better error handling.
+-   New admin features were added: a Products tab in the Dine Manager and a dedicated Net Pawmoter Score dashboard.
+-   A major backend refactoring effort is underway to modularize the massive  file. FAQ, Content (Blog/Testimonials), Loyalty, and Discount routes have been successfully extracted into their own files.
 
 **Last working item**:
--   Last item agent was working: The user provided a new set of high-priority tasks in their last message. The agent was preparing to implement these changes after analyzing the relevant files (, ).
-    1.  Correct the Pet Soul page to reflect the 14 pillars accurately.
-    2.  Incorporate a Health Information collection step into the Pet Soul / user onboarding journey.
-    3.  Ensure all information a member provides (including the new health info) is visible in their My Account area.
+-   Last item agent was working: The agent was in the middle of Phase 2 of a major backend refactoring. It successfully created  and , moved the relevant code from  into them, and updated  to use these new routers. The next step was to restart the backend and test these changes.
 -   Status: IN PROGRESS
 -   Agent Testing Done: N
--   Which testing method agent to use? both
+-   Which testing method agent to use? backend testing agent
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Implement Latest User Requests (P0)
+-   Issue 1: Service Desk / Command Center data integrity (P1)
 -   Issue 2: Root cause of Untitled products from Shopify sync (P2)
--   Issue 3: Backend code quality in  and  (P2)
+-   Issue 3: Incomplete FAQ seeding by pillar (P2)
 
 **Issues Detail**:
--   **Issue 1: Implement Latest User Requests**
-    -   **Description**: Address the three requests from the user's latest message regarding the Pet Soul page, health information collection, and member account visibility.
-    -   **Attempted fixes**: The agent has viewed the relevant files to understand the current structure.
+-   **Issue 1: Service Desk / Command Center data integrity**
+    -   **Description**: The user has repeatedly reported that new orders or customer interactions do not appear correctly in the Command Center or Service Desk, sometimes showing as Unknown Customer. While the agent has verified ticket creation through API tests, the user's recurring reports suggest an underlying data consistency or frontend refresh issue.
+    -   **Attempted fixes**: The agent has verified the  logic and  data normalization multiple times. Placed test orders which successfully created tickets.
     -   **Next debug checklist**:
-        1.  Modify  to correctly display the 14 pillars.
-        2.  Identify the user onboarding flow (e.g., ) and add a new step/section to collect pet health information. This will require frontend UI, new backend endpoints, and schema updates to the  collection in the database.
-        3.  Update the member's account area ( or ) to fetch and display the newly collected health information.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a direct user request that deepens the Pet Soul concept and improves the user's ability to manage their data, which is core to the application's vision.
+        1.  Verify the frontend polling/WebSocket mechanism for the Command Center and Service Desk to ensure they update in real-time without requiring a hard refresh.
+        2.  Trace a new order from creation () through ticket creation () to display in the Command Center queue ().
+        3.  Add comprehensive logging at each step to track the , , and  to see if it gets dropped.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a core function of the application. Fixing it will ensure operational reliability and build user trust.
     -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: N
+    -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Both
-    -   **Blocked on other issue**: None.
 -   **Issue 2: The root cause of Untitled products from Shopify sync may still exist.**
-    -   **Attempted fixes**: None. An API-level workaround is still in place.
-    -   **Next debug checklist**: 1. Locate the Shopify sync script. 2. Trace the data mapping for products. 3. Identify why the  field is sometimes missing.
+    -   **Attempted fixes**: None in this session.
+    -   **Next debug checklist**: 1. Locate the Shopify sync script/routes in . 2. Trace the data mapping for products. 3. Identify why the  field is sometimes missing during the sync.
     -   **Why fix this issue and what will be achieved with the fix?**: Ensures data integrity and removes technical debt.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Backend
--   **Issue 3: Backend code quality in  and .**
-    -   **Attempted fixes**: Some routes have been moved to separate files, but the core files remain large.
-    -   **Next debug checklist**: Continue building new features in separate modules. Plan a dedicated refactoring effort for later.
-    -   **Why fix this issue and what will be achieved with the fix?**: Improves code maintainability and scalability.
-    -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: Y
+-   **Issue 3: Incomplete FAQ seeding by pillar**
+    -   **Attempted fixes**: None. Agent noted the issue.
+    -   **Next debug checklist**: 1. Review the existing FAQ seeding function. 2. Create sample FAQs for each of the 14 pillars. 3. Update the seed script to include these new FAQs, categorized by pillar.
+    -   **Why fix this issue and what will be achieved with the fix?**: Provides comprehensive user support and content for every pillar.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Backend
 
 **In progress Task List**:
--   **Task 1: Complete the implementation of the latest user requests.**
-    -   **Where to resume**: Start by modifying  to reflect the 14 pillars, then proceed to implement the health data collection and display features.
-    -   **What will be achieved with this?**: This will bring the Pet Soul and Member Account sections in line with the user's vision.
+-   **Task 1: Continue Backend Refactoring (P0)**
+    -   **Where to resume**: The agent just extracted Loyalty and Discount routes.
+        1.  Restart the backend backend: stopped
+backend: started.
+        2.  Test the loyalty and discount API endpoints to ensure they work correctly after extraction.
+        3.  Proceed to the next refactoring target: **Abandoned Cart** routes (approx. lines 5424-6352 in ).
+    -   **What will be achieved with this?**: This will further reduce the size of the monolithic , improving code organization and maintainability.
     -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Should Test frontend/backend/both after fix?**: Backend
     -   **Blocked on something**: None.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   **(P1) Build out New Pillars**: Fully implement the Paperwork, Advisory, Emergency, Adopt, and Farewell pillars, including frontend pages, backend routes, and admin management panels.
--   **(P1) WhatsApp Business API Integration**: Replace the provisional click-to-chat links with a true API integration to send messages directly from the Command Center.
+-   **(P0) Complete Backend Refactoring - Phase 2**: Extract the remaining large modules from .
+    -   Extract **Abandoned Cart** routes into .
+    -   Extract **Shopify Sync** routes and functions into .
+-   **(P1) Build Farewell & Adopt Pillar Pages**: Create the frontend pages and backend support for these two missing pillars.
+-   **(P2) WhatsApp Business API Integration**: Replace the provisional click-to-chat links with a true API integration.
 
 **Future Tasks:**
 -   Concierge Command Center - Phase 3 (SLA breach audio alerts).
--   Agent Performance Dashboard.
--   SLA Compliance Reports.
+-   Agent Performance Dashboard & SLA Compliance Reports.
 -   Multi-Pet Discount Calculator.
 -   Member-facing analytics dashboard.
 -   Re-enable  for go-live on necessary pages.
+-   Implement the Net Pawmoter Score folder in the admin panel.
 
 **Completed work in this session**
--   **Resolved 3 Critical Production Bugs**:
-    -   Fixed data disappearing on redeployment by implementing automatic data seeding in .
-    -   Fixed new orders not creating tickets in the Command Center.
-    -   Fixed tickets showing Unknown Customer by normalizing member data structures in .
--   **Full Learn Pillar Admin Implementation**:
-    -   Created , a new admin component with full CRUD functionality for programs, trainers, etc.
-    -   Added a complete Settings tab to the , replicating all functionality from the .
--   **UI/UX and Pillar Standardization**:
-    -   Corrected the application-wide pillar count to 14, updating the homepage and footer.
-    -   Created a new .
-    -   Fixed the Command Center bug where clicking a ticket did not open the detail view.
-    -   Replaced the product review system with a Net Pawmoter Score display on .
-    -   Increased the logo size in the  for better visibility.
--   **Documentation**: Updated  and  with all changes.
+-   **Pet Health Feature**: Implemented a Health Information step in the pet creation flow () and updated the backend  model in  to store the data.
+-   **Critical Bug Fix**: Resolved a persistent  by discovering and removing a duplicate, outdated  model definition in  that was overriding the correct one from .
+-   **Multiple User-Requested Fixes**:
+    -   Changed Create Free Account to Become a Member on .
+    -   Significantly increased the logo/paw size by modifying  and increasing the  height.
+    -   Removed login requirements from Enjoy, Travel, Care, and Paperwork pages as per user's temporary request.
+    -   Fixed the footer link to .
+    -   Seeded product data for the Paperwork pillar.
+    -   Improved Mira AI stability by adding a 60-second timeout and better error handling in .
+-   **New Admin Features**:
+    -   Added a Products tab with full CRUD functionality to .
+    -   Created and integrated a new  component to serve as the Pawmoter Score admin dashboard.
+-   **Backend Refactoring (Phase 1 & 2 Started)**:
+    -   Reduced  from **11,569 lines** to **11,238 lines** (and counting).
+    -   Created  and moved FAQ CRUD logic into it.
+    -   Created  and moved Blog and Testimonial logic into it.
+    -   Created  and  and moved the respective logic into them.
 
 **Earlier issues found/mentioned but not fixed**
 -   The root cause of Shopify Sync creates Untitled Products remains unresolved. This is captured in the All Pending/In progress Issue list.
@@ -116,72 +119,78 @@ The user's primary goal is to create a world-class, unified **Concierge Command 
 
 
 **Key Technical Concepts**
--   **Automated Database Seeding**: Solved data volatility by modifying the   function to check for and seed essential data (FAQs, Collections) on application startup if it doesn't exist.
--   **Data Normalization**: Fixed the Unknown Customer bug by refactoring  to create a consistent  object structure for items originating from different database collections (, ).
--   **Modular Admin UI**: Established a pattern for creating pillar-specific admin panels by building  based on , including a highly configurable Settings tab.
--   **Dynamic API-Driven Components**: Replaced a static review UI in  with a Pawmoter Score display that fetches product-specific NPS data from .
+-   **Backend Refactoring (Modularization)**: Actively breaking down a monolithic  by extracting domains (FAQs, Content, Loyalty, Discounts) into their own  files. This improves maintainability and separation of concerns.
+-   **Pydantic Model Resolution**: Debugged and fixed a critical issue where a duplicate model definition in  was overriding the intended model from , preventing schema changes from being applied. This was resolved by removing the duplicate and centralizing model imports.
+-   **Robust Asynchronous Operations**: Improved the frontend stability of the Mira AI feature by wrapping the  call in a  with a  to handle potential long response times from the LLM.
+-   **Dynamic Admin UI**: Extended the admin panel by adding a new Products tab to the existing  component and creating an entirely new  dashboard, demonstrating the pattern for adding new management tools.
 
 **key DB schema**
--   No direct schema changes were made, but the upcoming task to add Health Information will likely require adding a new field or object to the  collection.
+-   **pets**:
+    -   :  - A new nested object to store health information, matching the  Pydantic model. Includes , , , etc.
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--    (Needs updating)
--    (Needs to display new health data)
--    (Related to My Account)
--    (Reference for pillar display)
--    (Reference for pillar display)
--    (Reference for settings)
--    (Reference for startup logic)
--    (Reference for data normalization logic)
+-    (The main file being refactored)
+-    (Newly created)
+-    (Newly created)
+-    (Modified to add products tab)
+-    (Newly created)
+-    (Modified to integrate new admin components)
+-    (Modified for health info step)
+-    (Modified for new health model)
+-    (Modified to fix model duplication bug)
 
 **Areas that need refactoring**:
--    and  are still large and would benefit from further modularization.
--   The routing for  in  is overloaded for different purposes (onboarding, profile, about page) and could be clarified to avoid conflicts.
+-    is still critically large at **11,238 lines**. The refactoring effort must continue with high priority. The next targets are Abandoned Cart and Shopify Sync sections.
 
 **key api endpoints**
--   : (FIXED) Now correctly displays customer names.
--   : (FIXED) Detail view now opens correctly from the Command Center.
--   : (NEW) A suite of CRUD endpoints to support the  UI.
--   : (NEW) Endpoint to fetch NPS scores for display on product cards.
+-   : (NEW) Extracted to .
+-   : (NEW) Extracted to .
+-   : (NEW) Extracted to .
+-   : (NEW) Extracted to .
+-   : Used by the new Products tab in .
+-   : Used by the new .
 
 **Critical Info for New Agent**
--   **TOP PRIORITY**: Immediately begin work on the user's latest requests: fix the Pet Soul page, add health info collection to the user journey, and display that information in the member's account.
--   **There are 14 pillars, not 8 or 12**. The official list is: Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt, Shop. Community is a separate future feature.
--   The three critical production bugs from the previous session (data loss, orders not creating tickets, unknown customer) are **resolved and verified**. Understand the fixes (auto-seeding on startup, data normalization in concierge routes) to avoid regressions.
+-   **Your immediate task is to continue the backend refactoring**. The user has approved it, and it's in progress. Start by testing the recent extraction of Loyalty and Discount routes, then proceed to extract the Abandoned Cart logic from .
+-   The user has explicitly requested to keep pillar pages (Enjoy, Travel, etc.) **open without a login requirement** for now. Do not re-implement authentication gates on them.
+-   The Unknown Customer / Order not in Service Desk issue is a high-priority, recurring complaint from the user. Even if API tests pass, be prepared to investigate this from a frontend/data-freshness perspective if the user reports it again.
+-   A critical bug was caused by a duplicate Pydantic model in  overriding . Be aware of this pattern if you encounter issues with model changes not applying after a hot reload.
 
 **documents and test reports created in this job**
--   
--   
--   
+-    (Updated)
 -   
 
 **Last 10 User Messages and any pending HUMAN messages**
--   **User corrected the pillar count to 14** and provided the full list.
--   **User requested that the Learn pillar's admin settings** be as comprehensive as the Fit pillar's settings. (COMPLETED)
--   **User reported that the ticket detail view was not opening** from the Command Center. (COMPLETED)
--   **User requested replacing product reviews** with the Net Pawmoter Score. (COMPLETED)
--   **User requested changes to the footer, homepage pillars, and Pet Soul page**. (PARTIALLY COMPLETED, PENDING)
--   **User provided the latest set of tasks**: 1. Fix Pet Soul page with 14 pillars. 2. Add Health Information to the user journey. 3. Ensure all member-filled data is visible in My Account. (PENDING - HIGHEST PRIORITY)
+1.  **User**: Continued the refactoring (Phase 2).
+2.  **Agent**: Completed Phase B, C, D features, provided a summary.
+3.  **User**: Let's do B, C, and D (features) first, then A (refactoring).
+4.  **Agent**: Proposed a plan to continue with more refactoring or work on features while the app redeploys.
+5.  **User**: My site is redeploying, what should we do?
+6.  **Agent**: Finished refactoring FAQs and Content, summarized progress.
+7.  **User**: Yes, start Phase 1 refactoring.
+8.  **Agent**: Proposed a detailed, multi-phase plan to refactor  and asked for approval to start.
+9.  **User**: will it affect my site - Expressed concern about data loss or downtime from refactoring.
+10. **Agent**: Reassured the user about the safety of refactoring and asked for confirmation.
 
 **Project Health Check:**
--   **Broken**: The Pet Soul page and Member Dashboard are out of sync with the latest user requirements regarding the 14 pillars and the absence of a health information section.
+-   **Broken**:  remains a significant technical debt and maintainability risk due to its size (>11,000 lines).
 -   **Mocked**: WhatsApp Integration (remains a click-to-chat link).
 
 **3rd Party Integrations**
--   **OpenAI**: Powers the Mira® AI system and Command Center intelligence features (via  and the **Emergent LLM Key**).
--   **Resend**: Used for transactional emails (order confirmations, NPS surveys).
+-   **OpenAI**: Powers the Mira® AI system (via  and the **Emergent LLM Key**).
+-   **Resend**: Used for transactional emails.
 -   **Razorpay**: Payment gateway.
 -   **Shopify**: For product sync (known bug causing Untitled products).
 -   **ReportLab**: For server-side PDF generation.
 
 **Testing status**
--   Testing agent used after significant changes: YES
+-   Testing agent used after significant changes: YES ( was generated and passed).
 -   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created: New test cases were added by the testing agent in .
--   Known regressions: None from this session. The critical bugs from the previous session were resolved.
+-   Test files created: None manually.
+-   Known regressions: None.
 
 **Credentials to test flow:**
 -   **Admin Username**: 
@@ -190,4 +199,5 @@ The user's primary goal is to create a world-class, unified **Concierge Command 
 -   **Test User Password**: 
 
 **What agent forgot to execute**
--   The agent initially misunderstood the full list of pillars and the required depth of the Learn admin settings but corrected these mistakes promptly based on user feedback. The current work is a direct continuation of the user's latest instructions.</analysis>
+-   The agent was in the middle of extracting  and . It edited all the files but did not get to restart and test the backend to confirm the extraction was successful before the session ended. The next agent's first step should be to run backend: stopped
+backend: started and test the related API endpoints.</analysis>

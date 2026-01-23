@@ -14,7 +14,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-concierge-1.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pawmoter-central.preview.emergentagent.com').rstrip('/')
 
 # Admin credentials
 ADMIN_USERNAME = "aditya"
