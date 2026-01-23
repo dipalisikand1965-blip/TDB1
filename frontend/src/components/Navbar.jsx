@@ -413,13 +413,18 @@ const Navbar = () => {
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-1">
-              {/* Pet Soul */}
+              {/* Pet Soul / My Pets with Score */}
               <Link
                 to={user ? "/my-pets" : "/pet-soul"}
                 className="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:opacity-90"
                 data-testid="pet-soul-nav-btn"
               >
-                🐾 {user ? "My Pets" : "Pet Soul"}
+                🐾 {user ? "My Pets" : "Pet Soul™"}
+                {user && petSoulScore !== null && (
+                  <span className="ml-1 bg-white/20 px-1.5 py-0.5 rounded-full text-[10px] font-bold">
+                    {petSoulScore}%
+                  </span>
+                )}
               </Link>
 
               {/* Voice Order */}
