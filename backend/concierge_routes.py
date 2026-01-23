@@ -118,7 +118,8 @@ def calculate_priority_score(item: Dict) -> int:
             pass
     
     # Member tier bonus
-    member_tier = item.get("member", {}).get("membership_tier", "free")
+    member = item.get("member") or {}
+    member_tier = member.get("membership_tier", "free") if member else "free"
     if member_tier == "lifetime":
         score += PRIORITY_WEIGHTS["lifetime"]
     elif member_tier == "annual":
