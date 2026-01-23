@@ -1403,6 +1403,7 @@ async def generate_ai_draft(ticket_id: str):
     # Generate draft using LLM
     try:
         from emergentintegrations.llm.chat import LlmChat, UserMessage
+        import uuid
         
         api_key = os.environ.get("EMERGENT_LLM_KEY")
         if not api_key:
@@ -1425,6 +1426,7 @@ Do NOT include:
 
         chat = LlmChat(
             api_key=api_key,
+            session_id=f"draft-{ticket_id}-{uuid.uuid4().hex[:8]}",
             system_message=system_prompt
         )
         chat.with_model("openai", "gpt-4o-mini")
