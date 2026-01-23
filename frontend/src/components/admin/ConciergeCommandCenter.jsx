@@ -148,6 +148,11 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
   // Agents list for manual assignment
   const [agents, setAgents] = useState([]);
   
+  // Event Stream
+  const [showEventStream, setShowEventStream] = useState(false);
+  const [eventStream, setEventStream] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(false);
+  
   // Create ticket modal
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newTicket, setNewTicket] = useState({
