@@ -23,6 +23,29 @@ logger = logging.getLogger(__name__)
 # Create router
 auth_router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
+
+# ==================== PET PASS NUMBER GENERATION ====================
+
+async def generate_pet_pass_number(db_instance=None) -> str:
+    """
+    Generate a unique Pet Pass Number for a pet.
+    Format: TDC-XXXXXX (6 alphanumeric characters)
+    This is the pet's membership number - pets are the real members!
+    """
+    database = db_instance or db
+    
+    while True:
+        # Generate random 6-character alphanumeric code
+        import random
+        import string
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        pet_pass = f"TDC-{code}"
+        
+        # Ensure uniqueness
+        existing = await database.pets.find_one({"pet_pass_number": pet_pass})
+        if not existing:
+            return pet_pass
+
 # Database reference
 db: AsyncIOMotorDatabase = None
 
