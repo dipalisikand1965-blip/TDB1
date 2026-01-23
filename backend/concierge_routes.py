@@ -64,10 +64,16 @@ PRIORITY_WEIGHTS = {
 }
 
 SLA_HOURS = {
-    "urgent": 1,
+    "urgent": 2,
     "high": 4,
     "medium": 24,
-    "low": 72
+    "low": 48
+}
+
+# Auto-assignment configuration
+AGENT_SKILLS = {
+    # Maps pillars to capable agents (will be stored in DB later)
+    "default": ["aditya", "concierge_team"]
 }
 
 def calculate_priority_score(item: Dict) -> int:
