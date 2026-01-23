@@ -700,9 +700,16 @@ Range: -100 to +100
 
 ## 🌐 Production Data Seeding (Updated Jan 23, 2026)
 
-### New Endpoint: `/api/admin/seed-production-data`
-A comprehensive seeder for production environments that seeds:
-- **FAQs** (8 pre-configured questions across categories: Delivery, Products, Orders, Membership, Payment, Pet Soul, Mira AI)
+### Auto-Seeding on Startup (NEW - Jan 23, 2026)
+The system now **automatically seeds critical data on every startup** via the `auto_seed_critical_data()` function:
+- **FAQs** are auto-seeded if the collection is empty (8 initial FAQs)
+- **Collections** are auto-seeded if the collection is empty (3 initial collections)
+
+This ensures data survives deployments without manual intervention.
+
+### Manual Endpoint: `/api/admin/seed-production-data`
+For additional seeding or re-seeding:
+- **FAQs** (16+ pre-configured questions across categories: Delivery, Products, Orders, Membership, Payment, Pet Soul, Mira AI, and Pillar-specific FAQs)
 - **Collections** (4 campaign collections: Valentine's Day, Birthday Celebration, Healthy Bites, Diwali Special)
 - **Sample Tickets** (5 realistic, editable tickets for Command Center testing)
 
@@ -716,10 +723,26 @@ curl -X POST https://thedoggycompany.in/api/admin/seed-production-data
 - All seeded data is fully editable via admin panel
 - Sample tickets marked with `is_sample: true` for identification
 
-### Important Notes for Production Deployment:
-1. **Database Isolation**: Production and preview environments have separate databases
-2. After redeployment, call the seed endpoint to populate the production database
-3. The Command Center will show live data feeds once tickets exist in the database
+---
+
+## 🐛 Bug Fixes (Session 8 - Jan 23, 2026)
+
+### Critical Bugs Fixed:
+
+1. **Data Disappearing on Redeployment** ✅
+   - **Problem**: FAQs, Collections disappeared after deployment
+   - **Fix**: Added `auto_seed_critical_data()` function that runs on every startup, seeding FAQs and Collections if empty
+   - **File**: `/app/backend/server.py` (lines 657-703)
+
+2. **Orders Not Creating Tickets** ✅
+   - **Problem**: New orders weren't generating tickets in Command Center
+   - **Fix**: Confirmed working - `create_ticket_from_event()` in `ticket_auto_create.py` creates tickets with `ticket_id = order_id`
+   - **Verified**: Test orders create tickets correctly
+
+3. **"Unknown Customer" in Tickets** ✅
+   - **Problem**: Command Center showed "Unknown Customer" instead of customer name
+   - **Fix**: Normalized `member` data in `concierge_routes.py` to handle `parentName` field from checkout
+   - **File**: `/app/backend/concierge_routes.py` (lines 267-291)
 
 ---
 
