@@ -232,6 +232,42 @@ const PetSoulJourneyPage = () => {
           </div>
         )}
       </div>
+      
+      {/* Edit Answer Modal */}
+      <Dialog open={editModal.open} onOpenChange={(open) => !open && setEditModal({ open: false, questionId: null })}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <PawPrint className="w-5 h-5 text-purple-600" />
+              {pet?.name}'s Pet Soul™
+            </DialogTitle>
+            <DialogDescription>
+              {editModal.questionId?.replace(/_/g, ' ')?.replace(/\b\w/g, l => l.toUpperCase())}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-2 py-4">
+            {(QUESTION_OPTIONS[editModal.questionId] || ['Yes', 'No', 'Sometimes']).map((option) => (
+              <Button
+                key={option}
+                variant="outline"
+                className={`justify-start h-auto py-3 px-4 text-left ${
+                  pet?.doggy_soul_answers?.[editModal.questionId] === option 
+                    ? 'bg-purple-100 border-purple-500 text-purple-700' 
+                    : 'hover:bg-purple-50'
+                }`}
+                disabled={savingAnswer}
+                onClick={() => handleSaveAnswer(editModal.questionId, option)}
+              >
+                {pet?.doggy_soul_answers?.[editModal.questionId] === option && (
+                  <Check className="w-4 h-4 mr-2 text-purple-600" />
+                )}
+                {option}
+              </Button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
