@@ -1125,25 +1125,59 @@ _GST applicable on final invoice_
                 
                 {/* Remember Me Checkbox */}
                 <div className="mt-4 pt-4 border-t border-gray-100">
-                  <label className="flex items-center gap-3 cursor-pointer group">
-                    <div className="relative">
-                      <input
-                        type="checkbox"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                        className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                        data-testid="remember-me-checkbox"
-                      />
-                    </div>
-                    <div>
-                      <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                        Remember my details for next time
-                      </span>
-                      <p className="text-xs text-gray-500">
-                        Save your info for faster checkout on future orders
-                      </p>
-                    </div>
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                      <div className="relative">
+                        <input
+                          type="checkbox"
+                          checked={rememberMe}
+                          onChange={(e) => setRememberMe(e.target.checked)}
+                          className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                          data-testid="remember-me-checkbox"
+                        />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                          Remember my details for next time
+                        </span>
+                        <p className="text-xs text-gray-500">
+                          Save your info for faster checkout on future orders
+                        </p>
+                      </div>
+                    </label>
+                    
+                    {/* Clear saved data button */}
+                    {localStorage.getItem('tdc_customer_details') && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-gray-500 hover:text-red-600"
+                        onClick={() => {
+                          localStorage.removeItem('tdc_customer_details');
+                          setFormData(prev => ({
+                            ...prev,
+                            parentName: '',
+                            email: '',
+                            phone: '',
+                            whatsappNumber: '',
+                            address: '',
+                            landmark: '',
+                            city: 'Bangalore',
+                            pincode: '',
+                            petName: '',
+                            petBreed: '',
+                            petAge: ''
+                          }));
+                          toast({ title: 'Saved details cleared', description: 'You can enter fresh information' });
+                        }}
+                        data-testid="clear-saved-details"
+                      >
+                        <X className="w-3 h-3 mr-1" />
+                        Clear saved details
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </Card>
 
@@ -1164,10 +1198,27 @@ _GST applicable on final invoice_
                   </div>
                 )}
                 
+                {/* Info about where data comes from */}
+                {(formData.petName || formData.petBreed) && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex items-start gap-2">
+                    <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-blue-800">
+                      <p>Pet details loaded from your previous order. <button 
+                        type="button"
+                        className="underline hover:text-blue-900 font-medium"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, petName: '', petBreed: '', petAge: '' }));
+                        }}
+                      >Clear pet details</button> if ordering for a different pet.</p>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="grid md:grid-cols-3 gap-4">
                   <div>
                     <Label htmlFor="petName">Pet&apos;s Name {cartAnalysis.hasBakeryItems ? '*' : ''}</Label>
                     <Input
+
                       id="petName"
                       name="petName"
                       value={formData.petName}
