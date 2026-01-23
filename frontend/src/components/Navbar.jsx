@@ -26,7 +26,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchPetSoulScore = async () => {
       if (!user || !token) {
-        setPetSoulScore(null);
+        setPetSoulScore(0);
         return;
       }
       try {
@@ -37,8 +37,17 @@ const Navbar = () => {
           const data = await res.json();
           const pets = data.pets || [];
           if (pets.length > 0) {
-            // Calculate average soul score across all pets
-            const avgScore = pets.reduce((sum, pet) => sum + (pet.soul_score || 0), 0) / pets.length;
+            // Calculate soul score from answers - 59 total questions possible
+            const totalQuestions = 59;
+            const calculatePetScore = (pet) => {
+              const answers = pet.doggy_soul_answers || {};
+              const answeredCount = Object.keys(answers).filter(k => answers[k] && answers[k] !== '' && answers[k] !== null).length;
+              return Math.round((answeredCount / totalQuestions) * 100);
+            };
+            
+            // Get average score across all pets, or max score if user prefers that
+            const scores = pets.map(calculatePetScore);
+            const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
             setPetSoulScore(Math.round(avgScore));
           } else {
             setPetSoulScore(0);
@@ -46,6 +55,7 @@ const Navbar = () => {
         }
       } catch (error) {
         console.error('Failed to fetch pet soul score:', error);
+        setPetSoulScore(0);
       }
     };
     fetchPetSoulScore();
