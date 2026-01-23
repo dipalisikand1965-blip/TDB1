@@ -1,25 +1,25 @@
 {
-  "name": "The Doggy Bakery - Dog Cakes & Treats",
-  "short_name": "Doggy Bakery",
-  "description": "India's #1 Dog Bakery! Premium dog birthday cakes, healthy treats & fresh meals. Same-day delivery in Mumbai, Bangalore & Gurgaon.",
+  "name": "The Doggy Company - Pet Life Operating System",
+  "short_name": "Doggy Company",
+  "description": "India's #1 Pet Life Platform! Premium dog cakes, pet-friendly dining, stays & services. Same-day delivery in Mumbai, Bangalore & Gurgaon.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#722282",
+  "background_color": "#000000",
+  "theme_color": "#00bcd4",
   "categories": ["food", "shopping", "lifestyle"],
   "lang": "en-IN",
   "dir": "ltr",
   "scope": "/",
   "icons": [
     {
-      "src": "tdb-logo.png",
+      "src": "doggy-logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "tdb-logo.png",
+      "src": "doggy-logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -27,7 +27,7 @@
   ],
   "screenshots": [
     {
-      "src": "tdb-logo.png",
+      "src": "doggy-logo.png",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide"
@@ -39,21 +39,21 @@
       "short_name": "Cakes",
       "description": "Browse our delicious dog cakes",
       "url": "/cakes",
-      "icons": [{ "src": "tdb-logo.png", "sizes": "192x192" }]
+      "icons": [{ "src": "doggy-logo.png", "sizes": "192x192" }]
     },
     {
       "name": "Order Treats",
       "short_name": "Treats",
       "description": "Browse healthy dog treats",
       "url": "/treats",
-      "icons": [{ "src": "tdb-logo.png", "sizes": "192x192" }]
+      "icons": [{ "src": "doggy-logo.png", "sizes": "192x192" }]
     },
     {
       "name": "Chat with Mira",
       "short_name": "Mira AI",
       "description": "Get help from our AI concierge",
       "url": "/concierge",
-      "icons": [{ "src": "tdb-logo.png", "sizes": "192x192" }]
+      "icons": [{ "src": "doggy-logo.png", "sizes": "192x192" }]
     }
   ],
   "related_applications": [],
