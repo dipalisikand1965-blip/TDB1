@@ -939,12 +939,216 @@ const LearnManager = ({ getAuthHeader }) => {
           </div>
         </TabsContent>
 
-        {/* Settings Tab */}
-        <TabsContent value="settings" className="mt-6">
+        {/* Settings Tab - Full Settings like FitManager */}
+        <TabsContent value="settings" className="mt-6 space-y-4">
           <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Learn Pillar Settings</h3>
-            <p className="text-gray-500">Configuration options for the Learn pillar will be available here.</p>
+            <h3 className="text-lg font-semibold mb-4">🐾 Paw Rewards Settings</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Points per Training Request</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.points_per_request || 30} 
+                  onChange={(e) => setSettings(prev => ({
+                    ...prev,
+                    paw_rewards: { ...prev.paw_rewards, points_per_request: parseInt(e.target.value) }
+                  }))}
+                  className="mt-1" 
+                />
+              </div>
+              <div>
+                <Label>Points per Session Attended</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.points_per_session || 10} 
+                  onChange={(e) => setSettings(prev => ({
+                    ...prev,
+                    paw_rewards: { ...prev.paw_rewards, points_per_session: parseInt(e.target.value) }
+                  }))}
+                  className="mt-1" 
+                />
+              </div>
+              <div>
+                <Label>Points per Program Completion</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.points_per_completion || 100} 
+                  onChange={(e) => setSettings(prev => ({
+                    ...prev,
+                    paw_rewards: { ...prev.paw_rewards, points_per_completion: parseInt(e.target.value) }
+                  }))}
+                  className="mt-1" 
+                />
+              </div>
+              <div>
+                <Label>Milestone Bonus Points</Label>
+                <Input 
+                  type="number" 
+                  value={settings.paw_rewards?.milestone_bonus || 50} 
+                  onChange={(e) => setSettings(prev => ({
+                    ...prev,
+                    paw_rewards: { ...prev.paw_rewards, milestone_bonus: parseInt(e.target.value) }
+                  }))}
+                  className="mt-1" 
+                />
+              </div>
+            </div>
           </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">🎂 Birthday Perks Settings</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Birthday Discount %</Label>
+                <Input 
+                  type="number" 
+                  value={settings.birthday_perks?.discount_percent || 15} 
+                  onChange={(e) => setSettings(prev => ({
+                    ...prev,
+                    birthday_perks: { ...prev.birthday_perks, discount_percent: parseInt(e.target.value) }
+                  }))}
+                  className="mt-1" 
+                />
+              </div>
+              <div>
+                <Label>Valid Days (before/after birthday)</Label>
+                <Input 
+                  type="number" 
+                  value={settings.birthday_perks?.valid_days || 7} 
+                  onChange={(e) => setSettings(prev => ({
+                    ...prev,
+                    birthday_perks: { ...prev.birthday_perks, valid_days: parseInt(e.target.value) }
+                  }))}
+                  className="mt-1" 
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">🔔 Notification Settings</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Email Notifications</Label>
+                <Switch 
+                  checked={settings.notifications?.email_enabled !== false} 
+                  onCheckedChange={(v) => setSettings(prev => ({
+                    ...prev,
+                    notifications: { ...prev.notifications, email_enabled: v }
+                  }))}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>WhatsApp Notifications</Label>
+                <Switch 
+                  checked={settings.notifications?.whatsapp_enabled || false} 
+                  onCheckedChange={(v) => setSettings(prev => ({
+                    ...prev,
+                    notifications: { ...prev.notifications, whatsapp_enabled: v }
+                  }))}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>SMS Notifications</Label>
+                <Switch 
+                  checked={settings.notifications?.sms_enabled || false} 
+                  onCheckedChange={(v) => setSettings(prev => ({
+                    ...prev,
+                    notifications: { ...prev.notifications, sms_enabled: v }
+                  }))}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Training Reminders</Label>
+                <Switch 
+                  checked={settings.notifications?.training_reminder !== false} 
+                  onCheckedChange={(v) => setSettings(prev => ({
+                    ...prev,
+                    notifications: { ...prev.notifications, training_reminder: v }
+                  }))}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Weekly Progress Summary</Label>
+                <Switch 
+                  checked={settings.notifications?.weekly_progress || false} 
+                  onCheckedChange={(v) => setSettings(prev => ({
+                    ...prev,
+                    notifications: { ...prev.notifications, weekly_progress: v }
+                  }))}
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">📋 Service Desk Integration</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Auto-create tickets for training requests</Label>
+                <Switch 
+                  checked={settings.service_desk?.auto_create_tickets !== false} 
+                  onCheckedChange={(v) => setSettings(prev => ({
+                    ...prev,
+                    service_desk: { ...prev.service_desk, auto_create_tickets: v }
+                  }))}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Route to Certified Trainers</Label>
+                <Switch 
+                  checked={settings.service_desk?.route_to_trainers || false} 
+                  onCheckedChange={(v) => setSettings(prev => ({
+                    ...prev,
+                    service_desk: { ...prev.service_desk, route_to_trainers: v }
+                  }))}
+                />
+              </div>
+              <div>
+                <Label>Default SLA (hours)</Label>
+                <Input 
+                  type="number" 
+                  value={settings.service_desk?.default_sla || 48} 
+                  onChange={(e) => setSettings(prev => ({
+                    ...prev,
+                    service_desk: { ...prev.service_desk, default_sla: parseInt(e.target.value) }
+                  }))}
+                  className="mt-1 w-32" 
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">🎓 Training Configuration</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Allow Online Training Sessions</Label>
+                <Switch checked={true} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Require Trainer Certification</Label>
+                <Switch checked={true} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Enable Group Training</Label>
+                <Switch checked={false} />
+              </div>
+              <div>
+                <Label>Max Session Duration (minutes)</Label>
+                <Input type="number" defaultValue={60} className="mt-1 w-32" />
+              </div>
+              <div>
+                <Label>Min Days Notice for Booking</Label>
+                <Input type="number" defaultValue={2} className="mt-1 w-32" />
+              </div>
+            </div>
+          </Card>
+
+          <div className="flex justify-end gap-3">
+            <Button variant="outline">Reset to Defaults</Button>
+            <Button className="bg-blue-600 hover:bg-blue-700">Save Settings</Button>
+          </div>
         </TabsContent>
       </Tabs>
 
