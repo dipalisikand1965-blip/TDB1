@@ -142,7 +142,7 @@ const PetSoulJourneyPage = () => {
     setEditModal({ open: true, questionId });
   };
 
-  const handleSaveAnswer = async (questionId, value) => {
+  const handleSaveAnswer = async (questionId, value, autoAdvance = false) => {
     setSavingAnswer(true);
     try {
       // Use the soul-drip journey-answer endpoint
@@ -169,11 +169,34 @@ const PetSoulJourneyPage = () => {
             [questionId]: value
           }
         }));
-        toast({
-          title: "✨ Answer saved!",
-          description: `Great job building ${pet?.name}'s Pet Soul!`
-        });
-        setEditModal({ open: false, questionId: null });
+        
+        // In flow mode, auto-advance to next unanswered question
+        if (flowMode && autoAdvance) {
+          const nextIndex = findNextUnansweredIndex(currentQuestionIndex + 1, {
+            ...pet?.doggy_soul_answers,
+            [questionId]: value
+          });
+          if (nextIndex !== -1) {
+            setCurrentQuestionIndex(nextIndex);
+            toast({
+              title: "✨ Great!",
+              description: "Moving to next question..."
+            });
+          } else {
+            // All questions answered!
+            setFlowMode(false);
+            toast({
+              title: "🎉 Amazing!",
+              description: `${pet?.name}'s Pet Soul™ is complete!`
+            });
+          }
+        } else {
+          toast({
+            title: "✨ Answer saved!",
+            description: `Great job building ${pet?.name}'s Pet Soul!`
+          });
+          setEditModal({ open: false, questionId: null });
+        }
       } else {
         throw new Error('Failed to save');
       }
@@ -188,6 +211,44 @@ const PetSoulJourneyPage = () => {
       setSavingAnswer(false);
     }
   };
+  
+  // Find next unanswered question index
+  const findNextUnansweredIndex = (startIndex, answers) => {
+    for (let i = startIndex; i < ALL_QUESTIONS.length; i++) {
+      if (!answers?.[ALL_QUESTIONS[i].id]) {
+        return i;
+      }
+    }
+    // Wrap around to beginning
+    for (let i = 0; i < startIndex; i++) {
+      if (!answers?.[ALL_QUESTIONS[i].id]) {
+        return i;
+      }
+    }
+    return -1; // All answered
+  };
+  
+  // Start flow mode from first unanswered question
+  const startFlowMode = () => {
+    const firstUnanswered = findNextUnansweredIndex(0, pet?.doggy_soul_answers);
+    if (firstUnanswered !== -1) {
+      setCurrentQuestionIndex(firstUnanswered);
+      setFlowMode(true);
+    } else {
+      toast({
+        title: "All Done! 🎉",
+        description: `${pet?.name}'s Pet Soul™ is already complete!`
+      });
+    }
+  };
+  
+  // Get current question in flow mode
+  const currentFlowQuestion = flowMode ? ALL_QUESTIONS[currentQuestionIndex] : null;
+  
+  // Count unanswered questions
+  const unansweredCount = ALL_QUESTIONS.filter(q => !pet?.doggy_soul_answers?.[q.id]).length;
+  const answeredCount = ALL_QUESTIONS.length - unansweredCount;
+  const completionPercent = Math.round((answeredCount / ALL_QUESTIONS.length) * 100);
 
   if (loading) {
     return (
