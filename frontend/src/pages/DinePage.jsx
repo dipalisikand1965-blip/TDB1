@@ -51,6 +51,11 @@ const DinePage = () => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Fetch restaurants and bundles from API
   useEffect(() => {
     const fetchData = async () => {
