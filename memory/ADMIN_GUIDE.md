@@ -1269,6 +1269,12 @@ TIERS = ['free', 'monthly', 'annual', 'family']
 
 # Change Log
 
+## January 23, 2026 (Session 6)
+- **Advanced Analytics Dashboard**: Full analytics with 6 tabs - Overview, Revenue, Agent Performance, SLA Compliance, NPS, Pillar Breakdown
+- **NPS Feedback System**: Automated surveys sent after ticket resolution, responses tracked in Analytics
+- **Mira AI Conversation Flow**: Now asks one question at a time, summarizes at end, confirms before handoff
+- **Logo Update**: New colorful paw icon with "thedoggy company®" text
+
 ## January 23, 2026 (Session 5)
 - **Universal Pillar-Aware Product Experience**: Refactored CarePage, DinePage, and TravelPage to use the centralized `ProductCard` component
 - Products now show pillar-specific cross-sell titles (e.g., "Complete the Care Package!" on Care page)
@@ -1280,6 +1286,127 @@ TIERS = ['free', 'monthly', 'annual', 'family']
 - Fixed ticket search to include all member fields
 - Restored Travel & Care pages without ProtectedRoute
 - Restored FAQs and Valentine's Collection
+
+---
+
+# NEW FEATURES (January 2026)
+
+## NPS Feedback System
+**Purpose**: Measure customer satisfaction with Net Pawmoter Score (NPS)
+
+### How It Works
+1. **Automatic Trigger**: When you resolve a ticket in Command Center, an NPS survey email is sent automatically
+2. **Email Survey**: Customer receives a beautiful email with clickable 0-10 score buttons
+3. **Feedback Page**: Clicking a score opens `/feedback?ticket={id}&token={token}`
+4. **Optional Comments**: Customer can add detailed feedback
+5. **Review Feature**: Promoters (9-10) can opt to have their review featured on the website
+
+### Flow Diagram
+```
+Resolve Ticket → Email Sent → Customer Clicks Score → Feedback Page → Submit → Data in Analytics
+```
+
+### NPS Score Categories
+| Score | Category | Meaning |
+|-------|----------|---------|
+| 9-10 | 🎉 Promoter | Highly likely to recommend |
+| 7-8 | 😊 Passive | Satisfied but not enthusiastic |
+| 0-6 | 😔 Detractor | Unlikely to recommend |
+
+### Where to View NPS Data
+- **Admin Panel** → **Analytics** tab → **"⭐ NPS & Satisfaction"** sub-tab
+- Shows: NPS Score, Promoters/Passives/Detractors count, Response rate
+
+### NPS Score Formula
+```
+NPS = % Promoters - % Detractors
+Range: -100 to +100
+50+ = Excellent
+0-50 = Good
+<0 = Needs Improvement
+```
+
+---
+
+## Advanced Analytics Dashboard
+**Tab ID**: `analytics`
+
+### Overview Tab
+Shows 4 main KPIs:
+- 💰 **Total Revenue** (with trend %)
+- 🎫 **Total Tickets** (resolved count)
+- ⭐ **NPS Score** (Excellent/Good/Needs Work badge)
+- 🎯 **SLA Compliance** (On Track/At Risk badge)
+
+Plus 6 quick stats: Orders, Customers, Avg Order Value, Avg Resolution Time, Promoters, SLA Breaches
+
+### Revenue Tab
+- Revenue by Pillar (bar chart)
+- Revenue Distribution (percentage breakdown)
+
+### Agent Performance Tab
+- Leaderboard with 🥇🥈🥉 rankings
+- Metrics: Tickets Resolved, Avg Resolution Time, SLA Compliance %, NPS Score
+
+### SLA Compliance Tab
+- Met SLA / Breached SLA / At Risk counts
+- SLA compliance by priority (Urgent/High/Medium/Low)
+
+### NPS & Satisfaction Tab
+- Large NPS Score display
+- Promoter/Passive/Detractor breakdown
+- Survey stats: Total Responses, Average Score, Response Rate
+
+### Pillar Breakdown Tab
+- All 14 pillars with Revenue, Orders, Tickets, SLA % for each
+
+### Export Feature
+- Click "Export" to download CSV report
+- Includes all metrics for the selected period
+
+### Date Range Filter
+- Last 7 days, 30 days, 90 days, or 12 months
+
+---
+
+## Smart Product Recommendations
+**Feature**: Pillar-aware cross-sell in product modals
+
+### How It Works
+When a product modal opens on any pillar page, the "You May Also Like" section shows:
+- **Dynamic Title**: Based on current pillar (e.g., "Complete the Trip!" for Travel)
+- **Relevant Products**: Products from the same pillar category
+
+### Cross-Sell Titles by Pillar
+| Pillar | Cross-Sell Title |
+|--------|------------------|
+| Celebrate | Complete the Celebration! |
+| Dine | Complete the Dining Experience! |
+| Stay | Complete the Stay! |
+| Travel | Complete the Trip! |
+| Care | Complete the Care Package! |
+| Shop | Complete Your Order! |
+| Enjoy | Add More Fun! |
+| Fit | Complete the Fitness Pack! |
+| Learn | Enhance the Learning! |
+| Adopt | Welcome Home Essentials! |
+| Insure | Add More Coverage! |
+| Farewell | Memorial Additions |
+| Community | Community Favorites! |
+
+---
+
+## Communication Preferences (Backend Ready)
+**Status**: Backend API ready, frontend UI pending
+
+### API Endpoints
+- `PUT /api/member/communication-preferences` - Update preferences
+- `GET /api/member/communication-preferences` - Get current settings
+
+### Preference Options
+- ✉️ Email notifications
+- 📱 SMS notifications  
+- 💬 WhatsApp notifications
 
 ---
 
