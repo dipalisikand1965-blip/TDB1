@@ -688,11 +688,14 @@ async def get_item_detail(ticket_id: str):
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
-    # Get member email - handle None values safely
+    # Get member email - handle all possible field locations
     member_data = item.get("member") or {}
     member_email = member_data.get("email") if member_data else None
     if not member_email and item.get("customer"):
         member_email = item["customer"].get("email")
+    if not member_email:
+        # Also check direct customer_email field (for service_desk_tickets)
+        member_email = item.get("customer_email")
     
     # ============== A. MEMBER & PET SNAPSHOT ==============
     member_snapshot = None
