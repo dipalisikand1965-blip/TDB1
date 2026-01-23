@@ -261,7 +261,7 @@ class TestManualAssignment:
         response = requests.post(
             f"{BASE_URL}/api/concierge/item/{test_ticket_id}/manual-assign",
             json={
-                "agent_username": "aditya",
+                "agent_username": "sarah",  # Use actual agent from agents collection
                 "reason": "Test assignment"
             }
         )
@@ -269,7 +269,7 @@ class TestManualAssignment:
         data = response.json()
         
         assert data["success"] == True
-        assert data["assigned_to"] == "aditya"
+        assert data["assigned_to"] == "sarah"
         assert data["reason"] == "manual_assignment"
     
     def test_manual_assign_invalid_agent(self, test_ticket_id):
