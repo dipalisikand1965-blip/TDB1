@@ -319,6 +319,101 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
     }
   };
 
+  // Omni-Channel: Send via Email
+  const sendViaEmail = async () => {
+    if (!selectedItem || !resolutionNotes.trim()) {
+      alert('Please enter a message first.');
+      return;
+    }
+    
+    const memberEmail = itemDetail?.member_snapshot?.email || 
+                        itemDetail?.item?.member?.email ||
+                        itemDetail?.item?.customer?.email;
+    
+    if (!memberEmail) {
+      alert('No email address found for this member.');
+      return;
+    }
+    
+    setActionLoading('email');
+    try {
+      const response = await fetch(`${API_URL}/api/concierge/reply/email?ticket_id=${selectedItem.ticket_id}&message=${encodeURIComponent(resolutionNotes)}&recipient_email=${encodeURIComponent(memberEmail)}`, {
+        method: 'POST'
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        alert(`✅ Email sent successfully to ${memberEmail}`);
+        // Also resolve the ticket
+        await resolveItem('email');
+      } else {
+        const error = await response.json();
+        alert(`Failed to send email: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Email send failed:', error);
+      alert('Failed to send email. Please try again.');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  // Omni-Channel: Send via WhatsApp (click-to-chat)
+  const sendViaWhatsApp = async () => {
+    if (!selectedItem || !resolutionNotes.trim()) {
+      alert('Please enter a message first.');
+      return;
+    }
+    
+    const memberPhone = itemDetail?.member_snapshot?.phone || 
+                        itemDetail?.item?.member?.phone ||
+                        itemDetail?.item?.customer?.phone;
+    
+    if (!memberPhone) {
+      alert('No phone number found for this member.');
+      return;
+    }
+    
+    try {
+      const response = await fetch(`${API_URL}/api/concierge/reply/whatsapp?ticket_id=${selectedItem.ticket_id}&message=${encodeURIComponent(resolutionNotes)}&recipient_phone=${encodeURIComponent(memberPhone)}`, {
+        method: 'POST'
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        // Open WhatsApp in new tab
+        window.open(result.link, '_blank');
+        // Ask if they want to resolve
+        if (confirm('WhatsApp opened. Mark ticket as resolved?')) {
+          await resolveItem('whatsapp');
+        }
+      }
+    } catch (error) {
+      console.error('WhatsApp link generation failed:', error);
+    }
+  };
+
+  // Auto-assign ticket
+  const autoAssignTicket = async () => {
+    if (!selectedItem) return;
+    setActionLoading('autoassign');
+    try {
+      const response = await fetch(`${API_URL}/api/concierge/auto-assign/${selectedItem.ticket_id}`, {
+        method: 'POST'
+      });
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Assigned to: ${result.assigned_to}`);
+        loadQueue();
+        loadItemDetail(selectedItem.ticket_id);
+      }
+    } catch (error) {
+      console.error('Auto-assign failed:', error);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   // Render queue item
   const QueueItem = ({ item }) => {
     const sourceConfig = SOURCE_CONFIG[item.source_type] || SOURCE_CONFIG.ticket;
