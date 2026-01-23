@@ -186,7 +186,15 @@ const MyTickets = () => {
     }
   };
   
-  // Not logged in state
+  // Not logged in state - show loading while auth is checking
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <RefreshCw className="w-8 h-8 animate-spin text-purple-500" />
+      </div>
+    );
+  }
+  
   if (!userEmail) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
