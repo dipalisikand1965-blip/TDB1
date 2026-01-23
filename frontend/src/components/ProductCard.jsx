@@ -1132,76 +1132,88 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
           </div>
         )}
         
-        {/* Reviews Section */}
-        <div className="border-t bg-gray-50 p-6" data-testid="reviews-section">
+        {/* Net Pawmoter Score Section - Using Paws instead of Stars */}
+        <div className="border-t bg-gradient-to-br from-amber-50 to-orange-50 p-6" data-testid="nps-section">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                    <MessageSquare className="w-5 h-5 text-purple-600" />
-                    Customer Reviews ({reviews.length})
+                    <PawPrint className="w-5 h-5 text-amber-600" />
+                    Net Pawmoter Score™
                 </h3>
-                <Button variant="outline" size="sm" onClick={() => setShowReviewForm(!showReviewForm)} data-testid="write-review-btn">
-                    {showReviewForm ? 'Cancel' : 'Write a Review'}
-                </Button>
             </div>
-
-            {showReviewForm && (
-                <div className="bg-white p-4 rounded-xl border mb-6 animate-in slide-in-from-top-2">
-                    <h4 className="font-semibold mb-3">Write a Review</h4>
-                    <div className="space-y-3">
-                        <Input 
-                            placeholder="Your Name" 
-                            value={newReview.author_name}
-                            onChange={(e) => setNewReview({...newReview, author_name: e.target.value})}
-                        />
-                        <Input 
-                            placeholder="Review Title" 
-                            value={newReview.title}
-                            onChange={(e) => setNewReview({...newReview, title: e.target.value})}
-                        />
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600">Rating:</span>
-                            <div className="flex gap-1">
-                                {[1,2,3,4,5].map(star => (
-                                    <button key={star} type="button" onClick={() => setNewReview({...newReview, rating: star})}>
-                                        <Star className={`w-5 h-5 ${star <= newReview.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                                    </button>
-                                ))}
-                            </div>
+            
+            {/* NPS Score Display */}
+            {npsScore !== null ? (
+                <div className="text-center mb-6">
+                    <div className="inline-flex items-center gap-2 bg-white px-6 py-3 rounded-full shadow-sm border border-amber-200">
+                        {/* Paw Rating */}
+                        <div className="flex items-center gap-1">
+                            {[1, 2, 3, 4, 5].map((paw) => (
+                                <PawPrint 
+                                    key={paw}
+                                    className={`w-6 h-6 ${
+                                        paw <= Math.round(npsScore / 20) 
+                                            ? 'fill-amber-500 text-amber-500' 
+                                            : 'text-gray-300'
+                                    }`}
+                                />
+                            ))}
                         </div>
-                        <Textarea 
-                            placeholder="Share your experience..." 
-                            value={newReview.content}
-                            onChange={(e) => setNewReview({...newReview, content: e.target.value})}
-                        />
-                        <Button onClick={submitReview} disabled={submittingReview} className="w-full bg-purple-600">
-                            {submittingReview ? 'Submitting...' : 'Submit Review'}
-                        </Button>
+                        <span className="text-2xl font-bold text-amber-600">{npsScore}</span>
+                        <span className="text-gray-500 text-sm">/100</span>
                     </div>
+                    <p className="text-xs text-gray-500 mt-2">Based on customer satisfaction surveys</p>
+                </div>
+            ) : (
+                <div className="text-center mb-6">
+                    <div className="inline-flex items-center gap-1 text-gray-400">
+                        {[1, 2, 3, 4, 5].map((paw) => (
+                            <PawPrint key={paw} className="w-6 h-6" />
+                        ))}
+                    </div>
+                    <p className="text-sm text-gray-500 mt-2">No ratings yet</p>
                 </div>
             )}
-
-            <div className="space-y-4">
-                {reviews.map(review => (
-                    <div key={review.id} className="bg-white p-4 rounded-xl border shadow-sm">
-                        <div className="flex justify-between items-start mb-2">
-                            <div>
-                                <h5 className="font-semibold">{review.title}</h5>
-                                <div className="flex items-center gap-1">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+            
+            {/* NPS Testimonials */}
+            {npsTestimonials.length > 0 && (
+                <div className="space-y-3">
+                    <h4 className="text-sm font-semibold text-gray-700">What Pet Parents Say</h4>
+                    {npsTestimonials.slice(0, 3).map((testimonial, idx) => (
+                        <div key={idx} className="bg-white p-4 rounded-xl border border-amber-100 shadow-sm">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="flex items-center gap-0.5">
+                                    {[1, 2, 3, 4, 5].map((paw) => (
+                                        <PawPrint 
+                                            key={paw}
+                                            className={`w-4 h-4 ${
+                                                paw <= Math.round((testimonial.score || 0) / 20) 
+                                                    ? 'fill-amber-500 text-amber-500' 
+                                                    : 'text-gray-300'
+                                            }`}
+                                        />
                                     ))}
                                 </div>
+                                <Badge className="bg-amber-100 text-amber-700 text-xs">
+                                    {testimonial.score}/100
+                                </Badge>
                             </div>
-                            <span className="text-xs text-gray-500">{new Date(review.created_at).toLocaleDateString()}</span>
+                            <p className="text-sm text-gray-700 italic">"{testimonial.feedback}"</p>
+                            <div className="flex items-center justify-between mt-2">
+                                <span className="text-xs text-gray-500">— {testimonial.member_name || 'Happy Pet Parent'}</span>
+                                {testimonial.pet_name && (
+                                    <span className="text-xs text-amber-600 flex items-center gap-1">
+                                        <PawPrint className="w-3 h-3" /> {testimonial.pet_name}
+                                    </span>
+                                )}
+                            </div>
                         </div>
-                        <p className="text-sm text-gray-600">{review.content}</p>
-                        <p className="text-xs text-gray-400 mt-2">- {review.author_name}</p>
-                    </div>
-                ))}
-                {reviews.length === 0 && !showReviewForm && (
-                    <p className="text-center text-gray-500 italic py-4">No reviews yet. Be the first!</p>
-                )}
-            </div>
+                    ))}
+                </div>
+            )}
+            
+            {npsTestimonials.length === 0 && npsScore === null && (
+                <p className="text-center text-gray-500 italic py-4">Be the first to rate this product!</p>
+            )}
         </div>
 
         </div>
