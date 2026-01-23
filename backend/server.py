@@ -9486,6 +9486,10 @@ app.include_router(discount_admin_router)  # Admin at /api/admin/discount-codes/
 app.include_router(cart_router)  # Public at /api/cart/*
 app.include_router(cart_admin_router)  # Admin at /api/admin/abandoned-carts/*
 
+# Shopify Sync Routes (Refactored)
+app.include_router(shopify_router)  # Public cron endpoint
+app.include_router(shopify_admin_router)  # Admin sync management
+
 # Auto Ticket Creation System
 set_auto_ticket_db(db)  # Initialize auto-ticket creation with database
 
