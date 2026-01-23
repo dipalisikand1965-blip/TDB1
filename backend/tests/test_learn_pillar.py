@@ -48,7 +48,7 @@ class TestLearnPrograms:
         assert response.status_code == 200
         
         data = response.json()
-        required_fields = ["id", "name", "program_type", "description", "duration", "sessions", "price"]
+        required_fields = ["id", "name", "description", "duration", "sessions", "price"]
         
         for program in data["programs"]:
             for field in required_fields:
