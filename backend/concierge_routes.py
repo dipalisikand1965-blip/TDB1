@@ -485,8 +485,9 @@ async def get_item_detail(ticket_id: str):
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
-    # Get member email
-    member_email = item.get("member", {}).get("email")
+    # Get member email - handle None values safely
+    member_data = item.get("member") or {}
+    member_email = member_data.get("email") if member_data else None
     if not member_email and item.get("customer"):
         member_email = item["customer"].get("email")
     
