@@ -518,33 +518,16 @@ const PaperworkPage = () => {
             </div>
           )}
           
-          {/* Products by Type */}
+          {/* Products by Type - Using ProductCard for clickable modals */}
           {products.length > 0 && (
             <div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-6">🛍️ Individual Products</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {products.slice(0, 12).map((product) => (
-                  <Card key={product.id} className="p-4 hover:shadow-md transition-all" data-testid={`product-${product.id}`}>
-                    <div className="aspect-square bg-gradient-to-br from-blue-100 to-indigo-50 rounded-lg mb-3 flex items-center justify-center">
-                      <FileText className="w-12 h-12 text-blue-300" />
-                    </div>
-                    <Badge variant="outline" className="text-xs mb-2 capitalize">
-                      {product.product_type}
-                    </Badge>
-                    <h4 className="font-medium text-gray-900 text-sm mb-1 line-clamp-2">{product.name}</h4>
-                    <p className="text-xs text-gray-500 line-clamp-2 mb-2">{product.description}</p>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="font-bold text-blue-600">₹{product.price}</span>
-                        {product.compare_price && (
-                          <span className="text-xs text-gray-400 line-through ml-1">₹{product.compare_price}</span>
-                        )}
-                      </div>
-                      {product.paw_reward_points > 0 && (
-                        <span className="text-xs text-blue-600">🐾 {product.paw_reward_points}</span>
-                      )}
-                    </div>
-                  </Card>
+              <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                <ShoppingBag className="w-5 h-5 text-blue-500" />
+                Individual Products
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {products.slice(0, 10).map((product) => (
+                  <ProductCard key={product.id} product={product} pillar="paperwork" />
                 ))}
               </div>
             </div>
