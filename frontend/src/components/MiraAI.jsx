@@ -339,6 +339,10 @@ const MiraAI = () => {
       const apiUrl = getApiUrl();
       console.log('[Mira] Sending chat to:', `${apiUrl}/api/mira/chat`);
       
+      // Add timeout controller for LLM requests (60 seconds)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+      
       const response = await fetch(`${apiUrl}/api/mira/chat`, {
         method: 'POST',
         headers: { 
@@ -354,8 +358,11 @@ const MiraAI = () => {
           previous_pillar: previousPillar,
           selected_pet_id: userPets.length === 1 ? (userPets[0].id || userPets[0].name) : null,
           history: history
-        })
+        }),
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
       console.log('[Mira] Response status:', response.status);
       
