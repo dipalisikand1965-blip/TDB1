@@ -123,31 +123,31 @@ class TestReportsOverview:
         assert response.status_code == 200
         
         data = response.json()
-        # Check required fields
-        assert "ticket_stats" in data, "Missing 'ticket_stats' field"
-        assert "agent_performance" in data, "Missing 'agent_performance' field"
-        assert "sla_stats" in data, "Missing 'sla_stats' field"
+        # Check required fields (actual API structure)
+        assert "overview" in data, "Missing 'overview' field"
+        assert "performance" in data, "Missing 'performance' field"
         
-        ticket_stats = data["ticket_stats"]
-        assert "total" in ticket_stats, "Missing 'total' in ticket_stats"
-        assert "open" in ticket_stats, "Missing 'open' in ticket_stats"
-        assert "resolved" in ticket_stats, "Missing 'resolved' in ticket_stats"
+        overview = data["overview"]
+        assert "total_tickets" in overview, "Missing 'total_tickets' in overview"
+        assert "open_tickets" in overview, "Missing 'open_tickets' in overview"
+        assert "sla_breaches" in overview, "Missing 'sla_breaches' in overview"
         
-        print(f"✅ Reports overview: total={ticket_stats['total']}, open={ticket_stats['open']}, resolved={ticket_stats['resolved']}")
+        print(f"✅ Reports overview: total={overview['total_tickets']}, open={overview['open_tickets']}, sla_breaches={overview['sla_breaches']}")
     
     def test_reports_overview_agent_performance(self):
         """Test agent performance data in overview"""
         response = requests.get(f"{BASE_URL}/api/concierge/reports/overview")
         data = response.json()
         
-        agent_perf = data.get("agent_performance", [])
-        # Agent performance should be a list
-        assert isinstance(agent_perf, list), "agent_performance should be a list"
+        performance = data.get("performance", {})
+        agent_stats = performance.get("agent_stats", [])
+        # Agent stats should be a list
+        assert isinstance(agent_stats, list), "agent_stats should be a list"
         
-        if agent_perf:
-            for agent in agent_perf[:2]:
+        if agent_stats:
+            for agent in agent_stats[:2]:
                 assert "agent" in agent or "username" in agent, "Agent entry missing identifier"
-            print(f"✅ Agent performance data: {len(agent_perf)} agents")
+            print(f"✅ Agent performance data: {len(agent_stats)} agents")
         else:
             print("⚠️ No agent performance data (may be expected if no agents)")
 
