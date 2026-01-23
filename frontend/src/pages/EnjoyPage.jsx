@@ -9,13 +9,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraContextPanel from '../components/MiraContextPanel';
+import ProductCard from '../components/ProductCard';
 import {
   PartyPopper, Calendar, MapPin, Users, Clock, PawPrint,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
   ArrowRight, Play, ChevronDown, Coffee, Mountain, GraduationCap,
-  Heart, Shield, Ticket, Filter, ChevronLeft, Globe, List, CalendarDays, X
+  Heart, Shield, Ticket, Filter, ChevronLeft, Globe, List, CalendarDays, X,
+  ShoppingBag
 } from 'lucide-react';
 
 // Experience Type Configuration - Using warm, playful colors
