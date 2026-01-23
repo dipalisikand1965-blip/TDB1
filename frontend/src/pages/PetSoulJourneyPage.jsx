@@ -104,9 +104,50 @@ const PetSoulJourneyPage = () => {
   }, [petId]);
 
   const handleEditAnswer = (questionId) => {
-    // TODO: Implement edit modal
-    console.log('Edit question:', questionId);
-    alert(`Edit functionality for "${questionId}" coming soon!`);
+    setEditModal({ open: true, questionId });
+  };
+
+  const handleSaveAnswer = async (questionId, value) => {
+    setSavingAnswer(true);
+    try {
+      const response = await fetch(`${getApiUrl()}/api/pets/${petId}/soul-answers`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          answers: { [questionId]: value }
+        })
+      });
+      
+      if (response.ok) {
+        // Update local pet state
+        setPet(prev => ({
+          ...prev,
+          doggy_soul_answers: {
+            ...prev?.doggy_soul_answers,
+            [questionId]: value
+          }
+        }));
+        toast({
+          title: "✨ Answer saved!",
+          description: `Great job building ${pet?.name}'s Pet Soul!`
+        });
+        setEditModal({ open: false, questionId: null });
+      } else {
+        throw new Error('Failed to save');
+      }
+    } catch (error) {
+      console.error('Error saving answer:', error);
+      toast({
+        title: "Failed to save",
+        description: "Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSavingAnswer(false);
+    }
   };
 
   if (loading) {
