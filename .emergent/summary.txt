@@ -1,92 +1,110 @@
-<analysis>**original_problem_statement**: The user is building **The Doggy Company**, a Pet Life Operating System designed to be a pet-first platform with deep intelligence. The core vision is a vision-first, commerce-later approach, centered around a Pet Soul™ for each pet and an intelligent concierge, Mira® AI.
+<analysis>**original_problem_statement**: The user is building **The Doggy Company**, a Pet Life Operating System designed to be a pet-first platform. The core vision is a vision-first, commerce-later approach, centered around a Pet Soul™ for each pet and an intelligent concierge, Mira® AI.
 
-Recent user requests have focused on:
-1.  **Mira AI Doctrine**: Evolving Mira from a simple chatbot to a true concierge that takes ownership of tasks by creating service desk tickets, rather than advising the user.
-2.  **Mira Relationship Memory**: Implementing a store forever, surface selectively memory system for Mira to build long-term relationships with pet families.
-3.  **Unified Concierge Workspace**: Consolidating all actionable items (orders, service tickets, messages) from fragmented admin tabs into a single Concierge Command Center to provide a unified operational view.
-4.  **Multi-Pet Household Experience**: Enhancing the member-facing  page to be a Family Dashboard that reflects how pet parents think about their household as a group.
+The user's primary goal is to create a world-class, unified **Concierge Command Center** that acts as the single source of truth and operational hub for the entire business, surpassing generic CRMs. They have recently expanded this vision to include a highly personalized and pillar-aware product discovery experience across the entire site.
 
 **PRODUCT REQUIREMENTS**:
--   **A. Concierge as the Core**: Mira AI and the human concierge team must act as a seamless, proactive service layer, handling requests end-to-end.
--   **B. Unified Operational View**: The concierge team needs a single Command Center to manage all member interactions and tasks without switching between multiple tabs.
--   **C. Relationship-Driven AI**: All data and interactions must enrich a persistent Relationship Memory that allows Mira to have context-aware, personalized conversations over time.
--   **D. Family-Centric UX**: The user interface must be designed around the concept of a pet family or household, not just individual pets.
+-   **A. The All-Seeing Eye Command Center**: All system events must generate tickets in a unified Event Stream. The center needs intelligence features like sentiment analysis, ticket merging, and SLA tracking.
+-   **B. Complete 360° Member & Pet Profile**: A complete, clickable, 360-degree view of the entire member relationship history, including communication preferences.
+-   **C. Pillar-Aware E-Commerce Experience**: The product discovery and cross-sell functionality should be tailored to each specific pillar (e.g., Complete the Trip! for Travel, Complete the Care! for Care).
+-   **D. Data-Driven Operations**: The platform requires advanced analytics and reporting on agent performance, ticket distribution, and revenue.
+-   **E. Net Pawmoter Score (NPS) System**: A post-resolution satisfaction survey system to gather customer feedback and display testimonials.
+-   **F. Expanded Pillars**: The system must support new pillars: Learn, Adopt, Farewell, and Community, and they must be integrated sitewide.
 
 **User's preferred language**: English
 
 **what currently exists?**
-- A full-stack application with a React frontend and FastAPI backend.
-- The Mira AI has been significantly enhanced to function as a true concierge. It now automatically detects actionable requests (e.g., book a restaurant), creates a service desk ticket, and informs the user that a live concierge will follow up. The old behavior of advising the user has been eliminated.
-- A Relationship Memory system has been implemented for Mira. It stores key facts from conversations (e.g., travel plans, pet preferences) indefinitely and surfaces them contextually in future chats. An admin UI () exists to view these memories.
-- A new Family Dashboard has been built on the  page, replacing the old list view. It features a household overview, upcoming family moments (birthdays), quick-access family-wide actions, and a Family Journey timeline that displays relationship memories.
-- The Admin Member Profile has been upgraded into a Zoho-like unified history view, with new Tickets and Memories tabs showing a complete, consolidated history of all service requests and stored memories for a specific member.
-- An Automated Reminders Manager UI has been added to the admin panel.
-- The backend features new data aggregation endpoints (e.g., ) to support the unified views.
+-   A full-stack application with a React frontend and FastAPI backend.
+-   The new company logo has been implemented sitewide, including the favicon, with a refactored  component that displays the icon and text side-by-side.
+-   A universally consistent, pillar-aware product experience is now implemented across all 12 pillar pages (, , , , , , , etc.), which all use a standardized  component. Login is no longer required to browse these pages.
+-   The new Learn pillar is fully integrated with a frontend page, backend routes, and is visible in the Navbar, Command Center, and admin docs.
+-   A fully functional Advanced Analytics Dashboard and NPS Feedback Page are implemented and connected to backend APIs. The NPS survey is sent via email upon ticket resolution.
+-   A Communication Preferences UI exists in the Member Dashboard, allowing users to manage their notification settings.
+-   The Mira AI concierge has been updated to provide a step-by-step, one-question-at-a-time conversational flow with improved response formatting.
+-   The Command Center features a fixed AI Draft generator and an improved ticket detail view.
+-   The  and  documents are updated with all the latest features.
 
 **Last working item**:
--   Last item agent was working: The agent was in the initial stages of building the **Concierge Command Center**, a major new feature requested by the user. The user provided a highly detailed specification for this feature, envisioning it as the primary workspace for the concierge team, unifying all actionable items into a single, intelligent queue. The agent had just created the placeholder backend routes file and was creating the main frontend component.
--   Status: IN PROGRESS
+-   Last item agent was working: The user reported three critical, high-priority bugs:
+    1.  Seeded production data disappearing upon redeployment.
+    2.  New orders placed via the frontend are not generating tickets in the Command Center.
+    3.  Tickets that are created show Unknown Customer instead of the member's name.
+    The agent was about to begin investigating the root cause of these three issues.
+-   Status: NOT STARTED
 -   Agent Testing Done: N
 -   Which testing method agent to use? both
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Backend code quality in  (P2)
+-   Issue 1: Critical Production Bugs (P0)
 -   Issue 2: Root cause of Untitled products from Shopify sync (P2)
+-   Issue 3: Backend code quality in  and  (P2)
 
 **Issues Detail**:
--   **Issue 1: Backend code quality in .**
-    -   **Attempted fixes**: The agent is continuing the strategy of incremental refactoring by creating new features in separate, modular route files (, ).
-    -   **Next debug checklist**: Continue building new features in separate modules. A dedicated refactoring effort to move existing routes out of  can be planned for later.
-    -   **Why fix this issue and what will be achieved with the fix?**: Improves code maintainability and scalability.
-    -   **Status**: IN PROGRESS
+-   **Issue 1: Critical Production Bugs**
+    -   **Description**: The user reported three interconnected issues:
+        1.  **Data Disappearance**: Seeded data (FAQs, Collections, etc.) vanishes on redeployment, requiring a manual re-seed.
+        2.  **Orders Not Creating Tickets**: A new order placed by a customer does not automatically create a corresponding service desk ticket in the Command Center.
+        3.  **Unknown Customer**: For tickets that do appear, the customer's name is not being correctly identified, showing as Unknown Customer in the Unified Inbox.
+    -   **Attempted fixes**: The agent previously created a Seed Production Data button in the admin panel as a workaround for the disappearing data, but the root cause persists. No fixes attempted for the other two issues yet.
+    -   **Next debug checklist**:
+        1.  **Data Disappearance**: Review the deployment process and database initialization logic. Check if the database is being reset or if the connection is being lost. Ensure the Seed Production button is prominent in the admin panel as a temporary user-facing fix.
+        2.  **Order-to-Ticket Flow**: Trace the  endpoint in . Verify that the logic to create a service desk ticket is being triggered. Check  in  for errors.
+        3.  **Customer Recognition**: Investigate the  function. Check how  and  are being fetched and passed when a ticket is created from an order. The issue is likely in how the user session or order details are linked to a member profile.
+    -   **Why fix this issue and what will be achieved with the fix?**: These are core operational failures that break the All-Seeing Eye concept of the Command Center, prevent agents from helping customers, and erode trust in the system. Fixing them is critical for the platform to be usable.
+    -   **Status**: NOT STARTED
     -   **Is recurring issue?**: Y
-    -   **Should Test frontend/backend/both after fix?**: Backend
+    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Blocked on other issue**: None.
 -   **Issue 2: The root cause of Untitled products from Shopify sync may still exist.**
-    -   **Attempted fixes**: None in this session. An API-level workaround is still in place.
+    -   **Attempted fixes**: None. An API-level workaround is still in place.
     -   **Next debug checklist**: 1. Locate the Shopify sync script. 2. Trace the data mapping for products. 3. Identify why the  field is sometimes missing.
     -   **Why fix this issue and what will be achieved with the fix?**: Ensures data integrity and removes technical debt.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Backend
+-   **Issue 3: Backend code quality in  and .**
+    -   **Attempted fixes**: New analytics features were moved to a separate  file, which is a good step. However,  and  remain large.
+    -   **Next debug checklist**: Continue building new features in separate modules. A dedicated refactoring effort can be planned for later.
+    -   **Why fix this issue and what will be achieved with the fix?**: Improves code maintainability and scalability.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?**: Y
+    -   **Should Test frontend/backend/both after fix?**: Backend
 
 **In progress Task List**:
--   **Task 1: [P0] Build the Concierge Command Center**
-    -   **Where to resume**: The agent has created  and . The next steps are to:
-        1.  Build the backend aggregation logic in  to fetch and merge actionable items from all sources (, , , ).
-        2.  Implement the frontend UI for the Command Center according to the user's detailed specification, including the priority-sorted queue, source filters, and the slide-in panel for viewing individual items.
-        3.  Implement Mira's AI Assistant feature within the ticket view, which auto-drafts replies based on member history.
-    -   **What will be achieved with this?**: This will create the unified, intelligent workstation for the concierge team, which is a core part of the user's vision. It will eliminate the need for the team to jump between multiple fragmented admin tabs.
-    -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: Both
-    -   **Blocked on something**: No.
+-   None. The current priority is to fix the critical bugs.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   **(P1) WhatsApp Business API Integration**: Replace provisional click-to-chat links with a real API integration.
--   **(P1) Concierge Command Center - Phase 2**: Implement proactive features like SLA breach alerts and advanced reporting.
--   **(P2) Multi-Pet Discount Calculator**: Implement the logic for the Family Discount mentioned in the Family Dashboard.
+-   **(P1) Display NPS Reviews on Product Pages**: Build the UI to show approved, high-scoring NPS feedback as testimonials in the product modal. An API endpoint () and initial frontend logic are already in place.
+-   **(P1) Build out New Pillars**: Fully implement the Adopt, Farewell, and Community pillars, following the template established by the Learn pillar (frontend page, backend routes, navbar integration, etc.).
+-   **(P1) WhatsApp Business API Integration**: Replace the provisional click-to-chat links with a true API integration to send messages directly from the Command Center.
+-   **(P2) Proactive Outreach Engine**: Build functionality for smart campaigns and re-engagement flows.
 
 **Future Tasks:**
--   Omni-Channel Replies from Command Center (Email, WhatsApp).
--   Self-Service Portal for members to view ticket status.
--   Member analytics dashboard.
--   Weight tracking graph visualization in Health Vault.
--   Export health records as a PDF.
--   Re-enable  for go-live.
+-   Concierge Command Center - Phase 3 (SLA breach audio alerts).
+-   Agent Performance Dashboard.
+-   SLA Compliance Reports.
+-   Multi-Pet Discount Calculator.
+-   Member-facing analytics dashboard.
+-   Re-enable  for go-live on necessary pages (e.g., dashboard, checkout).
 
 **Completed work in this session**
--   **Mira Concierge Doctrine**: Overhauled  to make Mira a true concierge. Mira now automatically creates service desk tickets for actionable requests instead of advising the user.
--   **Mira Relationship Memory**: Implemented a persistent memory system (, ) and a corresponding admin UI ().
--   **Family Dashboard UI**: Created a new household view on  with , showing all pets, upcoming moments, family actions, and a memory timeline.
--   **Unified Member History**: Enhanced  to include Tickets and Memories tabs, providing a complete, Zoho-like historical view of all interactions for a member.
--   **Automated Reminders UI**: Created  and integrated it into the admin panel.
--   **Backend Data Aggregation**: Created a new endpoint () in  to merge data from old and new ticketing systems.
--   **Testing & Bug Fixes**: Successfully used the testing agent to validate the Family Dashboard and related features, which also identified and fixed a bug in .
--   **Planning**: Created a comprehensive plan for the Concierge System in .
+-   **Resolved User-Reported Bugs**:
+    -   Fixed products not opening and login again issues by removing  from all pillar/browsing pages.
+    -   Refactored all remaining pillar pages (, , , , ) to use the standard , ensuring a universal product experience.
+    -   Fixed the broken AI Draft feature in the Command Center by correcting the LLM call.
+    -   Improved the Command Center ticket detail view for better readability.
+-   **New Logo Implementation**: Updated the entire application to use the new company logo provided by the user, including the favicon and a redesigned  component for better visibility in the navbar.
+-   **Mira AI Conversation Flow**: Refined the Mira AI system prompt to enforce a step-by-step, one-question-at-a-time conversational flow and fixed response formatting.
+-   **Feature Implementation**:
+    -   Fully built and integrated the new Learn pillar.
+    -   Completed the Advanced Analytics Dashboard.
+    -   Completed the NPS Feedback Page and the backend flow for sending survey emails.
+    -   Built the frontend for Communication Preferences in the Member Dashboard.
+-   **Documentation**: Updated  and  with details on all new features, including Mira AI rules, Analytics, and the NPS system.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1**: The root cause of Shopify Sync creates Untitled Products remains unresolved, though a workaround is in place.
+-   The root cause of Shopify Sync creates Untitled Products remains unresolved. This is captured in the All Pending/In progress Issue list.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork**: Shopify Sync creates Untitled Products
@@ -97,71 +115,81 @@ Recent user requests have focused on:
 
 
 **Key Technical Concepts**
--   **LLM as a Tool (Concierge Doctrine)**: Shifted the LLM's role from a user-facing advisor to an internal tool that assists human agents by detecting intent, creating tickets, and summarizing context. This is a fundamental change in .
--   **Data Aggregation for Unified Views**: The backend now features endpoints that query multiple, disparate MongoDB collections (e.g., , ) and merge the results to present a single, chronological history to the frontend.
--   **Additive & Safe Refactoring**: Adopted a user-approved strategy of building the new Concierge Command Center as a parallel, additive feature without removing or altering existing, stable components, ensuring zero disruption to current workflows.
--   **Complex Frontend State Management**: The Family Dashboard and Admin panel use local state to toggle between different views (e.g., family vs. detailed) and manage active tabs. The upcoming Command Center will require more advanced state preservation (scroll position, filters).
+-   **Code Refactoring for Consistency**: Replaced all bespoke product rendering logic across multiple pillar pages with a single, reusable  component to enforce a universal UI/UX.
+-   **Conditional Routing ()**: Audited and removed  from pages intended for public browsing to fix user experience issues, while keeping it for authenticated sections.
+-   **LLM System Prompt Engineering**: Iteratively refined the  system prompt to control the AI's conversational style, enforcing a strict one-question-at-a-time flow and specific formatting rules.
+-   **Backend Service Modularity**: Created new router files (, ) to break down the monolithic  and improve code organization.
+-   **Image Processing with Pillow**: Used the Pillow library to programmatically make an image background transparent, improving its versatility across different UI themes.
 
 **key DB schema**
--   **mira_memories**: { , , , , ,  }
--   **service_desk_tickets**: { , , , , , ,  } - Created by Mira.
--   The system now performs read-only aggregation across , , , and  to populate the Command Center.
+-   : Added , .
+-   : The  object was expanded to include more granular notification toggles like , , , etc.
+
+**changes in tech stack**
+-   None.
 
 **All files of reference**
--    (Contains the detailed user spec for the next major feature)
--    (Core logic for Mira's new concierge behavior)
--    (The primary component for the next task)
--    (Example of the Zoho-like unified history view)
--    (Location of the new Family Dashboard)
--    (Contains the new data aggregation endpoint for tickets)
+-    (For investigating order-to-ticket creation flow)
+-    (For investigating order-to-ticket creation flow)
+-    (For investigating ticket creation logic)
+-    (For debugging Unknown Customer)
+-    (Reference for routing structure)
+-   All pillar pages in  (Reference for the  implementation)
 
 **Areas that need refactoring**:
--    is still monolithic, but the current strategy of building new features in separate modules is effective.
--   The proliferation of admin tabs (, , , etc.) is a known issue. The new Concierge Command Center is the strategic solution to unify these workflows, potentially making the old tabs redundant in the future.
+-   The monolithic files  and  continue to be large despite some refactoring. They are prime candidates for being split into smaller, feature-focused modules.
 
 **key api endpoints**
--   : Now creates a service desk ticket for actionable requests.
--   : (New) Fetches a combined ticket history from multiple collections for the member profile view.
--   : (To be built) Will provide the aggregated, priority-sorted list of all actionable items for the new Command Center.
+-   : (NEEDS INVESTIGATION) Should trigger ticket creation.
+-   : (NEEDS INVESTIGATION) Endpoint for creating tickets.
+-   : Fetches key performance indicators.
+-   : Fetches revenue data.
+-   : Fetches ticket data.
+-   : Fetches NPS score data.
+-   : Fetches learning programs.
+-   : Fetches trainer profiles.
+-   : Fetches products for the Learn pillar.
+-   : Fetches approved NPS reviews for display.
 
 **Critical Info for New Agent**
--   **Build the Concierge Command Center**: Your highest priority is to build the  component. The user has provided an extremely detailed, non-negotiable specification in  and their last messages. You must follow this spec precisely, especially regarding the additive approach (build new, don't delete old), the slide-in drawer UI, and the preservation of UI state (filters, scroll position).
--   **Mira's AI Assistant Role**: A key part of the Command Center spec is making Mira an AI Assistant for the concierge. When a ticket is opened, you must implement logic for Mira to scour the member's history (past orders, tickets, memories) and auto-draft a suggested response for the human agent.
--   **The Concierge Doctrine is Law**: Mira is no longer an advisor. She is a concierge who creates tickets for a human. All new logic must respect this fundamental change. Do not write any code that advises the user to perform an action themselves.
+-   **TOP PRIORITY**: The user is blocked by three critical bugs: disappearing data on redeploy, orders not creating tickets, and Unknown Customer in the Command Center. You MUST address these three issues first before any other task.
+-   The disappearing data issue seems environmental. Investigate the deployment or database initialization scripts. As a temporary measure, ensure the Seed Production Data button is highly visible in the admin panel, as the user relies on it.
+-   The login required issue was fixed by removing  from browsing pages. Be mindful of this distinction when creating new pages. Authenticated actions (like checkout, view dashboard) still need protection, but viewing products/pillars should be public.
+-   The new standard for any product display is the  component. Do not write custom product rendering logic.
 
 **documents and test reports created in this job**
--   
+-    (Continuously updated)
+-    (Continuously updated)
 -   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Specifies the design for the Concierge Command Center, including the slide-in panel working surface, the four vertical zones (Member Snapshot, Request, Mira's Intelligence, Action Panel), and the smart back button that preserves UI state. (STATUS: PENDING IMPLEMENTATION)
-2.  **User**: Recommends the safe, additive approach: build the new Command Center as a new tab, keep all old tabs functional, and transition only when the new system is proven stable. (STATUS: AGREED, PENDING IMPLEMENTATION)
-3.  **User**: Asks what the agent suggests for unifying the fragmented admin tabs, expressing fear of losing existing logic. (STATUS: ADDRESSED)
-4.  **User**: Clarifies the difference between the current Service Desk and the future Concierge desk and asks about unifying the various folders (orders, fulfillment, inbox). (STATUS: ADDRESSED)
-5.  **User**: Asks if the concierge plan includes Mira acting as an assistant to the human concierge, e.g., by auto-drafting replies based on past order history. (STATUS: PENDING IMPLEMENTATION)
-6.  **User**: Asks how to review the  file. (STATUS: ADDRESSED)
-7.  **User**: Says they are redeploying and asks for a comprehensive plan for the Concierge system, showing what's done and what's next. (STATUS: COMPLETED)
-8.  **User**: Provides detailed analysis of the two screenshots, requesting a unified Member History Panel similar to Zoho CRM, combining all tickets, orders, and activities in one view. (STATUS: COMPLETED)
-9.  **User**: Confirms the proposed unified architecture for the service desk and asks the agent to proceed. (STATUS: ADDRESSED)
-10. **User**: After reviewing Mira's new concierge behavior, specifies that the action should trigger a Service Desk ticket and route to the Unified Inbox, with the response being Our live concierge will get back to you shortly. (STATUS: COMPLETED)
+-   **10. ccrm seed old data dissappeared...**: User reported 3 critical bugs: disappearing data, orders not creating tickets, and Unknown Customer in the command center. (STATUS: NOT STARTED)
+-   **9. pRODUTS not opening...**: User reported products not opening on many pages and being asked to log in again. Requested a full audit. (STATUS: COMPLETED).
+-   **8. Display NPS Reviews... LEARN FIRST**: User approved building the new 'Learn' pillar and then displaying NPS reviews. (STATUS: COMPLETED).
+-   **7. can we also put the LLM rules...**: User asked to add Mira AI rules to admin docs and build the Communication Preferences frontend. (STATUS: COMPLETED).
+-   **6. where does the NPs come...**: User asked for clarification on the NPS flow and documentation. (STATUS: COMPLETED).
+-   **5. ok lets go ahead with next items**: User approved moving on to the NPS & Analytics tasks. (STATUS: COMPLETED).
+-   **4. User provides new paw icon logo**: User uploaded a new paw icon to be used without text in the main logo component. (STATUS: COMPLETED).
+-   **3. User feedback on Mira AI response**: User reported Mira was asking too many questions at once and using incorrect formatting. (STATUS: COMPLETED).
+-   **2. how is this supposed to work...**: User reported issues with the AI Draft feature and viewing full ticket details in the Command Center. (STATUS: COMPLETED).
+-   **1. if the logo is too small...**: User requested a change to the logo layout to have the text on the side for better readability. (STATUS: COMPLETED).
 
 **Project Health Check:**
--   **Broken**: None.
--   **Mocked**: WhatsApp integration (uses click-to-chat links), Razorpay (uses test keys).
+-   **Broken**: The order-to-ticket creation pipeline is broken. The database seeding process is unreliable on redeployment.
+-   **Mocked**: WhatsApp Integration (still a click-to-chat link).
 
 **3rd Party Integrations**
--   **OpenAI**: Powers the Mira® AI system (text generation and concierge action detection) via  and the **Emergent LLM Key**.
+-   **OpenAI**: Powers the Mira® AI system and the Command Center's **Sentiment Analysis** and **AI Draft** features (via  and the **Emergent LLM Key**).
+-   **Resend**: Used for transactional emails, including order confirmations and NPS survey delivery.
 -   **Razorpay**: Payment gateway (using test keys).
--   **Resend**: Used for all transactional and marketing emails.
--   **Shopify**: For product sync (has a known, non-blocking bug).
+-   **Shopify**: For product sync (has a known, non-blocking bug causing Untitled products).
+-   **ReportLab**: Used for server-side PDF generation for the Health Vault.
 
 **Testing status**
--   Testing agent used after significant changes: YES. The testing agent successfully ran a comprehensive suite on the Family Dashboard and related features, finding and fixing one backend bug.
+-   Testing agent used after significant changes: YES
 -   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created:
-    - 
-    - 
--   Known regressions: None.
+-   Test files created: []
+-   Known regressions: The disappearing data issue appears to be a regression or persistent environmental problem. Orders not creating tickets is a new, critical regression.
 
 **Credentials to test flow:**
 -   **Admin Username**: 
@@ -170,4 +198,4 @@ Recent user requests have focused on:
 -   **Test User Password**: 
 
 **What agent forgot to execute**
-- The agent has successfully followed all high-priority user directives in this session. All pending items are either lower-priority backlog tasks (like the Shopify bug) or part of the next major feature (the Concierge Command Center) which is now the primary focus.</analysis>
+-   The agent successfully completed a massive amount of refactoring and feature implementation. The primary forgotten items are now the top-priority bugs reported by the user in their very last message, which preempted the previously planned work.</analysis>
