@@ -7163,6 +7163,9 @@ set_channel_db(db)
 # Set MIS reporting database
 set_mis_db(db)
 
+# Set Pet Pass Renewal Reminders database
+set_renewal_db(db)
+
 # Set Paw Rewards database
 set_rewards_db(db)
 set_pet_soul_db(db)
