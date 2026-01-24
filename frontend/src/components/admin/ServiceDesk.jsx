@@ -151,6 +151,33 @@ const DEFAULT_CATEGORIES = [
 ];
 
 const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
+  // Get current admin user from localStorage
+  const getCurrentAdminUser = () => {
+    try {
+      const adminAuth = localStorage.getItem('adminAuth');
+      if (adminAuth) {
+        const decoded = atob(adminAuth);
+        return decoded.split(':')[0]; // username is before the colon
+      }
+      // Fallback: try token-based auth
+      const adminToken = localStorage.getItem('tdc_admin_token');
+      if (adminToken) {
+        // Token format might include username - try to decode
+        try {
+          const payload = JSON.parse(atob(adminToken.split('.')[1]));
+          return payload.username || payload.sub || 'admin';
+        } catch {
+          return 'admin';
+        }
+      }
+    } catch {
+      return 'admin';
+    }
+    return 'admin';
+  };
+  
+  const currentAdminUser = getCurrentAdminUser();
+  
   // State
   const [tickets, setTickets] = useState([]);
   const [stats, setStats] = useState(null);
