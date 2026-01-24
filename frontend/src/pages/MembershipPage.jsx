@@ -148,8 +148,8 @@ const MembershipPage = () => {
 
   const handleSelectPlan = (plan) => {
     setSelectedPlan(plan);
-    // Always redirect to onboarding page for new signups
-    navigate(`/pet-soul?plan=${plan}`);
+    // Redirect to Pet Soul onboarding page - the entry point for new members
+    navigate(`/pet-soul-onboard?plan=${plan}`);
   };
 
   const handleSubmit = async (e) => {
