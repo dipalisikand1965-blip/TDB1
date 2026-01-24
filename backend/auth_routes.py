@@ -369,6 +369,167 @@ async def get_user_info(current_user: dict = Depends(get_current_user)):
     return {"user": user_data, "mira_access": access}
 
 
+
+# ==================== PASSWORD RESET FOR MEMBERS ====================
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+
+@auth_router.post("/forgot-password")
+async def member_forgot_password(request: ForgotPasswordRequest):
+    """
+    Request password reset for a member.
+    Sends email with reset link.
+    """
+    email = request.email.lower().strip()
+    
+    # Check if user exists
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    if not user:
+        # Don't reveal if email exists - return success anyway
+        return {"message": "If this email is registered, you will receive a password reset link."}
+    
+    # Generate reset token
+    reset_token = secrets.token_urlsafe(32)
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=24)
+    
+    # Store reset token
+    await db.member_password_resets.delete_many({"email": email})  # Remove old tokens
+    await db.member_password_resets.insert_one({
+        "email": email,
+        "token": reset_token,
+        "expires_at": expires_at.isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "used": False
+    })
+    
+    # Send email
+    try:
+        import resend
+        resend_key = os.environ.get("RESEND_API_KEY")
+        if resend_key:
+            resend.api_key = resend_key
+            
+            frontend_url = os.environ.get("FRONTEND_URL", "https://thedoggycompany.in")
+            reset_link = f"{frontend_url}/reset-password?token={reset_token}"
+            
+            user_name = user.get("name", "Pet Parent")
+            
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #f9fafb; }}
+                    .container {{ max-width: 600px; margin: 0 auto; background: white; }}
+                    .header {{ background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%); color: white; padding: 30px; text-align: center; }}
+                    .content {{ padding: 30px; }}
+                    .cta-button {{ display: inline-block; background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%); color: white !important; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }}
+                    .footer {{ background: #f3f4f6; padding: 20px; text-align: center; color: #6b7280; font-size: 14px; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1 style="margin: 0;">🔐 Password Reset</h1>
+                    </div>
+                    <div class="content">
+                        <h2>Hi {user_name},</h2>
+                        
+                        <p>We received a request to reset your password for your Pet Pass account.</p>
+                        
+                        <p>Click the button below to set a new password:</p>
+                        
+                        <a href="{reset_link}" class="cta-button">Reset Password</a>
+                        
+                        <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+                            This link will expire in 24 hours. If you didn't request this, you can safely ignore this email.
+                        </p>
+                        
+                        <p style="color: #6b7280; font-size: 12px;">
+                            Or copy this link: <br/>{reset_link}
+                        </p>
+                    </div>
+                    <div class="footer">
+                        <p>🐾 The Doggy Company</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            resend.Emails.send({
+                "from": os.environ.get("SENDER_EMAIL", "onboarding@resend.dev"),
+                "to": email,
+                "subject": f"Reset your Pet Pass password",
+                "html": html_content
+            })
+            
+            logger.info(f"Password reset email sent to {email}")
+    except Exception as e:
+        logger.error(f"Failed to send password reset email: {e}")
+        # Still return success to not reveal email existence
+    
+    return {"message": "If this email is registered, you will receive a password reset link."}
+
+
+@auth_router.post("/reset-password")
+async def member_reset_password(request: ResetPasswordRequest):
+    """
+    Reset member password using token from email.
+    """
+    # Find valid reset token
+    reset_record = await db.member_password_resets.find_one({
+        "token": request.token,
+        "used": False
+    }, {"_id": 0})
+    
+    if not reset_record:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset link")
+    
+    # Check expiry
+    expires_at = datetime.fromisoformat(reset_record["expires_at"].replace('Z', '+00:00'))
+    if datetime.now(timezone.utc) > expires_at:
+        raise HTTPException(status_code=400, detail="Reset link has expired. Please request a new one.")
+    
+    email = reset_record["email"]
+    
+    # Validate password
+    if len(request.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Hash new password
+    password_hash = pwd_context.hash(request.new_password)
+    
+    # Update user password
+    result = await db.users.update_one(
+        {"email": email},
+        {"$set": {
+            "password_hash": password_hash,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Mark token as used
+    await db.member_password_resets.update_one(
+        {"token": request.token},
+        {"$set": {"used": True}}
+    )
+    
+    logger.info(f"Password reset successful for {email}")
+    
+    return {"message": "Password reset successful! You can now log in with your new password."}
+
+
+
 @auth_router.post("/google/session")
 async def process_google_session(request: dict):
     """
