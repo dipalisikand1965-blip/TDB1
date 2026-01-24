@@ -813,7 +813,7 @@ const MemberDashboard = () => {
                       <div key={meetup.id} className="p-4 bg-white rounded-lg border">
                         <p className="font-medium">Meetup at {meetup.restaurant_name}</p>
                         <p className="text-sm text-gray-500">{meetup.visit_date}</p>
-                        {meetup.message && <p className="text-sm text-gray-600 mt-2">"{meetup.message}"</p>}
+                        {meetup.message && <p className="text-sm text-gray-600 mt-2">&quot;{meetup.message}&quot;</p>}
                         <div className="flex gap-2 mt-3">
                           <Button size="sm" className="bg-green-600 hover:bg-green-700">Accept</Button>
                           <Button size="sm" variant="outline" className="text-red-600">Decline</Button>
