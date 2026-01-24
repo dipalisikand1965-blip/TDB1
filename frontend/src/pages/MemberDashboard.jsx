@@ -1525,7 +1525,7 @@ const MemberDashboard = () => {
                     {settingsLoading && <span className="text-xs text-gray-400 ml-2">Saving...</span>}
                     {settingsSaved && <span className="text-xs text-green-500 ml-2">✓ Saved</span>}
                   </h3>
-                  <p className="text-sm text-gray-500 mb-4">Choose how you'd like to hear from us</p>
+                  <p className="text-sm text-gray-500 mb-4">Choose how you&apos;d like to hear from us</p>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
