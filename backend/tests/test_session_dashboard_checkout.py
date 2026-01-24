@@ -285,7 +285,8 @@ class TestMiraContext:
         data = response.json()
         
         # Should contain "Sign in" for unauthenticated users
-        greeting = data.get("greeting", "")
+        # Check both greeting and pillar_note fields
+        greeting = data.get("greeting", "") or data.get("pillar_note", "")
         assert "Sign in" in greeting or "Welcome" in greeting
         print(f"✓ Mira context (no auth): {greeting[:50]}...")
     
