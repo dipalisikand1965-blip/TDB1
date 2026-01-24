@@ -3,6 +3,8 @@
 ## Original Problem Statement
 Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-first platform. The core vision is a "vision-first, commerce-later" approach, centered around a "Pet Soul™" for each pet and an intelligent concierge, "Mira® AI".
 
+---
+
 ## Pet Pass System (Core Identity)
 
 ### What Pet Pass IS
@@ -19,125 +21,158 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ### Pet Pass Plans
 1. **Pet Pass — Trial** (1 month): ₹499 + GST
-   - Introduction to the concierge experience
-   - Clearly labeled as "TRIAL", not "Monthly"
-
 2. **Pet Pass — Foundation** (12 months): ₹4,999 + GST
-   - Full concierge relationship
-   - Recommended plan
 
 ### Multi-Pet Pricing
 - Additional pets: ₹2,499/year or ₹249/trial + GST
-- Each pet gets their own unique Pet Pass number
+- Each pet gets their own unique Pet Pass number (format: TDC-XXXXXX)
 
-### Navigation Rules (CRITICAL)
+---
+
+## Member Tier System (Pet Pass Journey)
+
+### NEW Tier Names (Replacing Old)
+| New Tier | Old Tier | Criteria |
+|----------|----------|----------|
+| 🐕 Curious Pup | free | New members |
+| 🦮 Loyal Companion | pawsome | 2+ pillars used OR 3+ months |
+| 🛡️ Trusted Guardian | premium | 5+ pillars OR 6+ months |
+| 👑 Pack Leader | vip | 8+ pillars OR 12+ months |
+
+### Points Multipliers
+- Curious Pup: 1.0x
+- Loyal Companion: 1.5x
+- Trusted Guardian: 2.0x
+- Pack Leader: 3.0x
+
+---
+
+## Navigation Rules (CRITICAL)
 - **Not signed in**: Show "Sign in" | "Join now" 
 - **Signed in**: Show "My Account" (never "Dashboard")
 - "Join now" routes to: `/pet-soul-onboard`
-- No pricing/checkout without account context
 
 ### Language Guidelines
 - ✅ "Join now" (not "Subscribe")
 - ✅ "My Account" (not "Dashboard")
 - ✅ "Activate Pet Pass" (not "Buy")
-- ✅ "Complete setup" (not "Finish checkout")
 - ✅ "Trial" (not "Monthly")
 
 ---
 
 ## What's Been Implemented (January 2026)
 
-### Phase 1: Pet Pass CX Flow ✅
-- [x] Updated MembershipPage.jsx with Pet Pass branding and messaging
-- [x] Changed "Monthly" label to "Trial" with clear badge
-- [x] Added "What is Pet Pass?" section (IS vs IS NOT)
-- [x] Added "How Pet Pass Works" (Understand → Guide → Support → Remember)
-- [x] Updated Navbar for "Sign in | Join now" (logged out) vs "My Account" (logged in)
-- [x] Updated Mobile Menu with same auth-aware navigation
-- [x] Updated MembershipOnboarding with Pet Pass language
-- [x] Created PetPassCard.jsx digital identity card component
-- [x] Updated MyPets.jsx to show Pet Pass card for each pet
-- [x] Updated MemberDashboard header to "My Account"
-- [x] Updated Login page with "Join now" link
-- [x] Backend: Updated pricing calculation to handle "trial" plan type
-- [x] Backend: Enhanced verify_payment to update pet's Pet Pass status
+### Session 1: Pet Pass CX Flow ✅
+- [x] MembershipPage.jsx with Pet Pass branding
+- [x] "Trial" label (not "Monthly")
+- [x] "What is Pet Pass?" section
+- [x] Navbar: "Sign in | Join now" vs "My Account"
+- [x] PetPassCard.jsx digital identity component
+- [x] Backend pricing for "trial" plan type
 
-### Previous Work Completed
-- Production deployment issue resolved (incorrect REACT_APP_BACKEND_URL)
-- Service Desk ticket bug fixed (correct collection name)
-- Full CX Journey audit completed (documented in CX_JOURNEY_GAPS.md)
-- Pet Soul UX flow mode implemented
-- Personalized Mira AI welcome card
-- Dashboard CTA for Pet Soul completion
-- Header pet photo enhancement
-- Checkout pet selector for logged-in users
+### Session 2: Tier System & Member Flow ✅
+- [x] Updated all tier names: Curious Pup → Pack Leader
+- [x] Removed "pawsome" references from frontend
+- [x] Updated MembersTab.jsx with new tier display
+- [x] Updated MembershipManager.jsx tier dropdowns
+- [x] Backend: Updated loyalty multipliers
+- [x] Backend: Updated member stats API
+
+### Session 2: Password Reset Flow ✅
+- [x] Created `/api/auth/forgot-password` endpoint
+- [x] Created `/api/auth/reset-password` endpoint
+- [x] Created MemberForgotPassword.jsx page
+- [x] Created MemberResetPassword.jsx page
+- [x] Added "Forgot password?" link to Login page
+- [x] Routes: `/member/forgot-password`, `/reset-password`
+
+### Session 2: Renewal Reminders ✅
+- [x] Created `renewal_reminders.py` module
+- [x] Trial reminders: 7 days before expiry
+- [x] Annual reminders: 30, 15, 3 days before expiry
+- [x] Admin endpoints: `/api/admin/renewals/expiring`, `/api/admin/renewals/check`
+- [x] Email templates with Pet Pass branding
+
+### Session 2: Session Persistence Fix ✅
+- [x] Fixed AuthContext to only clear token on 401 (not network errors)
 
 ---
 
 ## Prioritized Backlog
 
 ### P0 - Critical
-1. **Unified Inbox Customer Name Recognition** - Service Desk doesn't display customer names
-2. **Session Persistence** - Users getting logged out unexpectedly during navigation
+1. ~~**Session Persistence**~~ ✅ FIXED
+2. **Unified Inbox Customer Name** - Service Desk not displaying customer names
 
-### P1 - High Priority
-1. **Production Login Flow** - No "Forgot Password" for production database
-2. Complete 'Adopt' Pillar - Scaffolding exists, needs registration in app files
-3. Complete CX Journey Gap fixes from audit
+### P1 - High Priority  
+1. ~~**Production Forgot Password**~~ ✅ IMPLEMENTED
+2. ~~**Remove Pawsome references**~~ ✅ DONE
+3. Complete 'Adopt' Pillar - Scaffolding exists
+4. CX Journey Gap fixes from audit
 
 ### P2 - Medium Priority
-1. **Checkout Cart Pet Details Bug** - Email appearing as pet name
-2. **"Untitled" Products from Shopify Sync** - Recurring issue (10+ times)
+1. **Checkout Cart Pet Details Bug**
+2. **"Untitled" Products from Shopify Sync** (recurring)
 3. Build 'Farewell' Pillar
 4. Build 'Shop' Pillar
-5. Continue backend refactoring (server.py modularization)
 
 ### P3 - Lower Priority
-1. **Mobile Cart View Redesign**
+1. Mobile Cart View Redesign
 2. WhatsApp Business API Integration
+
+---
+
+## Key API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - Login
+- `POST /api/auth/register` - Register
+- `POST /api/auth/forgot-password` - Request password reset (NEW)
+- `POST /api/auth/reset-password` - Complete password reset (NEW)
+- `GET /api/auth/me` - Get current user
+
+### Admin - Renewals (NEW)
+- `GET /api/admin/renewals/expiring?days=30` - List expiring memberships
+- `POST /api/admin/renewals/check` - Trigger renewal reminder check
+- `POST /api/admin/renewals/send-reminder/{email}` - Manual reminder
+
+### Members
+- `GET /api/admin/members` - List all members
+- `GET /api/admin/membership/stats` - Membership statistics
 
 ---
 
 ## Architecture
 
-### Backend Routes
-- `/api/membership/onboard` - New member onboarding with Pet Pass number generation
-- `/api/payments/verify` - Payment verification + Pet Pass activation
+### New Files Created
+- `/app/backend/renewal_reminders.py` - Renewal reminder system
+- `/app/frontend/src/pages/MemberForgotPassword.jsx`
+- `/app/frontend/src/pages/MemberResetPassword.jsx`
+- `/app/frontend/src/components/PetPassCard.jsx`
+- `/app/memory/PET_PASS_TIERS.md`
 
-### Key Frontend Components
-- `MembershipPage.jsx` - Pet Pass landing page
-- `MembershipOnboarding.jsx` - Multi-step onboarding flow
-- `Navbar.jsx` - Auth-aware navigation
-- `PetPassCard.jsx` - Digital Pet Pass identity card (NEW)
-- `MyPets.jsx` - Shows Pet Pass cards per pet
-- `MemberDashboard.jsx` - "My Account" page
-
-### Pet Pass Data Model
-```
-{
-  pet_pass_number: "TDC-XXXXXX",
-  pet_pass_status: "pending" | "active" | "expired",
-  pet_pass_plan: "trial" | "foundation",
-  pet_pass_activated_at: ISO datetime,
-  pet_pass_expires: ISO datetime
-}
-```
+### Modified Files
+- `/app/backend/auth_routes.py` - Added password reset endpoints
+- `/app/backend/server.py` - Integrated renewal reminders
+- `/app/backend/loyalty_routes.py` - Updated tier multipliers
+- `/app/backend/admin_member_routes.py` - Updated tier stats
+- `/app/frontend/src/components/admin/MembersTab.jsx` - New tiers
+- `/app/frontend/src/components/admin/MembershipManager.jsx` - New tiers
+- `/app/frontend/src/context/AuthContext.jsx` - Session fix
+- `/app/frontend/src/pages/Login.jsx` - Forgot password link
+- `/app/frontend/src/App.js` - New routes
 
 ---
 
 ## Known Issues
-- Session persistence is flaky (users logged out unexpectedly)
-- Production database separate from preview (changes don't sync)
 - WhatsApp integration is MOCKED (click-to-chat only)
-
----
+- Production DB separate from preview
 
 ## 3rd Party Integrations
-- **OpenAI**: Powers Mira AI (via litellm + Emergent LLM Key)
-- **Resend**: Transactional emails
-- **Razorpay**: Payment gateway
-- **Shopify**: Product sync (known "Untitled" bug)
-- **ReportLab**: PDF generation
+- **OpenAI**: Powers Mira AI (via Emergent LLM Key)
+- **Resend**: Email (password reset, renewal reminders)
+- **Razorpay**: Payments
+- **Shopify**: Product sync
 
 ---
 
