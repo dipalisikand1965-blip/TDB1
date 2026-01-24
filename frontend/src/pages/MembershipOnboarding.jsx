@@ -952,13 +952,13 @@ const MembershipOnboarding = () => {
                 <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50">
                   <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <CreditCard className="w-5 h-5 text-purple-600" />
-                    Order Summary
+                    Pet Pass Summary
                   </h3>
                   
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">
-                        {planType === 'annual' ? 'Annual' : 'Monthly'} Membership (1 pet)
+                        Pet Pass — {pricing.isTrialPlan ? 'Trial (1 month)' : 'Foundation (12 months)'} (1 pet)
                       </span>
                       <span>₹{pricing.basePrice}</span>
                     </div>
@@ -966,7 +966,7 @@ const MembershipOnboarding = () => {
                     {pricing.additionalPets > 0 && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">
-                          Additional Dogs ({pricing.additionalPets} × ₹{pricing.additionalPetPrice})
+                          Additional Pet Pass ({pricing.additionalPets} × ₹{pricing.additionalPetPrice})
                         </span>
                         <span>₹{pricing.additionalPets * pricing.additionalPetPrice}</span>
                       </div>
@@ -994,9 +994,9 @@ const MembershipOnboarding = () => {
 
                   {/* What's Included */}
                   <div className="mt-6 p-4 bg-white/60 rounded-lg">
-                    <p className="text-xs font-medium text-gray-500 mb-2">WHAT&apos;S INCLUDED</p>
+                    <p className="text-xs font-medium text-gray-500 mb-2">YOUR PET PASS INCLUDES</p>
                     <div className="space-y-2 text-sm">
-                      {['All 12 pillars unlocked', 'Pet Soul profile', 'Mira AI concierge', 'Health Vault', 'Priority support'].map((item, i) => (
+                      {['Unique Pet Pass number per pet', 'All 14 pillars unlocked', 'Pet Soul™ profile', 'Mira AI concierge', 'Health Vault', 'Priority support'].map((item, i) => (
                         <div key={i} className="flex items-center gap-2 text-gray-700">
                           <Check className="w-4 h-4 text-green-500" />
                           {item}
@@ -1034,7 +1034,7 @@ const MembershipOnboarding = () => {
                         </>
                       ) : (
                         <>
-                          Pay ₹{pricing.total}
+                          Activate Pet Pass — ₹{pricing.total}
                           <ArrowRight className="w-5 h-5 ml-2" />
                         </>
                       )}
