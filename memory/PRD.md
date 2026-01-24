@@ -29,8 +29,16 @@
    - Added "Clear saved details" button to reset form data
    - Added info message explaining where pet data comes from
    - "Clear pet details" link for ordering for different pets
-   - Improved localStorage handling
    - File: `/app/frontend/src/pages/Checkout.jsx`
+
+4. **Personalized Mira Welcome Card** (NEW - P1)
+   - Beautiful welcome card with pet/parent photo for returning members
+   - Smart image priority: Pet photo → Parent photo → Breed image → Default dog
+   - Shows pet name, breed, and parent name
+   - "Pet's Photo" badge when showing uploaded pet image
+   - Breed-specific fallback images for 15+ breeds
+   - Personalized greeting: "Welcome back, [Name]! How is [Pet] doing today?"
+   - File: `/app/frontend/src/components/MiraAI.jsx`
 
 ### ⚠️ Previous Session Fixes (Still Working)
 - Pet Soul animated score in header
