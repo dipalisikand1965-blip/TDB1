@@ -7482,6 +7482,9 @@ async def verify_payment(request: VerifyPaymentRequest):
         duration_days = order.get("duration_days", 30)
         expires_at = datetime.now(timezone.utc) + timedelta(days=duration_days)
         
+        # Determine Pet Pass plan type based on duration
+        pet_pass_plan = "trial" if duration_days <= 31 else "foundation"
+        
         user = await db.users.find_one({"email": request.user_email})
         
         if user:
@@ -7503,6 +7506,20 @@ async def verify_payment(request: VerifyPaymentRequest):
                     "last_payment_id": request.razorpay_payment_id
                 }}
             )
+            
+            # Update Pet Pass status for all user's pets
+            pet_ids = user.get("pet_ids", [])
+            if pet_ids:
+                await db.pets.update_many(
+                    {"id": {"$in": pet_ids}},
+                    {"$set": {
+                        "pet_pass_status": "active",
+                        "pet_pass_plan": pet_pass_plan,
+                        "pet_pass_activated_at": datetime.now(timezone.utc).isoformat(),
+                        "pet_pass_expires": expires_at.isoformat()
+                    }}
+                )
+                logger.info(f"Activated Pet Pass for {len(pet_ids)} pets")
         else:
             new_user = {
                 "id": f"user-{uuid.uuid4().hex[:12]}",
@@ -7533,7 +7550,7 @@ async def verify_payment(request: VerifyPaymentRequest):
         
         return {
             "success": True,
-            "message": "Payment verified and membership activated!",
+            "message": "Payment verified and Pet Pass activated!",
             "membership": {
                 "tier": order.get("tier"),
                 "expires": expires_at.isoformat(),
