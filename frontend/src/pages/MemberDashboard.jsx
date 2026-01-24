@@ -379,19 +379,17 @@ const MemberDashboard = () => {
               <div className="flex justify-center md:justify-end">
                 <Card className="w-72 bg-white/10 backdrop-blur-md border-white/20 text-white overflow-hidden">
                   {/* Pet Photo */}
-                  <div className="relative h-40 bg-gradient-to-br from-purple-400/30 to-pink-400/30">
-                    {petPhotoUrl ? (
+                  <div className="relative h-40 bg-gradient-to-br from-purple-400/30 to-pink-400/30 flex items-center justify-center">
+                    {petPhotoUrl && (
                       <img 
                         src={petPhotoUrl} 
                         alt={primaryPet.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => { e.target.style.display = 'none'; }}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={(e) => { e.target.style.opacity = '0'; }}
                       />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <PawPrint className="w-16 h-16 text-white/30" />
-                      </div>
                     )}
+                    {/* Fallback icon - always present underneath, shown when no photo */}
+                    <PawPrint className="w-16 h-16 text-white/30" />
                     <div className="absolute top-3 right-3 bg-purple-600/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full font-medium">
                       {Math.round(primaryPet.overall_score || 0)}% Soul
                     </div>
