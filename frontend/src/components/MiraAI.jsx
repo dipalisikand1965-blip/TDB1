@@ -64,12 +64,20 @@ const getWelcomeImage = (user, pets) => {
   return { url: BREED_IMAGES.default, type: 'default' };
 };
 
-// Welcome Card Component
-const WelcomeCard = ({ user, pets }) => {
+// Welcome Card Component - Enhanced with clickable links
+const WelcomeCard = ({ user, pets, onLinkClick }) => {
   const imageInfo = getWelcomeImage(user, pets);
   const petName = pets?.[0]?.name;
   const userName = user?.name?.split(' ')[0] || 'Friend';
   const breed = pets?.[0]?.identity?.breed || pets?.[0]?.breed || '';
+  const petScore = pets?.[0]?.overall_score || pets?.[0]?.soul_score || 0;
+  
+  // Quick action links
+  const quickLinks = [
+    { label: 'Find Events', query: 'What pet-friendly events are happening?', icon: '🎉' },
+    { label: 'Trails & Hikes', query: 'Suggest dog-friendly trails and hikes nearby', icon: '🥾' },
+    { label: 'Meetups', query: 'Are there any dog meetups I can join?', icon: '🐕' }
+  ];
   
   return (
     <div className="rounded-xl overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100 shadow-sm">
@@ -100,6 +108,13 @@ const WelcomeCard = ({ user, pets }) => {
             {petName}&apos;s Photo
           </div>
         )}
+        
+        {/* Soul Score badge */}
+        {petScore > 0 && (
+          <div className="absolute top-2 left-2 bg-white/90 text-purple-700 text-[10px] px-2 py-0.5 rounded-full font-medium">
+            {Math.round(petScore)}% Soul
+          </div>
+        )}
       </div>
       
       {/* Welcome Message */}
@@ -113,6 +128,20 @@ const WelcomeCard = ({ user, pets }) => {
         <p className="text-xs text-gray-500 mt-1">
           I&apos;m Mira, your dedicated concierge. How may I assist you?
         </p>
+        
+        {/* Quick Action Links */}
+        <div className="flex flex-wrap gap-2 mt-3">
+          {quickLinks.map((link, idx) => (
+            <button
+              key={idx}
+              onClick={() => onLinkClick && onLinkClick(link.query)}
+              className="flex items-center gap-1 px-2.5 py-1.5 text-xs bg-white hover:bg-purple-50 border border-purple-200 hover:border-purple-400 rounded-full text-purple-700 font-medium transition-colors cursor-pointer"
+            >
+              <span>{link.icon}</span>
+              <span>{link.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
