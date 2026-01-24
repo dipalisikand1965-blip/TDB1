@@ -7500,7 +7500,7 @@ async def verify_payment(request: VerifyPaymentRequest):
             await db.users.update_one(
                 {"email": request.user_email},
                 {"$set": {
-                    "membership_tier": order.get("tier", "pawsome"),
+                    "membership_tier": order.get("tier", "loyal_companion"),
                     "membership_expires": expires_at.isoformat(),
                     "membership_plan": order.get("plan_id"),
                     "last_payment_id": request.razorpay_payment_id
@@ -7657,7 +7657,7 @@ async def import_members_csv(file: UploadFile = File(...)):
                     "name": row.get('name', '').strip(),
                     "phone": row.get('phone', '').strip(),
                     "password": hashed,
-                    "membership_tier": row.get('membership_tier', 'pawsome').strip() or 'pawsome',
+                    "membership_tier": row.get('membership_tier', 'loyal_companion').strip() or 'loyal_companion',
                     "membership_expires": expires_at.isoformat(),
                     "loyalty_points": int(row.get('paw_points', '100') or '100'),
                     "admin_notes": row.get('notes', '').strip(),
