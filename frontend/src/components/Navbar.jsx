@@ -42,18 +42,10 @@ const Navbar = () => {
             // Store the primary (first) pet for display
             setPrimaryPet(pets[0]);
             
-            // Calculate soul score from answers - 59 total questions possible
-            const totalQuestions = 59;
-            const calculatePetScore = (pet) => {
-              const answers = pet.doggy_soul_answers || {};
-              const answeredCount = Object.keys(answers).filter(k => answers[k] && answers[k] !== '' && answers[k] !== null).length;
-              return Math.round((answeredCount / totalQuestions) * 100);
-            };
-            
-            // Get average score across all pets, or max score if user prefers that
-            const scores = pets.map(calculatePetScore);
-            const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
-            setPetSoulScore(Math.round(avgScore));
+            // Use the overall_score from the API for consistency
+            // This score is calculated on the backend based on doggy_soul_answers
+            const primaryScore = pets[0].overall_score || 0;
+            setPetSoulScore(Math.round(primaryScore));
           } else {
             setPetSoulScore(0);
             setPrimaryPet(null);
