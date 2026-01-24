@@ -8937,6 +8937,61 @@ async def get_agent_analytics(days: int = 30):
     }
 
 
+
+# ==================== PET PASS RENEWAL REMINDERS ====================
+
+@api_router.get("/admin/renewals/expiring")
+async def get_expiring_passes(days: int = 30, username: str = Depends(verify_admin)):
+    """Get list of Pet Pass memberships expiring within specified days"""
+    expiring = await get_expiring_memberships(days)
+    return {
+        "expiring_within_days": days,
+        "count": len(expiring),
+        "members": expiring
+    }
+
+
+@api_router.post("/admin/renewals/check")
+async def trigger_renewal_check(username: str = Depends(verify_admin)):
+    """Manually trigger renewal reminder check (sends emails to those due for reminder)"""
+    results = await check_and_send_renewal_reminders()
+    return {
+        "message": "Renewal check completed",
+        "results": results
+    }
+
+
+@api_router.post("/admin/renewals/send-reminder/{user_email}")
+async def send_manual_reminder(user_email: str, username: str = Depends(verify_admin)):
+    """Manually send a renewal reminder to a specific user"""
+    from renewal_reminders import send_renewal_reminder_email
+    
+    user = await db.users.find_one({"email": user_email}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get expiry days
+    expires_str = user.get("membership_expires")
+    if not expires_str:
+        raise HTTPException(status_code=400, detail="User has no membership expiration date")
+    
+    expires = datetime.fromisoformat(expires_str.replace('Z', '+00:00'))
+    days_until = (expires - datetime.now(timezone.utc)).days
+    
+    # Get user's pets
+    pet_ids = user.get("pet_ids", [])
+    pets = await db.pets.find({"id": {"$in": pet_ids}}, {"_id": 0, "name": 1}).to_list(100) if pet_ids else []
+    pet_names = [p.get("name", "Unknown") for p in pets]
+    
+    success = await send_renewal_reminder_email(user, max(days_until, 1), pet_names)
+    
+    if success:
+        return {"message": f"Renewal reminder sent to {user_email}"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to send reminder email")
+
+
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
