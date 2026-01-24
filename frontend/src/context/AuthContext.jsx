@@ -100,11 +100,11 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const response = await axios.post(`${API_URL}/api/auth/login`, { email, password });
-    const { access_token, user } = response.data;
-    localStorage.setItem('tdb_auth_token', access_token);
+    const { access_token, user: userData } = response.data;
+    localStorage.setItem(TOKEN_KEY, access_token);
     setToken(access_token);
-    setUser(user);
-    return user;
+    setUser(userData);
+    return userData;
   };
 
   const register = async (userData) => {
@@ -119,11 +119,11 @@ export const AuthProvider = ({ children }) => {
    */
   const loginWithGoogle = async (sessionId) => {
     const response = await axios.post(`${API_URL}/api/auth/google/session`, { session_id: sessionId });
-    const { access_token, user } = response.data;
-    localStorage.setItem('tdb_auth_token', access_token);
+    const { access_token, user: userData } = response.data;
+    localStorage.setItem(TOKEN_KEY, access_token);
     setToken(access_token);
-    setUser(user);
-    return user;
+    setUser(userData);
+    return userData;
   };
 
   /**
@@ -136,19 +136,22 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    // Try to invalidate session on server
+    // Clear local state first
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem('tdb_session_token');
+    setToken(null);
+    setUser(null);
+    
+    // Then try to invalidate session on server (non-blocking)
     try {
       const sessionToken = localStorage.getItem('tdb_session_token');
       if (sessionToken) {
         await axios.post(`${API_URL}/api/auth/logout`, { session_token: sessionToken });
-        localStorage.removeItem('tdb_session_token');
       }
     } catch (e) {
-      console.error('Logout error:', e);
+      // Ignore logout errors - user is already logged out locally
+      console.debug('Server logout notification failed:', e.message);
     }
-    localStorage.removeItem('tdb_auth_token');
-    setToken(null);
-    setUser(null);
   };
 
   return (
