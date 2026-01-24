@@ -301,7 +301,8 @@ class TestMiraContext:
         assert response.status_code == 200
         data = response.json()
         
-        greeting = data.get("greeting", "")
+        # Check both greeting and pillar_note fields
+        greeting = data.get("greeting", "") or data.get("pillar_note", "")
         # Should contain user's name for authenticated users
         # Should NOT contain "Sign in"
         assert "Sign in" not in greeting, f"Authenticated user should not see 'Sign in': {greeting}"
