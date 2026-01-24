@@ -434,7 +434,8 @@ const Navbar = () => {
               {/* Pet Soul / My Pets with Animated Score */}
               <PetSoulScore 
                 score={petSoulScore} 
-                isLoggedIn={!!user} 
+                isLoggedIn={!!user}
+                pet={primaryPet}
                 className="hidden md:flex"
               />
 
