@@ -314,7 +314,7 @@ const Navbar = () => {
           <div className="flex items-center justify-between h-24">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-              <Logo size="lg" showText={true} />
+              <Logo size="xl" showText={true} />
             </Link>
 
             {/* Desktop Navigation - Life Pillars */}
