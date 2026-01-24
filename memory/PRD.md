@@ -1,7 +1,7 @@
 # The Doggy Company® - Product Requirements Document
 ## Pet Life Operating System
 
-**Last Updated:** January 23, 2026 (Session 16 - Production Deployment Fix, Pet Soul Flow Mode, Checkout UX Improvements)
+**Last Updated:** January 24, 2026 (Session 16 - CX Journey Gap Analysis & Fixes)
 
 ---
 
@@ -10,41 +10,50 @@
 ### ✅ Completed This Session
 
 1. **Production Deployment Fix** (P0 - CRITICAL)
-   - Identified root cause: `REACT_APP_BACKEND_URL` was pointing to wrong URL (`dogbakery-ecom.emergent.host`)
-   - Guided user to fix environment variables in Emergent deployment settings
-   - Production site now working correctly at `thedoggycompany.in`
+   - Identified root cause: `REACT_APP_BACKEND_URL` pointing to wrong URL
+   - Guided user to fix environment variables in deployment settings
+   - Production site now working at `thedoggycompany.in`
 
 2. **Pet Soul Question Flow Mode** (P1 - NEW)
-   - Created seamless "flow mode" for answering multiple questions
-   - Beautiful full-screen modal with progress tracking
+   - Seamless flow mode for answering multiple questions
    - Auto-advances to next unanswered question after saving
-   - Options displayed as elegant A/B/C/D/E buttons
-   - Category badges (Identity, Family, Routine, etc.)
-   - Previous/Skip navigation controls
-   - Progress bar shows completion percentage
-   - "Answer X Questions" button in header
+   - Beautiful modal with progress tracking, category badges, A/B/C/D buttons
    - File: `/app/frontend/src/pages/PetSoulJourneyPage.jsx`
 
-3. **Checkout UX Improvements** (P1)
-   - Added "Clear saved details" button to reset form data
-   - Added info message explaining where pet data comes from
-   - "Clear pet details" link for ordering for different pets
-   - File: `/app/frontend/src/pages/Checkout.jsx`
-
-4. **Personalized Mira Welcome Card** (NEW - P1)
-   - Beautiful welcome card with pet/parent photo for returning members
-   - Smart image priority: Pet photo → Parent photo → Breed image → Default dog
-   - Shows pet name, breed, and parent name
-   - "Pet's Photo" badge when showing uploaded pet image
-   - Breed-specific fallback images for 15+ breeds
-   - Personalized greeting: "Welcome back, [Name]! How is [Pet] doing today?"
+3. **Personalized Mira Welcome Card** (P1 - NEW)
+   - Beautiful welcome card with pet/parent photo
+   - Smart image priority: Pet photo → Parent photo → Breed image → Default
+   - Personalized greeting with pet name and breed
    - File: `/app/frontend/src/components/MiraAI.jsx`
 
-### ⚠️ Previous Session Fixes (Still Working)
-- Pet Soul animated score in header
-- Mira AI personalization on pillar pages
-- Care bundles showing correctly in PricingHub
-- Command Center loading properly
+4. **Dashboard Pet Soul Completion CTA** (P1 - NEW)
+   - Prominent card showing "Complete [Pet]'s Pet Soul™"
+   - Progress bar with percentage completion
+   - "Continue Building Soul" button linking to flow mode
+   - Shows when score is below 80%
+   - File: `/app/frontend/src/pages/MemberDashboard.jsx`
+
+5. **Checkout Pet Quick-Selector** (P1 - NEW)
+   - For logged-in users: Quick-select from registered pets
+   - Pet buttons with photo thumbnails
+   - Auto-fills pet name, breed, and age
+   - "Other Pet" option for manual entry
+   - File: `/app/frontend/src/pages/Checkout.jsx`
+
+6. **Fixed "Add Your Pet" Dead Links** (P0 - BUG FIX)
+   - Fixed buttons that pointed to non-existent `/pets/add`
+   - Now redirect to `/pet-soul-onboard`
+   - Files: `MiraContextPanel.jsx`, `PersonalizedDashboard.jsx`, `PetGateModal.jsx`, `PetSoulJourney.jsx`
+
+7. **CX Journey Gap Analysis** (Documentation)
+   - Created comprehensive gap analysis at `/app/memory/CX_JOURNEY_GAPS.md`
+   - Identified 14 UX gaps from new visitor to returning customer
+   - Prioritized fixes with implementation plan
+
+### ⚠️ Remaining Gaps to Address
+- Post-signup redirect to pet addition (Gap 3)
+- Upcoming events/reminders on dashboard (Gap 6)
+- Login page dynamic text for new vs returning users (Gap 8)
 
 ---
 
