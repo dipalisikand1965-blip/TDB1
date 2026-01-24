@@ -414,7 +414,7 @@ async def list_tickets(
     sort_by: str = "created_at",
     sort_order: str = "desc"
 ):
-    """List tickets with filters"""
+    """List tickets with filters - reads from both tickets and service_desk_tickets collections"""
     db = get_db()
     
     query = {}
@@ -426,10 +426,12 @@ async def list_tickets(
             query["status"] = status
     
     if category:
-        query["category"] = category
+        query["$or"] = [{"category": category}, {"pillar": category}]
     
     if urgency:
-        query["urgency"] = urgency
+        query["$or"] = query.get("$or", []) if "$or" not in query else query["$or"]
+        if "$or" not in query:
+            query["urgency"] = urgency
     
     if assigned_to:
         query["assigned_to"] = assigned_to
@@ -441,23 +443,63 @@ async def list_tickets(
         query["member.email"] = member_email
     
     if search:
-        query["$or"] = [
+        search_conditions = [
             {"ticket_id": {"$regex": search, "$options": "i"}},
             {"member.name": {"$regex": search, "$options": "i"}},
             {"member.email": {"$regex": search, "$options": "i"}},
             {"member.phone": {"$regex": search, "$options": "i"}},
             {"description": {"$regex": search, "$options": "i"}},
+            {"subject": {"$regex": search, "$options": "i"}},
         ]
+        if "$or" in query:
+            # Combine with existing $or conditions
+            query = {"$and": [query, {"$or": search_conditions}]}
+        else:
+            query["$or"] = search_conditions
     
     sort_direction = -1 if sort_order == "desc" else 1
     
-    cursor = db.tickets.find(query).sort(sort_by, sort_direction).skip(offset).limit(limit)
-    tickets = await cursor.to_list(length=limit)
+    # Fetch from BOTH collections and merge
+    all_tickets = []
     
-    total = await db.tickets.count_documents(query)
+    # 1. From tickets collection (legacy)
+    try:
+        cursor1 = db.tickets.find(query).sort(sort_by, sort_direction).skip(offset).limit(limit)
+        tickets1 = await cursor1.to_list(length=limit)
+        for t in tickets1:
+            t["source_collection"] = "tickets"
+        all_tickets.extend(tickets1)
+    except Exception as e:
+        logger.warning(f"Error fetching from tickets collection: {e}")
+    
+    # 2. From service_desk_tickets collection (new auto-created tickets)
+    try:
+        cursor2 = db.service_desk_tickets.find(query).sort(sort_by, sort_direction).skip(offset).limit(limit)
+        tickets2 = await cursor2.to_list(length=limit)
+        for t in tickets2:
+            t["source_collection"] = "service_desk_tickets"
+        
+        # Add only if not duplicate (by ticket_id)
+        existing_ids = {t.get("ticket_id") for t in all_tickets}
+        for t in tickets2:
+            if t.get("ticket_id") not in existing_ids:
+                all_tickets.append(t)
+    except Exception as e:
+        logger.warning(f"Error fetching from service_desk_tickets collection: {e}")
+    
+    # Sort combined results
+    all_tickets.sort(key=lambda x: x.get(sort_by, ""), reverse=(sort_order == "desc"))
+    
+    # Apply limit
+    all_tickets = all_tickets[:limit]
+    
+    # Get total count from both collections
+    total1 = await db.tickets.count_documents(query) if query else 0
+    total2 = await db.service_desk_tickets.count_documents(query) if query else 0
+    total = total1 + total2
     
     return {
-        "tickets": [serialize_ticket(t) for t in tickets],
+        "tickets": [serialize_ticket(t) for t in all_tickets],
         "total": total,
         "limit": limit,
         "offset": offset
