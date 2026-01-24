@@ -242,16 +242,18 @@ const MembershipOnboarding = () => {
     }
   };
 
-  // Calculate pricing - Updated to new Founding Member rates
+  // Calculate pricing - Updated for Pet Pass (Trial vs Annual)
   const getPricing = () => {
-    const basePrice = planType === 'annual' ? 4999 : 499;
-    const additionalPetPrice = planType === 'annual' ? 2499 : 249;
+    // Trial = 1 month (₹499), Annual = 12 months (₹4,999)
+    const isTrialPlan = planType === 'trial' || planType === 'monthly';
+    const basePrice = isTrialPlan ? 499 : 4999;
+    const additionalPetPrice = isTrialPlan ? 249 : 2499;
     const additionalPets = Math.max(0, petsData.length - 1);
     const subtotal = basePrice + (additionalPets * additionalPetPrice);
     const gst = Math.round(subtotal * 0.18);
     const total = subtotal + gst;
     
-    return { basePrice, additionalPetPrice, additionalPets, subtotal, gst, total };
+    return { basePrice, additionalPetPrice, additionalPets, subtotal, gst, total, isTrialPlan };
   };
 
   const pricing = getPricing();
@@ -259,7 +261,7 @@ const MembershipOnboarding = () => {
   return (
     <>
       <Helmet>
-        <title>Join The Pack - Membership | The Doggy Company</title>
+        <title>Activate Pet Pass | The Doggy Company</title>
       </Helmet>
       
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-pink-100">
@@ -299,7 +301,7 @@ const MembershipOnboarding = () => {
             </div>
             
             <Badge className="bg-gradient-to-r from-orange-500 to-pink-500 text-white border-0 px-3 py-1">
-              {planType === 'annual' ? '🌟 Annual Plan' : 'Monthly Plan'}
+              {planType === 'annual' ? '🌟 Pet Pass — Foundation' : '✨ Pet Pass — Trial'}
             </Badge>
           </div>
         </header>
