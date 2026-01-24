@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Search, User, Heart, ChevronDown, Sparkles, Cake, UtensilsCrossed, Home, Plane, HeartPulse, Clock, Activity, Brain, FileText, MoreHorizontal, GraduationCap } from 'lucide-react';
+import { ShoppingCart, Menu, X, Search, User, Heart, ChevronDown, Sparkles, Cake, UtensilsCrossed, Home, Plane, HeartPulse, Clock, Activity, Brain, FileText, MoreHorizontal, GraduationCap, PawPrint } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Button } from './ui/button';
 import { useAuth } from '../context/AuthContext';
