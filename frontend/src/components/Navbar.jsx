@@ -431,22 +431,26 @@ const Navbar = () => {
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-1">
-              {/* Pet Soul / My Pets with Animated Score */}
-              <PetSoulScore 
-                score={petSoulScore} 
-                isLoggedIn={!!user}
-                pet={primaryPet}
-                className="hidden md:flex"
-              />
+              {/* Pet Soul / My Pets with Animated Score - Only show when logged in */}
+              {user && (
+                <PetSoulScore 
+                  score={petSoulScore} 
+                  isLoggedIn={true}
+                  pet={primaryPet}
+                  className="hidden md:flex"
+                />
+              )}
 
-              {/* Voice Order */}
-              <Link
-                to="/voice-order"
-                className="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium bg-gradient-to-r from-orange-500 to-red-500 text-white hover:opacity-90"
-                data-testid="voice-order-nav-btn"
-              >
-                🎙️ Voice
-              </Link>
+              {/* Voice Order - Only show when logged in */}
+              {user && (
+                <Link
+                  to="/voice-order"
+                  className="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium bg-gradient-to-r from-orange-500 to-red-500 text-white hover:opacity-90"
+                  data-testid="voice-order-nav-btn"
+                >
+                  🎙️ Voice
+                </Link>
+              )}
 
               {/* Mira AI */}
               <button
@@ -469,12 +473,30 @@ const Navbar = () => {
                 <Search className="w-4 h-4" />
               </Button>
 
-              {/* User */}
-              <Link to={user ? "/dashboard" : "/login"}>
-                <Button variant="ghost" size="icon" className="hidden sm:flex h-8 w-8">
-                  <User className="w-4 h-4" />
-                </Button>
-              </Link>
+              {/* Auth Actions - Different for logged in vs logged out */}
+              {user ? (
+                /* Logged In: Show My Account */
+                <Link to="/dashboard">
+                  <Button variant="ghost" size="sm" className="hidden sm:flex items-center gap-1.5 h-8 px-3 text-xs font-medium">
+                    <User className="w-3.5 h-3.5" />
+                    My Account
+                  </Button>
+                </Link>
+              ) : (
+                /* Logged Out: Show Sign in | Join now */
+                <div className="hidden sm:flex items-center gap-1">
+                  <Link to="/login">
+                    <Button variant="ghost" size="sm" className="h-8 px-3 text-xs font-medium text-gray-600 hover:text-gray-900">
+                      Sign in
+                    </Button>
+                  </Link>
+                  <Link to="/pet-soul-onboard">
+                    <Button size="sm" className="h-8 px-3 text-xs font-medium bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
+                      Join now
+                    </Button>
+                  </Link>
+                </div>
+              )}
 
               {/* Cart */}
               <Button
