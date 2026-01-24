@@ -932,7 +932,7 @@ const MemberDashboard = () => {
                   })}
                   {pets.filter(p => p.birth_date).length === 0 && (
                     <p className="text-center text-gray-500 py-4">
-                      Add your pet's birthday to get special offers!
+                      Add your pet&apos;s birthday to get special offers!
                     </p>
                   )}
                 </div>
