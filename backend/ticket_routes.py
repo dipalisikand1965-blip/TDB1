@@ -558,50 +558,66 @@ async def get_member_all_tickets(
 
 @router.get("/stats")
 async def get_ticket_stats():
-    """Get ticket statistics for dashboard"""
+    """Get ticket statistics for dashboard - includes both tickets and service_desk_tickets"""
     db = get_db()
+    
+    # Helper to count from both collections
+    async def count_both(query):
+        count1 = await db.tickets.count_documents(query)
+        count2 = await db.service_desk_tickets.count_documents(query)
+        return count1 + count2
     
     # Count by status
     status_counts = {}
     for status in TICKET_STATUSES:
-        count = await db.tickets.count_documents({"status": status["id"]})
+        count = await count_both({"status": status["id"]})
         status_counts[status["id"]] = count
     
     # Count open tickets
-    open_count = await db.tickets.count_documents({"status": {"$nin": ["resolved", "closed"]}})
+    open_count = await count_both({"status": {"$nin": ["resolved", "closed"]}})
     
-    # Count by category
+    # Count by category (also check pillar field for service_desk_tickets)
     category_counts = {}
     for cat in TICKET_CATEGORIES:
-        count = await db.tickets.count_documents({"category": cat["id"]})
-        category_counts[cat["id"]] = count
+        count1 = await db.tickets.count_documents({"category": cat["id"]})
+        count2 = await db.service_desk_tickets.count_documents({"$or": [{"category": cat["id"]}, {"pillar": cat["id"]}]})
+        category_counts[cat["id"]] = count1 + count2
     
     # Count by urgency (open tickets only)
     urgency_counts = {}
     for urg in URGENCY_LEVELS:
-        count = await db.tickets.count_documents({
-            "urgency": urg["id"],
-            "status": {"$nin": ["resolved", "closed"]}
-        })
+        query = {"urgency": urg["id"], "status": {"$nin": ["resolved", "closed"]}}
+        count = await count_both(query)
         urgency_counts[urg["id"]] = count
     
-    # Tickets by concierge
+    # Tickets by concierge - aggregate from both collections
     pipeline = [
         {"$match": {"assigned_to": {"$ne": None}}},
         {"$group": {"_id": "$assigned_to", "count": {"$sum": 1}}},
         {"$sort": {"count": -1}}
     ]
-    cursor = db.tickets.aggregate(pipeline)
-    tickets_by_assignee = await cursor.to_list(length=100)
+    cursor1 = db.tickets.aggregate(pipeline)
+    cursor2 = db.service_desk_tickets.aggregate(pipeline)
+    
+    assignees1 = await cursor1.to_list(length=100)
+    assignees2 = await cursor2.to_list(length=100)
+    
+    # Merge assignee counts
+    assignee_map = {}
+    for a in assignees1 + assignees2:
+        if a["_id"]:
+            assignee_map[a["_id"]] = assignee_map.get(a["_id"], 0) + a["count"]
+    
+    tickets_by_assignee = [{"_id": k, "count": v} for k, v in sorted(assignee_map.items(), key=lambda x: -x[1])]
     
     # Recent tickets (last 24 hours)
     from datetime import timedelta
     yesterday = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
-    recent_count = await db.tickets.count_documents({"created_at": {"$gte": yesterday}})
+    recent_count = await count_both({"created_at": {"$gte": yesterday}})
     
     # Overdue tickets
     now = datetime.now(timezone.utc).isoformat()
-    overdue_count = await db.tickets.count_documents({
+    overdue_count = await count_both({
         "deadline": {"$lt": now, "$ne": None},
         "status": {"$nin": ["resolved", "closed"]}
     })
