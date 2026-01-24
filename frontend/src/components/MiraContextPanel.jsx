@@ -694,21 +694,44 @@ const MiraContextPanel = ({
                   <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 rounded-lg text-center">
                     <PawPrint className="w-8 h-8 text-purple-400 mx-auto mb-2" />
                     <p className="text-sm font-semibold text-gray-800">Start Your Pet&apos;s Soul</p>
-                    <p className="text-xs text-gray-500 mt-1">Add your pet to unlock personalized care</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {user ? 'Add your pet to unlock personalized care' : 'Sign in or join to unlock personalized care'}
+                    </p>
                     <div className="mt-2">
                       <div className="w-full bg-purple-100 rounded-full h-2">
                         <div className="bg-gray-300 h-2 rounded-full" style={{ width: '0%' }} />
                       </div>
                       <p className="text-xs text-purple-600 font-medium mt-1">Soul Score: 0%</p>
                     </div>
-                    <Button
-                      size="sm"
-                      className="mt-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs"
-                      onClick={() => window.location.href = '/pet-soul-onboard'}
-                    >
-                      <Plus className="w-3 h-3 mr-1" />
-                      Add Your Pet
-                    </Button>
+                    {user ? (
+                      <Button
+                        size="sm"
+                        className="mt-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs"
+                        onClick={() => window.location.href = '/pet-soul-onboard'}
+                      >
+                        <Plus className="w-3 h-3 mr-1" />
+                        Add Your Pet
+                      </Button>
+                    ) : (
+                      <div className="mt-3 flex flex-col gap-2">
+                        <Button
+                          size="sm"
+                          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs"
+                          onClick={() => window.location.href = '/membership'}
+                        >
+                          <Sparkles className="w-3 h-3 mr-1" />
+                          Join Pet Pass
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => window.location.href = '/login'}
+                        >
+                          Already a member? Sign in
+                        </Button>
+                      </div>
+                    )}
                   </div>
                   
                   {/* Benefits of Adding Pet */}
