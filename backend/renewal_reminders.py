@@ -30,7 +30,7 @@ def get_resend():
         if api_key:
             resend.api_key = api_key
             return resend
-    except:
+    except Exception:
         pass
     return None
 
