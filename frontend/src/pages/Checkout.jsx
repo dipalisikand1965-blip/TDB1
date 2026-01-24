@@ -1271,8 +1271,54 @@ _GST applicable on final invoice_
                   </div>
                 )}
                 
-                {/* Info about where data comes from */}
-                {(formData.petName || formData.petBreed) && (
+                {/* Quick Pet Selector for logged-in users with pets */}
+                {registeredPets.length > 0 && (
+                  <div className="mb-4 p-3 bg-purple-50 rounded-lg border border-purple-100">
+                    <Label className="text-sm font-medium text-purple-700 mb-2 block">
+                      Quick Select from Your Pets
+                    </Label>
+                    <div className="flex flex-wrap gap-2">
+                      {registeredPets.map(pet => (
+                        <button
+                          key={pet.id}
+                          type="button"
+                          onClick={() => handlePetSelect(pet.id)}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all ${
+                            selectedPetId === pet.id 
+                              ? 'bg-purple-600 text-white border-purple-600' 
+                              : 'bg-white text-gray-700 border-gray-200 hover:border-purple-300'
+                          }`}
+                        >
+                          {pet.photo_url || pet.image_url ? (
+                            <img 
+                              src={pet.photo_url || pet.image_url} 
+                              alt={pet.name}
+                              className="w-6 h-6 rounded-full object-cover"
+                            />
+                          ) : (
+                            <PawPrint className="w-4 h-4" />
+                          )}
+                          <span className="text-sm font-medium">{pet.name}</span>
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => handlePetSelect('manual')}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all ${
+                          selectedPetId === 'manual' 
+                            ? 'bg-gray-600 text-white border-gray-600' 
+                            : 'bg-white text-gray-500 border-dashed border-gray-300 hover:border-gray-400'
+                        }`}
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span className="text-sm">Other Pet</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Info about where data comes from - only show if no pet selector */}
+                {registeredPets.length === 0 && (formData.petName || formData.petBreed) && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex items-start gap-2">
                     <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                     <div className="text-sm text-blue-800">
