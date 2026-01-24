@@ -320,10 +320,11 @@ const MemberDashboard = () => {
                 {user.name?.charAt(0) || 'U'}
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Hello, {user.name}</h1>
+                <h1 className="text-2xl font-bold text-gray-900">My Account</h1>
+                <p className="text-gray-600 text-sm">Welcome back, {user.name}</p>
                 <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                  <Badge variant="outline" className="border-purple-200 text-purple-700 bg-purple-50">
-                    {user.membership_tier?.toUpperCase()} MEMBER
+                  <Badge variant="outline" className={`border-purple-200 text-purple-700 bg-purple-50 ${user.membership_tier === 'pending' ? 'border-amber-200 text-amber-700 bg-amber-50' : ''}`}>
+                    {user.membership_tier === 'pending' ? 'SETUP PENDING' : 'PET PASS ACTIVE'}
                   </Badge>
                   <span>•</span>
                   <span>{user.email}</span>
@@ -332,7 +333,7 @@ const MemberDashboard = () => {
             </div>
             <Button variant="ghost" onClick={logout} className="text-red-600 hover:bg-red-50 hover:text-red-700 self-start md:self-center">
               <LogOut className="w-4 h-4 mr-2" />
-              Logout
+              Log out
             </Button>
           </div>
         </div>
