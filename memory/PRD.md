@@ -39,7 +39,6 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 ### Session 4: Soul Score Consistency & UX Fixes ✅
 - **Soul Score now unified** - Uses `overall_score` from API everywhere
 - **Mira AI Welcome Card Enhanced** with pet photo and clickable quick links
-- **Logo size increased** in navbar
 - **Photo URL handling** - Fixed relative URL paths
 
 ### Session 5: Critical Bug Fixes (January 24, 2026) ✅
@@ -48,16 +47,74 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
   - Only clears auth on explicit 401 errors, not network errors
   - Added timeout (10s) and cross-tab synchronization
 - **P1 - Dashboard Hero "A System That Remembers" COMPLETED**
-  - Beautiful gradient hero with animated background
-  - Pet card showing name, breed, and Pet Soul percentage
-  - Quick stats (Points, Pets, Orders)
-  - Pet Pass Member badge with Active status
 - **P2 - Checkout Pet Name Bug FIXED**
-  - Added validation to prevent email addresses being saved as pet names
-  - Both load and save functions now validate pet name
 - **P4 - Mobile Cart View VERIFIED**
-  - Cart sidebar is responsive (full width on mobile)
-  - Modern design with gradient CTA buttons
+
+### Session 6: UI/UX Enhancements (January 24, 2026) ✅
+- **NEW LOGO**: Brilliant concierge bell + colorful paw design
+  - Generated custom logo with AI
+  - Location: `/app/frontend/public/logo-new.png`
+  - Features golden concierge bell with colorful paw pads
+  
+- **ALL 14 PILLARS on My Account**: Added "All Life Pillars" section
+  - Grid layout showing: Feed, Celebrate, Dine, Stay, Travel, Care, Groom, Play, Train, Insure, Adopt, Farewell, Shop, Community
+  - Each pillar is clickable and links to its page
+  
+- **MIRA SIGN-UP LINKS**: Added membership/sign-in links for non-logged users
+  - MiraContextPanel: "Join Pet Pass" + "Already a member? Sign in" buttons
+  - MiraPage sidebar: Same buttons for non-logged users
+  - MiraAI welcome message: Clickable links to /membership and /login
+  
+- **ADMIN DOCS UPDATED**: Pet Pass section completely rewritten
+  - New pricing tiers
+  - Member tier system (Curious Pup → Pack Leader)
+  - Password reset flow documentation
+  - Renewal reminders documentation
+  - All relevant API endpoints
+
+---
+
+## 14 Life Pillars
+| Pillar | Icon | Path |
+|--------|------|------|
+| Feed | 🍖 | /feed |
+| Celebrate | 🎂 | /celebrate |
+| Dine | 🍽️ | /dine |
+| Stay | 🏨 | /stay |
+| Travel | ✈️ | /travel |
+| Care | 🩺 | /care |
+| Groom | ✂️ | /groom |
+| Play | 🎾 | /play |
+| Train | 🎓 | /train |
+| Insure | 🛡️ | /insure |
+| Adopt | 🐕 | /adopt |
+| Farewell | 🌈 | /farewell |
+| Shop | 🛒 | /products |
+| Community | 👥 | /community |
+
+---
+
+## Checkout Personalization Features ✅
+- **Breed-specific product recommendations**
+  - Fetches products tailored to the entered pet breed
+  - Located in Checkout.jsx lines 288-312
+  - API: `/api/pet-soul/breed-products/{breed}`
+- **Pet name validation** - Prevents email addresses from being saved as pet names
+
+---
+
+## Password Reset Flow ✅
+1. User clicks "Forgot Password" on `/login`
+2. Submits email on `/member/forgot-password`
+3. Backend generates 24hr reset token
+4. Email sent via Resend with reset link
+5. User clicks link → `/reset-password?token=xxx`
+6. User enters new password
+7. Token invalidated after use
+
+**Files**:
+- Frontend: `MemberForgotPassword.jsx`, `MemberResetPassword.jsx`
+- Backend: `auth_routes.py` (forgot-password, reset-password endpoints)
 
 ---
 
@@ -92,10 +149,12 @@ const fullUrl = url.startsWith('http')
 ## Architecture
 
 ### Key Components Modified This Session
-- `/app/frontend/src/context/AuthContext.jsx` - Session persistence fix with refs
-- `/app/frontend/src/pages/MemberDashboard.jsx` - "A System That Remembers" hero
-- `/app/frontend/src/pages/Checkout.jsx` - Pet name validation
-- `/app/frontend/src/components/CartSidebar.jsx` - Mobile responsive
+- `/app/frontend/src/components/Logo.jsx` - New custom logo
+- `/app/frontend/src/pages/MemberDashboard.jsx` - All 14 pillars section
+- `/app/frontend/src/components/MiraContextPanel.jsx` - Sign-up links
+- `/app/frontend/src/pages/MiraPage.jsx` - Sign-up links in sidebar
+- `/app/frontend/src/components/MiraAI.jsx` - Clickable links in welcome
+- `/app/frontend/src/pages/AdminDocs.jsx` - Pet Pass documentation
 
 ### Backend Score Calculation
 Location: `/app/backend/server.py` - `calculate_pet_soul_score()`
@@ -109,11 +168,14 @@ Location: `/app/backend/server.py` - `calculate_pet_soul_score()`
 ### P0 - Critical
 1. ~~**Session Persistence**~~ ✅ FIXED
 2. ~~**Soul Score Consistency**~~ ✅ FIXED
+3. ~~**Logo redesign**~~ ✅ FIXED
+4. ~~**All pillars on My Account**~~ ✅ FIXED
+5. ~~**Sign-up links in Mira**~~ ✅ FIXED
 
 ### P1 - High Priority
 1. Service Desk - Missing Customer Name on tickets (capture name at ticket creation)
 2. Complete 'Adopt' Pillar registration
-3. Pet Pass Renewal Reminders integration
+3. Pet Pass Renewal Reminders integration (email scheduling)
 
 ### P2 - Medium Priority
 1. ~~**Checkout Pet Name Bug**~~ ✅ FIXED
@@ -122,9 +184,9 @@ Location: `/app/backend/server.py` - `calculate_pet_soul_score()`
 4. Member Tier Graduation logic
 
 ### P3 - Lower Priority
-1. Enhanced My Pets page with all 14 pillars clickable
-2. WhatsApp Business API integration
-3. Complete backend refactoring
+1. WhatsApp Business API integration
+2. Complete backend refactoring
+3. The "All-Seeing Eye" Command Center enhancements
 
 ---
 
