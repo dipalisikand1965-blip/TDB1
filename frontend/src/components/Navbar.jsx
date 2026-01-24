@@ -289,7 +289,7 @@ const Navbar = () => {
     <>
       {/* Top Banner */}
       <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white py-1.5 px-4 text-center text-xs font-medium">
-        🐾 Welcome to The Doggy Company — Your Pet's Life Operating System! 🚀
+        🐾 Welcome to The Doggy Company — Your Pet&apos;s Life Operating System! 🚀
       </div>
 
       {/* Search Overlay */}
