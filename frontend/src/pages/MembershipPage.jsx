@@ -238,7 +238,7 @@ const MembershipPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* Hero Section - Matching site style */}
+      {/* Hero Section - Pet Pass Introduction */}
       <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-900 text-white">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-20">
@@ -250,34 +250,35 @@ const MembershipPage = () => {
           <div className="max-w-3xl mx-auto text-center">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <Brain className="w-5 h-5 text-yellow-400" />
-              <span className="text-sm font-medium">Pet Life Operating System</span>
+              <PawPrint className="w-5 h-5 text-yellow-400" />
+              <span className="text-sm font-medium">Pet Pass — Personal Concierge</span>
             </div>
             
             {/* Main Headline */}
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              The Longer You&apos;re With Us
+              A Personal Concierge
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-yellow-400">
-                The Less You Explain
+                For Your Dog
               </span>
             </h1>
             
             <p className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-              Not just a membership — a system that quietly learns, remembers, and adapts around your pet.
+              Pet Pass creates a living concierge relationship — beginning with understanding your dog, sustained through memory, care, and continuity.
             </p>
             
-            {/* CTA Buttons - Clear hierarchy */}
+            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
-                size="lg"
-                className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105"
-                data-testid="hero-start-soul-btn"
-              >
-                <Brain className="w-5 h-5 mr-2" />
-                Start Your Pet&apos;s Soul
-              </Button>
+              <Link to="/pet-soul-onboard">
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105"
+                  data-testid="hero-join-now-btn"
+                >
+                  <PawPrint className="w-5 h-5 mr-2" />
+                  Join now
+                </Button>
+              </Link>
               <Button 
                 onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
                 size="lg"
@@ -289,19 +290,98 @@ const MembershipPage = () => {
                 Talk to Mira
               </Button>
             </div>
+
+            {/* Already a member? Sign in */}
+            <div className="mt-6">
+              <Link to="/login" className="text-white/60 hover:text-white text-sm underline underline-offset-4">
+                Already a member? Sign in
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* What Pet Pass IS and IS NOT */}
+      <div className="bg-white py-16">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              What is Pet Pass?
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* What it IS */}
+            <Card className="p-6 border-2 border-green-200 bg-green-50/50">
+              <h3 className="text-lg font-bold text-green-800 mb-4 flex items-center gap-2">
+                <Check className="w-5 h-5" /> Pet Pass IS
+              </h3>
+              <ul className="space-y-3">
+                {[
+                  'A personal concierge for your dog',
+                  'A system that understands your pet first',
+                  'A living relationship between you, your pet, and our care system',
+                  'Memory that grows smarter over time'
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-green-700">
+                    <Check className="w-4 h-4 mt-1 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+
+            {/* What it IS NOT */}
+            <Card className="p-6 border-2 border-gray-200 bg-gray-50/50">
+              <h3 className="text-lg font-bold text-gray-600 mb-4 flex items-center gap-2">
+                <X className="w-5 h-5" /> Pet Pass is NOT
+              </h3>
+              <ul className="space-y-3">
+                {[
+                  'A shopping membership',
+                  'A discount program',
+                  'A subscription box',
+                  'A product bundle'
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-gray-500">
+                    <X className="w-4 h-4 mt-1 flex-shrink-0" />
+                    <span className="line-through">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          </div>
+
+          {/* How it works */}
+          <div className="mt-16 text-center">
+            <h3 className="text-2xl font-bold text-gray-900 mb-8">How Pet Pass Works</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { icon: '🔍', title: 'Understand', desc: 'We learn about your dog' },
+                { icon: '🧭', title: 'Guide', desc: 'Personalized recommendations' },
+                { icon: '🤝', title: 'Support', desc: 'Concierge care when needed' },
+                { icon: '🧠', title: 'Remember', desc: 'We never forget' }
+              ].map((step, idx) => (
+                <div key={idx} className="text-center p-4">
+                  <div className="text-4xl mb-3">{step.icon}</div>
+                  <h4 className="font-semibold text-gray-900">{step.title}</h4>
+                  <p className="text-sm text-gray-500 mt-1">{step.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Life System Pillars Section */}
-      <div className="bg-white py-20">
+      <div className="bg-gradient-to-b from-gray-50 to-white py-20">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              A Complete Life System for Your Pet
+              14 Life Pillars Unlocked
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              One pass unlocks everything. No more juggling multiple apps and services.
+              From celebrations to emergencies — your pet&apos;s entire life covered.
             </p>
           </div>
 
