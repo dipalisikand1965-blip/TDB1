@@ -704,7 +704,7 @@ const MiraContextPanel = ({
                     <Button
                       size="sm"
                       className="mt-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs"
-                      onClick={() => window.location.href = '/pets/add'}
+                      onClick={() => window.location.href = '/pet-soul-onboard'}
                     >
                       <Plus className="w-3 h-3 mr-1" />
                       Add Your Pet
