@@ -247,7 +247,7 @@ const MembershipManager = () => {
 
   // Download CSV template
   const downloadTemplate = () => {
-    const template = 'name,email,phone,membership_tier,membership_months,paw_points,notes\nJohn Doe,john@example.com,9876543210,pawsome,12,100,Offline registration\n';
+    const template = 'name,email,phone,membership_tier,membership_months,paw_points,notes\nJohn Doe,john@example.com,9876543210,curious_pup,12,100,Offline registration\n';
     const blob = new Blob([template], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1053,7 +1053,8 @@ const EditMemberModal = ({ member, onClose, onSave }) => {
               className="w-full mt-1 px-3 py-2 border rounded-lg"
             >
               <option value="free">🐕 Curious Pup (Free)</option>
-              <option value="pawsome">🦮 Loyal Companion</option>
+              <option value="curious_pup">🐕 Curious Pup</option>
+              <option value="loyal_companion">🦮 Loyal Companion</option>
               <option value="premium">🐕‍🦺 Trusted Guardian</option>
               <option value="vip">👑 Pack Leader</option>
             </select>
@@ -1091,7 +1092,7 @@ const EditMemberModal = ({ member, onClose, onSave }) => {
 // Gift Membership Modal Component
 const GiftMembershipModal = ({ member, onClose, onGift }) => {
   const [duration, setDuration] = useState(1);
-  const [tier, setTier] = useState('pawsome');
+  const [tier, setTier] = useState('curious_pup');
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -1128,7 +1129,8 @@ const GiftMembershipModal = ({ member, onClose, onGift }) => {
               onChange={(e) => setTier(e.target.value)}
               className="w-full mt-1 px-3 py-2 border rounded-lg"
             >
-              <option value="pawsome">🦮 Loyal Companion</option>
+              <option value="curious_pup">🐕 Curious Pup</option>
+              <option value="loyal_companion">🦮 Loyal Companion</option>
               <option value="premium">🐕‍🦺 Trusted Guardian</option>
               <option value="vip">👑 Pack Leader</option>
             </select>
@@ -1237,7 +1239,7 @@ const AddMemberModal = ({ onClose, onAdd }) => {
     name: '',
     email: '',
     phone: '',
-    membership_tier: 'pawsome',
+    membership_tier: 'curious_pup',
     membership_months: 12,
     paw_points: 100,
     notes: '',
@@ -1304,7 +1306,8 @@ const AddMemberModal = ({ onClose, onAdd }) => {
               className="w-full mt-1 px-3 py-2 border rounded-lg"
             >
               <option value="free">🐕 Curious Pup (Free)</option>
-              <option value="pawsome">🦮 Loyal Companion</option>
+              <option value="curious_pup">🐕 Curious Pup</option>
+              <option value="loyal_companion">🦮 Loyal Companion</option>
               <option value="premium">🐕‍🦺 Trusted Guardian</option>
               <option value="vip">👑 Pack Leader</option>
             </select>
