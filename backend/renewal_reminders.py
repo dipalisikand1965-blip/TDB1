@@ -254,7 +254,6 @@ async def get_expiring_memberships(days: int = 30):
         return []
     
     now = datetime.now(timezone.utc)
-    future = now + timedelta(days=days)
     
     users = await db.users.find({
         "membership_expires": {"$exists": True, "$ne": None}
