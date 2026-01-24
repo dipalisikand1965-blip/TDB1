@@ -783,7 +783,7 @@ const MemberDashboard = () => {
                               </span>
                               <Badge variant="outline" className="capitalize">{visit.time_slot}</Badge>
                             </div>
-                            {visit.notes && <p className="text-sm text-purple-600 mt-2">"{visit.notes}"</p>}
+                            {visit.notes && <p className="text-sm text-purple-600 mt-2">&quot;{visit.notes}&quot;</p>}
                           </div>
                           {visit.looking_for_buddies && (
                             <Badge className="bg-purple-100 text-purple-700">Looking for Buddies</Badge>
