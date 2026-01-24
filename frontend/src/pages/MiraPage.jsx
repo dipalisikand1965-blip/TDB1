@@ -574,14 +574,24 @@ const MiraPage = () => {
             ) : (
               <Card className="mb-6 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-100">
                 <CardContent className="p-4 text-center">
-                  <p className="text-sm text-gray-600 mb-3">Sign in for personalized assistance</p>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => window.location.href = '/login'}
-                  >
-                    Sign In
-                  </Button>
+                  <p className="text-sm font-medium text-gray-700 mb-1">Welcome to Mira</p>
+                  <p className="text-xs text-gray-500 mb-3">Sign in for personalized assistance</p>
+                  <div className="flex flex-col gap-2">
+                    <Button 
+                      size="sm"
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+                      onClick={() => window.location.href = '/membership'}
+                    >
+                      Join Pet Pass
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => window.location.href = '/login'}
+                    >
+                      Already a member? Sign In
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             )}
