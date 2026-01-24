@@ -794,14 +794,25 @@ async def add_concierge(
 
 @router.get("/{ticket_id}")
 async def get_ticket(ticket_id: str):
-    """Get a single ticket by ID"""
+    """Get a single ticket by ID - searches both tickets and service_desk_tickets"""
     db = get_db()
     
+    # First try tickets collection
     ticket = await db.tickets.find_one({"ticket_id": ticket_id})
     
     if not ticket:
         try:
             ticket = await db.tickets.find_one({"_id": ObjectId(ticket_id)})
+        except:
+            pass
+    
+    # If not found, try service_desk_tickets collection
+    if not ticket:
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+    
+    if not ticket:
+        try:
+            ticket = await db.service_desk_tickets.find_one({"_id": ObjectId(ticket_id)})
         except:
             pass
     
