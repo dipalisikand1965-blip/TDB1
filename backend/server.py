@@ -1074,6 +1074,13 @@ from channel_intake import (
     set_database as set_channel_db
 )
 
+# Import Pet Pass Renewal Reminders
+from renewal_reminders import (
+    set_database as set_renewal_db,
+    check_and_send_renewal_reminders,
+    get_expiring_memberships
+)
+
 # Import MIS & Reporting engine
 from mis_reporting import (
     mis_router,
