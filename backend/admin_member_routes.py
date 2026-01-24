@@ -223,10 +223,10 @@ async def get_membership_stats(username: str = Depends(verify_admin)):
     stats = {
         "total": len(all_users),
         "by_tier": {
-            "curious_pup": sum(1 for u in all_users if u.get("membership_tier", "free") in ["free", "guest", None]),
-            "loyal_companion": sum(1 for u in all_users if u.get("membership_tier") == "pawsome"),
-            "trusted_guardian": sum(1 for u in all_users if u.get("membership_tier") == "premium"),
-            "pack_leader": sum(1 for u in all_users if u.get("membership_tier") == "vip")
+            "curious_pup": sum(1 for u in all_users if u.get("membership_tier", "curious_pup") in ["free", "guest", "curious_pup", None, "pending"]),
+            "loyal_companion": sum(1 for u in all_users if u.get("membership_tier") in ["pawsome", "loyal_companion"]),
+            "trusted_guardian": sum(1 for u in all_users if u.get("membership_tier") in ["premium", "trusted_guardian"]),
+            "pack_leader": sum(1 for u in all_users if u.get("membership_tier") in ["vip", "pack_leader"])
         },
         "active_subscriptions": 0,
         "expiring_soon": 0,
