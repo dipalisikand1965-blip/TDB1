@@ -20,14 +20,16 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data.user);
     } catch (error) {
       console.error('Failed to fetch user:', error);
-      // Token is invalid/expired - clear it
-      localStorage.removeItem('tdb_auth_token');
-      setToken(null);
-      setUser(null);
+      // Only clear token if we get a 401 (unauthorized) - not for network errors
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem('tdb_auth_token');
+        setToken(null);
+        setUser(null);
+      }
     } finally {
       setLoading(false);
     }
-  }, [API_URL]);
+  }, []);
 
   useEffect(() => {
     if (token) {
