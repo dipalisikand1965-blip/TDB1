@@ -152,6 +152,73 @@ const Checkout = () => {
       console.error('Error loading saved customer details:', err);
     }
   }, []);
+  
+  // Fetch registered pets for logged-in users
+  useEffect(() => {
+    const fetchRegisteredPets = async () => {
+      if (!token || !user) return;
+      
+      try {
+        const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setRegisteredPets(data.pets || []);
+          
+          // If user has pets and form is empty, pre-fill with first pet
+          if (data.pets?.length > 0 && !formData.petName) {
+            const firstPet = data.pets[0];
+            setSelectedPetId(firstPet.id);
+            setFormData(prev => ({
+              ...prev,
+              petName: firstPet.name || '',
+              petBreed: firstPet.identity?.breed || firstPet.breed || '',
+              petAge: calculateAge(firstPet.birth_date) || ''
+            }));
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching registered pets:', err);
+      }
+    };
+    
+    fetchRegisteredPets();
+  }, [token, user]);
+  
+  // Helper to calculate pet age from birth date
+  const calculateAge = (birthDate) => {
+    if (!birthDate) return '';
+    const birth = new Date(birthDate);
+    const now = new Date();
+    const years = Math.floor((now - birth) / (365.25 * 24 * 60 * 60 * 1000));
+    if (years < 1) {
+      const months = Math.floor((now - birth) / (30.44 * 24 * 60 * 60 * 1000));
+      return `${months} months`;
+    }
+    return `${years} year${years > 1 ? 's' : ''}`;
+  };
+  
+  // Handle pet selection from dropdown
+  const handlePetSelect = (petId) => {
+    setSelectedPetId(petId);
+    if (petId === 'manual') {
+      // User wants to enter manually
+      setFormData(prev => ({ ...prev, petName: '', petBreed: '', petAge: '' }));
+      return;
+    }
+    
+    const selectedPet = registeredPets.find(p => p.id === petId);
+    if (selectedPet) {
+      setFormData(prev => ({
+        ...prev,
+        petName: selectedPet.name || '',
+        petBreed: selectedPet.identity?.breed || selectedPet.breed || '',
+        petAge: calculateAge(selectedPet.birth_date) || ''
+      }));
+      toast({ title: `${selectedPet.name} selected`, description: 'Pet details filled automatically' });
+    }
+  };
 
   // Fetch Pet Soul insights when pet name changes
   useEffect(() => {
