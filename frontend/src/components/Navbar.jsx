@@ -28,6 +28,7 @@ const Navbar = () => {
     const fetchPetSoulScore = async () => {
       if (!user || !token) {
         setPetSoulScore(0);
+        setPrimaryPet(null);
         return;
       }
       try {
@@ -38,6 +39,9 @@ const Navbar = () => {
           const data = await res.json();
           const pets = data.pets || [];
           if (pets.length > 0) {
+            // Store the primary (first) pet for display
+            setPrimaryPet(pets[0]);
+            
             // Calculate soul score from answers - 59 total questions possible
             const totalQuestions = 59;
             const calculatePetScore = (pet) => {
@@ -52,11 +56,13 @@ const Navbar = () => {
             setPetSoulScore(Math.round(avgScore));
           } else {
             setPetSoulScore(0);
+            setPrimaryPet(null);
           }
         }
       } catch (error) {
         console.error('Failed to fetch pet soul score:', error);
         setPetSoulScore(0);
+        setPrimaryPet(null);
       }
     };
     fetchPetSoulScore();
