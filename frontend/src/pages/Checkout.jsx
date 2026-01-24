@@ -870,6 +870,11 @@ _GST applicable on final invoice_
     // Save customer details for future orders (if opted in)
     if (rememberMe) {
       try {
+        // Validate pet name before saving - should not be an email
+        const validatedPetName = (formData.petName && !formData.petName.includes('@')) 
+          ? formData.petName 
+          : '';
+        
         const customerToSave = {
           parentName: formData.parentName,
           email: formData.email,
@@ -879,7 +884,7 @@ _GST applicable on final invoice_
           landmark: formData.landmark,
           city: formData.city,
           pincode: formData.pincode,
-          petName: formData.petName,
+          petName: validatedPetName,
           petBreed: formData.petBreed,
           rememberMe: true,
           savedAt: new Date().toISOString()
