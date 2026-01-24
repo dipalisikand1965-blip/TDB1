@@ -823,13 +823,28 @@ async def get_ticket(ticket_id: str):
 
 @router.patch("/{ticket_id}")
 async def update_ticket(ticket_id: str, update: TicketUpdate, username: str = Depends(verify_token)):
-    """Update a ticket"""
+    """Update a ticket - works with both collections"""
     db = get_db()
     
+    # Try tickets collection first
     ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    collection = db.tickets
+    
     if not ticket:
         try:
             ticket = await db.tickets.find_one({"_id": ObjectId(ticket_id)})
+        except:
+            pass
+    
+    # Try service_desk_tickets if not found
+    if not ticket:
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+        collection = db.service_desk_tickets
+    
+    if not ticket:
+        try:
+            ticket = await db.service_desk_tickets.find_one({"_id": ObjectId(ticket_id)})
+            collection = db.service_desk_tickets
         except:
             raise HTTPException(status_code=404, detail="Ticket not found")
     
