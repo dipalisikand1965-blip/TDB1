@@ -1,38 +1,20 @@
 # The Doggy Company - Product Requirements Document
 
 ## Original Problem Statement
-Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-first platform. The core vision is a "vision-first, commerce-later" approach, centered around a "Pet Soul™" for each pet and an intelligent concierge, "Mira® AI".
+Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-first platform. Core vision: "vision-first, commerce-later" approach, centered around "Pet Soul™" and "Mira® AI" concierge.
 
 ---
 
-## Pet Pass System (Core Identity)
+## Pet Pass System
 
-### What Pet Pass IS
-- A personal concierge for your dog
-- A system that understands your pet first
-- A living relationship between you, your pet, and our care system
-- Memory that grows smarter over time
-
-### What Pet Pass is NOT
-- ❌ A shopping membership
-- ❌ A discount program  
-- ❌ A subscription box
-- ❌ A product bundle
-
-### Pet Pass Plans
+### Plans
 1. **Pet Pass — Trial** (1 month): ₹499 + GST
 2. **Pet Pass — Foundation** (12 months): ₹4,999 + GST
+3. **Additional pets**: ₹2,499/year or ₹249/trial + GST
 
-### Multi-Pet Pricing
-- Additional pets: ₹2,499/year or ₹249/trial + GST
-- Each pet gets their own unique Pet Pass number (format: TDC-XXXXXX)
-
----
-
-## Member Tier System (Pet Pass Journey)
-
-| New Tier | Emoji | Criteria |
-|----------|-------|----------|
+### Member Tiers
+| Tier | Emoji | Criteria |
+|------|-------|----------|
 | Curious Pup | 🐕 | New members |
 | Loyal Companion | 🦮 | 2+ pillars OR 3+ months |
 | Trusted Guardian | 🛡️ | 5+ pillars OR 6+ months |
@@ -42,104 +24,90 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ## What's Been Implemented (January 2026)
 
-### Session 1: Pet Pass CX Flow ✅
+### Session 1-2: Core Pet Pass Flow ✅
 - MembershipPage with Pet Pass branding
-- "Trial" label (not "Monthly")
-- "What is Pet Pass?" section
+- "Trial" vs "Foundation" plans
 - Navbar: "Sign in | Join now" vs "My Account"
-- PetPassCard digital identity component
+- Password reset flow
+- Renewal reminders (7/30/15/3 days)
 
-### Session 2: Tier System & Member Flow ✅
-- Updated all tier names: Curious Pup → Pack Leader
-- Removed "pawsome" references
-- Backend tier multipliers and stats updated
+### Session 3: My Pets Overhaul ✅
+- Pet Soul Completion Panel
+- All 14 Pillars Section
+- Service Desk ticket fixes
 
-### Session 2: Password Reset Flow ✅
-- `/api/auth/forgot-password` endpoint
-- `/api/auth/reset-password` endpoint
-- MemberForgotPassword & MemberResetPassword pages
-- "Forgot password?" link on Login page
+### Session 4: Soul Score Consistency & UX Fixes ✅
+- **Soul Score now unified** - Uses `overall_score` from API everywhere
+  - Navbar: Shows pet photo + "X% Soul"
+  - Dashboard: "Complete [Pet]'s Pet Soul™ X% done"
+  - My Pets: Pet Soul panel with X% completion
+  - Mira AI: Welcome card shows X% Soul badge
+- **Mira AI Welcome Card Enhanced**
+  - Pet's actual photo displays (with URL path fix for relative URLs)
+  - "57% Soul" badge in top-left
+  - "Mojo's Photo" badge in top-right
+  - **Clickable quick links**: 🎉 Find Events, 🥾 Trails & Hikes, 🐕 Meetups
+  - Links auto-submit query to Mira when clicked
+- **Logo size increased** - Changed from `lg` to `xl` in navbar
+- **Photo URL handling** - Fixed relative URL paths to prepend API URL
 
-### Session 2: Renewal Reminders ✅
-- Trial: 7 days before expiry
-- Annual: 30, 15, 3 days before expiry
-- Admin endpoints for managing renewals
+---
 
-### Session 3: My Pets Page Overhaul ✅
-- **Pet Soul Completion Panel** - Large, central view showing:
-  - Completion percentage (e.g., 57%)
-  - Progress bar
-  - Category breakdown: Basics, Personality, Lifestyle, Health
-  - "Continue Pet Soul Journey" CTA
-- **All 14 Pillars Section** - Every pillar visible:
-  - Feed, Celebrate, Dine, Stay, Travel, Care, Groom
-  - Play, Train, Insure, Adopt, Farewell, Shop, Community
-  - Each pillar links to pillar page with pet context
-  - Pet Pass number displayed
+## Data Consistency Rules (CRITICAL)
 
-### Session 3: Service Desk Fixes ✅
-- Fixed ticket detail API to search both collections (tickets + service_desk_tickets)
-- Fixed `serialize_ticket` to ensure `member` and `messages` are never null
-- Ticket replies now work with both collections
+### Single Source of Truth
+The `overall_score` from the backend API is the ONLY source for Pet Soul scores.
 
-### Session 3: Products ✅
-- Increased product fetch limit to 2000
-- CSV Export/Import buttons visible
-- Edit/Delete functionality available
+**DO NOT** calculate scores locally in frontend using:
+- `doggy_soul_answers.length / totalQuestions`
+- Different `totalQuestions` values (27, 59, 24, etc.)
+
+**ALWAYS** use:
+```javascript
+const score = pet.overall_score || 0;
+```
+
+### Photo URL Handling
+Pet photos may be stored as relative paths. Always ensure full URL:
+```javascript
+const fullUrl = url.startsWith('http') 
+  ? url 
+  : `${API_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+```
+
+---
+
+## Architecture
+
+### Key Components Modified This Session
+- `/app/frontend/src/components/Navbar.jsx` - Larger logo, API-based score
+- `/app/frontend/src/components/MiraAI.jsx` - Enhanced WelcomeCard with clickable links
+- `/app/frontend/src/components/PetSoulScore.jsx` - Fixed photo URL handling
+- `/app/frontend/src/components/Logo.jsx` - Added larger sizes
+- `/app/frontend/src/pages/MemberDashboard.jsx` - Uses API overall_score
+
+### Backend Score Calculation
+Location: `/app/backend/server.py` - `calculate_pet_soul_score()`
+- Uses `totalPossible = 24` questions
+- Returns score as percentage (0-100)
 
 ---
 
 ## Prioritized Backlog
 
 ### P0 - Critical
-1. ~~**Session Persistence**~~ ✅ Fixed
-2. ~~**Service Desk tickets not opening**~~ ✅ Fixed
-3. **Unified Inbox Customer Name** - Still needs work on data capture
+1. ~~**Soul Score Consistency**~~ ✅ FIXED
+2. ~~**Mira Photo Missing**~~ ✅ FIXED
+3. ~~**Quick Links Not Clickable**~~ ✅ FIXED
 
-### P1 - High Priority  
-1. ~~**Production Forgot Password**~~ ✅ Implemented
-2. ~~**My Pets - Pet Soul Panel**~~ ✅ Implemented
-3. ~~**My Pets - All Pillars**~~ ✅ Implemented
-4. Complete 'Adopt' Pillar
+### P1 - High Priority
+1. Complete 'Adopt' Pillar registration
+2. Test Service Desk with real tickets
 
 ### P2 - Medium Priority
 1. Checkout Cart Pet Details Bug
 2. "Untitled" Products from Shopify Sync
-3. Build 'Farewell' Pillar
-4. Build 'Shop' Pillar
-
----
-
-## Key Routes
-
-### Member Pages
-- `/membership` - Pet Pass landing page
-- `/pet-soul-onboard` - Onboarding flow
-- `/my-pets` - Pet list with Soul panel + Pillars
-- `/dashboard` - My Account page
-- `/member/forgot-password` - Password reset request
-- `/reset-password?token=xxx` - Password reset
-
-### Admin
-- `/admin?tab=tickets` - Service Desk
-- `/admin?tab=products` - Product Manager
-- `/admin?tab=members` - Member Manager
-
----
-
-## Architecture
-
-### New/Modified Files This Session
-- `/app/frontend/src/pages/MyPets.jsx` - Added Pet Soul Panel + Pillars
-- `/app/backend/ticket_routes.py` - Fixed dual-collection search + serialize
-- `/app/frontend/src/components/ProductManager.jsx` - Increased limit
-
----
-
-## Known Issues
-- WhatsApp integration is MOCKED (click-to-chat only)
-- Some old tickets have null member data
-- Production DB separate from preview
+3. Build 'Farewell' and 'Shop' Pillars
 
 ---
 
