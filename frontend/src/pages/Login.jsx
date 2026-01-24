@@ -135,8 +135,8 @@ const Login = () => {
 
         <div className="mt-6 text-center text-sm text-gray-600">
           Don't have an account?{' '}
-          <Link to="/register" className="text-purple-600 font-medium hover:underline">
-            Join the pack
+          <Link to="/pet-soul-onboard" className="text-purple-600 font-medium hover:underline">
+            Join now
           </Link>
         </div>
       </Card>
