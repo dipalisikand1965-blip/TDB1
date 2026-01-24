@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -11,7 +12,7 @@ import { toast } from '../hooks/use-toast';
 import { 
   ArrowLeft, CreditCard, Truck, MapPin, Phone, MessageCircle, 
   CheckCircle, User, Mail, PawPrint, Calendar, Gift, Sparkles,
-  Crown, AlertCircle, Tag, Star, Loader2, X, Store, Package, Info, Plus
+  Crown, AlertCircle, Tag, Star, Loader2, X, Store, Package, Info, Plus, ChevronDown
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import BreedAutocomplete from '../components/BreedAutocomplete';
