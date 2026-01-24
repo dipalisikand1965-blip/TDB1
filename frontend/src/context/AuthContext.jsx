@@ -76,7 +76,8 @@ export const AuthProvider = ({ children }) => {
     return () => {
       mountedRef.current = false;
     };
-  }, []); // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Intentionally run once on mount
   
   // Listen for token changes (e.g., from another tab)
   useEffect(() => {
