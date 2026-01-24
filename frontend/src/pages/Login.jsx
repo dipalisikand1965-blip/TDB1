@@ -121,6 +121,11 @@ const Login = () => {
                 data-testid="login-password-input"
               />
             </div>
+            <div className="text-right mt-1">
+              <Link to="/member/forgot-password" className="text-sm text-purple-600 hover:underline">
+                Forgot password?
+              </Link>
+            </div>
           </div>
 
           <Button
