@@ -20,7 +20,7 @@ import {
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Debug logging for production issues
-const DEBUG_MODE = true;
+const DEBUG_MODE = false; // Set to true for development debugging only
 const debugLog = (...args) => {
   if (DEBUG_MODE) {
     console.log('[CommandCenter]', ...args);
