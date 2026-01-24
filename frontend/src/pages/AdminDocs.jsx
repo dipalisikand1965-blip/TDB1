@@ -711,27 +711,72 @@ DELETE /api/admin/faqs/{id}     # Delete FAQ
       ]
     },
     'membership': {
-      title: 'Membership',
-      subtitle: 'Membership Tier Management',
+      title: 'Pet Pass Membership',
+      subtitle: 'Pet Pass System - Membership Belongs to the Pet, Not the Parent',
+      badge: '🆕 Updated Jan 2026',
       files: {
-        frontend: '/app/frontend/src/components/admin/MembershipManager.jsx',
-        backend: '/app/backend/membership_routes.py'
+        frontend: '/app/frontend/src/pages/MembershipPage.jsx, /app/frontend/src/components/PetPassCard.jsx',
+        backend: '/app/backend/membership_routes.py, /app/backend/auth_routes.py, /app/backend/renewal_reminders.py'
       },
       sections: [
         {
-          title: 'Membership Tiers',
-          content: `| Tier | Price | Key Benefits |
-|------|-------|--------------|
-| Free | ₹0 | Basic access, 3 Mira chats/day |
-| Monthly | ₹99/mo | Full Mira access, 5% rewards |
-| Annual | ₹999/yr | Priority support, 10% rewards |
-| Family | ₹1,499/yr | Multiple pets, 15% rewards |`
+          title: 'Pet Pass Plans',
+          content: `| Plan | Price | Duration | Key Benefits |
+|------|-------|----------|--------------|
+| Pet Pass — Trial | ₹499 + GST | 1 month | Full access trial |
+| Pet Pass — Foundation | ₹4,999 + GST | 12 months | Full annual membership |
+| Additional Pet | ₹2,499/year or ₹249/trial | Per pet | Multi-pet families |`
         },
         {
-          title: 'Rules',
-          content: `• Auto-renewal via Razorpay
-• Grace period: 7 days after expiry
-• Downgrade to free if not renewed`
+          title: 'Member Tiers',
+          content: `| Tier | Emoji | How to Achieve |
+|------|-------|----------------|
+| Curious Pup | 🐕 | New members |
+| Loyal Companion | 🦮 | 2+ pillars used OR 3+ months |
+| Trusted Guardian | 🛡️ | 5+ pillars used OR 6+ months |
+| Pack Leader | 👑 | 8+ pillars used OR 12+ months |`
+        },
+        {
+          title: 'Pet Pass Number',
+          content: `• **Format**: TDC-XXXXXX (unique per pet)
+• **Generated**: Automatically when pet created
+• **Activation**: Status changes to "active" on payment
+• **Display**: Shown on Pet Pass card, Navbar, My Pets page`
+        },
+        {
+          title: 'Password Reset Flow',
+          content: `1. User clicks "Forgot Password" on login page
+2. Submits email on /member/forgot-password
+3. Backend generates reset token (24hr expiry)
+4. Email sent via Resend with reset link
+5. User clicks link → /reset-password?token=xxx
+6. User enters new password
+7. Token invalidated after use
+
+**Files**: 
+- Frontend: MemberForgotPassword.jsx, MemberResetPassword.jsx
+- Backend: auth_routes.py (forgot-password, reset-password endpoints)`
+        },
+        {
+          title: 'Renewal Reminders',
+          content: `Automatic emails sent at:
+• 30 days before expiry
+• 15 days before expiry
+• 7 days before expiry  
+• 3 days before expiry
+• Day of expiry
+
+**File**: /app/backend/renewal_reminders.py`
+        },
+        {
+          title: 'API Endpoints',
+          content: `\`\`\`
+POST /api/auth/forgot-password     # Request password reset
+POST /api/auth/reset-password      # Submit new password
+GET  /api/admin/memberships        # List all memberships
+GET  /api/admin/memberships/expiring # Expiring memberships
+POST /api/admin/memberships/send-reminders # Trigger reminder emails
+\`\`\``
         }
       ]
     },
