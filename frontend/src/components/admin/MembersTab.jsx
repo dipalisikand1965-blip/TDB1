@@ -25,16 +25,20 @@ const MembersTab = ({
           <p className="text-3xl font-bold text-gray-600">{memberStats.free || 0}</p>
         </Card>
         <Card className="p-4 bg-blue-50">
-          <p className="text-sm text-blue-600">Pawsome</p>
-          <p className="text-3xl font-bold text-blue-700">{memberStats.pawsome || 0}</p>
+          <p className="text-sm text-blue-600">🐕 Curious Pup</p>
+          <p className="text-3xl font-bold text-blue-700">{memberStats.curious_pup || memberStats.free || 0}</p>
+        </Card>
+        <Card className="p-4 bg-green-50">
+          <p className="text-sm text-green-600">🦮 Loyal Companion</p>
+          <p className="text-3xl font-bold text-green-700">{memberStats.loyal_companion || memberStats.pawsome || 0}</p>
         </Card>
         <Card className="p-4 bg-purple-50">
-          <p className="text-sm text-purple-600">Premium</p>
-          <p className="text-3xl font-bold text-purple-700">{memberStats.premium || 0}</p>
+          <p className="text-sm text-purple-600">🛡️ Trusted Guardian</p>
+          <p className="text-3xl font-bold text-purple-700">{memberStats.trusted_guardian || memberStats.premium || 0}</p>
         </Card>
         <Card className="p-4 bg-amber-50">
-          <p className="text-sm text-amber-600">VIP</p>
-          <p className="text-3xl font-bold text-amber-700">{memberStats.vip || 0}</p>
+          <p className="text-sm text-amber-600">👑 Pack Leader</p>
+          <p className="text-3xl font-bold text-amber-700">{memberStats.pack_leader || memberStats.vip || 0}</p>
         </Card>
       </div>
 
@@ -68,12 +72,15 @@ const MembersTab = ({
                 </td>
                 <td className="px-6 py-4">
                   <Badge variant={
-                    member.membership_tier === 'vip' ? 'warning' :
-                    member.membership_tier === 'premium' ? 'default' :
-                    member.membership_tier === 'pawsome' ? 'secondary' : 
-                    member.membership_tier === 'guest' ? 'outline' : 'secondary'
+                    member.membership_tier === 'pack_leader' || member.membership_tier === 'vip' ? 'warning' :
+                    member.membership_tier === 'trusted_guardian' || member.membership_tier === 'premium' ? 'default' :
+                    member.membership_tier === 'loyal_companion' || member.membership_tier === 'pawsome' ? 'secondary' : 
+                    member.membership_tier === 'curious_pup' || member.membership_tier === 'free' ? 'outline' : 'outline'
                   }>
-                    {member.membership_tier || 'free'}
+                    {member.membership_tier === 'pack_leader' || member.membership_tier === 'vip' ? '👑 Pack Leader' :
+                     member.membership_tier === 'trusted_guardian' || member.membership_tier === 'premium' ? '🛡️ Trusted Guardian' :
+                     member.membership_tier === 'loyal_companion' || member.membership_tier === 'pawsome' ? '🦮 Loyal Companion' : 
+                     '🐕 Curious Pup'}
                   </Badge>
                   {member.membership_expires && (
                     <p className="text-xs text-gray-500 mt-1">
@@ -86,17 +93,16 @@ const MembersTab = ({
                 </td>
                 <td className="px-6 py-4">
                   <select
-                    defaultValue={member.membership_tier || 'free'}
+                    defaultValue={member.membership_tier || 'curious_pup'}
                     onClick={(e) => e.stopPropagation()}
                     onChange={(e) => updateMemberTier(member.id, e.target.value)}
                     className="px-2 py-1 border rounded text-sm"
                     data-testid={`tier-select-${idx}`}
                   >
-                    <option value="guest">Guest</option>
-                    <option value="free">Free</option>
-                    <option value="pawsome">Pawsome</option>
-                    <option value="premium">Premium</option>
-                    <option value="vip">VIP</option>
+                    <option value="curious_pup">🐕 Curious Pup</option>
+                    <option value="loyal_companion">🦮 Loyal Companion</option>
+                    <option value="trusted_guardian">🛡️ Trusted Guardian</option>
+                    <option value="pack_leader">👑 Pack Leader</option>
                   </select>
                 </td>
               </tr>
