@@ -885,6 +885,49 @@ const MemberDashboard = () => {
               );
             })()}
 
+            {/* All Life Pillars Section */}
+            <Card className="mt-6 p-6 bg-gradient-to-r from-slate-50 via-purple-50 to-slate-50 border-purple-200/50 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-purple-100 rounded-xl">
+                  <Crown className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900">All Life Pillars</h3>
+                  <p className="text-xs text-gray-500">14 pillars unlocked with Pet Pass • Click any pillar to explore</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2">
+                {[
+                  { id: 'feed', name: 'Feed', icon: '🍖', path: '/feed', color: 'from-orange-400 to-red-400' },
+                  { id: 'celebrate', name: 'Celebrate', icon: '🎂', path: '/celebrate', color: 'from-pink-400 to-rose-400' },
+                  { id: 'dine', name: 'Dine', icon: '🍽️', path: '/dine', color: 'from-amber-400 to-orange-400' },
+                  { id: 'stay', name: 'Stay', icon: '🏨', path: '/stay', color: 'from-blue-400 to-indigo-400' },
+                  { id: 'travel', name: 'Travel', icon: '✈️', path: '/travel', color: 'from-cyan-400 to-blue-400' },
+                  { id: 'care', name: 'Care', icon: '🩺', path: '/care', color: 'from-emerald-400 to-teal-400' },
+                  { id: 'groom', name: 'Groom', icon: '✂️', path: '/groom', color: 'from-violet-400 to-purple-400' },
+                  { id: 'play', name: 'Play', icon: '🎾', path: '/play', color: 'from-green-400 to-emerald-400' },
+                  { id: 'train', name: 'Train', icon: '🎓', path: '/train', color: 'from-indigo-400 to-purple-400' },
+                  { id: 'insure', name: 'Insure', icon: '🛡️', path: '/insure', color: 'from-slate-400 to-gray-500' },
+                  { id: 'adopt', name: 'Adopt', icon: '🐕', path: '/adopt', color: 'from-rose-400 to-pink-400' },
+                  { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/farewell', color: 'from-purple-400 to-indigo-400' },
+                  { id: 'shop', name: 'Shop', icon: '🛒', path: '/products', color: 'from-teal-400 to-cyan-400' },
+                  { id: 'community', name: 'Community', icon: '👥', path: '/community', color: 'from-yellow-400 to-amber-400' }
+                ].map((pillar) => (
+                  <button
+                    key={pillar.id}
+                    onClick={() => window.location.href = pillar.path}
+                    className="group p-3 bg-white rounded-xl border hover:border-purple-300 hover:shadow-md transition-all text-center"
+                  >
+                    <div className={`w-10 h-10 mx-auto rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition-transform`}>
+                      {pillar.icon}
+                    </div>
+                    <p className="text-xs font-medium text-gray-700 truncate">{pillar.name}</p>
+                  </button>
+                ))}
+              </div>
+            </Card>
+
             <h3 className="text-xl font-bold mt-10 mb-4 text-gray-900">Recent Activity</h3>
             {orders.length > 0 ? (
               <div className="space-y-4">
