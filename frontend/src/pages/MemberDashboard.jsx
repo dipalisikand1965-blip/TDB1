@@ -417,19 +417,14 @@ const MemberDashboard = () => {
             
             {/* Pet Soul Completion CTA - Show if score is below 80% */}
             {pets.length > 0 && (() => {
-              // Calculate average Pet Soul score across all pets
-              const totalQuestions = 27; // Total questions in Pet Soul
-              let totalAnswers = 0;
-              pets.forEach(pet => {
-                const answers = pet.doggy_soul_answers || {};
-                totalAnswers += Object.keys(answers).length;
-              });
-              const avgScore = pets.length > 0 ? Math.round((totalAnswers / (totalQuestions * pets.length)) * 100) : 0;
+              // Use the overall_score from the API for consistency
+              // This score is calculated on the backend and should be the single source of truth
+              const primaryPet = pets[0];
+              const avgScore = Math.round(primaryPet?.overall_score || 0);
               
               if (avgScore >= 80) return null;
               
               const remainingPercent = 100 - avgScore;
-              const primaryPet = pets[0];
               
               return (
                 <Card className="mt-6 p-6 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-purple-200/50 shadow-sm relative overflow-hidden">
