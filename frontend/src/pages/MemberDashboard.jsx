@@ -413,6 +413,67 @@ const MemberDashboard = () => {
                 <p className="text-sm text-gray-500 mt-2">Active profiles</p>
               </Card>
             </div>
+            
+            {/* Pet Soul Completion CTA - Show if score is below 80% */}
+            {pets.length > 0 && (() => {
+              // Calculate average Pet Soul score across all pets
+              const totalQuestions = 27; // Total questions in Pet Soul
+              let totalAnswers = 0;
+              pets.forEach(pet => {
+                const answers = pet.doggy_soul_answers || {};
+                totalAnswers += Object.keys(answers).length;
+              });
+              const avgScore = pets.length > 0 ? Math.round((totalAnswers / (totalQuestions * pets.length)) * 100) : 0;
+              
+              if (avgScore >= 80) return null;
+              
+              const remainingPercent = 100 - avgScore;
+              const primaryPet = pets[0];
+              
+              return (
+                <Card className="mt-6 p-6 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-purple-200/50 shadow-sm relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-purple-200/30 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl text-white">
+                        <Sparkles className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                          Complete {primaryPet.name}&apos;s Pet Soul™
+                          <Badge variant="outline" className="text-purple-600 border-purple-200 bg-white">
+                            {avgScore}% done
+                          </Badge>
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Answer {remainingPercent > 50 ? 'a few more' : 'just a few'} questions to unlock personalized recommendations, 
+                          birthday alerts, and care reminders tailored for {primaryPet.name}.
+                        </p>
+                        
+                        {/* Progress bar */}
+                        <div className="mt-3 w-full md:w-80">
+                          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500"
+                              style={{ width: `${avgScore}%` }}
+                            />
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">{remainingPercent}% remaining to complete</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md"
+                      onClick={() => window.location.href = `/pet-soul-journey/${primaryPet.id}`}
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Continue Building Soul
+                    </Button>
+                  </div>
+                </Card>
+              );
+            })()}
 
             {/* Smart Reorder Widget */}
             {orders.length > 0 && (() => {
