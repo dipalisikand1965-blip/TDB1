@@ -553,28 +553,61 @@ const Navbar = () => {
               
               <div className="border-t border-gray-200 my-3"></div>
               
-              {/* Mobile Pet Soul Score */}
-              <Link
-                to={user ? "/my-pets" : "/pet-soul"}
-                onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
-              >
-                <span className="text-lg">🐾</span>
-                <span className="flex-1">{user ? "My Pets" : "Pet Soul™"}</span>
-                {user && (
-                  <span className="bg-white/20 px-2.5 py-1 rounded-full text-sm font-bold">
-                    {petSoulScore}%
-                  </span>
-                )}
-              </Link>
-              
-              <Link
-                to="/voice-order"
-                onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 text-white"
-              >
-                🎙️ Voice Order
-              </Link>
+              {/* Auth Section for Mobile */}
+              {user ? (
+                <>
+                  {/* Mobile Pet Soul Score - Only for logged in */}
+                  <Link
+                    to="/my-pets"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
+                  >
+                    <span className="text-lg">🐾</span>
+                    <span className="flex-1">My Pets</span>
+                    <span className="bg-white/20 px-2.5 py-1 rounded-full text-sm font-bold">
+                      {petSoulScore}%
+                    </span>
+                  </Link>
+                  
+                  <Link
+                    to="/voice-order"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 text-white"
+                  >
+                    🎙️ Voice Order
+                  </Link>
+                  
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-gray-100 text-gray-700"
+                  >
+                    <User className="w-4 h-4" />
+                    My Account
+                  </Link>
+                </>
+              ) : (
+                <>
+                  {/* Mobile Join/Sign In - For logged out */}
+                  <Link
+                    to="/pet-soul-onboard"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium"
+                  >
+                    <PawPrint className="w-4 h-4" />
+                    Join now
+                  </Link>
+                  
+                  <Link
+                    to="/login"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-gray-100 text-gray-700"
+                  >
+                    <User className="w-4 h-4" />
+                    Sign in
+                  </Link>
+                </>
+              )}
               
               <button
                 onClick={() => { openMiraAI(); setIsMenuOpen(false); }}
