@@ -256,6 +256,16 @@ def serialize_ticket(ticket: dict) -> dict:
     # Ensure ticket_id exists (some old tickets may have 'id' instead)
     if not ticket.get("ticket_id") and ticket.get("id"):
         ticket["ticket_id"] = ticket["id"]
+    # Ensure messages is always an array
+    if ticket.get("messages") is None:
+        ticket["messages"] = []
+    # Ensure member is always an object
+    if ticket.get("member") is None:
+        ticket["member"] = {
+            "name": ticket.get("customer_name") or "Unknown",
+            "email": ticket.get("customer_email"),
+            "phone": ticket.get("customer_phone"),
+        }
     return ticket
 
 # ============== TICKET ROUTES ==============
