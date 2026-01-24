@@ -1,15 +1,16 @@
 /**
  * PetSoulScore Component
- * Animated circular progress ring with paw icon
+ * Animated circular progress ring with pet photo
  * Shows pet soul completion percentage with attention-grabbing animation
  */
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { PawPrint } from 'lucide-react';
 
-const PetSoulScore = ({ score, isLoggedIn, className = '' }) => {
+const PetSoulScore = ({ score, isLoggedIn, pet, className = '' }) => {
   // Calculate stroke dasharray and dashoffset for progress ring
-  const size = 36;
+  const size = 40;
   const strokeWidth = 3;
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
@@ -24,6 +25,10 @@ const PetSoulScore = ({ score, isLoggedIn, className = '' }) => {
   
   const colors = getColor();
   const needsAttention = score < 70;
+  
+  // Get pet photo URL
+  const petPhotoUrl = pet?.photo_url || pet?.image_url;
+  const petName = pet?.name || 'Pet';
 
   if (!isLoggedIn) {
     // Simple button for non-logged-in users
@@ -46,9 +51,9 @@ const PetSoulScore = ({ score, isLoggedIn, className = '' }) => {
       to="/my-pets"
       className={`flex items-center gap-2 group ${className}`}
       data-testid="pet-soul-nav-btn"
-      title={`Pet Soul: ${score}% complete - Click to view your pets`}
+      title={`${petName}'s Soul: ${score}% complete - Click to view`}
     >
-      {/* Animated Score Circle */}
+      {/* Pet Photo with Progress Ring */}
       <div className={`relative ${needsAttention ? 'animate-pulse-soft' : ''}`}>
         {/* Glow effect for incomplete profiles */}
         {needsAttention && (
@@ -56,13 +61,13 @@ const PetSoulScore = ({ score, isLoggedIn, className = '' }) => {
             className="absolute inset-0 rounded-full animate-ping-slow opacity-75"
             style={{ 
               backgroundColor: colors.glow,
-              transform: 'scale(1.3)'
+              transform: 'scale(1.2)'
             }}
           />
         )}
         
-        {/* SVG Progress Ring */}
-        <svg width={size} height={size} className="transform -rotate-90 relative z-10">
+        {/* SVG Progress Ring with Pet Photo */}
+        <svg width={size} height={size} className="relative z-10">
           {/* Background circle */}
           <circle
             cx={size / 2}
@@ -78,6 +83,52 @@ const PetSoulScore = ({ score, isLoggedIn, className = '' }) => {
             cy={size / 2}
             r={radius}
             fill="transparent"
+            stroke={colors.ring}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            className="transition-all duration-700 ease-out"
+            style={{ transform: 'rotate(-90deg)', transformOrigin: 'center' }}
+          />
+          
+          {/* Pet Photo or Paw Icon in center */}
+          <foreignObject x="4" y="4" width={size - 8} height={size - 8}>
+            <div className="w-full h-full rounded-full overflow-hidden bg-purple-100 flex items-center justify-center">
+              {petPhotoUrl ? (
+                <img 
+                  src={petPhotoUrl} 
+                  alt={petName}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <div className={`w-full h-full items-center justify-center ${petPhotoUrl ? 'hidden' : 'flex'}`}>
+                <PawPrint className="w-4 h-4 text-purple-500" />
+              </div>
+            </div>
+          </foreignObject>
+        </svg>
+      </div>
+      
+      {/* Score Text */}
+      <div className="hidden lg:flex flex-col">
+        <span className="text-xs font-semibold text-gray-800 leading-tight">{petName}</span>
+        <span 
+          className="text-[10px] font-medium leading-tight"
+          style={{ color: colors.ring }}
+        >
+          {score}% Soul
+        </span>
+      </div>
+    </Link>
+  );
+};
+
+export default PetSoulScore;
             stroke={colors.ring}
             strokeWidth={strokeWidth}
             strokeDasharray={circumference}
