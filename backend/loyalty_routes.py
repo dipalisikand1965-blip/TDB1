@@ -31,6 +31,12 @@ security = HTTPBasic()
 POINTS_PER_RUPEE = 1  # 1 point per ₹10 spent = 0.1 points per rupee
 POINTS_REDEMPTION_VALUE = 0.5  # 1 point = ₹0.50 discount
 MEMBERSHIP_POINT_MULTIPLIERS = {
+    # New Pet Pass tiers
+    "curious_pup": 1.0,
+    "loyal_companion": 1.5,
+    "trusted_guardian": 2.0,
+    "pack_leader": 3.0,
+    # Legacy tier mappings (for backward compatibility)
     "free": 1.0,
     "pawsome": 1.5,
     "premium": 2.0,
