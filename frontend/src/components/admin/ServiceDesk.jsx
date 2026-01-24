@@ -1787,7 +1787,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
               {/* Info about escalation */}
               <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 text-xs text-blue-800">
                 <strong>How it works:</strong> Every 15 minutes, the system checks all open tickets against these rules. 
-                If a ticket matches a rule's trigger condition, it's automatically reassigned to someone with the target role, 
+                If a ticket matches a rule&apos;s trigger condition, it&apos;s automatically reassigned to someone with the target role, 
                 and an escalation history entry is logged.
               </div>
             </TabsContent>
