@@ -16,6 +16,7 @@ const Navbar = () => {
   const [showMorePillars, setShowMorePillars] = useState(false);
   const [navbarCollections, setNavbarCollections] = useState([]);
   const [petSoulScore, setPetSoulScore] = useState(0);
+  const [primaryPet, setPrimaryPet] = useState(null);
   const pillarRef = useRef(null);
   const moreRef = useRef(null);
   const { getCartCount, setIsCartOpen } = useCart();
