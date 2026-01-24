@@ -667,7 +667,18 @@ const MiraAI = () => {
                 {/* Show WelcomeCard for the welcome message when user is logged in */}
                 {message.id === 'welcome' && user ? (
                   <div className="w-full">
-                    <WelcomeCard user={user} pets={userPets} />
+                    <WelcomeCard 
+                      user={user} 
+                      pets={userPets} 
+                      onLinkClick={(query) => {
+                        setInputValue(query);
+                        // Auto-submit the query
+                        setTimeout(() => {
+                          const submitBtn = document.querySelector('[data-testid="mira-send-btn"]');
+                          if (submitBtn) submitBtn.click();
+                        }, 100);
+                      }}
+                    />
                   </div>
                 ) : (
                   <>
