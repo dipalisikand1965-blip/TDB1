@@ -911,12 +911,12 @@ async def update_ticket(ticket_id: str, update: TicketUpdate, username: str = De
     if audit_entries:
         update_op["$push"] = {"audit_trail": {"$each": audit_entries}}
     
-    await db.tickets.update_one(
+    await collection.update_one(
         {"_id": ticket["_id"]},
         update_op
     )
     
-    updated = await db.tickets.find_one({"_id": ticket["_id"]})
+    updated = await collection.find_one({"_id": ticket["_id"]})
     updated_serialized = serialize_ticket(updated)
     
     # Send email notification if resolved
@@ -928,13 +928,28 @@ async def update_ticket(ticket_id: str, update: TicketUpdate, username: str = De
 
 @router.post("/{ticket_id}/reply")
 async def add_reply(ticket_id: str, reply: TicketReply):
-    """Add a reply/message to a ticket"""
+    """Add a reply/message to a ticket - works with both collections"""
     db = get_db()
     
+    # Try tickets collection first
     ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    collection = db.tickets
+    
     if not ticket:
         try:
             ticket = await db.tickets.find_one({"_id": ObjectId(ticket_id)})
+        except:
+            pass
+    
+    # Try service_desk_tickets if not found
+    if not ticket:
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+        collection = db.service_desk_tickets
+    
+    if not ticket:
+        try:
+            ticket = await db.service_desk_tickets.find_one({"_id": ObjectId(ticket_id)})
+            collection = db.service_desk_tickets
         except:
             raise HTTPException(status_code=404, detail="Ticket not found")
     
@@ -958,7 +973,7 @@ async def add_reply(ticket_id: str, reply: TicketReply):
     if not ticket.get("first_response_at") and not reply.is_internal:
         update_doc["first_response_at"] = now
     
-    await db.tickets.update_one(
+    await collection.update_one(
         {"_id": ticket["_id"]},
         {
             "$push": {"messages": message},
