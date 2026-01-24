@@ -70,6 +70,8 @@ import PaperworkPage from "./pages/PaperworkPage";
 import EmergencyPage from "./pages/EmergencyPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import MemberForgotPassword from "./pages/MemberForgotPassword";
+import MemberResetPassword from "./pages/MemberResetPassword";
 import VoiceOrder from "./pages/VoiceOrder";
 import AgentPortal from "./pages/AgentPortal";
 import ServiceDeskPage from "./pages/ServiceDeskPage";
