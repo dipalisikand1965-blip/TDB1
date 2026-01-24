@@ -38,18 +38,26 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ### Session 4: Soul Score Consistency & UX Fixes ✅
 - **Soul Score now unified** - Uses `overall_score` from API everywhere
-  - Navbar: Shows pet photo + "X% Soul"
-  - Dashboard: "Complete [Pet]'s Pet Soul™ X% done"
-  - My Pets: Pet Soul panel with X% completion
-  - Mira AI: Welcome card shows X% Soul badge
-- **Mira AI Welcome Card Enhanced**
-  - Pet's actual photo displays (with URL path fix for relative URLs)
-  - "57% Soul" badge in top-left
-  - "Mojo's Photo" badge in top-right
-  - **Clickable quick links**: 🎉 Find Events, 🥾 Trails & Hikes, 🐕 Meetups
-  - Links auto-submit query to Mira when clicked
-- **Logo size increased** - Changed from `lg` to `xl` in navbar
-- **Photo URL handling** - Fixed relative URL paths to prepend API URL
+- **Mira AI Welcome Card Enhanced** with pet photo and clickable quick links
+- **Logo size increased** in navbar
+- **Photo URL handling** - Fixed relative URL paths
+
+### Session 5: Critical Bug Fixes (January 24, 2026) ✅
+- **P0 - Session Persistence FIXED** 
+  - AuthContext improved with refs to prevent duplicate fetches
+  - Only clears auth on explicit 401 errors, not network errors
+  - Added timeout (10s) and cross-tab synchronization
+- **P1 - Dashboard Hero "A System That Remembers" COMPLETED**
+  - Beautiful gradient hero with animated background
+  - Pet card showing name, breed, and Pet Soul percentage
+  - Quick stats (Points, Pets, Orders)
+  - Pet Pass Member badge with Active status
+- **P2 - Checkout Pet Name Bug FIXED**
+  - Added validation to prevent email addresses being saved as pet names
+  - Both load and save functions now validate pet name
+- **P4 - Mobile Cart View VERIFIED**
+  - Cart sidebar is responsive (full width on mobile)
+  - Modern design with gradient CTA buttons
 
 ---
 
@@ -58,14 +66,18 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 ### Single Source of Truth
 The `overall_score` from the backend API is the ONLY source for Pet Soul scores.
 
-**DO NOT** calculate scores locally in frontend using:
-- `doggy_soul_answers.length / totalQuestions`
-- Different `totalQuestions` values (27, 59, 24, etc.)
+**DO NOT** calculate scores locally in frontend.
 
 **ALWAYS** use:
 ```javascript
 const score = pet.overall_score || 0;
 ```
+
+### Auth Token Handling
+- Token stored in localStorage as `tdb_auth_token`
+- Only clear auth on explicit 401 Unauthorized
+- Never clear on network errors or timeouts
+- Use refs to prevent duplicate API calls
 
 ### Photo URL Handling
 Pet photos may be stored as relative paths. Always ensure full URL:
@@ -80,11 +92,10 @@ const fullUrl = url.startsWith('http')
 ## Architecture
 
 ### Key Components Modified This Session
-- `/app/frontend/src/components/Navbar.jsx` - Larger logo, API-based score
-- `/app/frontend/src/components/MiraAI.jsx` - Enhanced WelcomeCard with clickable links
-- `/app/frontend/src/components/PetSoulScore.jsx` - Fixed photo URL handling
-- `/app/frontend/src/components/Logo.jsx` - Added larger sizes
-- `/app/frontend/src/pages/MemberDashboard.jsx` - Uses API overall_score
+- `/app/frontend/src/context/AuthContext.jsx` - Session persistence fix with refs
+- `/app/frontend/src/pages/MemberDashboard.jsx` - "A System That Remembers" hero
+- `/app/frontend/src/pages/Checkout.jsx` - Pet name validation
+- `/app/frontend/src/components/CartSidebar.jsx` - Mobile responsive
 
 ### Backend Score Calculation
 Location: `/app/backend/server.py` - `calculate_pet_soul_score()`
@@ -96,18 +107,32 @@ Location: `/app/backend/server.py` - `calculate_pet_soul_score()`
 ## Prioritized Backlog
 
 ### P0 - Critical
-1. ~~**Soul Score Consistency**~~ ✅ FIXED
-2. ~~**Mira Photo Missing**~~ ✅ FIXED
-3. ~~**Quick Links Not Clickable**~~ ✅ FIXED
+1. ~~**Session Persistence**~~ ✅ FIXED
+2. ~~**Soul Score Consistency**~~ ✅ FIXED
 
 ### P1 - High Priority
-1. Complete 'Adopt' Pillar registration
-2. Test Service Desk with real tickets
+1. Service Desk - Missing Customer Name on tickets (capture name at ticket creation)
+2. Complete 'Adopt' Pillar registration
+3. Pet Pass Renewal Reminders integration
 
 ### P2 - Medium Priority
-1. Checkout Cart Pet Details Bug
+1. ~~**Checkout Pet Name Bug**~~ ✅ FIXED
 2. "Untitled" Products from Shopify Sync
 3. Build 'Farewell' and 'Shop' Pillars
+4. Member Tier Graduation logic
+
+### P3 - Lower Priority
+1. Enhanced My Pets page with all 14 pillars clickable
+2. WhatsApp Business API integration
+3. Complete backend refactoring
+
+---
+
+## Test Credentials
+- **Test User Email**: dipali@clubconcierge.in
+- **Test User Password**: lola4304
+- **Admin Username**: aditya
+- **Admin Password**: lola4304
 
 ---
 
