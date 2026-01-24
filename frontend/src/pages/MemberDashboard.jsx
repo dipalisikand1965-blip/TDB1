@@ -1195,7 +1195,7 @@ const MemberDashboard = () => {
                 <div className="text-center py-12">
                   <RefreshCw className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                   <h4 className="text-lg font-medium text-gray-900 mb-2">No active subscriptions</h4>
-                  <p className="text-gray-500 mb-6">Subscribe to your dog's favourites and save up to 50%!</p>
+                  <p className="text-gray-500 mb-6">Subscribe to your dog&apos;s favourites and save up to 50%!</p>
                   <div className="bg-blue-50 rounded-xl p-4 max-w-md mx-auto text-left">
                     <p className="font-medium text-blue-900 mb-2">Autoship Benefits:</p>
                     <ul className="text-sm text-blue-800 space-y-1">
