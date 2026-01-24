@@ -15,9 +15,10 @@ const Logo = ({
   const sizes = {
     xs: { img: 'h-8 w-8', text: 'text-sm', subtext: 'text-xs', container: 'gap-0.5' },
     sm: { img: 'h-10 w-10', text: 'text-base', subtext: 'text-sm', container: 'gap-1' },
-    default: { img: 'h-10 w-10', text: 'text-lg', subtext: 'text-base', container: 'gap-1' },
-    lg: { img: 'h-12 w-12', text: 'text-xl', subtext: 'text-lg', container: 'gap-1' },
-    xl: { img: 'h-14 w-14', text: 'text-2xl', subtext: 'text-xl', container: 'gap-1.5' },
+    default: { img: 'h-12 w-12', text: 'text-lg', subtext: 'text-base', container: 'gap-1' },
+    lg: { img: 'h-14 w-14', text: 'text-xl', subtext: 'text-lg', container: 'gap-1.5' },
+    xl: { img: 'h-16 w-16', text: 'text-2xl', subtext: 'text-xl', container: 'gap-2' },
+    '2xl': { img: 'h-20 w-20', text: 'text-3xl', subtext: 'text-2xl', container: 'gap-2' },
   };
 
   const config = sizes[size] || sizes.default;
