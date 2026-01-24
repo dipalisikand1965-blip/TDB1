@@ -1,78 +1,119 @@
-<analysis>**original_problem_statement**: The user is building **The Doggy Company**, a Pet Life Operating System designed to be a pet-first platform. The core vision is a vision-first, commerce-later approach, centered around a Pet Soul™ for each pet and an intelligent concierge, Mira® AI.
+<analysis>**original_problem_statement**: The user is building **The Doggy Company**, a Pet Life Operating System designed as a pet-first platform. The core vision is a vision-first, commerce-later approach, centered around a Pet Soul™ for each pet and an intelligent concierge, Mira® AI.
 
-The user's primary goal is to create a world-class, unified **Concierge Command Center** that acts as the single source of truth and operational hub for the entire business, surpassing generic CRMs. They have recently expanded this vision to include a highly personalized and pillar-aware product discovery experience across the entire site.
+The user's primary goal is to create a world-class, unified **Concierge Command Center** and a highly personalized, pillar-aware product discovery experience across the entire site, supporting 14 distinct pillars of pet care.
 
 **PRODUCT REQUIREMENTS**:
 -   **A. The All-Seeing Eye Command Center**: A unified event stream for all system events.
 -   **B. Complete 360° Member & Pet Profile**: A complete view of the member relationship.
--   **C. Pillar-Aware E-Commerce Experience**: Tailored product discovery for each of the **14 pillars**: Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt, and Shop.
+-   **C. Pillar-Aware E-Commerce Experience**: Tailored product discovery for all 14 pillars.
 -   **D. Data-Driven Operations**: Advanced analytics and reporting.
 -   **E. Net Pawmoter Score (NPS) System**: A post-resolution satisfaction survey system.
--   **F. Expanded Pillars**: The system must fully support all 14 pillars. Community is a future feature, not a pillar.
--   **G. Refactor Backend**: Break down the monolithic  for improved maintainability.
+-   **F. Expanded Pillars**: The system must fully support all 14 pillars.
+-   **G. Refactor Backend**: Break down the monolithic .
+-   **H. Pet Pass Membership System**: A new concierge-focused membership model where membership belongs to the pet, not the parent. It includes Trial and Annual plans, unique Pet Pass numbers per pet, and automated renewals.
+-   **I. Seamless User Flow**: The user journey from landing, to sign-up, to post-login must be seamless, intuitive, and always provide clear next steps, avoiding dead ends.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack application with a React frontend and FastAPI backend. A major backend refactoring initiative is well underway, having successfully modularized a significant portion of the original monolithic  into discrete route files for FAQs, content, loyalty, discounts, carts, Shopify sync, orders, and autoship.
+A full-stack application with a React frontend and FastAPI backend. A major Pet Pass membership system and customer experience (CX) overhaul has been implemented based on the user's detailed doctrine. This included redesigning the Membership page, Navbar, and onboarding flow. The backend was updated to support Trial and Annual Pet Pass plans, generate unique Pet Pass numbers, and activate memberships on payment.
 
-Several user-reported issues were resolved, including:
--   Fixing a z-index issue where the header obscured the Mira AI chat.
--   Implementing a new user-provided logo and brand colors.
--   Making the header Pet Soul link dynamic to show a user's pet score.
--   Adding extensive documentation for NPS and Mira AI to the admin panel.
--   Removing a login requirement from the public FAQs page and seeding it with comprehensive data for all 14 pillars.
--   A complete overhaul of the Mira AI system prompt based on detailed user specifications, significantly enhancing its personalization, memory, and conversational flow. Multiple critical backend bugs related to this were also fixed.
+Numerous UI/UX bugs have been fixed:
+-   Pet Soul scores are now consistent across all pages.
+-   Missing pet photos in the Mira AI welcome card and navbar have been restored.
+-   The company logo size in the navbar has been increased.
+-   The critical Service Desk issue where ticket details wouldn't open has been resolved by fixing the backend API to query multiple database collections.
+-   A Forgot Password flow for members has been implemented.
+-   Old membership tier names (pawsome) have been replaced with a new hierarchy (Curious Pup, etc.).
+
+The agent was in the middle of another UI redesign for the Member Dashboard as requested by the user.
 
 **Last working item**:
--   Last item agent was working: The agent was continuing the major backend refactoring. It had successfully extracted the Orders and Autoship modules and was in the process of planning the next extraction, having identified the **Admin Members**, **Multi-Pet Household**, and **Reviews** sections in  as the next targets.
+-   Last item agent was working: Redesigning the  page to be more visually appealing with a new hero section titled A System That Remembers. As part of this, the agent also modified  to redirect users to the homepage () instead of the dashboard upon login.
 -   Status: IN PROGRESS
 -   Agent Testing Done: N
--   Which testing method agent to use? backend testing agent
+-   Which testing method agent to use? frontend testing agent
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Service Desk / Command Center data integrity (P1)
--   Issue 2: Root cause of Untitled products from Shopify sync (P2)
+-   Issue 1: Session Persistence / Spontaneous Logout (P0 - CRITICAL BLOCKER)
+-   Issue 2: Service Desk / Unified Inbox - Missing Customer Name (P2)
+-   Issue 3: Checkout cart shows incorrect pet details (P3)
+-   Issue 4: Untitled products from Shopify sync (P3)
+-   Issue 5: Mobile Cart View needs redesign (P4)
 
 **Issues Detail**:
--   **Issue 1: Service Desk / Command Center data integrity**
-    -   **Description**: The user has repeatedly reported that new orders or customer interactions do not appear correctly in the Command Center, stating it never works on deployment. While API tests on the production domain were successful, the recurring reports suggest an underlying data consistency or frontend refresh/configuration issue specific to the production environment ().
-    -   **Attempted fixes**: The agent verified the backend API endpoints for the command center are active and return data on the production domain.
+-   **Issue 1: Session Persistence / Spontaneous Logout**
+    -   **Description**: Users are frequently and unexpectedly logged out when navigating between pages or after short periods of inactivity. This is a severe usability bug that also hinders development and testing.
+    -   **Attempted fixes**: The agent modified  to prevent logout on generic network errors, only triggering on 401 Unauthorized responses. However, the issue persisted, suggesting a deeper problem.
     -   **Next debug checklist**:
-        1.  Investigate the frontend implementation of the Command Center ( or similar) to check how it fetches and displays data, especially on the production site.
-        2.  Check for console errors in the browser's developer tools when visiting the Command Center page on the live production site.
-        3.  Verify that the  is being correctly utilized by the frontend components responsible for the Command Center.
-        4.  Trace a new order from creation through to the Command Center UI to see where the breakdown occurs.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a core function of the application. Fixing it will ensure operational reliability and build user trust.
+        1.  Thoroughly review  for race conditions or logic errors.
+        2.  Investigate if any component is accidentally calling the  function on render.
+        3.  Use browser developer tools to inspect  during navigation to see exactly when and why the  is being cleared.
+        4.  Verify the  dependency in backend routes is not failing intermittently.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is the highest priority issue. Fixing it will restore basic application usability for all users and unblock effective testing and development.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: Y
-    -   **Should Test frontend/backend/both after fix?**: Both
--   **Issue 2: The root cause of Untitled products from Shopify sync may still exist.**
-    -   **Attempted fixes**: None directly, but the relevant code has been isolated into , which will make debugging easier.
-    -   **Next debug checklist**: 1. Review . 2. Trace the data mapping for products during the sync process. 3. Identify why the  field is sometimes missing or null.
-    -   **Why fix this issue and what will be achieved with the fix?**: Ensures data integrity for e-commerce operations.
+    -   **Should Test frontend/backend/both after fix?**: both
+-   **Issue 2: Service Desk / Unified Inbox - Missing Customer Name**
+    -   **Description**: When tickets are created from sources like the Mira AI chat, the customer's name is not always captured, leading to entries like Unknown or Website Visitor in the service desk.
+    -   **Attempted fixes**: The agent fixed the ticket detail API () to always return a  object, preventing the UI from crashing. This was a patch, not a root cause fix.
+    -   **Next debug checklist**:
+        1.  Trace the  event in .
+        2.  Determine why  sometimes lacks user information.
+        3.  Enhance the event creation logic to ensure the user's identity (if logged in) is always attached to the chat session and subsequent events.
+    -   **Why fix this issue and what will be achieved with the fix?**: Ensures support agents can identify and personally address users, fulfilling a core requirement of the Concierge Command Center.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Backend
+-   **Issue 3: Checkout cart shows incorrect pet details**
+    -   **Description**: User's email sometimes appears as the pet's name during checkout.
+    -   **Attempted fixes**: None in this session. Previous agent added a pet selector, but the root data corruption issue remains.
+    -   **Next debug checklist**:
+        1.  Review the logic in  that saves and retrieves data from .
+        2.  Add validation to prevent an email address from being saved as .
+    -   **Why fix this issue and what will be achieved with the fix?**: Prevents user confusion and ensures data integrity during the critical checkout process.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: Y
+    -   **Should Test frontend/backend/both after fix?**: Frontend
+-   **Issue 4: Untitled products from Shopify sync**
+    -   **Description**: A recurring issue where product sync from Shopify results in products with no title.
+    -   **Attempted fixes**: None in this session.
+    -   **Next debug checklist**: Review  and trace the data mapping to find why the  field is being dropped or missed.
+    -   **Why fix this issue and what will be achieved with the fix?**: Ensures data integrity for the e-commerce portion of the app.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: Y
+    -   **Should Test frontend/backend/both after fix?**: Backend
+-   **Issue 5: Mobile Cart View needs redesign**
+    -   **Description**: User requested an update to an old-looking mobile cart view.
+    -   **Attempted fixes**: None. File identified as .
+    -   **Next debug checklist**: Propose and implement a modern, responsive design for the checkout page on mobile.
+    -   **Why fix this issue and what will be achieved with the fix?**: Improves mobile UX and potential conversion rate.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Frontend
 
 **In progress Task List**:
--   **Task 1: Continue Backend Refactoring (P0)**
-    -   **Where to resume**: The agent just finished extracting Orders and Autoship routes. The user has approved continuing the refactoring.
-        1.  Create new files: , , and .
-        2.  Extract the corresponding logic for Admin Members (approx. lines 4687-4880), Multi-Pet Households (approx. lines 6223-6433), and Reviews (approx. lines 6586-6800) from  into these new files.
-        3.  Update  to import and use the new routers.
-        4.  Restart and thoroughly test the extracted endpoints.
-    -   **What will be achieved with this?**: This will further reduce the size of  from 9,376 lines, improving code organization and maintainability.
+-   **Task 1: Complete Redesign of My Account Page (P1)**
+    -   **Where to resume**: Agent has replaced the header of  with a new hero section. The component needs to be fully built out to be more beautiful and information-full as per user feedback.
+    -   **What will be achieved with this?**: Delivers a more engaging and visually appealing central hub for logged-in members.
     -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: Backend
-    -   **Blocked on something**: None.
+    -   **Should Test frontend/backend/both after fix?**: Frontend
+-   **Task 2: Build 'Adopt' Pillar (P2)**
+    -   **Where to resume**: Scaffolding files (, , ) exist. They need to be registered in the main app files and have their functionality built out, using the Care pillar as a template.
+    -   **What will be achieved with this?**: Expands the application with one of the 14 core pillars.
+    -   **Status**: NOT STARTED
+    -   **Should Test frontend/backend/both after fix?**: both
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   **(P0) Complete Backend Refactoring - Phase 3**: Extract remaining large modules from  (e.g., Product Management, App Settings, Admin Notifications).
--   **(P1) Build Farewell & Adopt Pillar Pages**: Create the frontend pages and backend support for these two missing pillars.
--   **(P2) WhatsApp Business API Integration**: Replace the provisional click-to-chat links with a true API integration.
+-   **(P1) Implement Pet Pass Renewal Reminders**: The backend logic and endpoints exist in . Need to create a scheduled job or trigger to run the checks and integrate with Resend to send emails.
+-   **(P1) Implement Member Tier Graduation**: Add logic for members to automatically upgrade from Curious Pup to Loyal Companion after a certain time/activity level, triggering a celebratory email.
+-   **(P1) Build 'Farewell' Pillar**: Create the frontend page, backend routes, and admin manager.
+-   **(P1) Build 'Shop' Pillar**: Create the frontend page, backend routes, and admin manager.
+-   **(P2) Enhance  Page**: Ensure all 14 pillars are visible and clickable for each pet, linking to a pet-scoped history/request page for that pillar.
+-   **(P2) Complete Backend Refactoring**: Continue modularizing the monolithic .
+-   **(P2) WhatsApp Business API Integration**: Replace provisional click-to-chat links with a proper API integration.
 
 **Future Tasks:**
 -   Concierge Command Center - Phase 3 (SLA breach audio alerts).
@@ -82,29 +123,18 @@ Several user-reported issues were resolved, including:
 -   Re-enable  for go-live on necessary pages.
 
 **Completed work in this session**
--   **Major Backend Refactoring (P0 Priority Task)**:
-    -   Extracted **Abandoned Cart** logic into .
-    -   Extracted **Shopify Sync** logic into .
-    -   Extracted **Orders API** logic into .
-    -   Extracted **Autoship System** logic into .
-    -   Reduced  from **11,238 lines** down to **9,376 lines** (a ~19% reduction).
-    -   All refactored modules were verified with the testing agent (, , ).
--   **Mira AI Personalization & System Prompt Overhaul**:
-    -   Replaced the entire system prompt in  with the user's comprehensive guidelines, focusing on conversational flow, memory, and safety.
-    -   Significantly enhanced Mira's personalization to use pet parent/pet names and recall past conversations.
-    -   Fixed multiple critical  bugs in  to handle  data from the database gracefully.
-    -   Successfully tested multiple conversational edge cases (Emergency, Travel, Dine, Guest User).
--   **UI/UX Fixes and Enhancements**:
-    -   **New Logo**: Implemented a new user-provided logo, favicon, and brand text colors site-wide (, ).
-    -   **Mira AI Visibility**: Fixed a  issue where the header was covering the Mira AI chat window ().
-    -   **Dynamic Header Link**: Updated the Pet Soul link in  to direct to  and show a pet score when the user is logged in.
--   **Feature Enhancements**:
-    -   **NPS Admin Dashboard**: Enhanced  to show detailed product-wise NPS data with customer comments, supported by a new backend endpoint.
-    -   **FAQs Page**: Fixed a bug that required login, making the page public. Seeded the database with 58 comprehensive FAQs for all 14 pillars.
-    -   **Admin Docs**: Added detailed documentation for the Net Pawmoter Score system and Mira LLM Rules in .
+-   **Pet Pass CX Flow Implementation**: Overhauled the user journey according to the user's detailed doctrine, redesigning the membership page (), navbar (), and onboarding () with new Pet Pass branding and logic.
+-   **Forgot Password Feature**: Implemented a full forgot/reset password flow for members, including backend endpoints () and frontend pages (, ).
+-   **Service Desk Ticket View Fix**: Resolved a critical bug where ticket details failed to load. The fix involved modifying  to query both  and  collections and ensuring the API response was always structured correctly.
+-   **Pet Soul Score Unification**: Fixed inconsistencies in the Pet Soul score by standardizing all components (, , ) to use the  field provided by the backend API, eliminating frontend recalculations.
+-   **Mira AI Welcome Card Enhanced**: Fixed the welcome card in  to correctly display the pet's photo (by handling relative URLs) and added the user-requested clickable quick-action links.
+-   **Admin Product Loading Fix**: Resolved an issue where not all products were loading in the  by increasing the API fetch limit.
+-   **Membership Tier Refactor**: Replaced all legacy pawsome tier references with the new Curious Pup -> Pack Leader hierarchy across the frontend and backend.
+-   **Renewal Reminder System**: Created the backend foundation for Pet Pass renewal reminders in .
+-   **General UI Fixes**: Increased the main logo size in the .
 
 **Earlier issues found/mentioned but not fixed**
--   The root cause of Shopify Sync creates Untitled Products remains unresolved. This is captured in the All Pending/In progress Issue list.
+-   None that were not already captured in the pending issue list.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork**: Shopify Sync creates Untitled Products
@@ -115,85 +145,81 @@ Several user-reported issues were resolved, including:
 
 
 **Key Technical Concepts**
--   **Backend Refactoring (Modularization)**: The primary activity was breaking down the monolithic  by extracting domains (Cart, Shopify, Orders, Autoship) into their own  files, significantly improving maintainability.
--   **Comprehensive LLM System Prompt Engineering**: A complete overhaul of the Mira AI system prompt in  based on highly detailed user specifications, including complex rules for conversation flow, product recommendations, memory usage, and web lookups.
--   **Robust Data Handling & Defensive Programming**: Fixed multiple  bugs by adding checks for / values returned from MongoDB, making the application more resilient to incomplete data.
--   **Z-Index Debugging**: Solved a critical UI overlap issue between the fixed navbar and a floating action button component by adjusting CSS  properties.
--   **Dynamic Frontend State**: Implemented logic in  to fetch user-specific data (pet soul score) and conditionally render UI elements based on login status.
--   **Data Seeding & Mocking**: Populated the database with test data for FAQs and NPS to validate new features and UI components.
+-   **Doctrine-Driven Development**: Implementing features based on a detailed, user-provided specification (Pet Pass doctrine).
+-   **Session Management Debugging**: Investigating a persistent authentication issue related to token handling in  and React Context.
+-   **API & Database Reconciliation**: Fixing bugs by making backend queries account for multiple, similar database collections ( and ).
+-   **Data Consistency**: Unifying how data (like the Pet Soul Score) is calculated and displayed by relying on a single source of truth from the API ().
+-   **UI/UX Overhaul**: Performing significant redesigns of core pages (, ) to improve aesthetics and user flow.
 
 **key DB schema**
--   No schema changes were made in this session.
+-   : Contains user profile, an array of associated pet IDs, and membership details (, ).
+-   : Stores all pet-specific information, including , , and the canonical .
+-    / : Two collections used for storing support tickets. API logic must query both to provide a unified view.
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   **/app/backend/server.py**: The main file being refactored.
--   **/app/backend/mira_routes.py**: Contains the critical, newly updated Mira AI system prompt.
--   **/app/backend/cart_routes.py**: Newly created.
--   **/app/backend/shopify_sync_routes.py**: Newly created.
--   **/app/backend/orders_routes.py**: Newly created.
--   **/app/backend/autoship_routes.py**: Newly created.
--   **/app/frontend/src/components/Navbar.jsx**: Contains fixes for z-index and dynamic Pet Soul link.
--   **/app/frontend/src/components/MiraAI.jsx**: Contains the z-index fix.
--   **/app/frontend/src/pages/FAQs.jsx**: Contains the API endpoint fix.
--   **/app/frontend/src/components/admin/NPSManager.jsx**: Contains the enhanced NPS dashboard UI.
--   **/app/frontend/src/pages/AdminDocs.jsx**: Contains new documentation.
+-   : Currently being redesigned.
+-   : Login redirect logic was just changed.
+-   : Contains an attempted fix for the critical session persistence issue.
+-   : Contains the critical fix for the Service Desk ticket view.
+-   : Contains the new Forgot Password endpoints.
+-   : The primary Pet Pass landing page.
+-   : Recently updated with a new Pet Soul panel.
+-   : The main monolith, modified for new features.
+-   : The product requirements document, updated this session.
 
 **Areas that need refactoring**:
--    is still large at **9,376 lines**. The refactoring effort must continue with high priority. The next identified targets are Admin Members, Multi-Pet Household, and Reviews.
+-   ****: Remains a large monolithic file that needs to be broken down into more modules.
+-   **** and **** are large, complex components that could be simplified and broken into smaller sub-components.
+-   ****: Needs a more robust implementation to definitively solve the session persistence issue.
 
 **key api endpoints**
--   : (NEW) Extracted to .
--   : (NEW) Extracted to .
--   : (NEW) Extracted to .
--   : (NEW) Extracted to .
--   : (NEW) Created in  for the enhanced NPS admin dashboard.
--   : (EXISTING/PUBLIC) The  page was updated to use this public endpoint instead of the admin one.
+-   : Redirect behavior was just modified in the frontend calling this.
+-   : (POST) New endpoint to request a password reset token for a member.
+-   : (POST) New endpoint to set a new password using a reset token.
+-   : (GET) Significantly modified to query two collections (, ) and return a consistent data structure, fixing the service desk UI.
+-   : (GET) New endpoint to get a list of memberships nearing expiry.
+-   : (POST) New endpoint to trigger renewal reminder emails.
 
 **Critical Info for New Agent**
--   **Your immediate task is to continue the backend refactoring**. The user has approved it, and it's the highest priority task (P0). The next targets are Admin Members, Multi-Pet Household, and Reviews.
--   The user is highly focused on **Mira AI's personalization and memory**. The AI's ability to recall pet/parent details and conversation history is a critical feature. The current implementation in  and  is the source of truth.
--   The Command Center not working on deployment issue is a high-priority, recurring complaint. This likely requires frontend debugging on the production URL, as backend APIs appear to be working.
--   The Shopify Untitled product bug is now easier to tackle since the code has been isolated in .
+-   **SESSION PERSISTENCE IS THE #1 BLOCKER (P0)**. Users are logged out constantly. This severely impacts usability and your ability to test changes. The previous agent's fix in  was not sufficient. Your first priority should be to definitively solve this.
+-   The user's current focus is redesigning the **My Account page** () to be more beautiful and informative, and ensuring login redirects to the homepage, not the account page.
+-   The user provides extremely detailed doctrines for features. Refer to the user's messages and the PRD for the Pet Pass system logic. Adhere to these specifications strictly.
+-   There are two MongoDB collections for tickets:  and . All ticket-related API logic must account for both to avoid bugs.
+-   The Pet Soul score is now standardized. Use the  field from the pet object provided by the API. Do not recalculate this on the frontend.
 
 **documents and test reports created in this job**
--   /app/memory/PRD.md (Updated)
--   /app/test_reports/iteration_55.json
--   /app/test_reports/iteration_56.json
--   /app/test_reports/iteration_57.json
+-    (Updated)
+-    (New)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Asks to continue refactoring. (Completed: Agent extracted Orders & Autoship).
-2.  **Agent**: Summarized refactoring and asked to continue or switch tasks.
-3.  **User**: Asks to continue refactoring. (Completed: Agent is planning the next set of extractions).
-4.  **Agent**: Summarized Mira AI edge case testing and asked to continue refactoring or build pillar pages.
-5.  **User**: Confirms to test more edge cases for Mira and then refactor. (Completed: Agent tested edge cases and found/fixed bugs).
-6.  **Agent**: Summarized Mira AI personalization and asked for next steps.
-7.  **User**: Emphasized that Mira AI personalization is P2 priority because it needs to be a highly personalized pet companion. (Completed: Agent investigated and enhanced the personalization and memory systems).
-8.  **Agent**: Summarized the Mira visibility fix and the new system prompt.
-9.  **User**: Pointed out Mira AI chat is still hidden and provided a comprehensive new system prompt. (Completed: Agent fixed the final visibility issue and implemented the new prompt).
-10. **User**: Confirmed they want to use the new logo and specified text color requirements. (Completed: Agent implemented the new logo and colors).
+1.  **User**: Finish the Pet Pass CX flow implementation. (Status: COMPLETED).
+2.  **User**: Requests several new features and fixes: update admin docs, new members should appear everywhere, fix member tier names, remove pawsome references, and provides priorities for fixing the Unified Inbox, session persistence, and adding renewal reminders. (Status: IN PROGRESS, many items completed).
+3.  **User**: Reports critical issues: My Pets page needs a large Pet Soul panel and must show all pillars; Service Desk tickets are not opening with conversation history; Products are not all loading. (Status: IN PROGRESS, agent has fixed Service Desk and Products issue, and started on My Pets page).
+4.  **User**: Provides screenshots and reports critical UI bugs: inconsistent Soul scores, missing pet photo in Mira AI, non-clickable links, and small logo. (Status: COMPLETED, agent fixed all these issues).
+5.  **User**: Requests that logged-in users be redirected to the main homepage, not their My Account page. (Status: COMPLETED, agent updated ).
+6.  **User**: Critiques the My Account page UI, calling it not at all nice looking and requesting a more beautiful and informative design, referencing a previous A system that remembers concept. (Status: IN PROGRESS, agent has started redesigning ).
 
 **Project Health Check:**
 -   **Broken**:
-    -    remains a significant technical debt and maintainability risk due to its size (9,376 lines).
-    -   The user reports the **Concierge Command Center is non-functional on the production deployment**, suggesting a critical frontend or configuration issue.
--   **Mocked**: WhatsApp Integration (remains a click-to-chat link).
+    -   **Session Management**: A critical P0 issue causing frequent, spontaneous logouts.
+-   **Mocked**:
+    -   WhatsApp Integration (remains a click-to-chat link).
 
 **3rd Party Integrations**
 -   **OpenAI**: Powers the Mira® AI system (via  and the **Emergent LLM Key**).
--   **Resend**: Used for transactional emails.
+-   **Resend**: Used for transactional emails (e.g., password resets).
 -   **Razorpay**: Payment gateway.
 -   **Shopify**: For product sync (known bug causing Untitled products).
 -   **ReportLab**: For server-side PDF generation.
 
 **Testing status**
--   Testing agent used after significant changes: YES (, ,  were generated).
+-   Testing agent used after significant changes: NO
 -   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created: None manually, but the testing agent generated tests.
--   Known regressions: None.
+-   Test files created: NO
+-   Known regressions: The session persistence issue remains a severe, unresolved regression.
 
 **Credentials to test flow:**
 -   **Admin Username**: 
@@ -202,4 +228,5 @@ Several user-reported issues were resolved, including:
 -   **Test User Password**: 
 
 **What agent forgot to execute**
--   The agent's work on refactoring was a natural stopping point. It had planned the next extraction (Admin Members, Multi-Pet Household, Reviews) but had not yet begun creating the files or moving the code. This is the correct place for the next agent to resume.</analysis>
+-   The root cause of the Unified Inbox not recognising customer name issue (i.e., capturing the name at the source of ticket creation) was not fixed, although the UI-breaking symptom was patched.
+-   The agent did not address several pending issues from the original handoff (e.g., checkout bug, mobile cart redesign), as user priorities shifted to the Pet Pass CX flow and subsequent UI fixes.</analysis>
