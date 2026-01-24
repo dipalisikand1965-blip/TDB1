@@ -151,6 +151,10 @@ function MainLayout() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<MemberDashboard />} />
         
+        {/* Member Password Reset - New Pages */}
+        <Route path="/member/forgot-password" element={<MemberForgotPassword />} />
+        <Route path="/reset-password" element={<MemberResetPassword />} />
+        
         {/* Search Results */}
         <Route path="/search" element={<SearchResults />} />
         
