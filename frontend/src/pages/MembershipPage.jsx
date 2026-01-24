@@ -584,38 +584,38 @@ const MembershipPage = () => {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
               <Crown className="w-4 h-4" />
-              Founding Members
+              Pet Pass
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Pet Life Pass
+              Your Pet&apos;s Personal Concierge
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              An early invitation to help us build the world&apos;s first Pet Life Operating System.
+              A living concierge relationship for your dog — beginning with understanding, sustained through memory, care, and continuity.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Annual Plan - FIRST (Recommended) */}
+            {/* Annual Plan - FIRST (Foundation) */}
             <Card className="p-8 border-2 border-purple-500 relative overflow-hidden order-1">
               <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                FOUNDING MEMBER
+                RECOMMENDED
               </div>
 
               <div className="text-center mb-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Annual Pet Life Pass</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Pet Pass — Foundation</h3>
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-4xl font-bold text-gray-900">₹4,999</span>
                   <span className="text-gray-500">/year</span>
                 </div>
                 <p className="text-xs text-gray-400 mt-1">+ 18% GST</p>
-                <p className="text-sm text-green-600 mt-2 font-medium">Save ₹989 vs monthly</p>
+                <p className="text-sm text-green-600 mt-2 font-medium">Full concierge relationship</p>
               </div>
 
               <ul className="space-y-3 mb-8">
                 {[
                   'Full Pet Soul™ Profile',
                   'Unlimited Mira AI Concierge',
-                  'All 12 Life Pillars Unlocked',
+                  'All 14 Life Pillars Unlocked',
                   'Health Vault & Records',
                   'Priority Concierge Support',
                   'Double Paw Points (2x)',
@@ -635,27 +635,31 @@ const MembershipPage = () => {
                 data-testid="annual-plan-btn"
               >
                 <Crown className="w-5 h-5 mr-2" />
-                Become a Founding Member
+                Activate Pet Pass
               </Button>
             </Card>
 
-            {/* Monthly Plan */}
-            <Card className="p-8 border-2 border-gray-200 hover:border-purple-300 transition-colors order-2">
+            {/* Trial Plan */}
+            <Card className="p-8 border-2 border-gray-200 hover:border-purple-300 transition-colors order-2 relative">
+              <div className="absolute top-4 right-4 bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full">
+                TRIAL
+              </div>
+
               <div className="text-center mb-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Monthly Pet Life Pass</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Pet Pass — Trial</h3>
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-4xl font-bold text-gray-900">₹499</span>
-                  <span className="text-gray-500">/month</span>
+                  <span className="text-gray-500">/1 month</span>
                 </div>
                 <p className="text-xs text-gray-400 mt-1">+ 18% GST</p>
-                <p className="text-sm text-gray-500 mt-2">Billed monthly, cancel anytime</p>
+                <p className="text-sm text-amber-600 mt-2 font-medium">Introduction to the concierge experience</p>
               </div>
 
               <ul className="space-y-3 mb-8">
                 {[
                   'Full Pet Soul™ Profile',
                   'Unlimited Mira AI Concierge',
-                  'All 12 Life Pillars Unlocked',
+                  'All 14 Life Pillars Unlocked',
                   'Health Vault & Records',
                   'Priority Concierge Support',
                   'Paw Rewards'
@@ -669,19 +673,19 @@ const MembershipPage = () => {
 
               <Button 
                 className="w-full bg-gray-900 hover:bg-gray-800 py-6"
-                onClick={() => handleSelectPlan('monthly')}
-                data-testid="monthly-plan-btn"
+                onClick={() => handleSelectPlan('trial')}
+                data-testid="trial-plan-btn"
               >
-                Get Started
+                Start Trial
               </Button>
             </Card>
           </div>
 
-          {/* Family Plan Note */}
+          {/* Multi-Pet Note */}
           <div className="mt-8 text-center">
             <Card className="inline-block p-4 bg-purple-50 border-purple-200">
               <p className="text-purple-900">
-                <strong>🐾 Multiple pets?</strong> Add more pets at just ₹2,499/year or ₹249/month each (+ GST)
+                <strong>🐾 Multiple pets?</strong> Each pet gets their own Pet Pass at ₹2,499/year or ₹249/trial (+ GST)
               </p>
             </Card>
           </div>
