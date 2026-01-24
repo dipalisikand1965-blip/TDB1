@@ -86,23 +86,32 @@ async def get_all_customers(username: str = Depends(verify_admin)):
     all_customers = users + guests
     all_customers.sort(key=lambda x: x.get("created_at", ""), reverse=True)
     
-    # Stats
+    # Stats - Support both new and legacy tier names
     total = len(all_customers)
-    free_count = sum(1 for u in all_customers if u.get("membership_tier") == "free")
-    pawsome_count = sum(1 for u in all_customers if u.get("membership_tier") == "pawsome")
-    premium_count = sum(1 for u in all_customers if u.get("membership_tier") == "premium")
-    vip_count = sum(1 for u in all_customers if u.get("membership_tier") == "vip")
+    
+    # New tier counts
+    curious_pup_count = sum(1 for u in all_customers if u.get("membership_tier") in ["curious_pup", "free"])
+    loyal_companion_count = sum(1 for u in all_customers if u.get("membership_tier") in ["loyal_companion", "pawsome"])
+    trusted_guardian_count = sum(1 for u in all_customers if u.get("membership_tier") in ["trusted_guardian", "premium"])
+    pack_leader_count = sum(1 for u in all_customers if u.get("membership_tier") in ["pack_leader", "vip"])
     guest_count = len(guests)
     
     return {
         "members": all_customers,
         "total": total,
         "stats": {
-            "free": free_count,
-            "pawsome": pawsome_count,
-            "premium": premium_count,
-            "vip": vip_count,
-            "guest": guest_count
+            # New tier names
+            "curious_pup": curious_pup_count,
+            "loyal_companion": loyal_companion_count,
+            "trusted_guardian": trusted_guardian_count,
+            "pack_leader": pack_leader_count,
+            # Legacy names for backward compatibility
+            "free": curious_pup_count,
+            "pawsome": loyal_companion_count,
+            "premium": trusted_guardian_count,
+            "vip": pack_leader_count,
+            "guest": guest_count,
+            "total": total
         }
     }
 
