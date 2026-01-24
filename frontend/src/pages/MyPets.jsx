@@ -634,6 +634,116 @@ const MyPets = () => {
                     </div>
                   </div>
                   
+                  {/* PET SOUL COMPLETION PANEL - Large, Central, Always Visible */}
+                  <div className="px-6 py-4 border-t border-gray-100">
+                    <Card className={`p-5 ${(pet.overall_score || 0) < 100 ? 'bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200' : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'}`}>
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                            <Brain className="w-6 h-6 text-purple-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-gray-900">
+                              {(pet.overall_score || 0) < 100 ? '🌱 Pet Soul Growing' : '✨ Pet Soul Complete'}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              {(pet.overall_score || 0) < 100 
+                                ? `Help us understand ${pet.name} better` 
+                                : `We know ${pet.name} deeply!`}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-3xl font-bold text-purple-600">{Math.round(pet.overall_score || 0)}%</div>
+                          <p className="text-xs text-gray-500">completion</p>
+                        </div>
+                      </div>
+                      
+                      {/* Progress Bar */}
+                      <div className="w-full bg-white/60 rounded-full h-3 mb-4">
+                        <div 
+                          className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all"
+                          style={{ width: `${Math.round(pet.overall_score || 0)}%` }}
+                        />
+                      </div>
+                      
+                      {/* Soul Categories */}
+                      <div className="grid grid-cols-4 gap-2 mb-4">
+                        {[
+                          { key: 'basics', label: 'Basics', icon: '📋', filled: !!(pet.name && pet.breed) },
+                          { key: 'personality', label: 'Personality', icon: '🎭', filled: !!pet.soul?.persona },
+                          { key: 'lifestyle', label: 'Lifestyle', icon: '🏠', filled: !!pet.soul?.activity_level },
+                          { key: 'health', label: 'Health', icon: '💊', filled: !!(pet.weight || pet.allergies?.length) }
+                        ].map((cat) => (
+                          <div key={cat.key} className={`text-center p-2 rounded-lg ${cat.filled ? 'bg-green-100' : 'bg-white/50'}`}>
+                            <div className="text-xl mb-1">{cat.icon}</div>
+                            <p className="text-xs font-medium text-gray-700">{cat.label}</p>
+                            {cat.filled ? (
+                              <Check className="w-3 h-3 text-green-600 mx-auto mt-1" />
+                            ) : (
+                              <p className="text-[10px] text-amber-600 mt-1">Pending</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* CTA */}
+                      {(pet.overall_score || 0) < 100 && (
+                        <Link to={`/pet-soul-journey/${pet.id}`}>
+                          <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                            <Sparkles className="w-4 h-4 mr-2" />
+                            Continue Pet Soul Journey →
+                          </Button>
+                        </Link>
+                      )}
+                    </Card>
+                  </div>
+                  
+                  {/* ALL PILLARS SECTION - Show all 14 pillars */}
+                  <div className="px-6 py-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                        🏛️ Life Pillars
+                      </h3>
+                      <Badge variant="outline">{pet.pet_pass_number || 'Pet Pass Pending'}</Badge>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2">
+                      {[
+                        { id: 'feed', name: 'Feed', icon: '🍖', path: '/feed', color: 'from-orange-400 to-red-400' },
+                        { id: 'celebrate', name: 'Celebrate', icon: '🎂', path: '/celebrate', color: 'from-pink-400 to-rose-400' },
+                        { id: 'dine', name: 'Dine', icon: '🍽️', path: '/dine', color: 'from-amber-400 to-orange-400' },
+                        { id: 'stay', name: 'Stay', icon: '🏨', path: '/stay', color: 'from-blue-400 to-indigo-400' },
+                        { id: 'travel', name: 'Travel', icon: '✈️', path: '/travel', color: 'from-cyan-400 to-blue-400' },
+                        { id: 'care', name: 'Care', icon: '🩺', path: '/care', color: 'from-emerald-400 to-teal-400' },
+                        { id: 'groom', name: 'Groom', icon: '✂️', path: '/groom', color: 'from-violet-400 to-purple-400' },
+                        { id: 'play', name: 'Play', icon: '🎾', path: '/play', color: 'from-green-400 to-emerald-400' },
+                        { id: 'train', name: 'Train', icon: '🎓', path: '/train', color: 'from-indigo-400 to-purple-400' },
+                        { id: 'insure', name: 'Insure', icon: '🛡️', path: '/insure', color: 'from-slate-400 to-gray-500' },
+                        { id: 'adopt', name: 'Adopt', icon: '🐕', path: '/adopt', color: 'from-rose-400 to-pink-400' },
+                        { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/farewell', color: 'from-purple-400 to-indigo-400' },
+                        { id: 'shop', name: 'Shop', icon: '🛒', path: '/products', color: 'from-teal-400 to-cyan-400' },
+                        { id: 'community', name: 'Community', icon: '👥', path: '/community', color: 'from-yellow-400 to-amber-400' }
+                      ].map((pillar) => (
+                        <Link 
+                          key={pillar.id} 
+                          to={`${pillar.path}?pet=${pet.id}`}
+                          className="group"
+                        >
+                          <Card className="p-3 hover:shadow-md transition-all cursor-pointer border hover:border-purple-300">
+                            <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition-transform`}>
+                              {pillar.icon}
+                            </div>
+                            <p className="text-xs font-medium text-gray-700 truncate">{pillar.name}</p>
+                            <p className="text-[10px] text-gray-400">Not used</p>
+                          </Card>
+                        </Link>
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-3 text-center">
+                      All 14 pillars unlocked with Pet Pass • Click any pillar to request support
+                    </p>
+                  </div>
+                  
                   {/* Pet Pass Card Section - Show if pet has a Pet Pass number */}
                   {pet.pet_pass_number && (
                     <div className="px-6 pb-4 pt-2 border-t border-gray-100">
