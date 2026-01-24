@@ -55,10 +55,10 @@ const MemberForgotPassword = () => {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Check Your Email</h1>
           <p className="text-gray-600 mb-4">
-            If <strong>{email}</strong> is registered with us, you'll receive a password reset link shortly.
+            If <strong>{email}</strong> is registered with us, you&apos;ll receive a password reset link shortly.
           </p>
           <p className="text-sm text-gray-500 mb-6">
-            The link will expire in 24 hours. Check your spam folder if you don't see it.
+            The link will expire in 24 hours. Check your spam folder if you don&apos;t see it.
           </p>
           <div className="space-y-3">
             <Link to="/login">
@@ -92,7 +92,7 @@ const MemberForgotPassword = () => {
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Forgot Password?</h1>
           <p className="text-gray-600 mt-2">
-            No worries! Enter your email and we'll send you reset instructions.
+            No worries! Enter your email and we&apos;ll send you reset instructions.
           </p>
         </div>
 
@@ -136,7 +136,7 @@ const MemberForgotPassword = () => {
         </form>
 
         <div className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link to="/pet-soul-onboard" className="text-purple-600 font-medium hover:underline">
             Join now
           </Link>
