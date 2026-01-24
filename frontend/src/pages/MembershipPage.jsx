@@ -692,14 +692,14 @@ const MembershipPage = () => {
         </div>
       </div>
 
-      {/* CTA Section - Calmer */}
+      {/* CTA Section */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to begin your pet&apos;s journey with us?
+            Ready to begin your pet&apos;s concierge journey?
           </h2>
           <p className="text-white/80 mb-8 max-w-2xl mx-auto">
-            Join our founding members and help build the future of pet care.
+            Pet Pass creates a living relationship between your pet, you, and our care system.
           </p>
           <Button 
             size="lg"
@@ -708,7 +708,7 @@ const MembershipPage = () => {
             data-testid="final-cta-btn"
           >
             <Crown className="w-5 h-5 mr-2" />
-            Get Your Pet Life Pass <ArrowRight className="ml-2 w-5 h-5" />
+            Activate Pet Pass <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
         </div>
       </div>
