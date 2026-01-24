@@ -27,7 +27,13 @@ const PetSoulScore = ({ score, isLoggedIn, pet, className = '' }) => {
   const needsAttention = score < 70;
   
   // Get pet photo URL
-  const petPhotoUrl = pet?.photo_url || pet?.image_url;
+  // Ensure photo URL is absolute
+  const rawPhotoUrl = pet?.photo_url || pet?.image_url;
+  const petPhotoUrl = rawPhotoUrl 
+    ? (rawPhotoUrl.startsWith('http') 
+        ? rawPhotoUrl 
+        : `${process.env.REACT_APP_BACKEND_URL || ''}${rawPhotoUrl.startsWith('/') ? '' : '/'}${rawPhotoUrl}`)
+    : null;
   const petName = pet?.name || 'Pet';
 
   if (!isLoggedIn) {
