@@ -176,7 +176,7 @@ const PersonalizedDashboard = ({ user, pets = [], onOpenMira }) => {
             Add your pet to unlock a personalized experience. 
             We'll remember everything about them, so you never have to repeat yourself.
           </p>
-          <Link to="/pets/add">
+          <Link to="/pet-soul-onboard">
             <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
               <Plus className="w-5 h-5 mr-2" />
               Add Your Pet

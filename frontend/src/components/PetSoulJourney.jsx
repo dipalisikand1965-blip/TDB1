@@ -395,7 +395,7 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
           <p className="text-lg text-gray-600 mb-8">
             Add your first pet to begin building their evolving digital soul.
           </p>
-          <Link to="/pets/add">
+          <Link to="/pet-soul-onboard">
             <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600">
               <PawPrint className="w-5 h-5 mr-2" />
               Add Your Pet
