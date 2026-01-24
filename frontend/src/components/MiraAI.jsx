@@ -16,6 +16,108 @@ const markdownComponents = {
   strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
 };
 
+// Default breed images from Unsplash
+const BREED_IMAGES = {
+  'golden retriever': 'https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=400&h=300&fit=crop',
+  'labrador': 'https://images.unsplash.com/photo-1579213838058-8ae16d24b6bb?w=400&h=300&fit=crop',
+  'labrador retriever': 'https://images.unsplash.com/photo-1579213838058-8ae16d24b6bb?w=400&h=300&fit=crop',
+  'german shepherd': 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=400&h=300&fit=crop',
+  'beagle': 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=400&h=300&fit=crop',
+  'poodle': 'https://images.unsplash.com/photo-1616149256170-a95d5a0a63c8?w=400&h=300&fit=crop',
+  'bulldog': 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400&h=300&fit=crop',
+  'french bulldog': 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400&h=300&fit=crop',
+  'rottweiler': 'https://images.unsplash.com/photo-1567752881298-894bb81f9379?w=400&h=300&fit=crop',
+  'husky': 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&h=300&fit=crop',
+  'siberian husky': 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&h=300&fit=crop',
+  'pug': 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400&h=300&fit=crop',
+  'shih tzu': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop',
+  'dachshund': 'https://images.unsplash.com/photo-1612195583950-b8fd34c87093?w=400&h=300&fit=crop',
+  'boxer': 'https://images.unsplash.com/photo-1543071220-6ee5bf71a54e?w=400&h=300&fit=crop',
+  'indie': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop',
+  'indian pariah': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop',
+  'default': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop'
+};
+
+// Get appropriate image for the welcome card
+const getWelcomeImage = (user, pets) => {
+  // Priority 1: Pet&apos;s uploaded photo
+  if (pets?.[0]?.photo_url || pets?.[0]?.image_url) {
+    return { url: pets[0].photo_url || pets[0].image_url, type: 'pet' };
+  }
+  
+  // Priority 2: User/Parent&apos;s uploaded photo
+  if (user?.photo_url || user?.avatar_url || user?.profile_image) {
+    return { url: user.photo_url || user.avatar_url || user.profile_image, type: 'user' };
+  }
+  
+  // Priority 3: Breed-specific image
+  if (pets?.[0]) {
+    const breed = (pets[0].identity?.breed || pets[0].breed || '').toLowerCase();
+    for (const [breedKey, url] of Object.entries(BREED_IMAGES)) {
+      if (breed.includes(breedKey) || breedKey.includes(breed)) {
+        return { url, type: 'breed' };
+      }
+    }
+  }
+  
+  // Priority 4: Default beautiful dog image
+  return { url: BREED_IMAGES.default, type: 'default' };
+};
+
+// Welcome Card Component
+const WelcomeCard = ({ user, pets }) => {
+  const imageInfo = getWelcomeImage(user, pets);
+  const petName = pets?.[0]?.name;
+  const userName = user?.name?.split(' ')[0] || 'Friend';
+  const breed = pets?.[0]?.identity?.breed || pets?.[0]?.breed || '';
+  
+  return (
+    <div className="rounded-xl overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100 shadow-sm">
+      {/* Image Section */}
+      <div className="relative h-32 overflow-hidden">
+        <img 
+          src={imageInfo.url} 
+          alt={petName || 'Welcome'} 
+          className="w-full h-full object-cover"
+          onError={(e) => { e.target.src = BREED_IMAGES.default; }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        
+        {/* Overlay Text */}
+        <div className="absolute bottom-0 left-0 right-0 p-3">
+          {petName && (
+            <div className="flex items-center gap-2">
+              <PawPrint className="w-4 h-4 text-white/80" />
+              <span className="text-white font-semibold text-sm">{petName}</span>
+              {breed && <span className="text-white/70 text-xs">• {breed}</span>}
+            </div>
+          )}
+        </div>
+        
+        {/* Image type badge */}
+        {imageInfo.type === 'pet' && (
+          <div className="absolute top-2 right-2 bg-purple-600/80 text-white text-[10px] px-2 py-0.5 rounded-full">
+            {petName}&apos;s Photo
+          </div>
+        )}
+      </div>
+      
+      {/* Welcome Message */}
+      <div className="p-3">
+        <p className="text-sm text-gray-700">
+          <span className="font-semibold text-purple-700">Welcome back, {userName}!</span>
+          {petName && (
+            <span className="text-gray-600"> How is <span className="font-medium">{petName}</span> doing today?</span>
+          )}
+        </p>
+        <p className="text-xs text-gray-500 mt-1">
+          I&apos;m Mira, your dedicated concierge. How may I assist you?
+        </p>
+      </div>
+    </div>
+  );
+};
+
 // Generate unique session ID
 const generateSessionId = () => {
   const stored = sessionStorage.getItem('mira_session_id');
