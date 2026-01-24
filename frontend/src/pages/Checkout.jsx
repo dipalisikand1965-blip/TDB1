@@ -46,9 +46,14 @@ const addOns = [
 
 const Checkout = () => {
   const { cartItems, getCartTotal, clearCart, addToCart, markCartConverted, captureEmail } = useCart();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
+  
+  // User's registered pets (for logged-in users)
+  const [registeredPets, setRegisteredPets] = useState([]);
+  const [selectedPetId, setSelectedPetId] = useState('');
   const [whatsappUrl, setWhatsappUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
