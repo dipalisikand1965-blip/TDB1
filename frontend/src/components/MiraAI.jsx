@@ -40,14 +40,28 @@ const BREED_IMAGES = {
 
 // Get appropriate image for the welcome card
 const getWelcomeImage = (user, pets) => {
-  // Priority 1: Pet&apos;s uploaded photo
-  if (pets?.[0]?.photo_url || pets?.[0]?.image_url) {
-    return { url: pets[0].photo_url || pets[0].image_url, type: 'pet' };
+  // Helper to ensure full URL
+  const ensureFullUrl = (url) => {
+    if (!url) return null;
+    // If it's already an absolute URL, return it
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    // If it's a relative path, prepend the API URL
+    const apiUrl = process.env.REACT_APP_BACKEND_URL || '';
+    return `${apiUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+  
+  // Priority 1: Pet's uploaded photo
+  const petPhoto = pets?.[0]?.photo_url || pets?.[0]?.image_url || pets?.[0]?.photo;
+  if (petPhoto) {
+    return { url: ensureFullUrl(petPhoto), type: 'pet' };
   }
   
-  // Priority 2: User/Parent&apos;s uploaded photo
-  if (user?.photo_url || user?.avatar_url || user?.profile_image) {
-    return { url: user.photo_url || user.avatar_url || user.profile_image, type: 'user' };
+  // Priority 2: User/Parent's uploaded photo
+  const userPhoto = user?.photo_url || user?.avatar_url || user?.profile_image;
+  if (userPhoto) {
+    return { url: ensureFullUrl(userPhoto), type: 'user' };
   }
   
   // Priority 3: Breed-specific image
