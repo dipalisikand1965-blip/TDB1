@@ -1,43 +1,101 @@
-import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { API_URL } from '../utils/api';
 
 const AuthContext = createContext();
 
+// Storage key constant
+const TOKEN_KEY = 'tdb_auth_token';
+
 export const AuthProvider = ({ children }) => {
+  // Initialize user from localStorage to prevent flash
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(() => localStorage.getItem('tdb_auth_token'));
+  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
+  
+  // Track if we're currently fetching to prevent duplicate calls
+  const fetchingRef = useRef(false);
+  // Track mounted state to prevent setState after unmount
+  const mountedRef = useRef(true);
 
   const fetchUser = useCallback(async (currentToken) => {
+    // Prevent duplicate fetches
+    if (fetchingRef.current || !currentToken) {
+      if (!currentToken) setLoading(false);
+      return;
+    }
+    
+    fetchingRef.current = true;
+    
     try {
-      // Use Bearer token in Authorization header (correct way)
       const response = await axios.get(`${API_URL}/api/auth/me`, {
         headers: {
           Authorization: `Bearer ${currentToken}`
-        }
+        },
+        timeout: 10000 // 10 second timeout
       });
-      setUser(response.data.user);
+      
+      if (mountedRef.current) {
+        setUser(response.data.user);
+      }
     } catch (error) {
       console.error('Failed to fetch user:', error);
-      // Only clear token if we get a 401 (unauthorized) - not for network errors
-      if (error.response && error.response.status === 401) {
-        localStorage.removeItem('tdb_auth_token');
-        setToken(null);
-        setUser(null);
+      
+      // Only clear auth on explicit 401 Unauthorized
+      // Do NOT clear on network errors, timeouts, or server errors (5xx)
+      if (error.response?.status === 401) {
+        console.log('Token invalid (401), clearing auth state');
+        if (mountedRef.current) {
+          localStorage.removeItem(TOKEN_KEY);
+          setToken(null);
+          setUser(null);
+        }
+      } else {
+        // For network errors or server errors, keep the token
+        // User might just have a connectivity issue
+        console.log('Non-401 error, keeping auth state:', error.message);
       }
     } finally {
-      setLoading(false);
+      fetchingRef.current = false;
+      if (mountedRef.current) {
+        setLoading(false);
+      }
     }
   }, []);
 
+  // Initial auth check on mount
   useEffect(() => {
+    mountedRef.current = true;
+    
     if (token) {
-      // Validate token and get user info on app load
       fetchUser(token);
     } else {
       setLoading(false);
     }
+    
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []); // Only run once on mount
+  
+  // Listen for token changes (e.g., from another tab)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === TOKEN_KEY) {
+        const newToken = e.newValue;
+        if (newToken !== token) {
+          setToken(newToken);
+          if (newToken) {
+            fetchUser(newToken);
+          } else {
+            setUser(null);
+          }
+        }
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, [token, fetchUser]);
 
   const login = async (email, password) => {
