@@ -16,13 +16,9 @@ const MembersTab = ({
           <p className="text-sm text-gray-500">Total Customers</p>
           <p className="text-3xl font-bold">{members.length}</p>
         </Card>
-        <Card className="p-4 bg-gray-50">
-          <p className="text-sm text-gray-500">Guest</p>
-          <p className="text-3xl font-bold text-gray-600">{memberStats.guest || 0}</p>
-        </Card>
-        <Card className="p-4 bg-white border">
-          <p className="text-sm text-gray-500">Free</p>
-          <p className="text-3xl font-bold text-gray-600">{memberStats.free || 0}</p>
+        <Card className="p-4 bg-gradient-to-br from-purple-100 to-pink-100">
+          <p className="text-sm text-purple-600 font-medium">Total Members</p>
+          <p className="text-3xl font-bold text-purple-700">{memberStats.total || 0}</p>
         </Card>
         <Card className="p-4 bg-blue-50">
           <p className="text-sm text-blue-600">🐕 Curious Pup</p>
