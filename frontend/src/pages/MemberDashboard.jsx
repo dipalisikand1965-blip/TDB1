@@ -577,6 +577,152 @@ const MemberDashboard = () => {
                 </Card>
               );
             })()}
+            
+            {/* Upcoming Events Widget */}
+            {pets.length > 0 && (() => {
+              const today = new Date();
+              const upcomingEvents = [];
+              
+              pets.forEach(pet => {
+                // Check for upcoming birthdays (within 30 days)
+                if (pet.birth_date) {
+                  const birthDate = new Date(pet.birth_date);
+                  const thisYearBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+                  if (thisYearBirthday < today) {
+                    thisYearBirthday.setFullYear(today.getFullYear() + 1);
+                  }
+                  const daysUntil = Math.ceil((thisYearBirthday - today) / (1000 * 60 * 60 * 24));
+                  if (daysUntil <= 30) {
+                    const age = thisYearBirthday.getFullYear() - birthDate.getFullYear();
+                    upcomingEvents.push({
+                      type: 'birthday',
+                      pet: pet.name,
+                      petId: pet.id,
+                      date: thisYearBirthday,
+                      daysUntil,
+                      label: `${pet.name} turns ${age}!`,
+                      icon: '🎂',
+                      color: 'pink',
+                      action: 'Order Birthday Cake',
+                      actionUrl: '/celebrate/cakes'
+                    });
+                  }
+                }
+                
+                // Check for gotcha day / adoption anniversary (within 30 days)
+                if (pet.gotcha_date) {
+                  const gotchaDate = new Date(pet.gotcha_date);
+                  const thisYearGotcha = new Date(today.getFullYear(), gotchaDate.getMonth(), gotchaDate.getDate());
+                  if (thisYearGotcha < today) {
+                    thisYearGotcha.setFullYear(today.getFullYear() + 1);
+                  }
+                  const daysUntil = Math.ceil((thisYearGotcha - today) / (1000 * 60 * 60 * 24));
+                  if (daysUntil <= 30 && daysUntil > 0) {
+                    const years = thisYearGotcha.getFullYear() - gotchaDate.getFullYear();
+                    upcomingEvents.push({
+                      type: 'gotcha',
+                      pet: pet.name,
+                      petId: pet.id,
+                      date: thisYearGotcha,
+                      daysUntil,
+                      label: `${years} year${years > 1 ? 's' : ''} with ${pet.name}!`,
+                      icon: '🏠',
+                      color: 'blue',
+                      action: 'Celebrate',
+                      actionUrl: '/celebrate'
+                    });
+                  }
+                }
+                
+                // Check for vaccination due (from health records)
+                if (pet.health?.vaccinations) {
+                  pet.health.vaccinations.forEach(vax => {
+                    if (vax.next_due) {
+                      const dueDate = new Date(vax.next_due);
+                      const daysUntil = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+                      if (daysUntil <= 14 && daysUntil >= -7) { // 2 weeks before to 1 week overdue
+                        upcomingEvents.push({
+                          type: 'vaccination',
+                          pet: pet.name,
+                          petId: pet.id,
+                          date: dueDate,
+                          daysUntil,
+                          label: `${vax.name} ${daysUntil < 0 ? 'overdue' : 'due'}`,
+                          icon: '💉',
+                          color: daysUntil < 0 ? 'red' : 'amber',
+                          action: 'Book Vet',
+                          actionUrl: '/care'
+                        });
+                      }
+                    }
+                  });
+                }
+              });
+              
+              // Sort by date (soonest first)
+              upcomingEvents.sort((a, b) => a.daysUntil - b.daysUntil);
+              
+              if (upcomingEvents.length === 0) return null;
+              
+              const colorMap = {
+                pink: { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-700', btn: 'bg-pink-600 hover:bg-pink-700' },
+                blue: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', btn: 'bg-blue-600 hover:bg-blue-700' },
+                amber: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', btn: 'bg-amber-600 hover:bg-amber-700' },
+                red: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', btn: 'bg-red-600 hover:bg-red-700' }
+              };
+              
+              return (
+                <Card className="mt-6 p-5 border-none shadow-sm bg-gradient-to-r from-amber-50 via-pink-50 to-purple-50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-amber-100 rounded-xl">
+                      <Calendar className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Upcoming Events</h3>
+                      <p className="text-xs text-gray-500">Don&apos;t miss these important dates!</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {upcomingEvents.slice(0, 3).map((event, idx) => {
+                      const colors = colorMap[event.color] || colorMap.blue;
+                      return (
+                        <div 
+                          key={`${event.type}-${event.pet}-${idx}`}
+                          className={`flex items-center justify-between p-3 rounded-lg ${colors.bg} ${colors.border} border`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">{event.icon}</span>
+                            <div>
+                              <p className={`font-medium ${colors.text}`}>{event.label}</p>
+                              <p className="text-xs text-gray-500">
+                                {event.daysUntil === 0 ? 'Today!' : 
+                                 event.daysUntil === 1 ? 'Tomorrow' :
+                                 event.daysUntil < 0 ? `${Math.abs(event.daysUntil)} days ago` :
+                                 `In ${event.daysUntil} days`}
+                              </p>
+                            </div>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            className={`${colors.btn} text-white text-xs`}
+                            onClick={() => navigate(event.actionUrl)}
+                          >
+                            {event.action}
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {upcomingEvents.length > 3 && (
+                    <p className="text-xs text-gray-500 mt-3 text-center">
+                      +{upcomingEvents.length - 3} more events coming up
+                    </p>
+                  )}
+                </Card>
+              );
+            })()}
 
             <h3 className="text-xl font-bold mt-10 mb-4 text-gray-900">Recent Activity</h3>
             {orders.length > 0 ? (
