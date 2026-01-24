@@ -634,6 +634,28 @@ const MyPets = () => {
                     </div>
                   </div>
                   
+                  {/* Pet Pass Card Section - Show if pet has a Pet Pass number */}
+                  {pet.pet_pass_number && (
+                    <div className="px-6 pb-4 pt-2 border-t border-gray-100">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-semibold text-gray-700 flex items-center gap-2">
+                          <CreditCard className="w-4 h-4" />
+                          Pet Pass Identity
+                        </h3>
+                        <Badge className={pet.pet_pass_status === 'active' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}>
+                          {pet.pet_pass_status?.toUpperCase() || 'PENDING'}
+                        </Badge>
+                      </div>
+                      <PetPassCard 
+                        pet={{
+                          ...pet,
+                          photo: pet.photo_url
+                        }} 
+                        className="max-w-sm"
+                      />
+                    </div>
+                  )}
+                  
                   {/* Expandable Sections */}
                   <div className="divide-y divide-gray-100">
                     {/* Health Vault Section */}
