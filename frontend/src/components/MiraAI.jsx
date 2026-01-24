@@ -386,7 +386,7 @@ const MiraAI = () => {
     } else if (user) {
       return `**Good day, ${user.name || 'valued guest'}.**\n\nI am Mira, your dedicated Concierge at The Doggy Company.\n\nI notice you haven't added your pet's profile yet. Creating a **Pet Soul** profile allows me to personalise every recommendation — from birthday cakes to travel arrangements.\n\n**How may I be of service today?**`;
     } else {
-      return `**Good day.** I am Mira, your dedicated Concierge at The Doggy Company.\n\nI am here to assist with anything your companion may need — from celebrating special moments to travel arrangements, dining, wellness, and beyond.\n\n**How may I be of service today?**`;
+      return `**Good day.** I am Mira, your dedicated Concierge at The Doggy Company.\n\nI am here to assist with anything your companion may need — from celebrating special moments to travel arrangements, dining, wellness, and beyond.\n\n[**Join Pet Pass**](/membership) to unlock personalized recommendations and exclusive benefits, or [**Sign In**](/login) if you're already a member.\n\n**How may I be of service today?**`;
     }
   }, [user, userPets]);
 
