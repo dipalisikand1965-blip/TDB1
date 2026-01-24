@@ -309,37 +309,157 @@ const MemberDashboard = () => {
   // If not authenticated after loading, the useEffect will redirect
   if (!user) return null;
 
+  // Get primary pet info
+  const primaryPet = pets[0];
+  const petPhotoUrl = primaryPet?.photo_url 
+    ? (primaryPet.photo_url.startsWith('http') 
+        ? primaryPet.photo_url 
+        : `${API_URL}${primaryPet.photo_url}`)
+    : null;
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
-      <div className="bg-white border-b sticky top-16 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-2xl font-bold text-white shadow-lg">
-                {user.name?.charAt(0) || 'U'}
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-20">
+      {/* Beautiful Hero Section - "A System That Remembers" */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-10 left-10 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-80 h-80 bg-pink-500/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl"></div>
+        </div>
+        
+        {/* Pattern Overlay */}
+        <div className="absolute inset-0 opacity-5" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'}}></div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Left Side - User Welcome */}
+            <div className="text-white">
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                <PawPrint className="w-4 h-4 text-yellow-400" />
+                <span className="text-sm font-medium">Pet Pass Member</span>
+                <Badge className={`ml-2 ${user.membership_tier === 'pending' ? 'bg-amber-400 text-amber-900' : 'bg-green-400 text-green-900'} border-0`}>
+                  {user.membership_tier === 'pending' ? 'Setup Pending' : 'Active'}
+                </Badge>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">My Account</h1>
-                <p className="text-gray-600 text-sm">Welcome back, {user.name}</p>
-                <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                  <Badge variant="outline" className={`border-purple-200 text-purple-700 bg-purple-50 ${user.membership_tier === 'pending' ? 'border-amber-200 text-amber-700 bg-amber-50' : ''}`}>
-                    {user.membership_tier === 'pending' ? 'SETUP PENDING' : 'PET PASS ACTIVE'}
-                  </Badge>
-                  <span>•</span>
-                  <span>{user.email}</span>
+              
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+                A System That
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-300 to-yellow-300">
+                  Remembers
+                </span>
+              </h1>
+              
+              <p className="text-lg text-white/70 mb-6 max-w-md">
+                Welcome back, <span className="text-white font-semibold">{user.name}</span>. 
+                {primaryPet && (
+                  <> We&apos;re here for <span className="text-yellow-300 font-semibold">{primaryPet.name}</span>.</>
+                )}
+              </p>
+              
+              {/* Quick Stats */}
+              <div className="flex flex-wrap gap-4">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3">
+                  <p className="text-white/60 text-xs uppercase tracking-wider">Points</p>
+                  <p className="text-2xl font-bold text-white">{(user.loyalty_points || 0).toLocaleString()}</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3">
+                  <p className="text-white/60 text-xs uppercase tracking-wider">Pets</p>
+                  <p className="text-2xl font-bold text-white">{pets.length}</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3">
+                  <p className="text-white/60 text-xs uppercase tracking-wider">Orders</p>
+                  <p className="text-2xl font-bold text-white">{orders.length}</p>
                 </div>
               </div>
             </div>
-            <Button variant="ghost" onClick={logout} className="text-red-600 hover:bg-red-50 hover:text-red-700 self-start md:self-center">
-              <LogOut className="w-4 h-4 mr-2" />
-              Log out
-            </Button>
+            
+            {/* Right Side - Pet Card */}
+            {primaryPet && (
+              <div className="flex justify-center md:justify-end">
+                <Card className="w-72 bg-white/10 backdrop-blur-md border-white/20 text-white overflow-hidden">
+                  {/* Pet Photo */}
+                  <div className="relative h-40 bg-gradient-to-br from-purple-400/30 to-pink-400/30">
+                    {petPhotoUrl ? (
+                      <img 
+                        src={petPhotoUrl} 
+                        alt={primaryPet.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <PawPrint className="w-16 h-16 text-white/30" />
+                      </div>
+                    )}
+                    <div className="absolute top-3 right-3 bg-purple-600/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full font-medium">
+                      {Math.round(primaryPet.overall_score || 0)}% Soul
+                    </div>
+                  </div>
+                  
+                  {/* Pet Info */}
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xl font-bold">{primaryPet.name}</h3>
+                      {primaryPet.pet_pass_number && (
+                        <span className="text-xs text-white/60 font-mono">{primaryPet.pet_pass_number}</span>
+                      )}
+                    </div>
+                    <p className="text-white/70 text-sm mb-3">
+                      {primaryPet.identity?.breed || primaryPet.breed || 'Good Boy/Girl'}
+                    </p>
+                    
+                    {/* Soul Progress */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-white/60">Pet Soul Progress</span>
+                        <span className="text-yellow-300 font-medium">{Math.round(primaryPet.overall_score || 0)}%</span>
+                      </div>
+                      <div className="w-full bg-white/20 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-yellow-400 to-pink-400 h-2 rounded-full transition-all"
+                          style={{ width: `${primaryPet.overall_score || 0}%` }}
+                        />
+                      </div>
+                    </div>
+                    
+                    {(primaryPet.overall_score || 0) < 80 && (
+                      <Button 
+                        size="sm" 
+                        className="w-full mt-3 bg-white/20 hover:bg-white/30 text-white border-0"
+                        onClick={() => window.location.href = `/pet-soul-journey/${primaryPet.id}`}
+                      >
+                        <Sparkles className="w-3 h-3 mr-1" />
+                        Complete Soul
+                      </Button>
+                    )}
+                  </div>
+                </Card>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
+      {/* My Account Section Below Hero */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Account Header Bar */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-lg font-bold text-white shadow-md">
+              {user.name?.charAt(0) || 'U'}
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">My Account</h2>
+              <p className="text-sm text-gray-500">{user.email}</p>
+            </div>
+          </div>
+          <Button variant="ghost" onClick={logout} className="text-red-600 hover:bg-red-50 hover:text-red-700">
+            <LogOut className="w-4 h-4 mr-2" />
+            Log out
+          </Button>
+        </div>
+        
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="bg-white p-1 rounded-xl border shadow-sm w-full md:w-auto flex overflow-x-auto">
             <TabsTrigger value="overview" className="rounded-lg flex-1 md:flex-none">Overview</TabsTrigger>
@@ -375,6 +495,53 @@ const MemberDashboard = () => {
 
           {/* Overview Content */}
           <TabsContent value="overview" className="animate-in fade-in-50 duration-300">
+            {/* Quick Action Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <Card 
+                className="p-4 cursor-pointer hover:shadow-lg transition-all border-2 border-transparent hover:border-purple-200 bg-gradient-to-br from-purple-50 to-white"
+                onClick={() => window.location.href = '/my-pets'}
+              >
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
+                  <PawPrint className="w-5 h-5 text-purple-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">My Pets</h3>
+                <p className="text-sm text-gray-500">{pets.length} active</p>
+              </Card>
+              
+              <Card 
+                className="p-4 cursor-pointer hover:shadow-lg transition-all border-2 border-transparent hover:border-pink-200 bg-gradient-to-br from-pink-50 to-white"
+                onClick={() => window.location.href = '/celebrate'}
+              >
+                <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center mb-3">
+                  <Cake className="w-5 h-5 text-pink-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">Celebrate</h3>
+                <p className="text-sm text-gray-500">Plan a party</p>
+              </Card>
+              
+              <Card 
+                className="p-4 cursor-pointer hover:shadow-lg transition-all border-2 border-transparent hover:border-amber-200 bg-gradient-to-br from-amber-50 to-white"
+                onClick={() => window.location.href = '/products'}
+              >
+                <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mb-3">
+                  <ShoppingBag className="w-5 h-5 text-amber-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">Shop</h3>
+                <p className="text-sm text-gray-500">Browse treats</p>
+              </Card>
+              
+              <Card 
+                className="p-4 cursor-pointer hover:shadow-lg transition-all border-2 border-transparent hover:border-blue-200 bg-gradient-to-br from-blue-50 to-white"
+                onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+              >
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+                  <Sparkles className="w-5 h-5 text-blue-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">Ask Mira</h3>
+                <p className="text-sm text-gray-500">AI concierge</p>
+              </Card>
+            </div>
+
             <div className="grid md:grid-cols-3 gap-6">
               <Card className="p-6 bg-gradient-to-br from-purple-600 to-indigo-700 text-white border-none shadow-lg relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl"></div>
