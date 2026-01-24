@@ -2759,7 +2759,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                           return (
                             <div className="flex items-center gap-2 text-sm text-amber-700 bg-white/60 rounded-lg px-3 py-2">
                               <span>🎂</span>
-                              <span><strong>{petSoulData.pet.name}'s birthday is in {daysUntil} days!</strong> Mention cake options?</span>
+                              <span><strong>{petSoulData.pet.name}&apos;s birthday is in {daysUntil} days!</strong> Mention cake options?</span>
                             </div>
                           );
                         }
