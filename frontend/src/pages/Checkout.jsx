@@ -132,6 +132,17 @@ const Checkout = () => {
       const savedCustomer = localStorage.getItem('tdc_customer_details');
       if (savedCustomer) {
         const parsed = JSON.parse(savedCustomer);
+        
+        // Validate pet name - should not be an email address
+        const isValidPetName = (name) => {
+          if (!name) return false;
+          // Pet name should not contain @ (email indicator)
+          if (name.includes('@')) return false;
+          // Pet name should be reasonable length
+          if (name.length > 50) return false;
+          return true;
+        };
+        
         setFormData(prev => ({
           ...prev,
           parentName: parsed.parentName || prev.parentName,
@@ -142,7 +153,8 @@ const Checkout = () => {
           landmark: parsed.landmark || prev.landmark,
           city: parsed.city || prev.city,
           pincode: parsed.pincode || prev.pincode,
-          petName: parsed.petName || prev.petName,
+          // Only use saved pet name if it's valid (not an email)
+          petName: isValidPetName(parsed.petName) ? parsed.petName : prev.petName,
           petBreed: parsed.petBreed || prev.petBreed,
         }));
         // Check if user had opted to remember
