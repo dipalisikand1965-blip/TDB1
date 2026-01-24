@@ -1097,7 +1097,7 @@ const MemberDashboard = () => {
                   <div className="text-center py-8">
                     <Plane className="w-12 h-12 mx-auto text-gray-300 mb-3" />
                     <p className="text-gray-500">No travel requests yet</p>
-                    <p className="text-sm text-gray-400 mt-1">Plan your pet's next adventure!</p>
+                    <p className="text-sm text-gray-400 mt-1">Plan your pet&apos;s next adventure!</p>
                     <Button className="mt-4 bg-blue-500 hover:bg-blue-600" onClick={() => navigate('/travel')}>
                       Plan Travel
                     </Button>
