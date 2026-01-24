@@ -998,7 +998,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     
     switch (quickFilter) {
       case 'my_tickets':
-        filtered = tickets.filter(t => t.assigned_to === 'aditya'); // TODO: Get current user
+        filtered = tickets.filter(t => t.assigned_to === currentAdminUser);
         break;
       case 'unassigned':
         filtered = tickets.filter(t => !t.assigned_to);
