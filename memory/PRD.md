@@ -33,27 +33,39 @@
    - Shows when score is below 80%
    - File: `/app/frontend/src/pages/MemberDashboard.jsx`
 
-5. **Checkout Pet Quick-Selector** (P1 - NEW)
+5. **Dashboard Upcoming Events Widget** (P1 - NEW)
+   - Shows pet birthdays (within 30 days) with "Order Birthday Cake" CTA
+   - Shows gotcha day anniversaries with "Celebrate" CTA
+   - Shows vaccination due dates (2 weeks before to 1 week overdue)
+   - Color-coded by urgency: pink/blue/amber/red
+   - File: `/app/frontend/src/pages/MemberDashboard.jsx`
+
+6. **Checkout Pet Quick-Selector** (P1 - NEW)
    - For logged-in users: Quick-select from registered pets
    - Pet buttons with photo thumbnails
    - Auto-fills pet name, breed, and age
    - "Other Pet" option for manual entry
    - File: `/app/frontend/src/pages/Checkout.jsx`
 
-6. **Fixed "Add Your Pet" Dead Links** (P0 - BUG FIX)
+7. **Fixed "Add Your Pet" Dead Links** (P0 - BUG FIX)
    - Fixed buttons that pointed to non-existent `/pets/add`
    - Now redirect to `/pet-soul-onboard`
    - Files: `MiraContextPanel.jsx`, `PersonalizedDashboard.jsx`, `PetGateModal.jsx`, `PetSoulJourney.jsx`
 
-7. **CX Journey Gap Analysis** (Documentation)
-   - Created comprehensive gap analysis at `/app/memory/CX_JOURNEY_GAPS.md`
-   - Identified 14 UX gaps from new visitor to returning customer
-   - Prioritized fixes with implementation plan
+8. **CX Journey Gap Analysis** (Documentation)
+   - Created `/app/memory/CX_JOURNEY_GAPS.md` with 14 identified gaps
+   - Prioritized fixes from critical to nice-to-have
 
-### ⚠️ Remaining Gaps to Address
-- Post-signup redirect to pet addition (Gap 3)
-- Upcoming events/reminders on dashboard (Gap 6)
-- Login page dynamic text for new vs returning users (Gap 8)
+9. **Admin Panel Fixes** (P0 - Security & Functionality)
+   - Turned off DEBUG_MODE in ConciergeCommandCenter.jsx (security fix)
+   - Fixed hardcoded 'aditya' user in ServiceDesk.jsx - now uses actual logged-in admin
+   - Created `/app/memory/ADMIN_JOURNEY_GAPS.md` with 18 identified gaps
+
+### ⚠️ Remaining Admin Gaps to Address
+- Pet edit modal in MemberDirectory (Gap 4)
+- Business metrics dashboard (Gap 5)
+- Quick actions widget (Gap 6)
+- Real-time notifications (Gap 7)
 
 ---
 
