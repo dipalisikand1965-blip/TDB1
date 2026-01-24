@@ -14,8 +14,11 @@ import os
 import secrets
 import asyncio
 import jwt
+import logging
 from dotenv import load_dotenv
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/tickets", tags=["tickets"], redirect_slashes=False)
 
