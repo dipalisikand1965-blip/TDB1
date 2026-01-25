@@ -79,6 +79,7 @@ const UnifiedProductBox = () => {
   // Pagination
   const [page, setPage] = useState(0);
   const [totalProducts, setTotalProducts] = useState(0);
+  const [exporting, setExporting] = useState(false);
   const limit = 20;
 
   // Fetch products
