@@ -78,6 +78,73 @@ const MyPets = () => {
   // View mode state - 'family' (dashboard) or 'detailed' (list)
   const [viewMode, setViewMode] = useState('family');
   const [selectedPetId, setSelectedPetId] = useState(null);
+  
+  // Inline Pet Soul questions state
+  const [expandedQuestions, setExpandedQuestions] = useState({});
+  const [savingAnswer, setSavingAnswer] = useState(null);
+  
+  // Quick questions for inline answering (most impactful questions)
+  const QUICK_QUESTIONS = [
+    { id: 'food_allergies', label: 'Does {name} have any food allergies?', icon: '🍖', options: ['No allergies', 'Chicken', 'Grain', 'Beef', 'Other'] },
+    { id: 'temperament', label: "What's {name}'s personality like?", icon: '🎭', options: ['Calm', 'Playful', 'Shy', 'Energetic', 'Protective'] },
+    { id: 'energy_level', label: "What's {name}'s energy level?", icon: '⚡', options: ['Low', 'Medium', 'High', 'Very High'] },
+    { id: 'car_comfort', label: 'How does {name} feel about car rides?', icon: '🚗', options: ['Loves car rides', 'Gets anxious', 'Motion sickness', 'Neutral'] },
+    { id: 'favorite_protein', label: "What's {name}'s favorite protein?", icon: '🥩', options: ['Chicken', 'Beef', 'Fish', 'Lamb', 'Pork'] },
+    { id: 'alone_time_comfort', label: 'How does {name} handle being alone?', icon: '🏠', options: ['Fine alone', 'Gets anxious', 'Needs company', 'Depends'] },
+    { id: 'training_level', label: "What's {name}'s training level?", icon: '🎓', options: ['Beginner', 'Basic commands', 'Well trained', 'Advanced'] },
+    { id: 'vet_comfort', label: 'How does {name} feel at the vet?', icon: '🏥', options: ['Comfortable', 'Anxious', 'Very anxious'] }
+  ];
+  
+  // Toggle inline questions for a pet
+  const toggleQuestions = (petId) => {
+    setExpandedQuestions(prev => ({ ...prev, [petId]: !prev[petId] }));
+  };
+  
+  // Save an answer inline
+  const saveQuickAnswer = async (petId, questionId, answer) => {
+    setSavingAnswer(`${petId}-${questionId}`);
+    try {
+      const response = await fetch(`${API_URL}/api/pets/${petId}/soul-answer`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ question_id: questionId, answer })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Update local pet data
+        setPets(prev => prev.map(p => {
+          if (p.id === petId) {
+            return {
+              ...p,
+              overall_score: data.new_score || p.overall_score,
+              doggy_soul_answers: {
+                ...p.doggy_soul_answers,
+                [questionId]: answer
+              }
+            };
+          }
+          return p;
+        }));
+        toast({
+          title: "Answer saved!",
+          description: `${data.pet_name || 'Pet'}'s Soul Score updated to ${Math.round(data.new_score || 0)}%`,
+        });
+      }
+    } catch (error) {
+      console.error('Error saving answer:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save answer",
+        variant: "destructive"
+      });
+    } finally {
+      setSavingAnswer(null);
+    }
+  };
 
   // Redirect to login if not authenticated
   useEffect(() => {
