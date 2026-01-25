@@ -191,7 +191,7 @@ const UnifiedPetPage = () => {
   // Fetch health data when health tab is active
   useEffect(() => {
     const fetchHealthData = async () => {
-      if (!petId || !['health', 'vaccines'].includes(activeTab) || healthData) return;
+      if (!petId || activeTab !== 'health' || healthData) return;
       
       setLoadingHealth(true);
       try {
