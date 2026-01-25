@@ -1138,13 +1138,13 @@ const UnifiedPetPage = () => {
                           })}
                           
                           {progress < 100 && (
-                            <Button 
-                              className="w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-600"
-                              onClick={() => navigate(`/pet-soul-journey/${pet.id}?section=${pillar.key}`)}
-                            >
-                              <Sparkles className="w-4 h-4 mr-2" />
-                              Complete {pillar.name}
-                            </Button>
+                            <div className="mt-4 p-3 bg-white rounded-lg border border-purple-200 text-center">
+                              <p className="text-sm text-purple-700 mb-2">
+                                <Sparkles className="w-4 h-4 inline mr-1" />
+                                {totalQuestions - answeredCount} questions remaining in {pillar.name}
+                              </p>
+                              <p className="text-xs text-gray-500">Click any question above to answer inline</p>
+                            </div>
                           )}
                         </div>
                       )}
