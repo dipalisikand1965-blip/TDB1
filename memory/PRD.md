@@ -5,6 +5,62 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
+## Session 12 - Critical Bug Fixes & Pillar Pages (January 25, 2026)
+
+### Completed This Session
+
+**1. 🔧 CRITICAL BUG FIX: Pet Soul Questions Not Saving**
+- Added missing `PATCH /api/pets/{pet_id}/soul-answers` endpoint
+- Frontend was calling PATCH but backend only had POST endpoint
+- Now inline editing on UnifiedPetPage works correctly
+
+**2. 🔧 CRITICAL BUG FIX: Paw Points JWT Token**
+- Fixed JWT secret mismatch in paw_points_routes.py
+- Was using "doggy-secret-key-2024" instead of "tdb_super_secret_key_2025_woof"
+- Sync achievements endpoint now works correctly
+
+**3. 🌈 FAREWELL PAGE - Full Implementation**
+- `/farewell` route now loads `FarewellPage.jsx` instead of generic `PillarPage`
+- Memorial service packages: Peaceful Farewell, Loving Tribute, Eternal Love
+- Service categories: Hospice, Cremation, Memorial, Grief Support
+- Memorial keepsakes product grid
+- Service request modal with urgency selection
+- Backend endpoint: `POST /api/farewell/service-request`
+- Auto-creates support ticket for the team
+
+**4. 🛒 SHOP PAGE - Full Implementation**
+- `/shop` route now loads `ShopPage.jsx` instead of generic `PillarPage`
+- Displays 790+ products from catalog
+- Category filters: All, Food, Treats, Toys, Grooming, Accessories, Health, Celebrations
+- Quick filters: Best Sellers, New Arrivals, On Sale, Grain Free, Organic, Subscribe & Save
+- Grid/List view toggle
+- Price range filtering
+- Responsive mobile filters drawer
+
+**5. 🔗 LEGACY LINKS CLEANUP**
+- Fixed `/pet-soul/${id}` → `/pet/${id}` in:
+  - PersonalizedDashboard.jsx
+  - MemberDashboard.jsx
+  - ServiceDesk.jsx (admin)
+  - Home.jsx
+  - Footer.jsx
+  - PetSoulScore.jsx
+- Legacy `/pet-soul-journey/{petId}` already redirects via PetSoulJourneyRedirect
+
+### Test Results (iteration_64.json)
+- Backend: 100% (11/11 tests passed)
+- Frontend: 100% (all features verified)
+- All 3 critical bugs fixed and verified
+
+### Files Modified
+- `/app/backend/server.py` - Added PATCH soul-answers endpoint, farewell service request
+- `/app/backend/paw_points_routes.py` - Fixed JWT secret
+- `/app/frontend/src/App.js` - Routed /farewell and /shop to actual pages
+- `/app/frontend/src/pages/*.jsx` - Fixed legacy pet-soul links
+- `/app/frontend/src/components/*.jsx` - Fixed legacy pet-soul links
+
+---
+
 ## Session 11 - World-Class Features Complete (January 25, 2026)
 
 ### All Features Delivered
