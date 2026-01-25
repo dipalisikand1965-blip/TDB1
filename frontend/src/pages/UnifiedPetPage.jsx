@@ -265,9 +265,11 @@ const UnifiedPetPage = () => {
             [questionId]: answer
           }
         });
+        // Refetch score from server (single source of truth)
+        refetchScore();
         toast({
           title: "Answer saved!",
-          description: `${pet.name}'s Soul Score updated to ${Math.round(data.new_score || 0)}%`,
+          description: `${pet.name}'s Pet Soul updated!`,
         });
       }
     } catch (err) {
