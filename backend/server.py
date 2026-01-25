@@ -3864,7 +3864,7 @@ async def get_public_products(
     pan_india: Optional[bool] = None,
     search: Optional[str] = None
 ):
-    """Public endpoint for products"""
+    """Public endpoint for products - queries both products and unified_products collections"""
     query = {}
     
     # Handle collection-based filtering (e.g., valentine)
@@ -3921,12 +3921,92 @@ async def get_public_products(
         else:
             query = category_query
     
-    products = await db.products.find(query, {"_id": 0}).to_list(500)
+    # Query from BOTH collections and merge results
+    products = []
+    seen_ids = set()
     
-    # Ensure title field exists (use name if title is missing)
-    for p in products:
-        if not p.get("title") and p.get("name"):
-            p["title"] = p["name"]
+    # First, query old products collection
+    old_products = await db.products.find(query, {"_id": 0}).to_list(500)
+    for p in old_products:
+        pid = p.get("id") or p.get("shopify_id")
+        if pid and pid not in seen_ids:
+            seen_ids.add(pid)
+            # Ensure title field exists
+            if not p.get("title") and p.get("name"):
+                p["title"] = p["name"]
+            products.append(p)
+    
+    # Second, query unified_products collection with adapted query
+    unified_query = {}
+    if category and not collection:
+        # Unified products use 'pillars' array for category mapping
+        category_lower = category.lower()
+        # Map categories to pillars/tags
+        category_mappings = {
+            "cakes": ["celebrate", "cakes", "birthday-cakes"],
+            "treats": ["feed", "treats", "training-treats"],
+            "desi": ["celebrate", "desi-treats", "festive"],
+            "desi-treats": ["celebrate", "desi-treats", "festive"],
+            "hampers": ["celebrate", "hampers", "gift-boxes"],
+            "frozen-treats": ["celebrate", "frozen-treats"],
+            "mini-cakes": ["celebrate", "mini-cakes"],
+            "dognuts": ["celebrate", "dognuts", "pupcakes"],
+            "meals": ["dine", "meals"],
+            "fresh-meals": ["dine", "fresh-meals"],
+            "cat-treats": ["shop", "cat-treats"],
+        }
+        
+        search_terms = category_mappings.get(category_lower, [category_lower])
+        unified_query = {
+            "$or": [
+                {"category": {"$regex": f"^{category}$", "$options": "i"}},
+                {"tags": {"$in": search_terms}},
+                {"pillars": {"$in": search_terms}},
+                {"primary_pillar": {"$in": search_terms}}
+            ],
+            "visibility.status": "active"
+        }
+    elif search:
+        search_regex = {"$regex": search, "$options": "i"}
+        unified_query = {
+            "$or": [
+                {"name": search_regex},
+                {"tags": search_regex},
+                {"category": search_regex},
+                {"short_description": search_regex}
+            ],
+            "visibility.status": "active"
+        }
+    else:
+        unified_query = {"visibility.status": "active"}
+    
+    try:
+        unified_products = await db.unified_products.find(unified_query, {"_id": 0}).to_list(500)
+        for p in unified_products:
+            pid = p.get("id") or p.get("shopify_id")
+            if pid and pid not in seen_ids:
+                seen_ids.add(pid)
+                # Adapt unified product format to legacy format
+                adapted = {
+                    "id": p.get("id"),
+                    "name": p.get("name"),
+                    "title": p.get("name"),
+                    "description": p.get("short_description") or p.get("long_description"),
+                    "price": p.get("pricing", {}).get("base_price", 0),
+                    "images": p.get("images", []),
+                    "image": p.get("thumbnail") or (p.get("images", [None])[0] if p.get("images") else None),
+                    "category": p.get("category"),
+                    "tags": p.get("tags", []),
+                    "in_stock": p.get("in_stock", True),
+                    "pillars": p.get("pillars", []),
+                    # Preserve other useful fields
+                    "shopify_id": p.get("shopify_id"),
+                    "sku": p.get("sku"),
+                    "is_customizable": p.get("is_customizable", False),
+                }
+                products.append(adapted)
+    except Exception as e:
+        logger.warning(f"Error querying unified_products: {e}")
     
     return {"products": products, "total": len(products)}
 
