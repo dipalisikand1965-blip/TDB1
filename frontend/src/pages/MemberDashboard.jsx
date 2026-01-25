@@ -946,7 +946,22 @@ const MemberDashboard = () => {
           orders={orders}
           user={user}
           onNavigateToPet={(petId) => navigate(`/pet/${petId}?tab=personality`)}
+          onOpenExplainer={() => setShowSoulExplainer(true)}
         />
+        
+        {/* Soul Explainer Video Modal */}
+        {showSoulExplainer && (
+          <SoulExplainerVideo
+            petName={pets[0]?.name || 'your pet'}
+            onClose={() => setShowSoulExplainer(false)}
+            onStartJourney={() => {
+              setShowSoulExplainer(false);
+              if (pets[0]?.id) {
+                navigate(`/pet/${pets[0].id}?tab=personality`);
+              }
+            }}
+          />
+        )}
         
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="bg-white p-1 rounded-xl border shadow-sm w-full md:w-auto flex overflow-x-auto">
