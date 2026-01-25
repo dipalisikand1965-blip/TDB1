@@ -29,6 +29,11 @@ export const usePetScore = (petId, token = null) => {
       const data = await response.json();
       setScoreState(data);
       setError(null);
+      
+      // Dispatch event to update header score dynamically
+      window.dispatchEvent(new CustomEvent('petSoulScoreUpdated', { 
+        detail: { score: data.score || 0, petId } 
+      }));
     } catch (err) {
       console.error('Error fetching pet score:', err);
       setError(err.message);
