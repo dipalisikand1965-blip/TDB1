@@ -31,6 +31,7 @@ import PaperworkManager from '../components/admin/PaperworkManager';
 import EmergencyManager from '../components/admin/EmergencyManager';
 import CelebrateManager from '../components/admin/CelebrateManager';
 import NPSManager from '../components/admin/NPSManager';
+import AdoptManager from '../components/admin/AdoptManager';
 import DataMigration from '../components/DataMigration';
 import { DashboardTab, OrdersTab, MembersTab, ChatsTab, DineManager, ServiceDesk, ProductTagsManager, MembershipManager, AboutManager, MemberDirectory } from '../components/admin';
 import PageContentManager from '../components/admin/PageContentManager';
