@@ -1006,7 +1006,11 @@ const MemberDashboard = () => {
                   </Card>
                 ))}
                 {orders.length > 10 && (
-                  <Button variant="outline" className="w-full mt-4" onClick={() => setActiveTab('orders')}>
+                  <Button variant="outline" className="w-full mt-4" onClick={() => {
+                    // Switch to orders tab by clicking the tab trigger
+                    const ordersTab = document.querySelector('[data-value="orders"]');
+                    if (ordersTab) ordersTab.click();
+                  }}>
                     View All {orders.length} Orders
                   </Button>
                 )}
