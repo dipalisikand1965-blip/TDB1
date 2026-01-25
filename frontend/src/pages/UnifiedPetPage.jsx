@@ -597,6 +597,14 @@ const UnifiedPetPage = () => {
               </Card>
             )}
             
+            {/* Achievements Section */}
+            {unlockedAchievements.length > 0 && (
+              <AchievementsGrid 
+                unlockedAchievements={unlockedAchievements}
+                petName={pet.name}
+              />
+            )}
+            
             {/* All 14 Pillars Grid */}
             <Card className="p-6">
               <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
