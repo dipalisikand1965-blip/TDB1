@@ -582,7 +582,7 @@ const Navbar = () => {
                 <>
                   {/* Mobile Join/Sign In - For logged out */}
                   <Link
-                    to="/pet-soul-onboard"
+                    to="/membership"
                     onClick={() => setIsMenuOpen(false)}
                     className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium"
                   >
