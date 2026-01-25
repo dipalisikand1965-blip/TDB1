@@ -39,7 +39,7 @@ const AdoptManager = ({ authHeaders }) => {
   
   // Filter state
   const [petFilter, setPetFilter] = useState({ status: 'available' });
-  const [appFilter, setAppFilter] = useState({ status: '' });
+  const [appFilter, setAppFilter] = useState({ status: 'all' });
   
   // Modal state
   const [showPetModal, setShowPetModal] = useState(false);
