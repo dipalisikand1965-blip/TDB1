@@ -7297,6 +7297,64 @@ async def lookup_pet_by_pass_number(pet_pass_number: str):
     return {"pet": pet}
 
 
+# ==================== FAREWELL SERVICES ====================
+
+@api_router.post("/farewell/service-request")
+async def create_farewell_service_request(request_data: dict, current_user: dict = Depends(get_current_user)):
+    """Create a farewell/memorial service request"""
+    request_id = f"farewell-{uuid.uuid4().hex[:8]}"
+    
+    farewell_request = {
+        "id": request_id,
+        "user_id": current_user.get("id"),
+        "user_email": current_user.get("email"),
+        "pet_id": request_data.get("pet_id"),
+        "pet_name": request_data.get("pet_name"),
+        "package_id": request_data.get("package_id"),
+        "package": request_data.get("package"),
+        "service_type": request_data.get("service_type", "memorial"),
+        "urgency": request_data.get("urgency", "planned"),
+        "preferred_date": request_data.get("preferred_date"),
+        "preferred_time": request_data.get("preferred_time"),
+        "address": request_data.get("address"),
+        "city": request_data.get("city"),
+        "phone": request_data.get("phone"),
+        "email": request_data.get("email"),
+        "special_requests": request_data.get("special_requests"),
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.farewell_requests.insert_one(farewell_request)
+    
+    # Auto-create a support ticket for the team
+    ticket_id = f"TKT-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    ticket = {
+        "id": ticket_id,
+        "category": "farewell",
+        "subcategory": request_data.get("urgency", "planned"),
+        "priority": "urgent" if request_data.get("urgency") == "emergency" else "high",
+        "subject": f"Farewell Service Request - {request_data.get('pet_name', 'Pet')}",
+        "description": f"Service: {request_data.get('package', {}).get('name', 'Memorial Service')}\nUrgency: {request_data.get('urgency', 'planned')}\nSpecial Requests: {request_data.get('special_requests', 'None')}",
+        "customer_email": current_user.get("email"),
+        "customer_name": current_user.get("name"),
+        "pet_id": request_data.get("pet_id"),
+        "pet_name": request_data.get("pet_name"),
+        "status": "open",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.tickets.insert_one(ticket)
+    
+    logger.info(f"Farewell service request {request_id} created for pet {request_data.get('pet_name')}")
+    
+    return {
+        "success": True,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "message": "Your request has been submitted. Our compassionate team will contact you within 2 hours."
+    }
+
+
 # ==================== APP SETUP ====================
 
 app.add_middleware(
