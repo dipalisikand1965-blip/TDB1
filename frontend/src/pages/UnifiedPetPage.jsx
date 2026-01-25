@@ -104,9 +104,9 @@ const UnifiedPetPage = () => {
     
     // Tier achievements
     if (hasAnswers) unlocked.push('first_answer');
-    if (scoreState.tier === 'Soul Seeker' || scoreState.overall_score >= 25) unlocked.push('soul_seeker_unlocked');
-    if (scoreState.tier === 'Soul Explorer' || scoreState.overall_score >= 50) unlocked.push('soul_explorer_unlocked');
-    if (scoreState.tier === 'Soul Master' || scoreState.overall_score >= 75) unlocked.push('soul_master_unlocked');
+    if (scoreState.tier?.key === 'soul_seeker' || scoreState.overall_score >= 25) unlocked.push('soul_seeker_unlocked');
+    if (scoreState.tier?.key === 'soul_explorer' || scoreState.overall_score >= 50) unlocked.push('soul_explorer_unlocked');
+    if (scoreState.tier?.key === 'soul_master' || scoreState.overall_score >= 75) unlocked.push('soul_master_unlocked');
     if (scoreState.overall_score >= 100) unlocked.push('pet_soul_complete');
     
     // Category achievements - check if category is complete
