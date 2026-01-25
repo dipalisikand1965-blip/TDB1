@@ -962,10 +962,20 @@ const MemberDashboard = () => {
             {orders.length > 0 ? (
               <div className="space-y-4">
                 {orders.slice(0, 10).map(order => (
-                  <Card key={order.orderId} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-purple-200 transition-colors">
+                  <Card 
+                    key={order.orderId} 
+                    className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-purple-200 hover:shadow-md transition-all cursor-pointer"
+                    onClick={() => {
+                      // Navigate to order details or show order modal
+                      toast({
+                        title: `Order ${order.orderId}`,
+                        description: `${order.items?.length || 1} items • ₹${order.total} • Status: ${order.status}`,
+                      });
+                    }}
+                  >
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-gray-100 rounded-lg">
-                        <Package className="w-6 h-6 text-gray-600" />
+                      <div className="p-3 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg">
+                        <Package className="w-6 h-6 text-purple-600" />
                       </div>
                       <div>
                         <p className="font-semibold text-gray-900">{order.orderId}</p>
@@ -977,6 +987,7 @@ const MemberDashboard = () => {
                       <Badge variant={order.status === 'delivered' ? 'success' : 'secondary'} className={order.status === 'delivered' ? 'bg-green-100 text-green-700' : ''}>
                         {order.status}
                       </Badge>
+                      <ChevronRight className="w-5 h-5 text-gray-400" />
                     </div>
                   </Card>
                 ))}
