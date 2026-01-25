@@ -87,7 +87,7 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white" data-testid="home-page">
+    <div className="min-h-screen bg-white overflow-x-hidden" data-testid="home-page">
       
       {/* ========== HERO SECTION ========== */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
