@@ -514,11 +514,61 @@ const MemberDashboard = () => {
 
           {/* Overview Content */}
           <TabsContent value="overview" className="animate-in fade-in-50 duration-300">
+            {/* ALL 14 LIFE PILLARS - PROMINENT AT TOP */}
+            <Card className="p-6 bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-800 text-white border-none shadow-xl mb-8">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <Crown className="w-6 h-6 text-yellow-400" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-white text-lg">Your Pet Life Pillars</h3>
+                  <p className="text-xs text-white/70">14 pillars unlocked with Pet Pass • Click any pillar to explore</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 md:gap-3">
+                {[
+                  { id: 'feed', name: 'Feed', icon: '🍖', path: '/meals', color: 'from-orange-400 to-red-400' },
+                  { id: 'celebrate', name: 'Celebrate', icon: '🎂', path: '/celebrate', color: 'from-pink-400 to-rose-400' },
+                  { id: 'dine', name: 'Dine', icon: '🍽️', path: '/dine', color: 'from-amber-400 to-orange-400' },
+                  { id: 'stay', name: 'Stay', icon: '🏨', path: '/stay', color: 'from-blue-400 to-indigo-400' },
+                  { id: 'travel', name: 'Travel', icon: '✈️', path: '/travel', color: 'from-cyan-400 to-blue-400' },
+                  { id: 'care', name: 'Care', icon: '🩺', path: '/care', color: 'from-emerald-400 to-teal-400' },
+                  { id: 'groom', name: 'Groom', icon: '✂️', path: '/pillar/groom', color: 'from-violet-400 to-purple-400' },
+                  { id: 'play', name: 'Play', icon: '🎾', path: '/pillar/play', color: 'from-green-400 to-emerald-400' },
+                  { id: 'train', name: 'Train', icon: '🎓', path: '/learn', color: 'from-indigo-400 to-purple-400' },
+                  { id: 'insure', name: 'Insure', icon: '🛡️', path: '/advisory', color: 'from-slate-400 to-gray-500' },
+                  { id: 'adopt', name: 'Adopt', icon: '🐕', path: '/pillar/adopt', color: 'from-rose-400 to-pink-400' },
+                  { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/pillar/farewell', color: 'from-purple-400 to-indigo-400' },
+                  { id: 'shop', name: 'Shop', icon: '🛒', path: '/products', color: 'from-teal-400 to-cyan-400' },
+                  { id: 'community', name: 'Community', icon: '👥', path: '/pillar/community', color: 'from-yellow-400 to-amber-400' }
+                ].map((pillar) => (
+                  <button
+                    key={pillar.id}
+                    onClick={() => navigate(pillar.path)}
+                    className="group p-2 md:p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all text-center"
+                  >
+                    <div className={`w-9 h-9 md:w-11 md:h-11 mx-auto rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-lg md:text-xl mb-1.5 group-hover:scale-110 transition-transform shadow-lg`}>
+                      {pillar.icon}
+                    </div>
+                    <p className="text-[10px] md:text-xs font-medium text-white/90 truncate">{pillar.name}</p>
+                  </button>
+                ))}
+              </div>
+            </Card>
+
             {/* Quick Action Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <Card 
                 className="p-4 cursor-pointer hover:shadow-lg transition-all border-2 border-transparent hover:border-purple-200 bg-gradient-to-br from-purple-50 to-white"
-                onClick={() => window.location.href = '/my-pets'}
+                onClick={() => {
+                  // Go directly to unified pet page for first pet
+                  if (pets.length > 0) {
+                    navigate(`/pet/${pets[0].id}?tab=personality`);
+                  } else {
+                    navigate('/my-pets');
+                  }
+                }}
               >
                 <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
                   <PawPrint className="w-5 h-5 text-purple-600" />
