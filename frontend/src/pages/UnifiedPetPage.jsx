@@ -1013,7 +1013,14 @@ const UnifiedPetPage = () => {
                       {isExpanded && (
                         <div className={`p-4 border-t ${colors.border} ${colors.bg} rounded-b-xl space-y-3`}>
                           {pillar.questions.map((questionId) => {
-                            const value = answers[questionId];
+                            // For core pet info fields, fall back to pet's root properties
+                            const coreFields = {
+                              name: pet?.name,
+                              breed: pet?.breed,
+                              gender: pet?.gender,
+                              dob: pet?.dob
+                            };
+                            const value = answers[questionId] || coreFields[questionId];
                             const hasAnswer = value && value !== '' && value !== 'None';
                             const displayValue = Array.isArray(value) ? value.filter(v => v && v !== 'None').join(', ') : value;
                             const isEditing = editingQuestion === questionId;
