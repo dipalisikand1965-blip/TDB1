@@ -21,7 +21,7 @@ import { toast } from '../hooks/use-toast';
 import FamilyDashboard from '../components/FamilyDashboard';
 import MemoryTimeline from '../components/MemoryTimeline';
 import PetPassCard from '../components/PetPassCard';
-import { getPetPhotoUrl } from '../utils/petPhoto';
+import { resolvePetAvatar, getPetPhotoUrl } from '../utils/petAvatar';
 
 // Persona icons mapping
 const PERSONA_ICONS = {
