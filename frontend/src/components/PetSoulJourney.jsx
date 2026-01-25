@@ -533,8 +533,8 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
               <Brain className="w-5 h-5 text-purple-600" />
               What We Know About {petName}
             </h2>
-            <Link to={`/pets/${selectedPet?.id}?tab=soul`}>
-              <Button variant="ghost" size="sm" className="text-purple-600">
+            <Link to={`/pet-soul-journey/${selectedPet?.id}`}>
+              <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50">
                 View Full Soul <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             </Link>
