@@ -35,6 +35,7 @@ const generateSessionId = () => {
 
 const MiraContextPanel = ({ 
   pillar = 'advisory',
+  category = null,  // Product category for more specific suggestions
   className = '',
   position = 'right' // 'right' for desktop, 'bottom' for mobile
 }) => {
