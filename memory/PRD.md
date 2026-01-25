@@ -5,6 +5,41 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
+## Session 14 - Guest User Flow & Admin Updates (January 25, 2026)
+
+### MAJOR UPDATE: All Pillars Open to Guest Users
+**No login required** to use any pillar feature. Users can:
+- Submit requests (Fit, Care, Enjoy, Learn, etc.)
+- RSVP to events
+- Add products to cart
+- Request services (Farewell, Advisory, etc.)
+
+### Guest User Flow Changes
+
+**Frontend Pages Updated (5 files):**
+1. `FitPage.jsx` - Guest pet entry form (name, breed, weight, age) + contact fields
+2. `EnjoyPage.jsx` - Guest RSVP with manual pet details
+3. `LearnPage.jsx` - Guest training request + enrollment
+4. `PaperworkPage.jsx` - Fixed Add to Cart onClick handler
+5. `FarewellPage.jsx` - Guest service request with pet details
+
+**Backend Updates (2 files):**
+1. `enjoy_routes.py` - Made `pet_id` Optional in ExperienceRSVP model
+2. `server.py` - Farewell endpoint uses optional auth for guest support
+
+### Admin Panel Updates
+
+**Files Updated:**
+- `AgentManagement.jsx` - Updated PILLAR_PERMISSIONS with all 14 pillars
+- `Admin.jsx` - Added Farewell, Adopt, Shop tabs to PILLAR TOOLS
+- `AdoptManager.jsx` - Fixed SelectItem empty value error
+
+### Test Reports
+- `/app/test_reports/iteration_70.json` - Backend & API tests (100% pass)
+- `/app/test_reports/iteration_71.json` - Guest user flow tests (100% pass)
+
+---
+
 ## Session 13 - Complete 14 Pillar Consistency Audit (January 25, 2026)
 
 ### THE 14 CANONICAL PILLARS
