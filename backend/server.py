@@ -5633,8 +5633,8 @@ async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
     with open(file_path, 'wb') as f:
         f.write(content)
     
-    # Generate URL
-    photo_url = f"/static/uploads/pets/{filename}"
+    # Generate URL using API route (for K8s ingress compatibility)
+    photo_url = f"/api/pet-photo/{pet_id}/{filename}"
     
     # Update pet record
     await db.pets.update_one(
