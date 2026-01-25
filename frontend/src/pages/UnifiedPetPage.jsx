@@ -481,22 +481,44 @@ const UnifiedPetPage = () => {
           </div>
           
           {token && (
-            <Button variant="outline" size="sm" onClick={() => {
-              setEditing(!editing);
-              if (!editing) {
-                setEditForm({
-                  name: pet.name || '',
-                  breed: pet.breed || '',
-                  species: pet.species || 'dog',
-                  gender: pet.gender || 'male',
-                  birth_date: pet.birth_date || '',
-                  gotcha_date: pet.gotcha_date || ''
-                });
-              }
-            }}>
-              {editing ? <X className="w-4 h-4 mr-2" /> : <Edit className="w-4 h-4 mr-2" />}
-              {editing ? 'Cancel' : 'Edit'}
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => {
+                  // Copy pet profile link to clipboard
+                  navigator.clipboard.writeText(`${window.location.origin}/pet/${pet.id}`);
+                  toast({ title: 'Link Copied!', description: `Share ${pet.name}'s profile with friends & family` });
+                }}
+                className="bg-white/10 border-white/30 text-gray-700 hover:bg-white"
+              >
+                <Share2 className="w-4 h-4 mr-2" /> Share
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => window.print()}
+                className="bg-white/10 border-white/30 text-gray-700 hover:bg-white"
+              >
+                <Printer className="w-4 h-4 mr-2" /> Print
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => {
+                setEditing(!editing);
+                if (!editing) {
+                  setEditForm({
+                    name: pet.name || '',
+                    breed: pet.breed || '',
+                    species: pet.species || 'dog',
+                    gender: pet.gender || 'male',
+                    birth_date: pet.birth_date || '',
+                    gotcha_date: pet.gotcha_date || ''
+                  });
+                }
+              }}>
+                {editing ? <X className="w-4 h-4 mr-2" /> : <Edit className="w-4 h-4 mr-2" />}
+                {editing ? 'Cancel' : 'Edit'}
+              </Button>
+            </div>
           )}
         </div>
       </div>
