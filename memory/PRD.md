@@ -5,6 +5,69 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
+## Session 16 - Mobile UX Fixes & Product Enrichment (January 25, 2026)
+
+### MOBILE VIEW FIXES COMPLETED:
+
+**1. Company Name Now Visible on Mobile**
+- Issue: "The Doggy Company" text was hidden on mobile (only logo icon shown)
+- Fix: Added compact text version alongside logo icon for mobile breakpoints
+- File: `/app/frontend/src/components/Navbar.jsx` lines 369-378
+
+**2. Horizontal Overflow/Shaking Fixed**
+- Issue: Page was shaking/scrolling horizontally on iPhone
+- Root Causes Fixed:
+  - Background gradient elements (w-96, w-80) extending beyond viewport
+  - Missing overflow-x-hidden on html/body
+  - Large animated elements positioned with fixed left/right values
+- Fixes Applied:
+  - Added `overflow-x-hidden` to `html` and `body` in `/app/frontend/src/index.css`
+  - Added `overflow-x-hidden` to App wrapper in `/app/frontend/src/App.js`
+  - Added `overflow-x-hidden` to Home.jsx container
+  - Reduced background element sizes on mobile (w-64 vs w-96)
+  - Used negative positioning (-left-20, -right-20) for background elements
+  - Added overflow-hidden to background container
+
+**Verification:** All dimensions now match (scrollWidth === clientWidth === 375px)
+
+### PRODUCT ENRICHMENT COMPLETED:
+
+**50 New Products Seeded Across 10 Pillars:**
+| Pillar | Products | Example Product | Price |
+|--------|----------|-----------------|-------|
+| Fit | 5 | Personal Fitness Assessment | ₹1,499 |
+| Learn | 5 | Puppy Foundation Course | ₹4,999 |
+| Groom | 5 | Full Grooming Package | ₹1,999 |
+| Advisory | 5 | Behaviour Consultation | ₹2,999 |
+| Paperwork | 5 | Pet Passport Application Service | ₹3,999 |
+| Emergency | 5 | Pet First Aid Kit - Premium | ₹1,999 |
+| Adopt | 5 | Adoption Application Processing | ₹499 |
+| Farewell | 5 | Private Cremation Service | ₹4,999 |
+| Insure | 5 | Basic Health Coverage | ₹2,999 |
+| Community | 5 | Dog Park Meetup Pass | ₹999 |
+
+**10 New Bundles Created:**
+- Complete Fitness Transformation (Fit) - ₹8,999
+- Puppy Learning Journey (Learn) - ₹9,999
+- Ultimate Pamper Day (Groom) - ₹4,499
+- New Pet Parent Essentials (Advisory) - ₹4,999
+- Travel Ready Package (Paperwork) - ₹9,999
+- Peace of Mind Package (Emergency) - ₹6,999
+- New Family Member Package (Adopt) - ₹5,999
+- Complete Memorial Package (Farewell) - ₹8,999
+- Complete Protection Plan (Insure) - ₹7,499
+- Social Butterfly Package (Community) - ₹4,999
+
+**Seed Script:** `/app/backend/seed_pillar_products.py`
+
+### CURRENT TOTALS:
+- **Unified Products:** 650
+- **Active Products:** 394
+- **Bundles:** 10 (new) + previous bundles
+- **All products include images** from Unsplash/Pexels
+
+---
+
 ## Session 15 - Farewell & Shop Admin Managers (January 25, 2026)
 
 ### COMPLETED: Full Admin Manager Implementation
