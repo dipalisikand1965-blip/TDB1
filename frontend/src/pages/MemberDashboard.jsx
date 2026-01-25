@@ -17,6 +17,8 @@ import {
 import axios from 'axios';
 import { toast } from '../hooks/use-toast';
 import { API_URL } from '../utils/api';
+import { getPetPhotoUrl } from '../utils/petAvatar';
+import PetAvatar, { PetAvatarMini } from '../components/PetAvatar';
 
 const MemberDashboard = () => {
   const { user, logout, token, loading: authLoading } = useAuth();
