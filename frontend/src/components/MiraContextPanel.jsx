@@ -42,8 +42,10 @@ const MiraContextPanel = ({
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [isMinimized, setIsMinimized] = useState(false);
+  // On mobile (position='bottom'), start minimized to not block content
+  const isMobile = position === 'bottom';
+  const [isExpanded, setIsExpanded] = useState(!isMobile);
+  const [isMinimized, setIsMinimized] = useState(isMobile);
   const [context, setContext] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showChat, setShowChat] = useState(false);
