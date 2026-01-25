@@ -628,7 +628,7 @@ const MemberDashboard = () => {
                           </Badge>
                         </h3>
                         <p className="text-sm text-gray-600 mt-1">
-                          Answer {remainingPercent > 50 ? 'a few more' : 'just a few'} questions to unlock personalized recommendations, 
+                          Answer {remainingPercent > 50 ? 'a few more' : 'just a few'} questions to unlock personalised recommendations, 
                           birthday alerts, and care reminders tailored for {primaryPet.name}.
                         </p>
                         
