@@ -186,7 +186,8 @@ const MiraContextPanel = ({
           ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify({
-          current_pillar: pillar
+          current_pillar: pillar,
+          current_category: category  // Pass category for more specific suggestions
         })
       });
       
