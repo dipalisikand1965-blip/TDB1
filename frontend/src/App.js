@@ -84,15 +84,17 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <HelmetProvider>
-      <AuthProvider>
-        <CartProvider>
-          <BrowserRouter>
-            <AppRouter />
-          </BrowserRouter>
-        </CartProvider>
-      </AuthProvider>
-    </HelmetProvider>
+    <ErrorBoundary>
+      <HelmetProvider>
+        <AuthProvider>
+          <CartProvider>
+            <BrowserRouter>
+              <AppRouter />
+            </BrowserRouter>
+          </CartProvider>
+        </AuthProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
   );
 }
 
