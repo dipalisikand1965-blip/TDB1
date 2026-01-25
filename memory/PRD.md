@@ -64,7 +64,35 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
-## Session 15.6 - Mobile View Audit (January 25, 2026)
+## Session 15.7 - Bug Fixes (January 25, 2026)
+
+### ISSUES FIXED:
+
+**1. Adopt Admin Page Crashing (FIXED)**
+- Issue: Page crashed with "Oops! Something went wrong"
+- Root Cause: `SelectItem value=""` - empty string value causes Radix UI Select to crash
+- Fix: Changed `value=""` to `value="all"` in AdoptManager.jsx line 442
+- File: `/app/frontend/src/components/admin/AdoptManager.jsx`
+
+**2. Mira AI Repeating "Before we go any further..." (FIXED)**
+- Issue: Mira was repeating the intro phrase in every message
+- Root Cause: Prompt said "start of every NEW interaction" which LLM interpreted as every message
+- Fix: Added explicit conversation state awareness instructions:
+  - Check conversation history before each response
+  - Only use intro phrase when there is NO chat history
+  - Track which questions have been answered
+  - Never loop back, always progress forward
+- File: `/app/backend/mira_routes.py` lines 1095-1127 and 1176-1195
+
+**3. Service Desk Mira Draft (VERIFIED WORKING)**
+- Endpoint `/api/tickets/ai/draft-reply` works correctly
+- Returns professional, personalized drafts based on ticket content
+
+**4. Join/Sign Up Buttons (VERIFIED PRESENT)**
+- Located at bottom of mobile hamburger menu
+- "Join now" - Pink gradient button with sparkle icon
+- "Sign in" - Regular button with user icon
+- Both buttons fully visible and functional
 
 ### MOBILE ISSUES FIXED:
 
