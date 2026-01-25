@@ -1,198 +1,196 @@
 <analysis>**original_problem_statement**: The user is building **The Doggy Company**, a Pet Life Operating System designed as a pet-first platform. The core vision is a vision-first, commerce-later approach, centered around a Pet Soul™ for each pet and an intelligent concierge, Mira® AI.
 
-The user's recent focus has been a complete overhaul of the application's architecture and user experience, driven by comprehensive doctrines they provided. Key initiatives include a major redesign of the  to be the definitive My Account page, consolidating all pet information into a , and implementing a  as the single source of truth for all products and services. The user has also provided detailed bug reports and UI/UX feedback, emphasizing the need for a seamless, intuitive, and visually appealing user journey.
+The user's recent focus has been a comprehensive audit of the entire platform to fix numerous regressions and UI/UX inconsistencies. The goal is to ensure all 14 of the company's pillars are fully integrated and functional across all user-facing pages and admin systems, providing a seamless, world-class experience.
 
 **PRODUCT REQUIREMENTS**:
--   **A. All-Seeing Eye Command Center**: A unified event stream for all system events.
--   **B. Complete 360° Member & Pet Profile**: A single, consolidated view of the member relationship and pet profile.
--   **C. Pillar-Aware E-Commerce Experience**: Tailored product discovery for all 14 pillars, guided by the Pet Soul Score.
--   **D. Unified Product Box**: A central admin system to manage all products, services, and rewards.
--   **E. Net Pawmoter Score (NPS) System**: A post-resolution satisfaction survey system.
--   **F. Expanded Pillars**: The system must fully support all 14 pillars.
--   **G. Backend Refactoring**: Break down the monolithic .
--   **H. Pet Pass Membership System**: A concierge-focused membership model with unique IDs for each pet.
--   **I. Seamless User Flow**: An intuitive journey from landing to a rich, personalized post-login experience.
+*   **A. All-Seeing Eye Command Center**: A unified event stream for all system events.
+*   **B. Complete 360° Member & Pet Profile**: A single, consolidated view of the member relationship and pet profile.
+*   **C. Pillar-Aware E-Commerce Experience**: Tailored product discovery for all 14 pillars.
+*   **D. Unified Product Box**: A central admin system to manage all products, services, and rewards.
+*   **E. Net Pawmoter Score (NPS) System**: A post-resolution satisfaction survey system.
+*   **F. Expanded Pillars**: The system must fully support all 14 pillars.
+*   **G. Backend Refactoring**: Break down the monolithic .
+*   **H. Pet Pass Membership System**: A concierge-focused membership model.
+*   **I. Seamless User Flow**: An intuitive and consistent journey across the platform.
 
 **User's preferred language**: English (with a specific request for British English spellings, e.g., flavour, personalised, colourful).
 
 **what currently exists?**
-The application is a full-stack React/FastAPI platform. The agent has just completed a massive overhaul of the user experience, primarily centered on the , and has resolved several critical production issues.
+The agent has just completed a massive session of bug fixes, feature enhancements, and data seeding. Three P0 critical bugs (photo upload, soul answer saving, legacy links) were fixed and verified. The Paw Points sync was fixed, and the UI was updated to refresh the user state automatically. The Concierge Command Center was enhanced with SLA breach audio alerts. All pillar pages (, , , , , ) were audited, populated with seeded data, and now render correctly with Mira AI integration. A major data issue was resolved by syncing product images from the  collection to the  collection and fixing the frontend, so product images now load correctly across the site. The  was significantly enhanced with image/tagging fields and a comprehensive pricing/shipping section.
 
-Key accomplishments from this session include:
-1.  **Production Stability & Data Fixes**: Diagnosed and resolved a series of production issues, including a  error (deployment issue) and blank product pages. The blank pages were fixed by updating the  endpoint to query both the new  and legacy  collections, ensuring data visibility. The agent also manually triggered the database seeding on the user's production environment.
-2.  **The Ultimate **: The  was completely rewritten to become a world-class, all-in-one pet profile. It now includes:
-    *   **Inline Editing**: Users can answer Pet Soul questions directly on the page without navigating away.
-    *   **Social Sharing**: A share modal with a beautiful preview card for Facebook, Instagram, WhatsApp, and Twitter/X.
-    *   **Pet Switcher**: A dropdown in the header to seamlessly switch between multiple pets.
-    *   **Premium Features**: An Emergency Info Card, Photo Gallery, Milestones & Memories tracker, a Breed Info Card, and a Quick Actions floating button.
-3.  **Mira AI Context Fix**: Resolved a bug where Mira AI made irrelevant suggestions (e.g., cakes on the treats page) by making the backend suggestion logic category-aware.
-4.  **Frontend Crash Prevention**: Implemented a global React  and added robust error handling to the  page to prevent the entire page from crashing due to API errors.
-5.  **Admin & Dashboard UX**: Added a Seed All button to the Unified Product Box admin UI and began refactoring the  for a better user experience by making elements clickable and reorganizing the layout.
+However, the user has just provided a new, extensive list of bugs and consistency issues that need to be addressed. The agent has already started investigating and implementing fixes for some of these.
 
 **Last working item**:
--   Last item agent was working: The user reported a critical bug on the  page where all question inputs are incorrectly rendered as Yes/No/Sometimes options, even for fields like Date of Birth. The agent acknowledged the bug and was about to begin investigation.
--   Status: IN PROGRESS
--   Agent Testing Done: N
--   Which testing method agent to use? frontend testing agent
--   User Testing Done: N
+*   Last item agent was working: The user reported a large number of issues across multiple pages, including non-functional Submit Request buttons, a broken product detail page flow, incorrect Mira AI panel placement, and a lack of pillar consistency in admin areas. The agent began a comprehensive fix-it session, starting with creating the , adding the necessary routes/endpoints, and fixing the CSS positioning of the  on several pillar pages.
+*   Status: IN PROGRESS
+*   Agent Testing Done: N
+*   Which testing method agent to use? Both. Frontend agent to do a full regression test on all pillar pages and admin functionality. Backend testing via  to verify all the newly fixed/created API endpoints.
+*   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Critical Bug: Incorrect Input Types on Pet Soul Journey Page (P0)
--   Issue 2: Incomplete Pillar Navigation on Member Dashboard (P1)
--   Issue 3: Untitled products from Shopify sync (P2)
--   Issue 4: Inconsistent Add to Cart Behavior for Customizable Products (P2)
+*   Issue 1: Submit Request / RSVP buttons not working on multiple Pillar Pages (P0)
+*   Issue 2: Product Detail Page does not open from Shop Page (P0)
+*   Issue 3: Admin systems are not fully pillar-aware (P0)
+*   Issue 4: Missing Add to Cart on Emergency Pillar Page (P1)
+*   Issue 5: Pets not loading on Adopt Page (Recurring Bug) (P1)
+*   Issue 6: Ensure all data is editable in admin with CSV export for all tables (P1)
 
 **Issues Detail**:
--   **Issue 1: Critical Bug: Incorrect Input Types on Pet Soul Journey Page**
-    -   **Description**: On the  page, all question types are broken. They default to Yes/No/Sometimes options, even for fields like Date of Birth, making the page unusable.
-    -   **Attempted fixes**: None. Agent was just about to start debugging.
-    -   **Next debug checklist**:
-        1.  Examine  and its child components.
-        2.  Identify the component responsible for rendering questions and its logic for determining input types (e.g., date-picker, text input, multi-choice).
-        3.  Find why the logic is failing and defaulting to a generic Yes/No/Sometimes format for all questions.
-        4.  Correct the conditional rendering to display the proper input control based on each question's type.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a show-stopping bug on a core feature. Fixing it is essential to make the Pet Soul differentiator functional again. It also highlights the need to deprecate this page in favor of the now-superior .
-    -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Frontend
--   **Issue 2: Incomplete Pillar Navigation on Member Dashboard**
-    -   **Description**: The user pointed out that the  is missing navigation for the full list of 14 pillars. The current UI only shows a subset.
-    -   **Attempted fixes**: Agent started looking at the file but was interrupted by the more critical bug (Issue 1).
-    -   **Next debug checklist**:
-        1.  Edit .
-        2.  Locate the All Life Pillars section.
-        3.  Add the missing pillars to the grid: , , , , , , .
-    -   **Why fix this issue and what will be achieved with the fix?**: Fulfills a direct user request and ensures the central dashboard provides complete navigation to all platform features.
-    -   **Status**: NOT STARTED
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Frontend
--   **Issue 3: Untitled products from Shopify sync**
-    -   **Description**: A long-standing recurring issue where product sync from Shopify results in products with no title.
-    -   **Attempted fixes**: None in this session.
-    -   **Next debug checklist**: Review  and trace the data mapping from the Shopify API response to the database model to find why the  field is being dropped or missed.
-    -   **Status**: NOT STARTED
-    -   **Is recurring issue?**: Y
-    -   **Should Test frontend/backend/both after fix?**: Backend
--   **Issue 4: Inconsistent Add to Cart Behavior for Customizable Products**
-    -   **Description**: Adding customizable products to the cart from general listings bypasses the customization page.
-    -   **Attempted fixes**: Previously fixed in some components, but a full audit is still needed.
-    -   **Next debug checklist**:
-        1.  Audit all pillar pages and components that list products.
-        2.  Ensure any Add to Cart button checks if a product is customizable and, if so, navigates to the product detail page () instead of adding to cart directly.
-    -   **Status**: NOT STARTED
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Frontend
+*   **Issue 1: Submit Request / RSVP buttons not working on multiple Pillar Pages**
+    *   **Description**: Buttons for submitting requests on pages like , , , , and  are not functional.
+    *   **Attempted fixes**: Agent investigated  and confirmed the frontend code and backend endpoint () exist.
+    *   **Next debug checklist**: The issue is likely a misconfiguration in the API call (wrong URL, missing headers, incorrect payload) or a general unhandled error.
+        1.  Open browser developer tools, click the Submit Request button on .
+        2.  Inspect the network request to see the exact URL being called and the server's response (e.g., 404, 422, 500).
+        3.  Compare the called URL with the actual backend route ().
+        4.  Once the root cause is found, apply the same fix to , , , and .
+    *   **Why fix this issue and what will be achieved with the fix?**: These buttons are the primary CTAs on their respective pillar pages. Fixing them is critical for lead generation and service fulfillment.
+    *   **Status**: IN PROGRESS
+    *   **Is recurring issue?**: N
+    *   **Should Test frontend/backend/both after fix?**: Both
+
+*   **Issue 2: Product Detail Page does not open from Shop Page**
+    *   **Description**: Clicking on any product on the  page does not navigate to a product detail page.
+    *   **Attempted fixes**: Agent diagnosed that the component  and the route  were missing. The agent has already created the file , added the frontend route in , and added a public backend endpoint  in .
+    *   **Next debug checklist**:
+        1.  Flesh out the UI of . It should fetch data from the new  endpoint.
+        2.  Display the product's image, name, description, price, and variants.
+        3.  Add an Add to Cart button and wire it up to the  context.
+    *   **Why fix this issue and what will be achieved with the fix?**: This is a fundamental e-commerce flow. Without it, users cannot view product details or purchase items.
+    *   **Status**: IN PROGRESS
+    *   **Is recurring issue?**: N
+    *   **Should Test frontend/backend/both after fix?**: Both
+
+*   **Issue 3: Admin systems are not fully pillar-aware**
+    *   **Description**: The user wants all 14 pillars (, , , , , , , , , , , , , ) to be consistently represented across all admin UIs and backend logic (e.g., Service Desk categories, Unified Inbox filters, Command Center). The user provided a screenshot showing the discrepancy.
+    *   **Attempted fixes**: None.
+    *   **Next debug checklist**:
+        1.  Perform a full-text search () for PILLARS or similar constants in  and .
+        2.  Identify all arrays defining pillars.
+        3.  Update these arrays to include all 14 pillars with the correct names, icons, and paths.
+        4.  Check backend schemas (e.g.,  collection) to ensure  is a valid and indexed field.
+    *   **Why fix this issue and what will be achieved with the fix?**: This ensures data consistency and allows admins to correctly categorize and manage tickets, products, and services across the entire platform.
+    *   **Status**: NOT STARTED
+    *   **Is recurring issue?**: N
+    *   **Should Test frontend/backend/both after fix?**: Both
+
+*   **Issue 4 & 5 & 6**: These are lower priority and require investigation after the P0 issues are resolved. They involve checking the Emergency pillar's Add to Cart button, re-diagnosing the Adopt page's data loading, and auditing admin tables for CSV export functionality.
 
 **In progress Task List**:
--   **Task 1: Build Auto-tagging System (P1)**
-    -   **Where to resume**: A backend endpoint is needed to apply descriptive tags (e.g., grain-free, birthday) to products automatically based on their existing data.
-    -   **What will be achieved with this?**: Enriches product data, enabling better filtering, search, and AI-driven recommendations.
-    -   **Status**: NOT STARTED
-    -   **Should Test frontend/backend/both after fix?**: Backend
+*   **Task 1: Complete Product Detail Page Implementation (P0)**
+    *   **Where to resume**: The file  is created but empty. The agent needs to build the component's UI and data-fetching logic.
+    *   **What will be achieved with this?**: A functional product detail page, allowing users to view products from the shop page.
+    *   **Status**: IN PROGRESS
+    *   **Should Test frontend/backend/both after fix?**: Both
+    *   **Blocked on something**: No.
+
+*   **Task 2: Fix Mira AI Panel Placement and Integration (P1)**
+    *   **Where to resume**: The agent has already applied CSS fixes to , , and  by wrapping the  in a correctly styled container.
+    *   **What will be achieved with this?**: The Mira AI side panel will appear correctly positioned on the right side of all pillar pages, providing a consistent user experience.
+    *   **Status**: IN PROGRESS
+    *   **Should Test frontend/backend/both after fix?**: Frontend
+    *   **Blocked on something**: No.
+
+*   **Task 3: Implement Add to Cart on Farewell Page (P1)**
+    *   **Where to resume**: The agent has added the  hook and the Add to Cart button to the product card on .
+    *   **What will be achieved with this?**: Users will be able to purchase memorial products directly from the Farewell pillar page.
+    *   **Status**: IN PROGRESS
+    *   **Should Test frontend/backend/both after fix?**: Frontend
+    *   **Blocked on something**: No.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   **(P1) Implement Mira Conversation History**: Build the backend storage and UI to review past Mira AI chats. The UI placeholder already exists on the .
--   **(P2) Finalize Product Data Refactor**: Systematically refactor all remaining parts of the app to pull product data exclusively from the new  collection, allowing for the eventual deprecation of the  collection.
--   **(P2) Deprecate **: Now that  supports superior inline editing, the redundant and buggy  should be removed and all links should point to the unified page.
+*   (P1) Build out full, dedicated pages for , , , , , and  to replace the generic Coming Soon placeholders.
+*   (P2) Investigate and fix the recurring Untitled products issue from the Shopify sync.
+*   (P2) Redesign the mobile cart view.
 
 **Future Tasks:**
--   Build out the full Paw Rewards ledger system (earn, redeem, balance).
--   Build 'Adopt', 'Farewell', and 'Shop' Pillars (UI/UX).
--   Concierge Command Center - Phase 3 (SLA breach audio alerts).
--   Agent Performance Dashboard & SLA Compliance Reports.
--   Re-enable  for go-live.
+*   Build out the full Paw Rewards ledger system (earn, redeem, balance history).
+*   Agent Performance Dashboard & SLA Compliance Reports.
+*   Re-enable  for go-live.
+*   Implement Soul Whisper via WhatsApp.
+*   Implement Smart Recommendations and a Subscription Box Builder.
 
 **Completed work in this session**
--   **Production Issue Resolution**: Diagnosed and fixed a  error and blank product pages on the user's production server by updating the backend API and manually seeding the production database.
--   **Ultimate  Overhaul**: Transformed the pet profile page into a comprehensive, world-class hub with inline editing, social sharing, a pet switcher, an emergency card, a photo gallery, milestones, and a breed info card.
--   **Mira AI Suggestion Fix**: Made Mira AI suggestions category-aware, ensuring relevance.
--   **Frontend Crash Prevention**: Implemented a global  and improved error handling in .
--   **Admin Seed All Button**: Added a button to the admin UI for easy database seeding.
--   **Multi-Pet UX**: Enhanced the multi-pet experience by adding a pet switcher and ensuring all pet cards and links navigate correctly to the individual unified pet pages.
--   **Documentation**: Updated  to reflect the new  features.
-
-**Earlier issues found/mentioned but not fixed**
--   **Mobile Cart View needs redesign**: Mentioned in a previous handoff, has not been addressed.
-
-**Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork**: Shopify Sync creates Untitled Products
--   **Recurrence count**: 10+
--   **Status**: NOT STARTED
+- **Critical Bug Fixes**: Resolved and tested major bugs preventing photo uploads, saving Pet Soul answers, and fixed all legacy  links.
+- **Pillar Page Overhaul**: Integrated, seeded data for, and verified functionality of , , , , , and  pages.
+- **Product Image Loading Fix**: Diagnosed and fixed a critical bug preventing product images from appearing on the  by syncing image URLs to the  collection and updating the frontend component.
+- **Unified Product Box Enhancement**: Added comprehensive features for Image uploads, an auto-fill Tagging system, and detailed Pricing/Shipping options to the admin product editor.
+- **Dashboard Audit & Fixes**: Corrected all pillar icon links on the  and ensured pet soul scores are consistent.
+- **Paw Points & User State**: Fixed the Paw Points sync logic and implemented an automatic UI refresh in the  to show updated balances without a page reload.
+- **Mira AI Integration**: Fully connected the Mira chat history component and fixed its CSS placement on multiple pillar pages.
+- **Concierge Command Center**: Implemented a real-time SLA breach audio alert system.
+- **Code Cleanup**: Deleted the deprecated  file.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Production vs. Preview Debugging**: Differentiated between code bugs and deployment/environment issues using  and screenshots on both environments.
--   **Legacy API Compatibility**: Updated the  endpoint to be backwards compatible by querying both the old  and new  collections, enabling a phased migration.
--   **Robust Frontend Error Handling**: Implemented a global React  and local error states to prevent the UI from crashing due to API failures.
--   **Complex Single-Page State Management**: The  now manages a large amount of state for inline editing, multiple API calls, modal visibility, and dynamic UI rendering within a single, highly interactive component.
--   **Component-Driven UI Enhancement**: Systematically added new features (Emergency Card, Social Share Modal, Pet Switcher) as distinct pieces of logic within the  component.
+- **State Management & Context**: Added a  function to the  to allow child components to trigger a refetch of the global user object, ensuring UI consistency after backend updates (e.g., Paw Points sync).
+- **Component-Based Admin UI**: Heavily enhanced the  with complex state management for new tabs (Image, Tags, Pricing, Shipping), demonstrating a modular approach to building complex admin forms.
+- **Full-Stack Debugging**: Traced issues from frontend UI (non-functional buttons, broken images) through network requests and into backend API logic () and database collections () to find and fix root causes.
+- **Data Seeding and Synchronization**: Wrote and executed multiple Python scripts via  to seed data for all 14 pillars and to sync missing  URLs from the  collection to the  collection.
 
 **key DB schema**
--   **unified_products**: The authoritative Single Source of Truth collection for all products. It has been successfully seeded on production.
--   **products**: The legacy collection. The  endpoint currently reads from this as a fallback to ensure older parts of the frontend still work. This collection should be phased out.
--   **pets**: Stores pet information, including  which powers the Pet Soul profile.
+- **unified_products**:  field was added and populated with URLs from the  collection.
+- **users**:  field is now being correctly updated by the Paw Points sync job.
+- **adoptable_pets**: New collection, seeded with 5 pets for the  page.
 
 **All files of reference**
--   : **CRITICALLY BROKEN**. This is the file to investigate for the input type bug.
--   : The new gold standard for pet profiles. Contains all the recently added features like inline editing and social sharing.
--   : The central My Account page that needs the full 14 pillars added.
--   : Contains the  endpoint logic that was fixed to merge data from two collections.
--   : The page that was crashing and is now protected by the .
--   : The product requirements document, updated with the latest progress.
+-  (and other pillar pages) for Submit Request buttons.
+-  (newly created) for the product view.
+- , ,  for ongoing UI/UX fixes.
+-  for API endpoint creation and auditing.
+-  for the comprehensive pillar integration audit.
 
 **Critical Info for New Agent**
--   **Fix the  bug first (P0)**. This is a show-stopper for a core user flow. The page is rendering all inputs as Yes/No/Sometimes.
--   **The user's ultimate goal is a single, seamless pet profile experience.** The work on  is the template to follow. The buggy  should be fixed and then a plan should be made to deprecate it entirely, ensuring all its functionality is flawlessly integrated into .
--   **The user wants all 14 pillars on the main dashboard.** This is the next priority after the critical bug fix.
--   The production backend has been unstable. While the agent's code seems correct in the preview environment, be prepared for potential deployment or environment-specific issues.
--   The user is extremely passionate about the UI/UX. Strive for pixel-perfect, intuitive, and beautiful interfaces.
+- **PRIORITIZE THE USER'S LATEST BUG LIST**. The platform has many new features, but the user is focused on fixing all reported inconsistencies and broken flows.
+1.  **Submit Request Buttons**: This is a recurring pattern of failure across multiple pages. Find the root cause on one page (e.g., ) and apply the fix to all others (, , , etc.). Check the browser's network tab to see the exact API error.
+2.  **Product Detail Page**: The foundational pieces (file, route, API endpoint) have been created, but the  component is empty. Your first task should be to build its UI to fetch and display product data, and include an Add to Cart button.
+3.  **Pillar Consistency Audit**: This is a major task. The user wants all 14 pillars to appear *everywhere*. You will need to systematically go through all admin components (, , etc.) and backend files to update pillar lists and related logic.
+4.  **Re-verify Adopt Page**: The user reported that pets are not loading again. Although the agent fixed this, it might be an intermittent bug. Re-test the  endpoint and the frontend rendering logic on .
 
 **documents and test reports created in this job**
--    (Updated)
+-  (Updated)
+- 
+- 
+- 
+- 
+- 
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Confirms the production site is finally working after redeployment and asks for major improvements to the My Account and My Pets experience.
-2.  **User**: Emphasizes the need for a single, brilliant unified pet page instead of multiple fragmented pages.
-3.  **User**: Loves the ultimate unified pet page enhancements and asks for inline answer editing.
-4.  **User**: Enthusiastically requests even more enhancements to make the pet page the universal best and to update all documentation.
-5.  **User**: Asks how the multi-pet experience works.
-6.  **User**: Loves the idea of a social sharing feature to attract new members via Facebook or Instagram.
-7.  **User**: Points out that the Member Dashboard is still missing the full 14 pillars.
-8.  **User**: Reports that on the  page, questions are not expanding for inline answers.
-9.  **User**: Provides a screenshot and clarifies the severity of the bug on the  page, showing that ALL questions (including DOB) have incorrect Yes/No/Sometimes inputs.
-10. **(Pending)** No pending messages. The agent has acknowledged the critical bug and is about to start working on it.
+1.  **User**: (Summary) Asks to add Image, Tags, and a comprehensive Pricing/Shipping tab to the , and auto-populate fields. **(COMPLETE)**
+2.  **Agent**: Asks for suggestions for world-class enhancements.
+3.  **User**: Asks for a comprehensive audit of all pillar pages, to seed data for all of them, ensure Mira is present, and make sure the admin is as complete as the  pillar. **(COMPLETE)**
+4.  **User**: Asks to thoroughly check if products are seeding and loading correctly with images. **(COMPLETE)**
+5.  **User**: Reports a long list of new bugs: no rsvp going fit, submit request not working on multiple pages, add to cart in emergency not working, pets not loading in adopt, product detail page not opening, Mira in wrong place, add to cart not coming in farewell. **(PENDING - This is the current highest priority work)**
+6.  **Agent**: Proposes plan to fix all issues. **(PENDING USER CONFIRMATION)**
+7.  **User**: (from chat 678) admin for new pillars missing, notification, service desk, order... to work for all, product box... should have all across the system, do a full audit and see all pillars now appear. Reinforces the need for a full pillar consistency audit. **(PENDING - Part of current P0 work)**
 
 **Project Health Check:**
--   **Broken**:
-    -   The  is critically broken. Its question-rendering logic is faulty, showing incorrect Yes/No/Sometimes inputs for all question types.
--   **Mocked**:
-    -   Mira AI conversation history is still a UI placeholder on the . The backend is not yet implemented.
-    -   The Photo Gallery on  has a UI but the upload functionality is not yet implemented.
+*   **Broken**:
+    *   Submit Request buttons on , , , ,  pages.
+    *   The user flow from the  to a product's detail page is broken.
+    *   Add to Cart on the  pillar page.
+*   **Mocked**:
+    *   Several admin functionalities (Service Desk, Unified Inbox) are not yet fully aware of all 14 pillars.
 
 **3rd Party Integrations**
--   **OpenAI**: Powers the Mira® AI system (via  and the **Emergent LLM Key**).
--   **Resend**: For transactional emails.
--   **Razorpay**: Payment gateway.
--   **Shopify**: For product sync (known recurring bug causing Untitled products).
--   **ReportLab**: For server-side PDF generation.
--   **canvas-confetti**: For UI gamification.
+*   **OpenAI**: Powers the Mira® AI system (via  and the **Emergent LLM Key**).
+*   **Resend**: For transactional emails.
+*   **Razorpay**: Payment gateway.
+*   **Shopify**: For product sync (known recurring bug causing Untitled products).
+*   **ReportLab**: For server-side PDF generation.
+*   **canvas-confetti**: For UI gamification.
 
 **Testing status**
--   Testing agent used after significant changes: NO (Agent used extensive manual testing with screenshots and curl).
--   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created: NO
--   Known regressions: The  has a severe regression where all input types are broken.
+*   Testing agent used after significant changes: YES. Multiple successful test runs ( through ) verifying critical bug fixes, pillar page functionality, and product image loading.
+*   Troubleshoot agent used after agent stuck in loop: NO
+*   Test files created: NO
+*   Known regressions: Pets not loading on Adopt Page was reported again by the user.
 
 **Credentials to test flow:**
--   **Admin Username**: 
--   **Admin Password**: 
--   **Test User**: 
--   **Test User Password**: 
-
-**What agent forgot to execute**
--   The task to add all 14 pillars to the  was started but interrupted.
--   The recurring Shopify Untitled product sync issue was not addressed.
--   The auto-tagging system was not implemented.</analysis>
+*   **Admin Username**: 
+*   **Admin Password**: 
+*   **Test User**: 
+*   **Test User Password**: </analysis>
