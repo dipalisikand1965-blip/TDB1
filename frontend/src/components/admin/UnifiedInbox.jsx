@@ -275,10 +275,16 @@ const UnifiedInbox = ({ credentials }) => {
             All incoming requests across channels and pillars
           </p>
         </div>
-        <Button onClick={() => { fetchIntakes(); fetchStats(); }} variant="outline" size="sm">
-          <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => { fetchIntakes(); fetchStats(); }} variant="outline" size="sm">
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button onClick={exportInboxCSV} variant="outline" size="sm">
+            <Download className="w-4 h-4 mr-2" />
+            Export CSV
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
