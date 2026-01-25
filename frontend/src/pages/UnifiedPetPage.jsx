@@ -65,6 +65,16 @@ const UnifiedPetPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  // Use server-side Pet Score API (single source of truth)
+  const { 
+    scoreState, 
+    loading: scoreLoading, 
+    refetch: refetchScore,
+    score,
+    tier,
+    recommendations 
+  } = usePetScore(petId, token);
+  
   // Health data
   const [healthData, setHealthData] = useState(null);
   const [loadingHealth, setLoadingHealth] = useState(false);
