@@ -4889,6 +4889,24 @@ async def membership_onboard(data: MembershipOnboardModel):
         for pet_data in data.pets:
             pet_id = str(uuid.uuid4())
             pet_pass_number = await generate_pet_pass_number_server()
+            
+            # Pre-populate doggy_soul_answers from onboarding data
+            initial_soul_answers = {}
+            if pet_data.name:
+                initial_soul_answers["name"] = pet_data.name
+            if pet_data.breed:
+                initial_soul_answers["breed"] = pet_data.breed
+            if pet_data.gender:
+                initial_soul_answers["gender"] = pet_data.gender
+            if pet_data.birth_date:
+                initial_soul_answers["dob"] = pet_data.birth_date
+            if pet_data.gotcha_date:
+                initial_soul_answers["gotcha_date"] = pet_data.gotcha_date
+            if pet_data.weight:
+                initial_soul_answers["weight"] = str(pet_data.weight) + " " + (pet_data.weight_unit or "kg")
+            if pet_data.is_neutered is not None:
+                initial_soul_answers["spayed_neutered"] = "Yes" if pet_data.is_neutered else "No"
+            
             pet_doc = {
                 "id": pet_id,
                 "pet_pass_number": pet_pass_number,
@@ -4897,6 +4915,7 @@ async def membership_onboard(data: MembershipOnboardModel):
                 "species": pet_data.species,
                 "gender": pet_data.gender,
                 "date_of_birth": pet_data.birth_date,
+                "dob": pet_data.birth_date,
                 "gotcha_day": pet_data.gotcha_date,
                 "weight": pet_data.weight,
                 "weight_unit": pet_data.weight_unit,
@@ -4911,13 +4930,13 @@ async def membership_onboard(data: MembershipOnboardModel):
                     "weight": pet_data.weight,
                     "weight_unit": pet_data.weight_unit
                 },
-                "doggy_soul_answers": {},
+                "doggy_soul_answers": initial_soul_answers,
                 "soul_enrichments": [],
                 "created_at": datetime.now(timezone.utc).isoformat()
             }
             await db.pets.insert_one(pet_doc)
             pet_ids.append(pet_id)
-            logger.info(f"Created pet profile: {pet_data.name} ({pet_id}) - Pet Pass: {pet_pass_number}")
+            logger.info(f"Created pet profile: {pet_data.name} ({pet_id}) - Pet Pass: {pet_pass_number} with {len(initial_soul_answers)} pre-filled answers")
         
         # Create user account (pending membership until payment)
         user_doc = {
