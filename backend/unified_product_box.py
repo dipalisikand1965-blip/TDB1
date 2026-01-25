@@ -766,3 +766,230 @@ async def get_dietary_flags():
 async def get_reward_triggers():
     """Get all reward trigger conditions"""
     return {"triggers": REWARD_TRIGGERS}
+
+
+# ==================== AUTO-SEEDING & SMART MAPPING ====================
+
+# Category to pillar mapping
+CATEGORY_TO_PILLARS = {
+    # Food & Treats
+    "treats": ["feed", "shop"],
+    "food": ["feed", "shop"],
+    "snacks": ["feed", "shop"],
+    "nutrition": ["feed", "shop"],
+    
+    # Celebration
+    "cakes": ["celebrate", "shop"],
+    "birthday": ["celebrate", "shop"],
+    "party": ["celebrate", "shop"],
+    "gifts": ["celebrate", "shop"],
+    "gifting": ["celebrate", "shop"],
+    
+    # Grooming
+    "grooming": ["groom", "care", "shop"],
+    "hygiene": ["groom", "care", "shop"],
+    "shampoo": ["groom", "shop"],
+    "spa": ["groom", "care"],
+    
+    # Toys & Play
+    "toys": ["play", "shop"],
+    "accessories": ["play", "shop"],
+    "games": ["play", "shop"],
+    
+    # Training
+    "training": ["train", "shop"],
+    "courses": ["train", "learn"],
+    "classes": ["train", "learn"],
+    
+    # Health & Care
+    "health": ["care", "shop"],
+    "wellness": ["care", "shop"],
+    "supplements": ["care", "feed", "shop"],
+    "medication": ["care"],
+    
+    # Travel
+    "travel": ["travel", "shop"],
+    "carriers": ["travel", "shop"],
+    "luggage": ["travel", "shop"],
+    
+    # Apparel
+    "apparel": ["shop"],
+    "clothing": ["shop"],
+    "fashion": ["shop"],
+    
+    # Dining
+    "bowls": ["dine", "feed", "shop"],
+    "feeders": ["dine", "feed", "shop"],
+    
+    # Insurance
+    "insurance": ["insure"],
+    
+    # Stay
+    "boarding": ["stay"],
+    "daycare": ["stay", "care"],
+}
+
+# Tag to pillar mapping
+TAG_TO_PILLARS = {
+    "birthday": ["celebrate"],
+    "party": ["celebrate"],
+    "gift": ["celebrate", "shop"],
+    "treat": ["feed"],
+    "snack": ["feed"],
+    "food": ["feed"],
+    "toy": ["play"],
+    "training": ["train"],
+    "groom": ["groom"],
+    "spa": ["groom", "care"],
+    "travel": ["travel"],
+    "health": ["care"],
+    "wellness": ["care"],
+    "valentine": ["celebrate"],
+    "christmas": ["celebrate"],
+    "diwali": ["celebrate"],
+    "holi": ["celebrate"],
+}
+
+
+@product_box_router.post("/auto-seed-pillars")
+async def auto_seed_pillars():
+    """
+    Auto-assign products to appropriate pillars based on category and tags.
+    Also enables Mira visibility for appropriate products.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    collection = db.products_unified
+    products = await collection.find({}).to_list(length=10000)
+    
+    updated_count = 0
+    pillar_counts = {p: 0 for p in ALL_PILLARS}
+    
+    for product in products:
+        product_pillars = set(product.get("pillars", ["shop"]))
+        category = (product.get("category") or "").lower()
+        tags = [t.lower() for t in (product.get("tags") or [])]
+        name = (product.get("name") or product.get("product_name") or "").lower()
+        
+        # Map based on category
+        if category in CATEGORY_TO_PILLARS:
+            product_pillars.update(CATEGORY_TO_PILLARS[category])
+        
+        # Map based on tags
+        for tag in tags:
+            for key, pillars in TAG_TO_PILLARS.items():
+                if key in tag:
+                    product_pillars.update(pillars)
+        
+        # Map based on product name keywords
+        name_mappings = {
+            "cake": ["celebrate"],
+            "treat": ["feed"],
+            "biscuit": ["feed"],
+            "toy": ["play"],
+            "shampoo": ["groom"],
+            "collar": ["shop"],
+            "leash": ["travel", "shop"],
+            "bowl": ["dine", "feed"],
+            "bed": ["shop"],
+        }
+        
+        for keyword, pillars in name_mappings.items():
+            if keyword in name:
+                product_pillars.update(pillars)
+        
+        # Ensure shop is always included for physical products
+        if product.get("product_type") == "physical":
+            product_pillars.add("shop")
+        
+        # Determine primary pillar (first non-shop pillar, or shop)
+        primary = "shop"
+        for p in ["celebrate", "feed", "groom", "play", "train", "care", "travel", "dine", "stay"]:
+            if p in product_pillars:
+                primary = p
+                break
+        
+        # Update the product
+        pillars_list = list(product_pillars)
+        
+        # Enable Mira for products with good data
+        mira_can_suggest = bool(
+            product.get("name") and 
+            product.get("pricing", {}).get("base_price", 0) > 0 and
+            len(product_pillars) > 1  # Products mapped to multiple pillars are more useful
+        )
+        
+        await collection.update_one(
+            {"_id": product["_id"]},
+            {
+                "$set": {
+                    "pillars": pillars_list,
+                    "primary_pillar": primary,
+                    "mira_visibility.can_suggest_proactively": mira_can_suggest,
+                    "mira_visibility.can_reference": True,
+                    "updated_at": datetime.now(timezone.utc),
+                    "updated_by": "auto-seed"
+                }
+            }
+        )
+        
+        updated_count += 1
+        for p in pillars_list:
+            pillar_counts[p] = pillar_counts.get(p, 0) + 1
+    
+    return {
+        "success": True,
+        "message": f"Auto-seeded {updated_count} products with pillar mappings",
+        "updated_count": updated_count,
+        "pillar_distribution": {k: v for k, v in pillar_counts.items() if v > 0}
+    }
+
+
+@product_box_router.post("/auto-enable-rewards")
+async def auto_enable_rewards(
+    percentage: int = Query(default=30, description="Percentage of products to make reward-eligible")
+):
+    """
+    Auto-enable Paw Rewards for a percentage of products.
+    Products with higher prices get higher reward values.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    collection = db.products_unified
+    products = await collection.find({"visibility.status": "active"}).to_list(length=10000)
+    
+    import random
+    random.shuffle(products)
+    
+    # Select percentage of products
+    count_to_enable = int(len(products) * (percentage / 100))
+    products_to_update = products[:count_to_enable]
+    
+    updated_count = 0
+    for product in products_to_update:
+        price = product.get("pricing", {}).get("base_price", 0) or 0
+        
+        # Calculate reward value (1 paw point per ₹100, min 5, max 50)
+        reward_value = min(50, max(5, int(price / 100)))
+        
+        await collection.update_one(
+            {"_id": product["_id"]},
+            {
+                "$set": {
+                    "paw_rewards.is_reward_eligible": True,
+                    "paw_rewards.reward_value": reward_value,
+                    "paw_rewards.trigger_conditions": ["purchase"],
+                    "updated_at": datetime.now(timezone.utc),
+                    "updated_by": "auto-seed-rewards"
+                }
+            }
+        )
+        updated_count += 1
+    
+    return {
+        "success": True,
+        "message": f"Enabled rewards for {updated_count} products ({percentage}%)",
+        "updated_count": updated_count
+    }
