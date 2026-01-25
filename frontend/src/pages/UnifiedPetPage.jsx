@@ -584,26 +584,23 @@ const UnifiedPetPage = () => {
       </div>
 
       {/* Tab Navigation */}
-      <div className="bg-white border-b sticky top-[57px] z-10">
+      <div className="bg-white border-b sticky top-[57px] z-10 shadow-sm">
         <div className="max-w-6xl mx-auto px-4">
           <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList className="h-12 w-full justify-start overflow-x-auto flex-nowrap">
-              <TabsTrigger value="overview" className="gap-1.5">
-                <Home className="w-4 h-4" /> Overview
+            <TabsList className="h-14 w-full justify-start overflow-x-auto flex-nowrap bg-transparent gap-1">
+              <TabsTrigger value="personality" className="gap-1.5 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 px-4">
+                <Sparkles className="w-4 h-4" /> Detailed View
               </TabsTrigger>
-              <TabsTrigger value="personality" className="gap-1.5">
-                <Sparkles className="w-4 h-4" /> Pet Soul
+              <TabsTrigger value="health" className="gap-1.5 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 px-4">
+                <Heart className="w-4 h-4" /> Health Vault
               </TabsTrigger>
-              <TabsTrigger value="health" className="gap-1.5">
-                <Heart className="w-4 h-4" /> Health
-              </TabsTrigger>
-              <TabsTrigger value="vaccines" className="gap-1.5">
-                <Syringe className="w-4 h-4" /> Vaccines
-              </TabsTrigger>
-              <TabsTrigger value="pillars" className="gap-1.5">
+              <TabsTrigger value="pillars" className="gap-1.5 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 px-4">
                 <Crown className="w-4 h-4" /> Services
               </TabsTrigger>
-              <TabsTrigger value="identity" className="gap-1.5">
+              <TabsTrigger value="mira-history" className="gap-1.5 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 px-4">
+                <MessageCircle className="w-4 h-4" /> Mira Chats
+              </TabsTrigger>
+              <TabsTrigger value="identity" className="gap-1.5 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 px-4">
                 <CreditCard className="w-4 h-4" /> Pet Pass
               </TabsTrigger>
             </TabsList>
