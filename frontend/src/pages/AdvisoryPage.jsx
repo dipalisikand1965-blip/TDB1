@@ -17,7 +17,7 @@ import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
   ArrowRight, Play, ChevronDown, Users, Calendar, MapPin, Award,
-  Phone, Video, MessageCircle, Mail, Clock, PawPrint, Shield, ShoppingBag
+  Phone, Video, MessageCircle, Mail, Clock, PawPrint, Shield, ShoppingBag, AlertCircle
 } from 'lucide-react';
 
 // Advisory Type Configuration - Violet/Purple theme
