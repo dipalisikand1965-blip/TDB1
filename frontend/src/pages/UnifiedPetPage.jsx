@@ -164,7 +164,7 @@ const UnifiedPetPage = () => {
         setEditingQuestion(null);
         setEditValue('');
         // Refresh score
-        refreshScore();
+        refetchScore();
       } else {
         throw new Error('Failed to save');
       }
