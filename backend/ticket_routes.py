@@ -259,13 +259,28 @@ def serialize_ticket(ticket: dict) -> dict:
     # Ensure messages is always an array
     if ticket.get("messages") is None:
         ticket["messages"] = []
-    # Ensure member is always an object
+    # Ensure member is always an object with proper name fallback
     if ticket.get("member") is None:
         ticket["member"] = {
             "name": ticket.get("customer_name") or "Unknown",
             "email": ticket.get("customer_email"),
             "phone": ticket.get("customer_phone"),
         }
+    else:
+        # Fix: If member exists but has generic name, try to get from customer_name
+        member = ticket.get("member", {})
+        if member.get("name") in [None, "", "Website Visitor", "Unknown"]:
+            if ticket.get("customer_name"):
+                ticket["member"]["name"] = ticket.get("customer_name")
+            elif ticket.get("customer_email"):
+                # Use email prefix as fallback name
+                email = ticket.get("customer_email")
+                ticket["member"]["name"] = email.split("@")[0].title()
+        # Also update email/phone if missing in member but present at root
+        if not member.get("email") and ticket.get("customer_email"):
+            ticket["member"]["email"] = ticket.get("customer_email")
+        if not member.get("phone") and ticket.get("customer_phone"):
+            ticket["member"]["phone"] = ticket.get("customer_phone")
     return ticket
 
 # ============== TICKET ROUTES ==============
