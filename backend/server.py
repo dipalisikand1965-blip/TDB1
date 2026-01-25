@@ -5184,6 +5184,48 @@ async def delete_pet_profile(pet_id: str):
     return {"message": "Pet profile deleted"}
 
 
+@api_router.post("/pets/{pet_id}/soul-answer")
+async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dict = Depends(get_current_user)):
+    """Save a single Pet Soul answer and recalculate score"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    question_id = answer_data.get("question_id")
+    answer = answer_data.get("answer")
+    
+    if not question_id or not answer:
+        raise HTTPException(status_code=400, detail="question_id and answer are required")
+    
+    # Get current soul answers or initialize
+    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers[question_id] = answer
+    
+    # Recalculate score
+    filled = sum(1 for v in soul_answers.values() if v and v not in ['', [], None, 'Unknown'])
+    total_possible = 26  # Total expected questions
+    new_score = min(100, int((filled / total_possible) * 100))
+    
+    # Update pet
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$set": {
+            "doggy_soul_answers": soul_answers,
+            "overall_score": new_score,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {
+        "message": "Answer saved",
+        "question_id": question_id,
+        "answer": answer,
+        "new_score": new_score,
+        "pet_name": pet.get("name"),
+        "answers_count": filled
+    }
+
+
 @api_router.post("/pets/{pet_id}/photo")
 async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
     """Upload or update a pet's photo"""
