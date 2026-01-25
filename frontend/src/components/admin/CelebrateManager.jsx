@@ -1169,7 +1169,7 @@ const CelebrateManager = ({ getAuthHeader }) => {
                 />
               </div>
               <div>
-                <Label>Flavors (comma-separated)</Label>
+                <Label>Flavours (comma-separated)</Label>
                 <Input
                   value={productForm.flavors}
                   onChange={(e) => setProductForm({...productForm, flavors: e.target.value})}
