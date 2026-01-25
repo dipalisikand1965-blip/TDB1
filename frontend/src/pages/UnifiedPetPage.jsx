@@ -92,6 +92,38 @@ const UnifiedPetPage = () => {
   // Inline questions
   const [showQuestions, setShowQuestions] = useState(false);
   const [savingAnswer, setSavingAnswer] = useState(null);
+  
+  // Compute unlocked achievements based on score state and pet data
+  const computeUnlockedAchievements = () => {
+    const unlocked = [];
+    if (!scoreState) return unlocked;
+    
+    const answers = pet?.doggy_soul_answers || {};
+    const hasAnswers = Object.keys(answers).length > 0;
+    
+    // Tier achievements
+    if (hasAnswers) unlocked.push('first_answer');
+    if (scoreState.tier === 'Soul Seeker' || scoreState.overall_score >= 25) unlocked.push('soul_seeker_unlocked');
+    if (scoreState.tier === 'Soul Explorer' || scoreState.overall_score >= 50) unlocked.push('soul_explorer_unlocked');
+    if (scoreState.tier === 'Soul Master' || scoreState.overall_score >= 75) unlocked.push('soul_master_unlocked');
+    if (scoreState.overall_score >= 100) unlocked.push('pet_soul_complete');
+    
+    // Category achievements - check if category is complete
+    const categoryBreakdown = scoreState.category_breakdown || {};
+    if (categoryBreakdown.safety?.completion >= 100) unlocked.push('safety_first');
+    if (categoryBreakdown.personality?.completion >= 100) unlocked.push('personality_pro');
+    if (categoryBreakdown.lifestyle?.completion >= 100) unlocked.push('lifestyle_guru');
+    if (categoryBreakdown.nutrition?.completion >= 100) unlocked.push('nutrition_ninja');
+    if (categoryBreakdown.training?.completion >= 100) unlocked.push('training_expert');
+    
+    // Special achievements
+    if (pet?.photo_url) unlocked.push('photo_uploaded');
+    if (answers.food_allergies && answers.food_allergies !== 'No allergies') unlocked.push('allergy_aware');
+    
+    return unlocked;
+  };
+  
+  const unlockedAchievements = computeUnlockedAchievements();
 
   // Fetch pet data
   useEffect(() => {
