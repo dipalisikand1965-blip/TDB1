@@ -433,17 +433,6 @@ const Navbar = () => {
                 />
               )}
 
-              {/* Voice Order - Only show when logged in */}
-              {user && (
-                <Link
-                  to="/voice-order"
-                  className="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium bg-gradient-to-r from-orange-500 to-red-500 text-white hover:opacity-90"
-                  data-testid="voice-order-nav-btn"
-                >
-                  🎙️ Voice
-                </Link>
-              )}
-
               {/* Mira AI */}
               <button
                 onClick={openMiraAI}
