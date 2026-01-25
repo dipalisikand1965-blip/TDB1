@@ -4,6 +4,7 @@ import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 import { useEffect } from "react";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 // ScrollToTop component - scrolls to top on route change
 function ScrollToTop() {
