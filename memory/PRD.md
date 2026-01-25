@@ -14,12 +14,21 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 2. ✅ **Advisory Form** - Consultation request working
 3. ✅ **Stay Booking Form** - Multi-step modal working
 4. ✅ **React Hydration Warning** - Fixed nested `<a>` tags in Logo.jsx
+5. ✅ **Login Redirect** - Now redirects to /dashboard (My Account) after login
 
 **New Features Completed:**
 1. ✅ **Pet Achievements Integration** - AchievementsGrid integrated into UnifiedPetPage overview tab
 2. ✅ **Pet Soul Score Documentation** - Added comprehensive docs to AdminDocs.jsx
 3. ✅ **Confetti Celebrations** - Triggers when achievements unlocked (with toast notifications)
 4. ✅ **CSV Export for Product Box** - Export all products with filters to CSV file
+5. ✅ **CSV Export for Product Tags Manager** - Export products with tags to CSV
+6. ✅ **British English Spellings** - Changed flavor→flavour, personalized→personalised, colorful→colourful
+
+**Dashboard (My Account Page):**
+- Personalised hero banner with pet photo and Pet Soul Score
+- All 14 Life Pillars displayed on single page
+- Quick action cards, upcoming events, recent activity
+- Full pet profile info (not just "What would you like help with?")
 
 ---
 
