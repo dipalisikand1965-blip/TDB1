@@ -112,7 +112,7 @@ const WelcomeCard = ({ user, pets, onLinkClick }) => {
           )}
         </p>
         <p className="text-xs text-gray-500 mt-1">
-          I&apos;m Mira, your dedicated concierge. How may I assist you?
+          I&apos;m Mira, your dedicated Pet Concierge®. How may I assist you?
         </p>
         
         {/* Quick Action Links */}
