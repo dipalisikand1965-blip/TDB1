@@ -92,6 +92,7 @@ const UnifiedPetPage = () => {
   // Inline questions
   const [showQuestions, setShowQuestions] = useState(false);
   const [savingAnswer, setSavingAnswer] = useState(null);
+  const [previousAchievements, setPreviousAchievements] = useState([]);
   
   // Compute unlocked achievements based on score state and pet data
   const computeUnlockedAchievements = () => {
@@ -124,6 +125,36 @@ const UnifiedPetPage = () => {
   };
   
   const unlockedAchievements = computeUnlockedAchievements();
+  
+  // Celebrate newly unlocked achievements with confetti
+  useEffect(() => {
+    if (unlockedAchievements.length === 0) return;
+    
+    // Find newly unlocked achievements (not in previous list)
+    const newlyUnlocked = unlockedAchievements.filter(
+      id => !previousAchievements.includes(id)
+    );
+    
+    // Trigger celebration for each new achievement (with delay between)
+    if (newlyUnlocked.length > 0 && previousAchievements.length > 0) {
+      newlyUnlocked.forEach((achievementId, index) => {
+        const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
+        if (achievement) {
+          setTimeout(() => {
+            celebrateAchievement(achievement.type);
+            toast({
+              title: `🎉 Achievement Unlocked!`,
+              description: `${achievement.icon} ${achievement.title} - ${achievement.description}`,
+              duration: 5000
+            });
+          }, index * 1500); // Stagger celebrations
+        }
+      });
+    }
+    
+    // Update previous achievements
+    setPreviousAchievements(unlockedAchievements);
+  }, [unlockedAchievements.join(',')]); // Only trigger when achievement list changes
 
   // Fetch pet data
   useEffect(() => {
