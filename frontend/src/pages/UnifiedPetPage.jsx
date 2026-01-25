@@ -501,11 +501,7 @@ const UnifiedPetPage = () => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => {
-                  // Copy pet profile link to clipboard
-                  navigator.clipboard.writeText(`${window.location.origin}/pet/${pet.id}`);
-                  toast({ title: 'Link Copied!', description: `Share ${pet.name}'s profile with friends & family` });
-                }}
+                onClick={() => setShowShareModal(true)}
                 className="bg-white/10 border-white/30 text-gray-700 hover:bg-white"
               >
                 <Share2 className="w-4 h-4 mr-2" /> Share
