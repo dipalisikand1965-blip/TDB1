@@ -440,7 +440,14 @@ const MemberDashboard = () => {
                   </Button>
                 )}
                 <Button 
-                  onClick={() => navigate('/my-pets')}
+                  onClick={() => {
+                    // Go directly to unified pet page for primary pet
+                    if (pets.length > 0) {
+                      navigate(`/pet/${pets[0].id}?tab=personality`);
+                    } else {
+                      navigate('/my-pets');
+                    }
+                  }}
                   variant="outline"
                   className="bg-white/10 border-white/30 text-white hover:bg-white/20"
                 >
