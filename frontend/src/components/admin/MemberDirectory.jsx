@@ -1430,7 +1430,7 @@ const PetSoulTabs = ({ pets }) => {
                 // Open member's Pet Soul Journey page in new tab
                 const petId = currentPet?.id || currentPet?._id;
                 if (petId) {
-                  window.open(`/pet-soul-journey/${petId}`, '_blank');
+                  window.open(`/pet/${petId}`, '_blank');
                 } else {
                   alert('Pet ID not found. Unable to open full profile.');
                 }

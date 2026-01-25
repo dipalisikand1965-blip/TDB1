@@ -533,7 +533,7 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
               <Brain className="w-5 h-5 text-purple-600" />
               What We Know About {petName}
             </h2>
-            <Link to={`/pet-soul-journey/${selectedPet?.id}`}>
+            <Link to={`/pet/${selectedPet?.id}`}>
               <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50">
                 View Full Soul <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
@@ -629,7 +629,7 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
                   
                   {/* Fill More Questions Button */}
                   <div className="pt-3 border-t border-gray-100">
-                    <Link to={`/pet-soul-journey/${selectedPet?.id}?section=${selectedPillar}`}>
+                    <Link to={`/pet/${selectedPet?.id}?section=${selectedPillar}`}>
                       <Button 
                         size="sm" 
                         className="bg-purple-600 hover:bg-purple-700 text-white"
@@ -645,7 +645,7 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
                   <p className="text-gray-500 text-sm">
                     No information yet. Talk to Mira or answer questions to build this pillar.
                   </p>
-                  <Link to={`/pet-soul-journey/${selectedPet?.id}?section=${selectedPillar}`}>
+                  <Link to={`/pet/${selectedPet?.id}?section=${selectedPillar}`}>
                     <Button 
                       size="sm" 
                       className="bg-purple-600 hover:bg-purple-700 text-white"
