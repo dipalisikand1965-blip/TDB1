@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card } from './ui/card';
 import { PawPrint, Crown, Calendar, Shield } from 'lucide-react';
+import { resolvePetAvatar } from '../utils/petAvatar';
 
 /**
  * Digital Pet Pass Card Component
@@ -16,13 +17,15 @@ const PetPassCard = ({ pet, className = '' }) => {
 
   const {
     name,
-    photo,
     pet_pass_number,
     pet_pass_status = 'pending',
     pet_pass_plan = 'trial',
     pet_pass_activated_at,
     pet_pass_expires
   } = pet;
+  
+  // Use centralized avatar resolver
+  const { photoUrl, needsUpload } = resolvePetAvatar(pet);
 
   // Format dates
   const formatDate = (dateStr) => {
