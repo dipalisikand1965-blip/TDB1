@@ -137,7 +137,7 @@ const OrdersTab = ({
                             <p className="font-medium">{item.customDetails.shapeIcon || ''} {item.customDetails.shape}</p>
                           </div>
                           <div>
-                            <span className="text-gray-500">Flavor:</span>
+                            <span className="text-gray-500">Flavour:</span>
                             <p className="font-medium">{item.customDetails.flavorIcon || ''} {item.customDetails.flavor}</p>
                           </div>
                           <div>
