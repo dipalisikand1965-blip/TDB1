@@ -1,6 +1,8 @@
 import React from 'react';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Download } from 'lucide-react';
 
 const MembersTab = ({ 
   members, 
@@ -8,6 +10,28 @@ const MembersTab = ({
   setSelectedMember,
   updateMemberTier 
 }) => {
+  // CSV Export function
+  const handleExportCSV = () => {
+    const headers = ['Name', 'Email', 'Phone', 'Membership Tier', 'Joined Date', 'Expires', 'Chats Today'];
+    const rows = members.map(m => [
+      m.name || 'Guest',
+      m.email || '',
+      m.phone || '',
+      m.membership_tier || 'curious_pup',
+      m.created_at ? new Date(m.created_at).toLocaleDateString() : '',
+      m.membership_expires ? new Date(m.membership_expires).toLocaleDateString() : '',
+      m.chat_count_today || 0
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.map(v => `"${v}"`).join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `members_export_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6" data-testid="members-tab">
       {/* Member Stats */}
