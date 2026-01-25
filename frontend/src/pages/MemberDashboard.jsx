@@ -438,6 +438,7 @@ const MemberDashboard = () => {
   const [celebrationOrders, setCelebrationOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reviewLoading, setReviewLoading] = useState(false);
+  const [showSoulExplainer, setShowSoulExplainer] = useState(false);
   const navigate = useNavigate();
   
   // Review form state
