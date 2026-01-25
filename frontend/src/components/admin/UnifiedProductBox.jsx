@@ -282,6 +282,48 @@ const UnifiedProductBox = () => {
     }
   };
 
+  // Seed All - runs migration, pillar assignment, and rewards enablement
+  const seedAll = async () => {
+    if (!confirm('This will:\n1. Migrate products from old collection\n2. Auto-assign pillars based on categories/tags\n3. Enable rewards for 30% of products\n\nContinue?')) return;
+    
+    setSeeding(true);
+    try {
+      // Step 1: Migrate from old products collection
+      toast({ title: 'Step 1/3', description: 'Migrating products...' });
+      const migrateRes = await fetch(`${API_URL}/api/product-box/migrate-from-products`, { method: 'POST' });
+      const migrateData = await migrateRes.json();
+      
+      // Step 2: Auto-seed pillars
+      toast({ title: 'Step 2/3', description: 'Assigning pillars...' });
+      const pillarsRes = await fetch(`${API_URL}/api/product-box/auto-seed-pillars`, { method: 'POST' });
+      const pillarsData = await pillarsRes.json();
+      
+      // Step 3: Enable rewards
+      toast({ title: 'Step 3/3', description: 'Enabling rewards...' });
+      const rewardsRes = await fetch(`${API_URL}/api/product-box/auto-enable-rewards?percentage=30`, { method: 'POST' });
+      const rewardsData = await rewardsRes.json();
+      
+      // Show results
+      const totalMigrated = migrateData.migrated || 0;
+      const totalSeeded = pillarsData.updated_count || 0;
+      const totalRewards = rewardsData.updated_count || 0;
+      
+      toast({ 
+        title: 'Seed Complete!', 
+        description: `Migrated: ${totalMigrated}, Pillars assigned: ${totalSeeded}, Rewards enabled: ${totalRewards}` 
+      });
+      
+      // Refresh data
+      fetchProducts();
+      fetchStats();
+    } catch (err) {
+      console.error('Error seeding:', err);
+      toast({ title: 'Error', description: 'Seeding failed. Check console for details.', variant: 'destructive' });
+    } finally {
+      setSeeding(false);
+    }
+  };
+
   // Create new product
   const createNewProduct = () => {
     setSelectedProduct({
