@@ -110,6 +110,29 @@ const UnifiedInbox = ({ credentials }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [updating, setUpdating] = useState(false);
 
+  // CSV Export function for Unified Inbox
+  const exportInboxCSV = () => {
+    const headers = ['ID', 'Channel', 'Pillar', 'Status', 'Customer', 'Pet', 'Message', 'Date'];
+    const rows = intakes.map(i => [
+      i.id,
+      i.channel,
+      i.pillar || 'general',
+      i.status,
+      i.customer_name || i.user_name || '',
+      i.pet_name || '',
+      (i.initial_message || i.message || '').substring(0, 100).replace(/,/g, ';').replace(/\n/g, ' '),
+      i.created_at?.split('T')[0]
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `unified_inbox_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    toast({ title: 'Exported!', description: `${intakes.length} messages exported to CSV` });
+  };
+
   // Fetch intakes
   const fetchIntakes = async () => {
     setLoading(true);
