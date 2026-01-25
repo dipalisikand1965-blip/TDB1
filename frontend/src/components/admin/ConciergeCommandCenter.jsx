@@ -227,25 +227,22 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
   });
   const [creating, setCreating] = useState(false);
   
-  // Pillar configuration
+  // Pillar configuration - THE 14 PILLARS
   const PILLARS = [
     { id: 'celebrate', name: 'Celebrate', icon: '🎂' },
     { id: 'dine', name: 'Dine', icon: '🍽️' },
     { id: 'stay', name: 'Stay', icon: '🏨' },
     { id: 'travel', name: 'Travel', icon: '✈️' },
-    { id: 'care', name: 'Care', icon: '🏥' },
-    { id: 'shop', name: 'Shop', icon: '🛍️' },
-    { id: 'club', name: 'Club', icon: '👑' },
-    { id: 'enjoy', name: 'Enjoy', icon: '🎉' },
-    { id: 'fit', name: 'Fit', icon: '💪' },
-    { id: 'learn', name: 'Learn', icon: '📚' },
-    { id: 'adopt', name: 'Adopt', icon: '🐾' },
-    { id: 'insure', name: 'Insure', icon: '🛡️' },
-    { id: 'farewell', name: 'Farewell', icon: '🌈' },
-    { id: 'community', name: 'Community', icon: '🤝' },
-    { id: 'advisory', name: 'Advisory', icon: '📋' },
+    { id: 'care', name: 'Care', icon: '💊' },
+    { id: 'enjoy', name: 'Enjoy', icon: '🎾' },
+    { id: 'fit', name: 'Fit', icon: '🏃' },
+    { id: 'learn', name: 'Learn', icon: '🎓' },
     { id: 'paperwork', name: 'Paperwork', icon: '📄' },
-    { id: 'emergency', name: 'Emergency', icon: '🚨' }
+    { id: 'advisory', name: 'Advisory', icon: '📋' },
+    { id: 'emergency', name: 'Emergency', icon: '🚨' },
+    { id: 'farewell', name: 'Farewell', icon: '🌈' },
+    { id: 'adopt', name: 'Adopt', icon: '🐾' },
+    { id: 'shop', name: 'Shop', icon: '🛒' }
   ];
 
   // Load agents for assignment dropdown

@@ -10,22 +10,22 @@ import {
   Target, Award, Star, Zap, Package, Ticket, ArrowUp, ArrowDown
 } from 'lucide-react';
 
-// Pillar configuration with colors
+// Pillar configuration with colors - THE 14 PILLARS
 const PILLARS = [
   { id: 'celebrate', name: 'Celebrate', icon: '🎂', color: 'bg-pink-500' },
   { id: 'dine', name: 'Dine', icon: '🍽️', color: 'bg-amber-500' },
   { id: 'stay', name: 'Stay', icon: '🏨', color: 'bg-blue-500' },
   { id: 'travel', name: 'Travel', icon: '✈️', color: 'bg-cyan-500' },
-  { id: 'care', name: 'Care', icon: '🏥', color: 'bg-red-500' },
-  { id: 'shop', name: 'Shop', icon: '🛍️', color: 'bg-orange-500' },
-  { id: 'enjoy', name: 'Enjoy', icon: '🎉', color: 'bg-violet-500' },
-  { id: 'fit', name: 'Fit', icon: '💪', color: 'bg-green-500' },
-  { id: 'learn', name: 'Learn', icon: '📚', color: 'bg-teal-500' },
-  { id: 'adopt', name: 'Adopt', icon: '🐾', color: 'bg-purple-500' },
-  { id: 'insure', name: 'Insure', icon: '🛡️', color: 'bg-emerald-500' },
+  { id: 'care', name: 'Care', icon: '💊', color: 'bg-red-500' },
+  { id: 'enjoy', name: 'Enjoy', icon: '🎾', color: 'bg-violet-500' },
+  { id: 'fit', name: 'Fit', icon: '🏃', color: 'bg-green-500' },
+  { id: 'learn', name: 'Learn', icon: '🎓', color: 'bg-teal-500' },
+  { id: 'paperwork', name: 'Paperwork', icon: '📄', color: 'bg-slate-500' },
+  { id: 'advisory', name: 'Advisory', icon: '📋', color: 'bg-gray-600' },
+  { id: 'emergency', name: 'Emergency', icon: '🚨', color: 'bg-red-600' },
   { id: 'farewell', name: 'Farewell', icon: '🌈', color: 'bg-rose-400' },
-  { id: 'community', name: 'Community', icon: '🤝', color: 'bg-indigo-500' },
-  { id: 'club', name: 'Club', icon: '👑', color: 'bg-yellow-500' }
+  { id: 'adopt', name: 'Adopt', icon: '🐾', color: 'bg-purple-500' },
+  { id: 'shop', name: 'Shop', icon: '🛒', color: 'bg-orange-500' }
 ];
 
 const AdvancedAnalyticsDashboard = ({ authHeaders }) => {

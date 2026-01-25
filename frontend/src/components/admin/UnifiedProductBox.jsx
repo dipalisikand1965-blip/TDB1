@@ -22,24 +22,22 @@ import {
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 
-// All pillars
+// All pillars - THE 14 PILLARS
 const ALL_PILLARS = [
-  { id: 'feed', name: 'Feed', icon: '🍖' },
   { id: 'celebrate', name: 'Celebrate', icon: '🎂' },
   { id: 'dine', name: 'Dine', icon: '🍽️' },
   { id: 'stay', name: 'Stay', icon: '🏨' },
   { id: 'travel', name: 'Travel', icon: '✈️' },
-  { id: 'care', name: 'Care', icon: '🩺' },
-  { id: 'groom', name: 'Groom', icon: '✂️' },
-  { id: 'play', name: 'Play', icon: '🎾' },
-  { id: 'train', name: 'Train', icon: '🎓' },
-  { id: 'insure', name: 'Insure', icon: '🛡️' },
-  { id: 'adopt', name: 'Adopt', icon: '🐕' },
-  { id: 'farewell', name: 'Farewell', icon: '🌈' },
-  { id: 'shop', name: 'Shop', icon: '🛒' },
-  { id: 'community', name: 'Community', icon: '👥' },
+  { id: 'care', name: 'Care', icon: '💊' },
+  { id: 'enjoy', name: 'Enjoy', icon: '🎾' },
+  { id: 'fit', name: 'Fit', icon: '🏃' },
+  { id: 'learn', name: 'Learn', icon: '🎓' },
+  { id: 'paperwork', name: 'Paperwork', icon: '📄' },
+  { id: 'advisory', name: 'Advisory', icon: '📋' },
   { id: 'emergency', name: 'Emergency', icon: '🚨' },
-  { id: 'concierge', name: 'Concierge', icon: '🛎️' }
+  { id: 'farewell', name: 'Farewell', icon: '🌈' },
+  { id: 'adopt', name: 'Adopt', icon: '🐾' },
+  { id: 'shop', name: 'Shop', icon: '🛒' }
 ];
 
 const PRODUCT_TYPES = [

@@ -41,25 +41,22 @@ const DEFAULT_VIEWS = [
   { id: 'today', name: "Today's Tickets", icon: '📅', filter: { today: true } },
 ];
 
-// Pillar-specific views - ALL PILLARS + Special Views
+// Pillar-specific views - THE 14 PILLARS + Special Views
 const PILLAR_VIEWS = [
   { id: 'celebrate', name: 'Celebrate', icon: '🎂', filter: { category: 'celebrate' } },
   { id: 'dine', name: 'Dine', icon: '🍽️', filter: { category: 'dine' } },
   { id: 'stay', name: 'Stay', icon: '🏨', filter: { category: 'stay' } },
   { id: 'travel', name: 'Travel', icon: '✈️', filter: { category: 'travel' } },
   { id: 'care', name: 'Care', icon: '💊', filter: { category: 'care' } },
-  { id: 'shop', name: 'Shop', icon: '🛍️', filter: { category: 'shop' } },
-  { id: 'enjoy', name: 'Enjoy', icon: '🎉', filter: { category: 'enjoy' } },
-  { id: 'fit', name: 'Fit', icon: '💪', filter: { category: 'fit' } },
-  { id: 'learn', name: 'Learn', icon: '📚', filter: { category: 'learn' } },
-  { id: 'adopt', name: 'Adopt', icon: '🐾', filter: { category: 'adopt' } },
-  { id: 'insure', name: 'Insure', icon: '🛡️', filter: { category: 'insure' } },
-  { id: 'farewell', name: 'Farewell', icon: '🌈', filter: { category: 'farewell' } },
-  { id: 'community', name: 'Community', icon: '🤝', filter: { category: 'community' } },
-  { id: 'advisory', name: 'Advisory', icon: '📋', filter: { category: 'advisory' } },
+  { id: 'enjoy', name: 'Enjoy', icon: '🎾', filter: { category: 'enjoy' } },
+  { id: 'fit', name: 'Fit', icon: '🏃', filter: { category: 'fit' } },
+  { id: 'learn', name: 'Learn', icon: '🎓', filter: { category: 'learn' } },
   { id: 'paperwork', name: 'Paperwork', icon: '📄', filter: { category: 'paperwork' } },
+  { id: 'advisory', name: 'Advisory', icon: '📋', filter: { category: 'advisory' } },
   { id: 'emergency', name: 'Emergency', icon: '🚨', filter: { category: 'emergency' } },
-  { id: 'club', name: 'Club', icon: '👑', filter: { category: 'club' } },
+  { id: 'farewell', name: 'Farewell', icon: '🌈', filter: { category: 'farewell' } },
+  { id: 'adopt', name: 'Adopt', icon: '🐾', filter: { category: 'adopt' } },
+  { id: 'shop', name: 'Shop', icon: '🛒', filter: { category: 'shop' } },
   { id: 'mira', name: 'Mira AI', icon: '🤖', filter: { category: 'mira_conversation' } },
   { id: 'live_mis', name: 'Live MIS', icon: '📊', filter: { category: 'live_mis' } },
   { id: 'shipping', name: 'Shipping & Commercial', icon: '🚚', filter: { category: 'shipping' } },
@@ -131,23 +128,22 @@ const DEFAULT_STATUSES = [
   { id: 'closed', name: 'Closed', color: 'gray' }
 ];
 
-// Default categories (pillars) - fallback
+// Default categories (pillars) - THE 14 PILLARS
 const DEFAULT_CATEGORIES = [
   { id: 'celebrate', name: 'Celebrate', icon: '🎂', description: 'Birthday cakes, celebrations' },
   { id: 'dine', name: 'Dine', icon: '🍽️', description: 'Restaurant reservations, dining' },
-  { id: 'travel', name: 'Travel', icon: '✈️', description: 'Pet travel assistance' },
   { id: 'stay', name: 'Stay', icon: '🏨', description: 'Pet-friendly accommodations' },
-  { id: 'enjoy', name: 'Enjoy', icon: '🎉', description: 'Events & experiences' },
-  { id: 'club', name: 'Club', icon: '👑', description: 'Membership & club services' },
+  { id: 'travel', name: 'Travel', icon: '✈️', description: 'Pet travel assistance' },
   { id: 'care', name: 'Care', icon: '💊', description: 'Pet health & wellness' },
-  { id: 'shop', name: 'Shop Assist', icon: '🛒', description: 'Product inquiries & orders' },
-  { id: 'work', name: 'Work', icon: '💼', description: 'Pet at work services' },
+  { id: 'enjoy', name: 'Enjoy', icon: '🎾', description: 'Events & experiences' },
   { id: 'fit', name: 'Fit', icon: '🏃', description: 'Pet fitness & activities' },
-  { id: 'exclusive', name: 'Exclusive', icon: '⭐', description: 'VIP & exclusive requests' },
-  { id: 'emergency', name: 'Emergency', icon: '🚨', description: 'Urgent pet emergencies' },
-  { id: 'advisory', name: 'Advisory', icon: '📋', description: 'Pet advice & consultation' },
+  { id: 'learn', name: 'Learn', icon: '🎓', description: 'Training & courses' },
   { id: 'paperwork', name: 'Paperwork', icon: '📄', description: 'Documents & certifications' },
-  { id: 'referrals', name: 'Referrals', icon: '🤝', description: 'Partner referrals' }
+  { id: 'advisory', name: 'Advisory', icon: '📋', description: 'Pet advice & consultation' },
+  { id: 'emergency', name: 'Emergency', icon: '🚨', description: 'Urgent pet emergencies' },
+  { id: 'farewell', name: 'Farewell', icon: '🌈', description: 'End-of-life services' },
+  { id: 'adopt', name: 'Adopt', icon: '🐾', description: 'Pet adoption services' },
+  { id: 'shop', name: 'Shop', icon: '🛒', description: 'Product inquiries & orders' }
 ];
 
 const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
