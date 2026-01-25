@@ -274,6 +274,7 @@ function MainLayout() {
         <Route path="/adopt" element={<AdoptPage />} />
         <Route path="/farewell" element={<FarewellPage />} />
         <Route path="/shop" element={<ShopPage />} />
+        <Route path="/product/:productId" element={<ProductDetailPage />} />
         <Route path="/community" element={<PillarPage />} />
         
         {/* Campaign Collections */}
