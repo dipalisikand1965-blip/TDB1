@@ -4018,6 +4018,28 @@ async def get_public_products(
     return {"products": products, "total": len(products)}
 
 
+@api_router.get("/products/{product_id}")
+async def get_product_detail(product_id: str):
+    """Get single product by ID for detail page"""
+    # Try products collection first
+    product = await db.products.find_one(
+        {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+        {"_id": 0}
+    )
+    
+    if not product:
+        # Try unified_products
+        product = await db.unified_products.find_one(
+            {"$or": [{"id": product_id}, {"sku": product_id}]},
+            {"_id": 0}
+        )
+    
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"product": product}
+
+
 @api_router.get("/products/{product_id}/related")
 async def get_related_products(product_id: str, limit: int = 4, pillar: str = None):
     """Get products that go well with the specified product - pillar-aware smart recommendations"""
