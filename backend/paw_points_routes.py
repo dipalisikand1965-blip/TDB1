@@ -524,3 +524,139 @@ async def get_ways_to_earn():
     ]
     
     return {"ways_to_earn": ways}
+
+
+# Achievement definitions with point values
+ACHIEVEMENT_POINTS = {
+    "soul_starter": {"name": "Soul Starter", "points": 50, "type": "questions", "threshold": 1},
+    "soul_seeker": {"name": "Soul Seeker", "points": 100, "type": "percentage", "threshold": 25},
+    "soul_explorer": {"name": "Soul Explorer", "points": 250, "type": "percentage", "threshold": 50},
+    "soul_guardian": {"name": "Soul Guardian", "points": 500, "type": "percentage", "threshold": 75},
+    "soul_master": {"name": "Soul Master", "points": 1000, "type": "percentage", "threshold": 100},
+    "first_order": {"name": "First Paw-chase", "points": 100, "type": "orders", "threshold": 1},
+    "photo_uploaded": {"name": "Picture Paw-fect", "points": 50, "type": "photo", "threshold": 1},
+    "multi_pet": {"name": "Pack Leader", "points": 200, "type": "pets", "threshold": 2},
+    "mira_chat": {"name": "Mira's Friend", "points": 75, "type": "mira", "threshold": 1},
+    "celebration_planned": {"name": "Party Planner", "points": 150, "type": "celebration", "threshold": 1},
+}
+
+
+@paw_points_router.post("/sync-achievements")
+async def sync_achievement_points(authorization: str = Header(None)):
+    """
+    Sync achievement points - check which achievements user has unlocked
+    and credit points for any not yet credited.
+    This should be called when user visits dashboard or completes actions.
+    """
+    user = await get_user_from_token(authorization)
+    database = get_db()
+    
+    email = user["email"]
+    current_balance = user.get("loyalty_points", 0)
+    lifetime_earned = user.get("lifetime_points_earned", current_balance)
+    
+    # Get user's credited achievements
+    credited = user.get("credited_achievements", [])
+    
+    # Get user's pets
+    pets = await database.pets.find({"owner_email": email}, {"_id": 0}).to_list(100)
+    
+    # Get user's orders
+    orders_count = await database.orders.count_documents({"customer_email": email})
+    
+    # Get user's celebrations
+    celebrations_count = await database.celebration_orders.count_documents({"user_email": email})
+    
+    # Get user's Mira sessions
+    mira_count = await database.mira_conversations.count_documents({"user_email": email})
+    
+    # Calculate soul score from primary pet
+    primary_pet = pets[0] if pets else None
+    soul_score = 0
+    questions_answered = 0
+    has_photo = False
+    
+    if primary_pet:
+        answers = primary_pet.get("doggy_soul_answers", {})
+        questions_answered = len(answers)
+        # Calculate score (simple percentage)
+        soul_score = min(100, int((questions_answered / 59) * 100))
+        has_photo = bool(primary_pet.get("photo_url"))
+    
+    # Check and credit new achievements
+    new_credits = []
+    total_new_points = 0
+    
+    for ach_id, ach_data in ACHIEVEMENT_POINTS.items():
+        if ach_id in credited:
+            continue  # Already credited
+        
+        # Check if achievement is unlocked
+        unlocked = False
+        
+        if ach_data["type"] == "questions" and questions_answered >= ach_data["threshold"]:
+            unlocked = True
+        elif ach_data["type"] == "percentage" and soul_score >= ach_data["threshold"]:
+            unlocked = True
+        elif ach_data["type"] == "orders" and orders_count >= ach_data["threshold"]:
+            unlocked = True
+        elif ach_data["type"] == "pets" and len(pets) >= ach_data["threshold"]:
+            unlocked = True
+        elif ach_data["type"] == "photo" and has_photo:
+            unlocked = True
+        elif ach_data["type"] == "mira" and mira_count >= ach_data["threshold"]:
+            unlocked = True
+        elif ach_data["type"] == "celebration" and celebrations_count >= ach_data["threshold"]:
+            unlocked = True
+        
+        if unlocked:
+            new_credits.append(ach_id)
+            total_new_points += ach_data["points"]
+            
+            # Log the transaction
+            await database.paw_points_ledger.insert_one({
+                "user_email": email,
+                "amount": ach_data["points"],
+                "balance_after": current_balance + total_new_points,
+                "reason": f"Achievement: {ach_data['name']}",
+                "source": "achievement",
+                "reference_id": ach_id,
+                "created_at": datetime.now(timezone.utc)
+            })
+            
+            logger.info(f"Credited {ach_data['points']} points to {email} for achievement: {ach_data['name']}")
+    
+    # Update user with new balance and credited achievements
+    if total_new_points > 0:
+        new_balance = current_balance + total_new_points
+        new_lifetime = lifetime_earned + total_new_points
+        
+        await database.users.update_one(
+            {"email": email},
+            {
+                "$set": {
+                    "loyalty_points": new_balance,
+                    "lifetime_points_earned": new_lifetime
+                },
+                "$addToSet": {
+                    "credited_achievements": {"$each": new_credits}
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "new_achievements": new_credits,
+            "points_earned": total_new_points,
+            "new_balance": new_balance,
+            "message": f"🎉 You earned {total_new_points} Paw Points from {len(new_credits)} achievement(s)!"
+        }
+    
+    return {
+        "success": True,
+        "new_achievements": [],
+        "points_earned": 0,
+        "current_balance": current_balance,
+        "message": "No new achievements to credit"
+    }
+
