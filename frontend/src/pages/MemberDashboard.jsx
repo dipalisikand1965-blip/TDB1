@@ -12,7 +12,8 @@ import {
   ShoppingBag, PawPrint, Star, User, LogOut, Package, 
   MapPin, Settings, Lock, Bell, Shield, Phone, Mail, MessageCircle,
   RefreshCw, Calendar, Pause, Play, X, MessageSquare, Edit2, Trash2, Loader2,
-  UtensilsCrossed, Users, Clock, Stethoscope, Sparkles, Home, Plane, Cake, Gift, Crown, Heart
+  UtensilsCrossed, Users, Clock, Stethoscope, Sparkles, Home, Plane, Cake, Gift, Crown, Heart,
+  ChevronRight
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../hooks/use-toast';
