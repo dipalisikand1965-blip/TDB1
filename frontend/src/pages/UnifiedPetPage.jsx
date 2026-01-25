@@ -969,7 +969,17 @@ const UnifiedPetPage = () => {
                   { key: 'long_horizon', name: 'Health & Long-Term', icon: '💊', color: 'rose', questions: ['medical_conditions', 'medications', 'vet_name', 'last_vet_visit', 'vaccination_status', 'spayed_neutered', 'insurance', 'special_needs'] }
                 ].map((pillar) => {
                   const answers = pet.doggy_soul_answers || {};
-                  const answeredCount = pillar.questions.filter(q => answers[q] && answers[q] !== '' && answers[q] !== 'None').length;
+                  // For progress calculation, include core pet fields
+                  const coreFields = {
+                    name: pet?.name,
+                    breed: pet?.breed,
+                    gender: pet?.gender,
+                    dob: pet?.dob
+                  };
+                  const answeredCount = pillar.questions.filter(q => {
+                    const val = answers[q] || coreFields[q];
+                    return val && val !== '' && val !== 'None';
+                  }).length;
                   const totalQuestions = pillar.questions.length;
                   const progress = Math.round((answeredCount / totalQuestions) * 100);
                   const isExpanded = expandedPillar === pillar.key;
