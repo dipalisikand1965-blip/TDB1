@@ -209,17 +209,33 @@ async def get_farewell_products(
     in_stock: Optional[bool] = None,
     limit: int = 100
 ):
-    """Get farewell/memorial products"""
+    """Get farewell/memorial products from unified_products collection"""
     db = get_db()
     
-    query = {}
+    query = {"pillar": "farewell"}
     if category:
         query["category"] = category
     if in_stock is not None:
         query["in_stock"] = in_stock
     
-    products = await db.farewell_products.find(query, {"_id": 0}).to_list(limit)
-    return {"products": products}
+    # Try unified_products first
+    products = await db.unified_products.find(query, {"_id": 0}).to_list(limit)
+    
+    # Also check legacy farewell_products collection
+    legacy_query = {}
+    if category:
+        legacy_query["category"] = category
+    if in_stock is not None:
+        legacy_query["in_stock"] = in_stock
+    legacy = await db.farewell_products.find(legacy_query, {"_id": 0}).to_list(limit)
+    
+    # Merge without duplicates
+    seen_ids = {p.get("id") for p in products}
+    for p in legacy:
+        if p.get("id") not in seen_ids:
+            products.append(p)
+    
+    return {"products": products[:limit], "total": len(products)}
 
 
 @router.post("/admin/products")
