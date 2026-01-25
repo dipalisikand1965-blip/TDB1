@@ -393,7 +393,7 @@ const MemberDashboard = () => {
               <p className="text-lg text-white/70 mb-4">
                 {primaryPet ? (
                   <>
-                    <span className="text-white/90">{user.name?.split(' ')[0]}</span>, we're here to take care of {primaryPet.name}.
+                    <span className="text-white/90">{user.name?.split(' ')[0]}</span>, we&apos;re here to take care of {primaryPet.name}.
                     {primaryPet.breed && <span className="text-purple-300"> Your beautiful {primaryPet.breed}.</span>}
                   </>
                 ) : (
