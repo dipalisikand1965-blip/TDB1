@@ -3116,25 +3116,66 @@ async def admin_get_reminders_log(
 async def get_all_products(
     username: str = Depends(verify_admin),
     category: Optional[str] = None,
-    limit: int = 200
+    pillar: Optional[str] = None,
+    source: Optional[str] = Query(None, description="Source collection: 'unified' (default), 'legacy', or 'all'"),
+    limit: int = 500
 ):
-    """Get all products with optional category filter"""
+    """Get all products with optional category/pillar filter.
+    
+    By default queries unified_products (pillar products with 650 items).
+    Use source='legacy' for old products collection, 'all' for both merged.
+    """
     query = {}
     if category:
         query["category"] = category
+    if pillar:
+        query["pillar"] = pillar
     
-    products = await db.products.find(query, {"_id": 0}).limit(limit).to_list(limit)
-    total = await db.products.count_documents(query)
+    # Determine which collection to query
+    use_unified = source != "legacy"
+    use_legacy = source in ["legacy", "all"]
+    
+    all_products = []
+    
+    # Query unified_products (primary - pillar products)
+    if use_unified:
+        unified_products = await db.unified_products.find(query, {"_id": 0}).limit(limit).to_list(limit)
+        all_products.extend(unified_products)
+    
+    # Query legacy products collection
+    if use_legacy:
+        legacy_products = await db.products.find(query, {"_id": 0}).limit(limit).to_list(limit)
+        # Avoid duplicates by ID
+        existing_ids = {p.get("id") for p in all_products}
+        for p in legacy_products:
+            if p.get("id") not in existing_ids:
+                all_products.append(p)
+    
+    # Count totals
+    total_unified = await db.unified_products.count_documents(query) if use_unified else 0
+    total_legacy = await db.products.count_documents(query) if use_legacy else 0
+    total = total_unified + total_legacy if source == "all" else (total_unified if use_unified else total_legacy)
     
     # Ensure title field exists (use name if title is missing)
-    for p in products:
+    for p in all_products:
         if not p.get("title") and p.get("name"):
             p["title"] = p["name"]
     
-    # Get distinct categories
-    categories = await db.products.distinct("category")
+    # Get distinct categories from both collections
+    unified_categories = await db.unified_products.distinct("category") if use_unified else []
+    legacy_categories = await db.products.distinct("category") if use_legacy else []
+    categories = list(set(unified_categories + legacy_categories))
     
-    return {"products": products, "total": total, "categories": categories}
+    # Get distinct pillars for filtering
+    pillars = await db.unified_products.distinct("pillar") if use_unified else []
+    
+    return {
+        "products": all_products[:limit],
+        "total": total,
+        "categories": categories,
+        "pillars": [p for p in pillars if p],  # Filter out None/empty
+        "source": source or "unified"
+    }
 
 
 @admin_router.get("/products/{product_id}")
