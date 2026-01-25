@@ -16,84 +16,85 @@ The user's recent focus has been a complete overhaul of the application's archit
 **User's preferred language**: English (with a specific request for British English spellings, e.g., flavour, personalised, colourful).
 
 **what currently exists?**
-The application is a full-stack React (frontend) and FastAPI (backend) platform. In this session, the agent performed a comprehensive audit and series of fixes based on user feedback.
+The application is a full-stack React/FastAPI platform. The agent has just completed a massive overhaul of the user experience, primarily centered on the , and has resolved several critical production issues.
 
-Key accomplishments include:
-1.  **Form & API Audit**: Verified and fixed submission logic for service request forms across multiple pillars (Stay, Travel, Advisory, Fit, Care) and added user-friendly validation messages.
-2.  **Product Box Seeding**: Diagnosed and fixed a critical issue preventing the Unified Product Box from being seeded. The agent corrected the database collection name to  and created/executed a backend script () to correctly map 394 products to their respective pillars and enable them for rewards and Mira AI suggestions.
-3.  **Dashboard & Navigation Overhaul**: Fixed login/homepage redirects to ensure logged-in users always land on the . The dashboard was updated to display all 14 pillars and an expanded Recent Activity list.
-4.  **Major  Redesign**: Overhauled the pet profile page to be more visually appealing, added a Back to My Account button, made the Pet Pass ID prominent, combined Health/Vaccines into a Health Vault tab, and set the Detailed View as the default.
-5.  **Gamification & Docs**: Integrated the  component into the  (with confetti effects) and added documentation for the server-side Pet Soul Score to .
-6.  **British English Localisation**: Updated user-facing text across the application to use British English spellings as requested.
-7.  **Feature Enhancements**: Added CSV export functionality to the  and  admin pages and fixed the  page to auto-populate user/pet data.
+Key accomplishments from this session include:
+1.  **Production Stability & Data Fixes**: Diagnosed and resolved a series of production issues, including a  error (deployment issue) and blank product pages. The blank pages were fixed by updating the  endpoint to query both the new  and legacy  collections, ensuring data visibility. The agent also manually triggered the database seeding on the user's production environment.
+2.  **The Ultimate **: The  was completely rewritten to become a world-class, all-in-one pet profile. It now includes:
+    *   **Inline Editing**: Users can answer Pet Soul questions directly on the page without navigating away.
+    *   **Social Sharing**: A share modal with a beautiful preview card for Facebook, Instagram, WhatsApp, and Twitter/X.
+    *   **Pet Switcher**: A dropdown in the header to seamlessly switch between multiple pets.
+    *   **Premium Features**: An Emergency Info Card, Photo Gallery, Milestones & Memories tracker, a Breed Info Card, and a Quick Actions floating button.
+3.  **Mira AI Context Fix**: Resolved a bug where Mira AI made irrelevant suggestions (e.g., cakes on the treats page) by making the backend suggestion logic category-aware.
+4.  **Frontend Crash Prevention**: Implemented a global React  and added robust error handling to the  page to prevent the entire page from crashing due to API errors.
+5.  **Admin & Dashboard UX**: Added a Seed All button to the Unified Product Box admin UI and began refactoring the  for a better user experience by making elements clickable and reorganizing the layout.
 
 **Last working item**:
--   Last item agent was working: Investigating a user report of pages going blank upon clicking tabs and a belief that the product box was not seeded. The agent confirmed via logs, API checks, and screenshots that both the product box was fully seeded and the pages (e.g., ) were functioning correctly in the preview environment. The agent concluded this is likely a discrepancy between the user's production environment and the agent's preview environment.
--   Status: USER VERIFICATION PENDING
--   Agent Testing Done: Y
--   Which testing method agent to use? both
+-   Last item agent was working: The user reported a critical bug on the  page where all question inputs are incorrectly rendered as Yes/No/Sometimes options, even for fields like Date of Birth. The agent acknowledged the bug and was about to begin investigation.
+-   Status: IN PROGRESS
+-   Agent Testing Done: N
+-   Which testing method agent to use? frontend testing agent
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Blank Pages on Tab Click (P0)
--   Issue 2: Mira AI Incorrectly Suggests Cakes Instead of Treats (P1)
+-   Issue 1: Critical Bug: Incorrect Input Types on Pet Soul Journey Page (P0)
+-   Issue 2: Incomplete Pillar Navigation on Member Dashboard (P1)
 -   Issue 3: Untitled products from Shopify sync (P2)
 -   Issue 4: Inconsistent Add to Cart Behavior for Customizable Products (P2)
 
 **Issues Detail**:
--   **Issue 1: Blank Pages on Tab Click**
-    -   **Description**: User reports that clicking on any tab (e.g., on the cakes page) causes the page to go blank.
-    -   **Attempted fixes**: The agent investigated the backend and frontend logs and took screenshots of the  page and the admin Product Box UI. All were working correctly in the preview environment. The agent concluded the issue is likely environmental (production vs. preview).
+-   **Issue 1: Critical Bug: Incorrect Input Types on Pet Soul Journey Page**
+    -   **Description**: On the  page, all question types are broken. They default to Yes/No/Sometimes options, even for fields like Date of Birth, making the page unusable.
+    -   **Attempted fixes**: None. Agent was just about to start debugging.
     -   **Next debug checklist**:
-        1.  Communicate to the user that the features are working correctly in the preview environment.
-        2.  Guide the user to check the correct preview URL and confirm if the issue persists there.
-        3.  If the issue is only on production, explain that the latest code needs to be deployed.
-    -   **Status**: USER VERIFICATION PENDING
+        1.  Examine  and its child components.
+        2.  Identify the component responsible for rendering questions and its logic for determining input types (e.g., date-picker, text input, multi-choice).
+        3.  Find why the logic is failing and defaulting to a generic Yes/No/Sometimes format for all questions.
+        4.  Correct the conditional rendering to display the proper input control based on each question's type.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a show-stopping bug on a core feature. Fixing it is essential to make the Pet Soul differentiator functional again. It also highlights the need to deprecate this page in favor of the now-superior .
+    -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Frontend
--   **Issue 2: Mira AI Incorrectly Suggests Cakes Instead of Treats**
-    -   **Description**: On the Treats page, Mira AI suggests cakes, which is contextually incorrect.
-    -   **Attempted fixes**: None. This was next on the list before the user reported the blank page issue.
+-   **Issue 2: Incomplete Pillar Navigation on Member Dashboard**
+    -   **Description**: The user pointed out that the  is missing navigation for the full list of 14 pillars. The current UI only shows a subset.
+    -   **Attempted fixes**: Agent started looking at the file but was interrupted by the more critical bug (Issue 1).
     -   **Next debug checklist**:
-        1.  Review  to understand the logic for generating contextual product suggestions.
-        2.  Analyze how the  or page context is passed to the AI.
-        3.  Adjust the prompts or filtering logic to ensure suggestions align with the current page's product category (e.g., suggest treats on the treats page).
-    -   **Why fix this issue and what will be achieved with the fix?**: Improves the relevance and usefulness of the AI concierge, a core product feature.
+        1.  Edit .
+        2.  Locate the All Life Pillars section.
+        3.  Add the missing pillars to the grid: , , , , , , .
+    -   **Why fix this issue and what will be achieved with the fix?**: Fulfills a direct user request and ensures the central dashboard provides complete navigation to all platform features.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Backend
+    -   **Should Test frontend/backend/both after fix?**: Frontend
 -   **Issue 3: Untitled products from Shopify sync**
     -   **Description**: A long-standing recurring issue where product sync from Shopify results in products with no title.
     -   **Attempted fixes**: None in this session.
     -   **Next debug checklist**: Review  and trace the data mapping from the Shopify API response to the database model to find why the  field is being dropped or missed.
-    -   **Why fix this issue and what will be achieved with the fix?**: Ensures data integrity for the e-commerce system.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Backend
 -   **Issue 4: Inconsistent Add to Cart Behavior for Customizable Products**
     -   **Description**: Adding customizable products to the cart from general listings bypasses the customization page.
-    -   **Attempted fixes**: This was fixed in  by linking to the product detail page.  was found to be working correctly (it opens a modal).
+    -   **Attempted fixes**: Previously fixed in some components, but a full audit is still needed.
     -   **Next debug checklist**:
-        1.  Audit all remaining pillar pages and components that list products.
-        2.  For any component with a direct Add to Cart button, add logic to check if the product is customizable.
-        3.  If customizable, the button should navigate to the product's detail page () instead of adding it directly to the cart.
-    -   **Why fix this issue and what will be achieved with the fix?**: Ensures users can properly configure products before purchasing.
-    -   **Status**: IN PROGRESS
+        1.  Audit all pillar pages and components that list products.
+        2.  Ensure any Add to Cart button checks if a product is customizable and, if so, navigates to the product detail page () instead of adding to cart directly.
+    -   **Status**: NOT STARTED
     -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Frontend
 
 **In progress Task List**:
 -   **Task 1: Build Auto-tagging System (P1)**
-    -   **Where to resume**: The agent built a backend endpoint () to map products to pillars. A similar system is needed for applying descriptive tags (e.g., grain-free, birthday, chew-toy) to products automatically based on their name, category, or description.
+    -   **Where to resume**: A backend endpoint is needed to apply descriptive tags (e.g., grain-free, birthday) to products automatically based on their existing data.
     -   **What will be achieved with this?**: Enriches product data, enabling better filtering, search, and AI-driven recommendations.
-    -   **Status**: IN PROGRESS
+    -   **Status**: NOT STARTED
     -   **Should Test frontend/backend/both after fix?**: Backend
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
 -   **(P1) Implement Mira Conversation History**: Build the backend storage and UI to review past Mira AI chats. The UI placeholder already exists on the .
--   **(P2) Refactor Product Data Usage**: Systematically refactor all parts of the app (e-commerce pillar pages, cart, etc.) to pull product data exclusively from the new Unified Product Box API instead of old collections or mock data.
--   **(P2) Consolidate Pet-Related Pages**: Officially deprecate and remove old/redundant pages like , ensuring all their functionality is present in the .
+-   **(P2) Finalize Product Data Refactor**: Systematically refactor all remaining parts of the app to pull product data exclusively from the new  collection, allowing for the eventual deprecation of the  collection.
+-   **(P2) Deprecate **: Now that  supports superior inline editing, the redundant and buggy  should be removed and all links should point to the unified page.
 
 **Future Tasks:**
 -   Build out the full Paw Rewards ledger system (earn, redeem, balance).
@@ -103,14 +104,13 @@ Key accomplishments include:
 -   Re-enable  for go-live.
 
 **Completed work in this session**
--   **Product Box Seeding**: Fixed the database connection and collection name () and successfully seeded 394 products with correct pillar mappings and reward eligibility via a new backend endpoint.
--   **Dashboard & Navigation**: Corrected all login and homepage redirects to ensure logged-in users always land on . Updated the dashboard to show all 14 pillars and an expanded recent activity list.
--   ** Redesign**: Completed a major visual and functional overhaul of the pet profile page, including a new header, prominent Pet Pass ID, consolidated Health Vault tab, and making the Detailed View the default.
--   **Form UX & Validation**: Audited and improved all service request forms (, , , etc.) by adding clear validation messages for disabled submit buttons.
--   **Localisation**: Changed American English spellings to British English (, ) across user-facing components.
--   **Feature Completion**: Integrated  with confetti, added CSV export to two admin pages, and fixed the  page to auto-populate user/pet data.
--   **Bug Fix**: Resolved a React hydration warning by fixing a nested anchor tag in the  component.
--   **Documentation**: Updated  and created  to track feature/bug status.
+-   **Production Issue Resolution**: Diagnosed and fixed a  error and blank product pages on the user's production server by updating the backend API and manually seeding the production database.
+-   **Ultimate  Overhaul**: Transformed the pet profile page into a comprehensive, world-class hub with inline editing, social sharing, a pet switcher, an emergency card, a photo gallery, milestones, and a breed info card.
+-   **Mira AI Suggestion Fix**: Made Mira AI suggestions category-aware, ensuring relevance.
+-   **Frontend Crash Prevention**: Implemented a global  and improved error handling in .
+-   **Admin Seed All Button**: Added a button to the admin UI for easy database seeding.
+-   **Multi-Pet UX**: Enhanced the multi-pet experience by adding a pet switcher and ensuring all pet cards and links navigate correctly to the individual unified pet pages.
+-   **Documentation**: Updated  to reflect the new  features.
 
 **Earlier issues found/mentioned but not fixed**
 -   **Mobile Cart View needs redesign**: Mentioned in a previous handoff, has not been addressed.
@@ -124,78 +124,67 @@ Key accomplishments include:
 
 
 **Key Technical Concepts**
--   **Single Source of Truth (SSoT)**: Reinforced by fixing and seeding the  collection as the authoritative source for all product data.
--   **Backend Data Seeding/Migration**: Created a dedicated, re-runnable API endpoint () to programmatically enrich existing data, a crucial pattern for evolving schemas.
--   **Conditional Rendering & UX**: Improved form usability by adding dynamic validation messages that explain why a submit button is disabled.
--   **Environment Discrepancy Debugging**: Identifying that a user-reported issue may stem from differences between the preview and production environments.
+-   **Production vs. Preview Debugging**: Differentiated between code bugs and deployment/environment issues using  and screenshots on both environments.
+-   **Legacy API Compatibility**: Updated the  endpoint to be backwards compatible by querying both the old  and new  collections, enabling a phased migration.
+-   **Robust Frontend Error Handling**: Implemented a global React  and local error states to prevent the UI from crashing due to API failures.
+-   **Complex Single-Page State Management**: The  now manages a large amount of state for inline editing, multiple API calls, modal visibility, and dynamic UI rendering within a single, highly interactive component.
+-   **Component-Driven UI Enhancement**: Systematically added new features (Emergency Card, Social Share Modal, Pet Switcher) as distinct pieces of logic within the  component.
 
 **key DB schema**
--   **unified_products**: The authoritative collection for all products. **CRITICAL NOTE**: The correct name is , NOT  as previously assumed. This collection was successfully populated with 394 products.
--   **pets**: Stores pet information, , and the .
--   **service_desk_tickets**: Stores support tickets.
-
-**changes in tech stack**
--   None in this session.
+-   **unified_products**: The authoritative Single Source of Truth collection for all products. It has been successfully seeded on production.
+-   **products**: The legacy collection. The  endpoint currently reads from this as a fallback to ensure older parts of the frontend still work. This collection should be phased out.
+-   **pets**: Stores pet information, including  which powers the Pet Soul profile.
 
 **All files of reference**
--   : Contains the major redesign and feature consolidation for the pet profile.
--   : The primary My Account page.
--   : Contains the logic for the product SSoT, including the critical auto-seeding endpoint.
--   : Contains the redirect logic for logged-in users.
--   : The RAG status report created for the user.
--   : The fixed voice order form.
-
-**Areas that need refactoring**:
--   **Product Data Sources**: The task to refactor all components to use the  API is still pending and critical for consistency.
--   **Form Submission Logic**: While validation UX was improved, a standardized form-handling hook or component could further reduce boilerplate and prevent future bugs in service request forms.
-
-**key api endpoints**
--   : (NEW) Populates pillar mappings for all products in the  collection.
--   : (NEW) Enables the paw rewards flag for a percentage of products.
--   : (MODIFIED) Now returns correct stats after seeding.
+-   : **CRITICALLY BROKEN**. This is the file to investigate for the input type bug.
+-   : The new gold standard for pet profiles. Contains all the recently added features like inline editing and social sharing.
+-   : The central My Account page that needs the full 14 pillars added.
+-   : Contains the  endpoint logic that was fixed to merge data from two collections.
+-   : The page that was crashing and is now protected by the .
+-   : The product requirements document, updated with the latest progress.
 
 **Critical Info for New Agent**
--   **Address the Blank Page Issue First**: The user's top priority is understanding why pages are appearing blank on their end. Your first action should be to communicate that the preview environment is working correctly and guide them to verify. This is likely an environment-mismatch issue, not a code bug in the preview.
--   **The Product Box is SEEDED**: The user believes the product box is empty, but it is not. It contains 394 products in the  collection. You may need to re-state this and show evidence from the  endpoint. The key was correcting the collection name from  to .
--   **Follow the User's UI/UX Vision**: The user has a very specific and high-quality vision for the app. The  is the central hub for logged-in users, and the  is the central hub for pet data. All design and navigation decisions should reinforce this.
--   **Use British English**: The user has explicitly requested British English spellings. Be mindful of this in all user-facing text.
+-   **Fix the  bug first (P0)**. This is a show-stopper for a core user flow. The page is rendering all inputs as Yes/No/Sometimes.
+-   **The user's ultimate goal is a single, seamless pet profile experience.** The work on  is the template to follow. The buggy  should be fixed and then a plan should be made to deprecate it entirely, ensuring all its functionality is flawlessly integrated into .
+-   **The user wants all 14 pillars on the main dashboard.** This is the next priority after the critical bug fix.
+-   The production backend has been unstable. While the agent's code seems correct in the preview environment, be prepared for potential deployment or environment-specific issues.
+-   The user is extremely passionate about the UI/UX. Strive for pixel-perfect, intuitive, and beautiful interfaces.
 
 **documents and test reports created in this job**
 -    (Updated)
--    (New)
--    (New)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Reports submit buttons not working, Mira AI suggestion issues, and asks for an auto-tagging system and a full audit. Provides images of broken forms.
-2.  **Agent**: Acknowledges request, performs a full audit, creates a RAG status report (), and adds UX improvements to disabled form buttons.
-3.  **User**: Reports that the header needs to be more attractive, the login still doesn't redirect to the dashboard, not all 14 pillars are visible, and the fill more questions button isn't working.
-4.  **Agent**: Fixes all reported issues: login/homepage redirects, confirms all 14 pillars are visible, and verifies the fill more questions navigation works.
-5.  **User**: Asks for the  form to be auto-populated.
-6.  **Agent**: Fixes the  form to auto-populate user data and provides a pet selection dropdown.
-7.  **User**: States the product box has not been seeded.
-8.  **Agent**: Investigates, finds the wrong collection name was being used, corrects it to , creates and runs an auto-seeding script, and confirms 394 products are now correctly mapped to pillars and enabled for rewards/Mira.
-9.  **User**: Complains that the  is still showing on the homepage instead of redirecting to the main . Asks why all pillars are not on the My Account page.
-10. **User**: Reports that pages are going blank when any tab is clicked and reiterates that the product box seems unbuilt/unseeded.
+1.  **User**: Confirms the production site is finally working after redeployment and asks for major improvements to the My Account and My Pets experience.
+2.  **User**: Emphasizes the need for a single, brilliant unified pet page instead of multiple fragmented pages.
+3.  **User**: Loves the ultimate unified pet page enhancements and asks for inline answer editing.
+4.  **User**: Enthusiastically requests even more enhancements to make the pet page the universal best and to update all documentation.
+5.  **User**: Asks how the multi-pet experience works.
+6.  **User**: Loves the idea of a social sharing feature to attract new members via Facebook or Instagram.
+7.  **User**: Points out that the Member Dashboard is still missing the full 14 pillars.
+8.  **User**: Reports that on the  page, questions are not expanding for inline answers.
+9.  **User**: Provides a screenshot and clarifies the severity of the bug on the  page, showing that ALL questions (including DOB) have incorrect Yes/No/Sometimes inputs.
+10. **(Pending)** No pending messages. The agent has acknowledged the critical bug and is about to start working on it.
 
 **Project Health Check:**
 -   **Broken**:
-    -   User is experiencing a critical issue where pages reportedly go blank when tabs are clicked. This is not reproducible in the preview environment and is likely an environmental issue (production vs. preview).
+    -   The  is critically broken. Its question-rendering logic is faulty, showing incorrect Yes/No/Sometimes inputs for all question types.
 -   **Mocked**:
-    -   Mira AI conversation history is still a UI placeholder on the . The backend storage is not yet implemented.
+    -   Mira AI conversation history is still a UI placeholder on the . The backend is not yet implemented.
+    -   The Photo Gallery on  has a UI but the upload functionality is not yet implemented.
 
 **3rd Party Integrations**
 -   **OpenAI**: Powers the Mira® AI system (via  and the **Emergent LLM Key**).
 -   **Resend**: For transactional emails.
 -   **Razorpay**: Payment gateway.
--   **Shopify**: For product sync (known bug causing Untitled products).
+-   **Shopify**: For product sync (known recurring bug causing Untitled products).
 -   **ReportLab**: For server-side PDF generation.
 -   **canvas-confetti**: For UI gamification.
 
 **Testing status**
--   Testing agent used after significant changes: YES
+-   Testing agent used after significant changes: NO (Agent used extensive manual testing with screenshots and curl).
 -   Troubleshoot agent used after agent stuck in loop: NO
 -   Test files created: NO
--   Known regressions: User is reporting blank pages, though this was not reproducible by the agent.
+-   Known regressions: The  has a severe regression where all input types are broken.
 
 **Credentials to test flow:**
 -   **Admin Username**: 
@@ -204,4 +193,6 @@ Key accomplishments include:
 -   **Test User Password**: 
 
 **What agent forgot to execute**
--   The agent has not yet started to fix the Mira AI suggestion logic (cakes vs. treats), which was the next item on the priority list before being interrupted by more critical user reports.</analysis>
+-   The task to add all 14 pillars to the  was started but interrupted.
+-   The recurring Shopify Untitled product sync issue was not addressed.
+-   The auto-tagging system was not implemented.</analysis>
