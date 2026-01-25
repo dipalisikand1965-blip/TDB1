@@ -4,6 +4,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { API_URL } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 
 // Limits for voice recording
 const MAX_RECORDING_SECONDS = 30;
