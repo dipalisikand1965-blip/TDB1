@@ -60,6 +60,31 @@ const REWARD_TRIGGERS = [
   'referral', 'manual_grant', 'celebration', 'gotcha_day'
 ];
 
+// Common product tags for auto-fill
+const COMMON_TAGS = [
+  // Pet types
+  'dog', 'cat', 'puppy', 'kitten', 'senior',
+  // Diet
+  'grain-free', 'organic', 'natural', 'human-grade', 'vegan', 'vegetarian', 'single-protein',
+  // Categories
+  'treats', 'food', 'toys', 'grooming', 'health', 'accessories', 'celebration', 'birthday',
+  // Features
+  'bestseller', 'new-arrival', 'sale', 'limited-edition', 'handmade', 'personalised',
+  'eco-friendly', 'locally-made', 'imported', 'premium',
+  // Occasions
+  'birthday-cake', 'party', 'gift', 'travel', 'training', 'dental', 'calming',
+  // Subscription
+  'autoship-eligible', 'subscribe-save'
+];
+
+// Shipping zones
+const SHIPPING_ZONES = [
+  { id: 'local', name: 'Local (Same City)', baseCost: 50 },
+  { id: 'metro', name: 'Metro Cities', baseCost: 99 },
+  { id: 'national', name: 'National', baseCost: 149 },
+  { id: 'remote', name: 'Remote Areas', baseCost: 249 }
+];
+
 const UnifiedProductBox = () => {
   // State
   const [products, setProducts] = useState([]);
