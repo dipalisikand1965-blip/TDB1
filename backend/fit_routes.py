@@ -351,16 +351,17 @@ async def get_fit_products(
     fit_type: Optional[str] = None,
     limit: int = 50
 ):
-    """Get fitness products"""
+    """Get fitness products from unified_products collection"""
     db = get_db()
     
-    query = {"category": "fit"}
+    query = {"pillar": "fit"}
     if fit_type:
-        query["fit_type"] = fit_type
+        query["category"] = fit_type
     
-    products = await db.products.find(query, {"_id": 0}).to_list(limit)
+    products = await db.unified_products.find(query, {"_id": 0}).to_list(limit)
+    total = await db.unified_products.count_documents(query)
     
-    return {"products": products, "total": len(products)}
+    return {"products": products, "total": total}
 
 
 @router.post("/admin/products")
