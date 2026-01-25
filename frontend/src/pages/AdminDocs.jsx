@@ -482,6 +482,212 @@ GET /api/pet-vault/{id}/medications  # Medication records
         }
       ]
     },
+    'gamification': {
+      title: 'Gamification System',
+      subtitle: 'World-Class Engagement through Achievements, Points & Celebrations',
+      badge: '🆕 New Feature',
+      files: {
+        frontend: '/app/frontend/src/pages/MemberDashboard.jsx',
+        backend: '/app/backend/paw_points_routes.py'
+      },
+      sections: [
+        {
+          title: 'Overview',
+          content: `The Gamification System drives engagement through:
+
+**1. Progress Banner** - Beautiful gradient card showing:
+• Pet avatar with score ring
+• Soul completion percentage
+• Next milestone & points reward
+• "Continue Soul Journey" CTA
+
+**2. Achievement System** - 10 unlockable badges:
+• Soul Starter (🌱) - Answer 1 question
+• Soul Seeker (🔍) - Reach 25%
+• Soul Explorer (🧭) - Reach 50%
+• Soul Guardian (🛡️) - Reach 75%
+• Soul Master (👑) - Complete 100%
+• First Paw-chase (🛒) - Place first order
+• Picture Paw-fect (📸) - Upload pet photo
+• Pack Leader (🐾) - Add multiple pets
+• Mira's Friend (💬) - Chat with Mira
+• Party Planner (🎉) - Plan a celebration
+
+**3. Confetti Celebrations** - Auto-triggers on milestones!`
+        },
+        {
+          title: 'Achievement Points',
+          content: `Each achievement awards Paw Points to the user's real balance:
+
+| Achievement | Points | Trigger |
+|-------------|--------|---------|
+| Soul Starter | 50 | 1 question answered |
+| Soul Seeker | 100 | 25% completion |
+| Soul Explorer | 250 | 50% completion |
+| Soul Guardian | 500 | 75% completion |
+| Soul Master | 1000 | 100% completion |
+| First Paw-chase | 100 | First order |
+| Picture Paw-fect | 50 | Photo uploaded |
+| Pack Leader | 200 | 2+ pets |
+| Mira's Friend | 75 | Chat with Mira |
+| Party Planner | 150 | Book celebration |
+
+**Total Possible:** 2,475+ points from achievements alone!`
+        },
+        {
+          title: 'API Endpoints',
+          content: \`\`\`\`
+POST /api/paw-points/sync-achievements
+# Checks and credits newly unlocked achievements
+# Called automatically when user visits dashboard
+# Returns: points_earned, new_balance, new_achievements[]
+\`\`\`\``
+        }
+      ]
+    },
+    'paw-points': {
+      title: 'Paw Points Rewards',
+      subtitle: 'Full Loyalty Redemption System',
+      badge: '🆕 New Feature',
+      files: {
+        frontend: '/app/frontend/src/components/PawPointsRewards.jsx',
+        backend: '/app/backend/paw_points_routes.py'
+      },
+      sections: [
+        {
+          title: 'Reward Catalog',
+          content: `Members can redeem points for:
+
+**Discounts:**
+• ₹50 Off (100 points) - Bronze
+• ₹100 Off (200 points) - Silver
+• ₹250 Off (500 points) - Gold
+• 10% Off (400 points) - Gold
+
+**Free Items:**
+• Free Treat Box (150 points) - Bronze
+• Free Grooming (500 points) - Gold
+• Free Birthday Cake (350 points) - Silver
+
+**Experiences:**
+• Priority Mira Support (200 points) - Silver
+• VIP Restaurant Booking (300 points) - Silver
+• Personal Concierge Session (750 points) - Platinum
+
+**Exclusive:**
+• Early Access Pass (400 points) - Gold
+• Double Points Week (600 points) - Gold`
+        },
+        {
+          title: 'Tier System',
+          content: `| Tier | Lifetime Points | Perks |
+|------|----------------|-------|
+| Bronze | 0+ | Basic rewards |
+| Silver | 500+ | Silver rewards unlocked |
+| Gold | 1,500+ | Gold rewards unlocked |
+| Platinum | 5,000+ | All rewards + VIP perks |`
+        },
+        {
+          title: 'API Endpoints',
+          content: \`\`\`\`
+GET  /api/paw-points/balance      # Current balance & tier
+GET  /api/paw-points/catalog      # Available rewards
+POST /api/paw-points/redeem       # Redeem a reward
+GET  /api/paw-points/history      # Transaction ledger
+GET  /api/paw-points/redemptions  # Active/used codes
+GET  /api/paw-points/ways-to-earn # Earning methods
+\`\`\`\``
+        }
+      ]
+    },
+    'soul-whisper': {
+      title: 'Soul Whisper™',
+      subtitle: 'Daily Pet Soul Questions via WhatsApp',
+      badge: '🆕 Premium Feature',
+      files: {
+        frontend: '/app/frontend/src/pages/MemberDashboard.jsx (Settings tab)',
+        backend: '/app/backend/communication_engine.py'
+      },
+      sections: [
+        {
+          title: 'What It Is',
+          content: \`Soul Whisper sends **one gentle question per day** via WhatsApp, making it effortless for members to build their pet's Soul profile over time.
+
+**Settings Location:** My Account → Settings → Soul Whisper™
+
+**Options:**
+• Enable/Disable toggle
+• Frequency: Daily, Twice Weekly, Weekly
+• Preferred Time: 8am, 10am, 2pm, 6pm, 8pm
+
+**Preview Message:**
+"Soul Whisper for Mojo 💜
+'What's Mojo's favourite spot in the house?'
+Tap to answer →"\`
+        },
+        {
+          title: 'User Flow',
+          content: \`1. Member enables Soul Whisper in Settings
+2. System sends question at preferred time
+3. Member taps WhatsApp message
+4. Opens app to answer question
+5. Answer saved, score updated
+6. Next question queued
+
+**Benefits:**
+• Never overwhelming (just 1 question)
+• Builds habit of engagement
+• Grows Soul score naturally\`
+        }
+      ]
+    },
+    'soul-explainer': {
+      title: 'Soul Explainer Video',
+      subtitle: 'Animated Storytelling Component for Pet Soul™',
+      badge: '🆕 New Feature',
+      files: {
+        frontend: '/app/frontend/src/components/SoulExplainerVideo.jsx'
+      },
+      sections: [
+        {
+          title: 'What It Is',
+          content: \`An **animated, video-like slideshow** that explains what Pet Soul™ is and why it matters. 
+
+**Location:** Dashboard → "What is Pet Soul?" button
+
+**7 Slides:**
+1. What is Pet Soul? - Introduction
+2. Why Does It Matter? - Personalisation benefits
+3. 8 Soul Pillars - Category overview
+4. Your Soul Score - Tier progression
+5. Earn Paw Points - Rewards connection
+6. Soul Whisper™ - Daily questions feature
+7. Start Your Journey - CTA
+
+**Features:**
+• Auto-advancing slides (8 seconds each)
+• Play/Pause controls
+• Progress dots for navigation
+• Beautiful gradient backgrounds
+• Smooth animations\`
+        },
+        {
+          title: 'Usage',
+          content: \`\`\`\`jsx
+import SoulExplainerVideo from './components/SoulExplainerVideo';
+
+// In your component
+{showExplainer && (
+  <SoulExplainerVideo
+    petName="Mojo"
+    onClose={() => setShowExplainer(false)}
+    onStartJourney={() => navigate('/pet/' + petId)}
+  />
+)}
+\`\`\`\``
+        }
+      ]
+    },
     'member-directory': {
       title: 'Pet Parent Directory',
       subtitle: 'Complete 360° CRM View - Like Zoho/Salesforce but Pet-Centric',
