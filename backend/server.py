@@ -8191,6 +8191,7 @@ app.include_router(celebrate_router)  # Celebrate Pillar
 app.include_router(pet_soul_router, prefix="/api")
 app.include_router(pet_soul_admin_router, prefix="/api/admin")
 app.include_router(pet_score_router, prefix="/api")  # Pet Score Logic API
+app.include_router(product_box_router)  # Unified Product Box API
 app.include_router(pet_vault_router, prefix="/api")
 app.include_router(pet_vault_admin_router, prefix="/api/admin/pet-vault")
 
