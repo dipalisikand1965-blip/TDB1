@@ -1879,6 +1879,11 @@ const Admin = () => {
           <CelebrateManager getAuthHeader={getAuthHeaders} />
         )}
 
+        {/* Unified Product Box Tab */}
+        {activeTab === 'product-box' && (
+          <UnifiedProductBox />
+        )}
+
         {/* Autoship Tab */}
         {activeTab === 'autoship' && (
           <AutoshipManager getAuthHeader={getAuthHeaders} />
