@@ -78,6 +78,7 @@ import ServiceDeskPage from "./pages/ServiceDeskPage";
 import MyTickets from "./pages/MyTickets";
 import AdminDocs from "./pages/AdminDocs";
 import NPSFeedbackPage from "./pages/NPSFeedbackPage";
+import UnifiedPetPage from "./pages/UnifiedPetPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
