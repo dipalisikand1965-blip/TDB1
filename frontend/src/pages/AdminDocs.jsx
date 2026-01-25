@@ -536,12 +536,10 @@ GET /api/pet-vault/{id}/medications  # Medication records
         },
         {
           title: 'API Endpoints',
-          content: \`\`\`\`
-POST /api/paw-points/sync-achievements
+          content: `POST /api/paw-points/sync-achievements
 # Checks and credits newly unlocked achievements
 # Called automatically when user visits dashboard
-# Returns: points_earned, new_balance, new_achievements[]
-\`\`\`\``
+# Returns: points_earned, new_balance, new_achievements[]`
         }
       ]
     },
