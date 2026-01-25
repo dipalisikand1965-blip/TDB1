@@ -444,6 +444,10 @@ const MemberDashboard = () => {
     celebration_reminders: true,
     health_reminders: true,
     community_updates: false,
+    // Soul Whisper - Daily pet soul questions via WhatsApp
+    soul_whisper: true,
+    soul_whisper_frequency: 'daily', // daily, weekly, twice_weekly
+    soul_whisper_time: '10:00', // Preferred time
     // Privacy
     shareData: false
   });
