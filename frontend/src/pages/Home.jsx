@@ -87,15 +87,15 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white" data-testid="home-page">
+    <div className="min-h-screen bg-white overflow-x-hidden" data-testid="home-page">
       
       {/* ========== HERO SECTION ========== */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        {/* Background Elements */}
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-20 left-10 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-10 w-80 h-80 bg-pink-500 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-          <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-yellow-500 rounded-full blur-3xl opacity-50"></div>
+        {/* Background Elements - contained */}
+        <div className="absolute inset-0 opacity-30 overflow-hidden">
+          <div className="absolute top-20 -left-20 w-64 sm:w-96 h-64 sm:h-96 bg-purple-500 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 -right-20 w-56 sm:w-80 h-56 sm:h-80 bg-pink-500 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-48 sm:w-72 h-48 sm:h-72 bg-yellow-500 rounded-full blur-3xl opacity-50"></div>
         </div>
 
         <div className="relative max-w-6xl mx-auto px-4 py-20 text-center z-10">
