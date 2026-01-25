@@ -49,9 +49,11 @@ import {
   Crown,
   BookOpen,
   Shield,
-  Users
+  Users,
+  Download
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
+import { toast } from '../../hooks/use-toast';
 
 // Helper to create Basic Auth header
 const getAuthHeader = (credentials) => {
