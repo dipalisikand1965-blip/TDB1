@@ -82,15 +82,9 @@ const Home = () => {
     window.dispatchEvent(new CustomEvent('openMiraAI'));
   };
 
-  // If logged in with pets, show personalized dashboard
+  // If logged in with pets, redirect to member dashboard
   if (user && userPets.length > 0 && !loadingPets) {
-    return (
-      <PersonalizedDashboard 
-        user={user} 
-        pets={userPets} 
-        onOpenMira={handleOpenMira}
-      />
-    );
+    return <Navigate to="/dashboard" replace />;
   }
 
   return (
