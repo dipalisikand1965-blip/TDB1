@@ -104,6 +104,19 @@ export function resolvePetAvatar(pet) {
   if (pet.photo_url) {
     let photoUrl = pet.photo_url;
     
+    // Convert old static path format to new API route format
+    // Old: /static/uploads/pets/pet_petid_hash.jpg
+    // New: /api/pet-photo/petid/pet_petid_hash.jpg
+    if (photoUrl.includes('/static/uploads/pets/')) {
+      const filename = photoUrl.split('/').pop();
+      // Extract pet_id from filename (format: pet_PETID_hash.ext)
+      const parts = filename.split('_');
+      if (parts.length >= 2) {
+        const petIdFromFilename = parts[1];
+        photoUrl = `/api/pet-photo/${petIdFromFilename}/${filename}`;
+      }
+    }
+    
     // Handle relative URLs
     if (photoUrl.startsWith('/')) {
       photoUrl = `${API_URL}${photoUrl}`;
