@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { X, Sparkles, Minimize2, Maximize2, Send, Loader2, User, Bot, PawPrint, Mic, MicOff, RotateCcw, History, ChevronRight } from 'lucide-react';
+import { X, Sparkles, Minimize2, Maximize2, Send, Loader2, User, Bot, PawPrint, Mic, MicOff, RotateCcw, History, ChevronRight, Upload } from 'lucide-react';
 import { Button } from './ui/button';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 import { getApiUrl } from '../utils/api';
+import { resolvePetAvatar } from '../utils/petAvatar';
 
 // Markdown components for ReactMarkdown - defined outside component to avoid re-creation
 const markdownComponents = {
@@ -16,48 +17,26 @@ const markdownComponents = {
   strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
 };
 
-// Default breed images from Unsplash
-const BREED_IMAGES = {
-  'golden retriever': 'https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=400&h=300&fit=crop',
-  'labrador': 'https://images.unsplash.com/photo-1579213838058-8ae16d24b6bb?w=400&h=300&fit=crop',
-  'labrador retriever': 'https://images.unsplash.com/photo-1579213838058-8ae16d24b6bb?w=400&h=300&fit=crop',
-  'german shepherd': 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=400&h=300&fit=crop',
-  'beagle': 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=400&h=300&fit=crop',
-  'poodle': 'https://images.unsplash.com/photo-1616149256170-a95d5a0a63c8?w=400&h=300&fit=crop',
-  'bulldog': 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400&h=300&fit=crop',
-  'french bulldog': 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400&h=300&fit=crop',
-  'rottweiler': 'https://images.unsplash.com/photo-1567752881298-894bb81f9379?w=400&h=300&fit=crop',
-  'husky': 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&h=300&fit=crop',
-  'siberian husky': 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&h=300&fit=crop',
-  'pug': 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400&h=300&fit=crop',
-  'shih tzu': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop',
-  'dachshund': 'https://images.unsplash.com/photo-1612195583950-b8fd34c87093?w=400&h=300&fit=crop',
-  'boxer': 'https://images.unsplash.com/photo-1543071220-6ee5bf71a54e?w=400&h=300&fit=crop',
-  'indie': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop',
-  'indian pariah': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop',
-  'default': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop'
-};
-
-// Get appropriate image for the welcome card
+// Get appropriate image for the welcome card using centralized avatar resolver
 const getWelcomeImage = (user, pets) => {
-  // Helper to ensure full URL
-  const ensureFullUrl = (url) => {
-    if (!url) return null;
-    // If it's already an absolute URL, return it
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-    // If it's a relative path, prepend the API URL
-    const apiUrl = process.env.REACT_APP_BACKEND_URL || '';
-    return `${apiUrl}${url.startsWith('/') ? '' : '/'}${url}`;
-  };
+  const primaryPet = pets?.[0];
   
-  // Priority 1: Pet's uploaded photo
-  const petPhoto = pets?.[0]?.photo_url || pets?.[0]?.image_url || pets?.[0]?.photo;
-  if (petPhoto) {
-    return { url: ensureFullUrl(petPhoto), type: 'pet' };
+  if (primaryPet) {
+    const { photoUrl, isBreedPhoto, uploadPrompt } = resolvePetAvatar(primaryPet);
+    return { 
+      url: photoUrl, 
+      type: isBreedPhoto ? 'breed' : 'pet',
+      needsUpload: isBreedPhoto,
+      uploadPrompt
+    };
   }
   
+  // No pet - return default
+  return { 
+    url: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop',
+    type: 'default',
+    needsUpload: false
+  };
   // Priority 2: User/Parent's uploaded photo
   const userPhoto = user?.photo_url || user?.avatar_url || user?.profile_image;
   if (userPhoto) {
