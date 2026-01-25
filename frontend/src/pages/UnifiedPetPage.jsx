@@ -66,6 +66,8 @@ const UnifiedPetPage = () => {
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [allPets, setAllPets] = useState([]); // For pet switcher
+  const [showPetSwitcher, setShowPetSwitcher] = useState(false);
   
   // Use server-side Pet Score API (single source of truth)
   const { 
