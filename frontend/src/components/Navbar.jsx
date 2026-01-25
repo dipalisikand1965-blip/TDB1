@@ -379,9 +379,9 @@ const Navbar = () => {
       </div>
 
       {/* Pillars Navigation Row - Desktop */}
-      <nav className="hidden lg:block bg-slate-800 text-white text-sm border-t border-slate-700" ref={dropdownRef}>
+      <nav className="hidden md:block bg-slate-800 text-white text-sm border-t border-slate-700 overflow-x-auto" ref={dropdownRef}>
         <div className="max-w-7xl mx-auto px-4">
-          <ul className="flex items-center">
+          <ul className="flex items-center whitespace-nowrap">
             {PILLARS.map((pillar) => (
               <li 
                 key={pillar.id} 
@@ -391,14 +391,14 @@ const Navbar = () => {
               >
                 <Link
                   to={pillar.path}
-                  className={`flex items-center gap-1.5 px-3 py-2.5 transition-colors ${pillar.color} ${
+                  className={`flex items-center gap-1 px-2.5 py-2.5 transition-colors ${pillar.color} ${
                     isActive(pillar.path) ? 'bg-slate-700' : 'hover:bg-slate-700'
                   }`}
                   data-testid={`nav-${pillar.id}`}
                 >
-                  <span>{pillar.icon}</span>
-                  <span className="font-medium">{pillar.name}</span>
-                  {pillar.dropdown && <ChevronDown className="w-3 h-3 opacity-50" />}
+                  <span className="text-sm">{pillar.icon}</span>
+                  <span className="font-medium text-xs">{pillar.name}</span>
+                  {pillar.dropdown && <ChevronDown className="w-2.5 h-2.5 opacity-50" />}
                 </Link>
 
                 {/* Dropdown Menu */}
