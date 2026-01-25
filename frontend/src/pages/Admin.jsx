@@ -2500,6 +2500,67 @@ const Admin = () => {
           <EmergencyManager getAuthHeader={getAuthHeaders} />
         )}
 
+        {/* Farewell Tab */}
+        {activeTab === 'farewell' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                  🌈 Farewell Pillar Management
+                </h2>
+                <p className="text-gray-600">Manage end-of-life services, memorials, and bereavement support</p>
+              </div>
+            </div>
+            <Card className="p-8 text-center">
+              <Heart className="w-16 h-16 mx-auto text-rose-400 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Farewell Services Coming Soon</h3>
+              <p className="text-gray-500 max-w-md mx-auto">
+                Memorial products, cremation services, and grief support resources will be managed here.
+                For now, farewell products can be managed in the Unified Product Box.
+              </p>
+              <Button className="mt-4" onClick={() => setActiveTab('product-box')}>
+                <Package className="w-4 h-4 mr-2" /> Go to Product Box
+              </Button>
+            </Card>
+          </div>
+        )}
+
+        {/* Adopt Tab */}
+        {activeTab === 'adopt' && (
+          <AdoptManager getAuthHeader={getAuthHeaders} />
+        )}
+
+        {/* Shop Tab */}
+        {activeTab === 'shop' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                  🛒 Shop Pillar Management
+                </h2>
+                <p className="text-gray-600">Manage products, inventory, and shop settings</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab('products')}>
+                <Package className="w-10 h-10 text-purple-600 mb-3" />
+                <h3 className="font-semibold">Product Manager</h3>
+                <p className="text-sm text-gray-500">Manage Celebrate/Cake products</p>
+              </Card>
+              <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab('product-box')}>
+                <ShoppingBag className="w-10 h-10 text-orange-600 mb-3" />
+                <h3 className="font-semibold">Unified Product Box</h3>
+                <p className="text-sm text-gray-500">All pillars product management</p>
+              </Card>
+              <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab('collections')}>
+                <Layers className="w-10 h-10 text-blue-600 mb-3" />
+                <h3 className="font-semibold">Collections</h3>
+                <p className="text-sm text-gray-500">Curated product collections</p>
+              </Card>
+            </div>
+          </div>
+        )}
+
         {/* Service Desk Tab - Redirect to Full Screen Page */}
         {activeTab === 'servicedesk' && (
           <div className="flex flex-col items-center justify-center h-[60vh] space-y-6">
