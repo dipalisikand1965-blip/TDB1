@@ -15,12 +15,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraContextPanel from '../components/MiraContextPanel';
 import {
   Heart, Rainbow, Flower2, Star, Calendar, Phone, Mail, MapPin,
   Clock, ChevronRight, Sparkles, Home, CheckCircle, Users,
-  MessageCircle, ArrowRight, Book, Camera, Music, Loader2, X
+  MessageCircle, ArrowRight, Book, Camera, Music, Loader2, X, ShoppingCart
 } from 'lucide-react';
 
 // Service Categories
