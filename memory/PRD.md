@@ -165,7 +165,9 @@ Product Record:
 ### P2 - Pending
 - "Untitled" Shopify products fix
 - Mobile cart view redesign
-- User's bug list (awaiting)
+- Full Paw Rewards ledger system (earn, redeem, balance)
+- Build 'Adopt', 'Farewell', 'Shop' Pillars
+- Consolidate/deprecate old pet pages (PetSoulJourneyPage.jsx)
 
 ---
 
