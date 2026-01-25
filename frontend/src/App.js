@@ -270,7 +270,7 @@ function MainLayout() {
         <Route path="/play" element={<PillarPage />} />
         <Route path="/train" element={<PillarPage />} />
         <Route path="/insure" element={<PillarPage />} />
-        <Route path="/adopt" element={<PillarPage />} />
+        <Route path="/adopt" element={<AdoptPage />} />
         <Route path="/farewell" element={<FarewellPage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/community" element={<PillarPage />} />
