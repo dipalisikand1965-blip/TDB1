@@ -201,6 +201,86 @@ const UnifiedProductBox = () => {
     }
   };
 
+  // Export products to CSV
+  const exportToCSV = async () => {
+    setExporting(true);
+    try {
+      // Fetch ALL products (no pagination)
+      const params = new URLSearchParams({ limit: '10000' });
+      if (searchTerm) params.append('search', searchTerm);
+      if (filterType) params.append('product_type', filterType);
+      if (filterPillar) params.append('pillar', filterPillar);
+      if (filterStatus) params.append('status', filterStatus);
+      if (filterRewardEligible !== null) params.append('reward_eligible', filterRewardEligible.toString());
+      
+      const response = await fetch(`${API_URL}/api/product-box/products?${params}`);
+      const data = await response.json();
+      const allProducts = data.products || [];
+      
+      if (allProducts.length === 0) {
+        toast({ title: 'No Data', description: 'No products to export', variant: 'destructive' });
+        return;
+      }
+      
+      // CSV Headers
+      const headers = [
+        'ID', 'Name', 'Type', 'Status', 'Category', 'Tags',
+        'Primary Pillar', 'All Pillars', 'Base Price', 'GST Rate',
+        'In Stock', 'Reward Eligible', 'Reward Value', 'Reward Triggers',
+        'Life Stages', 'Size Suitability', 'Dietary Flags',
+        'Mira Can Reference', 'Mira Can Suggest', 'Short Description'
+      ];
+      
+      // Build CSV rows
+      const rows = allProducts.map(p => [
+        p.id || '',
+        `"${(p.name || p.product_name || '').replace(/"/g, '""')}"`,
+        p.product_type || '',
+        p.visibility?.status || p.status || '',
+        p.category || '',
+        `"${(p.tags || []).join(', ')}"`,
+        p.primary_pillar || '',
+        `"${(p.pillars || []).join(', ')}"`,
+        p.pricing?.base_price || p.base_price || 0,
+        p.pricing?.gst_rate || 18,
+        p.in_stock ? 'Yes' : 'No',
+        p.paw_rewards?.is_reward_eligible ? 'Yes' : 'No',
+        p.paw_rewards?.reward_value || 0,
+        `"${(p.paw_rewards?.trigger_conditions || []).join(', ')}"`,
+        `"${(p.pet_safety?.life_stages || []).join(', ')}"`,
+        `"${(p.pet_safety?.size_suitability || []).join(', ')}"`,
+        `"${(p.pet_safety?.dietary_flags || []).join(', ')}"`,
+        p.mira_visibility?.can_reference ? 'Yes' : 'No',
+        p.mira_visibility?.can_suggest_proactively ? 'Yes' : 'No',
+        `"${(p.short_description || '').replace(/"/g, '""').substring(0, 200)}"`
+      ]);
+      
+      // Create CSV content
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.join(','))
+      ].join('\n');
+      
+      // Download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `products_export_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast({ title: 'Exported!', description: `${allProducts.length} products exported to CSV` });
+    } catch (err) {
+      console.error('Error exporting:', err);
+      toast({ title: 'Error', description: 'Failed to export products', variant: 'destructive' });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   // Create new product
   const createNewProduct = () => {
     setSelectedProduct({
