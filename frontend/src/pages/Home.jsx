@@ -81,8 +81,8 @@ const Home = () => {
     window.dispatchEvent(new CustomEvent('openMiraAI'));
   };
 
-  // If logged in with pets, redirect to member dashboard
-  if (user && userPets.length > 0 && !loadingPets) {
+  // If logged in, ALWAYS redirect to member dashboard
+  if (user) {
     return <Navigate to="/dashboard" replace />;
   }
 
