@@ -55,7 +55,9 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
     : 0;
 
   const handleClick = () => {
-    navigate(`/product/${product.id}`);
+    // Use shopify_handle for cleaner URLs, fallback to id
+    const slug = product.shopify_handle || product.handle || product.id;
+    navigate(`/product/${slug}`);
   };
 
   if (viewMode === 'list') {
