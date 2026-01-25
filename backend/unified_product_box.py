@@ -870,7 +870,7 @@ async def auto_seed_pillars():
             "success": False,
             "message": "No products found in products_unified collection",
             "debug": {
-                "db_name": db.name if db else "None",
+                "db_name": db.name if db is not None else "None",
                 "collection_name": "products_unified"
             }
         }
