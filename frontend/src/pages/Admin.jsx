@@ -2514,33 +2514,7 @@ const Admin = () => {
 
         {/* Shop Tab */}
         {activeTab === 'shop' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                  🛒 Shop Pillar Management
-                </h2>
-                <p className="text-gray-600">Manage products, inventory, and shop settings</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab('products')}>
-                <Package className="w-10 h-10 text-purple-600 mb-3" />
-                <h3 className="font-semibold">Product Manager</h3>
-                <p className="text-sm text-gray-500">Manage Celebrate/Cake products</p>
-              </Card>
-              <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab('product-box')}>
-                <ShoppingBag className="w-10 h-10 text-orange-600 mb-3" />
-                <h3 className="font-semibold">Unified Product Box</h3>
-                <p className="text-sm text-gray-500">All pillars product management</p>
-              </Card>
-              <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab('collections')}>
-                <Layers className="w-10 h-10 text-blue-600 mb-3" />
-                <h3 className="font-semibold">Collections</h3>
-                <p className="text-sm text-gray-500">Curated product collections</p>
-              </Card>
-            </div>
-          </div>
+          <ShopManager getAuthHeader={getAuthHeaders} />
         )}
 
         {/* Service Desk Tab - Redirect to Full Screen Page */}
