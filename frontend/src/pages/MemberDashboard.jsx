@@ -649,7 +649,13 @@ const MemberDashboard = () => {
                   <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
                     <PawPrint className="w-6 h-6" />
                   </div>
-                  <Button variant="outline" size="sm" className="h-8" onClick={() => window.location.href='/my-pets'}>
+                  <Button variant="outline" size="sm" className="h-8" onClick={() => {
+                    if (pets.length > 0) {
+                      navigate(`/pet/${pets[0].id}?tab=personality`);
+                    } else {
+                      navigate('/my-pets');
+                    }
+                  }}>
                     Manage
                   </Button>
                 </div>
