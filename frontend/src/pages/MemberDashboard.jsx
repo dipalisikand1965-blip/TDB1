@@ -517,6 +517,50 @@ const MemberDashboard = () => {
         setAutoships(autoshipRes.data.subscriptions || []);
         setReviews(reviewsRes.data.reviews || []);
         
+        // Check for achievement unlocks and trigger celebrations
+        const loadedPets = petsRes.data.pets || [];
+        if (loadedPets.length > 0) {
+          const primaryPet = loadedPets[0];
+          const score = primaryPet.overall_score || 0;
+          
+          // Check localStorage for previously celebrated milestones
+          const celebratedKey = `celebrated_milestones_${primaryPet.id}`;
+          const celebrated = JSON.parse(localStorage.getItem(celebratedKey) || '[]');
+          
+          const milestones = [
+            { threshold: 25, name: 'Soul Seeker', icon: '🔍' },
+            { threshold: 50, name: 'Soul Explorer', icon: '🧭' },
+            { threshold: 75, name: 'Soul Guardian', icon: '🛡️' },
+            { threshold: 100, name: 'Soul Master', icon: '👑' }
+          ];
+          
+          // Find newly unlocked milestones
+          const newMilestones = milestones.filter(m => 
+            score >= m.threshold && !celebrated.includes(m.threshold)
+          );
+          
+          // Celebrate new milestones!
+          if (newMilestones.length > 0) {
+            const highest = newMilestones[newMilestones.length - 1];
+            
+            // Delay celebration slightly for visual impact
+            setTimeout(() => {
+              triggerCelebration(highest.threshold === 100 ? 'heavy' : 'medium');
+              toast({
+                title: `🎉 Achievement Unlocked!`,
+                description: `${highest.icon} ${highest.name} - ${primaryPet.name} has reached ${highest.threshold}% Soul completion!`,
+                duration: 6000
+              });
+            }, 1000);
+            
+            // Save celebrated milestones
+            localStorage.setItem(celebratedKey, JSON.stringify([
+              ...celebrated,
+              ...newMilestones.map(m => m.threshold)
+            ]));
+          }
+        }
+        
         // Extract products from orders that user can review
         const productIds = new Set((reviewsRes.data.reviews || []).map(r => r.product_id));
         const reviewableProds = [];
