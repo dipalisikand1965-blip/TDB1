@@ -121,7 +121,7 @@ const Home = () => {
 
           {/* Single Clear CTA */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/pet-soul">
+            <Link to="/membership">
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-10 py-7 text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105"

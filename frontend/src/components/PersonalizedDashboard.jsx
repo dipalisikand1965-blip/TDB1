@@ -245,7 +245,7 @@ const PersonalizedDashboard = ({ user, pets = [], onOpenMira }) => {
               <Sparkles className="w-4 h-4 mr-2" />
               Ask Mira about {petName}
             </Button>
-            <Link to={`/pet-soul/${selectedPet?.id}`}>
+            <Link to={`/pet/${selectedPet?.id}`}>
               <Button variant="ghost" className="text-white hover:bg-white/20">
                 <Heart className="w-4 h-4 mr-2" />
                 View {petName}&apos;s Profile

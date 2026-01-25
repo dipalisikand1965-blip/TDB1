@@ -2369,7 +2369,7 @@ const MemberDashboard = () => {
                     <Button 
                       size="sm" 
                       className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white"
-                      onClick={() => window.location.href=`/pet-soul/${pet.id}`}
+                      onClick={() => window.location.href=`/pet/${pet.id}`}
                     >
                       <Sparkles className="w-4 h-4 mr-1" /> Pet Soul
                     </Button>

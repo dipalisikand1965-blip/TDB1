@@ -35,7 +35,7 @@ const PetSoulScore = ({ score, isLoggedIn, pet, className = '' }) => {
     // Simple button for non-logged-in users
     return (
       <Link
-        to="/pet-soul"
+        to="/membership"
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium 
           bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:opacity-90 transition-all
           ${className}`}
