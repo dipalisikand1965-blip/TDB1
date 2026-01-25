@@ -260,7 +260,7 @@ const GamificationBanner = ({ pets, orders, user, onNavigateToPet }) => {
               
               <div>
                 <h3 className="text-xl font-bold flex items-center gap-2">
-                  {primaryPet.name}'s Soul Journey
+                  {primaryPet.name}&apos;s Soul Journey
                   {soulScore >= 100 && <span className="text-yellow-400">👑</span>}
                 </h3>
                 <p className="text-white/70 text-sm">
