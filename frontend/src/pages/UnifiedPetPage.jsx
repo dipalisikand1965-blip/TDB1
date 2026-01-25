@@ -419,13 +419,19 @@ const UnifiedPetPage = () => {
         </div>
       </div>
 
-      {/* Pet Profile Header */}
-      <div className="bg-gradient-to-r from-purple-100 to-pink-100 py-8">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
-            {/* Pet Photo */}
+      {/* Pet Profile Header - More Attractive Design */}
+      <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 py-10 relative overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-0 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-pink-400/10 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="max-w-6xl mx-auto px-4 relative">
+          <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+            {/* Pet Photo - Larger and More Prominent */}
             <div className="relative group">
-              <div className="w-32 h-32 rounded-2xl bg-white shadow-lg overflow-hidden border-4 border-white">
+              <div className="w-40 h-40 rounded-3xl bg-white shadow-2xl overflow-hidden border-4 border-white/50 ring-4 ring-white/20">
                 <img src={petPhoto} alt={pet.name} className="w-full h-full object-cover" />
                 {token && (
                   <>
@@ -454,27 +460,36 @@ const UnifiedPetPage = () => {
                 )}
               </div>
               
-              {/* Soul Score Badge */}
-              <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-lg">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold ${
-                  displayScore >= 75 ? 'bg-amber-100 text-amber-700' :
-                  displayScore >= 50 ? 'bg-purple-100 text-purple-700' :
-                  displayScore >= 25 ? 'bg-blue-100 text-blue-700' :
-                  'bg-gray-100 text-gray-700'
+              {/* Soul Score Badge - More Visible */}
+              <div className="absolute -bottom-3 -right-3 bg-white rounded-2xl p-1.5 shadow-xl">
+                <div className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center text-sm font-bold ${
+                  displayScore >= 75 ? 'bg-gradient-to-br from-amber-400 to-orange-500 text-white' :
+                  displayScore >= 50 ? 'bg-gradient-to-br from-purple-500 to-pink-500 text-white' :
+                  displayScore >= 25 ? 'bg-gradient-to-br from-blue-400 to-indigo-500 text-white' :
+                  'bg-gradient-to-br from-gray-400 to-gray-500 text-white'
                 }`}>
-                  {Math.round(displayScore)}%
+                  <span className="text-lg">{Math.round(displayScore)}%</span>
+                  <span className="text-[10px] opacity-80">Soul</span>
                 </div>
               </div>
+              
+              {/* Pet Pass Number Badge - Prominent */}
+              {pet.pet_pass_number && (
+                <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-white/20 backdrop-blur-md text-white text-xs px-4 py-1.5 rounded-full font-mono border border-white/30 shadow-lg">
+                  <CreditCard className="w-3 h-3 inline mr-1.5" />
+                  {pet.pet_pass_number}
+                </div>
+              )}
             </div>
             
-            {/* Pet Info */}
+            {/* Pet Info - Enhanced */}
             <div className="flex-1 text-center md:text-left">
               {editing ? (
-                <div className="space-y-3">
+                <div className="space-y-3 bg-white/10 backdrop-blur-sm p-4 rounded-xl">
                   <Input
                     value={editForm.name}
                     onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                    className="text-2xl font-bold h-12 max-w-xs"
+                    className="text-2xl font-bold h-12 max-w-xs bg-white"
                     placeholder="Pet name"
                   />
                   <div className="flex flex-wrap gap-2">
@@ -482,12 +497,12 @@ const UnifiedPetPage = () => {
                       value={editForm.breed}
                       onChange={(e) => setEditForm({ ...editForm, breed: e.target.value })}
                       placeholder="Breed"
-                      className="w-40"
+                      className="w-40 bg-white"
                     />
                     <select
                       value={editForm.species}
                       onChange={(e) => setEditForm({ ...editForm, species: e.target.value })}
-                      className="h-10 px-3 rounded-md border border-gray-200"
+                      className="h-10 px-3 rounded-md border border-gray-200 bg-white"
                     >
                       <option value="dog">Dog</option>
                       <option value="cat">Cat</option>
@@ -495,7 +510,7 @@ const UnifiedPetPage = () => {
                     <select
                       value={editForm.gender}
                       onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
-                      className="h-10 px-3 rounded-md border border-gray-200"
+                      className="h-10 px-3 rounded-md border border-gray-200 bg-white"
                     >
                       <option value="male">Male</option>
                       <option value="female">Female</option>
@@ -503,51 +518,63 @@ const UnifiedPetPage = () => {
                   </div>
                   <div className="flex gap-2">
                     <div>
-                      <label className="text-xs text-gray-500">Birthday</label>
+                      <label className="text-xs text-white/70">Birthday</label>
                       <Input
                         type="date"
                         value={editForm.birth_date}
                         onChange={(e) => setEditForm({ ...editForm, birth_date: e.target.value })}
+                        className="bg-white"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500">Gotcha Day</label>
+                      <label className="text-xs text-white/70">Gotcha Day</label>
                       <Input
                         type="date"
                         value={editForm.gotcha_date}
                         onChange={(e) => setEditForm({ ...editForm, gotcha_date: e.target.value })}
+                        className="bg-white"
                       />
                     </div>
                   </div>
-                  <Button onClick={saveEdits} disabled={saving} className="bg-green-600 hover:bg-green-700">
+                  <Button onClick={saveEdits} disabled={saving} className="bg-green-500 hover:bg-green-600 text-white">
                     {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
                     Save Changes
                   </Button>
                 </div>
               ) : (
                 <>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-1">{pet.name}</h1>
-                  <p className="text-gray-600 mb-3">
+                  <h1 className="text-4xl font-bold text-white mb-2">{pet.name}</h1>
+                  <p className="text-white/80 text-lg mb-4">
                     {pet.breed || 'Adorable Furball'} • {pet.species === 'cat' ? '🐱 Cat' : '🐕 Dog'} • {pet.gender === 'male' ? '♂️ Male' : '♀️ Female'}
                   </p>
                   
-                  <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                  <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-4">
                     {pet.birth_date && (
-                      <Badge variant="outline" className="bg-white">
-                        🎂 {pet.birth_date}
+                      <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                        🎂 Birthday: {new Date(pet.birth_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </Badge>
                     )}
                     {pet.gotcha_date && (
-                      <Badge variant="outline" className="bg-white">
-                        💝 Gotcha: {pet.gotcha_date}
+                      <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                        💝 Gotcha: {new Date(pet.gotcha_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </Badge>
                     )}
-                    {pet.pet_pass_number && (
-                      <Badge className="bg-purple-100 text-purple-700">
-                        <CreditCard className="w-3 h-3 mr-1" />
-                        {pet.pet_pass_number}
-                      </Badge>
-                    )}
+                  </div>
+                  
+                  {/* Quick Stats */}
+                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 text-center">
+                      <p className="text-2xl font-bold text-white">{Math.round(displayScore)}%</p>
+                      <p className="text-xs text-white/70">Pet Soul™</p>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 text-center">
+                      <p className="text-2xl font-bold text-white">{tier || 'Newcomer'}</p>
+                      <p className="text-xs text-white/70">Current Tier</p>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 text-center">
+                      <p className="text-2xl font-bold text-white">{Object.keys(pet.doggy_soul_answers || {}).length}</p>
+                      <p className="text-xs text-white/70">Questions Answered</p>
+                    </div>
                   </div>
                 </>
               )}
