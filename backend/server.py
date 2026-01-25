@@ -7380,13 +7380,14 @@ async def create_farewell_service_request(request_data: dict, current_user: Opti
     
     # Auto-create a support ticket for the team
     ticket_id = f"TKT-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    package_data = request_data.get('package') or {}
     ticket = {
         "id": ticket_id,
         "category": "farewell",
         "subcategory": request_data.get("urgency", "planned"),
         "priority": "urgent" if request_data.get("urgency") == "emergency" else "high",
         "subject": f"Farewell Service Request - {request_data.get('pet_name', 'Pet')}",
-        "description": f"Service: {request_data.get('package', {}).get('name', 'Memorial Service')}\nUrgency: {request_data.get('urgency', 'planned')}\nSpecial Requests: {request_data.get('special_requests', 'None')}",
+        "description": f"Service: {package_data.get('name', 'Memorial Service')}\nUrgency: {request_data.get('urgency', 'planned')}\nSpecial Requests: {request_data.get('special_requests', 'None')}",
         "customer_email": user_email,
         "customer_name": user_name,
         "pet_id": request_data.get("pet_id"),
