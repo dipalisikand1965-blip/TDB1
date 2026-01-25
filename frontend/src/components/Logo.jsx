@@ -22,14 +22,6 @@ const Logo = ({
   };
   
   const config = sizeConfig[size] || sizeConfig.md;
-  
-  // Text color variants - matching the logo colors
-  const textColors = {
-    default: '',  // Custom gradient applied below
-    light: 'text-white',
-    dark: '',
-    gradient: ''
-  };
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
@@ -60,6 +52,25 @@ const Logo = ({
         </div>
       )}
     </div>
+  );
+};
+
+// Compact logo - just the icon, no text
+export const LogoCompact = ({ size = 'md', className = '' }) => {
+  const sizeConfig = {
+    xs: 'h-6 w-6',
+    sm: 'h-8 w-8',
+    md: 'h-10 w-10',
+    lg: 'h-12 w-12',
+    xl: 'h-16 w-16'
+  };
+  
+  return (
+    <img 
+      src="/logo-new.png" 
+      alt="The Doggy Company" 
+      className={`${sizeConfig[size] || sizeConfig.md} object-contain ${className}`}
+    />
   );
 };
 
