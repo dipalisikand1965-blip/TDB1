@@ -150,7 +150,7 @@ const RewardsModal = ({ isOpen, onClose, currentProgress, totalPoints }) => {
             <Trophy className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900">Your Paw Rewards 🐾</h2>
-          <p className="text-gray-500 mt-1">Complete Pet Soul to unlock amazing rewards!</p>
+          <p className="text-gray-500 mt-1">Earn points on every purchase!</p>
         </div>
         
         <div className="flex items-center justify-center gap-4 mb-6 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl">
