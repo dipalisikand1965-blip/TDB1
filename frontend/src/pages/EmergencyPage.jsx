@@ -46,6 +46,7 @@ const HERO_IMAGES = [
 
 const EmergencyPage = () => {
   const { user, token } = useAuth();
+  const { addToCart } = useCart();
   
   const [partners, setPartners] = useState([]);
   const [products, setProducts] = useState([]);
