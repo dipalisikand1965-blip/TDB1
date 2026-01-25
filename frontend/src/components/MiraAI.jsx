@@ -49,9 +49,9 @@ const WelcomeCard = ({ user, pets, onLinkClick }) => {
   
   // Quick action links
   const quickLinks = [
+    { label: '🎙️ Voice Order', href: '/voice-order', isExternal: true },
     { label: 'Find Events', query: 'What pet-friendly events are happening?', icon: '🎉' },
     { label: 'Trails & Hikes', query: 'Suggest dog-friendly trails and hikes nearby', icon: '🥾' },
-    { label: 'Meetups', query: 'Are there any dog meetups I can join?', icon: '🐕' }
   ];
   
   return (
