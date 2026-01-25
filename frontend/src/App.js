@@ -17,6 +17,12 @@ function ScrollToTop() {
   return null;
 }
 
+// Redirect component for deprecated pet-soul-journey route
+function PetSoulJourneyRedirect() {
+  const { petId } = useParams();
+  return <Navigate to={`/pet/${petId}`} replace />;
+}
+
 // Components
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
