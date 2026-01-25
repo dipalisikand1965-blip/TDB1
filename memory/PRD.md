@@ -18,6 +18,8 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 **New Features Completed:**
 1. ✅ **Pet Achievements Integration** - AchievementsGrid integrated into UnifiedPetPage overview tab
 2. ✅ **Pet Soul Score Documentation** - Added comprehensive docs to AdminDocs.jsx
+3. ✅ **Confetti Celebrations** - Triggers when achievements unlocked (with toast notifications)
+4. ✅ **CSV Export for Product Box** - Export all products with filters to CSV file
 
 ---
 
