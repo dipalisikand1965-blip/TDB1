@@ -824,22 +824,31 @@ const CarePage = () => {
               </Card>
               
               {/* Actions */}
-              <div className="flex gap-3 pt-2">
-                <Button variant="outline" onClick={() => setWizardStep(2)} className="flex-1">
-                  Back
-                </Button>
-                <Button 
-                  onClick={handleFormSubmit}
-                  disabled={submitting || !formData.description}
-                  className="flex-1 bg-gradient-to-r from-pink-600 to-rose-600"
-                  data-testid="submit-care-request-btn"
-                >
-                  {submitting ? (
-                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
-                  ) : (
-                    <><Send className="w-4 h-4 mr-2" /> Submit Request</>
-                  )}
-                </Button>
+              <div className="space-y-2 pt-2">
+                {/* Validation message */}
+                {!formData.description && (
+                  <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    Please describe your care needs above
+                  </p>
+                )}
+                <div className="flex gap-3">
+                  <Button variant="outline" onClick={() => setWizardStep(2)} className="flex-1">
+                    Back
+                  </Button>
+                  <Button 
+                    onClick={handleFormSubmit}
+                    disabled={submitting || !formData.description}
+                    className="flex-1 bg-gradient-to-r from-pink-600 to-rose-600"
+                    data-testid="submit-care-request-btn"
+                  >
+                    {submitting ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+                    ) : (
+                      <><Send className="w-4 h-4 mr-2" /> Submit Request</>
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
           )}
