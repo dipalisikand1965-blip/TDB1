@@ -337,16 +337,29 @@ const GamificationBanner = ({ pets, orders, user, onNavigateToPet, onOpenExplain
             </div>
           </div>
           
-          {/* CTA Button */}
-          <Button 
-            onClick={() => onNavigateToPet(primaryPet.id)}
-            className="w-full bg-white text-purple-700 hover:bg-white/90 font-semibold py-3 group"
-            data-testid="continue-soul-journey-btn"
-          >
-            <Sparkles className="w-4 h-4 mr-2 group-hover:animate-spin" />
-            {soulScore < 100 ? 'Continue Soul Journey' : 'View Complete Profile'}
-            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          {/* CTA Buttons Row */}
+          <div className="flex gap-3">
+            <Button 
+              onClick={() => onNavigateToPet(primaryPet.id)}
+              className="flex-1 bg-white text-purple-700 hover:bg-white/90 font-semibold py-3 group"
+              data-testid="continue-soul-journey-btn"
+            >
+              <Sparkles className="w-4 h-4 mr-2 group-hover:animate-spin" />
+              {soulScore < 100 ? 'Continue Soul Journey' : 'View Complete Profile'}
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+            
+            {/* What is Pet Soul? Video Button */}
+            <Button
+              onClick={onOpenExplainer}
+              variant="outline"
+              className="bg-white/10 border-white/30 text-white hover:bg-white/20 font-medium"
+              data-testid="soul-explainer-btn"
+            >
+              <span className="mr-1">✨</span>
+              What is Pet Soul?
+            </Button>
+          </div>
         </div>
       </div>
       
