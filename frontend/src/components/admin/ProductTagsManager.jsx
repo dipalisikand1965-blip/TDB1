@@ -342,6 +342,15 @@ const ProductTagsManager = ({ credentials }) => {
         </div>
         <div className="flex gap-2">
           <Button 
+            variant="outline"
+            onClick={exportToCSV}
+            disabled={exporting}
+            className="border-green-300 text-green-700 hover:bg-green-50"
+          >
+            {exporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
+            Export CSV
+          </Button>
+          <Button 
             className="bg-purple-600 hover:bg-purple-700" 
             onClick={() => setShowCreateTagModal(true)}
           >
