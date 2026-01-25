@@ -1260,13 +1260,7 @@ const MemberDashboard = () => {
                     return (
                       <div key={pet.id} className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                            {pet.photo_url ? (
-                              <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover rounded-full" />
-                            ) : (
-                              <PawPrint className="w-5 h-5 text-purple-600" />
-                            )}
-                          </div>
+                          <PetAvatarMini pet={pet} />
                           <div>
                             <p className="font-medium text-gray-900">{pet.name}</p>
                             <p className="text-xs text-gray-500">{birthday.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
