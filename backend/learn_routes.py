@@ -337,13 +337,26 @@ async def get_trainers(
 
 @router.get("/products")
 async def get_learn_products(limit: int = 20):
-    """Get training-related products"""
+    """Get training-related products from unified_products collection"""
     db = get_db()
     
-    products = await db.products.find(
+    # Query unified_products with pillar="learn"
+    products = await db.unified_products.find(
         {"pillar": "learn", "is_active": {"$ne": False}},
         {"_id": 0}
     ).limit(limit).to_list(limit)
+    
+    # Also check legacy products collection
+    if len(products) < limit:
+        legacy = await db.products.find(
+            {"pillar": "learn", "is_active": {"$ne": False}},
+            {"_id": 0}
+        ).limit(limit - len(products)).to_list(limit - len(products))
+        
+        seen_ids = {p.get("id") for p in products}
+        for p in legacy:
+            if p.get("id") not in seen_ids:
+                products.append(p)
     
     # If no products, return sample products
     if not products:
