@@ -326,19 +326,15 @@ const ShopPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white py-12 px-4">
+      <section className="bg-teal-600 text-white py-10 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-4">
-                <ShoppingBag className="w-5 h-5" />
-                <span className="font-medium">Pet Shop</span>
-              </div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                Everything Your Pet Needs 🛒
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">
+                Pet Shop
               </h1>
-              <p className="text-white/80 max-w-lg">
-                Premium products handpicked for your furry family members. 
+              <p className="text-teal-100 max-w-lg">
+                Premium products handpicked for your furry family members.
                 {pets.length > 0 && ` Personalised for ${pets[0].name}!`}
               </p>
             </div>
@@ -351,29 +347,9 @@ const ShopPage = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search products..."
-                  className="pl-10 py-3 bg-white text-gray-900"
+                  className="pl-10 py-3 bg-white text-gray-900 border-0"
                 />
               </div>
-            </div>
-          </div>
-          
-          {/* Trust Badges */}
-          <div className="flex flex-wrap justify-center gap-6 mt-8 text-sm">
-            <div className="flex items-center gap-2">
-              <Truck className="w-5 h-5" />
-              <span>Free Delivery over ₹500</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5" />
-              <span>100% Authentic</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5" />
-              <span>Same Day Dispatch</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Gift className="w-5 h-5" />
-              <span>Member Rewards</span>
             </div>
           </div>
         </div>
