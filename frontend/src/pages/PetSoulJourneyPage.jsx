@@ -658,52 +658,204 @@ const PetSoulJourneyPage = () => {
                   {currentFlowQuestion.label.replace(/_/g, ' ')}
                 </h3>
                 
-                {/* Options - Beautiful grid layout */}
-                <div className="grid gap-3">
-                  {(QUESTION_OPTIONS[currentFlowQuestion.id] || ['Yes', 'No', 'Sometimes']).map((option, idx) => (
-                    <button
-                      key={option}
-                      className={`
-                        relative flex items-center justify-between w-full p-4 rounded-xl border-2 transition-all duration-200
-                        ${pet?.doggy_soul_answers?.[currentFlowQuestion.id] === option 
-                          ? 'border-purple-500 bg-purple-50 shadow-md shadow-purple-100' 
-                          : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50/50'
+                {/* Smart Input based on question type */}
+                {/* TEXT INPUT */}
+                {QUESTION_TYPES[currentFlowQuestion.id] === 'text' && (
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg"
+                      placeholder={`Enter ${currentFlowQuestion.label.replace(/_/g, ' ').toLowerCase()}`}
+                      defaultValue={pet?.doggy_soul_answers?.[currentFlowQuestion.id] || pet?.[currentFlowQuestion.id] || ''}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.target.value) {
+                          handleSaveAnswer(currentFlowQuestion.id, e.target.value, true);
                         }
-                        ${savingAnswer ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                      `}
+                      }}
+                      id="flow-text-input"
+                    />
+                    <Button
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3"
                       disabled={savingAnswer}
-                      onClick={() => handleSaveAnswer(currentFlowQuestion.id, option, true)}
+                      onClick={() => {
+                        const input = document.getElementById('flow-text-input');
+                        if (input?.value) {
+                          handleSaveAnswer(currentFlowQuestion.id, input.value, true);
+                        }
+                      }}
                     >
-                      <span className="flex items-center gap-3">
-                        <span className={`
-                          w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+                      {savingAnswer ? 'Saving...' : 'Save & Continue'}
+                    </Button>
+                  </div>
+                )}
+                
+                {/* DATE INPUT */}
+                {QUESTION_TYPES[currentFlowQuestion.id] === 'date' && (
+                  <div className="space-y-3">
+                    <input
+                      type="date"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg"
+                      defaultValue={(() => {
+                        const val = pet?.doggy_soul_answers?.[currentFlowQuestion.id] || pet?.[currentFlowQuestion.id] || pet?.dob || pet?.dateOfBirth;
+                        if (val) {
+                          try { return new Date(val).toISOString().split('T')[0]; } catch { return ''; }
+                        }
+                        return '';
+                      })()}
+                      id="flow-date-input"
+                    />
+                    <Button
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3"
+                      disabled={savingAnswer}
+                      onClick={() => {
+                        const input = document.getElementById('flow-date-input');
+                        if (input?.value) {
+                          handleSaveAnswer(currentFlowQuestion.id, input.value, true);
+                        }
+                      }}
+                    >
+                      {savingAnswer ? 'Saving...' : 'Save & Continue'}
+                    </Button>
+                  </div>
+                )}
+                
+                {/* MULTISELECT */}
+                {QUESTION_TYPES[currentFlowQuestion.id] === 'multiselect' && (
+                  <div className="space-y-3">
+                    <p className="text-sm text-gray-500">Select all that apply:</p>
+                    <div className="grid gap-2 max-h-48 overflow-y-auto">
+                      {(QUESTION_OPTIONS[`${currentFlowQuestion.id}_options`] || ['None']).map((option, idx) => {
+                        const currentValues = Array.isArray(pet?.doggy_soul_answers?.[currentFlowQuestion.id])
+                          ? pet.doggy_soul_answers[currentFlowQuestion.id]
+                          : [];
+                        const isSelected = currentValues.includes(option);
+                        
+                        return (
+                          <button
+                            key={option}
+                            className={`
+                              flex items-center gap-3 w-full p-3 rounded-xl border-2 transition-all
+                              ${isSelected ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-300'}
+                              ${savingAnswer ? 'opacity-50' : ''}
+                            `}
+                            disabled={savingAnswer}
+                            onClick={() => {
+                              let newValues;
+                              if (option === 'None') {
+                                newValues = ['None'];
+                              } else if (isSelected) {
+                                newValues = currentValues.filter(v => v !== option);
+                              } else {
+                                newValues = [...currentValues.filter(v => v !== 'None'), option];
+                              }
+                              // Don't auto-advance for multiselect
+                              handleSaveAnswer(currentFlowQuestion.id, newValues.length > 0 ? newValues : ['None'], false);
+                            }}
+                          >
+                            <span className={`w-6 h-6 rounded flex items-center justify-center ${isSelected ? 'bg-purple-500 text-white' : 'bg-gray-100'}`}>
+                              {isSelected ? <Check className="w-4 h-4" /> : ''}
+                            </span>
+                            <span className="text-sm font-medium text-gray-700">{option}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <Button
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 mt-3"
+                      disabled={savingAnswer}
+                      onClick={() => {
+                        // Move to next question
+                        const nextIndex = findNextUnansweredIndex(currentQuestionIndex + 1, pet?.doggy_soul_answers);
+                        if (nextIndex !== -1) {
+                          setCurrentQuestionIndex(nextIndex);
+                        } else {
+                          setFlowMode(false);
+                        }
+                      }}
+                    >
+                      Continue
+                    </Button>
+                  </div>
+                )}
+                
+                {/* SINGLE SELECT OPTIONS - for questions with predefined options */}
+                {!QUESTION_TYPES[currentFlowQuestion.id] && QUESTION_OPTIONS[currentFlowQuestion.id] && (
+                  <div className="grid gap-3">
+                    {QUESTION_OPTIONS[currentFlowQuestion.id].map((option, idx) => (
+                      <button
+                        key={option}
+                        className={`
+                          relative flex items-center justify-between w-full p-4 rounded-xl border-2 transition-all duration-200
                           ${pet?.doggy_soul_answers?.[currentFlowQuestion.id] === option 
-                            ? 'bg-purple-500 text-white' 
-                            : 'bg-gray-100 text-gray-600'
+                            ? 'border-purple-500 bg-purple-50 shadow-md shadow-purple-100' 
+                            : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50/50'
                           }
-                        `}>
-                          {pet?.doggy_soul_answers?.[currentFlowQuestion.id] === option 
-                            ? <Check className="w-4 h-4" />
-                            : String.fromCharCode(65 + idx)
-                          }
+                          ${savingAnswer ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                        `}
+                        disabled={savingAnswer}
+                        onClick={() => handleSaveAnswer(currentFlowQuestion.id, option, true)}
+                      >
+                        <span className="flex items-center gap-3">
+                          <span className={`
+                            w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+                            ${pet?.doggy_soul_answers?.[currentFlowQuestion.id] === option 
+                              ? 'bg-purple-500 text-white' 
+                              : 'bg-gray-100 text-gray-600'
+                            }
+                          `}>
+                            {pet?.doggy_soul_answers?.[currentFlowQuestion.id] === option 
+                              ? <Check className="w-4 h-4" />
+                              : String.fromCharCode(65 + idx)
+                            }
+                          </span>
+                          <span className={`text-sm font-medium ${
+                            pet?.doggy_soul_answers?.[currentFlowQuestion.id] === option 
+                              ? 'text-purple-700' 
+                              : 'text-gray-700'
+                          }`}>
+                            {option}
+                          </span>
                         </span>
-                        <span className={`text-sm font-medium ${
-                          pet?.doggy_soul_answers?.[currentFlowQuestion.id] === option 
-                            ? 'text-purple-700' 
-                            : 'text-gray-700'
-                        }`}>
-                          {option}
-                        </span>
-                      </span>
-                      
-                      {savingAnswer && pet?.doggy_soul_answers?.[currentFlowQuestion.id] !== option && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-white/50 rounded-xl">
-                          <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
+                        
+                        {savingAnswer && pet?.doggy_soul_answers?.[currentFlowQuestion.id] !== option && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-white/50 rounded-xl">
+                            <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                
+                {/* FALLBACK TEXT INPUT - for questions with no predefined options */}
+                {!QUESTION_TYPES[currentFlowQuestion.id] && !QUESTION_OPTIONS[currentFlowQuestion.id] && (
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg"
+                      placeholder={`Enter ${currentFlowQuestion.label.replace(/_/g, ' ').toLowerCase()}`}
+                      defaultValue={pet?.doggy_soul_answers?.[currentFlowQuestion.id] || ''}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.target.value) {
+                          handleSaveAnswer(currentFlowQuestion.id, e.target.value, true);
+                        }
+                      }}
+                      id="flow-fallback-input"
+                    />
+                    <Button
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3"
+                      disabled={savingAnswer}
+                      onClick={() => {
+                        const input = document.getElementById('flow-fallback-input');
+                        if (input?.value) {
+                          handleSaveAnswer(currentFlowQuestion.id, input.value, true);
+                        }
+                      }}
+                    >
+                      {savingAnswer ? 'Saving...' : 'Save & Continue'}
+                    </Button>
+                  </div>
+                )}
               </div>
               
               {/* Navigation */}
