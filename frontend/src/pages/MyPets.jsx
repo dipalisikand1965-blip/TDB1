@@ -558,7 +558,17 @@ const MyPets = () => {
                       {/* Pet Photo - Uses utility for consistent photos */}
                       <div className="relative flex-shrink-0 group">
                         <div className="w-32 h-32 rounded-2xl bg-white shadow-sm overflow-hidden border-4 border-white relative">
-                          <img src={petPhoto} alt={pet.name} className="w-full h-full object-cover" />
+                          <img 
+                            src={petPhoto} 
+                            alt={pet.name} 
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              console.log('Pet photo failed to load:', petPhoto, 'for pet:', pet.name);
+                              // Fall back to breed stock photo
+                              const { photoUrl } = resolvePetAvatar({ ...pet, photo_url: null });
+                              e.target.src = photoUrl;
+                            }}
+                          />
                           {/* Photo upload overlay */}
                           <input
                             type="file"
