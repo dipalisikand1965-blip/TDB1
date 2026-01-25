@@ -7344,16 +7344,23 @@ async def lookup_pet_by_pass_number(pet_pass_number: str):
 # ==================== FAREWELL SERVICES ====================
 
 @api_router.post("/farewell/service-request")
-async def create_farewell_service_request(request_data: dict, current_user: dict = Depends(get_current_user)):
-    """Create a farewell/memorial service request"""
+async def create_farewell_service_request(request_data: dict, current_user: Optional[dict] = Depends(get_current_user_optional)):
+    """Create a farewell/memorial service request - works for both logged in and guest users"""
     request_id = f"farewell-{uuid.uuid4().hex[:8]}"
+    
+    # Get user info from logged in user or from request data (guest)
+    user_id = current_user.get("id") if current_user else None
+    user_email = current_user.get("email") if current_user else request_data.get("email")
+    user_name = current_user.get("name") if current_user else request_data.get("user_name", "")
     
     farewell_request = {
         "id": request_id,
-        "user_id": current_user.get("id"),
-        "user_email": current_user.get("email"),
+        "user_id": user_id,
+        "user_email": user_email,
         "pet_id": request_data.get("pet_id"),
         "pet_name": request_data.get("pet_name"),
+        "pet_breed": request_data.get("pet_breed"),
+        "pet_age": request_data.get("pet_age"),
         "package_id": request_data.get("package_id"),
         "package": request_data.get("package"),
         "service_type": request_data.get("service_type", "memorial"),
@@ -7363,7 +7370,7 @@ async def create_farewell_service_request(request_data: dict, current_user: dict
         "address": request_data.get("address"),
         "city": request_data.get("city"),
         "phone": request_data.get("phone"),
-        "email": request_data.get("email"),
+        "email": request_data.get("email") or user_email,
         "special_requests": request_data.get("special_requests"),
         "status": "pending",
         "created_at": datetime.now(timezone.utc).isoformat()
@@ -7380,8 +7387,8 @@ async def create_farewell_service_request(request_data: dict, current_user: dict
         "priority": "urgent" if request_data.get("urgency") == "emergency" else "high",
         "subject": f"Farewell Service Request - {request_data.get('pet_name', 'Pet')}",
         "description": f"Service: {request_data.get('package', {}).get('name', 'Memorial Service')}\nUrgency: {request_data.get('urgency', 'planned')}\nSpecial Requests: {request_data.get('special_requests', 'None')}",
-        "customer_email": current_user.get("email"),
-        "customer_name": current_user.get("name"),
+        "customer_email": user_email,
+        "customer_name": user_name,
         "pet_id": request_data.get("pet_id"),
         "pet_name": request_data.get("pet_name"),
         "status": "open",
