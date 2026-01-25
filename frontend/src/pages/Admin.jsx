@@ -4206,11 +4206,7 @@ const Admin = () => {
             <div className="p-4 border-b bg-gradient-to-r from-red-50 to-pink-50 flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                  {selectedPetForHealth.photo_url ? (
-                    <img src={selectedPetForHealth.photo_url} alt={selectedPetForHealth.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <PawPrint className="w-6 h-6 text-red-300" />
-                  )}
+                  <img src={getPetPhotoUrl(selectedPetForHealth)} alt={selectedPetForHealth.name} className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
