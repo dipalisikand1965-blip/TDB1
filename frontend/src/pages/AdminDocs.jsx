@@ -49,6 +49,7 @@ const AdminDocs = () => {
         { id: 'fulfilment', title: 'Fulfilment', icon: Package },
         { id: 'command-center', title: 'Command Center ⭐', icon: Command },
         { id: 'product-box', title: 'Unified Product Box 🆕', icon: Package },
+        { id: 'pet-soul-score', title: 'Pet Soul Score 🆕', icon: PawPrint },
         { id: 'member-directory', title: 'Pet Parent Directory', icon: Users },
         { id: 'membership', title: 'Membership', icon: Crown },
         { id: 'customers', title: 'Customers', icon: Users2 },
