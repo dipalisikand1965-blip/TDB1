@@ -339,9 +339,24 @@ const UnifiedProductBox = () => {
           </h2>
           <p className="text-gray-500 text-sm">Single source of truth for all products, rewards & experiences</p>
         </div>
-        <Button onClick={createNewProduct} className="bg-purple-600 hover:bg-purple-700">
-          <Plus className="w-4 h-4 mr-2" /> Add Product
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            onClick={exportToCSV} 
+            variant="outline" 
+            disabled={exporting}
+            className="border-green-300 text-green-700 hover:bg-green-50"
+          >
+            {exporting ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4 mr-2" />
+            )}
+            Export CSV
+          </Button>
+          <Button onClick={createNewProduct} className="bg-purple-600 hover:bg-purple-700">
+            <Plus className="w-4 h-4 mr-2" /> Add Product
+          </Button>
+        </div>
       </div>
 
       {/* Stats Overview */}
