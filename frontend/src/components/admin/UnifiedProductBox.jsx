@@ -384,6 +384,19 @@ const UnifiedProductBox = () => {
         </div>
         <div className="flex items-center gap-2">
           <Button 
+            onClick={seedAll} 
+            variant="outline" 
+            disabled={seeding}
+            className="border-amber-300 text-amber-700 hover:bg-amber-50"
+          >
+            {seeding ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Sparkles className="w-4 h-4 mr-2" />
+            )}
+            Seed All
+          </Button>
+          <Button 
             onClick={exportToCSV} 
             variant="outline" 
             disabled={exporting}
