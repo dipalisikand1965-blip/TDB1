@@ -94,6 +94,86 @@ const UnifiedPetPage = () => {
   const [savingAnswer, setSavingAnswer] = useState(null);
   const [previousAchievements, setPreviousAchievements] = useState([]);
   const [expandedPillar, setExpandedPillar] = useState(null);
+  const [editingQuestion, setEditingQuestion] = useState(null);
+  const [editValue, setEditValue] = useState('');
+  
+  // Quick answer options for common questions
+  const QUICK_OPTIONS = {
+    gender: ['Male', 'Female'],
+    general_nature: ['Calm', 'Energetic', 'Curious', 'Playful', 'Shy', 'Friendly'],
+    stranger_reaction: ['Friendly', 'Cautious', 'Excited', 'Shy', 'Protective', 'Indifferent'],
+    handling_comfort: ['Very Comfortable', 'Comfortable', 'Tolerates', 'Uncomfortable', 'Hates It'],
+    loud_sounds: ['Not Bothered', 'Slightly Nervous', 'Very Scared', 'Hides', 'Barks/Reacts'],
+    behavior_with_dogs: ['Friendly', 'Playful', 'Cautious', 'Aggressive', 'Ignores Them', 'Submissive'],
+    behavior_with_humans: ['Very Friendly', 'Friendly', 'Shy Initially', 'Cautious', 'Protective'],
+    other_pets: ['Yes - Dogs', 'Yes - Cats', 'Yes - Other', 'No Other Pets'],
+    kids_at_home: ['Yes - Toddlers', 'Yes - Children', 'Yes - Teenagers', 'No Children'],
+    walks_per_day: ['1 Walk', '2 Walks', '3+ Walks', 'No Regular Walks'],
+    energetic_time: ['Morning', 'Afternoon', 'Evening', 'Night', 'All Day'],
+    sleep_schedule: ['Early Riser', 'Night Owl', 'Regular Schedule', 'Naps Throughout'],
+    separation_anxiety: ['None', 'Mild', 'Moderate', 'Severe'],
+    alone_comfort: ['Very Comfortable', 'Okay for Few Hours', 'Gets Anxious', 'Cannot Be Left Alone'],
+    space_preference: ['Quiet Spaces', 'Busy/Active Areas', 'No Preference'],
+    sleeping_spot: ['Own Bed', 'Human Bed', 'Couch', 'Floor', 'Crate', 'Anywhere'],
+    crate_trained: ['Yes - Loves It', 'Yes - Tolerates', 'In Progress', 'No'],
+    allowed_on_furniture: ['Yes - Everywhere', 'Some Furniture', 'No'],
+    outdoor_access: ['Yes - Garden', 'Yes - Balcony', 'No Outdoor Access'],
+    car_rides: ['Loves It', 'Tolerates', 'Gets Anxious', 'Gets Sick'],
+    travel_style: ['Car', 'Flight', 'Train', 'Any Mode', 'Prefers Not to Travel'],
+    hotel_experience: ['Yes - Loved It', 'Yes - Was Okay', 'Yes - Didn\'t Like', 'No Experience'],
+    motion_sickness: ['Never', 'Sometimes', 'Often', 'Always'],
+    flight_experience: ['Yes - Cabin', 'Yes - Cargo', 'No Experience'],
+    travel_anxiety: ['None', 'Mild', 'Moderate', 'Severe'],
+    diet_type: ['Dry Kibble', 'Wet Food', 'Raw Diet', 'Home Cooked', 'Mixed'],
+    sensitive_stomach: ['No Issues', 'Mild Sensitivity', 'Very Sensitive'],
+    prefers_grain_free: ['Yes', 'No', 'Not Sure'],
+    training_level: ['Beginner', 'Basic Commands', 'Well Trained', 'Advanced', 'Professional'],
+    leash_behavior: ['Perfect', 'Good', 'Pulls Sometimes', 'Pulls A Lot', 'Needs Work'],
+    recall: ['Excellent', 'Good', 'Hit or Miss', 'Poor', 'None'],
+    vaccination_status: ['Fully Vaccinated', 'Partially', 'Overdue', 'Not Vaccinated'],
+    spayed_neutered: ['Yes', 'No', 'Planned'],
+    insurance: ['Yes - Full Cover', 'Yes - Basic', 'No Insurance']
+  };
+  
+  // Save inline answer
+  const saveInlineAnswer = async (questionId, value) => {
+    if (!value || value === '') return;
+    
+    setSavingAnswer(questionId);
+    try {
+      const response = await fetch(`${API_URL}/api/pets/${pet.id}/soul-answers`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ [questionId]: value })
+      });
+      
+      if (response.ok) {
+        // Update local pet data
+        setPet(prev => ({
+          ...prev,
+          doggy_soul_answers: {
+            ...prev.doggy_soul_answers,
+            [questionId]: value
+          }
+        }));
+        toast({ title: 'Saved!', description: 'Answer updated successfully' });
+        setEditingQuestion(null);
+        setEditValue('');
+        // Refresh score
+        refreshScore();
+      } else {
+        throw new Error('Failed to save');
+      }
+    } catch (error) {
+      console.error('Error saving answer:', error);
+      toast({ title: 'Error', description: 'Failed to save answer', variant: 'destructive' });
+    } finally {
+      setSavingAnswer(null);
+    }
+  };
   
   // Compute unlocked achievements based on score state and pet data
   const computeUnlockedAchievements = () => {
