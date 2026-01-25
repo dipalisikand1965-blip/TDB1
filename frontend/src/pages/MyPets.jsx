@@ -551,7 +551,16 @@ const MyPets = () => {
                   const petPhoto = getPetPhotoUrl(pet);
                   
                   return (
-                <Card key={pet.id} id={`pet-card-${pet.id}`} className="overflow-hidden hover:shadow-lg transition-all">
+                <Card 
+                  key={pet.id} 
+                  id={`pet-card-${pet.id}`} 
+                  className="overflow-hidden hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-300"
+                  onClick={(e) => {
+                    // Don't navigate if clicking on buttons, inputs, or edit mode
+                    if (e.target.closest('button') || e.target.closest('input') || isEditing) return;
+                    navigate(`/pet/${pet.id}?tab=personality`);
+                  }}
+                >
                   {/* Pet Header with Photo and Basic Info */}
                   <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50">
                     <div className="flex flex-col md:flex-row gap-6">
