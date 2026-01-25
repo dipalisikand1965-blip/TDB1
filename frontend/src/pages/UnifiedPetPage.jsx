@@ -68,6 +68,7 @@ const UnifiedPetPage = () => {
   const [error, setError] = useState(null);
   const [allPets, setAllPets] = useState([]); // For pet switcher
   const [showPetSwitcher, setShowPetSwitcher] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false); // Social share modal
   
   // Use server-side Pet Score API (single source of truth)
   const { 
