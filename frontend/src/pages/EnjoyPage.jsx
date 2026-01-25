@@ -158,26 +158,44 @@ const EnjoyPage = () => {
   };
 
   const submitRsvp = async () => {
-    if (!selectedPet || !selectedExperience) return;
+    // Check for pet info (either from profile or guest entry)
+    const hasPetInfo = selectedPet || rsvpForm.guest_pet_name;
+    if (!hasPetInfo || !selectedExperience) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter your pet's details",
+        variant: "destructive"
+      });
+      return;
+    }
     
     setSubmitting(true);
     try {
+      const petData = selectedPet ? {
+        pet_id: selectedPet.id,
+        pet_name: selectedPet.name,
+        pet_breed: selectedPet.breed,
+        pet_size: selectedPet.size,
+      } : {
+        pet_id: null,
+        pet_name: rsvpForm.guest_pet_name,
+        pet_breed: rsvpForm.guest_pet_breed || '',
+        pet_size: '',
+      };
+
       const response = await fetch(`${API_URL}/api/enjoy/rsvp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify({
           experience_id: selectedExperience.id,
-          pet_id: selectedPet.id,
-          pet_name: selectedPet.name,
-          pet_breed: selectedPet.breed,
-          pet_size: selectedPet.size,
+          ...petData,
           ...rsvpForm,
-          user_name: user?.name,
-          user_email: user?.email,
-          user_phone: user?.phone
+          user_name: user?.name || rsvpForm.guest_name || '',
+          user_email: user?.email || rsvpForm.guest_email || '',
+          user_phone: user?.phone || rsvpForm.guest_phone || ''
         })
       });
 
