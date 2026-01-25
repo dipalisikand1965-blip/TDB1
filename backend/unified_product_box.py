@@ -43,11 +43,11 @@ PRODUCT_TYPES = ["physical", "service", "experience", "reward"]
 
 PRODUCT_STATUS = ["draft", "active", "archived"]
 
-# All 14+ pillars
+# All 14 pillars - THE CANONICAL LIST
 ALL_PILLARS = [
-    "feed", "celebrate", "dine", "stay", "travel", "care",
-    "groom", "play", "train", "insure", "adopt", "farewell",
-    "shop", "community", "emergency", "concierge"
+    "celebrate", "dine", "stay", "travel", "care",
+    "enjoy", "fit", "learn", "paperwork", "advisory",
+    "emergency", "farewell", "adopt", "shop"
 ]
 
 LIFE_STAGES = ["puppy", "adult", "senior", "all"]

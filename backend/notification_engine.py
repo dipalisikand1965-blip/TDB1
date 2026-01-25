@@ -53,7 +53,7 @@ NotificationChannel = Literal["email", "whatsapp", "sms", "push"]
 NotificationPriority = Literal["low", "normal", "high", "urgent"]
 NotificationStatus = Literal["pending", "sent", "failed", "skipped"]
 
-PILLAR_TYPES = ["celebrate", "dine", "stay", "travel", "care", "shop", "general"]
+PILLAR_TYPES = ["celebrate", "dine", "stay", "travel", "care", "enjoy", "fit", "learn", "paperwork", "advisory", "emergency", "farewell", "adopt", "shop", "general"]
 
 class NotificationRecipient(BaseModel):
     """Recipient details"""
