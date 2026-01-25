@@ -420,11 +420,11 @@ async def create_mira_ticket(
         # Member info
         "member": {
             "id": user.get("id") if user else None,
-            "name": user.get("name") if user else "Guest",
+            "name": user.get("name") if user else "Website Visitor",
             "email": user.get("email") if user else None,
             "phone": user.get("phone") if user else None,
-            "membership_tier": user.get("membership_tier") if user else "free"
-        } if user else None,
+            "membership_tier": user.get("membership_tier") if user else "guest"
+        },
         
         # Pet info
         "pet": {
