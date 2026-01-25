@@ -58,6 +58,21 @@ const Navbar = () => {
       }
     };
     fetchPetSoulScore();
+    
+    // Listen for score updates from UnifiedPetPage
+    const handleScoreUpdate = (e) => {
+      if (e.detail?.score !== undefined) {
+        setPetSoulScore(Math.round(e.detail.score));
+      }
+      if (e.detail?.pet) {
+        setPrimaryPet(e.detail.pet);
+      }
+      // Also refetch to ensure we have the latest data
+      fetchPetSoulScore();
+    };
+    
+    window.addEventListener('petSoulScoreUpdated', handleScoreUpdate);
+    return () => window.removeEventListener('petSoulScoreUpdated', handleScoreUpdate);
   }, [user, token]);
 
   // Fetch collections that should appear in navbar
