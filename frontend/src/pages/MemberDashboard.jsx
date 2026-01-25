@@ -1049,14 +1049,14 @@ const MemberDashboard = () => {
                   { id: 'stay', name: 'Stay', icon: '🏨', path: '/stay', color: 'from-blue-400 to-indigo-400' },
                   { id: 'travel', name: 'Travel', icon: '✈️', path: '/travel', color: 'from-cyan-400 to-blue-400' },
                   { id: 'care', name: 'Care', icon: '🩺', path: '/care', color: 'from-emerald-400 to-teal-400' },
-                  { id: 'groom', name: 'Groom', icon: '✂️', path: '/pillar/groom', color: 'from-violet-400 to-purple-400' },
-                  { id: 'play', name: 'Play', icon: '🎾', path: '/pillar/play', color: 'from-green-400 to-emerald-400' },
-                  { id: 'train', name: 'Train', icon: '🎓', path: '/learn', color: 'from-indigo-400 to-purple-400' },
-                  { id: 'insure', name: 'Insure', icon: '🛡️', path: '/advisory', color: 'from-slate-400 to-gray-500' },
-                  { id: 'adopt', name: 'Adopt', icon: '🐕', path: '/pillar/adopt', color: 'from-rose-400 to-pink-400' },
-                  { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/pillar/farewell', color: 'from-purple-400 to-indigo-400' },
-                  { id: 'shop', name: 'Shop', icon: '🛒', path: '/products', color: 'from-teal-400 to-cyan-400' },
-                  { id: 'community', name: 'Community', icon: '👥', path: '/pillar/community', color: 'from-yellow-400 to-amber-400' }
+                  { id: 'fit', name: 'Fit', icon: '🏃', path: '/fit', color: 'from-violet-400 to-purple-400' },
+                  { id: 'enjoy', name: 'Enjoy', icon: '🎾', path: '/enjoy', color: 'from-green-400 to-emerald-400' },
+                  { id: 'learn', name: 'Learn', icon: '🎓', path: '/learn', color: 'from-indigo-400 to-purple-400' },
+                  { id: 'advisory', name: 'Advisory', icon: '🛡️', path: '/advisory', color: 'from-slate-400 to-gray-500' },
+                  { id: 'adopt', name: 'Adopt', icon: '🐕', path: '/adopt', color: 'from-rose-400 to-pink-400' },
+                  { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/farewell', color: 'from-purple-400 to-indigo-400' },
+                  { id: 'shop', name: 'Shop', icon: '🛒', path: '/shop', color: 'from-teal-400 to-cyan-400' },
+                  { id: 'emergency', name: 'Emergency', icon: '🚨', path: '/emergency', color: 'from-red-500 to-rose-500' }
                 ].map((pillar) => (
                   <button
                     key={pillar.id}
