@@ -34,6 +34,7 @@ const CATEGORY_CONFIG = {
 
 const PaperworkPage = () => {
   const { user, token } = useAuth();
+  const { addToCart } = useCart();
   
   const [loading, setLoading] = useState(true);
   const [userPets, setUserPets] = useState([]);
