@@ -12,6 +12,60 @@
 
 import { API_URL } from './api';
 
+// Breed spelling variations and normalization map
+const BREED_VARIATIONS = {
+  'shihtzu': 'shih tzu',
+  'shitzu': 'shih tzu',
+  'shih-tzu': 'shih tzu',
+  'shihzu': 'shih tzu',
+  'goldenretriever': 'golden retriever',
+  'germanshepherd': 'german shepherd',
+  'frenchbulldog': 'french bulldog',
+  'englishbulldog': 'english bulldog',
+  'bordercollie': 'border collie',
+  'cockerspaniel': 'cocker spaniel',
+  'australianshepherd': 'australian shepherd',
+  'yorkshireterrier': 'yorkshire terrier',
+  'jackrussell': 'jack russell',
+  'siberianhusky': 'siberian husky',
+  'cavalierking': 'cavalier king charles',
+  'cavalier king charles spaniel': 'cavalier king charles',
+  'labradorretreiever': 'labrador retriever',
+  'labradorretriever': 'labrador retriever',
+  'greatdane': 'great dane',
+  'bernese mountain': 'bernese mountain dog',
+  'alaskan malamute': 'malamute',
+  'dobermanpinscher': 'doberman pinscher',
+  'indian pariah dog': 'indian pariah',
+  'desi dog': 'desi',
+  'indie dog': 'indie',
+  'pembrokecorgi': 'pembroke welsh corgi',
+  'welsh corgi': 'pembroke welsh corgi',
+  'minischnauzer': 'miniature schnauzer',
+  'mini schnauzer': 'miniature schnauzer',
+  'boston': 'boston terrier',
+  'rottweiller': 'rottweiler',
+  'rotweiler': 'rottweiler',
+  'pomerian': 'pomeranian',
+  'pom': 'pomeranian',
+};
+
+// Function to normalize breed names
+const normalizeBreed = (breed) => {
+  if (!breed) return '';
+  const cleaned = breed.toLowerCase().trim().replace(/\s+/g, ' ');
+  
+  // Check for direct variation match
+  if (BREED_VARIATIONS[cleaned.replace(/\s/g, '')]) {
+    return BREED_VARIATIONS[cleaned.replace(/\s/g, '')];
+  }
+  if (BREED_VARIATIONS[cleaned]) {
+    return BREED_VARIATIONS[cleaned];
+  }
+  
+  return cleaned;
+};
+
 // High-quality breed-specific stock photos from Unsplash
 const BREED_PHOTOS = {
   // Small breeds
