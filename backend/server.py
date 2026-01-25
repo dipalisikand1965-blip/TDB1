@@ -4198,6 +4198,68 @@ async def get_related_products(product_id: str, limit: int = 4, pillar: str = No
     }
 
 
+# ==================== PET SOUL BACKFILL ====================
+
+@api_router.post("/admin/backfill-pet-soul-answers")
+async def backfill_pet_soul_answers(background_tasks: BackgroundTasks, admin: dict = Depends(verify_admin)):
+    """
+    Backfill doggy_soul_answers for existing pets that have basic data but empty soul answers.
+    This ensures onboarding data is reflected in the Pet Soul score.
+    """
+    async def do_backfill():
+        updated_count = 0
+        pets_cursor = db.pets.find({})
+        
+        async for pet in pets_cursor:
+            current_answers = pet.get("doggy_soul_answers", {})
+            new_answers = dict(current_answers)  # Start with existing answers
+            updated = False
+            
+            # Map basic pet fields to soul answer keys (only if not already set)
+            field_mappings = [
+                ("name", "name"),
+                ("breed", "breed"),
+                ("gender", "gender"),
+                ("date_of_birth", "dob"),
+                ("dob", "dob"),
+                ("gotcha_day", "gotcha_date"),
+                ("is_neutered", "spayed_neutered"),
+            ]
+            
+            for pet_field, soul_key in field_mappings:
+                pet_value = pet.get(pet_field)
+                if pet_value and soul_key not in new_answers:
+                    if soul_key == "spayed_neutered":
+                        new_answers[soul_key] = "Yes" if pet_value else "No"
+                    else:
+                        new_answers[soul_key] = pet_value
+                    updated = True
+            
+            # Handle weight specially (combine with unit)
+            if pet.get("weight") and "weight" not in new_answers:
+                weight_unit = pet.get("weight_unit", "kg")
+                new_answers["weight"] = f"{pet['weight']} {weight_unit}"
+                updated = True
+            
+            # Update pet if we added new answers
+            if updated and len(new_answers) > len(current_answers):
+                await db.pets.update_one(
+                    {"id": pet["id"]},
+                    {"$set": {"doggy_soul_answers": new_answers}}
+                )
+                updated_count += 1
+                logger.info(f"Backfilled soul answers for pet {pet.get('name')} ({pet['id']}): {len(new_answers)} total answers")
+        
+        logger.info(f"Pet Soul backfill complete: Updated {updated_count} pets")
+    
+    background_tasks.add_task(do_backfill)
+    
+    return {
+        "success": True,
+        "message": "Pet Soul backfill started in background. Check logs for progress."
+    }
+
+
 # ==================== ADMIN PRODUCT MANAGEMENT ====================
 
 DISPLAY_TAG_OPTIONS = [
