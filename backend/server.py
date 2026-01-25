@@ -8266,6 +8266,7 @@ app.include_router(notification_router)
 app.include_router(channel_router)
 app.include_router(mis_router)
 app.include_router(rewards_router)
+app.include_router(paw_points_router)  # Paw Points Redemption
 app.include_router(travel_router)  # Travel Pillar
 app.include_router(care_router)  # Care Pillar
 app.include_router(enjoy_router)  # Enjoy Pillar
