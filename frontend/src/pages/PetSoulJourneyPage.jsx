@@ -11,61 +11,138 @@ import PetSoulAnswers from '../components/PetSoulAnswers';
 import { useToast } from '../hooks/use-toast';
 import { useAuth } from '../context/AuthContext';
 
+// Question types - determines which input to render
+const QUESTION_TYPES = {
+  // Text inputs (freeform)
+  name: 'text',
+  breed: 'text',
+  age: 'text',
+  weight: 'text',
+  describe_3_words: 'text',
+  vet_name: 'text',
+  food_brand: 'text',
+  special_needs: 'text',
+  dietary_restrictions: 'text',
+  favorite_spot: 'text',
+  sleeping_spot: 'text',
+  
+  // Date inputs
+  dob: 'date',
+  last_vet_visit: 'date',
+  
+  // Multi-select (arrays)
+  food_allergies: 'multiselect',
+  favorite_treats: 'multiselect',
+  dislikes: 'multiselect',
+  commands_known: 'multiselect',
+  problematic_behaviors: 'multiselect',
+  anxiety_triggers: 'multiselect',
+  medical_conditions: 'multiselect',
+  medications: 'multiselect',
+};
+
 // Question options for each question ID
 const QUESTION_OPTIONS = {
-  // Identity & Temperament
+  // ========== Identity & Temperament ==========
   temperament: ['Calm', 'Playful', 'Shy', 'Energetic', 'Protective'],
   energy_level: ['Low', 'Medium', 'High', 'Very High'],
+  general_nature: ['Calm', 'Energetic', 'Mixed - depends on mood'],
+  gender: ['Male', 'Female'],
+  size: ['Small (under 10kg)', 'Medium (10-25kg)', 'Large (25-40kg)', 'Giant (over 40kg)'],
+  stranger_reaction: ['Friendly', 'Cautious', 'Barks', 'Hides', 'Indifferent'],
+  handling_comfort: ['Very comfortable', 'Somewhat comfortable', 'Needs work', 'Does not like'],
+  loud_sounds: ['Not bothered', 'Gets nervous', 'Very scared', 'Panics'],
+  
+  // ========== Family & Pack ==========
   social_with_dogs: ['Loves all dogs', 'Selective', 'Prefers humans', 'Nervous'],
   social_with_people: ['Loves everyone', 'Selective', 'Shy at first', 'Protective'],
-  adaptability: ['Very adaptable', 'Needs routine', 'Depends on situation'],
-  // Family & Pack
+  most_attached_to: ['Me', 'Partner/Spouse', 'Kids', 'Everyone equally', 'Another pet'],
+  behavior_with_dogs: ['Loves all dogs', 'Selective', 'Prefers humans', 'Nervous around dogs'],
+  behavior_with_humans: ['Loves everyone', 'Shy at first', 'Protective', 'Selective'],
+  other_pets: ['Yes, dogs', 'Yes, cats', 'Yes, other animals', 'No other pets'],
+  kids_at_home: ['Yes, under 5', 'Yes, 5-12', 'Yes, teenagers', 'No kids'],
+  primary_caretaker: ['Me', 'Partner', 'Family member', 'Shared responsibility'],
   primary_bond: ['Me', 'Partner/Spouse', 'Kids', 'Everyone equally'],
   with_other_dogs: ['Loves all dogs', 'Only small dogs', 'Only big dogs', 'Selective'],
   with_people: ['Loves everyone', 'Shy at first', 'Protective', 'Selective'],
-  other_pets: ['Yes, dogs', 'Yes, cats', 'Yes, other', 'No other pets'],
-  kids_at_home: ['Yes, under 5', 'Yes, 5-12', 'Yes, teenagers', 'No kids'],
-  primary_caretaker: ['Me', 'Partner', 'Family member', 'Shared'],
-  // Rhythm & Routine
+  
+  // ========== Rhythm & Routine ==========
+  walks_per_day: ['1 walk', '2 walks', '3+ walks', 'Rarely/Indoor only'],
+  energetic_time: ['Morning', 'Afternoon', 'Evening', 'Night', 'All day'],
+  sleep_schedule: ['Sleeps at night', 'Sleeps during day', 'Multiple naps', 'Irregular'],
+  feeding_times: ['Once a day', 'Twice a day', 'Three times', 'Free feeding'],
+  separation_anxiety: ['None', 'Mild', 'Moderate', 'Severe'],
+  alone_comfort: ['Fine alone all day', 'Few hours ok', 'Gets anxious', 'Cannot be left alone'],
+  potty_schedule: ['Regular schedule', 'On demand', 'Uses pee pads', 'Outdoor only'],
   morning_routine: ['Early riser', 'Sleeps in', 'Follows my schedule'],
-  feeding_times: ['Once a day', 'Twice a day', 'Free feeding', 'Three times'],
   exercise_needs: ['30 min/day', '1 hour/day', '2+ hours/day', 'Light walks only'],
   nap_habits: ['Multiple short naps', 'One long nap', 'Rarely naps', 'Sleeps all day'],
   bedtime: ['Before 9pm', '9-11pm', 'After 11pm', 'No set time'],
   weekend_vs_weekday: ['Same routine', 'More active weekends', 'More relaxed weekends'],
   best_time_for_training: ['Morning', 'Afternoon', 'Evening', 'Anytime'],
-  // Home & Comforts
-  favorite_spot: ['Couch', 'Bed', 'Floor', 'Own bed', 'Multiple spots'],
+  
+  // ========== Home & Comforts ==========
+  space_preference: ['Prefers quiet spaces', 'Loves busy areas', 'Adaptable to both'],
+  crate_trained: ['Yes', 'No', 'Working on it'],
+  allowed_on_furniture: ['Yes, everywhere', 'Some furniture', 'No, floor only'],
+  outdoor_access: ['Yes, has garden', 'Balcony only', 'No outdoor access'],
   alone_time_comfort: ['Fine alone', 'Gets anxious', 'Needs company', 'Depends'],
   noise_sensitivity: ['Not sensitive', 'Somewhat sensitive', 'Very sensitive'],
   favorite_toy_type: ['Plush toys', 'Balls', 'Chew toys', 'Puzzle toys', 'No preference'],
   temperature_preference: ['Loves heat', 'Loves cold', 'Moderate'],
   sleep_position: ['Curled up', 'Stretched out', 'On back', 'Changes often'],
-  // Travel & Mobility
+  
+  // ========== Travel & Mobility ==========
+  car_rides: ['Loves them', 'Gets anxious', 'Motion sickness', 'Neutral'],
   car_comfort: ['Loves car rides', 'Gets anxious', 'Motion sickness', 'Neutral'],
+  travel_style: ['Loves traveling', 'Tolerates it', 'Prefers staying home'],
+  hotel_experience: ['Yes, loves it', 'Yes, gets stressed', 'No, never tried'],
+  motion_sickness: ['No issues', 'Sometimes', 'Frequently', 'Always'],
+  flight_experience: ['Yes, cabin', 'Yes, cargo', 'No experience'],
+  travel_anxiety: ['None', 'Mild', 'Moderate', 'Severe'],
   travel_readiness: ['Great traveler', 'Needs preparation', 'Prefers home'],
   carrier_comfort: ['Comfortable', 'Anxious', 'Never tried'],
   new_environment_reaction: ['Excited', 'Curious', 'Anxious', 'Adapts quickly'],
   walking_style: ['Pulls ahead', 'Walks beside', 'Sniffs everything', 'Variable'],
   favorite_outing: ['Park', 'Beach', 'Hiking', 'Car rides', 'Pet-friendly cafes'],
-  // Taste & Treat
+  
+  // ========== Taste & Nutrition ==========
+  diet_type: ['Dry kibble', 'Wet food', 'Raw diet', 'Home cooked', 'Mixed'],
+  sensitive_stomach: ['No', 'Yes, mild', 'Yes, needs special food'],
+  prefers_grain_free: ['Yes', 'No', 'Not sure'],
   food_motivation: ['Very food motivated', 'Moderate', 'Picky eater'],
-  favorite_protein: ['Chicken', 'Beef', 'Fish', 'Lamb', 'Pork'],
+  favorite_protein: ['Chicken', 'Beef', 'Fish', 'Lamb', 'Pork', 'Turkey'],
   treat_preference: ['Soft treats', 'Crunchy treats', 'Natural treats', 'Any'],
-  food_allergies: ['None known', 'Chicken', 'Grain', 'Beef', 'Other'],
   eating_speed: ['Fast eater', 'Normal pace', 'Slow eater', 'Grazes'],
-  // Training & Behaviour
+  
+  // ========== Training & Behaviour ==========
   training_level: ['Beginner', 'Basic commands', 'Well trained', 'Advanced'],
+  leash_behavior: ['Walks nicely', 'Pulls sometimes', 'Pulls a lot', 'Needs training'],
+  recall: ['Excellent', 'Good', 'Needs work', 'Poor'],
   motivation_type: ['Food', 'Praise', 'Play', 'All'],
   attention_span: ['Short', 'Medium', 'Long'],
   known_commands: ['Sit', 'Stay', 'Come', 'Down', 'Multiple', 'Still learning'],
   behavior_issues: ['None', 'Barking', 'Jumping', 'Pulling', 'Other'],
-  // Long Horizon
-  health_conditions: ['None', 'Joint issues', 'Allergies', 'Digestive', 'Other'],
+  
+  // ========== Health & Long-Term ==========
+  vaccination_status: ['Fully up to date', 'Partially done', 'Overdue', 'Not sure'],
+  spayed_neutered: ['Yes', 'No', 'Not yet - planning to'],
+  insurance: ['Yes', 'No', 'Considering'],
   vet_comfort: ['Comfortable', 'Anxious', 'Very anxious'],
   grooming_tolerance: ['Loves it', 'Tolerates', 'Dislikes'],
-  life_stage: ['Puppy', 'Adult', 'Senior'],
-  weight_status: ['Underweight', 'Ideal', 'Overweight']
+  life_stage: ['Puppy (under 1)', 'Young adult (1-3)', 'Adult (3-7)', 'Senior (7+)'],
+  weight_status: ['Underweight', 'Ideal', 'Slightly overweight', 'Overweight'],
+  health_conditions: ['None', 'Joint issues', 'Allergies', 'Digestive', 'Heart', 'Other'],
+  
+  // Multiselect options
+  food_allergies_options: ['None', 'Chicken', 'Beef', 'Grain', 'Dairy', 'Fish', 'Eggs', 'Soy'],
+  favorite_treats_options: ['Chicken treats', 'Beef treats', 'Fish treats', 'Dental chews', 'Biscuits', 'Jerky', 'Cheese'],
+  commands_known_options: ['Sit', 'Stay', 'Come', 'Down', 'Heel', 'Shake', 'Roll over', 'Leave it'],
+  problematic_behaviors_options: ['None', 'Excessive barking', 'Jumping on people', 'Pulling on leash', 'Chewing', 'Digging', 'Aggression', 'Separation anxiety'],
+  anxiety_triggers_options: ['None', 'Thunder', 'Fireworks', 'Strangers', 'Other dogs', 'Car rides', 'Vet visits', 'Being alone'],
+  medical_conditions_options: ['None', 'Allergies', 'Arthritis', 'Diabetes', 'Heart disease', 'Kidney issues', 'Epilepsy', 'Hip dysplasia'],
+  medications_options: ['None', 'Pain medication', 'Allergy medication', 'Heart medication', 'Joint supplements', 'Thyroid medication', 'Other'],
+  dislikes_options: ['None', 'Vegetables', 'Certain proteins', 'Wet food', 'Dry food', 'Specific brands'],
 };
 
 // All questions in order for flow mode
