@@ -3180,8 +3180,12 @@ async def get_all_products(
 
 @admin_router.get("/products/{product_id}")
 async def get_product(product_id: str, username: str = Depends(verify_admin)):
-    """Get single product by ID"""
-    product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    """Get single product by ID - searches both unified_products and legacy products"""
+    # Try unified_products first
+    product = await db.unified_products.find_one({"id": product_id}, {"_id": 0})
+    if not product:
+        # Fall back to legacy products
+        product = await db.products.find_one({"id": product_id}, {"_id": 0})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return product
@@ -3189,28 +3193,37 @@ async def get_product(product_id: str, username: str = Depends(verify_admin)):
 
 @admin_router.post("/products")
 async def create_product(product: dict, username: str = Depends(verify_admin)):
-    """Create a new product"""
+    """Create a new product in unified_products collection"""
     product["id"] = str(uuid.uuid4())
     product["created_at"] = datetime.now(timezone.utc).isoformat()
     product["updated_at"] = datetime.now(timezone.utc).isoformat()
     
-    await db.products.insert_one(product)
+    # Store in unified_products (primary collection)
+    await db.unified_products.insert_one(product)
     return {"message": "Product created", "id": product["id"]}
 
 
 @admin_router.put("/products/{product_id}")
 async def update_product(product_id: str, updates: dict, username: str = Depends(verify_admin)):
-    """Update an existing product"""
+    """Update an existing product - searches both collections"""
     updates["updated_at"] = datetime.now(timezone.utc).isoformat()
     
     # Remove id from updates if present
     updates.pop("id", None)
     updates.pop("_id", None)
     
-    result = await db.products.update_one(
+    # Try unified_products first
+    result = await db.unified_products.update_one(
         {"id": product_id},
         {"$set": updates}
     )
+    
+    if result.matched_count == 0:
+        # Fall back to legacy products
+        result = await db.products.update_one(
+            {"id": product_id},
+            {"$set": updates}
+        )
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
