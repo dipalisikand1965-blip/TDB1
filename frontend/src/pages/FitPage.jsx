@@ -665,21 +665,30 @@ const FitPage = () => {
             </div>
 
             {/* Submit */}
-            <div className="flex gap-3 pt-2">
-              <Button variant="outline" onClick={() => setShowRequestModal(false)} className="flex-1">
-                Cancel
-              </Button>
-              <Button
-                onClick={submitRequest}
-                disabled={!selectedPet || submitting || requestForm.fitness_goals.length === 0}
-                className="flex-1 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600"
-              >
-                {submitting ? (
-                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
-                ) : (
-                  <><Send className="w-4 h-4 mr-2" /> Submit Request</>
-                )}
-              </Button>
+            <div className="space-y-2 pt-2">
+              {/* Validation message */}
+              {(!selectedPet || requestForm.fitness_goals.length === 0) && (
+                <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {!selectedPet ? 'Please select a pet above' : 'Please select at least one fitness goal'}
+                </p>
+              )}
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={() => setShowRequestModal(false)} className="flex-1">
+                  Cancel
+                </Button>
+                <Button
+                  onClick={submitRequest}
+                  disabled={!selectedPet || submitting || requestForm.fitness_goals.length === 0}
+                  className="flex-1 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600"
+                >
+                  {submitting ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+                  ) : (
+                    <><Send className="w-4 h-4 mr-2" /> Submit Request</>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </DialogContent>
