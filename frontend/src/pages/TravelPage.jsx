@@ -664,11 +664,11 @@ const TravelPage = () => {
                       data-testid={`wizard-pet-${pet.id}`}
                     >
                       <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                        {pet.photo_url ? (
-                          <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <PawPrint className="w-6 h-6 text-purple-500" />
-                        )}
+                        <img 
+                          src={getPetPhotoUrl(pet)} 
+                          alt={pet.name} 
+                          className="w-full h-full object-cover" 
+                        />
                       </div>
                       <div className="flex-1">
                         <h4 className="font-semibold text-gray-900">{pet.name}</h4>
