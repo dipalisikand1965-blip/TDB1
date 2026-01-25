@@ -335,11 +335,11 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
         const breachedItems = (data.items || []).filter(item => item.sla_breached);
         const currentBreachCount = breachedItems.length;
         
-        if (currentBreachCount > previousBreachCount && previousBreachCount > 0) {
+        if (currentBreachCount > previousBreachCountRef.current && previousBreachCountRef.current > 0) {
           // New SLA breach detected - play alert
           playBreachAlert();
         }
-        setPreviousBreachCount(currentBreachCount);
+        previousBreachCountRef.current = currentBreachCount;
         
         setQueue(data.items || []);
         setAttention(data.attention || {});
