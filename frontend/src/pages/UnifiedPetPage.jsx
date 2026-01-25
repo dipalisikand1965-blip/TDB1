@@ -15,6 +15,8 @@ import {
 import { API_URL } from '../utils/api';
 import { toast } from '../hooks/use-toast';
 import { resolvePetAvatar, getPetPhotoUrl } from '../utils/petAvatar';
+import usePetScore from '../utils/petScore';
+import PetScoreCard from '../components/PetScoreCard';
 import PetPassCard from '../components/PetPassCard';
 import PetSoulJourney from '../components/PetSoulJourney';
 import PetSoulAnswers from '../components/PetSoulAnswers';
