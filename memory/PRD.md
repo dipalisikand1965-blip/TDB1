@@ -5,34 +5,46 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
-## Session 11 - Critical Bug Fix: Pet Soul Journey Input Types (January 25, 2026)
+## Session 11 - Pet Soul Journey Deprecation & Unified Experience (January 25, 2026)
 
 ### Completed This Session
 
 **1. CRITICAL BUG FIX: Pet Soul Journey Page Input Types**
-- **Bug**: All question inputs were incorrectly rendering as "Yes/No/Sometimes" options, even for fields like Date of Birth, Name, Breed, Size, etc.
-- **Root Cause**: Question IDs from `PetSoulAnswers.jsx` didn't match the `QUESTION_OPTIONS` keys in `PetSoulJourneyPage.jsx`
-- **Fix Applied**:
-  - Added `QUESTION_TYPES` mapping to identify input types (text, date, multiselect, single-select)
-  - Expanded `QUESTION_OPTIONS` to cover 80+ question IDs with proper options
-  - Updated Edit Modal to render correct input type based on question
-  - Updated Flow Mode Modal with same smart input handling
+- **Bug**: All question inputs were incorrectly rendering as "Yes/No/Sometimes" options
+- **Fix**: Added `QUESTION_TYPES` mapping and expanded `QUESTION_OPTIONS` for 80+ questions
+- **Verified**: Date picker, dropdowns, multiselect, text inputs all working correctly
 
-**2. Verified Input Types Now Working:**
-- ✅ **Date of Birth** → Date picker input
-- ✅ **Size** → Dropdown (Small/Medium/Large/Giant)
-- ✅ **Gender** → Options (Male/Female)
-- ✅ **Temperament** → Options (Calm/Playful/Shy/Energetic/Protective)
-- ✅ **Food Allergies** → Multiselect checkboxes
-- ✅ **Text Fields** (Name, Breed, Weight) → Text input
-- ✅ **Fallback** → Text input for unknown question types
+**2. DEPRECATED: PetSoulJourneyPage.jsx**
+- Old URL `/pet-soul-journey/:petId` now **redirects** to `/pet/:petId` (UnifiedPetPage)
+- Added `PetSoulJourneyRedirect` component in App.js
+- Updated ALL links across the app to use `/pet/:petId` instead:
+  - MemberDirectory.jsx
+  - PetSoulJourney.jsx
+  - Admin.jsx
+  - UnifiedPetPage.jsx
+  - MemberDashboard.jsx
+  - MyPets.jsx
 
-**3. MemberDashboard - All 14 Pillars Verified:**
-- Feed, Celebrate, Dine, Stay, Travel, Care, Groom, Play, Train, Insure, Adopt, Farewell, Shop, Community
-- All pillars visible in the "Your Pet Life Pillars" purple gradient card
+**3. Dynamic Header Score Updates**
+- Header now listens for `petSoulScoreUpdated` custom events
+- Score updates in real-time when answers are saved on UnifiedPetPage
+- `usePetScore` hook dispatches event on score fetch
+
+**4. ONE DEFINITIVE PAGE: UnifiedPetPage (`/pet/:petId`)**
+- All pet information in one place
+- Inline question editing with proper input types
+- Emergency Info Card
+- 8 Soul Pillars with expand/collapse
+- Pet Switcher for multi-pet families
+- Social Sharing
+- Dynamic score that reflects in header
 
 ### Files Modified
-- `/app/frontend/src/pages/PetSoulJourneyPage.jsx` - Added QUESTION_TYPES, expanded QUESTION_OPTIONS, updated Edit Modal and Flow Mode Modal
+- `/app/frontend/src/App.js` - Added redirect route and PetSoulJourneyRedirect component
+- `/app/frontend/src/components/Navbar.jsx` - Added petSoulScoreUpdated event listener
+- `/app/frontend/src/utils/petScore.js` - Dispatches custom event on score fetch
+- `/app/frontend/src/pages/PetSoulJourneyPage.jsx` - Bug fix (kept for reference, deprecated)
+- Multiple files - Updated links from `/pet-soul-journey/` to `/pet/`
 
 ---
 
