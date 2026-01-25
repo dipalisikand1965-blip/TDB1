@@ -536,10 +536,20 @@ async def delete_enjoy_partner(partner_id: str):
 
 @router.get("/products")
 async def get_enjoy_products(limit: int = 50):
-    """Get enjoy-related products"""
+    """Get enjoy-related products from unified_products collection"""
     db = get_db()
     
-    products = await db.products.find(
+    # Query unified_products with pillar="enjoy" OR legacy category/tags
+    query = {"$or": [
+        {"pillar": "enjoy"},
+        {"category": "enjoy"},
+        {"tags": {"$in": ["enjoy", "outdoor", "social", "adventure", "meetup"]}}
+    ]}
+    
+    products = await db.unified_products.find(query, {"_id": 0}).limit(limit).to_list(limit)
+    
+    # Also check legacy products collection
+    legacy_products = await db.products.find(
         {"$or": [
             {"category": "enjoy"},
             {"tags": {"$in": ["enjoy", "outdoor", "social", "adventure", "meetup"]}}
@@ -547,7 +557,14 @@ async def get_enjoy_products(limit: int = 50):
         {"_id": 0}
     ).limit(limit).to_list(limit)
     
-    return {"products": products, "total": len(products)}
+    # Merge without duplicates
+    seen_ids = {p.get("id") for p in products}
+    for p in legacy_products:
+        if p.get("id") not in seen_ids:
+            products.append(p)
+            seen_ids.add(p.get("id"))
+    
+    return {"products": products[:limit], "total": len(products)}
 
 
 @router.get("/admin/products/export")
