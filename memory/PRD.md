@@ -49,12 +49,17 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 - "New Chat" quick action
 - **New Dashboard Tab**: "Mira AI"
 
-**7. 🏷️ AUTO-TAG PRODUCTS**
-- Ran `/api/product-box/auto-seed-pillars` endpoint
-- **394 products** auto-tagged with appropriate pillars
-- Products now have proper pillar assignments and Mira visibility
+**7. 🏷️ AUTO-TAGGED 394 PRODUCTS**
+- Ran `/api/product-box/auto-seed-pillars`
+- Products now have proper pillar assignments
 
-**8. DEPRECATED: PetSoulJourneyPage.jsx**
+**8. 🔧 ONBOARDING AUTO-FILL FIX**
+- **Problem**: Onboarding form data (name, breed, DOB, gender, weight) was NOT being saved to `doggy_soul_answers`
+- **Fix**: Updated both `/api/membership/onboard` endpoints (auth_routes.py + server.py) to pre-populate `doggy_soul_answers` from onboarding data
+- **Backfill**: Created `/api/admin/backfill-pet-soul-answers` endpoint
+- **Result**: 27 existing pets backfilled with their basic data
+
+**9. DEPRECATED: PetSoulJourneyPage.jsx**
 - All traffic redirects to `/pet/:petId`
 
 ### Files Created
@@ -64,7 +69,8 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ### Files Modified
 - `/app/frontend/src/pages/MemberDashboard.jsx` - Added new tabs, imports
-- `/app/backend/server.py` - Registered paw_points_router
+- `/app/backend/server.py` - Registered paw_points_router, added backfill endpoint, fixed onboarding
+- `/app/backend/auth_routes.py` - Fixed onboarding to pre-populate soul answers
 
 ---
 
