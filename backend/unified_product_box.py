@@ -863,6 +863,18 @@ async def auto_seed_pillars():
     collection = db.products_unified
     products = await collection.find({}).to_list(length=10000)
     
+    # Debug info
+    product_count = len(products)
+    if product_count == 0:
+        return {
+            "success": False,
+            "message": "No products found in products_unified collection",
+            "debug": {
+                "db_name": db.name if db else "None",
+                "collection_name": "products_unified"
+            }
+        }
+    
     updated_count = 0
     pillar_counts = {p: 0 for p in ALL_PILLARS}
     
