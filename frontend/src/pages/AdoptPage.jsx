@@ -286,10 +286,10 @@ const AdoptPage = () => {
       params.append('status', 'available');
       params.append('limit', '50');
       
-      if (filters.species) params.append('species', filters.species);
+      if (filters.species && filters.species !== 'all') params.append('species', filters.species);
       if (filters.breed) params.append('breed', filters.breed);
-      if (filters.age) params.append('age', filters.age);
-      if (filters.size) params.append('size', filters.size);
+      if (filters.age && filters.age !== 'all') params.append('age', filters.age);
+      if (filters.size && filters.size !== 'all') params.append('size', filters.size);
       if (filters.gender) params.append('gender', filters.gender);
       
       const res = await fetch(`${API_URL}/api/adopt/pets?${params.toString()}`);
