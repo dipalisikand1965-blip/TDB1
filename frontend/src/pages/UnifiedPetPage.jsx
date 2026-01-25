@@ -10,7 +10,8 @@ import {
   PawPrint, ArrowLeft, Calendar, Gift, Edit, Trash2, Save, X,
   Crown, Camera, Heart, Sparkles, Stethoscope, Syringe, Pill, 
   AlertCircle, Loader2, Check, MessageCircle, Upload, Brain, 
-  CreditCard, HelpCircle, ChevronDown, ChevronUp, Home, Settings
+  CreditCard, HelpCircle, ChevronDown, ChevronUp, Home, Settings,
+  Share2, Copy, Printer, Download
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { toast } from '../hooks/use-toast';
