@@ -174,7 +174,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
         
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-lg font-bold text-purple-600">₹{product.price?.toLocaleString()}</span>
+            <span className="text-lg font-bold text-teal-600">₹{product.price?.toLocaleString()}</span>
             {hasDiscount && (
               <span className="text-xs text-gray-400 line-through ml-1">
                 ₹{product.compare_at_price?.toLocaleString()}
