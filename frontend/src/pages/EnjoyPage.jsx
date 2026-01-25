@@ -989,6 +989,40 @@ const EnjoyPage = () => {
                 />
               </div>
 
+              {/* Guest Contact Info - only show if not logged in */}
+              {!user && (
+                <div className="space-y-3 pt-3 border-t">
+                  <Label className="text-sm font-medium">Your Contact Details</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-sm">Your Name *</Label>
+                      <Input
+                        placeholder="Full name"
+                        value={rsvpForm.guest_name || ''}
+                        onChange={(e) => setRsvpForm({...rsvpForm, guest_name: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm">Phone *</Label>
+                      <Input
+                        placeholder="Mobile number"
+                        value={rsvpForm.guest_phone || ''}
+                        onChange={(e) => setRsvpForm({...rsvpForm, guest_phone: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-sm">Email</Label>
+                    <Input
+                      type="email"
+                      placeholder="your@email.com"
+                      value={rsvpForm.guest_email || ''}
+                      onChange={(e) => setRsvpForm({...rsvpForm, guest_email: e.target.value})}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Submit */}
               <div className="flex gap-3 pt-2">
                 <Button variant="outline" onClick={() => setShowRsvpModal(false)} className="flex-1">
@@ -996,7 +1030,7 @@ const EnjoyPage = () => {
                 </Button>
                 <Button
                   onClick={submitRsvp}
-                  disabled={!selectedPet || submitting}
+                  disabled={(!selectedPet && !rsvpForm.guest_pet_name) || submitting}
                   className="flex-1 bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600"
                 >
                   {submitting ? (
