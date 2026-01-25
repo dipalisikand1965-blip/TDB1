@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useParams, useLocation } from 'react-router-dom';
-import { Clock, Bell, ArrowLeft, Sparkles, Home, UtensilsCrossed, Plane, HeartPulse, Cake } from 'lucide-react';
+import { Clock, Bell, ArrowLeft, Sparkles, Home, UtensilsCrossed, Plane, HeartPulse, Cake, Scissors, Dog, GraduationCap, Shield, Flower2, ShoppingBag, Users } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 
@@ -71,6 +71,125 @@ const pillarConfig = {
     image: 'https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?w=800',
     isActive: true,
     redirectTo: '/cakes',
+  },
+  feed: {
+    name: 'Feed',
+    icon: UtensilsCrossed,
+    color: 'from-orange-500 to-amber-500',
+    description: 'Premium nutrition & fresh meals',
+    features: [
+      'Fresh, human-grade meals',
+      'Customized nutrition plans',
+      'Prescription diet support',
+      'Subscription delivery',
+    ],
+    image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800',
+  },
+  groom: {
+    name: 'Groom',
+    icon: Scissors,
+    color: 'from-violet-500 to-purple-500',
+    description: 'Professional grooming & spa services',
+    features: [
+      'Full grooming packages',
+      'Breed-specific styling',
+      'Spa treatments & massages',
+      'At-home grooming visits',
+    ],
+    image: 'https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800',
+  },
+  play: {
+    name: 'Play',
+    icon: Dog,
+    color: 'from-green-500 to-emerald-500',
+    description: 'Toys, activities & enrichment',
+    features: [
+      'Interactive toys & puzzles',
+      'Outdoor play equipment',
+      'Subscription toy boxes',
+      'Activity recommendations',
+    ],
+    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+  },
+  train: {
+    name: 'Train',
+    icon: GraduationCap,
+    color: 'from-indigo-500 to-purple-500',
+    description: 'Professional training & behavior',
+    features: [
+      'Puppy training classes',
+      'Behavior modification',
+      'Agility & tricks training',
+      'Virtual training sessions',
+    ],
+    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+  },
+  insure: {
+    name: 'Insure',
+    icon: Shield,
+    color: 'from-slate-500 to-gray-600',
+    description: 'Pet insurance & protection plans',
+    features: [
+      'Comprehensive health coverage',
+      'Accident & illness protection',
+      'Wellness plan add-ons',
+      'Multi-pet discounts',
+    ],
+    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+  },
+  adopt: {
+    name: 'Adopt',
+    icon: Dog,
+    color: 'from-rose-500 to-pink-500',
+    description: 'Find your perfect furry companion',
+    features: [
+      'Shelter partnerships',
+      'Adoption counseling',
+      'Foster programs',
+      'Post-adoption support',
+    ],
+    image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800',
+  },
+  farewell: {
+    name: 'Farewell',
+    icon: Flower2,
+    color: 'from-purple-500 to-indigo-500',
+    description: 'Compassionate end-of-life care',
+    features: [
+      'Hospice & palliative care',
+      'Memorial services',
+      'Cremation options',
+      'Grief support resources',
+    ],
+    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+  },
+  shop: {
+    name: 'Shop',
+    icon: ShoppingBag,
+    color: 'from-teal-500 to-cyan-500',
+    description: 'Everything your pet needs',
+    features: [
+      'Premium food & treats',
+      'Toys & accessories',
+      'Health & wellness products',
+      'Exclusive member discounts',
+    ],
+    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+    isActive: true,
+    redirectTo: '/all',
+  },
+  community: {
+    name: 'Community',
+    icon: Users,
+    color: 'from-yellow-500 to-amber-500',
+    description: 'Connect with fellow pet parents',
+    features: [
+      'Pet parent meetups',
+      'Online forums & groups',
+      'Events & workshops',
+      'Expert Q&A sessions',
+    ],
+    image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800',
   },
 };
 
