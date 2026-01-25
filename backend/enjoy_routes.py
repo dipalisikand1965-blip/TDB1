@@ -116,7 +116,7 @@ class ExperienceCreate(BaseModel):
 
 class ExperienceRSVP(BaseModel):
     experience_id: str
-    pet_id: str
+    pet_id: Optional[str] = None
     pet_name: str
     pet_breed: Optional[str] = None
     pet_size: Optional[str] = None
