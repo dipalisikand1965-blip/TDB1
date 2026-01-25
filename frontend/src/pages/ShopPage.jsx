@@ -63,7 +63,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
       <Card className="flex overflow-hidden hover:shadow-lg transition-all cursor-pointer" onClick={handleClick}>
         <div className="w-48 h-48 flex-shrink-0 relative bg-gray-100">
           <img
-            src={product.image_url || product.images?.[0] || 'https://via.placeholder.com/200'}
+            src={product.image || product.image_url || product.images?.[0] || 'https://via.placeholder.com/200'}
             alt={product.title}
             className="w-full h-full object-cover"
           />
