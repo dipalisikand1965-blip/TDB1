@@ -839,7 +839,7 @@ const MyPets = () => {
                         </div>
                         
                         <div className="mt-4 pt-3 border-t border-gray-200 text-center">
-                          <Link to={`/pet-soul-journey/${pet.id}`}>
+                          <Link to={`/pet/${pet.id}`}>
                             <Button variant="link" className="text-purple-600">
                               Answer all {26 - Object.keys(pet.doggy_soul_answers || {}).length} remaining questions →
                             </Button>
@@ -1163,7 +1163,7 @@ const MyPets = () => {
                             );
                           })()}
                           
-                          <Link to={`/pet-soul-journey/${pet.id}`}>
+                          <Link to={`/pet/${pet.id}`}>
                             <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white">
                               <Sparkles className="w-4 h-4 mr-2" />
                               {(pet.overall_score || 0) < 100 ? 'Continue Building Soul' : 'View Full Soul Journey'}
