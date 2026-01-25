@@ -250,7 +250,7 @@ const MiraContextPanel = ({
     } finally {
       setLoading(false);
     }
-  }, [token, pillar, config.name]);
+  }, [token, pillar, category, config.name]);
   
   useEffect(() => {
     fetchContext();
