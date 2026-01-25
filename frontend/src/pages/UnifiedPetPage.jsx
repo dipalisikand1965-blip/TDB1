@@ -519,58 +519,17 @@ const UnifiedPetPage = () => {
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           {/* Overview Tab */}
           <TabsContent value="overview" className="mt-0 space-y-6">
-            {/* Pet Soul Score Card */}
-            <Card className={`p-6 ${score < 100 ? 'bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200' : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'}`}>
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-                    <Brain className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900">
-                      {score < 100 ? '🌱 Pet Soul Growing' : '✨ Pet Soul Complete'}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {score < 100 ? `Help us understand ${pet.name} better` : `We know ${pet.name} deeply!`}
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-purple-600">{score}%</div>
-                  <p className="text-xs text-gray-500">completion</p>
-                </div>
-              </div>
-              
-              <div className="w-full bg-white/60 rounded-full h-3 mb-4">
-                <div 
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all"
-                  style={{ width: `${score}%` }}
-                />
-              </div>
-              
-              {score < 100 && (
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={() => setShowQuestions(!showQuestions)}
-                    variant="outline"
-                    className="flex-1 border-purple-300 text-purple-600 hover:bg-purple-50"
-                  >
-                    <HelpCircle className="w-4 h-4 mr-2" />
-                    Quick Questions
-                  </Button>
-                  <Button 
-                    onClick={() => handleTabChange('personality')}
-                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Full Journey →
-                  </Button>
-                </div>
-              )}
-            </Card>
+            {/* Pet Soul Score Card - Using server-side data */}
+            <PetScoreCard
+              scoreState={scoreState}
+              loading={scoreLoading}
+              petName={pet.name}
+              onQuickQuestions={() => setShowQuestions(!showQuestions)}
+              onFullJourney={() => handleTabChange('personality')}
+            />
             
             {/* Quick Questions Panel */}
-            {showQuestions && score < 100 && (
+            {showQuestions && displayScore < 100 && (
               <Card className="p-4 bg-white border-purple-200">
                 <div className="flex items-center gap-2 mb-4">
                   <HelpCircle className="w-5 h-5 text-purple-600" />
