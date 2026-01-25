@@ -510,7 +510,23 @@ const PaperworkPage = () => {
                       <p className="text-sm text-blue-600 mb-4">🐾 Earn {bundle.paw_reward_points} Paw Points</p>
                     )}
                     
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                    <Button 
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                      onClick={() => {
+                        addToCart({
+                          id: bundle.id,
+                          name: bundle.name,
+                          price: bundle.price,
+                          image: bundle.image || 'https://via.placeholder.com/200?text=Paperwork+Bundle',
+                          quantity: 1,
+                          pillar: 'paperwork'
+                        });
+                        toast({
+                          title: "Added to Cart! 📄",
+                          description: `${bundle.name} added to your cart`
+                        });
+                      }}
+                    >
                       Add to Cart
                     </Button>
                   </Card>
