@@ -271,24 +271,25 @@ const ProductListing = ({ category = 'all' }) => {
     setVisibleCount(PRODUCTS_PER_PAGE);
   }
 
-  let filteredProducts = [...products];
+  let filteredProducts = [...products].filter(p => p !== null && p !== undefined);
 
   // PET SOUL FILTERING - Filter out products based on pet's allergies/restrictions
   // This implements the doctrine: "Commerce obeys Pet Soul"
-  const activePet = userPets[0]; // Use first pet for filtering
+  const activePet = userPets?.[0]; // Use first pet for filtering (safe access)
   const petAllergies = activePet?.doggy_soul_answers?.food_allergies || 
                        activePet?.preferences?.allergies || 
                        activePet?.health?.allergies || [];
   
   if (Array.isArray(petAllergies) && petAllergies.length > 0 && !petAllergies.includes('No') && !petAllergies.includes('None')) {
-    const allergyKeywords = petAllergies.map(a => a.toLowerCase()).filter(a => a && a !== 'no' && a !== 'none' && a !== 'other');
+    const allergyKeywords = petAllergies.map(a => (a || '').toLowerCase()).filter(a => a && a !== 'no' && a !== 'none' && a !== 'other');
     
     if (allergyKeywords.length > 0) {
       filteredProducts = filteredProducts.filter(product => {
+        if (!product) return false;
         const productName = (product.name || product.title || '').toLowerCase();
         const productDesc = (product.description || '').toLowerCase();
         const productIngredients = (product.ingredients || '').toLowerCase();
-        const productTags = (product.tags || []).map(t => t.toLowerCase()).join(' ');
+        const productTags = Array.isArray(product.tags) ? product.tags.map(t => (t || '').toLowerCase()).join(' ') : '';
         
         // Check if product contains any allergen
         const hasAllergen = allergyKeywords.some(allergen => 
