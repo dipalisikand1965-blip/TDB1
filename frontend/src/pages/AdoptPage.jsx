@@ -195,10 +195,10 @@ const AdoptPage = () => {
   
   // Filter state
   const [filters, setFilters] = useState({
-    species: '',
+    species: 'all',
     breed: '',
-    age: '',
-    size: '',
+    age: 'all',
+    size: 'all',
     gender: ''
   });
   const [searchQuery, setSearchQuery] = useState('');
