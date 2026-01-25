@@ -17,7 +17,7 @@ import { toast } from '../../hooks/use-toast';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   Plus, Edit, Trash2, Search, Filter, Eye, CheckCircle, XCircle,
-  Building2, Clock, RefreshCw, FileText, Loader2
+  Building2, Clock, RefreshCw, FileText, Loader2, Download
 } from 'lucide-react';
 
 const getApiUrl = () => {
@@ -37,6 +37,37 @@ const AdoptManager = ({ authHeaders }) => {
   const [events, setEvents] = useState([]);
   const [shelters, setShelters] = useState([]);
   
+  // CSV Export functions
+  const exportPetsCSV = () => {
+    const headers = ['Name', 'Species', 'Breed', 'Age', 'Gender', 'Size', 'Status', 'Location', 'Description'];
+    const rows = pets.map(p => [
+      p.name, p.species, p.breed, p.age, p.gender, p.size, p.status, p.location, p.description?.replace(/,/g, ';')
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `adopt_pets_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    toast({ title: 'Exported!', description: `${pets.length} pets exported to CSV` });
+  };
+
+  const exportApplicationsCSV = () => {
+    const headers = ['Pet Name', 'Applicant Name', 'Email', 'Phone', 'Status', 'Applied Date', 'Notes'];
+    const rows = applications.map(a => [
+      a.pet_name, a.applicant_name, a.email, a.phone, a.status, a.created_at?.split('T')[0], a.notes?.replace(/,/g, ';')
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `adopt_applications_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    toast({ title: 'Exported!', description: `${applications.length} applications exported to CSV` });
+  };
+
   // Filter state
   const [petFilter, setPetFilter] = useState({ status: 'available' });
   const [appFilter, setAppFilter] = useState({ status: 'all' });
