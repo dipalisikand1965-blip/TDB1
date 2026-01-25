@@ -8,7 +8,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { useToast } from '../components/ui/use-toast';
+import { useToast } from '../hooks/use-toast';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { API_URL } from '../utils/api';
