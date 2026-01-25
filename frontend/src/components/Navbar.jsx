@@ -482,7 +482,7 @@ const Navbar = () => {
                       Sign in
                     </Button>
                   </Link>
-                  <Link to="/pet-soul-onboard">
+                  <Link to="/membership">
                     <Button size="sm" className="h-8 px-3 text-xs font-medium bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
                       Join now
                     </Button>
