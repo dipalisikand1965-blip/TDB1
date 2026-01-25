@@ -344,7 +344,7 @@ const AdoptManager = ({ authHeaders }) => {
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
                   <SelectItem value="available">Available</SelectItem>
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="adopted">Adopted</SelectItem>
