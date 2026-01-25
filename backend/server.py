@@ -8509,6 +8509,8 @@ app.include_router(paperwork_router)  # Paperwork Pillar
 app.include_router(emergency_router)  # Emergency Pillar
 app.include_router(celebrate_router)  # Celebrate Pillar
 app.include_router(adopt_router)  # Adopt Pillar
+app.include_router(farewell_router)  # Farewell Pillar
+app.include_router(shop_router)  # Shop Pillar
 app.include_router(pet_soul_router, prefix="/api")
 app.include_router(pet_soul_admin_router, prefix="/api/admin")
 app.include_router(pet_score_router, prefix="/api")  # Pet Score Logic API
