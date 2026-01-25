@@ -740,6 +740,42 @@ const UnifiedProductBox = () => {
                   </div>
                 </div>
                 
+                {/* Image Section */}
+                <div className="border rounded-lg p-4 bg-gray-50">
+                  <Label className="flex items-center gap-2 mb-3">
+                    <Image className="w-4 h-4" /> Product Image
+                  </Label>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="col-span-2">
+                      <Input 
+                        value={selectedProduct.image_url || selectedProduct.images?.[0] || ''}
+                        onChange={(e) => setSelectedProduct({
+                          ...selectedProduct, 
+                          image_url: e.target.value,
+                          images: e.target.value ? [e.target.value, ...(selectedProduct.images?.slice(1) || [])] : selectedProduct.images
+                        })}
+                        placeholder="Enter image URL or paste link"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Paste a direct image URL (jpg, png, webp)</p>
+                    </div>
+                    <div className="flex items-center justify-center border-2 border-dashed rounded-lg bg-white h-24">
+                      {(selectedProduct.image_url || selectedProduct.images?.[0]) ? (
+                        <img 
+                          src={selectedProduct.image_url || selectedProduct.images?.[0]} 
+                          alt="Preview" 
+                          className="h-full w-full object-contain rounded-lg"
+                          onError={(e) => { e.target.src = 'https://via.placeholder.com/100?text=No+Image'; }}
+                        />
+                      ) : (
+                        <div className="text-center text-gray-400">
+                          <ImagePlus className="w-6 h-6 mx-auto mb-1" />
+                          <span className="text-xs">No Image</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
                 <div>
                   <Label>Short Description</Label>
                   <Textarea 
@@ -776,6 +812,102 @@ const UnifiedProductBox = () => {
                       onChange={(e) => setSelectedProduct({...selectedProduct, sku: e.target.value})}
                       placeholder="Auto-generated if empty"
                     />
+                  </div>
+                </div>
+                
+                {/* Tags Section */}
+                <div className="border rounded-lg p-4 bg-purple-50">
+                  <Label className="flex items-center gap-2 mb-3">
+                    <Tag className="w-4 h-4" /> Product Tags
+                  </Label>
+                  <div className="space-y-3">
+                    {/* Current Tags */}
+                    <div className="flex flex-wrap gap-2 min-h-[36px] p-2 bg-white rounded-lg border">
+                      {(selectedProduct.tags || []).length === 0 ? (
+                        <span className="text-gray-400 text-sm">No tags - click suggestions below to add</span>
+                      ) : (
+                        (selectedProduct.tags || []).map((tag, idx) => (
+                          <Badge 
+                            key={idx} 
+                            variant="secondary"
+                            className="bg-purple-100 text-purple-800 cursor-pointer hover:bg-red-100 hover:text-red-800"
+                            onClick={() => setSelectedProduct({
+                              ...selectedProduct,
+                              tags: selectedProduct.tags.filter((_, i) => i !== idx)
+                            })}
+                          >
+                            {tag} <X className="w-3 h-3 ml-1" />
+                          </Badge>
+                        ))
+                      )}
+                    </div>
+                    
+                    {/* Manual Tag Input */}
+                    <div className="flex gap-2">
+                      <Input 
+                        placeholder="Add custom tag..."
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && e.target.value.trim()) {
+                            const newTag = e.target.value.trim().toLowerCase().replace(/\s+/g, '-');
+                            if (!(selectedProduct.tags || []).includes(newTag)) {
+                              setSelectedProduct({
+                                ...selectedProduct,
+                                tags: [...(selectedProduct.tags || []), newTag]
+                              });
+                            }
+                            e.target.value = '';
+                          }
+                        }}
+                        className="flex-1"
+                      />
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          // Auto-generate tags based on product info
+                          const autoTags = [];
+                          const name = (selectedProduct.name || '').toLowerCase();
+                          const desc = (selectedProduct.short_description || '').toLowerCase();
+                          const category = (selectedProduct.category || '').toLowerCase();
+                          
+                          // Add category as tag
+                          if (category && !autoTags.includes(category)) autoTags.push(category);
+                          
+                          // Check common tags
+                          COMMON_TAGS.forEach(tag => {
+                            if ((name.includes(tag.replace('-', ' ')) || desc.includes(tag.replace('-', ' '))) && !autoTags.includes(tag)) {
+                              autoTags.push(tag);
+                            }
+                          });
+                          
+                          // Merge with existing
+                          const merged = [...new Set([...(selectedProduct.tags || []), ...autoTags])];
+                          setSelectedProduct({ ...selectedProduct, tags: merged });
+                          toast({ title: `Added ${autoTags.length} auto-detected tags` });
+                        }}
+                      >
+                        <Sparkles className="w-4 h-4 mr-1" /> Auto-Fill
+                      </Button>
+                    </div>
+                    
+                    {/* Tag Suggestions */}
+                    <div>
+                      <p className="text-xs text-gray-600 mb-2">Quick Add:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {COMMON_TAGS.slice(0, 20).filter(t => !(selectedProduct.tags || []).includes(t)).map(tag => (
+                          <button
+                            key={tag}
+                            onClick={() => setSelectedProduct({
+                              ...selectedProduct,
+                              tags: [...(selectedProduct.tags || []), tag]
+                            })}
+                            className="px-2 py-0.5 text-xs rounded-full bg-white border border-gray-200 hover:bg-purple-100 hover:border-purple-300"
+                          >
+                            + {tag}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
