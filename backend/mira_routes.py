@@ -1555,6 +1555,12 @@ async def mira_chat(
         "is_internal": False
     })
     
+    # Extract and update contact info from message (for non-logged-in users)
+    if not user:
+        extracted_contact = extract_contact_info(user_message)
+        if any(extracted_contact.values()):
+            await update_ticket_member_info(session_id, extracted_contact)
+    
     # 4. Handle EMERGENCY immediately
     if pillar == "emergency":
         emergency_response = """**EMERGENCY DETECTED**
