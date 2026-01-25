@@ -46,9 +46,9 @@ const Logo = ({
               </span>
             )}
           </div>
-          <span className={`${config.tagline} font-medium tracking-wider uppercase ${variant === 'light' ? 'text-white/70' : 'text-teal-600'}`}>
-            Pet Concierge
-          </span>
+          <a href="/about" className={`${config.tagline} font-medium tracking-wider uppercase ${variant === 'light' ? 'text-white/70 hover:text-white' : 'text-teal-600 hover:text-teal-700'} transition-colors`}>
+            Pet Concierge®
+          </a>
         </div>
       )}
     </div>
