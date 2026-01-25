@@ -2,19 +2,211 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   THE DOGGY COMPANY - DESIGN SYSTEM
+   Inspired by Chewy's clean, professional look
+   ============================================ */
+
+:root {
+  /* Brand Colors - Simplified palette */
+  --brand-primary: #0d9488;      /* Teal - Main brand */
+  --brand-secondary: #7c3aed;    /* Purple - Accent */
+  --brand-accent: #ec4899;       /* Pink - Highlights */
+  
+  /* Neutrals */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  
+  /* Spacing Scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+  
+  /* Shadows - Subtle, professional */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+}
+
+/* Import Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 body {
-    margin: 0;
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-        sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+  margin: 0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  color: var(--gray-800);
+  line-height: 1.6;
 }
 
 html {
-    overflow-x: hidden;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* ============================================
+   COMPONENT STYLES
+   ============================================ */
+
+/* Buttons - Consistent styling */
+@layer components {
+  .btn-primary {
+    @apply bg-teal-600 hover:bg-teal-700 text-white font-medium px-6 py-2.5 rounded-lg transition-all duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-white border border-gray-300 hover:border-gray-400 text-gray-700 font-medium px-6 py-2.5 rounded-lg transition-all duration-200;
+  }
+  
+  .btn-accent {
+    @apply bg-purple-600 hover:bg-purple-700 text-white font-medium px-6 py-2.5 rounded-lg transition-all duration-200;
+  }
+
+  /* Cards - Clean, minimal shadows */
+  .card-clean {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+  
+  .card-hover {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-teal-200 transition-all duration-200;
+  }
+
+  /* Product Card */
+  .product-card {
+    @apply bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .product-card img {
+    @apply w-full aspect-square object-cover bg-gray-50;
+  }
+
+  /* Section Headers - Consistent typography */
+  .section-title {
+    @apply text-2xl md:text-3xl font-bold text-gray-900 tracking-tight;
+  }
+  
+  .section-subtitle {
+    @apply text-base md:text-lg text-gray-600 max-w-2xl;
+  }
+
+  /* Price styling */
+  .price-tag {
+    @apply text-lg font-bold text-gray-900;
+  }
+  
+  .price-original {
+    @apply text-sm text-gray-400 line-through;
+  }
+  
+  .price-discount {
+    @apply text-sm font-medium text-green-600;
+  }
+
+  /* Badge styles */
+  .badge-sale {
+    @apply inline-block px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded;
+  }
+  
+  .badge-new {
+    @apply inline-block px-2 py-0.5 bg-teal-500 text-white text-xs font-bold rounded;
+  }
+  
+  .badge-featured {
+    @apply inline-block px-2 py-0.5 bg-purple-500 text-white text-xs font-bold rounded;
+  }
+
+  /* Input fields */
+  .input-clean {
+    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all duration-200;
+  }
+
+  /* Links */
+  .link-teal {
+    @apply text-teal-600 hover:text-teal-700 font-medium transition-colors duration-200;
+  }
+}
+
+/* ============================================
+   ANIMATIONS - Subtle, professional
+   ============================================ */
+
+/* Fade in on scroll */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* Staggered children animation */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.35s; }
+
+/* Hover lift effect */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Smooth image zoom on hover */
+.img-zoom {
+  overflow: hidden;
+}
+
+.img-zoom img {
+  transition: transform 0.3s ease;
+}
+
+.img-zoom:hover img {
+  transform: scale(1.05);
 }
 
 code {
