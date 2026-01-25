@@ -559,11 +559,6 @@ const MyPets = () => {
                       <div className="relative flex-shrink-0 group">
                         <div className="w-32 h-32 rounded-2xl bg-white shadow-sm overflow-hidden border-4 border-white relative">
                           <img src={petPhoto} alt={pet.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-purple-100">
-                              <PawPrint className="w-12 h-12 text-purple-300" />
-                            </div>
-                          )}
                           {/* Photo upload overlay */}
                           <input
                             type="file"
