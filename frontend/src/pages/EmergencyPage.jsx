@@ -452,7 +452,25 @@ const EmergencyPage = () => {
                       {bundle.paw_reward_points > 0 && (
                         <p className="text-xs text-red-600 mb-3">🐾 Earn {bundle.paw_reward_points} Paw Points</p>
                       )}
-                      <Button className="w-full bg-red-500 hover:bg-red-600">Add to Cart</Button>
+                      <Button 
+                        className="w-full bg-red-500 hover:bg-red-600"
+                        onClick={() => {
+                          addToCart({
+                            id: bundle.id,
+                            name: bundle.name,
+                            price: bundle.price,
+                            image: bundle.image || 'https://via.placeholder.com/200?text=Emergency+Kit',
+                            quantity: 1
+                          });
+                          toast({
+                            title: "Added to Cart! 🛒",
+                            description: `${bundle.name} added to your cart`
+                          });
+                        }}
+                        data-testid={`add-bundle-${bundle.id}`}
+                      >
+                        Add to Cart
+                      </Button>
                     </Card>
                   ))}
                 </div>
