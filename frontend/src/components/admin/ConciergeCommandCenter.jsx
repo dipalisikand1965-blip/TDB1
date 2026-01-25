@@ -330,6 +330,17 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
           attention: data.attention,
           buckets: data.buckets
         });
+        
+        // Check for SLA breaches and play alert if new ones detected
+        const breachedItems = (data.items || []).filter(item => item.sla_breached);
+        const currentBreachCount = breachedItems.length;
+        
+        if (currentBreachCount > previousBreachCount && previousBreachCount > 0) {
+          // New SLA breach detected - play alert
+          playBreachAlert();
+        }
+        setPreviousBreachCount(currentBreachCount);
+        
         setQueue(data.items || []);
         setAttention(data.attention || {});
         setBuckets(data.buckets || {});
