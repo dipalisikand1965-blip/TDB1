@@ -5,69 +5,82 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
-## Session 8: Server-Side Pet Soul Score System (January 25, 2026) ✅
+## Session 8 Completed Work (January 25, 2026)
 
-### BLANK HEALTH TAB BUG FIX ✅
-**Problem**: Clicking on a pillar (e.g., Health) from MiraContextPanel navigated to a blank page
-**Solution**: Created `UnifiedPetPage.jsx` to handle `/pet/:petId?tab=xxx` routes
+### 1. BLANK HEALTH TAB BUG FIX ✅ (P1)
+- Created `UnifiedPetPage.jsx` for `/pet/:petId?tab=xxx` routes
+- All tabs working: Overview, Pet Soul, Health, Vaccines, Services, Pet Pass
 
-### SERVER-SIDE PET SOUL SCORE SYSTEM ✅ (P0 - MAJOR FEATURE)
+### 2. SERVER-SIDE PET SOUL SCORE SYSTEM ✅ (P0)
+Created `/app/backend/pet_score_logic.py`:
+- Weighted question configuration (100 points across 6 categories)
+- 4-tier system: Newcomer → Soul Seeker → Soul Explorer → Soul Master
+- APIs: `/score_state`, `/quick-questions`, `/tiers`, `/config`, `/recalculate`
 
-Created `/app/backend/pet_score_logic.py` - The SINGLE SOURCE OF TRUTH for Pet Soul Score:
+### 3. GAMIFICATION SYSTEM ✅ (NEW)
+Created `/app/frontend/src/components/PetAchievements.jsx`:
+- **13 achievements** across categories: Tier, Category, Streak, Special
+- **Confetti celebrations** with `canvas-confetti` library
+- **Achievement badges** with lock/unlock states
+- **useAchievements hook** for automatic unlock detection
 
-#### Weighted Question Configuration
-- **Safety & Health** (35 points): food_allergies (10), health_conditions (8), vet_comfort (5), life_stage (5), grooming_tolerance (4), noise_sensitivity (3)
-- **Personality** (25 points): temperament (8), energy_level (6), social_with_dogs (4), social_with_people (4), behavior_issues (3)
-- **Lifestyle** (20 points): alone_time_comfort (5), car_comfort (4), travel_readiness (3), favorite_spot (2), morning_routine (2), exercise_needs (2), feeding_times (2)
-- **Nutrition** (10 points): favorite_protein (3), food_motivation (3), treat_preference (2)
-- **Training** (5 points): training_level (3), motivation_type (2)
-- **Relationships** (5 points): primary_bond (2), other_pets (2), kids_at_home (1)
+### 4. UNIVERSAL PET AVATAR INTEGRATION ✅ (P1)
+Updated components to use `getPetPhotoUrl()`:
+- ✅ MemberDashboard.jsx (3 places)
+- ✅ Checkout.jsx (pet selector)
+- ✅ Admin.jsx (4 places: pet table, profile modal, member details, health vault)
+- ✅ UnifiedPetPage.jsx
+- ✅ Navbar, MiraAI, PetPassCard (previous session)
 
-#### Tier System
-| Tier | Score Range | Benefits |
-|------|-------------|----------|
-| 🌱 Newcomer | 0-24% | Basic Mira AI, Product browsing |
-| 🔍 Soul Seeker | 25-49% | Personalized suggestions, Health reminders |
-| 🗺️ Soul Explorer | 50-74% | Safety alerts, Pillar recommendations, Priority Mira |
-| ✨ Soul Master | 75-100% | AI insights, Proactive recommendations, VIP concierge |
+### 5. SERVICE DESK CUSTOMER NAME FIX ✅ (P2)
+Updated `/app/backend/ticket_routes.py`:
+- Fixed fallback logic for "Website Visitor" names
+- Added email prefix extraction as name fallback
+- Improved contact field propagation
 
-#### New API Endpoints
-- `GET /api/pet-score/{pet_id}/score_state` - Complete score state (single source of truth)
-- `GET /api/pet-score/{pet_id}/quick-questions` - High-impact questions to boost score
-- `GET /api/pet-score/tiers` - All tier definitions
-- `GET /api/pet-score/config` - Full scoring configuration
-- `POST /api/pet-score/{pet_id}/recalculate` - Force score recalculation
-
-### NEW FRONTEND COMPONENTS ✅
-- `/app/frontend/src/utils/petScore.js` - `usePetScore` hook for server-side data
-- `/app/frontend/src/components/PetScoreCard.jsx` - Beautiful tier-aware score display
-
-### ALL 14 PILLAR ROUTES ADDED ✅
-Added routes for: `/feed`, `/groom`, `/play`, `/train`, `/insure`, `/adopt`, `/farewell`, `/community`
-
----
-
-## Core Principles (from User Doctrine)
-
-### Pet Soul Score vs Paw Rewards
-| Aspect | Pet Soul Score | Paw Rewards |
-|--------|---------------|-------------|
-| Purpose | Profile completeness & care context | Loyalty rewards |
-| Calculation | Server-side weighted questions | Transaction-based |
-| Benefits | Personalization unlock | Monetary discounts |
-| Never Mixes | ✓ | ✓ |
+Updated `/app/backend/mira_routes.py`:
+- Enhanced phone pattern matching
+- Added "name:" prefix pattern
+- Email prefix name extraction
+- More robust name filtering
 
 ---
 
-## Key Files
+## Achievements System
 
-| Component | File | Purpose |
-|-----------|------|---------|
-| Pet Score Logic | `/backend/pet_score_logic.py` | NEW - Server-side scoring |
-| Pet Score Hook | `/utils/petScore.js` | NEW - Frontend hook |
-| Pet Score Card | `/components/PetScoreCard.jsx` | NEW - Tier-aware display |
-| Unified Pet Page | `/pages/UnifiedPetPage.jsx` | Tab-based pet view |
-| App Routes | `App.js` | All pillar routes |
+| Achievement | Points | Type | Trigger |
+|-------------|--------|------|---------|
+| First Steps | 10 | Milestone | First answer |
+| Soul Seeker | 50 | Tier | Reach 25% |
+| Soul Explorer | 100 | Tier | Reach 50% |
+| Soul Master | 200 | Tier | Reach 75% |
+| Pet Soul Complete | 500 | Tier | Reach 100% |
+| Safety First | 75 | Category | 100% safety |
+| Personality Pro | 75 | Category | 100% personality |
+| Lifestyle Guru | 60 | Category | 100% lifestyle |
+| Nutrition Ninja | 40 | Category | 100% nutrition |
+| Training Expert | 30 | Category | 100% training |
+| Getting Started | 25 | Streak | 3-day streak |
+| On Fire | 50 | Streak | 7-day streak |
+| Picture Perfect | 20 | Special | Photo uploaded |
+| Allergy Aware | 30 | Special | Allergy info added |
+
+---
+
+## Key Files Updated This Session
+
+| File | Changes |
+|------|---------|
+| `/backend/pet_score_logic.py` | NEW - Server-side scoring |
+| `/backend/ticket_routes.py` | Customer name fallback fix |
+| `/backend/mira_routes.py` | Enhanced contact extraction |
+| `/frontend/src/components/PetAchievements.jsx` | NEW - Gamification |
+| `/frontend/src/utils/petScore.js` | NEW - Score hook |
+| `/frontend/src/components/PetScoreCard.jsx` | NEW - Tier-aware display |
+| `/frontend/src/pages/UnifiedPetPage.jsx` | Tab-based pet view |
+| `/frontend/src/pages/MemberDashboard.jsx` | Universal avatar |
+| `/frontend/src/pages/Checkout.jsx` | Universal avatar |
+| `/frontend/src/pages/Admin.jsx` | Universal avatar (4 places) |
 
 ---
 
@@ -75,28 +88,23 @@ Added routes for: `/feed`, `/groom`, `/play`, `/train`, `/insure`, `/adopt`, `/f
 
 ### P0 - Critical (All Completed ✅)
 - ~~Session Persistence~~ ✅
-- ~~Pet Photo Consistency~~ ✅ 
-- ~~Logo Redesign~~ ✅
-- ~~Centralized Avatar System~~ ✅
 - ~~Blank Health Tab Bug~~ ✅
-- ~~Missing Pillar Routes~~ ✅
 - ~~Server-Side Pet Soul Score~~ ✅
 
-### P1 - High Priority (In Progress)
-1. Complete Universal Pet Avatar integration across all components
-2. Consolidate remaining pet-related pages
-3. Store and display Mira conversation history
+### P1 - High Priority (Completed)
+- ~~Universal Pet Avatar Integration~~ ✅
+- ~~Gamification (Achievements, Confetti)~~ ✅
+- ~~Service Desk Customer Name Fix~~ ✅
 
-### P2 - Medium Priority
-1. "Untitled" Products from Shopify Sync
-2. Service Desk Missing Customer Name verification
-3. Mobile Cart View redesign
-4. Implement "Soft Gating" in Shopping Flow
+### P2 - Medium Priority (Pending User Bug List)
+1. "Untitled" Products from Shopify Sync (recurring)
+2. Mobile Cart View redesign
+3. Additional bugs from user's list
 
 ### P3 - Future
 - Build remaining pillar pages (Adopt, Farewell, etc.)
-- Paw Rewards ledger system (separate from Pet Soul Score)
-- Concierge Command Center Phase 3
+- Paw Rewards ledger system
+- Mira Conversation History storage
 
 ---
 
