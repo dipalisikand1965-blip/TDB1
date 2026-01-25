@@ -37,24 +37,6 @@ const getWelcomeImage = (user, pets) => {
     type: 'default',
     needsUpload: false
   };
-  // Priority 2: User/Parent's uploaded photo
-  const userPhoto = user?.photo_url || user?.avatar_url || user?.profile_image;
-  if (userPhoto) {
-    return { url: ensureFullUrl(userPhoto), type: 'user' };
-  }
-  
-  // Priority 3: Breed-specific image
-  if (pets?.[0]) {
-    const breed = (pets[0].identity?.breed || pets[0].breed || '').toLowerCase();
-    for (const [breedKey, url] of Object.entries(BREED_IMAGES)) {
-      if (breed.includes(breedKey) || breedKey.includes(breed)) {
-        return { url, type: 'breed' };
-      }
-    }
-  }
-  
-  // Priority 4: Default beautiful dog image
-  return { url: BREED_IMAGES.default, type: 'default' };
 };
 
 // Welcome Card Component - Enhanced with clickable links
