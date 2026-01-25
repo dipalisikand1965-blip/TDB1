@@ -5401,6 +5401,43 @@ async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dic
     }
 
 
+@api_router.patch("/pets/{pet_id}/soul-answers")
+async def patch_pet_soul_answers(pet_id: str, answers: dict):
+    """PATCH endpoint to update multiple soul answers at once (used by UnifiedPetPage inline editing)"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    # Get current soul answers or initialize
+    soul_answers = pet.get("doggy_soul_answers", {})
+    
+    # Merge the new answers into existing
+    for key, value in answers.items():
+        if value is not None and value != '':
+            soul_answers[key] = value
+    
+    # Recalculate score
+    filled = sum(1 for v in soul_answers.values() if v and v not in ['', [], None, 'Unknown'])
+    total_possible = 26  # Total expected questions
+    new_score = min(100, int((filled / total_possible) * 100))
+    
+    # Update pet
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$set": {
+            "doggy_soul_answers": soul_answers,
+            "overall_score": new_score,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {
+        "message": "Answers updated",
+        "new_score": new_score,
+        "answers_count": filled
+    }
+
+
 @api_router.post("/pets/{pet_id}/photo")
 async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
     """Upload or update a pet's photo"""

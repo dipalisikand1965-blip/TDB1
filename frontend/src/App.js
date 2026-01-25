@@ -86,6 +86,8 @@ import MyTickets from "./pages/MyTickets";
 import AdminDocs from "./pages/AdminDocs";
 import NPSFeedbackPage from "./pages/NPSFeedbackPage";
 import UnifiedPetPage from "./pages/UnifiedPetPage";
+import FarewellPage from "./pages/FarewellPage";
+import ShopPage from "./pages/ShopPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -268,7 +270,8 @@ function MainLayout() {
         <Route path="/train" element={<PillarPage />} />
         <Route path="/insure" element={<PillarPage />} />
         <Route path="/adopt" element={<PillarPage />} />
-        <Route path="/farewell" element={<PillarPage />} />
+        <Route path="/farewell" element={<FarewellPage />} />
+        <Route path="/shop" element={<ShopPage />} />
         <Route path="/community" element={<PillarPage />} />
         
         {/* Campaign Collections */}
