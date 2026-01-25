@@ -356,7 +356,7 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [filters, playBreachAlert]);
 
   useEffect(() => {
     loadQueue();
