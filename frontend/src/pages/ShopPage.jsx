@@ -127,7 +127,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
     >
       <div className="relative h-48 bg-gray-100 overflow-hidden">
         <img
-          src={product.image_url || product.images?.[0] || 'https://via.placeholder.com/200'}
+          src={product.image || product.image_url || product.images?.[0] || 'https://via.placeholder.com/200'}
           alt={product.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
