@@ -88,6 +88,7 @@ import NPSFeedbackPage from "./pages/NPSFeedbackPage";
 import UnifiedPetPage from "./pages/UnifiedPetPage";
 import FarewellPage from "./pages/FarewellPage";
 import ShopPage from "./pages/ShopPage";
+import AdoptPage from "./pages/AdoptPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
