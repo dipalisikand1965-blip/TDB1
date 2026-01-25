@@ -34,6 +34,38 @@ export default function VoiceOrder() {
   const timerRef = useRef(null);
   const streamRef = useRef(null);
 
+  // Auto-populate user data when logged in
+  useEffect(() => {
+    if (user) {
+      setCustomerName(user.name || '');
+      setCustomerEmail(user.email || '');
+      setCustomerPhone(user.phone || '');
+    }
+  }, [user]);
+
+  // Fetch user's pets for auto-population
+  useEffect(() => {
+    const fetchPets = async () => {
+      if (!token) return;
+      try {
+        const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserPets(data.pets || []);
+          // Auto-select first pet if available
+          if (data.pets?.length > 0 && !petName) {
+            setPetName(data.pets[0].name);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching pets:', err);
+      }
+    };
+    fetchPets();
+  }, [token, petName]);
+
   // Auto-stop recording when max time reached
   useEffect(() => {
     if (isRecording && recordingTime >= MAX_RECORDING_SECONDS) {
