@@ -952,7 +952,7 @@ const MemberDashboard = () => {
             <h3 className="text-xl font-bold mt-10 mb-4 text-gray-900">Recent Activity</h3>
             {orders.length > 0 ? (
               <div className="space-y-4">
-                {orders.slice(0, 3).map(order => (
+                {orders.slice(0, 10).map(order => (
                   <Card key={order.orderId} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-purple-200 transition-colors">
                     <div className="flex items-center gap-4">
                       <div className="p-3 bg-gray-100 rounded-lg">
@@ -960,7 +960,7 @@ const MemberDashboard = () => {
                       </div>
                       <div>
                         <p className="font-semibold text-gray-900">{order.orderId}</p>
-                        <p className="text-sm text-gray-500">{new Date(order.created_at).toLocaleDateString()} • {order.items.length} items</p>
+                        <p className="text-sm text-gray-500">{new Date(order.created_at).toLocaleDateString('en-GB')} • {order.items?.length || 1} items</p>
                       </div>
                     </div>
                     <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
@@ -971,6 +971,11 @@ const MemberDashboard = () => {
                     </div>
                   </Card>
                 ))}
+                {orders.length > 10 && (
+                  <Button variant="outline" className="w-full mt-4" onClick={() => setActiveTab('orders')}>
+                    View All {orders.length} Orders
+                  </Button>
+                )}
               </div>
             ) : (
               <div className="text-center py-12 bg-white rounded-xl border border-dashed">
