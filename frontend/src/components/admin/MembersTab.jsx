@@ -62,6 +62,13 @@ const MembersTab = ({
         </Card>
       </div>
 
+      {/* Export Button */}
+      <div className="flex justify-end">
+        <Button variant="outline" onClick={handleExportCSV} data-testid="export-members-csv">
+          <Download className="w-4 h-4 mr-2" /> Export CSV
+        </Button>
+      </div>
+
       {/* Members Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
