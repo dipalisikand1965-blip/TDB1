@@ -155,6 +155,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Refresh user data from server (useful after points sync, etc.)
+  const refreshUser = useCallback(async () => {
+    if (!token) return null;
+    
+    try {
+      const response = await axios.get(`${API_URL}/api/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 10000
+      });
+      
+      if (mountedRef.current) {
+        setUser(response.data.user);
+      }
+      return response.data.user;
+    } catch (error) {
+      console.error('Failed to refresh user:', error);
+      return null;
+    }
+  }, [token]);
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -164,7 +184,8 @@ export const AuthProvider = ({ children }) => {
       logout, 
       loading,
       loginWithGoogle,
-      initiateGoogleLogin 
+      initiateGoogleLogin,
+      refreshUser
     }}>
       {children}
     </AuthContext.Provider>
