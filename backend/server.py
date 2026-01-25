@@ -3232,8 +3232,12 @@ async def update_product(product_id: str, updates: dict, username: str = Depends
 
 @admin_router.delete("/products/{product_id}")
 async def delete_product(product_id: str, username: str = Depends(verify_admin)):
-    """Delete a product"""
-    result = await db.products.delete_one({"id": product_id})
+    """Delete a product - searches both collections"""
+    # Try unified_products first
+    result = await db.unified_products.delete_one({"id": product_id})
+    if result.deleted_count == 0:
+        # Fall back to legacy products
+        result = await db.products.delete_one({"id": product_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
     return {"message": "Product deleted successfully"}
