@@ -1604,6 +1604,7 @@ const Admin = () => {
             { id: 'servicedesk', label: '🎫 Service Desk', icon: Ticket },
             { id: 'agents', label: '👤 Agents', icon: Users },
             { id: 'loyalty', label: '⭐ Loyalty', icon: Star },
+            { id: 'product-box', label: '📦 Product Box', icon: Package },
             { id: 'reports', label: '📊 Reports', icon: BarChart3 },
             { id: 'analytics', label: '📈 Analytics', icon: TrendingUp },
             { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
