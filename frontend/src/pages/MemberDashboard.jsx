@@ -859,7 +859,7 @@ const MemberDashboard = () => {
       {/* My Account Section Below Hero */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Account Header Bar */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-lg font-bold text-white shadow-md">
               {user.name?.charAt(0) || 'U'}
@@ -874,6 +874,14 @@ const MemberDashboard = () => {
             Log out
           </Button>
         </div>
+        
+        {/* 🎮 GAMIFICATION BANNER - Complete Your Profile */}
+        <GamificationBanner 
+          pets={pets}
+          orders={orders}
+          user={user}
+          onNavigateToPet={(petId) => navigate(`/pet/${petId}?tab=personality`)}
+        />
         
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="bg-white p-1 rounded-xl border shadow-sm w-full md:w-auto flex overflow-x-auto">
