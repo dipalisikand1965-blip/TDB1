@@ -701,7 +701,7 @@ const MemberDashboard = () => {
                       <p className="text-xs text-purple-600">
                         {daysSinceLastOrder > 14 
                           ? `It's been ${daysSinceLastOrder} days since your last order!`
-                          : `Based on your favorites`}
+                          : `Based on your favourites`}
                       </p>
                     </div>
                   </div>
