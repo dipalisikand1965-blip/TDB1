@@ -516,9 +516,10 @@ const MiraContextPanel = ({
                     Suggested for {context.selected_pet?.name || 'your pet'}
                   </p>
                   {context.suggestions.slice(0, 3).map((item) => (
-                    <div 
+                    <a 
                       key={item.id}
-                      className="flex items-center gap-3 bg-white p-2 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors"
+                      href={`/product/${item.id}`}
+                      className="flex items-center gap-3 bg-white p-2 rounded-lg border border-gray-100 hover:border-purple-200 hover:bg-purple-50/50 transition-colors cursor-pointer"
                     >
                       {item.image && (
                         <img 
@@ -528,18 +529,14 @@ const MiraContextPanel = ({
                         />
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{item.name}</p>
+                        <p className="text-sm font-medium truncate text-gray-900">{item.name}</p>
                         <p className="text-xs text-gray-500">₹{item.price}</p>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 p-0"
-                        onClick={() => handleAddToCart(item)}
-                      >
-                        <ShoppingCart className="w-4 h-4" />
-                      </Button>
-                    </div>
+                      <div className="flex items-center text-purple-600 text-xs font-medium">
+                        View
+                        <ChevronRight className="w-3 h-3 ml-0.5" />
+                      </div>
+                    </a>
                   ))}
                 </div>
               )}
