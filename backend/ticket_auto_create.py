@@ -682,6 +682,61 @@ async def create_ticket_from_event(db, event_type: str, event_data: dict) -> str
             "is_internal": False
         })
     
+    elif event_type == "dine_bundle_order":
+        # Build items list
+        items_list = []
+        for item in event_data.get('items', []):
+            item_line = f"  - {item.get('name', 'Item')} x{item.get('quantity', 1)} - ₹{item.get('price', 0)}"
+            items_list.append(item_line)
+        
+        ticket_doc.update({
+            "category": "dine",
+            "sub_category": "bundle_order",
+            "urgency": "high",  # Orders are high priority
+            "member": {
+                "name": event_data.get("customer_name", "Customer"),
+                "email": event_data.get("customer_email"),
+                "phone": event_data.get("customer_phone"),
+                "city": event_data.get("city"),
+                "country": "India"
+            },
+            "description": f"""🍽️ DINE BUNDLE ORDER
+
+**Order ID / Ticket ID:** {event_data.get('order_id', 'Unknown')}
+**Customer:** {event_data.get('customer_name')}
+**Phone:** {event_data.get('customer_phone', 'Not provided')}
+**City:** {event_data.get('city', 'Not specified')}
+
+**Items:**
+{chr(10).join(items_list)}
+
+**Total:** ₹{event_data.get('total', 0)}
+
+**Delivery Method:** {event_data.get('delivery_method', 'delivery').upper()}
+**Delivery Date:** {event_data.get('delivery_date', 'Not specified')}
+**Delivery Address:** {event_data.get('delivery_address', 'Not provided')}
+
+**Special Instructions:** {event_data.get('special_instructions') or 'None'}
+
+---
+*Order ID = Ticket ID for easy tracking*""",
+            "source": "dine_bundle_order",
+            "source_reference": event_data.get("order_id"),
+            "linked_event_id": event_data.get("order_id"),
+            "tags": ["auto-created", "dine", "bundle", "order", event_data.get("city", "").lower().replace(" ", "-")] if event_data.get("city") else ["auto-created", "dine", "bundle", "order"]
+        })
+        
+        ticket_doc["messages"].append({
+            "id": str(uuid.uuid4()),
+            "type": "ticket_created",
+            "content": f"Dine bundle order #{event_data.get('order_id')} placed by {event_data.get('customer_name')}",
+            "sender": "system",
+            "sender_name": "System",
+            "channel": "auto",
+            "timestamp": now,
+            "is_internal": False
+        })
+    
     # Insert the ticket
     print(f"[TICKET DEBUG] About to insert ticket: {ticket_doc.get('ticket_id')}")
     try:
