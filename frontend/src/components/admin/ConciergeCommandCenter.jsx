@@ -168,7 +168,7 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
     const saved = localStorage.getItem('tdb_sla_audio_enabled');
     return saved !== 'false'; // Default to true
   });
-  const [previousBreachCount, setPreviousBreachCount] = useState(0);
+  const previousBreachCountRef = useRef(0);
   const audioRef = useRef(null);
   
   // Play SLA breach alert sound
