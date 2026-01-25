@@ -449,13 +449,15 @@ const FarewellPage = () => {
             {MEMORIAL_PRODUCTS.map((product) => (
               <Card 
                 key={product.id}
-                className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
-                onClick={() => {
-                  setSelectedProduct(product);
-                  setShowProductModal(true);
-                }}
+                className="overflow-hidden hover:shadow-lg transition-all group"
               >
-                <div className="relative h-40 overflow-hidden bg-gray-100">
+                <div 
+                  className="relative h-40 overflow-hidden bg-gray-100 cursor-pointer"
+                  onClick={() => {
+                    setSelectedProduct(product);
+                    setShowProductModal(true);
+                  }}
+                >
                   <img 
                     src={product.image} 
                     alt={product.name}
@@ -467,8 +469,16 @@ const FarewellPage = () => {
                   <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-purple-600">₹{product.price.toLocaleString()}</span>
-                    <Button size="sm" variant="outline" className="text-xs">
-                      View Details
+                    <Button 
+                      size="sm" 
+                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(product);
+                      }}
+                      data-testid={`add-to-cart-${product.id}`}
+                    >
+                      <ShoppingCart className="w-4 h-4 mr-1" /> Add
                     </Button>
                   </div>
                 </div>
