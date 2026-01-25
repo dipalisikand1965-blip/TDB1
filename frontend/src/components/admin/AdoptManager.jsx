@@ -385,6 +385,9 @@ const AdoptManager = ({ authHeaders }) => {
               <Button variant="outline" size="sm" onClick={fetchPets}>
                 <RefreshCw className="w-4 h-4" />
               </Button>
+              <Button variant="outline" size="sm" onClick={exportPetsCSV}>
+                <Download className="w-4 h-4 mr-1" /> Export CSV
+              </Button>
             </div>
             <Button onClick={() => { resetPetForm(); setEditingPet(null); setShowPetModal(true); }}>
               <Plus className="w-4 h-4 mr-2" /> Add Pet
