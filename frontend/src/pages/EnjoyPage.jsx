@@ -888,17 +888,10 @@ const EnjoyPage = () => {
                 </p>
               </Card>
 
-              {/* Pet Selection */}
+              {/* Pet Selection - Works for both logged in and guest users */}
               <div>
-                <Label className="mb-2 block">Select Pet</Label>
-                {userPets.length === 0 ? (
-                  <Card className="p-4 text-center bg-amber-50 border-amber-200">
-                    <p className="text-amber-700">Please add a pet profile first</p>
-                    <Button size="sm" className="mt-2" onClick={() => window.location.href = '/pet-profile'}>
-                      Add Pet
-                    </Button>
-                  </Card>
-                ) : (
+                <Label className="mb-2 block">Your Pet's Details</Label>
+                {userPets.length > 0 ? (
                   <div className="space-y-2">
                     {userPets.map((pet) => (
                       <button
@@ -920,6 +913,27 @@ const EnjoyPage = () => {
                         )}
                       </button>
                     ))}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label className="text-sm">Pet Name *</Label>
+                        <Input
+                          placeholder="e.g., Mojo"
+                          value={rsvpForm.guest_pet_name || ''}
+                          onChange={(e) => setRsvpForm({...rsvpForm, guest_pet_name: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm">Breed</Label>
+                        <Input
+                          placeholder="e.g., Labrador"
+                          value={rsvpForm.guest_pet_breed || ''}
+                          onChange={(e) => setRsvpForm({...rsvpForm, guest_pet_breed: e.target.value})}
+                        />
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
