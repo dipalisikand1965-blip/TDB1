@@ -387,9 +387,9 @@ const ProductListing = ({ category = 'all' }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-purple-600 mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 animate-spin text-teal-600 mx-auto mb-4" />
           <p className="text-gray-600">Loading products...</p>
         </div>
       </div>
@@ -397,7 +397,7 @@ const ProductListing = ({ category = 'all' }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
+    <div className="min-h-screen bg-gray-50">
       
       {/* === HERO SECTION === */}
       <div className={`relative overflow-hidden bg-gradient-to-br ${heroContent.color} text-white`}>
