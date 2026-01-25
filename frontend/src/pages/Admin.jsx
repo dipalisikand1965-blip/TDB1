@@ -2583,11 +2583,7 @@ const Admin = () => {
                             <td className="py-3 px-2">
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
-                                  {pet.photo_url ? (
-                                    <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
-                                  ) : (
-                                    <PawPrint className="w-5 h-5 text-purple-600" />
-                                  )}
+                                  <img src={getPetPhotoUrl(pet)} alt={pet.name} className="w-full h-full object-cover" />
                                 </div>
                                 <div>
                                   <p className="font-semibold text-gray-900">{pet.name}</p>
