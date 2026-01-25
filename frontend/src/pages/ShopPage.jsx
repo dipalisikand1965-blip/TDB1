@@ -159,7 +159,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
         <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
           <Button 
             onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
-            className="w-full bg-white text-purple-700 hover:bg-white/90 text-sm"
+            className="w-full bg-white text-teal-700 hover:bg-white/90 text-sm"
             size="sm"
           >
             <ShoppingBag className="w-4 h-4 mr-1" />
