@@ -201,7 +201,7 @@ async def get_user_from_token(authorization: str = Header(None)):
     
     import jwt
     try:
-        payload = jwt.decode(token, os.environ.get("JWT_SECRET", "doggy-secret-key-2024"), algorithms=["HS256"])
+        payload = jwt.decode(token, os.environ.get("JWT_SECRET", "tdb_super_secret_key_2025_woof"), algorithms=["HS256"])
         email = payload.get("sub")
         if not email:
             raise HTTPException(status_code=401, detail="Invalid token")
