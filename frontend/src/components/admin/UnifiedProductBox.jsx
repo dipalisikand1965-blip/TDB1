@@ -1286,128 +1286,446 @@ const UnifiedProductBox = () => {
               
               {/* Pricing Tab */}
               <TabsContent value="pricing" className="space-y-4 mt-4">
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <Label>Base Price (₹)</Label>
-                    <Input 
-                      type="number"
-                      value={selectedProduct.pricing?.base_price || 0}
-                      onChange={(e) => setSelectedProduct({
-                        ...selectedProduct,
-                        pricing: {...selectedProduct.pricing, base_price: parseFloat(e.target.value)}
-                      })}
-                    />
-                  </div>
-                  <div>
-                    <Label>Compare At Price</Label>
-                    <Input 
-                      type="number"
-                      value={selectedProduct.pricing?.compare_at_price || ''}
-                      onChange={(e) => setSelectedProduct({
-                        ...selectedProduct,
-                        pricing: {...selectedProduct.pricing, compare_at_price: parseFloat(e.target.value) || null}
-                      })}
-                      placeholder="Original price"
-                    />
-                  </div>
-                  <div>
-                    <Label>Cost Price</Label>
-                    <Input 
-                      type="number"
-                      value={selectedProduct.pricing?.cost_price || ''}
-                      onChange={(e) => setSelectedProduct({
-                        ...selectedProduct,
-                        pricing: {...selectedProduct.pricing, cost_price: parseFloat(e.target.value) || null}
-                      })}
-                      placeholder="Your cost"
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 p-4 border rounded-lg">
-                    <Switch 
-                      checked={selectedProduct.pricing?.gst_applicable ?? true}
-                      onCheckedChange={(c) => setSelectedProduct({
-                        ...selectedProduct,
-                        pricing: {...selectedProduct.pricing, gst_applicable: c}
-                      })}
-                    />
-                    <div>
-                      <Label>GST Applicable</Label>
-                    </div>
-                  </div>
-                  <div>
-                    <Label>GST Rate (%)</Label>
-                    <Input 
-                      type="number"
-                      value={selectedProduct.pricing?.gst_rate || 18}
-                      onChange={(e) => setSelectedProduct({
-                        ...selectedProduct,
-                        pricing: {...selectedProduct.pricing, gst_rate: parseFloat(e.target.value)}
-                      })}
-                    />
-                  </div>
-                </div>
-                
-                <div className="border-t pt-4 mt-4">
-                  <h4 className="font-medium mb-3 flex items-center gap-2">
-                    <Truck className="w-4 h-4" /> Shipping
-                  </h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3 p-4 border rounded-lg">
-                      <Switch 
-                        checked={selectedProduct.pricing?.requires_shipping ?? true}
-                        onCheckedChange={(c) => setSelectedProduct({
-                          ...selectedProduct,
-                          pricing: {...selectedProduct.pricing, requires_shipping: c}
-                        })}
-                      />
-                      <Label>Requires Shipping</Label>
-                    </div>
-                    <div className="flex items-center gap-3 p-4 border rounded-lg">
-                      <Switch 
-                        checked={selectedProduct.pricing?.free_shipping_eligible || false}
-                        onCheckedChange={(c) => setSelectedProduct({
-                          ...selectedProduct,
-                          pricing: {...selectedProduct.pricing, free_shipping_eligible: c}
-                        })}
-                      />
-                      <Label>Free Shipping Eligible</Label>
-                    </div>
-                  </div>
+                {/* Sub-tabs for Pricing section */}
+                <Tabs defaultValue="product-pricing" className="w-full">
+                  <TabsList className="grid grid-cols-4 w-full bg-gray-100">
+                    <TabsTrigger value="product-pricing" className="text-xs">💰 Product Pricing</TabsTrigger>
+                    <TabsTrigger value="shipping" className="text-xs">🚚 Shipping</TabsTrigger>
+                    <TabsTrigger value="tax" className="text-xs">📋 Tax & GST</TabsTrigger>
+                    <TabsTrigger value="commercial" className="text-xs">📊 Commercial</TabsTrigger>
+                  </TabsList>
                   
-                  <div className="grid grid-cols-2 gap-4 mt-4">
-                    <div>
-                      <Label>Shipping Weight (kg)</Label>
-                      <Input 
-                        type="number"
-                        step="0.1"
-                        value={selectedProduct.pricing?.shipping_weight || ''}
-                        onChange={(e) => setSelectedProduct({
-                          ...selectedProduct,
-                          pricing: {...selectedProduct.pricing, shipping_weight: parseFloat(e.target.value) || null}
-                        })}
-                      />
+                  {/* Product Pricing Sub-Tab */}
+                  <TabsContent value="product-pricing" className="space-y-4 mt-4">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <Label>Base Price (₹) *</Label>
+                        <Input 
+                          type="number"
+                          value={selectedProduct.pricing?.base_price || 0}
+                          onChange={(e) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, base_price: parseFloat(e.target.value)}
+                          })}
+                        />
+                      </div>
+                      <div>
+                        <Label>Compare At Price (₹)</Label>
+                        <Input 
+                          type="number"
+                          value={selectedProduct.pricing?.compare_at_price || ''}
+                          onChange={(e) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, compare_at_price: parseFloat(e.target.value) || null}
+                          })}
+                          placeholder="MRP / Original price"
+                        />
+                      </div>
+                      <div>
+                        <Label>Cost Price (₹)</Label>
+                        <Input 
+                          type="number"
+                          value={selectedProduct.pricing?.cost_price || ''}
+                          onChange={(e) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, cost_price: parseFloat(e.target.value) || null}
+                          })}
+                          placeholder="Your purchase cost"
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <Label>Shipping Class</Label>
-                      <select 
-                        value={selectedProduct.pricing?.shipping_class || ''}
-                        onChange={(e) => setSelectedProduct({
-                          ...selectedProduct,
-                          pricing: {...selectedProduct.pricing, shipping_class: e.target.value}
-                        })}
-                        className="w-full h-10 px-3 rounded-md border border-gray-200"
-                      >
-                        <option value="">Standard</option>
-                        <option value="express">Express</option>
-                        <option value="fragile">Fragile</option>
-                        <option value="refrigerated">Refrigerated</option>
-                      </select>
+                    
+                    {/* Calculated Margins */}
+                    {selectedProduct.pricing?.base_price > 0 && (
+                      <Card className="p-4 bg-green-50">
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <p className="text-gray-600">Selling Price</p>
+                            <p className="text-xl font-bold text-green-700">₹{selectedProduct.pricing.base_price?.toLocaleString()}</p>
+                          </div>
+                          {selectedProduct.pricing?.compare_at_price > 0 && (
+                            <div>
+                              <p className="text-gray-600">Discount</p>
+                              <p className="text-xl font-bold text-orange-600">
+                                {Math.round((1 - selectedProduct.pricing.base_price / selectedProduct.pricing.compare_at_price) * 100)}% OFF
+                              </p>
+                            </div>
+                          )}
+                          {selectedProduct.pricing?.cost_price > 0 && (
+                            <div>
+                              <p className="text-gray-600">Margin</p>
+                              <p className="text-xl font-bold text-blue-600">
+                                ₹{(selectedProduct.pricing.base_price - selectedProduct.pricing.cost_price).toLocaleString()}
+                                <span className="text-sm font-normal"> ({Math.round((1 - selectedProduct.pricing.cost_price / selectedProduct.pricing.base_price) * 100)}%)</span>
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </Card>
+                    )}
+                    
+                    {/* Autoship Pricing */}
+                    <div className="border rounded-lg p-4">
+                      <div className="flex items-center gap-3 mb-4">
+                        <Switch 
+                          checked={selectedProduct.pricing?.autoship_eligible || false}
+                          onCheckedChange={(c) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, autoship_eligible: c}
+                          })}
+                        />
+                        <div>
+                          <Label className="font-medium">Autoship Eligible</Label>
+                          <p className="text-sm text-gray-500">Enable subscribe & save pricing</p>
+                        </div>
+                      </div>
+                      
+                      {selectedProduct.pricing?.autoship_eligible && (
+                        <div className="grid grid-cols-2 gap-4 mt-4 pl-6 border-l-2 border-purple-200">
+                          <div>
+                            <Label>Autoship Discount (%)</Label>
+                            <Input 
+                              type="number"
+                              value={selectedProduct.pricing?.autoship_discount || 10}
+                              onChange={(e) => setSelectedProduct({
+                                ...selectedProduct,
+                                pricing: {...selectedProduct.pricing, autoship_discount: parseFloat(e.target.value)}
+                              })}
+                            />
+                          </div>
+                          <div>
+                            <Label>Autoship Price (₹)</Label>
+                            <p className="h-10 flex items-center text-lg font-bold text-purple-600">
+                              ₹{Math.round(selectedProduct.pricing.base_price * (1 - (selectedProduct.pricing?.autoship_discount || 10) / 100)).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </div>
+                  </TabsContent>
+                  
+                  {/* Shipping Sub-Tab */}
+                  <TabsContent value="shipping" className="space-y-4 mt-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex items-center gap-3 p-4 border rounded-lg">
+                        <Switch 
+                          checked={selectedProduct.pricing?.requires_shipping ?? true}
+                          onCheckedChange={(c) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, requires_shipping: c}
+                          })}
+                        />
+                        <div>
+                          <Label>Requires Shipping</Label>
+                          <p className="text-xs text-gray-500">Physical delivery needed</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 p-4 border rounded-lg">
+                        <Switch 
+                          checked={selectedProduct.pricing?.free_shipping_eligible || false}
+                          onCheckedChange={(c) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, free_shipping_eligible: c}
+                          })}
+                        />
+                        <div>
+                          <Label>Free Shipping Eligible</Label>
+                          <p className="text-xs text-gray-500">Include in free shipping offers</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {selectedProduct.pricing?.requires_shipping && (
+                      <>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div>
+                            <Label>Weight (kg)</Label>
+                            <Input 
+                              type="number"
+                              step="0.1"
+                              value={selectedProduct.pricing?.shipping_weight || ''}
+                              onChange={(e) => setSelectedProduct({
+                                ...selectedProduct,
+                                pricing: {...selectedProduct.pricing, shipping_weight: parseFloat(e.target.value) || null}
+                              })}
+                              placeholder="0.5"
+                            />
+                          </div>
+                          <div>
+                            <Label>Dimensions (LxWxH cm)</Label>
+                            <Input 
+                              value={selectedProduct.pricing?.shipping_dimensions || ''}
+                              onChange={(e) => setSelectedProduct({
+                                ...selectedProduct,
+                                pricing: {...selectedProduct.pricing, shipping_dimensions: e.target.value}
+                              })}
+                              placeholder="20x15x10"
+                            />
+                          </div>
+                          <div>
+                            <Label>Shipping Class</Label>
+                            <select 
+                              value={selectedProduct.pricing?.shipping_class || 'standard'}
+                              onChange={(e) => setSelectedProduct({
+                                ...selectedProduct,
+                                pricing: {...selectedProduct.pricing, shipping_class: e.target.value}
+                              })}
+                              className="w-full h-10 px-3 rounded-md border border-gray-200"
+                            >
+                              <option value="standard">📦 Standard</option>
+                              <option value="express">🚀 Express</option>
+                              <option value="fragile">⚠️ Fragile</option>
+                              <option value="refrigerated">❄️ Refrigerated</option>
+                              <option value="same_day">⚡ Same Day</option>
+                            </select>
+                          </div>
+                        </div>
+                        
+                        {/* Shipping Zones */}
+                        <div className="border rounded-lg p-4">
+                          <Label className="mb-3 block">Shipping Zone Pricing</Label>
+                          <div className="grid grid-cols-2 gap-3">
+                            {SHIPPING_ZONES.map(zone => (
+                              <div key={zone.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                  <p className="font-medium text-sm">{zone.name}</p>
+                                  <p className="text-xs text-gray-500">Base: ₹{zone.baseCost}</p>
+                                </div>
+                                <Input 
+                                  type="number"
+                                  className="w-24"
+                                  value={selectedProduct.pricing?.zone_shipping?.[zone.id] || zone.baseCost}
+                                  onChange={(e) => setSelectedProduct({
+                                    ...selectedProduct,
+                                    pricing: {
+                                      ...selectedProduct.pricing,
+                                      zone_shipping: {
+                                        ...(selectedProduct.pricing?.zone_shipping || {}),
+                                        [zone.id]: parseFloat(e.target.value)
+                                      }
+                                    }
+                                  })}
+                                  placeholder={`₹${zone.baseCost}`}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Delivery Estimate */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label>Min Delivery Days</Label>
+                            <Input 
+                              type="number"
+                              value={selectedProduct.pricing?.min_delivery_days || 2}
+                              onChange={(e) => setSelectedProduct({
+                                ...selectedProduct,
+                                pricing: {...selectedProduct.pricing, min_delivery_days: parseInt(e.target.value)}
+                              })}
+                            />
+                          </div>
+                          <div>
+                            <Label>Max Delivery Days</Label>
+                            <Input 
+                              type="number"
+                              value={selectedProduct.pricing?.max_delivery_days || 5}
+                              onChange={(e) => setSelectedProduct({
+                                ...selectedProduct,
+                                pricing: {...selectedProduct.pricing, max_delivery_days: parseInt(e.target.value)}
+                              })}
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </TabsContent>
+                  
+                  {/* Tax & GST Sub-Tab */}
+                  <TabsContent value="tax" className="space-y-4 mt-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex items-center gap-3 p-4 border rounded-lg">
+                        <Switch 
+                          checked={selectedProduct.pricing?.gst_applicable ?? true}
+                          onCheckedChange={(c) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, gst_applicable: c}
+                          })}
+                        />
+                        <div>
+                          <Label>GST Applicable</Label>
+                          <p className="text-xs text-gray-500">Include GST in pricing</p>
+                        </div>
+                      </div>
+                      <div>
+                        <Label>GST Rate (%)</Label>
+                        <select 
+                          value={selectedProduct.pricing?.gst_rate || 18}
+                          onChange={(e) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, gst_rate: parseFloat(e.target.value)}
+                          })}
+                          className="w-full h-10 px-3 rounded-md border border-gray-200"
+                        >
+                          <option value={0}>0% (Exempt)</option>
+                          <option value={5}>5% (Essential)</option>
+                          <option value={12}>12% (Standard)</option>
+                          <option value={18}>18% (Standard)</option>
+                          <option value={28}>28% (Luxury)</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>HSN Code</Label>
+                        <Input 
+                          value={selectedProduct.pricing?.hsn_code || ''}
+                          onChange={(e) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, hsn_code: e.target.value}
+                          })}
+                          placeholder="e.g., 23091090"
+                        />
+                      </div>
+                      <div className="flex items-center gap-3 p-4 border rounded-lg">
+                        <Switch 
+                          checked={selectedProduct.pricing?.price_includes_tax ?? true}
+                          onCheckedChange={(c) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, price_includes_tax: c}
+                          })}
+                        />
+                        <div>
+                          <Label>Price Includes Tax</Label>
+                          <p className="text-xs text-gray-500">GST included in base price</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Tax Calculation Preview */}
+                    {selectedProduct.pricing?.base_price > 0 && selectedProduct.pricing?.gst_applicable && (
+                      <Card className="p-4 bg-blue-50">
+                        <p className="text-sm font-medium text-blue-800 mb-2">Tax Calculation Preview</p>
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <p className="text-gray-600">Base Price</p>
+                            <p className="font-bold">₹{selectedProduct.pricing.base_price.toLocaleString()}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600">GST ({selectedProduct.pricing?.gst_rate || 18}%)</p>
+                            <p className="font-bold">₹{Math.round(selectedProduct.pricing.base_price * (selectedProduct.pricing?.gst_rate || 18) / 100).toLocaleString()}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600">Total</p>
+                            <p className="font-bold text-blue-700">₹{Math.round(selectedProduct.pricing.base_price * (1 + (selectedProduct.pricing?.gst_rate || 18) / 100)).toLocaleString()}</p>
+                          </div>
+                        </div>
+                      </Card>
+                    )}
+                  </TabsContent>
+                  
+                  {/* Commercial Sub-Tab */}
+                  <TabsContent value="commercial" className="space-y-4 mt-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Vendor / Supplier</Label>
+                        <Input 
+                          value={selectedProduct.pricing?.vendor || ''}
+                          onChange={(e) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, vendor: e.target.value}
+                          })}
+                          placeholder="Supplier name"
+                        />
+                      </div>
+                      <div>
+                        <Label>Vendor SKU</Label>
+                        <Input 
+                          value={selectedProduct.pricing?.vendor_sku || ''}
+                          onChange={(e) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, vendor_sku: e.target.value}
+                          })}
+                          placeholder="Vendor's product code"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <Label>Min Order Qty</Label>
+                        <Input 
+                          type="number"
+                          value={selectedProduct.pricing?.min_order_qty || 1}
+                          onChange={(e) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, min_order_qty: parseInt(e.target.value)}
+                          })}
+                        />
+                      </div>
+                      <div>
+                        <Label>Max Order Qty</Label>
+                        <Input 
+                          type="number"
+                          value={selectedProduct.pricing?.max_order_qty || ''}
+                          onChange={(e) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, max_order_qty: parseInt(e.target.value) || null}
+                          })}
+                          placeholder="No limit"
+                        />
+                      </div>
+                      <div>
+                        <Label>Stock Quantity</Label>
+                        <Input 
+                          type="number"
+                          value={selectedProduct.pricing?.stock_quantity || ''}
+                          onChange={(e) => setSelectedProduct({
+                            ...selectedProduct,
+                            pricing: {...selectedProduct.pricing, stock_quantity: parseInt(e.target.value) || null}
+                          })}
+                          placeholder="Unlimited"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Partner Commission */}
+                    <div className="border rounded-lg p-4">
+                      <Label className="mb-3 block flex items-center gap-2">
+                        <DollarSign className="w-4 h-4" /> Partner Commission Settings
+                      </Label>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Commission Type</Label>
+                          <select 
+                            value={selectedProduct.pricing?.commission_type || 'percentage'}
+                            onChange={(e) => setSelectedProduct({
+                              ...selectedProduct,
+                              pricing: {...selectedProduct.pricing, commission_type: e.target.value}
+                            })}
+                            className="w-full h-10 px-3 rounded-md border border-gray-200"
+                          >
+                            <option value="percentage">Percentage</option>
+                            <option value="fixed">Fixed Amount</option>
+                          </select>
+                        </div>
+                        <div>
+                          <Label>Commission Value</Label>
+                          <Input 
+                            type="number"
+                            value={selectedProduct.pricing?.commission_value || 10}
+                            onChange={(e) => setSelectedProduct({
+                              ...selectedProduct,
+                              pricing: {...selectedProduct.pricing, commission_value: parseFloat(e.target.value)}
+                            })}
+                            placeholder={selectedProduct.pricing?.commission_type === 'fixed' ? '₹ amount' : '% percentage'}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </TabsContent>
             </Tabs>
           )}
