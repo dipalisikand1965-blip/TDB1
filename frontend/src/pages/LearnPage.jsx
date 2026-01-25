@@ -890,10 +890,10 @@ const LearnPage = () => {
                 <p className="text-xl font-bold text-blue-600 mt-2">₹{selectedProgram.price?.toLocaleString()}</p>
               </Card>
 
-              {/* Pet Selection */}
-              {userPets.length > 0 && (
-                <div>
-                  <Label className="text-sm font-medium">Select Pet</Label>
+              {/* Pet Selection - Works for both logged in and guest users */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Your Pet's Details</Label>
+                {userPets.length > 0 ? (
                   <div className="grid grid-cols-2 gap-3 mt-2">
                     {userPets.map(pet => (
                       <Card 
@@ -911,8 +911,30 @@ const LearnPage = () => {
                       </Card>
                     ))}
                   </div>
-                </div>
-              )}
+                ) : (
+                  <div className="space-y-3">
+                    <Input
+                      placeholder="Pet name *"
+                      value={requestForm.guest_pet_name || ''}
+                      onChange={(e) => setRequestForm({...requestForm, guest_pet_name: e.target.value})}
+                    />
+                    {!user && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <Input
+                          placeholder="Your name *"
+                          value={requestForm.guest_name || ''}
+                          onChange={(e) => setRequestForm({...requestForm, guest_name: e.target.value})}
+                        />
+                        <Input
+                          placeholder="Phone *"
+                          value={requestForm.guest_phone || ''}
+                          onChange={(e) => setRequestForm({...requestForm, guest_phone: e.target.value})}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* Location */}
               <div>
