@@ -44,15 +44,21 @@ const Footer = () => {
           {/* COLUMN 1 — THE SYSTEM (CORE IDENTITY) */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
-              <Brain className="w-5 h-5 text-purple-400" />
-              <h3 className="text-white font-bold text-lg">The Pet Life OS</h3>
+              <div className="h-8 w-8 bg-white rounded-lg p-1 flex items-center justify-center">
+                <img src="/logo-new.png" alt="The Doggy Company" className="h-6 w-6 object-contain" />
+              </div>
+              <div>
+                <div className="text-sm font-bold leading-none">
+                  <span className="text-teal-400">the</span>
+                  <span className="text-purple-400">doggy</span>
+                  <span className="text-pink-400">company</span>
+                </div>
+                <div className="text-[10px] text-teal-400 tracking-wider">PET CONCIERGE®</div>
+              </div>
             </div>
             <p className="text-sm text-gray-400 mb-4 leading-relaxed">
               Your Pet&apos;s Life, Thoughtfully Orchestrated.
             </p>
-            <div className="mb-4">
-              <LogoCompact size="sm" className="text-white [&_span]:!text-white [&_span]:!bg-none" />
-            </div>
             <div className="flex space-x-3">
               <a href="https://www.facebook.com/thedoggybakery" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors">
                 <Facebook className="w-5 h-5" />
