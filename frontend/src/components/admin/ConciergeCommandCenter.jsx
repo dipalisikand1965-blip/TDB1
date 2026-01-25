@@ -163,6 +163,55 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
   const [eventStream, setEventStream] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
   
+  // SLA Breach Audio Alerts
+  const [audioEnabled, setAudioEnabled] = useState(() => {
+    const saved = localStorage.getItem('tdb_sla_audio_enabled');
+    return saved !== 'false'; // Default to true
+  });
+  const [previousBreachCount, setPreviousBreachCount] = useState(0);
+  const audioRef = useRef(null);
+  
+  // Play SLA breach alert sound
+  const playBreachAlert = useCallback(() => {
+    if (!audioEnabled) return;
+    
+    try {
+      // Create a more noticeable alert sound using Web Audio API
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      
+      // Play 3 beeps
+      [0, 0.2, 0.4].forEach((delay) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 880; // A5 note - urgent sounding
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + delay);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + delay + 0.15);
+        
+        oscillator.start(audioContext.currentTime + delay);
+        oscillator.stop(audioContext.currentTime + delay + 0.15);
+      });
+    } catch (e) {
+      console.log('Audio alert not available:', e);
+    }
+  }, [audioEnabled]);
+  
+  // Toggle audio alerts
+  const toggleAudio = () => {
+    const newValue = !audioEnabled;
+    setAudioEnabled(newValue);
+    localStorage.setItem('tdb_sla_audio_enabled', String(newValue));
+    if (newValue) {
+      // Test sound when enabling
+      playBreachAlert();
+    }
+  };
+  
   // Create ticket modal
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newTicket, setNewTicket] = useState({
