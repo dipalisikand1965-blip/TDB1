@@ -387,11 +387,12 @@ const UnifiedPetPage = () => {
               {/* Soul Score Badge */}
               <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-lg">
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold ${
-                  score >= 80 ? 'bg-green-100 text-green-700' :
-                  score >= 50 ? 'bg-amber-100 text-amber-700' :
-                  'bg-purple-100 text-purple-700'
+                  displayScore >= 75 ? 'bg-amber-100 text-amber-700' :
+                  displayScore >= 50 ? 'bg-purple-100 text-purple-700' :
+                  displayScore >= 25 ? 'bg-blue-100 text-blue-700' :
+                  'bg-gray-100 text-gray-700'
                 }`}>
-                  {score}%
+                  {Math.round(displayScore)}%
                 </div>
               </div>
             </div>
