@@ -346,6 +346,138 @@ import PetScoreCard from '../components/PetScoreCard';
         }
       ]
     },
+    'unified-pet-page': {
+      title: 'Unified Pet Page',
+      subtitle: 'THE Definitive Pet Profile - One Page for Everything',
+      badge: '⭐ Premium Feature',
+      files: {
+        frontend: '/app/frontend/src/pages/UnifiedPetPage.jsx',
+        backend: '/app/backend/pet_score_logic.py, /app/backend/health_vault_routes.py'
+      },
+      sections: [
+        {
+          title: 'What It Is',
+          content: `The Unified Pet Page is the **single source of truth** for all pet information. Instead of multiple scattered pages, everything is consolidated into one beautiful, intuitive interface.
+
+**Route:** \`/pet/{petId}?tab=personality\`
+
+**Key Sections:**
+• Emergency Info Card (allergies, medications, vet contact)
+• Soul Score Card with percentage & tier
+• ALL 8 Soul Pillars with inline editing
+• Photo Gallery
+• Milestone Tracker & Timeline
+• Breed Info Card
+• 14 Life Pillars quick access
+• Achievements gallery
+• Health Vault integration
+• Quick Actions Floating Button`
+        },
+        {
+          title: '8 Soul Pillars',
+          content: `| Pillar | Icon | Questions |
+|--------|------|-----------|
+| Identity & Temperament | 🎭 | 8 questions |
+| Family & Pack | 👨‍👩‍👧‍👦 | 6 questions |
+| Rhythm & Routine | ⏰ | 7 questions |
+| Home & Comforts | 🏠 | 6 questions |
+| Travel & Mobility | ✈️ | 6 questions |
+| Taste & Nutrition | 🍖 | 7 questions |
+| Training & Behaviour | 🎓 | 6 questions |
+| Health & Long-Term | 💊 | 8 questions |
+
+**Features:**
+• Click to expand/collapse
+• Progress bar per pillar
+• Inline editing with quick options
+• British English spellings`
+        },
+        {
+          title: 'Inline Editing System',
+          content: `Users can answer/edit questions **directly on the page** without navigating away!
+
+**How It Works:**
+1. Click "Answer" or edit icon on any question
+2. Quick option buttons appear for common answers
+3. Click an option to save instantly
+4. Score refreshes automatically
+
+**Quick Options Available For:**
+• Temperament (Calm, Energetic, Curious, etc.)
+• Stranger Reaction (Friendly, Cautious, etc.)
+• Behavior with Dogs/Humans
+• Travel preferences
+• Training level
+• And 25+ more question types!
+
+**Code Example:**
+\`\`\`jsx
+const QUICK_OPTIONS = {
+  general_nature: ['Calm', 'Energetic', 'Curious', 'Playful', 'Shy', 'Friendly'],
+  stranger_reaction: ['Friendly', 'Cautious', 'Excited', 'Shy', 'Protective'],
+  // ... more options
+};
+\`\`\``
+        },
+        {
+          title: 'Emergency Info Card',
+          content: `Critical pet info displayed prominently at the top:
+
+• **Allergies** - From food_allergies question
+• **Medical Conditions** - From medical_conditions question
+• **Active Medications** - From Health Vault
+• **Vet Contact** - From vet_name question
+
+**Styling:** Red/orange gradient for visibility
+**Purpose:** Quick reference in emergencies`
+        },
+        {
+          title: 'Premium Features',
+          content: `**Photo Gallery:**
+• Main pet photo + 6 additional slots
+• Click to upload more photos
+• Grid layout with 2x2 feature photo
+
+**Milestone Tracker:**
+• Timeline view with icons
+• Birthday with countdown
+• Gotcha Day with years calculation
+• Pet Pass enrollment
+• Soul Journey progress
+
+**Breed Info Card:**
+• Auto-populated breed traits
+• Temperament, Exercise needs, Grooming
+• Supports 20+ common breeds
+
+**Quick Actions FAB:**
+• Answer Questions → Pet Soul Journey
+• Health Vault → Add health records
+• Order Cake → Celebrate pillar
+• Ask Mira → Open AI chat`
+        },
+        {
+          title: 'API Endpoints Used',
+          content: `\`\`\`
+GET /api/pet/{id}                    # Pet details
+GET /api/pet/{id}/score_state        # Soul Score
+PATCH /api/pets/{id}/soul-answers    # Save inline answer
+GET /api/pet-vault/{id}/vaccines     # Vaccination records
+GET /api/pet-vault/{id}/medications  # Medication records
+\`\`\``
+        },
+        {
+          title: 'Tabs Available',
+          content: `| Tab | Contents |
+|-----|----------|
+| Detailed View | Soul pillars, Emergency info, Milestones, Breed info |
+| Health Vault | Vaccines, Medications, Vet visits, Weight tracking |
+| Services | Pillar-specific services booked/available |
+| Mira Chats | Conversation history with AI |
+| Pet Pass | Digital membership card |`
+        }
+      ]
+    },
     'member-directory': {
       title: 'Pet Parent Directory',
       subtitle: 'Complete 360° CRM View - Like Zoho/Salesforce but Pet-Centric',
