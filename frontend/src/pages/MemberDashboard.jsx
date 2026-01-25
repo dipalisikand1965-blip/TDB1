@@ -1043,20 +1043,20 @@ const MemberDashboard = () => {
               
               <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 md:gap-3">
                 {[
-                  { id: 'feed', name: 'Feed', icon: '🍖', path: '/meals', color: 'from-orange-400 to-red-400' },
                   { id: 'celebrate', name: 'Celebrate', icon: '🎂', path: '/celebrate', color: 'from-pink-400 to-rose-400' },
                   { id: 'dine', name: 'Dine', icon: '🍽️', path: '/dine', color: 'from-amber-400 to-orange-400' },
                   { id: 'stay', name: 'Stay', icon: '🏨', path: '/stay', color: 'from-blue-400 to-indigo-400' },
                   { id: 'travel', name: 'Travel', icon: '✈️', path: '/travel', color: 'from-cyan-400 to-blue-400' },
-                  { id: 'care', name: 'Care', icon: '🩺', path: '/care', color: 'from-emerald-400 to-teal-400' },
-                  { id: 'fit', name: 'Fit', icon: '🏃', path: '/fit', color: 'from-violet-400 to-purple-400' },
-                  { id: 'enjoy', name: 'Enjoy', icon: '🎾', path: '/enjoy', color: 'from-green-400 to-emerald-400' },
-                  { id: 'learn', name: 'Learn', icon: '🎓', path: '/learn', color: 'from-indigo-400 to-purple-400' },
-                  { id: 'advisory', name: 'Advisory', icon: '🛡️', path: '/advisory', color: 'from-slate-400 to-gray-500' },
-                  { id: 'adopt', name: 'Adopt', icon: '🐕', path: '/adopt', color: 'from-rose-400 to-pink-400' },
-                  { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/farewell', color: 'from-purple-400 to-indigo-400' },
-                  { id: 'shop', name: 'Shop', icon: '🛒', path: '/shop', color: 'from-teal-400 to-cyan-400' },
-                  { id: 'emergency', name: 'Emergency', icon: '🚨', path: '/emergency', color: 'from-red-500 to-rose-500' }
+                  { id: 'care', name: 'Care', icon: '💊', path: '/care', color: 'from-red-400 to-rose-400' },
+                  { id: 'enjoy', name: 'Enjoy', icon: '🎾', path: '/enjoy', color: 'from-violet-400 to-purple-400' },
+                  { id: 'fit', name: 'Fit', icon: '🏃', path: '/fit', color: 'from-green-400 to-emerald-400' },
+                  { id: 'learn', name: 'Learn', icon: '🎓', path: '/learn', color: 'from-teal-400 to-cyan-400' },
+                  { id: 'paperwork', name: 'Paperwork', icon: '📄', path: '/paperwork', color: 'from-slate-400 to-gray-500' },
+                  { id: 'advisory', name: 'Advisory', icon: '📋', path: '/advisory', color: 'from-gray-400 to-slate-500' },
+                  { id: 'emergency', name: 'Emergency', icon: '🚨', path: '/emergency', color: 'from-red-500 to-rose-500' },
+                  { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/farewell', color: 'from-rose-400 to-pink-400' },
+                  { id: 'adopt', name: 'Adopt', icon: '🐾', path: '/adopt', color: 'from-purple-400 to-violet-400' },
+                  { id: 'shop', name: 'Shop', icon: '🛒', path: '/shop', color: 'from-orange-400 to-amber-400' }
                 ].map((pillar) => (
                   <button
                     key={pillar.id}
