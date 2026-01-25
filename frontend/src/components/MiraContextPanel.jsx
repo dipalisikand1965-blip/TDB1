@@ -612,11 +612,11 @@ const MiraContextPanel = ({
                       />
                     </div>
                     
-                    {/* Gamification Rewards Message */}
+                    {/* Pet Soul Progress Message */}
                     {(context.selected_pet.soul_score || 0) < 100 && (
-                      <div className="mt-2 flex items-center gap-1 text-xs text-amber-700">
+                      <div className="mt-2 flex items-center gap-1 text-xs text-purple-700">
                         <Sparkles className="w-3 h-3" />
-                        <span>Complete to unlock {100 - (context.selected_pet.soul_score || 0)}% rewards!</span>
+                        <span>Complete your Pet Soul to unlock personalized care</span>
                       </div>
                     )}
                   </div>
