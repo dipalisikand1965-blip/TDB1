@@ -304,7 +304,7 @@ const ShopPage = () => {
       id: product.id,
       title: product.title,
       price: product.price,
-      image: product.image_url || product.images?.[0],
+      image: product.image || product.image_url || product.images?.[0],
       quantity: 1
     });
     toast({
