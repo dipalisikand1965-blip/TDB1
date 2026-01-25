@@ -773,6 +773,43 @@ const UnifiedPetPage = () => {
 
           {/* Pet Soul Tab - COMPREHENSIVE VIEW with ALL 8 Pillars */}
           <TabsContent value="personality" className="mt-0 space-y-6">
+            {/* EMERGENCY INFO CARD - Critical info at a glance */}
+            <Card className="p-4 bg-gradient-to-r from-red-50 to-orange-50 border-red-200">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-bold text-red-700 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5" />
+                  Emergency Info Card
+                </h3>
+                <Badge variant="outline" className="text-red-600 border-red-300">Quick Reference</Badge>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="bg-white rounded-lg p-3 border border-red-100">
+                  <p className="text-xs text-gray-500 mb-1">Allergies</p>
+                  <p className="font-semibold text-gray-900 text-sm">
+                    {(pet.doggy_soul_answers?.food_allergies || []).filter(a => a && a !== 'None').join(', ') || 'None recorded'}
+                  </p>
+                </div>
+                <div className="bg-white rounded-lg p-3 border border-red-100">
+                  <p className="text-xs text-gray-500 mb-1">Medical Conditions</p>
+                  <p className="font-semibold text-gray-900 text-sm">
+                    {(pet.doggy_soul_answers?.medical_conditions || []).filter(m => m && m !== 'None').join(', ') || 'None recorded'}
+                  </p>
+                </div>
+                <div className="bg-white rounded-lg p-3 border border-red-100">
+                  <p className="text-xs text-gray-500 mb-1">Medications</p>
+                  <p className="font-semibold text-gray-900 text-sm">
+                    {healthData?.medications?.filter(m => !m.end_date || new Date(m.end_date) > new Date()).map(m => m.name).join(', ') || 'None active'}
+                  </p>
+                </div>
+                <div className="bg-white rounded-lg p-3 border border-red-100">
+                  <p className="text-xs text-gray-500 mb-1">Vet Contact</p>
+                  <p className="font-semibold text-gray-900 text-sm">
+                    {pet.doggy_soul_answers?.vet_name || 'Not specified'}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
             {/* Soul Score Overview */}
             <div className="grid md:grid-cols-3 gap-6">
               {/* Score Card */}
