@@ -2060,15 +2060,15 @@ async def get_mira_context(
         # User logged in but no pets
         response["pillar_note"] = f"Hi **{user_name}**! Add your pet to get personalized recommendations across all our services."
     
-    # Get product suggestions based on pillar and pet
+    # Get product suggestions based on pillar, category, and pet
     if current_pillar and response["selected_pet"]:
-        suggestions = await get_pillar_suggestions(current_pillar, response["selected_pet"])
+        suggestions = await get_pillar_suggestions(current_pillar, response["selected_pet"], current_category)
         response["suggestions"] = suggestions
     
     return response
 
-async def get_pillar_suggestions(pillar: str, pet: Dict) -> List[Dict]:
-    """Get contextual product/service suggestions based on pillar and pet"""
+async def get_pillar_suggestions(pillar: str, pet: Dict, category: str = None) -> List[Dict]:
+    """Get contextual product/service suggestions based on pillar, category, and pet"""
     db = get_db()
     
     suggestions = []
