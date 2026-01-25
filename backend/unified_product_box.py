@@ -969,7 +969,7 @@ async def auto_enable_rewards(
     if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
-    collection = db.products_unified
+    collection = db.unified_products
     products = await collection.find({"visibility.status": "active"}).to_list(length=10000)
     
     import random
