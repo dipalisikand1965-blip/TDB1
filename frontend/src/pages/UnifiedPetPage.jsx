@@ -20,6 +20,7 @@ import PetScoreCard from '../components/PetScoreCard';
 import PetPassCard from '../components/PetPassCard';
 import PetSoulJourney from '../components/PetSoulJourney';
 import PetSoulAnswers from '../components/PetSoulAnswers';
+import { AchievementsGrid, ACHIEVEMENTS, celebrateAchievement } from '../components/PetAchievements';
 
 // Life Pillars configuration
 const LIFE_PILLARS = [
