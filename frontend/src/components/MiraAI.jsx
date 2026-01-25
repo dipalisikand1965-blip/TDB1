@@ -348,7 +348,7 @@ const MiraAI = () => {
       const breed = firstPet.identity?.breed || firstPet.breed || '';
       const allergies = firstPet.health?.allergies?.join(', ') || '';
       
-      let personalizedWelcome = `**Good day, ${user.name || 'valued guest'}.**\n\nI am Mira, your dedicated Concierge. I see you are here with `;
+      let personalizedWelcome = `**Good day, ${user.name || 'valued guest'}.**\n\nI am Mira, your dedicated Pet Concierge®. I see you are here with `;
       
       if (userPets.length === 1) {
         personalizedWelcome += `**${firstPet.name}**`;
