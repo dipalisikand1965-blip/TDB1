@@ -426,7 +426,7 @@ const GamificationBanner = ({ pets, orders, user, onNavigateToPet, onOpenExplain
 };
 
 const MemberDashboard = () => {
-  const { user, logout, token, loading: authLoading } = useAuth();
+  const { user, logout, token, loading: authLoading, refreshUser } = useAuth();
   const [orders, setOrders] = useState([]);
   const [pets, setPets] = useState([]);
   const [autoships, setAutoships] = useState([]);
