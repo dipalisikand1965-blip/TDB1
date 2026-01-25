@@ -547,17 +547,18 @@ const MyPets = () => {
                   const health = healthData[pet.id];
                   const soulExpanded = expandedSoul[pet.id];
                   const healthExpanded = expandedHealth[pet.id];
+                  const questionsExpanded = expandedQuestions[pet.id];
+                  const petPhoto = getPetPhotoUrl(pet);
                   
                   return (
                 <Card key={pet.id} id={`pet-card-${pet.id}`} className="overflow-hidden hover:shadow-lg transition-all">
                   {/* Pet Header with Photo and Basic Info */}
                   <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50">
                     <div className="flex flex-col md:flex-row gap-6">
-                      {/* Pet Photo */}
+                      {/* Pet Photo - Uses utility for consistent photos */}
                       <div className="relative flex-shrink-0 group">
                         <div className="w-32 h-32 rounded-2xl bg-white shadow-sm overflow-hidden border-4 border-white relative">
-                          {pet.photo_url ? (
-                            <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
+                          <img src={petPhoto} alt={pet.name} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-purple-100">
                               <PawPrint className="w-12 h-12 text-purple-300" />
