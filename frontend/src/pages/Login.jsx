@@ -123,7 +123,7 @@ const Login = () => {
               />
             </div>
             <div className="text-right mt-1">
-              <Link to="/member/forgot-password" className="text-sm text-purple-600 hover:underline">
+              <Link to="/member/forgot-password" className="text-sm text-teal-600 hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -131,7 +131,7 @@ const Login = () => {
 
           <Button
             type="submit"
-            className="w-full bg-purple-600 hover:bg-purple-700"
+            className="w-full bg-teal-600 hover:bg-teal-700"
             disabled={loading}
             data-testid="login-submit-btn"
           >
@@ -141,7 +141,7 @@ const Login = () => {
 
         <div className="mt-6 text-center text-sm text-gray-600">
           Don't have an account?{' '}
-          <Link to="/pet-soul-onboard" className="text-purple-600 font-medium hover:underline">
+          <Link to="/pet-soul-onboard" className="text-teal-600 font-medium hover:underline">
             Join now
           </Link>
         </div>
