@@ -1205,10 +1205,10 @@ const BookingRequestModal = ({ property, onClose }) => {
   const [loadingPets, setLoadingPets] = useState(false);
   
   const [formData, setFormData] = useState({
-    guest_name: '',
-    guest_email: '',
-    guest_phone: '',
-    guest_whatsapp: '',
+    guest_name: user?.name || '',
+    guest_email: user?.email || '',
+    guest_phone: user?.phone || '',
+    guest_whatsapp: user?.whatsapp || user?.phone || '',
     pet_name: '',
     pet_breed: '',
     pet_weight_kg: '',
@@ -1233,6 +1233,19 @@ const BookingRequestModal = ({ property, onClose }) => {
     // Pet Soul fields
     selectedPetId: null
   });
+  
+  // Auto-populate user data when user changes
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        guest_name: prev.guest_name || user.name || '',
+        guest_email: prev.guest_email || user.email || '',
+        guest_phone: prev.guest_phone || user.phone || '',
+        guest_whatsapp: prev.guest_whatsapp || user.whatsapp || user.phone || ''
+      }));
+    }
+  }, [user]);
   
   // Fetch user's pets on mount
   useEffect(() => {
