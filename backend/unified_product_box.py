@@ -1,0 +1,768 @@
+"""
+Unified Product Box - The Single Source of Truth
+=================================================
+Every product, reward, and experience must be born here, governed here,
+and resolved to a Pet Pass ID.
+
+This module powers:
+- Products on the website
+- Products in My Account
+- Products referenced by Mira
+- Products attached to Paw Rewards
+- Products linked to Service Desk tickets
+- Products used across Pillars
+- Products offered by Concierge
+"""
+
+import os
+import uuid
+import logging
+import secrets
+from datetime import datetime, timezone
+from typing import Optional, List, Dict, Any
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel, Field
+from motor.motor_asyncio import AsyncIOMotorDatabase
+
+logger = logging.getLogger(__name__)
+
+# Create router
+product_box_router = APIRouter(prefix="/api/product-box", tags=["Unified Product Box"])
+
+# Database reference
+db: AsyncIOMotorDatabase = None
+
+def set_product_box_db(database: AsyncIOMotorDatabase):
+    global db
+    db = database
+
+
+# ==================== ENUMS & CONSTANTS ====================
+
+PRODUCT_TYPES = ["physical", "service", "experience", "reward"]
+
+PRODUCT_STATUS = ["draft", "active", "archived"]
+
+# All 14+ pillars
+ALL_PILLARS = [
+    "feed", "celebrate", "dine", "stay", "travel", "care",
+    "groom", "play", "train", "insure", "adopt", "farewell",
+    "shop", "community", "emergency", "concierge"
+]
+
+LIFE_STAGES = ["puppy", "adult", "senior", "all"]
+
+SIZE_SUITABILITY = ["small", "medium", "large", "all"]
+
+DIETARY_FLAGS = [
+    "grain_free", "single_protein", "vegetarian", "limited_ingredient",
+    "hypoallergenic", "high_protein", "low_fat", "raw_friendly"
+]
+
+MEMBERSHIP_ELIGIBILITY = ["trial", "annual", "both", "reward_only", "all"]
+
+REWARD_TRIGGERS = [
+    "birthday", "booking", "order", "first_visit", "membership_milestone",
+    "referral", "manual_grant", "celebration", "gotcha_day"
+]
+
+
+# ==================== PYDANTIC MODELS ====================
+
+class PetSafetyInfo(BaseModel):
+    """Pet safety and suitability layer"""
+    life_stages: List[str] = ["all"]  # puppy, adult, senior, all
+    size_suitability: List[str] = ["all"]  # small, medium, large, all
+    dietary_flags: List[str] = []
+    known_exclusions: List[str] = []  # allergies, health restrictions
+    safety_notes: Optional[str] = None
+    is_validated: bool = False  # Admin must validate safety info
+
+
+class PawRewardConfig(BaseModel):
+    """Paw Rewards integration settings"""
+    is_reward_eligible: bool = False
+    is_reward_only: bool = False  # Cannot be purchased, reward only
+    reward_value: float = 0  # Points value for redemption
+    max_redemptions_per_pet: Optional[int] = None
+    expiry_days: Optional[int] = None
+    trigger_conditions: List[str] = []  # birthday, booking, etc.
+    pillar_specific: Optional[str] = None  # If tied to specific pillar
+
+
+class MiraVisibility(BaseModel):
+    """Mira AI visibility rules"""
+    can_reference: bool = True
+    can_suggest_proactively: bool = False  # Non-pushy by default
+    mention_only_if_asked: bool = True
+    suggestion_context: Optional[str] = None  # When to suggest
+    exclusion_reasons: List[str] = []  # Why Mira shouldn't suggest
+
+
+class PricingInfo(BaseModel):
+    """Pricing and tax configuration"""
+    base_price: float = 0
+    compare_at_price: Optional[float] = None
+    cost_price: Optional[float] = None
+    gst_applicable: bool = True
+    gst_rate: float = 18.0
+    variable_pricing: bool = False
+    zero_price_allowed: bool = False  # For rewards
+    currency: str = "INR"
+    
+    # Shipping
+    requires_shipping: bool = True
+    shipping_weight: Optional[float] = None  # in kg
+    shipping_class: Optional[str] = None  # standard, express, etc.
+    free_shipping_eligible: bool = False
+
+
+class VisibilitySettings(BaseModel):
+    """Visibility and status settings"""
+    status: str = "draft"  # draft, active, archived
+    visible_on_site: bool = True
+    visible_to_members: bool = True
+    admin_only: bool = False
+    membership_eligibility: str = "all"  # trial, annual, both, reward_only, all
+    featured: bool = False
+    searchable: bool = True
+
+
+class UnifiedProduct(BaseModel):
+    """The canonical product record"""
+    # Identity (immutable)
+    id: Optional[str] = None
+    sku: Optional[str] = None
+    
+    # Basic Info
+    name: str
+    product_type: str  # physical, service, experience, reward
+    short_description: Optional[str] = None
+    long_description: Optional[str] = None
+    usage_context: Optional[str] = None  # When appropriate/not appropriate
+    
+    # Categorization
+    category: Optional[str] = None
+    subcategory: Optional[str] = None
+    tags: List[str] = []
+    collections: List[str] = []
+    
+    # Pillar Mapping (Critical)
+    pillars: List[str] = []  # Which pillars this product appears in
+    primary_pillar: Optional[str] = None
+    
+    # Media
+    images: List[str] = []
+    thumbnail: Optional[str] = None
+    
+    # Nested Configs
+    pet_safety: PetSafetyInfo = Field(default_factory=PetSafetyInfo)
+    paw_rewards: PawRewardConfig = Field(default_factory=PawRewardConfig)
+    mira_visibility: MiraVisibility = Field(default_factory=MiraVisibility)
+    pricing: PricingInfo = Field(default_factory=PricingInfo)
+    visibility: VisibilitySettings = Field(default_factory=VisibilitySettings)
+    
+    # Inventory
+    in_stock: bool = True
+    stock_quantity: Optional[int] = None
+    track_inventory: bool = False
+    allow_backorder: bool = False
+    
+    # Variants (for physical products)
+    has_variants: bool = False
+    variants: List[Dict[str, Any]] = []
+    
+    # Bundle Info
+    is_bundle: bool = False
+    bundle_items: List[Dict[str, Any]] = []  # List of {product_id, quantity}
+    
+    # Fulfilment
+    fulfilment_notes: Optional[str] = None  # Internal only
+    preparation_time: Optional[str] = None
+    
+    # External References
+    shopify_id: Optional[str] = None
+    external_source: Optional[str] = None
+    
+    # Audit
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: Optional[str] = None
+    created_by: Optional[str] = None
+    updated_by: Optional[str] = None
+    version: int = 1
+
+
+class ProductFilter(BaseModel):
+    """Filter options for product search"""
+    product_type: Optional[str] = None
+    pillar: Optional[str] = None
+    status: Optional[str] = None
+    reward_eligible: Optional[bool] = None
+    mira_visible: Optional[bool] = None
+    in_stock: Optional[bool] = None
+    search: Optional[str] = None
+
+
+# ==================== API ROUTES ====================
+
+@product_box_router.get("/products")
+async def get_all_products(
+    skip: int = 0,
+    limit: int = 50,
+    product_type: Optional[str] = None,
+    pillar: Optional[str] = None,
+    status: Optional[str] = None,
+    reward_eligible: Optional[bool] = None,
+    search: Optional[str] = None
+):
+    """Get all products with filtering"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    # Build query
+    query = {}
+    
+    if product_type:
+        query["product_type"] = product_type
+    if pillar:
+        query["pillars"] = pillar
+    if status:
+        query["visibility.status"] = status
+    if reward_eligible is not None:
+        query["paw_rewards.is_reward_eligible"] = reward_eligible
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"sku": {"$regex": search, "$options": "i"}},
+            {"tags": {"$regex": search, "$options": "i"}}
+        ]
+    
+    # Execute query
+    products = await db.unified_products.find(
+        query, {"_id": 0}
+    ).skip(skip).limit(limit).to_list(limit)
+    
+    total = await db.unified_products.count_documents(query)
+    
+    return {
+        "products": products,
+        "total": total,
+        "skip": skip,
+        "limit": limit
+    }
+
+
+@product_box_router.get("/products/{product_id}")
+async def get_product(product_id: str):
+    """Get a single product by ID"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    product = await db.unified_products.find_one(
+        {"$or": [{"id": product_id}, {"sku": product_id}]},
+        {"_id": 0}
+    )
+    
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return product
+
+
+@product_box_router.post("/products")
+async def create_product(product: UnifiedProduct, admin_user: str = "system"):
+    """Create a new product"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    # Generate ID if not provided
+    if not product.id:
+        product.id = f"PROD-{secrets.token_hex(6).upper()}"
+    
+    # Generate SKU if not provided
+    if not product.sku:
+        product.sku = f"SKU-{product.product_type[:3].upper()}-{secrets.token_hex(4).upper()}"
+    
+    # Check for duplicate
+    existing = await db.unified_products.find_one({"id": product.id})
+    if existing:
+        raise HTTPException(status_code=400, detail="Product ID already exists")
+    
+    # Set audit fields
+    product_dict = product.model_dump()
+    product_dict["created_by"] = admin_user
+    product_dict["created_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.unified_products.insert_one(product_dict)
+    
+    # Remove _id from response
+    product_dict.pop("_id", None)
+    
+    logger.info(f"Created product: {product.id} - {product.name}")
+    return {"message": "Product created", "product": product_dict}
+
+
+@product_box_router.put("/products/{product_id}")
+async def update_product(product_id: str, updates: Dict[str, Any], admin_user: str = "system"):
+    """Update a product"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    # Check exists
+    existing = await db.unified_products.find_one({"id": product_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Don't allow changing ID
+    updates.pop("id", None)
+    updates.pop("_id", None)
+    
+    # Set audit fields
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    updates["updated_by"] = admin_user
+    updates["version"] = existing.get("version", 1) + 1
+    
+    await db.unified_products.update_one(
+        {"id": product_id},
+        {"$set": updates}
+    )
+    
+    # Get updated product
+    updated = await db.unified_products.find_one({"id": product_id}, {"_id": 0})
+    
+    logger.info(f"Updated product: {product_id}")
+    return {"message": "Product updated", "product": updated}
+
+
+@product_box_router.delete("/products/{product_id}")
+async def delete_product(product_id: str):
+    """Delete a product (soft delete - archive)"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    result = await db.unified_products.update_one(
+        {"id": product_id},
+        {"$set": {
+            "visibility.status": "archived",
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"message": "Product archived", "product_id": product_id}
+
+
+@product_box_router.post("/products/{product_id}/clone")
+async def clone_product(product_id: str, new_name: Optional[str] = None):
+    """Clone a product for creating variants"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    original = await db.unified_products.find_one({"id": product_id}, {"_id": 0})
+    if not original:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Create clone
+    clone = dict(original)
+    clone["id"] = f"PROD-{secrets.token_hex(6).upper()}"
+    clone["sku"] = f"SKU-{clone['product_type'][:3].upper()}-{secrets.token_hex(4).upper()}"
+    clone["name"] = new_name or f"{original['name']} (Copy)"
+    clone["visibility"]["status"] = "draft"
+    clone["created_at"] = datetime.now(timezone.utc).isoformat()
+    clone["updated_at"] = None
+    clone["version"] = 1
+    clone["shopify_id"] = None  # Don't copy external references
+    
+    await db.unified_products.insert_one(clone)
+    clone.pop("_id", None)
+    
+    return {"message": "Product cloned", "product": clone}
+
+
+# ==================== BULK OPERATIONS ====================
+
+@product_box_router.post("/products/bulk-update")
+async def bulk_update_products(
+    product_ids: List[str],
+    updates: Dict[str, Any],
+    admin_user: str = "system"
+):
+    """Bulk update multiple products"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    updates["updated_by"] = admin_user
+    
+    result = await db.unified_products.update_many(
+        {"id": {"$in": product_ids}},
+        {"$set": updates}
+    )
+    
+    return {
+        "message": f"Updated {result.modified_count} products",
+        "modified_count": result.modified_count
+    }
+
+
+@product_box_router.post("/products/bulk-assign-pillar")
+async def bulk_assign_pillar(product_ids: List[str], pillar: str):
+    """Assign multiple products to a pillar"""
+    if pillar not in ALL_PILLARS:
+        raise HTTPException(status_code=400, detail=f"Invalid pillar. Must be one of: {ALL_PILLARS}")
+    
+    result = await db.unified_products.update_many(
+        {"id": {"$in": product_ids}},
+        {
+            "$addToSet": {"pillars": pillar},
+            "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+        }
+    )
+    
+    return {"message": f"Assigned {result.modified_count} products to {pillar}"}
+
+
+# ==================== PILLAR & REWARD QUERIES ====================
+
+@product_box_router.get("/by-pillar/{pillar}")
+async def get_products_by_pillar(pillar: str, include_rewards: bool = True):
+    """Get all products for a specific pillar"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    query = {
+        "pillars": pillar,
+        "visibility.status": "active"
+    }
+    
+    if not include_rewards:
+        query["paw_rewards.is_reward_only"] = {"$ne": True}
+    
+    products = await db.unified_products.find(query, {"_id": 0}).to_list(200)
+    
+    return {
+        "pillar": pillar,
+        "products": products,
+        "count": len(products)
+    }
+
+
+@product_box_router.get("/rewards")
+async def get_reward_products(pillar: Optional[str] = None):
+    """Get all reward-eligible products"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    query = {
+        "paw_rewards.is_reward_eligible": True,
+        "visibility.status": "active"
+    }
+    
+    if pillar:
+        query["pillars"] = pillar
+    
+    products = await db.unified_products.find(query, {"_id": 0}).to_list(100)
+    
+    return {
+        "rewards": products,
+        "count": len(products)
+    }
+
+
+@product_box_router.get("/mira-visible")
+async def get_mira_visible_products(
+    can_suggest: bool = False,
+    pillar: Optional[str] = None
+):
+    """Get products that Mira can reference"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    query = {
+        "mira_visibility.can_reference": True,
+        "visibility.status": "active"
+    }
+    
+    if can_suggest:
+        query["mira_visibility.can_suggest_proactively"] = True
+    
+    if pillar:
+        query["pillars"] = pillar
+    
+    products = await db.unified_products.find(query, {"_id": 0}).to_list(100)
+    
+    return {
+        "products": products,
+        "count": len(products)
+    }
+
+
+# ==================== PET SAFETY QUERIES ====================
+
+@product_box_router.get("/safe-for-pet")
+async def get_safe_products_for_pet(
+    life_stage: str = "adult",
+    size: str = "medium",
+    allergies: List[str] = Query(default=[]),
+    pillar: Optional[str] = None
+):
+    """Get products safe for a specific pet profile"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    query = {
+        "visibility.status": "active",
+        "pet_safety.is_validated": True,
+        "$or": [
+            {"pet_safety.life_stages": "all"},
+            {"pet_safety.life_stages": life_stage}
+        ]
+    }
+    
+    # Size filter
+    query["$and"] = [
+        {"$or": [
+            {"pet_safety.size_suitability": "all"},
+            {"pet_safety.size_suitability": size}
+        ]}
+    ]
+    
+    # Exclude products with pet's allergies
+    if allergies:
+        query["pet_safety.known_exclusions"] = {"$nin": allergies}
+    
+    if pillar:
+        query["pillars"] = pillar
+    
+    products = await db.unified_products.find(query, {"_id": 0}).to_list(100)
+    
+    return {
+        "safe_products": products,
+        "count": len(products),
+        "filters": {
+            "life_stage": life_stage,
+            "size": size,
+            "excluded_allergies": allergies
+        }
+    }
+
+
+# ==================== STATISTICS ====================
+
+@product_box_router.get("/stats")
+async def get_product_stats():
+    """Get product statistics"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    # Total counts
+    total = await db.unified_products.count_documents({})
+    active = await db.unified_products.count_documents({"visibility.status": "active"})
+    draft = await db.unified_products.count_documents({"visibility.status": "draft"})
+    archived = await db.unified_products.count_documents({"visibility.status": "archived"})
+    
+    # By type
+    type_pipeline = [
+        {"$group": {"_id": "$product_type", "count": {"$sum": 1}}}
+    ]
+    by_type = await db.unified_products.aggregate(type_pipeline).to_list(10)
+    
+    # By pillar
+    pillar_pipeline = [
+        {"$unwind": "$pillars"},
+        {"$group": {"_id": "$pillars", "count": {"$sum": 1}}}
+    ]
+    by_pillar = await db.unified_products.aggregate(pillar_pipeline).to_list(20)
+    
+    # Reward stats
+    reward_eligible = await db.unified_products.count_documents({"paw_rewards.is_reward_eligible": True})
+    reward_only = await db.unified_products.count_documents({"paw_rewards.is_reward_only": True})
+    
+    # Mira stats
+    mira_visible = await db.unified_products.count_documents({"mira_visibility.can_reference": True})
+    mira_suggestable = await db.unified_products.count_documents({"mira_visibility.can_suggest_proactively": True})
+    
+    return {
+        "total": total,
+        "by_status": {
+            "active": active,
+            "draft": draft,
+            "archived": archived
+        },
+        "by_type": {item["_id"]: item["count"] for item in by_type},
+        "by_pillar": {item["_id"]: item["count"] for item in by_pillar},
+        "rewards": {
+            "eligible": reward_eligible,
+            "reward_only": reward_only
+        },
+        "mira": {
+            "visible": mira_visible,
+            "suggestable": mira_suggestable
+        }
+    }
+
+
+# ==================== MIGRATION / SEEDING ====================
+
+@product_box_router.post("/migrate-from-products")
+async def migrate_existing_products():
+    """Migrate existing products to unified product box"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    # Get existing products
+    existing = await db.products.find({}, {"_id": 0}).to_list(1000)
+    
+    migrated = 0
+    skipped = 0
+    
+    for product in existing:
+        # Check if already migrated
+        exists = await db.unified_products.find_one({
+            "$or": [
+                {"shopify_id": product.get("shopify_id")},
+                {"name": product.get("title") or product.get("name")}
+            ]
+        })
+        
+        if exists:
+            skipped += 1
+            continue
+        
+        # Transform to unified format
+        unified = {
+            "id": f"PROD-{secrets.token_hex(6).upper()}",
+            "sku": product.get("sku") or f"SKU-PHY-{secrets.token_hex(4).upper()}",
+            "name": product.get("title") or product.get("name") or "Untitled Product",
+            "product_type": "physical",
+            "short_description": product.get("description", "")[:200] if product.get("description") else None,
+            "long_description": product.get("description"),
+            "category": product.get("category"),
+            "subcategory": product.get("subcategory"),
+            "tags": product.get("tags", []),
+            "collections": product.get("collections", []),
+            "pillars": ["shop"],  # Default to shop pillar
+            "primary_pillar": "shop",
+            "images": product.get("images", []),
+            "thumbnail": product.get("images", [None])[0] if product.get("images") else None,
+            
+            # Pet Safety - default safe for all
+            "pet_safety": {
+                "life_stages": ["all"],
+                "size_suitability": ["all"],
+                "dietary_flags": [],
+                "known_exclusions": [],
+                "safety_notes": None,
+                "is_validated": False
+            },
+            
+            # Paw Rewards - not eligible by default
+            "paw_rewards": {
+                "is_reward_eligible": False,
+                "is_reward_only": False,
+                "reward_value": 0,
+                "max_redemptions_per_pet": None,
+                "expiry_days": None,
+                "trigger_conditions": [],
+                "pillar_specific": None
+            },
+            
+            # Mira - visible but not suggestable
+            "mira_visibility": {
+                "can_reference": True,
+                "can_suggest_proactively": False,
+                "mention_only_if_asked": True,
+                "suggestion_context": None,
+                "exclusion_reasons": []
+            },
+            
+            # Pricing
+            "pricing": {
+                "base_price": float(product.get("price", 0)),
+                "compare_at_price": float(product.get("compare_at_price")) if product.get("compare_at_price") else None,
+                "cost_price": None,
+                "gst_applicable": True,
+                "gst_rate": 18.0,
+                "variable_pricing": False,
+                "zero_price_allowed": False,
+                "currency": "INR",
+                "requires_shipping": True,
+                "shipping_weight": product.get("weight"),
+                "shipping_class": None,
+                "free_shipping_eligible": False
+            },
+            
+            # Visibility
+            "visibility": {
+                "status": "active" if product.get("in_stock", True) else "draft",
+                "visible_on_site": True,
+                "visible_to_members": True,
+                "admin_only": False,
+                "membership_eligibility": "all",
+                "featured": product.get("featured", False),
+                "searchable": True
+            },
+            
+            # Inventory
+            "in_stock": product.get("in_stock", True),
+            "stock_quantity": product.get("stock_quantity"),
+            "track_inventory": product.get("track_inventory", False),
+            "allow_backorder": False,
+            
+            # Variants
+            "has_variants": bool(product.get("variants")),
+            "variants": product.get("variants", []),
+            
+            # Bundle
+            "is_bundle": product.get("is_bundle", False),
+            "bundle_items": product.get("bundle_items", []),
+            
+            # External
+            "shopify_id": product.get("shopify_id"),
+            "external_source": "shopify" if product.get("shopify_id") else None,
+            
+            # Audit
+            "created_at": product.get("created_at") or datetime.now(timezone.utc).isoformat(),
+            "updated_at": None,
+            "created_by": "migration",
+            "updated_by": None,
+            "version": 1
+        }
+        
+        await db.unified_products.insert_one(unified)
+        migrated += 1
+    
+    logger.info(f"Migration complete: {migrated} migrated, {skipped} skipped")
+    
+    return {
+        "message": "Migration complete",
+        "migrated": migrated,
+        "skipped": skipped,
+        "total_existing": len(existing)
+    }
+
+
+@product_box_router.get("/config/pillars")
+async def get_all_pillars():
+    """Get all available pillars"""
+    return {"pillars": ALL_PILLARS}
+
+
+@product_box_router.get("/config/product-types")
+async def get_product_types():
+    """Get all product types"""
+    return {"types": PRODUCT_TYPES}
+
+
+@product_box_router.get("/config/dietary-flags")
+async def get_dietary_flags():
+    """Get all dietary flags"""
+    return {"flags": DIETARY_FLAGS}
+
+
+@product_box_router.get("/config/reward-triggers")
+async def get_reward_triggers():
+    """Get all reward trigger conditions"""
+    return {"triggers": REWARD_TRIGGERS}
