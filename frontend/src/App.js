@@ -188,7 +188,8 @@ function MainLayout() {
         <Route path="/pet-soul/:petId" element={<PetSoulPage />} />
         <Route path="/pet-soul" element={<PetSoulPage />} />
         <Route path="/pet-profile" element={<ProtectedRoute><PetProfile /></ProtectedRoute>} />
-        <Route path="/pet-soul-journey/:petId" element={<PetSoulJourneyPage />} />
+        {/* Redirect old pet-soul-journey URL to unified pet page */}
+        <Route path="/pet-soul-journey/:petId" element={<Navigate to={window.location.pathname.replace('/pet-soul-journey/', '/pet/')} replace />} />
         <Route path="/pet/:petId" element={<UnifiedPetPage />} />
         <Route path="/pet-soul-demo" element={<PetSoulDemo />} />
         <Route path="/pet-vault/:petId" element={<ProtectedRoute><PetVault /></ProtectedRoute>} />
