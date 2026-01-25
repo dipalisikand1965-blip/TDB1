@@ -14,6 +14,7 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraContextPanel from '../components/MiraContextPanel';
 import ProductCard from '../components/ProductCard';
+import { getPetPhotoUrl } from '../utils/petAvatar';
 import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,

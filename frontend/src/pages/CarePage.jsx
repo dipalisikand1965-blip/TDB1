@@ -12,6 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
 import MiraContextPanel from '../components/MiraContextPanel';
 import ProductCard from '../components/ProductCard';
+import { getPetPhotoUrl } from '../utils/petAvatar';
 import {
   Scissors, PawPrint, GraduationCap, Stethoscope, AlertTriangle, Heart,
   ClipboardList, MapPin, Calendar, Clock, CheckCircle, MessageCircle,

@@ -13,6 +13,7 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraContextPanel from '../components/MiraContextPanel';
 import ProductCard from '../components/ProductCard';
+import { getPetPhotoUrl } from '../utils/petAvatar';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
   ChevronRight, Sparkles, Star, Loader2, Send, ArrowRight, Play,
