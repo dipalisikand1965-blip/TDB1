@@ -1470,6 +1470,18 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
             <Button onClick={exportToCSV} variant="outline" size="sm">
               <Download className="w-4 h-4 mr-1" /> Export CSV
             </Button>
+            <Button 
+              onClick={toggleAudio} 
+              variant={audioEnabled ? "default" : "outline"} 
+              size="sm"
+              title={audioEnabled ? "SLA breach alerts ON - click to disable" : "SLA breach alerts OFF - click to enable"}
+            >
+              {audioEnabled ? (
+                <>🔔 Alerts ON</>
+              ) : (
+                <>🔕 Alerts OFF</>
+              )}
+            </Button>
             <Button onClick={loadQueue} variant="outline" size="sm">
               <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               Refresh
