@@ -618,12 +618,12 @@ GET  /api/paw-points/ways-to-earn # Earning methods`
 
 **Preview Message:**
 "Soul Whisper for Mojo 💜
-'What's Mojo's favourite spot in the house?'
-Tap to answer →"\`
+'What is Mojo favourite spot in the house?'
+Tap to answer →"`
         },
         {
           title: 'User Flow',
-          content: \`1. Member enables Soul Whisper in Settings
+          content: `1. Member enables Soul Whisper in Settings
 2. System sends question at preferred time
 3. Member taps WhatsApp message
 4. Opens app to answer question
@@ -633,7 +633,7 @@ Tap to answer →"\`
 **Benefits:**
 • Never overwhelming (just 1 question)
 • Builds habit of engagement
-• Grows Soul score naturally\`
+• Grows Soul score naturally`
         }
       ]
     },
@@ -647,7 +647,7 @@ Tap to answer →"\`
       sections: [
         {
           title: 'What It Is',
-          content: \`An **animated, video-like slideshow** that explains what Pet Soul™ is and why it matters. 
+          content: `An **animated, video-like slideshow** that explains what Pet Soul™ is and why it matters. 
 
 **Location:** Dashboard → "What is Pet Soul?" button
 
@@ -665,7 +665,7 @@ Tap to answer →"\`
 • Play/Pause controls
 • Progress dots for navigation
 • Beautiful gradient backgrounds
-• Smooth animations\`
+• Smooth animations`
         },
         {
           title: 'Usage',
