@@ -669,8 +669,7 @@ Tap to answer →"`
         },
         {
           title: 'Usage',
-          content: \`\`\`\`jsx
-import SoulExplainerVideo from './components/SoulExplainerVideo';
+          content: `import SoulExplainerVideo from './components/SoulExplainerVideo';
 
 // In your component
 {showExplainer && (
@@ -679,8 +678,7 @@ import SoulExplainerVideo from './components/SoulExplainerVideo';
     onClose={() => setShowExplainer(false)}
     onStartJourney={() => navigate('/pet/' + petId)}
   />
-)}
-\`\`\`\``
+)}`
         }
       ]
     },
