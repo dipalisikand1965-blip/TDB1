@@ -35,7 +35,7 @@ const TENURE_LEVELS = [
     name: 'Well Known', 
     description: 'We understand your pet deeply',
     minMonths: 6,
-    color: 'from-purple-400 to-purple-600'
+    color: 'from-teal-400 to-teal-600'
   },
   { 
     key: 'deeply_understood',
@@ -242,7 +242,7 @@ const MembershipPage = () => {
       <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-900 text-white">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 left-10 w-72 h-72 bg-teal-500 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500 rounded-full blur-3xl"></div>
         </div>
 
@@ -430,7 +430,7 @@ const MembershipPage = () => {
           <div className="text-center mt-8">
             <button
               onClick={() => setShowAllPillars(!showAllPillars)}
-              className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium transition-colors"
+              className="inline-flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium transition-colors"
               data-testid="toggle-pillars-btn"
             >
               {showAllPillars ? (
@@ -459,8 +459,8 @@ const MembershipPage = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             {benefits.filter(b => b.primary).map((benefit, idx) => (
               <div key={idx} className="flex gap-4 p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow" data-testid={`benefit-${benefit.title.toLowerCase().replace(/\s+/g, '-')}`}>
-                <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
-                  <benefit.icon className="w-6 h-6 text-purple-600" />
+                <div className="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center flex-shrink-0">
+                  <benefit.icon className="w-6 h-6 text-teal-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">{benefit.title}</h3>
@@ -599,7 +599,7 @@ const MembershipPage = () => {
                   <p className="text-xs text-white/60">Next Checkup</p>
                 </div>
                 <div className="text-center p-4 bg-white/10 rounded-lg">
-                  <Users className="w-8 h-8 mx-auto mb-2 text-purple-400" />
+                  <Users className="w-8 h-8 mx-auto mb-2 text-teal-400" />
                   <p className="text-sm font-medium">{SAMPLE_PET_SOUL.healthContinuity.vetName}</p>
                   <p className="text-xs text-white/60">Primary Vet</p>
                 </div>
@@ -611,7 +611,7 @@ const MembershipPage = () => {
             <p className="text-white/60 mb-4">This is just the beginning. Your pet&apos;s profile grows with every interaction.</p>
             <Button 
               size="lg"
-              className="bg-white text-purple-700 hover:bg-gray-100"
+              className="bg-white text-teal-700 hover:bg-gray-100"
               onClick={() => handleSelectPlan('annual')}
               data-testid="bruno-section-cta"
             >
@@ -662,7 +662,7 @@ const MembershipPage = () => {
       <div id="pricing" className="bg-gradient-to-b from-purple-50 to-white py-20">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <div className="inline-flex items-center gap-2 bg-teal-100 text-teal-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
               <Crown className="w-4 h-4" />
               Pet Pass
             </div>
@@ -676,8 +676,8 @@ const MembershipPage = () => {
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Annual Plan - FIRST (Foundation) */}
-            <Card className="p-8 border-2 border-purple-500 relative overflow-hidden order-1">
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+            <Card className="p-8 border-2 border-teal-500 relative overflow-hidden order-1">
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-teal-500 to-pink-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
                 RECOMMENDED
               </div>
 
@@ -710,7 +710,7 @@ const MembershipPage = () => {
               </ul>
 
               <Button 
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 py-6 text-lg"
+                className="w-full bg-gradient-to-r from-teal-600 to-pink-600 hover:from-teal-700 hover:to-pink-700 py-6 text-lg"
                 onClick={() => handleSelectPlan('annual')}
                 data-testid="annual-plan-btn"
               >
@@ -773,7 +773,7 @@ const MembershipPage = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 py-16">
+      <div className="bg-gradient-to-r from-teal-600 to-pink-600 py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             Ready to begin your pet&apos;s concierge journey?
@@ -783,7 +783,7 @@ const MembershipPage = () => {
           </p>
           <Button 
             size="lg"
-            className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-6 text-lg"
+            className="bg-white text-teal-600 hover:bg-gray-100 px-8 py-6 text-lg"
             onClick={() => handleSelectPlan('annual')}
             data-testid="final-cta-btn"
           >
@@ -812,7 +812,7 @@ const MembershipPage = () => {
             </button>
 
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <PawPrint className="w-8 h-8 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900">
@@ -907,7 +907,7 @@ const MembershipPage = () => {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                className="w-full bg-gradient-to-r from-teal-600 to-pink-600 hover:from-teal-700 hover:to-pink-700"
               >
                 {submitting ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
               </Button>
@@ -916,7 +916,7 @@ const MembershipPage = () => {
             <div className="mt-6 text-center">
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-purple-600 hover:text-purple-700"
+                className="text-sm text-teal-600 hover:text-teal-700"
               >
                 {isLogin ? "Don't have an account? Sign up" : 'Already a member? Sign in'}
               </button>
@@ -937,7 +937,7 @@ const MembershipPage = () => {
             </button>
 
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <CreditCard className="w-8 h-8 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900">
