@@ -174,7 +174,9 @@ const Navbar = () => {
             
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0" data-testid="navbar-logo">
-              <img src="/logo-new.png" alt="The Doggy Company" className="h-8 w-8" />
+              <div className="h-9 w-9 bg-white rounded-lg p-1 flex items-center justify-center">
+                <img src="/logo-new.png" alt="The Doggy Company" className="h-7 w-7 object-contain" />
+              </div>
               <div className="hidden sm:block">
                 <div className="text-sm font-bold leading-none">
                   <span className="text-teal-400">the</span>
