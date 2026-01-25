@@ -399,7 +399,7 @@ const ShopPage = () => {
                     onClick={() => toggleFilter(filter.id)}
                     className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
                       activeFilters.includes(filter.id)
-                        ? 'bg-purple-100 text-purple-700 font-medium'
+                        ? 'bg-teal-100 text-teal-700 font-medium'
                         : 'hover:bg-gray-100 text-gray-700'
                     }`}
                   >
