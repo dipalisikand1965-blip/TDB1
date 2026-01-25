@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Search, User, ChevronDown, Sparkles, PawPrint } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -7,7 +7,7 @@ import { API_URL } from '../utils/api';
 
 /**
  * Navbar with all 14 Pillars + Mira AI
- * Amazon/Chewy-style with beautiful mega dropdowns
+ * Compact design to fit all pillars without scrolling
  */
 
 // All 14 Pillars with icons, paths, and dropdown items
@@ -17,13 +17,12 @@ const PILLARS = [
     name: 'Celebrate',
     icon: '🎂',
     path: '/celebrate',
-    color: 'hover:text-pink-500',
     dropdown: [
       { name: 'Birthday Cakes', path: '/cakes' },
       { name: 'Breed Cakes', path: '/celebrate/breed-cakes' },
-      { name: 'Treats & Biscuits', path: '/treats' },
+      { name: 'Pupcakes', path: '/celebrate/pupcakes' },
+      { name: 'Desi Treats', path: '/celebrate/desi' },
       { name: 'Gift Hampers', path: '/hampers' },
-      { name: 'Custom Cake', path: '/custom-cake' },
     ]
   },
   {
@@ -31,11 +30,10 @@ const PILLARS = [
     name: 'Dine',
     icon: '🍽️',
     path: '/dine',
-    color: 'hover:text-orange-500',
     dropdown: [
+      { name: 'Pet Restaurants', path: '/dine' },
       { name: 'Fresh Meals', path: '/dine?type=meals' },
-      { name: 'Pet Restaurants', path: '/dine?type=restaurants' },
-      { name: 'Meal Subscriptions', path: '/autoship' },
+      { name: 'Meal Plans', path: '/autoship' },
     ]
   },
   {
@@ -43,10 +41,9 @@ const PILLARS = [
     name: 'Stay',
     icon: '🏨',
     path: '/stay',
-    color: 'hover:text-blue-500',
     dropdown: [
       { name: 'Pet Hotels', path: '/stay' },
-      { name: 'Pet Boarding', path: '/stay?type=boarding' },
+      { name: 'Boarding', path: '/stay?type=boarding' },
       { name: 'Day Care', path: '/stay?type=daycare' },
     ]
   },
@@ -55,10 +52,9 @@ const PILLARS = [
     name: 'Travel',
     icon: '✈️',
     path: '/travel',
-    color: 'hover:text-sky-500',
     dropdown: [
       { name: 'Pet Taxi', path: '/travel?type=taxi' },
-      { name: 'Airlines', path: '/travel?type=airline' },
+      { name: 'Pet Airlines', path: '/travel?type=airline' },
       { name: 'Travel Planning', path: '/travel' },
     ]
   },
@@ -67,10 +63,9 @@ const PILLARS = [
     name: 'Care',
     icon: '💊',
     path: '/care',
-    color: 'hover:text-red-500',
     dropdown: [
-      { name: 'Vet Consultations', path: '/care?type=vet' },
       { name: 'Grooming', path: '/care?type=grooming' },
+      { name: 'Vet Care', path: '/care?type=vet' },
       { name: 'Pet Sitting', path: '/care?type=sitting' },
       { name: 'Dog Walking', path: '/care?type=walking' },
     ]
@@ -80,11 +75,10 @@ const PILLARS = [
     name: 'Enjoy',
     icon: '🎾',
     path: '/enjoy',
-    color: 'hover:text-green-500',
     dropdown: [
       { name: 'Events', path: '/enjoy?type=event' },
       { name: 'Pet Parks', path: '/enjoy?type=park' },
-      { name: 'Meetups', path: '/enjoy?type=meetup' },
+      { name: 'Playdates', path: '/enjoy?type=meetup' },
     ]
   },
   {
@@ -92,11 +86,10 @@ const PILLARS = [
     name: 'Fit',
     icon: '🏃',
     path: '/fit',
-    color: 'hover:text-emerald-500',
     dropdown: [
       { name: 'Fitness Plans', path: '/fit' },
-      { name: 'Weight Management', path: '/fit?type=weight' },
-      { name: 'Exercise Sessions', path: '/fit?type=exercise' },
+      { name: 'Weight Programs', path: '/fit?type=weight' },
+      { name: 'Exercise', path: '/fit?type=exercise' },
     ]
   },
   {
@@ -104,11 +97,10 @@ const PILLARS = [
     name: 'Learn',
     icon: '🎓',
     path: '/learn',
-    color: 'hover:text-indigo-500',
     dropdown: [
       { name: 'Training Classes', path: '/learn' },
       { name: 'Puppy School', path: '/learn?type=puppy' },
-      { name: 'Behaviour Training', path: '/learn?type=behaviour' },
+      { name: 'Behaviour', path: '/learn?type=behaviour' },
     ]
   },
   {
@@ -116,7 +108,6 @@ const PILLARS = [
     name: 'Paperwork',
     icon: '📄',
     path: '/paperwork',
-    color: 'hover:text-slate-500',
     dropdown: [
       { name: 'Pet Passport', path: '/paperwork?type=passport' },
       { name: 'Health Records', path: '/paperwork?type=records' },
@@ -128,11 +119,10 @@ const PILLARS = [
     name: 'Advisory',
     icon: '📋',
     path: '/advisory',
-    color: 'hover:text-purple-500',
     dropdown: [
-      { name: 'Expert Consultation', path: '/advisory' },
-      { name: 'Nutrition Advice', path: '/advisory?type=nutrition' },
-      { name: 'Behaviour Consult', path: '/advisory?type=behaviour' },
+      { name: 'Expert Consult', path: '/advisory' },
+      { name: 'Nutrition', path: '/advisory?type=nutrition' },
+      { name: 'Behaviour', path: '/advisory?type=behaviour' },
     ]
   },
   {
@@ -140,7 +130,6 @@ const PILLARS = [
     name: 'Emergency',
     icon: '🚨',
     path: '/emergency',
-    color: 'hover:text-red-600',
     dropdown: [
       { name: '24/7 Helpline', path: '/emergency' },
       { name: 'Emergency Vets', path: '/emergency?type=vet' },
@@ -152,9 +141,8 @@ const PILLARS = [
     name: 'Farewell',
     icon: '🌈',
     path: '/farewell',
-    color: 'hover:text-violet-500',
     dropdown: [
-      { name: 'Memorial Services', path: '/farewell' },
+      { name: 'Memorial', path: '/farewell' },
       { name: 'Cremation', path: '/farewell?type=cremation' },
       { name: 'Grief Support', path: '/farewell?type=support' },
     ]
@@ -164,11 +152,10 @@ const PILLARS = [
     name: 'Adopt',
     icon: '🐾',
     path: '/adopt',
-    color: 'hover:text-amber-500',
     dropdown: [
       { name: 'Find a Pet', path: '/adopt' },
       { name: 'Foster', path: '/adopt?type=foster' },
-      { name: 'Shelter Support', path: '/adopt?type=shelter' },
+      { name: 'Shelters', path: '/adopt?type=shelter' },
     ]
   },
   {
@@ -176,7 +163,6 @@ const PILLARS = [
     name: 'Shop',
     icon: '🛒',
     path: '/shop',
-    color: 'hover:text-teal-500',
     dropdown: [
       { name: 'All Products', path: '/shop' },
       { name: 'Food & Treats', path: '/shop?category=food' },
@@ -197,6 +183,7 @@ const Navbar = () => {
   const { getCartCount, setIsCartOpen } = useCart();
   const { user, token } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Fetch Pet Soul score
   useEffect(() => {
@@ -235,7 +222,8 @@ const Navbar = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
     }
   };
 
@@ -253,7 +241,7 @@ const Navbar = () => {
   const handleMouseLeave = () => {
     dropdownTimeoutRef.current = setTimeout(() => {
       setActiveDropdown(null);
-    }, 150);
+    }, 200);
   };
 
   const isActive = (path) => {
@@ -271,7 +259,7 @@ const Navbar = () => {
       {/* Main Header Row */}
       <div className="bg-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center h-14 gap-4">
+          <div className="flex items-center h-14 gap-3">
             
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0" data-testid="navbar-logo">
@@ -310,7 +298,7 @@ const Navbar = () => {
             </form>
 
             {/* Right Side Actions */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2">
               
               {/* Account */}
               <Link 
@@ -319,7 +307,7 @@ const Navbar = () => {
                 data-testid="navbar-account"
               >
                 <span className="text-gray-400 text-[10px]">
-                  {user ? `Hello, ${user.name?.split(' ')[0] || 'Member'}` : 'Hello, Sign in'}
+                  {user ? `Hello, ${user.name?.split(' ')[0] || 'Member'}` : 'Sign in'}
                 </span>
                 <span className="font-semibold flex items-center gap-1">
                   Account <ChevronDown className="w-3 h-3" />
@@ -330,7 +318,7 @@ const Navbar = () => {
               {user && primaryPet && (
                 <Link 
                   to="/my-pets"
-                  className="hidden md:flex flex-col items-start text-xs hover:bg-white/10 rounded p-1.5"
+                  className="hidden lg:flex flex-col items-start text-xs hover:bg-white/10 rounded p-1.5"
                   data-testid="navbar-pet-soul"
                 >
                   <span className="text-gray-400 text-[10px]">{primaryPet.name}</span>
@@ -340,14 +328,14 @@ const Navbar = () => {
                 </Link>
               )}
 
-              {/* Mira AI Button */}
+              {/* Ask Mira Button */}
               <button
                 onClick={openMiraAI}
                 className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-xs font-semibold hover:from-purple-600 hover:to-pink-600 transition-all"
                 data-testid="navbar-mira-btn"
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                Mira AI
+                Ask Mira
               </button>
 
               {/* Cart */}
@@ -368,7 +356,7 @@ const Navbar = () => {
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="md:hidden p-1.5 hover:bg-white/10 rounded"
+                className="lg:hidden p-1.5 hover:bg-white/10 rounded"
                 data-testid="navbar-mobile-menu-btn"
               >
                 {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -378,73 +366,75 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Pillars Navigation Row - Desktop */}
-      <nav className="hidden md:block bg-slate-800 text-white text-sm border-t border-slate-700 overflow-x-auto" ref={dropdownRef}>
-        <div className="max-w-7xl mx-auto px-4">
-          <ul className="flex items-center whitespace-nowrap">
+      {/* Pillars Navigation Row - Desktop - Compact to fit all 14 */}
+      <nav className="hidden lg:block bg-slate-800 text-white text-xs border-t border-slate-700" ref={dropdownRef}>
+        <div className="max-w-7xl mx-auto px-2">
+          <ul className="flex items-center justify-between">
             {PILLARS.map((pillar) => (
               <li 
                 key={pillar.id} 
-                className="relative"
+                className="relative flex-1"
                 onMouseEnter={() => handleMouseEnter(pillar.id)}
                 onMouseLeave={handleMouseLeave}
               >
                 <Link
                   to={pillar.path}
-                  className={`flex items-center gap-1 px-2.5 py-2.5 transition-colors ${pillar.color} ${
-                    isActive(pillar.path) ? 'bg-slate-700' : 'hover:bg-slate-700'
+                  className={`flex items-center justify-center gap-1 px-1 py-2.5 transition-all hover:bg-slate-700 ${
+                    isActive(pillar.path) ? 'bg-slate-700 border-b-2 border-pink-500' : ''
                   }`}
                   data-testid={`nav-${pillar.id}`}
                 >
-                  <span className="text-sm">{pillar.icon}</span>
-                  <span className="font-medium text-xs">{pillar.name}</span>
-                  {pillar.dropdown && <ChevronDown className="w-2.5 h-2.5 opacity-50" />}
+                  <span className="text-base">{pillar.icon}</span>
+                  <span className="font-medium hidden xl:inline">{pillar.name}</span>
                 </Link>
 
-                {/* Dropdown Menu */}
+                {/* Beautiful Dropdown Menu */}
                 {pillar.dropdown && activeDropdown === pillar.id && (
                   <div 
-                    className="absolute top-full left-0 w-56 bg-white text-gray-800 shadow-xl rounded-b-lg py-2 z-50 border border-gray-100"
+                    className="absolute top-full left-1/2 -translate-x-1/2 w-48 bg-white text-gray-800 shadow-2xl rounded-lg py-2 z-50 border border-gray-100 animate-in fade-in slide-in-from-top-2 duration-200"
                     onMouseEnter={() => handleMouseEnter(pillar.id)}
                     onMouseLeave={handleMouseLeave}
                   >
-                    <div className="px-3 py-2 border-b border-gray-100">
-                      <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{pillar.name}</span>
+                    {/* Header */}
+                    <div className="px-4 py-2 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-pink-50">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{pillar.icon}</span>
+                        <span className="font-bold text-gray-900">{pillar.name}</span>
+                      </div>
                     </div>
-                    {pillar.dropdown.map((item) => (
+                    {/* Items */}
+                    {pillar.dropdown.map((item, idx) => (
                       <Link
                         key={item.path}
                         to={item.path}
                         onClick={() => setActiveDropdown(null)}
-                        className="block px-4 py-2.5 hover:bg-gray-50 text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors"
+                        className="block px-4 py-2.5 hover:bg-purple-50 text-sm text-gray-700 hover:text-purple-600 transition-colors border-l-2 border-transparent hover:border-purple-500"
                       >
                         {item.name}
                       </Link>
                     ))}
+                    {/* View All Link */}
+                    <div className="px-4 py-2 border-t border-gray-100 mt-1">
+                      <Link
+                        to={pillar.path}
+                        onClick={() => setActiveDropdown(null)}
+                        className="text-xs font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1"
+                      >
+                        View All {pillar.name} →
+                      </Link>
+                    </div>
                   </div>
                 )}
               </li>
             ))}
-
-            {/* Mira AI in Nav */}
-            <li className="ml-auto">
-              <button
-                onClick={openMiraAI}
-                className="flex items-center gap-1.5 px-4 py-2.5 text-pink-400 hover:text-pink-300 font-medium transition-colors"
-                data-testid="nav-mira"
-              >
-                <Sparkles className="w-4 h-4" />
-                Ask Mira
-              </button>
-            </li>
           </ul>
         </div>
       </nav>
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200 shadow-lg max-h-[80vh] overflow-y-auto">
-          <div className="px-4 py-4 space-y-1">
+        <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg max-h-[80vh] overflow-y-auto">
+          <div className="px-4 py-4 space-y-2">
             
             {/* Mobile Account */}
             {user ? (
@@ -482,26 +472,28 @@ const Navbar = () => {
               </div>
             )}
 
-            {/* Mira AI Button - Mobile */}
+            {/* Ask Mira Button - Mobile */}
             <button
               onClick={() => { openMiraAI(); setIsMenuOpen(false); }}
               className="w-full flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium"
             >
               <Sparkles className="w-4 h-4" />
-              Ask Mira AI
+              Ask Mira
             </button>
 
             <div className="border-t border-gray-200 my-3"></div>
 
-            {/* All Pillars - Mobile */}
+            {/* All Pillars - Mobile Grid */}
             <div className="grid grid-cols-2 gap-2">
               {PILLARS.map((pillar) => (
                 <Link
                   key={pillar.id}
                   to={pillar.path}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center gap-2 p-3 rounded-lg ${
-                    isActive(pillar.path) ? 'bg-purple-50 text-purple-700' : 'hover:bg-gray-50'
+                  className={`flex items-center gap-2 p-3 rounded-lg border ${
+                    isActive(pillar.path) 
+                      ? 'bg-purple-50 border-purple-200 text-purple-700' 
+                      : 'border-gray-100 hover:bg-gray-50'
                   }`}
                 >
                   <span className="text-lg">{pillar.icon}</span>
