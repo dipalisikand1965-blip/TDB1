@@ -597,6 +597,8 @@ const MemberDashboard = () => {
                 duration: 5000
               });
               triggerCelebration('light');
+              // Refresh user data to update loyalty_points in UI
+              await refreshUser();
             }
           }
         } catch (err) {
