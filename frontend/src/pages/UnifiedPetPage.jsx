@@ -718,7 +718,7 @@ const UnifiedPetPage = () => {
               <Card className="p-6 md:col-span-2">
                 <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Brain className="w-5 h-5 text-purple-600" />
-                  {pet.name}'s Soul Profile
+                  {pet.name}&apos;s Soul Profile
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="bg-purple-50 rounded-lg p-3 text-center">
