@@ -711,21 +711,30 @@ const AdvisoryPage = () => {
             </div>
 
             {/* Submit */}
-            <div className="flex gap-3 pt-2">
-              <Button variant="outline" onClick={() => setShowRequestModal(false)} className="flex-1">
-                Cancel
-              </Button>
-              <Button
-                onClick={submitRequest}
-                disabled={!selectedPet || !requestForm.concern.trim() || submitting}
-                className="flex-1 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
-              >
-                {submitting ? (
-                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
-                ) : (
-                  <><Send className="w-4 h-4 mr-2" /> Submit Request</>
-                )}
-              </Button>
+            <div className="space-y-2 pt-2">
+              {/* Validation message */}
+              {(!selectedPet || !requestForm.concern.trim()) && (
+                <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {!selectedPet ? 'Please select a pet above' : 'Please describe your concern above'}
+                </p>
+              )}
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={() => setShowRequestModal(false)} className="flex-1">
+                  Cancel
+                </Button>
+                <Button
+                  onClick={submitRequest}
+                  disabled={!selectedPet || !requestForm.concern.trim() || submitting}
+                  className="flex-1 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
+                >
+                  {submitting ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+                  ) : (
+                    <><Send className="w-4 h-4 mr-2" /> Submit Request</>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </DialogContent>
