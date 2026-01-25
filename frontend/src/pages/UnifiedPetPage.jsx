@@ -93,6 +93,7 @@ const UnifiedPetPage = () => {
   const [showQuestions, setShowQuestions] = useState(false);
   const [savingAnswer, setSavingAnswer] = useState(null);
   const [previousAchievements, setPreviousAchievements] = useState([]);
+  const [expandedPillar, setExpandedPillar] = useState(null);
   
   // Compute unlocked achievements based on score state and pet data
   const computeUnlockedAchievements = () => {
