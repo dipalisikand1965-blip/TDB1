@@ -853,7 +853,7 @@ const LearnPage = () => {
             <Button variant="outline" onClick={() => setShowRequestModal(false)}>Cancel</Button>
             <Button 
               onClick={handleSubmitRequest} 
-              disabled={submitting || !selectedPet}
+              disabled={submitting || (!selectedPet && !requestForm.guest_pet_name)}
               className="bg-blue-600 hover:bg-blue-700"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
