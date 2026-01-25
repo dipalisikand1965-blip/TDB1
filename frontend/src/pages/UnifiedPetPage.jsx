@@ -1732,7 +1732,7 @@ const UnifiedPetPage = () => {
             <Button
               size="sm"
               className="w-full bg-white shadow-lg border text-gray-700 hover:bg-purple-50 hover:text-purple-700 flex items-center justify-end gap-2"
-              onClick={() => navigate(`/pet-soul-journey/${pet.id}`)}
+              onClick={() => navigate(`/pet/${pet.id}`)}
             >
               <span className="text-xs">Answer Questions</span>
               <Sparkles className="w-4 h-4" />

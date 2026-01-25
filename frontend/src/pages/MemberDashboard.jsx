@@ -711,7 +711,7 @@ const MemberDashboard = () => {
                     
                     <Button 
                       className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md"
-                      onClick={() => window.location.href = `/pet-soul-journey/${primaryPet.id}`}
+                      onClick={() => window.location.href = `/pet/${primaryPet.id}`}
                     >
                       <Sparkles className="w-4 h-4 mr-2" />
                       Continue Building Soul

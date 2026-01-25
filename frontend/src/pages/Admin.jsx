@@ -2638,7 +2638,7 @@ const Admin = () => {
                                 variant="outline"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  window.open(`/pet-soul-journey/${pet.id}`, '_blank');
+                                  window.open(`/pet/${pet.id}`, '_blank');
                                 }}
                                 className="text-xs"
                               >
@@ -3307,7 +3307,7 @@ const Admin = () => {
                     <Button 
                       size="sm" 
                       className="bg-purple-600 hover:bg-purple-700"
-                      onClick={() => window.open(`/pet-soul-journey/${selectedPetProfile.id}`, '_blank')}
+                      onClick={() => window.open(`/pet/${selectedPetProfile.id}`, '_blank')}
                     >
                       <Sparkles className="w-4 h-4 mr-1" /> View Full Soul
                     </Button>
