@@ -797,7 +797,7 @@ const ReportsManager = ({ authHeaders }) => {
               </Card>
             )}
 
-            {/* Pillar Sub-tabs */}
+            {/* Pillar Sub-tabs - THE 14 PILLARS */}
             <Tabs value={selectedPillar} onValueChange={setSelectedPillar}>
               <TabsList className="bg-gray-100 flex-wrap h-auto gap-1 p-1">
                 <TabsTrigger value="summary">📊 Summary</TabsTrigger>
@@ -808,10 +808,13 @@ const ReportsManager = ({ authHeaders }) => {
                 <TabsTrigger value="care">💊 Care</TabsTrigger>
                 <TabsTrigger value="enjoy">🎾 Enjoy</TabsTrigger>
                 <TabsTrigger value="fit">🏃 Fit</TabsTrigger>
-                <TabsTrigger value="advisory">📋 Advisory</TabsTrigger>
+                <TabsTrigger value="learn">🎓 Learn</TabsTrigger>
                 <TabsTrigger value="paperwork">📄 Paperwork</TabsTrigger>
+                <TabsTrigger value="advisory">📋 Advisory</TabsTrigger>
                 <TabsTrigger value="emergency">🚨 Emergency</TabsTrigger>
-                <TabsTrigger value="club">👑 Club</TabsTrigger>
+                <TabsTrigger value="farewell">🌈 Farewell</TabsTrigger>
+                <TabsTrigger value="adopt">🐾 Adopt</TabsTrigger>
+                <TabsTrigger value="shop">🛒 Shop</TabsTrigger>
               </TabsList>
 
               {/* Summary View */}
