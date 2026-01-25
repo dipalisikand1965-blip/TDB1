@@ -522,7 +522,7 @@ const AdoptPage = () => {
                   <SelectValue placeholder="Species" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
                   <SelectItem value="dog">Dogs</SelectItem>
                   <SelectItem value="cat">Cats</SelectItem>
                 </SelectContent>
@@ -533,7 +533,7 @@ const AdoptPage = () => {
                   <SelectValue placeholder="Size" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Sizes</SelectItem>
+                  <SelectItem value="all">All Sizes</SelectItem>
                   <SelectItem value="small">Small</SelectItem>
                   <SelectItem value="medium">Medium</SelectItem>
                   <SelectItem value="large">Large</SelectItem>
@@ -545,7 +545,7 @@ const AdoptPage = () => {
                   <SelectValue placeholder="Age" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Ages</SelectItem>
+                  <SelectItem value="all">All Ages</SelectItem>
                   <SelectItem value="puppy">Puppy/Kitten</SelectItem>
                   <SelectItem value="young">Young</SelectItem>
                   <SelectItem value="adult">Adult</SelectItem>
