@@ -690,13 +690,234 @@ const UnifiedPetPage = () => {
             </Card>
           </TabsContent>
 
-          {/* Pet Soul Tab */}
-          <TabsContent value="personality" className="mt-0">
-            <PetSoulJourney 
-              user={user || { name: 'Guest', email: '' }} 
-              pets={[pet]}
-              onOpenMira={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
-            />
+          {/* Pet Soul Tab - COMPREHENSIVE VIEW with ALL 8 Pillars */}
+          <TabsContent value="personality" className="mt-0 space-y-6">
+            {/* Soul Score Overview */}
+            <div className="grid md:grid-cols-3 gap-6">
+              {/* Score Card */}
+              <Card className="p-6 bg-gradient-to-br from-purple-600 to-indigo-700 text-white">
+                <div className="text-center">
+                  <div className="w-24 h-24 mx-auto bg-white/20 rounded-full flex items-center justify-center mb-4">
+                    <span className="text-4xl font-bold">{Math.round(displayScore)}%</span>
+                  </div>
+                  <h3 className="font-bold text-lg mb-1">Pet Soul™ Score</h3>
+                  <p className="text-white/70 text-sm">
+                    {displayScore >= 80 ? "We truly know " + pet.name :
+                     displayScore >= 50 ? "Patterns are emerging" :
+                     displayScore >= 25 ? "Getting to know " + pet.name :
+                     "Just getting started"}
+                  </p>
+                  <Badge className="mt-3 bg-white/20 text-white border-none">
+                    {tier?.name || 'Soul Seeker'}
+                  </Badge>
+                </div>
+              </Card>
+              
+              {/* Quick Stats */}
+              <Card className="p-6 md:col-span-2">
+                <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <Brain className="w-5 h-5 text-purple-600" />
+                  {pet.name}'s Soul Profile
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-purple-50 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-purple-600">{Object.keys(pet.doggy_soul_answers || {}).length}</p>
+                    <p className="text-xs text-gray-600">Questions Answered</p>
+                  </div>
+                  <div className="bg-pink-50 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-pink-600">{unlockedAchievements.length}</p>
+                    <p className="text-xs text-gray-600">Achievements</p>
+                  </div>
+                  <div className="bg-blue-50 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-blue-600">{healthData?.vaccines?.length || 0}</p>
+                    <p className="text-xs text-gray-600">Vaccines</p>
+                  </div>
+                  <div className="bg-green-50 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-green-600">{healthData?.medications?.filter(m => !m.end_date || new Date(m.end_date) > new Date()).length || 0}</p>
+                    <p className="text-xs text-gray-600">Active Meds</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+            
+            {/* 8 SOUL PILLARS - Expandable Sections */}
+            <Card className="p-6">
+              <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-purple-600" />
+                Soul Questionnaire - 8 Pillars
+                <Badge variant="outline" className="ml-auto">
+                  Click any pillar to expand
+                </Badge>
+              </h3>
+              
+              <div className="space-y-3">
+                {[
+                  { key: 'identity_temperament', name: 'Identity & Temperament', icon: '🎭', color: 'purple', questions: ['name', 'breed', 'gender', 'general_nature', 'describe_3_words', 'stranger_reaction', 'handling_comfort', 'loud_sounds'] },
+                  { key: 'family_pack', name: 'Family & Pack', icon: '👨‍👩‍👧‍👦', color: 'blue', questions: ['most_attached_to', 'behavior_with_dogs', 'behavior_with_humans', 'other_pets', 'kids_at_home', 'primary_caretaker'] },
+                  { key: 'rhythm_routine', name: 'Rhythm & Routine', icon: '⏰', color: 'green', questions: ['walks_per_day', 'energetic_time', 'sleep_schedule', 'feeding_times', 'separation_anxiety', 'alone_comfort', 'potty_schedule'] },
+                  { key: 'home_comforts', name: 'Home & Comforts', icon: '🏠', color: 'amber', questions: ['space_preference', 'sleeping_spot', 'crate_trained', 'favorite_spot', 'allowed_on_furniture', 'outdoor_access'] },
+                  { key: 'travel_style', name: 'Travel & Mobility', icon: '✈️', color: 'sky', questions: ['car_rides', 'travel_style', 'hotel_experience', 'motion_sickness', 'flight_experience', 'travel_anxiety'] },
+                  { key: 'taste_treat', name: 'Taste & Nutrition', icon: '🍖', color: 'orange', questions: ['food_allergies', 'favorite_treats', 'dislikes', 'diet_type', 'food_brand', 'sensitive_stomach', 'prefers_grain_free'] },
+                  { key: 'training_behaviour', name: 'Training & Behaviour', icon: '🎓', color: 'indigo', questions: ['training_level', 'commands_known', 'leash_behavior', 'recall', 'problematic_behaviors', 'anxiety_triggers'] },
+                  { key: 'long_horizon', name: 'Health & Long-Term', icon: '💊', color: 'rose', questions: ['medical_conditions', 'medications', 'vet_name', 'last_vet_visit', 'vaccination_status', 'spayed_neutered', 'insurance', 'special_needs'] }
+                ].map((pillar) => {
+                  const answers = pet.doggy_soul_answers || {};
+                  const answeredCount = pillar.questions.filter(q => answers[q] && answers[q] !== '' && answers[q] !== 'None').length;
+                  const totalQuestions = pillar.questions.length;
+                  const progress = Math.round((answeredCount / totalQuestions) * 100);
+                  const isExpanded = expandedPillar === pillar.key;
+                  
+                  const colorMap = {
+                    purple: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700', progress: 'bg-purple-500' },
+                    blue: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', progress: 'bg-blue-500' },
+                    green: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', progress: 'bg-green-500' },
+                    amber: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', progress: 'bg-amber-500' },
+                    sky: { bg: 'bg-sky-50', border: 'border-sky-200', text: 'text-sky-700', progress: 'bg-sky-500' },
+                    orange: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', progress: 'bg-orange-500' },
+                    indigo: { bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-700', progress: 'bg-indigo-500' },
+                    rose: { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-700', progress: 'bg-rose-500' }
+                  };
+                  const colors = colorMap[pillar.color];
+                  
+                  return (
+                    <div key={pillar.key} className={`rounded-xl border-2 transition-all ${isExpanded ? colors.border + ' shadow-md' : 'border-gray-100 hover:border-gray-200'}`}>
+                      <button
+                        onClick={() => setExpandedPillar(isExpanded ? null : pillar.key)}
+                        className={`w-full p-4 flex items-center gap-4 ${isExpanded ? colors.bg : 'bg-white hover:bg-gray-50'} rounded-xl transition-colors`}
+                      >
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${colors.bg}`}>
+                          {pillar.icon}
+                        </div>
+                        <div className="flex-1 text-left">
+                          <h4 className="font-semibold text-gray-900">{pillar.name}</h4>
+                          <div className="flex items-center gap-3 mt-1">
+                            <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden max-w-[200px]">
+                              <div className={`h-full ${colors.progress} transition-all`} style={{ width: `${progress}%` }} />
+                            </div>
+                            <span className="text-sm text-gray-500">{answeredCount}/{totalQuestions}</span>
+                          </div>
+                        </div>
+                        <Badge className={progress === 100 ? 'bg-green-100 text-green-700' : colors.text + ' ' + colors.bg}>
+                          {progress}%
+                        </Badge>
+                        {isExpanded ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+                      </button>
+                      
+                      {isExpanded && (
+                        <div className={`p-4 border-t ${colors.border} ${colors.bg} rounded-b-xl space-y-3`}>
+                          {pillar.questions.map((questionId) => {
+                            const value = answers[questionId];
+                            const hasAnswer = value && value !== '' && value !== 'None';
+                            const displayValue = Array.isArray(value) ? value.filter(v => v && v !== 'None').join(', ') : value;
+                            
+                            // Question labels
+                            const questionLabels = {
+                              name: "Pet's Name", breed: 'Breed', gender: 'Gender', general_nature: 'Temperament',
+                              describe_3_words: 'Personality (3 words)', stranger_reaction: 'Stranger Reaction',
+                              handling_comfort: 'Handling Comfort', loud_sounds: 'Sound Sensitivity',
+                              most_attached_to: 'Most Attached To', behavior_with_dogs: 'With Other Dogs',
+                              behavior_with_humans: 'With People', other_pets: 'Other Pets', kids_at_home: 'Kids at Home',
+                              primary_caretaker: 'Primary Caretaker', walks_per_day: 'Daily Walks',
+                              energetic_time: 'Most Active Time', sleep_schedule: 'Sleep Schedule',
+                              feeding_times: 'Feeding Times', separation_anxiety: 'Separation Comfort',
+                              alone_comfort: 'Alone Comfort', potty_schedule: 'Potty Schedule',
+                              space_preference: 'Space Preference', sleeping_spot: 'Sleeping Spot',
+                              crate_trained: 'Crate Trained', favorite_spot: 'Favourite Spot',
+                              allowed_on_furniture: 'Furniture Access', outdoor_access: 'Outdoor Access',
+                              car_rides: 'Car Rides', travel_style: 'Travel Preference',
+                              hotel_experience: 'Boarding Experience', motion_sickness: 'Motion Sickness',
+                              flight_experience: 'Flight Experience', travel_anxiety: 'Travel Anxiety',
+                              food_allergies: 'Food Allergies', favorite_treats: 'Favourite Treats',
+                              dislikes: 'Food Dislikes', diet_type: 'Diet Type', food_brand: 'Food Brand',
+                              sensitive_stomach: 'Stomach Sensitivity', prefers_grain_free: 'Grain-Free',
+                              training_level: 'Training Level', commands_known: 'Commands Known',
+                              leash_behavior: 'Leash Behaviour', recall: 'Recall',
+                              problematic_behaviors: 'Behavioural Issues', anxiety_triggers: 'Anxiety Triggers',
+                              medical_conditions: 'Medical Conditions', medications: 'Current Medications',
+                              vet_name: 'Veterinarian', last_vet_visit: 'Last Vet Visit',
+                              vaccination_status: 'Vaccination Status', spayed_neutered: 'Spayed/Neutered',
+                              insurance: 'Pet Insurance', special_needs: 'Special Needs'
+                            };
+                            
+                            return (
+                              <div 
+                                key={questionId}
+                                className={`p-3 rounded-lg flex items-center justify-between ${hasAnswer ? 'bg-white' : 'bg-white/50 border border-dashed border-gray-300'}`}
+                              >
+                                <div className="flex items-center gap-3">
+                                  {hasAnswer ? (
+                                    <Check className="w-5 h-5 text-green-500" />
+                                  ) : (
+                                    <HelpCircle className="w-5 h-5 text-gray-300" />
+                                  )}
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-700">{questionLabels[questionId] || questionId}</p>
+                                    {hasAnswer && <p className="text-sm text-gray-500">{displayValue}</p>}
+                                  </div>
+                                </div>
+                                {!hasAnswer && (
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => navigate(`/pet-soul-journey/${pet.id}?section=${pillar.key}`)}
+                                    className="text-xs"
+                                  >
+                                    Answer
+                                  </Button>
+                                )}
+                              </div>
+                            );
+                          })}
+                          
+                          {progress < 100 && (
+                            <Button 
+                              className="w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-600"
+                              onClick={() => navigate(`/pet-soul-journey/${pet.id}?section=${pillar.key}`)}
+                            >
+                              <Sparkles className="w-4 h-4 mr-2" />
+                              Complete {pillar.name}
+                            </Button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+            
+            {/* Achievements Section */}
+            {unlockedAchievements.length > 0 && (
+              <AchievementsGrid 
+                unlockedAchievements={unlockedAchievements}
+                petName={pet.name}
+              />
+            )}
+            
+            {/* 14 Life Pillars Quick Access */}
+            <Card className="p-6">
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Crown className="w-5 h-5 text-purple-600" />
+                Life Pillars for {pet.name}
+                <span className="text-xs text-gray-500 font-normal ml-2">All 14 services unlocked with Pet Pass</span>
+              </h3>
+              <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+                {LIFE_PILLARS.map((pillar) => (
+                  <Link 
+                    key={pillar.id} 
+                    to={`${pillar.path}?pet=${pet.id}`}
+                    className="group"
+                  >
+                    <div className="p-2 hover:shadow-md transition-all cursor-pointer border rounded-xl hover:border-purple-300 text-center bg-white">
+                      <div className={`w-9 h-9 mx-auto rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-lg mb-1 group-hover:scale-110 transition-transform`}>
+                        {pillar.icon}
+                      </div>
+                      <p className="text-[10px] font-medium text-gray-600">{pillar.name}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </Card>
           </TabsContent>
 
           {/* Health Vault Tab - Combined Health + Vaccines */}
