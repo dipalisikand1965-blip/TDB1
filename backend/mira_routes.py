@@ -539,6 +539,98 @@ async def add_message_to_ticket(session_id: str, message: Dict):
         }
     )
 
+def extract_contact_info(text: str) -> Dict:
+    """Extract contact information (name, email, phone) from message text"""
+    import re
+    
+    extracted = {
+        "name": None,
+        "email": None,
+        "phone": None
+    }
+    
+    # Extract email
+    email_pattern = r'[\w.+-]+@[\w-]+\.[\w.-]+'
+    emails = re.findall(email_pattern, text.lower())
+    if emails:
+        extracted["email"] = emails[0]
+    
+    # Extract phone (Indian formats)
+    phone_patterns = [
+        r'\b(?:\+91[-.\s]?)?[6-9]\d{9}\b',  # +91 format
+        r'\b(?:91[-.\s]?)?[6-9]\d{9}\b',     # 91 format
+    ]
+    for pattern in phone_patterns:
+        phones = re.findall(pattern, text)
+        if phones:
+            # Clean up phone number
+            phone = re.sub(r'[-.\s]', '', phones[0])
+            if len(phone) == 10:
+                extracted["phone"] = phone
+            elif len(phone) >= 12:
+                extracted["phone"] = phone[-10:]  # Take last 10 digits
+            break
+    
+    # Extract name - look for patterns like "I'm X", "My name is X", "This is X"
+    name_patterns = [
+        r"(?:i'm|i am|my name is|this is|it's)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)",
+        r"(?:call me|you can call me)\s+([A-Z][a-z]+)",
+    ]
+    for pattern in name_patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            potential_name = match.group(1).strip()
+            # Filter out common non-names
+            if potential_name.lower() not in ['here', 'ok', 'okay', 'sure', 'fine', 'great']:
+                extracted["name"] = potential_name
+                break
+    
+    return extracted
+
+async def update_ticket_member_info(session_id: str, extracted_info: Dict):
+    """Update ticket member info with extracted contact details"""
+    db = get_db()
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Build update query
+    update_fields = {}
+    if extracted_info.get("name"):
+        update_fields["member.name"] = extracted_info["name"]
+    if extracted_info.get("email"):
+        update_fields["member.email"] = extracted_info["email"]
+    if extracted_info.get("phone"):
+        update_fields["member.phone"] = extracted_info["phone"]
+    
+    if not update_fields:
+        return False
+    
+    update_fields["updated_at"] = now
+    
+    # Update in mira_tickets
+    await db.mira_tickets.update_one(
+        {"mira_session_id": session_id},
+        {
+            "$set": update_fields,
+            "$push": {
+                "enrichments": {
+                    "type": "contact_extracted",
+                    "data": extracted_info,
+                    "timestamp": now,
+                    "source": "user_message"
+                }
+            }
+        }
+    )
+    
+    # Also update in tickets collection
+    await db.tickets.update_one(
+        {"source_reference": f"mira:{session_id}"},
+        {"$set": update_fields}
+    )
+    
+    logger.info(f"Updated ticket member info for session {session_id}: {extracted_info}")
+    return True
+
 async def upgrade_ticket_type(session_id: str, new_type: str):
     """Upgrade ticket from advisory to concierge"""
     db = get_db()
