@@ -656,6 +656,14 @@ const MyPets = () => {
                               </>
                             ) : (
                               <>
+                                <Button 
+                                  size="sm" 
+                                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                                  onClick={() => navigate(`/pet/${pet.id}?tab=personality`)}
+                                >
+                                  <Sparkles className="w-4 h-4 mr-1" />
+                                  View Full Profile
+                                </Button>
                                 <Button size="sm" variant="ghost" onClick={() => startEditing(pet)}>
                                   <Edit className="w-4 h-4" />
                                 </Button>
