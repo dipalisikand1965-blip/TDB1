@@ -63,7 +63,7 @@ ALGORITHM = "HS256"
 
 # ============== CONSTANTS ==============
 
-# The 12 Pillars + Sub-categories
+# The 14 Pillars - Complete Set
 PILLARS = {
     "celebrate": {
         "name": "Celebrate",
@@ -77,23 +77,17 @@ PILLARS = {
         "keywords": ["restaurant", "dining", "eat", "food", "cafe", "brunch", "lunch", "dinner", "reservation"],
         "urgency_default": "medium"
     },
-    "travel": {
-        "name": "Travel",
-        "icon": "✈️",
-        "keywords": ["travel", "flight", "cab", "car", "transport", "relocate", "relocation", "train", "airport", "pickup", "drop"],
-        "urgency_default": "medium"
-    },
     "stay": {
         "name": "Stay",
         "icon": "🏨",
         "keywords": ["hotel", "stay", "boarding", "daycare", "accommodation", "resort", "pawcation", "vacation"],
         "urgency_default": "medium"
     },
-    "enjoy": {
-        "name": "Enjoy",
-        "icon": "🎉",
-        "keywords": ["event", "meetup", "trail", "hike", "experience", "activity", "fun", "play", "park"],
-        "urgency_default": "low"
+    "travel": {
+        "name": "Travel",
+        "icon": "✈️",
+        "keywords": ["travel", "flight", "cab", "car", "transport", "relocate", "relocation", "train", "airport", "pickup", "drop"],
+        "urgency_default": "medium"
     },
     "care": {
         "name": "Care",
@@ -101,11 +95,29 @@ PILLARS = {
         "keywords": ["grooming", "vet", "veterinary", "health", "wellness", "vaccine", "checkup", "sitting", "walking", "daycare", "medical"],
         "urgency_default": "medium"
     },
+    "enjoy": {
+        "name": "Enjoy",
+        "icon": "🎾",
+        "keywords": ["event", "meetup", "trail", "hike", "experience", "activity", "fun", "play", "park"],
+        "urgency_default": "low"
+    },
     "fit": {
         "name": "Fit",
         "icon": "🏃",
         "keywords": ["fitness", "weight", "exercise", "training", "behaviour", "diet", "nutrition", "obesity"],
         "urgency_default": "low"
+    },
+    "learn": {
+        "name": "Learn",
+        "icon": "🎓",
+        "keywords": ["learn", "training", "course", "class", "puppy", "obedience", "behaviour", "agility"],
+        "urgency_default": "low"
+    },
+    "paperwork": {
+        "name": "Paperwork",
+        "icon": "📄",
+        "keywords": ["document", "certificate", "passport", "vaccine", "insurance", "record", "microchip", "license"],
+        "urgency_default": "medium"
     },
     "advisory": {
         "name": "Advisory",
@@ -113,21 +125,31 @@ PILLARS = {
         "keywords": ["advice", "consult", "question", "help", "guidance", "recommendation", "suggest"],
         "urgency_default": "low"
     },
-    "club": {
-        "name": "Club",
-        "icon": "👑",
-        "keywords": ["membership", "member", "club", "subscription", "rewards", "points", "tier"],
-        "urgency_default": "low"
+    "emergency": {
+        "name": "Emergency",
+        "icon": "🚨",
+        "keywords": ["emergency", "urgent", "help", "lost", "missing", "accident", "injured", "sick", "poison", "bleeding", "choking"],
+        "urgency_default": "critical"
+    },
+    "farewell": {
+        "name": "Farewell",
+        "icon": "🌈",
+        "keywords": ["farewell", "memorial", "loss", "grief", "cremation", "urn", "end of life", "passing", "goodbye"],
+        "urgency_default": "medium"
+    },
+    "adopt": {
+        "name": "Adopt",
+        "icon": "🐾",
+        "keywords": ["adopt", "adoption", "rescue", "shelter", "foster", "rehome"],
+        "urgency_default": "medium"
     },
     "shop": {
-        "name": "Shop Assist",
+        "name": "Shop",
         "icon": "🛒",
         "keywords": ["buy", "purchase", "order", "product", "shop", "price", "cost", "delivery"],
         "urgency_default": "medium"
-    },
-    "paperwork": {
-        "name": "Paperwork",
-        "icon": "📄",
+    }
+}
         "keywords": ["document", "certificate", "passport", "vaccine", "insurance", "record", "microchip", "license"],
         "urgency_default": "medium"
     },
