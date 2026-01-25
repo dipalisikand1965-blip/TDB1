@@ -1618,7 +1618,7 @@ const UnifiedPetPage = () => {
             
             {/* Share Options */}
             <div className="p-6">
-              <h4 className="font-semibold text-gray-900 mb-4 text-center">Share {pet.name}'s Profile</h4>
+              <h4 className="font-semibold text-gray-900 mb-4 text-center">Share {pet.name}&apos;s Profile</h4>
               
               <div className="grid grid-cols-4 gap-3 mb-6">
                 {/* Facebook */}
