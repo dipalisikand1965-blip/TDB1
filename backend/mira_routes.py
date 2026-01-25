@@ -150,16 +150,6 @@ PILLARS = {
         "urgency_default": "medium"
     }
 }
-        "keywords": ["document", "certificate", "passport", "vaccine", "insurance", "record", "microchip", "license"],
-        "urgency_default": "medium"
-    },
-    "emergency": {
-        "name": "Emergency",
-        "icon": "🚨",
-        "keywords": ["emergency", "urgent", "help", "lost", "missing", "accident", "injured", "sick", "poison", "bleeding", "choking"],
-        "urgency_default": "critical"
-    }
-}
 
 # Emergency keywords that trigger immediate escalation
 EMERGENCY_KEYWORDS = [
