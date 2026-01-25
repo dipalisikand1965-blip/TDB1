@@ -261,6 +261,19 @@ const UnifiedPetPage = () => {
         
         const data = await response.json();
         setPet(data.pet || data);
+        
+        // Also fetch all pets for the switcher
+        if (token) {
+          try {
+            const allPetsResponse = await fetch(`${API_URL}/api/pets`, { headers });
+            if (allPetsResponse.ok) {
+              const allPetsData = await allPetsResponse.json();
+              setAllPets(Array.isArray(allPetsData) ? allPetsData : allPetsData.pets || []);
+            }
+          } catch (e) {
+            console.warn('Could not fetch all pets for switcher:', e);
+          }
+        }
       } catch (err) {
         console.error('Error fetching pet:', err);
         setError(err.message);
