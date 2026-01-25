@@ -551,14 +551,6 @@ const Navbar = () => {
                   </Link>
                   
                   <Link
-                    to="/voice-order"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 text-white"
-                  >
-                    🎙️ Voice Order
-                  </Link>
-                  
-                  <Link
                     to="/dashboard"
                     onClick={() => setIsMenuOpen(false)}
                     className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-gray-100 text-gray-700"
