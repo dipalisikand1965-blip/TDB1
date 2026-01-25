@@ -1088,6 +1088,173 @@ const UnifiedPetPage = () => {
               </div>
             </Card>
             
+            {/* PHOTO GALLERY Section */}
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                  <Camera className="w-5 h-5 text-purple-600" />
+                  Photo Gallery
+                </h3>
+                <Button size="sm" variant="outline" onClick={() => document.getElementById('gallery-upload')?.click()}>
+                  <Upload className="w-4 h-4 mr-2" /> Add Photos
+                </Button>
+                <input 
+                  type="file" 
+                  id="gallery-upload" 
+                  className="hidden" 
+                  accept="image/*" 
+                  multiple
+                  onChange={async (e) => {
+                    const files = e.target.files;
+                    if (files && files.length > 0) {
+                      toast({ title: 'Coming Soon!', description: 'Photo gallery upload will be available soon.' });
+                    }
+                  }}
+                />
+              </div>
+              <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+                {/* Main Pet Photo */}
+                <div className="col-span-2 row-span-2 aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                  {pet.photo_url ? (
+                    <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <PawPrint className="w-16 h-16 text-purple-300" />
+                  )}
+                </div>
+                {/* Placeholder slots for more photos */}
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div 
+                    key={i}
+                    className="aspect-square rounded-xl bg-gray-100 border-2 border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-50 hover:border-purple-300 transition-all"
+                    onClick={() => document.getElementById('gallery-upload')?.click()}
+                  >
+                    <Camera className="w-6 h-6 text-gray-300" />
+                  </div>
+                ))}
+              </div>
+            </Card>
+            
+            {/* MILESTONE TRACKER */}
+            <Card className="p-6">
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Gift className="w-5 h-5 text-purple-600" />
+                Milestones & Memories
+              </h3>
+              <div className="relative">
+                {/* Timeline line */}
+                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-purple-200" />
+                
+                <div className="space-y-4">
+                  {/* Birthday */}
+                  {pet.birth_date && (
+                    <div className="flex gap-4 items-start">
+                      <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center z-10 border-2 border-white shadow">
+                        <span className="text-lg">🎂</span>
+                      </div>
+                      <div className="flex-1 bg-pink-50 rounded-lg p-3">
+                        <p className="font-semibold text-gray-900">Born</p>
+                        <p className="text-sm text-gray-600">{new Date(pet.birth_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                        {(() => {
+                          const birth = new Date(pet.birth_date);
+                          const today = new Date();
+                          const nextBirthday = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
+                          if (nextBirthday < today) nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+                          const daysUntil = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
+                          return daysUntil <= 30 && (
+                            <Badge className="mt-2 bg-pink-200 text-pink-700">
+                              🎉 Birthday in {daysUntil} days!
+                            </Badge>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Gotcha Day */}
+                  {pet.gotcha_date && (
+                    <div className="flex gap-4 items-start">
+                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center z-10 border-2 border-white shadow">
+                        <span className="text-lg">🏠</span>
+                      </div>
+                      <div className="flex-1 bg-purple-50 rounded-lg p-3">
+                        <p className="font-semibold text-gray-900">Gotcha Day</p>
+                        <p className="text-sm text-gray-600">{new Date(pet.gotcha_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                        <p className="text-xs text-purple-600 mt-1">
+                          {Math.floor((new Date() - new Date(pet.gotcha_date)) / (1000 * 60 * 60 * 24 * 365))} years with the family
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Pet Pass Joined */}
+                  {pet.pet_pass_number && (
+                    <div className="flex gap-4 items-start">
+                      <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center z-10 border-2 border-white shadow">
+                        <span className="text-lg">🎫</span>
+                      </div>
+                      <div className="flex-1 bg-amber-50 rounded-lg p-3">
+                        <p className="font-semibold text-gray-900">Pet Pass Member</p>
+                        <p className="text-sm text-gray-600">ID: {pet.pet_pass_number}</p>
+                        <p className="text-xs text-amber-600 mt-1">All 14 Life Pillars unlocked</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Soul Journey Started */}
+                  <div className="flex gap-4 items-start">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center z-10 border-2 border-white shadow">
+                      <span className="text-lg">✨</span>
+                    </div>
+                    <div className="flex-1 bg-blue-50 rounded-lg p-3">
+                      <p className="font-semibold text-gray-900">Soul Journey Started</p>
+                      <p className="text-sm text-gray-600">{Object.keys(pet.doggy_soul_answers || {}).length} questions answered</p>
+                      <p className="text-xs text-blue-600 mt-1">Pet Soul™ Score: {displayScore}%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+            
+            {/* BREED INFO CARD */}
+            {pet.breed && (
+              <Card className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+                <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-amber-600" />
+                  About {pet.breed}s
+                </h3>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="bg-white rounded-lg p-4">
+                    <p className="text-xs text-gray-500 mb-1">Typical Temperament</p>
+                    <p className="font-semibold text-gray-900">
+                      {['Labrador', 'Golden Retriever', 'Lab'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Friendly, Active, Outgoing' :
+                       ['Beagle'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Curious, Friendly, Merry' :
+                       ['German Shepherd', 'GSD'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Loyal, Confident, Courageous' :
+                       ['Poodle'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Intelligent, Active, Alert' :
+                       ['Bulldog'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Calm, Courageous, Friendly' :
+                       ['Indie', 'Indian', 'Desi'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Adaptable, Loyal, Alert' :
+                       'Unique & Lovable'}
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4">
+                    <p className="text-xs text-gray-500 mb-1">Exercise Needs</p>
+                    <p className="font-semibold text-gray-900">
+                      {['Labrador', 'Golden Retriever', 'Lab', 'German Shepherd', 'Beagle', 'Husky'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'High - Daily exercise needed' :
+                       ['Bulldog', 'Pug', 'Shih Tzu'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Low to Moderate' :
+                       'Moderate - Regular walks'}
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4">
+                    <p className="text-xs text-gray-500 mb-1">Grooming</p>
+                    <p className="font-semibold text-gray-900">
+                      {['Poodle', 'Golden Retriever', 'Husky', 'Shih Tzu'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'High - Regular grooming' :
+                       ['Labrador', 'Beagle', 'Indie'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Low - Easy to maintain' :
+                       'Moderate'}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+            
             {/* Achievements Section */}
             {unlockedAchievements.length > 0 && (
               <AchievementsGrid 
