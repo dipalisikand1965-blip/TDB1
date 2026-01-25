@@ -1307,15 +1307,11 @@ _GST applicable on final invoice_
                               : 'bg-white text-gray-700 border-gray-200 hover:border-purple-300'
                           }`}
                         >
-                          {pet.photo_url || pet.image_url ? (
-                            <img 
-                              src={pet.photo_url || pet.image_url} 
-                              alt={pet.name}
-                              className="w-6 h-6 rounded-full object-cover"
-                            />
-                          ) : (
-                            <PawPrint className="w-4 h-4" />
-                          )}
+                          <img 
+                            src={getPetPhotoUrl(pet)} 
+                            alt={pet.name}
+                            className="w-6 h-6 rounded-full object-cover"
+                          />
                           <span className="text-sm font-medium">{pet.name}</span>
                         </button>
                       ))}
