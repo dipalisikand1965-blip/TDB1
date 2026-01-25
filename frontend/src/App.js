@@ -89,6 +89,7 @@ import UnifiedPetPage from "./pages/UnifiedPetPage";
 import FarewellPage from "./pages/FarewellPage";
 import ShopPage from "./pages/ShopPage";
 import AdoptPage from "./pages/AdoptPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
