@@ -18,7 +18,7 @@ import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
   ArrowRight, Play, ChevronDown, Target, Zap, Timer, PawPrint,
-  Users, Calendar, MapPin, Award, ShoppingBag
+  Users, Calendar, MapPin, Award, ShoppingBag, AlertCircle
 } from 'lucide-react';
 
 // Fitness Type Configuration
