@@ -79,6 +79,9 @@ const OrdersTab = ({
           <Button variant="outline" onClick={fetchOrders} data-testid="refresh-orders-btn">
             <RefreshCw className="w-4 h-4 mr-2" />Refresh
           </Button>
+          <Button variant="outline" onClick={exportOrdersCSV} data-testid="export-orders-btn">
+            <Download className="w-4 h-4 mr-2" />Export CSV
+          </Button>
         </div>
       </Card>
 
