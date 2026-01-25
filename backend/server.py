@@ -3716,7 +3716,7 @@ async def seed_all_page_content(username: str = Depends(verify_admin)):
                 "sections": [
                     {"title": "What is Pet Soul?", "content": "Pet Soul is your pet's living digital profile that captures their personality, preferences, health history, and more. It grows smarter with every interaction."},
                     {"title": "Who is Mira?", "content": "Mira is our AI concierge that knows your pet personally. She remembers their allergies, preferences, and history to provide personalized recommendations."},
-                    {"title": "How does the Pet Life Pass work?", "content": "The Pet Life Pass gives you access to all 12 pillars of pet care — from grooming to travel, celebrations to emergency support — all connected to your pet's Soul profile."},
+                    {"title": "How does the Pet Life Pass work?", "content": "The Pet Life Pass gives you access to all 14 pillars of pet care — from grooming to travel, celebrations to emergency support — all connected to your pet's Soul profile."},
                     {"title": "Is my data safe?", "content": "Absolutely. We use bank-grade encryption and never sell or share your pet's data. You can export or delete your data anytime."}
                 ],
                 "seo": {
