@@ -587,14 +587,12 @@ GET /api/pet-vault/{id}/medications  # Medication records
         },
         {
           title: 'API Endpoints',
-          content: \`\`\`\`
-GET  /api/paw-points/balance      # Current balance & tier
+          content: `GET  /api/paw-points/balance      # Current balance & tier
 GET  /api/paw-points/catalog      # Available rewards
 POST /api/paw-points/redeem       # Redeem a reward
 GET  /api/paw-points/history      # Transaction ledger
 GET  /api/paw-points/redemptions  # Active/used codes
-GET  /api/paw-points/ways-to-earn # Earning methods
-\`\`\`\``
+GET  /api/paw-points/ways-to-earn # Earning methods`
         }
       ]
     },
@@ -609,7 +607,7 @@ GET  /api/paw-points/ways-to-earn # Earning methods
       sections: [
         {
           title: 'What It Is',
-          content: \`Soul Whisper sends **one gentle question per day** via WhatsApp, making it effortless for members to build their pet's Soul profile over time.
+          content: `Soul Whisper sends **one gentle question per day** via WhatsApp, making it effortless for members to build their pet's Soul profile over time.
 
 **Settings Location:** My Account → Settings → Soul Whisper™
 
