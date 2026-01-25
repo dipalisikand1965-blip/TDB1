@@ -559,6 +559,7 @@ def extract_contact_info(text: str) -> Dict:
     phone_patterns = [
         r'\b(?:\+91[-.\s]?)?[6-9]\d{9}\b',  # +91 format
         r'\b(?:91[-.\s]?)?[6-9]\d{9}\b',     # 91 format
+        r'\b[6-9]\d{9}\b',                    # Just 10 digits starting with 6-9
     ]
     for pattern in phone_patterns:
         phones = re.findall(pattern, text)
@@ -573,17 +574,27 @@ def extract_contact_info(text: str) -> Dict:
     
     # Extract name - look for patterns like "I'm X", "My name is X", "This is X"
     name_patterns = [
-        r"(?:i'm|i am|my name is|this is|it's)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)",
+        r"(?:i'm|i am|my name is|this is|it's|name:)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)",
         r"(?:call me|you can call me)\s+([A-Z][a-z]+)",
+        r"(?:hi,?\s+)?(?:i'm|i am)\s+([A-Z][a-z]+)",
+        r"^([A-Z][a-z]+)\s+here",  # "Ravi here"
     ]
     for pattern in name_patterns:
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
             potential_name = match.group(1).strip()
             # Filter out common non-names
-            if potential_name.lower() not in ['here', 'ok', 'okay', 'sure', 'fine', 'great']:
-                extracted["name"] = potential_name
+            if potential_name.lower() not in ['here', 'ok', 'okay', 'sure', 'fine', 'great', 'hi', 'hello', 'hey']:
+                extracted["name"] = potential_name.title()
                 break
+    
+    # If email found but no name, try to extract name from email prefix
+    if extracted["email"] and not extracted["name"]:
+        email_prefix = extracted["email"].split("@")[0]
+        # Clean up common email patterns
+        name_from_email = re.sub(r'[\d._-]+', ' ', email_prefix).strip()
+        if len(name_from_email) >= 2 and not name_from_email.isdigit():
+            extracted["name"] = name_from_email.title()
     
     return extracted
 
