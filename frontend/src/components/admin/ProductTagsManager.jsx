@@ -42,6 +42,7 @@ const ProductTagsManager = ({ credentials }) => {
   const [expandedProduct, setExpandedProduct] = useState(null);
   const [categories, setCategories] = useState([]);
   const [stats, setStats] = useState({ total: 0, withTags: 0 });
+  const [exporting, setExporting] = useState(false);
   
   // Tags state
   const [availableTags, setAvailableTags] = useState([]);
@@ -52,6 +53,58 @@ const ProductTagsManager = ({ credentials }) => {
   // Bulk selection
   const [selectedProducts, setSelectedProducts] = useState(new Set());
   const [showBulkTagModal, setShowBulkTagModal] = useState(false);
+
+  // Export products with tags to CSV
+  const exportToCSV = () => {
+    setExporting(true);
+    try {
+      const allProducts = filteredProducts.length > 0 ? filteredProducts : products;
+      
+      if (allProducts.length === 0) {
+        alert('No products to export');
+        setExporting(false);
+        return;
+      }
+      
+      // CSV Headers
+      const headers = [
+        'ID', 'Name', 'Category', 'Pillar', 'Tags', 'Price', 'Status'
+      ];
+      
+      // Build CSV rows
+      const rows = allProducts.map(p => [
+        p.id || '',
+        `"${(p.name || p.product_name || '').replace(/"/g, '""')}"`,
+        p.category || '',
+        p.pillar || '',
+        `"${(p.tags || []).map(t => t.label || t).join(', ')}"`,
+        p.price || p.minPrice || 0,
+        p.status || 'active'
+      ]);
+      
+      // Create CSV content
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.join(','))
+      ].join('\n');
+      
+      // Download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `product_tags_export_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Error exporting:', err);
+      alert('Failed to export products');
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const getAuthHeader = () => {
     return 'Basic ' + btoa(`${credentials.username}:${credentials.password}`);
