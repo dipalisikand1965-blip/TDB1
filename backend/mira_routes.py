@@ -2074,34 +2074,79 @@ async def get_pillar_suggestions(pillar: str, pet: Dict, category: str = None) -
     suggestions = []
     pet_name = pet.get("name", "your pet")
     
-    # Map pillars to product categories
+    # Category-specific mappings (more specific than pillar)
+    # If a category is specified, use it directly for more accurate suggestions
+    category_products = {
+        # Celebrate sub-categories
+        "cakes": ["cakes", "birthday-cakes", "breed-cakes", "mini-cakes"],
+        "treats": ["treats", "training-treats", "healthy-treats", "snacks"],
+        "desi": ["desi-treats", "indian-treats", "festive-treats"],
+        "desi-treats": ["desi-treats", "indian-treats", "festive-treats"],
+        "hampers": ["hampers", "gift-boxes", "party-supplies"],
+        "frozen-treats": ["frozen-treats", "ice-cream", "summer-treats"],
+        "mini-cakes": ["mini-cakes", "cupcakes", "small-cakes"],
+        "dognuts": ["dognuts", "pupcakes", "donuts"],
+        # Other categories
+        "meals": ["meals", "fresh-meals", "cooked-meals"],
+        "pizzas-burgers": ["pizzas", "burgers", "fast-food"],
+        "cat-treats": ["cat-treats", "feline-treats"],
+    }
+    
+    # Map pillars to product categories (fallback if no specific category)
     pillar_products = {
         "travel": ["travel-essentials", "carriers", "travel-kit"],
         "stay": ["boarding-essentials", "comfort-items"],
         "care": ["grooming", "wellness", "supplements"],
-        "celebrate": ["cakes", "treats", "party-supplies"],
-        "dine": ["dining-accessories", "travel-bowls"],
-        "shop": ["bestsellers", "new-arrivals"]
+        "celebrate": ["cakes", "treats", "party-supplies"],  # Fallback for celebrate pillar
+        "dine": ["dining-accessories", "travel-bowls", "meals"],
+        "shop": ["bestsellers", "new-arrivals"],
+        "feed": ["treats", "meals", "nutrition"]
     }
     
-    categories = pillar_products.get(pillar, [])
+    # Use category-specific mapping if available, otherwise fall back to pillar
+    if category and category in category_products:
+        categories = category_products[category]
+        logger.info(f"Mira suggestions using category mapping: {category} -> {categories}")
+    else:
+        categories = pillar_products.get(pillar, [])
+        logger.info(f"Mira suggestions using pillar mapping: {pillar} -> {categories}")
     
     if categories:
-        # Fetch relevant products
-        products = await db.products.find(
-            {"category": {"$in": categories}, "available": True},
-            {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1}
-        ).limit(3).to_list(3)
-        
-        for product in products:
-            suggestions.append({
-                "type": "product",
-                "id": product.get("id"),
-                "name": product.get("name"),
-                "price": product.get("price"),
-                "image": product.get("image"),
-                "reason": f"Recommended for {pet_name}"
-            })
+        # Try unified_products first (new SSoT), then fall back to products collection
+        try:
+            # Query unified_products with category matching
+            query = {
+                "$or": [
+                    {"category": {"$in": categories}},
+                    {"subcategory": {"$in": categories}},
+                    {"tags": {"$in": categories}}
+                ],
+                "visibility.status": "active"
+            }
+            
+            products = await db.unified_products.find(
+                query,
+                {"_id": 0, "id": 1, "name": 1, "pricing.base_price": 1, "images": 1, "thumbnail": 1}
+            ).limit(3).to_list(3)
+            
+            if not products:
+                # Fall back to old products collection
+                products = await db.products.find(
+                    {"category": {"$in": categories}, "available": True},
+                    {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1, "images": 1}
+                ).limit(3).to_list(3)
+            
+            for product in products:
+                suggestions.append({
+                    "type": "product",
+                    "id": product.get("id"),
+                    "name": product.get("name"),
+                    "price": product.get("pricing", {}).get("base_price") or product.get("price"),
+                    "image": product.get("thumbnail") or (product.get("images", [None])[0] if product.get("images") else product.get("image")),
+                    "reason": f"Recommended for {pet_name}"
+                })
+        except Exception as e:
+            logger.error(f"Error fetching product suggestions: {e}")
     
     return suggestions
 
