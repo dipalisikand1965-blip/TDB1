@@ -5,6 +5,38 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
+## Session 18 - Bug Fixes (January 25, 2026)
+
+### ADMIN PRODUCTS FIX (ADPT):
+**Issue:** Seeded unified_products (650 items) were not showing in admin panel. The admin endpoint was only querying the `products` collection (418 items).
+
+**Fix Applied:**
+- Updated `/api/admin/products` endpoint to query `unified_products` collection by default
+- Now returns 650 products with pillar information
+- Added support for pillar filtering
+- Added `source` parameter: 'unified' (default), 'legacy', or 'all'
+- Updated single product GET, PUT, DELETE to check both collections
+- File: `/app/backend/server.py` lines 3115-3245
+
+**Verification:** ✅ Admin panel now shows "Total Products: 650" in Unified Product Box
+
+### PET PHOTO UPLOAD FIX:
+**Issue:** Pet photos uploaded correctly to disk but weren't displaying because:
+1. Static files at `/static/uploads/pets/` weren't accessible via external URL
+2. Kubernetes ingress only routes `/api/*` paths to backend
+
+**Fix Applied:**
+1. Created new API endpoint `/api/pet-photo/{pet_id}/{filename}` to serve pet photos
+2. Updated photo upload to store URLs in new format: `/api/pet-photo/{pet_id}/filename`
+3. Updated frontend `petAvatar.js` to convert old static paths to new API paths
+- Files: 
+  - `/app/backend/server.py` lines 5599-5675 (upload + serve endpoints)
+  - `/app/frontend/src/utils/petAvatar.js` lines 103-130 (path conversion)
+
+**Verification:** ✅ All 17 backend tests passed. Pet photos serve correctly with proper content-type.
+
+---
+
 ## Session 17 - Complete UI/UX Redesign (January 25, 2026)
 
 ### UI POLISH - CHEWY-INSPIRED REDESIGN
