@@ -11,6 +11,8 @@ const MAX_RECORDING_SECONDS = 30;
 const MAX_FILE_SIZE_MB = 5;
 
 export default function VoiceOrder() {
+  const { user, token } = useAuth();
+  
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const [audioUrl, setAudioUrl] = useState(null);
@@ -19,11 +21,12 @@ export default function VoiceOrder() {
   const [error, setError] = useState('');
   const [recordingTime, setRecordingTime] = useState(0);
   
-  // Customer info
+  // Customer info - will be auto-populated from logged-in user
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [petName, setPetName] = useState('');
+  const [userPets, setUserPets] = useState([]);
   
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
