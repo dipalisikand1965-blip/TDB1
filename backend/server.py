@@ -1121,6 +1121,7 @@ from advisory_routes import router as advisory_router
 from paperwork_routes import router as paperwork_router
 from emergency_routes import router as emergency_router
 from celebrate_routes import router as celebrate_router
+from adopt_routes import router as adopt_router
 
 # Import Mira AI Concierge System
 from mira_routes import router as mira_router, set_mira_db
