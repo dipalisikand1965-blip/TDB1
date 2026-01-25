@@ -58,8 +58,8 @@ const UnifiedPetPage = () => {
   const navigate = useNavigate();
   const { user, token, loading: authLoading } = useAuth();
   
-  // Get tab from URL params, default to 'overview'
-  const initialTab = searchParams.get('tab') || 'overview';
+  // Get tab from URL params, default to 'personality' (Detailed View)
+  const initialTab = searchParams.get('tab') || 'personality';
   const [activeTab, setActiveTab] = useState(initialTab);
   
   const [pet, setPet] = useState(null);
