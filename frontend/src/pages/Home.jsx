@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { 
@@ -9,7 +9,6 @@ import {
   Lock, Users, Award, ExternalLink, X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import PersonalizedDashboard from '../components/PersonalizedDashboard';
 import { getApiUrl } from '../utils/api';
 
 // Outcome Statements (not feature tiles)
