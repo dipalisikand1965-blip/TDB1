@@ -286,8 +286,7 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 bg-white shadow-sm">
       {/* Top Banner */}
       <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white py-1.5 px-4 text-center text-xs font-medium">
-        <span className="hidden sm:inline">🐾 Free Delivery on orders over ₹999 | </span>
-        <span>Pet Life Operating System — Where every pet is remembered</span>
+        <span>✨ The World's First Pet Life Operating System — Your Pet Concierge® </span>
       </div>
 
       {/* Main Header Row */}
