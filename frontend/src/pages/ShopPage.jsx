@@ -111,7 +111,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
             </div>
             <Button 
               onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
-              className="bg-purple-600 hover:bg-purple-700"
+              className="bg-teal-600 hover:bg-teal-700"
             >
               Add to Cart
             </Button>
