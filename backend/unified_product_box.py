@@ -847,18 +847,18 @@ CATEGORY_TO_PILLARS = {
     "rescue": ["adopt"],
 }
 
-# Tag to pillar mapping
+# Tag to pillar mapping - THE 14 PILLARS
 TAG_TO_PILLARS = {
     "birthday": ["celebrate"],
     "party": ["celebrate"],
     "gift": ["celebrate", "shop"],
-    "treat": ["feed"],
-    "snack": ["feed"],
-    "food": ["feed"],
-    "toy": ["play"],
-    "training": ["train"],
-    "groom": ["groom"],
-    "spa": ["groom", "care"],
+    "treat": ["shop"],
+    "snack": ["shop"],
+    "food": ["shop"],
+    "toy": ["enjoy"],
+    "training": ["learn", "fit"],
+    "groom": ["care"],
+    "spa": ["care"],
     "travel": ["travel"],
     "health": ["care"],
     "wellness": ["care"],
