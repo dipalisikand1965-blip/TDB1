@@ -168,6 +168,7 @@ const SERVICE_PACKAGES = [
 
 const FarewellPage = () => {
   const { user, token } = useAuth();
+  const { addToCart } = useCart();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -175,6 +176,21 @@ const FarewellPage = () => {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [showProductModal, setShowProductModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  
+  // Add to cart handler
+  const handleAddToCart = (product) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: 1
+    });
+    toast({
+      title: "Added to Cart 🛒",
+      description: `${product.name} has been added to your cart`,
+    });
+  };
   
   // Service request form
   const [serviceForm, setServiceForm] = useState({
