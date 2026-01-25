@@ -161,39 +161,42 @@ const LearnPage = () => {
   };
 
   const handleSubmitRequest = async () => {
-    if (!user) {
-      toast({ 
-        title: 'Please sign in', 
-        description: 'You need to be logged in to submit a training request',
-        variant: 'destructive' 
-      });
-      return;
-    }
-    
-    if (!selectedPet) {
-      toast({ title: 'Please select a pet', variant: 'destructive' });
+    // Check for pet info (either from profile or guest entry)
+    const hasPetInfo = selectedPet || requestForm.guest_pet_name;
+    if (!hasPetInfo) {
+      toast({ title: 'Please enter your pet\'s details', variant: 'destructive' });
       return;
     }
 
     setSubmitting(true);
     try {
+      const petData = selectedPet ? {
+        pet_id: selectedPet.id,
+        pet_name: selectedPet.name,
+        pet_breed: selectedPet.breed,
+        pet_age: selectedPet.age,
+        pet_temperament: selectedPet.temperament,
+      } : {
+        pet_id: null,
+        pet_name: requestForm.guest_pet_name,
+        pet_breed: requestForm.guest_pet_breed || '',
+        pet_age: requestForm.guest_pet_age || '',
+        pet_temperament: '',
+      };
+
       const response = await fetch(`${API_URL}/api/learn/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          ...(token && { Authorization: `Bearer ${token}` })
         },
         body: JSON.stringify({
           ...requestForm,
-          pet_id: selectedPet.id,
-          pet_name: selectedPet.name,
-          pet_breed: selectedPet.breed,
-          pet_age: selectedPet.age,
-          pet_temperament: selectedPet.temperament,
-          user_id: user.id,
-          user_name: user.name,
-          user_email: user.email,
-          user_phone: user.phone
+          ...petData,
+          user_id: user?.id || null,
+          user_name: user?.name || requestForm.guest_name || '',
+          user_email: user?.email || requestForm.guest_email || '',
+          user_phone: user?.phone || requestForm.guest_phone || ''
         })
       });
 
