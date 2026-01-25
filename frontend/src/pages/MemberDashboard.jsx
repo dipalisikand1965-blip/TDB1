@@ -459,34 +459,6 @@ const MemberDashboard = () => {
           </div>
         </div>
       </div>
-                        <span className="text-white/60">Pet Soul Progress</span>
-                        <span className="text-yellow-300 font-medium">{Math.round(primaryPet.overall_score || 0)}%</span>
-                      </div>
-                      <div className="w-full bg-white/20 rounded-full h-2">
-                        <div 
-                          className="bg-gradient-to-r from-yellow-400 to-pink-400 h-2 rounded-full transition-all"
-                          style={{ width: `${primaryPet.overall_score || 0}%` }}
-                        />
-                      </div>
-                    </div>
-                    
-                    {(primaryPet.overall_score || 0) < 80 && (
-                      <Button 
-                        size="sm" 
-                        className="w-full mt-3 bg-white/20 hover:bg-white/30 text-white border-0"
-                        onClick={() => window.location.href = `/pet-soul-journey/${primaryPet.id}`}
-                      >
-                        <Sparkles className="w-3 h-3 mr-1" />
-                        Complete Soul
-                      </Button>
-                    )}
-                  </div>
-                </Card>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
 
       {/* My Account Section Below Hero */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
