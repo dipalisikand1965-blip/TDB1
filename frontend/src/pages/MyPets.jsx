@@ -753,14 +753,73 @@ const MyPets = () => {
                       
                       {/* CTA */}
                       {(pet.overall_score || 0) < 100 && (
-                        <Link to={`/pet-soul-journey/${pet.id}`}>
-                          <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                            <Sparkles className="w-4 h-4 mr-2" />
-                            Continue Pet Soul Journey →
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={() => toggleQuestions(pet.id)}
+                            variant="outline"
+                            className="flex-1 border-purple-300 text-purple-600 hover:bg-purple-50"
+                          >
+                            <HelpCircle className="w-4 h-4 mr-2" />
+                            Quick Questions
                           </Button>
-                        </Link>
+                          <Link to={`/pet-soul-journey/${pet.id}`} className="flex-1">
+                            <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                              <Sparkles className="w-4 h-4 mr-2" />
+                              Full Journey →
+                            </Button>
+                          </Link>
+                        </div>
                       )}
                     </Card>
+                    
+                    {/* INLINE QUICK QUESTIONS - Answer right here! */}
+                    {questionsExpanded && (pet.overall_score || 0) < 100 && (
+                      <Card className="mt-4 p-4 bg-white border-purple-200">
+                        <div className="flex items-center gap-2 mb-4">
+                          <HelpCircle className="w-5 h-5 text-purple-600" />
+                          <h4 className="font-bold text-gray-900">Help us know {pet.name} better</h4>
+                          <Badge variant="outline" className="ml-auto">
+                            {Object.keys(pet.doggy_soul_answers || {}).length} answered
+                          </Badge>
+                        </div>
+                        
+                        <div className="space-y-4">
+                          {QUICK_QUESTIONS.filter(q => !(pet.doggy_soul_answers || {})[q.id]).slice(0, 3).map((question) => (
+                            <div key={question.id} className="p-4 bg-gray-50 rounded-lg">
+                              <p className="font-medium text-gray-800 mb-3 flex items-center gap-2">
+                                <span className="text-xl">{question.icon}</span>
+                                {question.label.replace('{name}', pet.name)}
+                              </p>
+                              <div className="flex flex-wrap gap-2">
+                                {question.options.map((option) => (
+                                  <Button
+                                    key={option}
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={savingAnswer === `${pet.id}-${question.id}`}
+                                    onClick={() => saveQuickAnswer(pet.id, question.id, option)}
+                                    className="hover:bg-purple-100 hover:border-purple-400 hover:text-purple-700"
+                                  >
+                                    {savingAnswer === `${pet.id}-${question.id}` ? (
+                                      <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                                    ) : null}
+                                    {option}
+                                  </Button>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        <div className="mt-4 pt-3 border-t border-gray-200 text-center">
+                          <Link to={`/pet-soul-journey/${pet.id}`}>
+                            <Button variant="link" className="text-purple-600">
+                              Answer all {26 - Object.keys(pet.doggy_soul_answers || {}).length} remaining questions →
+                            </Button>
+                          </Link>
+                        </div>
+                      </Card>
+                    )}
                   </div>
                   
                   {/* ALL PILLARS SECTION - Show all 14 pillars */}
