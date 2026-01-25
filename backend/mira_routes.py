@@ -1976,6 +1976,7 @@ async def list_mira_tickets(
 
 class MiraContextRequest(BaseModel):
     current_pillar: Optional[str] = None
+    current_category: Optional[str] = None  # Product category for specific suggestions
     pet_id: Optional[str] = None
 
 @router.post("/context")
