@@ -1989,6 +1989,7 @@ async def get_mira_context(
     Returns personalized suggestions based on Pet Soul.
     """
     current_pillar = request.current_pillar
+    current_category = request.current_category  # Get category for specific suggestions
     pet_id = request.pet_id
     
     user = await get_user_from_token(authorization)
