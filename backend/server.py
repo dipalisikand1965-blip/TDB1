@@ -1101,6 +1101,12 @@ from paw_rewards import (
     set_database as set_rewards_db
 )
 
+# Import Paw Points Redemption System
+from paw_points_routes import (
+    paw_points_router,
+    set_db as set_paw_points_db
+)
+
 # Import Travel Pillar
 from travel_routes import router as travel_router
 
