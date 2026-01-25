@@ -383,13 +383,18 @@ const UnifiedPetPage = () => {
       <div className="bg-white border-b sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/my-pets')}>
-              <ArrowLeft className="w-4 h-4 mr-2" /> My Pets
+            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} className="text-purple-600 hover:text-purple-800 hover:bg-purple-50">
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back to My Account
             </Button>
             <div className="h-6 w-px bg-gray-200" />
             <div className="flex items-center gap-2">
-              <img src={petPhoto} alt={pet.name} className="w-8 h-8 rounded-full object-cover" />
+              <img src={petPhoto} alt={pet.name} className="w-8 h-8 rounded-full object-cover border-2 border-purple-200" />
               <span className="font-semibold text-gray-900">{pet.name}</span>
+              {pet.pet_pass_number && (
+                <Badge className="bg-purple-600 text-white text-xs ml-1">
+                  {pet.pet_pass_number}
+                </Badge>
+              )}
             </div>
           </div>
           
