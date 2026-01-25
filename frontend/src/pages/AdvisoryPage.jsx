@@ -625,8 +625,17 @@ const AdvisoryPage = () => {
                         selectedPet?.id === pet.id ? 'border-violet-500 bg-violet-50' : 'border-gray-200 hover:border-violet-200'
                       }`}
                     >
-                      <div className="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center">
-                        <PawPrint className="w-5 h-5 text-violet-600" />
+                      <div className="w-10 h-10 rounded-full overflow-hidden bg-violet-100 flex items-center justify-center">
+                        <img 
+                          src={getPetPhotoUrl(pet)} 
+                          alt={pet.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                        <PawPrint className="w-5 h-5 text-violet-600 hidden" />
                       </div>
                       <div>
                         <p className="font-medium">{pet.name}</p>
