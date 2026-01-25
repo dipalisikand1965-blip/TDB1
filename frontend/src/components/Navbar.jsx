@@ -368,7 +368,17 @@ const Navbar = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
               <Logo size="xl" showText={true} className="hidden sm:flex" />
-              <Logo size="md" showText={false} className="flex sm:hidden" />
+              <div className="flex sm:hidden items-center gap-2">
+                <Logo size="sm" showText={false} />
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold leading-tight">
+                    <span className="text-teal-600">the</span>
+                    <span className="text-purple-600">doggy</span>
+                    <span className="text-pink-600">company</span>
+                  </span>
+                  <span className="text-[8px] font-medium text-teal-600 tracking-wider uppercase">Pet Concierge®</span>
+                </div>
+              </div>
             </Link>
 
             {/* Desktop Navigation - Life Pillars */}
