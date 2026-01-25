@@ -200,16 +200,20 @@ const ProductListing = ({ category = 'all' }) => {
           const allProducts = [];
           
           for (const cat of categories) {
-            const response = await fetch(`${getApiUrl()}/api/products?limit=500&category=${cat}`);
-            if (response.ok) {
-              const data = await response.json();
-              allProducts.push(...(data.products || []));
+            try {
+              const response = await fetch(`${getApiUrl()}/api/products?limit=500&category=${cat}`);
+              if (response.ok) {
+                const data = await response.json();
+                allProducts.push(...(data.products || []));
+              }
+            } catch (fetchError) {
+              console.warn(`Failed to fetch ${cat} products:`, fetchError);
             }
           }
           
           // Remove duplicates based on id
           const uniqueProducts = allProducts.filter((product, index, self) =>
-            index === self.findIndex((p) => p.id === product.id)
+            product && product.id && index === self.findIndex((p) => p && p.id === product.id)
           );
           
           setProducts(uniqueProducts);
@@ -219,8 +223,10 @@ const ProductListing = ({ category = 'all' }) => {
           if (response.ok) {
             const data = await response.json();
             // Filter client-side in case API doesn't support the filter
-            const autoshipProducts = (data.products || []).filter(p => p.autoship_enabled === true);
+            const autoshipProducts = (data.products || []).filter(p => p && p.autoship_enabled === true);
             setProducts(autoshipProducts);
+          } else {
+            setProducts([]);
           }
         } else {
           let url = `${API_URL}/api/products?limit=500`;
@@ -238,11 +244,17 @@ const ProductListing = ({ category = 'all' }) => {
           const response = await fetch(url);
           if (response.ok) {
             const data = await response.json();
-            setProducts(data.products || []);
+            // Ensure we always have an array, even if API returns unexpected data
+            const productsArray = Array.isArray(data.products) ? data.products : [];
+            setProducts(productsArray.filter(p => p !== null && p !== undefined));
+          } else {
+            console.error('Failed to fetch products, status:', response.status);
+            setProducts([]);
           }
         }
       } catch (error) {
         console.error('Failed to fetch products:', error);
+        setProducts([]); // Set empty array on error to prevent crashes
       }
       setLoading(false);
     };
