@@ -368,7 +368,7 @@ const Navbar = () => {
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="lg:hidden p-1.5 hover:bg-white/10 rounded"
+                className="md:hidden p-1.5 hover:bg-white/10 rounded"
                 data-testid="navbar-mobile-menu-btn"
               >
                 {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
