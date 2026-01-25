@@ -316,12 +316,26 @@ export default function VoiceOrder() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Pet's Name</label>
-                <Input
-                  value={petName}
-                  onChange={(e) => setPetName(e.target.value)}
-                  placeholder="Your pet's name"
-                  data-testid="voice-pet-name"
-                />
+                {userPets.length > 0 ? (
+                  <select
+                    value={petName}
+                    onChange={(e) => setPetName(e.target.value)}
+                    className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white text-gray-900"
+                    data-testid="voice-pet-name"
+                  >
+                    <option value="">Select a pet</option>
+                    {userPets.map((pet) => (
+                      <option key={pet.id} value={pet.name}>{pet.name} ({pet.breed || pet.species})</option>
+                    ))}
+                  </select>
+                ) : (
+                  <Input
+                    value={petName}
+                    onChange={(e) => setPetName(e.target.value)}
+                    placeholder="Your pet's name"
+                    data-testid="voice-pet-name"
+                  />
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
