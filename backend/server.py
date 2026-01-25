@@ -4022,17 +4022,21 @@ async def get_public_products(
 
 @api_router.get("/products/{product_id}")
 async def get_product_detail(product_id: str):
-    """Get single product by ID for detail page"""
-    # Try products collection first
+    """Get single product by ID or handle for detail page"""
+    # Try products collection first - search by id, shopify_id, or shopify_handle
     product = await db.products.find_one(
-        {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+        {"$or": [
+            {"id": product_id}, 
+            {"shopify_id": product_id},
+            {"shopify_handle": product_id}
+        ]},
         {"_id": 0}
     )
     
     if not product:
         # Try unified_products
         product = await db.unified_products.find_one(
-            {"$or": [{"id": product_id}, {"sku": product_id}]},
+            {"$or": [{"id": product_id}, {"sku": product_id}, {"handle": product_id}]},
             {"_id": 0}
         )
     
