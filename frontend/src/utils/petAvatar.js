@@ -187,16 +187,21 @@ export function resolvePetAvatar(pet) {
   }
   
   // 2. Try to find breed-matched photo
-  const breed = (pet.breed || '').toLowerCase().trim();
+  const rawBreed = (pet.breed || '').toLowerCase().trim();
+  const breed = normalizeBreed(rawBreed); // Normalize spelling variations
   let breedPhoto = null;
   
-  // Direct match
+  // Direct match with normalized breed
   if (BREED_PHOTOS[breed]) {
     breedPhoto = BREED_PHOTOS[breed];
+  } else if (BREED_PHOTOS[rawBreed]) {
+    // Also try raw breed in case it's already correct
+    breedPhoto = BREED_PHOTOS[rawBreed];
   } else {
     // Partial match (e.g., "Golden Retriever Mix" → "golden retriever")
     for (const [breedKey, url] of Object.entries(BREED_PHOTOS)) {
-      if (breed.includes(breedKey) || breedKey.includes(breed)) {
+      if (breed.includes(breedKey) || breedKey.includes(breed) ||
+          rawBreed.includes(breedKey) || breedKey.includes(rawBreed)) {
         breedPhoto = url;
         break;
       }
