@@ -317,7 +317,7 @@ const MemberDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-20">
-      {/* Beautiful Hero Section - "A System That Remembers" */}
+      {/* Beautiful Hero Section - Pet-First Design */}
       <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
@@ -325,89 +325,140 @@ const MemberDashboard = () => {
           <div className="absolute bottom-10 right-10 w-80 h-80 bg-pink-500/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl"></div>
         </div>
-        
-        {/* Pattern Overlay */}
-        <div className="absolute inset-0 opacity-5" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'}}></div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            {/* Left Side - User Welcome */}
-            <div className="text-white">
-              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-                <PawPrint className="w-4 h-4 text-yellow-400" />
-                <span className="text-sm font-medium">Pet Pass Member</span>
-                <Badge className={`ml-2 ${user.membership_tier === 'pending' ? 'bg-amber-400 text-amber-900' : 'bg-green-400 text-green-900'} border-0`}>
-                  {user.membership_tier === 'pending' ? 'Setup Pending' : 'Active'}
-                </Badge>
-              </div>
-              
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-                A System That
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-300 to-yellow-300">
-                  Remembers
-                </span>
-              </h1>
-              
-              <p className="text-lg text-white/70 mb-6 max-w-md">
-                Welcome back, <span className="text-white font-semibold">{user.name}</span>. 
-                {primaryPet && (
-                  <> We&apos;re here for <span className="text-yellow-300 font-semibold">{primaryPet.name}</span>.</>
-                )}
-              </p>
-              
-              {/* Quick Stats */}
-              <div className="flex flex-wrap gap-4">
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3">
-                  <p className="text-white/60 text-xs uppercase tracking-wider">Points</p>
-                  <p className="text-2xl font-bold text-white">{(user.loyalty_points || 0).toLocaleString()}</p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3">
-                  <p className="text-white/60 text-xs uppercase tracking-wider">Pets</p>
-                  <p className="text-2xl font-bold text-white">{pets.length}</p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3">
-                  <p className="text-white/60 text-xs uppercase tracking-wider">Orders</p>
-                  <p className="text-2xl font-bold text-white">{orders.length}</p>
-                </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+          {/* Top Bar - Member Status */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+              <Crown className="w-4 h-4 text-yellow-400" />
+              <span className="text-sm font-medium text-white">Pet Pass Member</span>
+              <Badge className={`ml-2 ${user.membership_tier === 'pending' ? 'bg-amber-400 text-amber-900' : 'bg-green-400 text-green-900'} border-0`}>
+                {user.membership_tier === 'pending' ? 'Setup Pending' : 'Active'}
+              </Badge>
+            </div>
+            <div className="hidden md:flex items-center gap-3">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5 text-white text-sm">
+                <span className="text-white/60">Points:</span> <span className="font-bold">{(user.loyalty_points || 0).toLocaleString()}</span>
               </div>
             </div>
-            
-            {/* Right Side - Pet Card */}
+          </div>
+
+          {/* Main Hero Content */}
+          <div className="grid md:grid-cols-5 gap-8 items-center">
+            {/* Left - Pet Photo Hero (larger) */}
             {primaryPet && (
-              <div className="flex justify-center md:justify-end">
-                <Card className="w-72 bg-white/10 backdrop-blur-md border-white/20 text-white overflow-hidden">
-                  {/* Pet Photo */}
-                  <div className="relative h-40 bg-gradient-to-br from-purple-400/30 to-pink-400/30 flex items-center justify-center">
-                    {petPhotoUrl && (
-                      <img 
-                        src={petPhotoUrl} 
-                        alt={primaryPet.name}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        onError={(e) => { e.target.style.opacity = '0'; }}
-                      />
-                    )}
-                    {/* Fallback icon - always present underneath, shown when no photo */}
-                    <PawPrint className="w-16 h-16 text-white/30" />
-                    <div className="absolute top-3 right-3 bg-purple-600/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full font-medium">
-                      {Math.round(primaryPet.overall_score || 0)}% Soul
+              <div className="md:col-span-2 flex justify-center">
+                <div className="relative">
+                  {/* Large Pet Photo Circle */}
+                  <div className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white/30 shadow-2xl">
+                    <img 
+                      src={petPhotoUrl} 
+                      alt={primaryPet.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop'; }}
+                    />
+                  </div>
+                  
+                  {/* Soul Score Badge */}
+                  <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-1">
+                    <div className="bg-white rounded-full w-16 h-16 flex flex-col items-center justify-center">
+                      <span className="text-xl font-bold text-purple-700">{Math.round(primaryPet.overall_score || 0)}%</span>
+                      <span className="text-[10px] text-gray-500 font-medium">Soul</span>
                     </div>
                   </div>
                   
-                  {/* Pet Info */}
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xl font-bold">{primaryPet.name}</h3>
-                      {primaryPet.pet_pass_number && (
-                        <span className="text-xs text-white/60 font-mono">{primaryPet.pet_pass_number}</span>
-                      )}
+                  {/* Pet Pass Number Badge */}
+                  {primaryPet.pet_pass_number && (
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-white/20 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full font-mono">
+                      {primaryPet.pet_pass_number}
                     </div>
-                    <p className="text-white/70 text-sm mb-3">
-                      {primaryPet.identity?.breed || primaryPet.breed || 'Good Boy/Girl'}
-                    </p>
-                    
-                    {/* Soul Progress */}
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-xs">
+                  )}
+                </div>
+              </div>
+            )}
+            
+            {/* Right - Welcome Message & Quick Actions */}
+            <div className={`${primaryPet ? 'md:col-span-3' : 'md:col-span-5'} text-white`}>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                {primaryPet ? (
+                  <>
+                    Hello, <span className="text-yellow-300">{primaryPet.name}</span>! 
+                    <span className="text-2xl ml-2">🐾</span>
+                  </>
+                ) : (
+                  <>Welcome back, {user.name?.split(' ')[0]}!</>
+                )}
+              </h1>
+              
+              <p className="text-lg text-white/70 mb-4">
+                {primaryPet ? (
+                  <>
+                    <span className="text-white/90">{user.name?.split(' ')[0]}</span>, we're here to take care of {primaryPet.name}.
+                    {primaryPet.breed && <span className="text-purple-300"> Your beautiful {primaryPet.breed}.</span>}
+                  </>
+                ) : (
+                  <>Add your first pet to unlock the full Pet Concierge experience.</>
+                )}
+              </p>
+              
+              {/* Pet Quick Info Cards */}
+              {primaryPet && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
+                    <Sparkles className="w-5 h-5 mx-auto text-yellow-400 mb-1" />
+                    <p className="text-white text-lg font-bold">{Math.round(primaryPet.overall_score || 0)}%</p>
+                    <p className="text-white/60 text-xs">Pet Soul</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
+                    <Gift className="w-5 h-5 mx-auto text-pink-400 mb-1" />
+                    <p className="text-white text-lg font-bold">{user.loyalty_points || 0}</p>
+                    <p className="text-white/60 text-xs">Paw Points</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
+                    <Calendar className="w-5 h-5 mx-auto text-blue-400 mb-1" />
+                    <p className="text-white text-lg font-bold">{primaryPet.birth_date ? new Date(primaryPet.birth_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : '—'}</p>
+                    <p className="text-white/60 text-xs">Birthday</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
+                    <Heart className="w-5 h-5 mx-auto text-red-400 mb-1" />
+                    <p className="text-white text-lg font-bold">{pets.length}</p>
+                    <p className="text-white/60 text-xs">{pets.length === 1 ? 'Pet' : 'Pets'}</p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Quick Action Buttons */}
+              <div className="flex flex-wrap gap-3">
+                {primaryPet && (primaryPet.overall_score || 0) < 100 && (
+                  <Button 
+                    onClick={() => navigate(`/pet/${primaryPet.id}?tab=personality`)}
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Complete Pet Soul
+                  </Button>
+                )}
+                <Button 
+                  onClick={() => navigate('/my-pets')}
+                  variant="outline"
+                  className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                >
+                  <PawPrint className="w-4 h-4 mr-2" />
+                  {pets.length > 1 ? 'View All Pets' : 'My Pet Profile'}
+                </Button>
+                <Button 
+                  onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+                  variant="outline"
+                  className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Ask Mira
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
                         <span className="text-white/60">Pet Soul Progress</span>
                         <span className="text-yellow-300 font-medium">{Math.round(primaryPet.overall_score || 0)}%</span>
                       </div>
