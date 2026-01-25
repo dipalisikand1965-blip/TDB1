@@ -4,7 +4,7 @@ import React from 'react';
  * Logo component for The Doggy Company
  * 
  * Features a teal serving cloche (concierge bell) with colorful paw print on top
- * Colors: Purple, Pink, Orange, Green paw pads on teal bell
+ * Brand Colors: Teal (#14B8A6), Purple (#9333EA), Pink (#EC4899), Orange (#F97316)
  */
 const Logo = ({ 
   size = 'md', 
@@ -14,7 +14,7 @@ const Logo = ({
 }) => {
   // Size configurations
   const sizeConfig = {
-    xs: { logo: 'h-6 w-6', text: 'text-sm', tagline: 'text-xs' },
+    xs: { logo: 'h-6 w-6', text: 'text-sm', tagline: 'text-[10px]' },
     sm: { logo: 'h-8 w-8', text: 'text-base', tagline: 'text-xs' },
     md: { logo: 'h-12 w-12', text: 'text-xl', tagline: 'text-xs' },
     lg: { logo: 'h-16 w-16', text: 'text-2xl', tagline: 'text-sm' },
@@ -24,7 +24,7 @@ const Logo = ({
   const config = sizeConfig[size] || sizeConfig.md;
 
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
+    <div className={`flex items-center gap-2.5 ${className}`}>
       {/* Logo Icon - Teal cloche with colorful paw */}
       <img 
         src="/logo-new.png" 
@@ -32,21 +32,21 @@ const Logo = ({
         className={`${config.logo} object-contain`}
       />
       
-      {/* Company Name - Gradient text matching logo colors */}
+      {/* Company Name - Clean, professional typography */}
       {showText && (
         <div className="flex flex-col">
           <div className={`font-bold ${config.text} leading-tight tracking-tight`}>
             {variant === 'light' ? (
               <span className="text-white">thedoggycompany</span>
             ) : (
-              <>
-                <span className="text-orange-500">the</span>
-                <span className="bg-gradient-to-r from-teal-500 to-purple-600 bg-clip-text text-transparent">doggy</span>
-                <span className="text-purple-600">company</span>
-              </>
+              <span className="text-gray-900">
+                <span className="text-teal-600">the</span>
+                <span className="text-purple-600">doggy</span>
+                <span className="text-pink-600">company</span>
+              </span>
             )}
           </div>
-          <span className={`${config.tagline} font-medium tracking-wide ${variant === 'light' ? 'text-white/70' : 'text-gray-500'}`}>
+          <span className={`${config.tagline} font-medium tracking-wider uppercase ${variant === 'light' ? 'text-white/70' : 'text-teal-600'}`}>
             Pet Concierge
           </span>
         </div>
