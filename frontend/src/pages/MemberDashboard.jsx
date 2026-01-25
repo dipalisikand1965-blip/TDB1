@@ -311,13 +311,9 @@ const MemberDashboard = () => {
   // If not authenticated after loading, the useEffect will redirect
   if (!user) return null;
 
-  // Get primary pet info
+  // Get primary pet info with universal avatar
   const primaryPet = pets[0];
-  const petPhotoUrl = primaryPet?.photo_url 
-    ? (primaryPet.photo_url.startsWith('http') 
-        ? primaryPet.photo_url 
-        : `${API_URL}${primaryPet.photo_url}`)
-    : null;
+  const petPhotoUrl = primaryPet ? getPetPhotoUrl(primaryPet) : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-20">
