@@ -572,7 +572,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden bg-white border-t border-gray-200 py-4 w-full">
+          <div className="lg:hidden bg-white border-t border-gray-200 py-4 w-full max-h-[calc(100vh-8rem)] overflow-y-auto">
             <div className="px-4 space-y-2 max-w-full">
               {activePillars.map((pillar) => {
                 const Icon = pillar.icon;
