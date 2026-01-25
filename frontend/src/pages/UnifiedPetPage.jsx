@@ -662,8 +662,62 @@ const UnifiedPetPage = () => {
                 </div>
               ) : (
                 <>
-                  <h1 className="text-4xl font-bold text-white mb-2">{pet.name}</h1>
-                  <p className="text-white/80 text-lg mb-4">
+                  <div className="flex items-center gap-3 justify-center md:justify-start">
+                    <h1 className="text-4xl font-bold text-white">{pet.name}</h1>
+                    
+                    {/* PET SWITCHER - For multi-pet households */}
+                    {allPets.length > 1 && (
+                      <div className="relative">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setShowPetSwitcher(!showPetSwitcher)}
+                          className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                        >
+                          <ChevronDown className="w-4 h-4 mr-1" />
+                          Switch Pet
+                        </Button>
+                        
+                        {showPetSwitcher && (
+                          <div className="absolute top-full mt-2 left-0 bg-white rounded-xl shadow-2xl border z-50 py-2 min-w-[200px] max-h-[300px] overflow-y-auto">
+                            <div className="px-3 py-2 border-b text-xs text-gray-500 font-semibold">
+                              Your Pets ({allPets.length})
+                            </div>
+                            {allPets.map((p) => (
+                              <button
+                                key={p.id}
+                                onClick={() => {
+                                  navigate(`/pet/${p.id}?tab=personality`);
+                                  setShowPetSwitcher(false);
+                                }}
+                                className={`w-full px-3 py-2 flex items-center gap-3 hover:bg-purple-50 transition-colors ${
+                                  p.id === pet.id ? 'bg-purple-100' : ''
+                                }`}
+                              >
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-sm font-bold overflow-hidden">
+                                  {p.photo_url ? (
+                                    <img src={p.photo_url} alt={p.name} className="w-full h-full object-cover" />
+                                  ) : (
+                                    p.name?.charAt(0) || '?'
+                                  )}
+                                </div>
+                                <div className="text-left flex-1">
+                                  <p className={`font-semibold text-sm ${p.id === pet.id ? 'text-purple-700' : 'text-gray-900'}`}>
+                                    {p.name}
+                                  </p>
+                                  <p className="text-xs text-gray-500">{p.breed || p.species || 'Pet'}</p>
+                                </div>
+                                {p.id === pet.id && (
+                                  <Check className="w-4 h-4 text-purple-600" />
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-white/80 text-lg mb-4 mt-2">
                     {pet.breed || 'Adorable Furball'} • {pet.species === 'cat' ? '🐱 Cat' : '🐕 Dog'} • {pet.gender === 'male' ? '♂️ Male' : '♀️ Female'}
                   </p>
                   
