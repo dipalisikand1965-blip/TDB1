@@ -251,6 +251,16 @@ function MainLayout() {
         <Route path="/emergency" element={<EmergencyPage />} />
         <Route path="/pillar/:pillarId" element={<PillarPage />} />
         
+        {/* Additional Pillars - Coming Soon pages */}
+        <Route path="/feed" element={<PillarPage />} />
+        <Route path="/groom" element={<PillarPage />} />
+        <Route path="/play" element={<PillarPage />} />
+        <Route path="/train" element={<PillarPage />} />
+        <Route path="/insure" element={<PillarPage />} />
+        <Route path="/adopt" element={<PillarPage />} />
+        <Route path="/farewell" element={<PillarPage />} />
+        <Route path="/community" element={<PillarPage />} />
+        
         {/* Campaign Collections */}
         <Route path="/collections/:slug" element={<CollectionPage />} />
         
