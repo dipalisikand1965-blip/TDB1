@@ -1,5 +1,5 @@
 # The Doggy Company - RAG Status Report
-**Generated:** 25 January 2026
+**Generated:** 25 January 2026 (Updated)
 
 ---
 
@@ -10,6 +10,7 @@
 |---------|--------|-------|
 | User Registration | 🟢 | Working |
 | User Login | 🟢 | Redirects to /dashboard after login |
+| Homepage Redirect | 🟢 | **NEW** Logged-in users auto-redirect to /dashboard |
 | Admin Login | 🟢 | Working |
 | Password Reset | 🟢 | Working |
 
@@ -22,7 +23,9 @@
 | Pet Pass Number Generation | 🟢 | Auto-generated on creation |
 | UnifiedPetPage | 🟢 | Major redesign complete |
 | Health Vault Tab | 🟢 | Combined health + vaccines |
+| Services Tab (14 Pillars) | 🟢 | **VERIFIED** All 14 pillars displaying |
 | Pet Achievements | 🟢 | Integrated with confetti |
+| Fill More Questions | 🟢 | **VERIFIED** Links to PetSoulJourneyPage |
 
 ### Dashboard (My Account)
 | Feature | Status | Notes |
@@ -32,24 +35,32 @@
 | Quick Stats Cards | 🟢 | Working |
 | Recent Activity | 🟢 | Shows orders |
 | Upcoming Events | 🟢 | Birthday/Gotcha alerts |
+| Homepage → Dashboard | 🟢 | **NEW** Auto-redirect for logged-in users |
 
-### Form Submissions (Backend APIs)
+### Form Submissions - All Backend APIs Working
 | Pillar | API Endpoint | Status | Notes |
 |--------|--------------|--------|-------|
 | Travel | POST /api/travel/request | 🟢 | Tested & working |
 | Stay | POST /api/stay/booking-request | 🟢 | Tested & working |
 | Advisory | POST /api/advisory/request | 🟢 | Tested & working |
 | Fit | POST /api/fit/request | 🟢 | Tested & working |
-| Care | POST /api/care/request | 🟢 | Needs frontend test |
-| Emergency | POST /api/emergency/request | 🟢 | Needs frontend test |
-| Learn | POST /api/learn/request | 🟢 | Needs frontend test |
+| Care | POST /api/care/request | 🟢 | Tested & working |
+| Emergency | POST /api/emergency/request | 🟢 | Tested & working |
+| Learn | POST /api/learn/request | 🟢 | Tested & working |
+
+### Form UX Improvements
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Fit Form Validation | 🟢 | **NEW** Shows "Please select pet/goal" message |
+| Advisory Form Validation | 🟢 | **NEW** Shows "Please describe concern" message |
+| Care Form Validation | 🟢 | **NEW** Shows validation messages |
 
 ### Admin Features
 | Feature | Status | Notes |
 |---------|--------|-------|
 | Unified Product Box | 🟢 | 394 products migrated |
-| CSV Export (Product Box) | 🟢 | Newly added |
-| CSV Export (Tags Manager) | 🟢 | Newly added |
+| CSV Export (Product Box) | 🟢 | Working |
+| CSV Export (Tags Manager) | 🟢 | Working |
 | Service Desk / Tickets | 🟢 | Working |
 | Command Center | 🟢 | Working |
 | AdminDocs | 🟢 | Pet Soul Score docs added |
