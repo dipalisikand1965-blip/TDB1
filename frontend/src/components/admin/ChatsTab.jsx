@@ -10,7 +10,8 @@ import {
   MessageCircle,
   Clock,
   ChevronRight,
-  Send
+  Send,
+  Download
 } from 'lucide-react';
 
 const ChatsTab = ({ 
@@ -28,6 +29,30 @@ const ChatsTab = ({
   setSelectedChat,
   sendNotification
 }) => {
+  // CSV Export function
+  const handleExportCSV = () => {
+    const allChats = [...chatbaseChats, ...chats];
+    const headers = ['ID', 'Customer', 'Phone', 'Email', 'City', 'Status', 'Messages', 'Created At'];
+    const rows = allChats.map(c => [
+      c.id || c.chatId || '',
+      c.parentName || c.customer_name || '',
+      c.phone || c.whatsappNumber || '',
+      c.email || '',
+      c.city || '',
+      c.status || 'active',
+      c.messages?.length || c.messageCount || 0,
+      c.created_at || c.createdAt || ''
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.map(v => `"${v}"`).join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `chats_export_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6" data-testid="chats-tab">
       {/* Chatbase Section */}
