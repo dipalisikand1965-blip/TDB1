@@ -3003,7 +3003,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                             variant="outline" 
                             size="sm" 
                             className="w-full h-7 text-xs text-purple-600 border-purple-200 hover:bg-purple-50"
-                            onClick={() => window.open(`/pet-soul/${petSoulData.pet.id}`, '_blank')}
+                            onClick={() => window.open(`/pet/${petSoulData.pet.id}`, '_blank')}
                           >
                             <ExternalLink className="w-3 h-3 mr-1" /> View Full Pet Soul
                           </Button>
