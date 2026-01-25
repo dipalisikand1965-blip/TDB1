@@ -50,6 +50,7 @@ const AdminDocs = () => {
         { id: 'command-center', title: 'Command Center ⭐', icon: Command },
         { id: 'product-box', title: 'Unified Product Box 🆕', icon: Package },
         { id: 'pet-soul-score', title: 'Pet Soul Score 🆕', icon: PawPrint },
+        { id: 'unified-pet-page', title: 'Unified Pet Page ⭐', icon: PawPrint },
         { id: 'member-directory', title: 'Pet Parent Directory', icon: Users },
         { id: 'membership', title: 'Membership', icon: Crown },
         { id: 'customers', title: 'Customers', icon: Users2 },
