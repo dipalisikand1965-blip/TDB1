@@ -77,19 +77,17 @@ const PetPassCard = ({ pet, className = '' }) => {
 
         {/* Pet Info */}
         <div className="flex gap-4 mb-4">
-          {/* Pet Photo */}
+          {/* Pet Photo - using centralized avatar */}
           <div className="w-20 h-20 rounded-xl overflow-hidden bg-white/20 flex-shrink-0 border-2 border-white/30">
-            {photo ? (
-              <img 
-                src={photo} 
-                alt={name} 
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <PawPrint className="w-8 h-8 text-white/50" />
-              </div>
-            )}
+            <img 
+              src={photoUrl} 
+              alt={name} 
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
+              }}
+            />
           </div>
           
           {/* Pet Details */}
