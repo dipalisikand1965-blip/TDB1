@@ -17,7 +17,7 @@ import {
   Gift, Eye, EyeOff, Tag, DollarSign, Shield, Bot, Truck,
   AlertTriangle, Check, ChevronDown, ChevronRight, RefreshCw,
   PawPrint, Heart, Sparkles, ShoppingBag, Loader2, BarChart3,
-  Download
+  Download, Image, ImagePlus
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
