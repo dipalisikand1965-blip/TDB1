@@ -156,30 +156,50 @@ const FitPage = () => {
   };
 
   const submitRequest = async () => {
-    if (!selectedPet) return;
+    // Check if we have pet info (either from profile or guest entry)
+    const hasPetInfo = selectedPet || requestForm.guest_pet_name;
+    if (!hasPetInfo) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter your pet's details",
+        variant: "destructive"
+      });
+      return;
+    }
     
     setSubmitting(true);
     try {
+      const petData = selectedPet ? {
+        pet_id: selectedPet.id,
+        pet_name: selectedPet.name,
+        pet_breed: selectedPet.breed,
+        pet_age: selectedPet.age,
+        pet_weight: selectedPet.weight,
+        pet_size: selectedPet.size,
+      } : {
+        pet_id: null,
+        pet_name: requestForm.guest_pet_name,
+        pet_breed: requestForm.guest_pet_breed || '',
+        pet_age: requestForm.guest_pet_age || '',
+        pet_weight: requestForm.guest_pet_weight || '',
+        pet_size: '',
+      };
+
       const response = await fetch(`${API_URL}/api/fit/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify({
           ...requestForm,
-          pet_id: selectedPet.id,
-          pet_name: selectedPet.name,
-          pet_breed: selectedPet.breed,
-          pet_age: selectedPet.age,
-          pet_weight: selectedPet.weight,
-          pet_size: selectedPet.size,
+          ...petData,
           health_conditions: requestForm.health_conditions.split(',').map(s => s.trim()).filter(Boolean),
           preferred_activities: requestForm.preferred_activities.split(',').map(s => s.trim()).filter(Boolean),
-          user_id: user?.id,
-          user_name: user?.name,
-          user_email: user?.email,
-          user_phone: user?.phone
+          user_id: user?.id || null,
+          user_name: user?.name || requestForm.guest_name || '',
+          user_email: user?.email || requestForm.guest_email || '',
+          user_phone: user?.phone || requestForm.guest_phone || ''
         })
       });
 
