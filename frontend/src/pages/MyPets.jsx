@@ -854,7 +854,7 @@ const MyPets = () => {
                         { id: 'insure', name: 'Insure', icon: '🛡️', path: '/insure', color: 'from-slate-400 to-gray-500' },
                         { id: 'adopt', name: 'Adopt', icon: '🐕', path: '/adopt', color: 'from-rose-400 to-pink-400' },
                         { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/farewell', color: 'from-purple-400 to-indigo-400' },
-                        { id: 'shop', name: 'Shop', icon: '🛒', path: '/products', color: 'from-teal-400 to-cyan-400' },
+                        { id: 'shop', name: 'Shop', icon: '🛒', path: '/all', color: 'from-teal-400 to-cyan-400' },
                         { id: 'community', name: 'Community', icon: '👥', path: '/community', color: 'from-yellow-400 to-amber-400' }
                       ].map((pillar) => (
                         <Link 
