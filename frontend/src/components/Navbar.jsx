@@ -6,11 +6,10 @@ import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../utils/api';
 
 /**
- * Navbar with all 14 Pillars + Mira AI
- * Compact design to fit all pillars without scrolling
+ * Clean Navbar with all 14 Pillars
+ * No icons in nav row for cleaner look
  */
 
-// All 14 Pillars with icons, paths, and dropdown items
 const PILLARS = [
   {
     id: 'celebrate',
@@ -20,7 +19,7 @@ const PILLARS = [
     dropdown: [
       { name: 'Birthday Cakes', path: '/cakes' },
       { name: 'Breed Cakes', path: '/celebrate/breed-cakes' },
-      { name: 'Pupcakes', path: '/celebrate/pupcakes' },
+      { name: 'Pupcakes & Dognuts', path: '/celebrate/pupcakes' },
       { name: 'Desi Treats', path: '/celebrate/desi' },
       { name: 'Gift Hampers', path: '/hampers' },
     ]
@@ -178,7 +177,10 @@ const Navbar = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [petSoulScore, setPetSoulScore] = useState(0);
   const [primaryPet, setPrimaryPet] = useState(null);
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
   const dropdownRef = useRef(null);
+  const searchRef = useRef(null);
   const dropdownTimeoutRef = useRef(null);
   const { getCartCount, setIsCartOpen } = useCart();
   const { user, token } = useAuth();
@@ -214,16 +216,41 @@ const Navbar = () => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setActiveDropdown(null);
       }
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSearchSuggestions(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Fetch search suggestions
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (searchQuery.length < 2) {
+        setSearchSuggestions([]);
+        return;
+      }
+      try {
+        const res = await fetch(`${API_URL}/api/search/typeahead?q=${encodeURIComponent(searchQuery)}&limit=8`);
+        if (res.ok) {
+          const data = await res.json();
+          setSearchSuggestions(data.suggestions || []);
+        }
+      } catch (error) {
+        console.error('Typeahead error:', error);
+      }
+    };
+    const debounce = setTimeout(fetchSuggestions, 200);
+    return () => clearTimeout(debounce);
+  }, [searchQuery]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
+      setShowSearchSuggestions(false);
     }
   };
 
@@ -241,11 +268,18 @@ const Navbar = () => {
   const handleMouseLeave = () => {
     dropdownTimeoutRef.current = setTimeout(() => {
       setActiveDropdown(null);
-    }, 200);
+    }, 150);
   };
 
   const isActive = (path) => {
     return location.pathname === path || location.pathname.startsWith(path + '/');
+  };
+
+  // Get dropdown position class
+  const getDropdownPosition = (index) => {
+    if (index <= 1) return 'left-0'; // First 2 items align left
+    if (index >= PILLARS.length - 2) return 'right-0'; // Last 2 items align right
+    return 'left-1/2 -translate-x-1/2'; // Middle items center
   };
 
   return (
@@ -259,7 +293,7 @@ const Navbar = () => {
       {/* Main Header Row */}
       <div className="bg-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center h-14 gap-3">
+          <div className="flex items-center h-14 gap-4">
             
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0" data-testid="navbar-logo">
@@ -276,26 +310,62 @@ const Navbar = () => {
               </div>
             </Link>
 
-            {/* Search Bar */}
-            <form onSubmit={handleSearch} className="flex-1 max-w-xl">
-              <div className="flex">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search cakes, treats, services..."
-                  className="w-full px-4 py-2 text-sm text-gray-900 bg-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  data-testid="navbar-search-input"
-                />
-                <button 
-                  type="submit"
-                  className="px-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-r-md transition-colors"
-                  data-testid="navbar-search-btn"
-                >
-                  <Search className="w-5 h-5 text-white" />
-                </button>
-              </div>
-            </form>
+            {/* Search Bar with Suggestions */}
+            <div className="flex-1 max-w-xl relative" ref={searchRef}>
+              <form onSubmit={handleSearch}>
+                <div className="flex">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setShowSearchSuggestions(true);
+                    }}
+                    onFocus={() => setShowSearchSuggestions(true)}
+                    placeholder={primaryPet ? `Search for ${primaryPet.name}...` : "Search everything..."}
+                    className="w-full px-4 py-2 text-sm text-gray-900 bg-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    data-testid="navbar-search-input"
+                  />
+                  <button 
+                    type="submit"
+                    className="px-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-r-md transition-colors"
+                    data-testid="navbar-search-btn"
+                  >
+                    <Search className="w-5 h-5 text-white" />
+                  </button>
+                </div>
+              </form>
+
+              {/* Search Suggestions Dropdown */}
+              {showSearchSuggestions && searchSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50">
+                  {searchSuggestions.map((suggestion, idx) => (
+                    <Link
+                      key={idx}
+                      to={suggestion.url || `/search?q=${encodeURIComponent(suggestion.text || suggestion.name)}`}
+                      onClick={() => {
+                        setShowSearchSuggestions(false);
+                        setSearchQuery('');
+                      }}
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-purple-50 border-b border-gray-100 last:border-0"
+                    >
+                      {suggestion.image && (
+                        <img src={suggestion.image} alt="" className="w-10 h-10 rounded object-cover" />
+                      )}
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-gray-900">{suggestion.name || suggestion.text}</div>
+                        {suggestion.category && (
+                          <div className="text-xs text-gray-500">{suggestion.category}</div>
+                        )}
+                      </div>
+                      {suggestion.price && (
+                        <div className="text-sm font-bold text-purple-600">₹{suggestion.price}</div>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-2">
@@ -366,32 +436,33 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Pillars Navigation Row - Desktop - Compact to fit all 14 */}
-      <nav className="hidden lg:block bg-slate-800 text-white text-xs border-t border-slate-700" ref={dropdownRef}>
+      {/* Pillars Navigation Row - Clean text only */}
+      <nav className="hidden lg:block bg-slate-800 text-white text-sm border-t border-slate-700" ref={dropdownRef}>
         <div className="max-w-7xl mx-auto px-2">
-          <ul className="flex items-center justify-between">
-            {PILLARS.map((pillar) => (
+          <ul className="flex items-center">
+            {PILLARS.map((pillar, index) => (
               <li 
                 key={pillar.id} 
-                className="relative flex-1"
+                className="relative"
                 onMouseEnter={() => handleMouseEnter(pillar.id)}
                 onMouseLeave={handleMouseLeave}
               >
                 <Link
                   to={pillar.path}
-                  className={`flex items-center justify-center gap-1 px-1 py-2.5 transition-all hover:bg-slate-700 ${
-                    isActive(pillar.path) ? 'bg-slate-700 border-b-2 border-pink-500' : ''
+                  className={`flex items-center gap-1 px-3 py-2.5 transition-all font-medium hover:bg-slate-700 hover:text-pink-400 ${
+                    isActive(pillar.path) ? 'bg-slate-700 text-pink-400' : ''
                   }`}
                   data-testid={`nav-${pillar.id}`}
                 >
-                  <span className="text-base">{pillar.icon}</span>
-                  <span className="font-medium hidden xl:inline">{pillar.name}</span>
+                  {pillar.name}
+                  <ChevronDown className="w-3 h-3 opacity-60" />
                 </Link>
 
-                {/* Beautiful Dropdown Menu */}
+                {/* Beautiful Dropdown Menu - Positioned to not get cut off */}
                 {pillar.dropdown && activeDropdown === pillar.id && (
                   <div 
-                    className="absolute top-full left-1/2 -translate-x-1/2 w-48 bg-white text-gray-800 shadow-2xl rounded-lg py-2 z-50 border border-gray-100 animate-in fade-in slide-in-from-top-2 duration-200"
+                    className={`absolute top-full ${getDropdownPosition(index)} w-52 bg-white text-gray-800 shadow-2xl rounded-lg py-2 z-50 border border-gray-100`}
+                    style={{ minWidth: '200px' }}
                     onMouseEnter={() => handleMouseEnter(pillar.id)}
                     onMouseLeave={handleMouseLeave}
                   >
@@ -403,7 +474,7 @@ const Navbar = () => {
                       </div>
                     </div>
                     {/* Items */}
-                    {pillar.dropdown.map((item, idx) => (
+                    {pillar.dropdown.map((item) => (
                       <Link
                         key={item.path}
                         to={item.path}
