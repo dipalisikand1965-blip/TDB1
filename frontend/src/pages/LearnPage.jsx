@@ -228,28 +228,37 @@ const LearnPage = () => {
   };
 
   const handleEnroll = async () => {
-    if (!user || !selectedPet || !selectedProgram) {
-      toast({ title: 'Please select a pet and program', variant: 'destructive' });
+    // Check for pet info (either from profile or guest entry)
+    const hasPetInfo = selectedPet || requestForm.guest_pet_name;
+    if (!hasPetInfo || !selectedProgram) {
+      toast({ title: 'Please enter your pet\'s details and select a program', variant: 'destructive' });
       return;
     }
 
     setSubmitting(true);
     try {
+      const petData = selectedPet ? {
+        pet_id: selectedPet.id,
+        pet_name: selectedPet.name,
+      } : {
+        pet_id: null,
+        pet_name: requestForm.guest_pet_name,
+      };
+
       const response = await fetch(`${API_URL}/api/learn/enroll`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          ...(token && { Authorization: `Bearer ${token}` })
         },
         body: JSON.stringify({
           program_id: selectedProgram.id,
           program_name: selectedProgram.name,
-          pet_id: selectedPet.id,
-          pet_name: selectedPet.name,
-          user_id: user.id,
-          user_name: user.name,
-          user_email: user.email,
-          user_phone: user.phone,
+          ...petData,
+          user_id: user?.id || null,
+          user_name: user?.name || requestForm.guest_name || '',
+          user_email: user?.email || requestForm.guest_email || '',
+          user_phone: user?.phone || requestForm.guest_phone || '',
           amount: selectedProgram.price,
           preferred_start_date: requestForm.schedule_preference,
           location_preference: requestForm.location_preference
