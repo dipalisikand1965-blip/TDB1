@@ -5651,6 +5651,30 @@ async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
     return {"photo_url": photo_url, "message": "Photo uploaded successfully"}
 
 
+@api_router.get("/pet-photo/{pet_id}/{filename}")
+async def serve_pet_photo(pet_id: str, filename: str):
+    """Serve pet photos through API route (for Kubernetes ingress compatibility)"""
+    from fastapi.responses import FileResponse
+    import os
+    
+    file_path = f"/app/backend/static/uploads/pets/{filename}"
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Photo not found")
+    
+    # Get content type based on extension
+    ext = filename.split('.')[-1].lower() if '.' in filename else 'jpg'
+    content_types = {
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'png': 'image/png',
+        'gif': 'image/gif',
+        'webp': 'image/webp'
+    }
+    content_type = content_types.get(ext, 'image/jpeg')
+    
+    return FileResponse(file_path, media_type=content_type)
+
+
 @api_router.post("/pets/{pet_id}/celebrations")
 async def add_pet_celebration(pet_id: str, celebration: PetCelebration):
     """Add a celebration date to a pet's profile"""
