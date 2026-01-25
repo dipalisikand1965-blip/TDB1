@@ -699,85 +699,8 @@ const UnifiedPetPage = () => {
             />
           </TabsContent>
 
-          {/* Health Tab */}
+          {/* Health Vault Tab - Combined Health + Vaccines */}
           <TabsContent value="health" className="mt-0 space-y-6">
-            {loadingHealth ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
-              </div>
-            ) : (
-              <>
-                {/* Basic Health Info */}
-                {pet.health && (
-                  <Card className="p-6 bg-blue-50 border-blue-200">
-                    <h3 className="font-bold text-blue-800 mb-4 flex items-center gap-2">
-                      <Stethoscope className="w-5 h-5" />
-                      Health Profile
-                    </h3>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      {pet.health.vet_name && (
-                        <div className="bg-white rounded-lg p-4">
-                          <p className="text-xs text-gray-500 mb-1">Primary Vet</p>
-                          <p className="font-medium">{pet.health.vet_name}</p>
-                          {pet.health.vet_clinic && <p className="text-sm text-gray-600">{pet.health.vet_clinic}</p>}
-                        </div>
-                      )}
-                      {pet.health.medical_conditions && (
-                        <div className="bg-white rounded-lg p-4">
-                          <p className="text-xs text-gray-500 mb-1">Medical Conditions</p>
-                          <p className="font-medium">{pet.health.medical_conditions}</p>
-                        </div>
-                      )}
-                      {pet.health.dietary_restrictions && (
-                        <div className="bg-white rounded-lg p-4">
-                          <p className="text-xs text-gray-500 mb-1">Dietary Restrictions</p>
-                          <p className="font-medium">{pet.health.dietary_restrictions}</p>
-                        </div>
-                      )}
-                      {pet.weight && (
-                        <div className="bg-white rounded-lg p-4">
-                          <p className="text-xs text-gray-500 mb-1">Weight</p>
-                          <p className="font-medium">{pet.weight} kg</p>
-                        </div>
-                      )}
-                    </div>
-                  </Card>
-                )}
-                
-                {/* Active Medications */}
-                <Card className="p-6">
-                  <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <Pill className="w-5 h-5 text-purple-600" />
-                    Active Medications
-                  </h3>
-                  {healthData?.activeMeds?.length > 0 ? (
-                    <div className="space-y-3">
-                      {healthData.activeMeds.map((med, idx) => (
-                        <div key={idx} className="bg-purple-50 rounded-lg p-4">
-                          <p className="font-medium">{med.medication_name}</p>
-                          <p className="text-sm text-gray-600">{med.dosage} • {med.frequency}</p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-gray-500">No active medications recorded</p>
-                  )}
-                </Card>
-                
-                <div className="text-center">
-                  <Link to={`/pet-vault/${pet.id}`}>
-                    <Button className="bg-purple-600 hover:bg-purple-700">
-                      <Stethoscope className="w-4 h-4 mr-2" />
-                      Open Full Health Vault
-                    </Button>
-                  </Link>
-                </div>
-              </>
-            )}
-          </TabsContent>
-
-          {/* Vaccines Tab */}
-          <TabsContent value="vaccines" className="mt-0 space-y-6">
             {loadingHealth ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
@@ -796,7 +719,7 @@ const UnifiedPetPage = () => {
                         <div key={idx} className="bg-white rounded-lg p-3 flex justify-between items-center">
                           <span className="font-medium">{v.vaccine_name}</span>
                           <Badge className="bg-orange-100 text-orange-700">
-                            Due: {new Date(v.next_due_date).toLocaleDateString()}
+                            Due: {new Date(v.next_due_date).toLocaleDateString('en-GB')}
                           </Badge>
                         </div>
                       ))}
@@ -804,14 +727,80 @@ const UnifiedPetPage = () => {
                   </Card>
                 )}
                 
-                {/* All Vaccines */}
+                {/* Basic Health Info */}
+                <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+                  <h3 className="font-bold text-blue-800 mb-4 flex items-center gap-2">
+                    <Stethoscope className="w-5 h-5" />
+                    Health Profile
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {pet.health?.vet_name && (
+                      <div className="bg-white rounded-lg p-4 shadow-sm">
+                        <p className="text-xs text-gray-500 mb-1">Primary Vet</p>
+                        <p className="font-medium">{pet.health.vet_name}</p>
+                        {pet.health.vet_clinic && <p className="text-sm text-gray-600">{pet.health.vet_clinic}</p>}
+                      </div>
+                    )}
+                    {pet.health?.medical_conditions && (
+                      <div className="bg-white rounded-lg p-4 shadow-sm">
+                        <p className="text-xs text-gray-500 mb-1">Medical Conditions</p>
+                        <p className="font-medium">{pet.health.medical_conditions}</p>
+                      </div>
+                    )}
+                    {pet.health?.dietary_restrictions && (
+                      <div className="bg-white rounded-lg p-4 shadow-sm">
+                        <p className="text-xs text-gray-500 mb-1">Dietary Restrictions</p>
+                        <p className="font-medium">{pet.health.dietary_restrictions}</p>
+                      </div>
+                    )}
+                    {pet.weight && (
+                      <div className="bg-white rounded-lg p-4 shadow-sm">
+                        <p className="text-xs text-gray-500 mb-1">Weight</p>
+                        <p className="font-medium">{pet.weight} kg</p>
+                      </div>
+                    )}
+                    {!pet.health && !pet.weight && (
+                      <div className="col-span-2 text-center py-6 bg-white rounded-lg">
+                        <Heart className="w-10 h-10 mx-auto text-gray-300 mb-2" />
+                        <p className="text-gray-500">No health information recorded yet</p>
+                        <Link to={`/pet-vault/${pet.id}`}>
+                          <Button variant="outline" className="mt-3" size="sm">
+                            Add Health Info
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+                
+                {/* Active Medications */}
+                <Card className="p-6">
+                  <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Pill className="w-5 h-5 text-purple-600" />
+                    Active Medications
+                  </h3>
+                  {healthData?.activeMeds?.length > 0 ? (
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {healthData.activeMeds.map((med, idx) => (
+                        <div key={idx} className="bg-purple-50 rounded-lg p-4">
+                          <p className="font-medium">{med.medication_name}</p>
+                          <p className="text-sm text-gray-600">{med.dosage} • {med.frequency}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-4">No active medications recorded</p>
+                  )}
+                </Card>
+
+                {/* Vaccination Records */}
                 <Card className="p-6">
                   <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <Syringe className="w-5 h-5 text-green-600" />
                     Vaccination Records
                   </h3>
                   {healthData?.vaccines?.length > 0 ? (
-                    <div className="space-y-3">
+                    <div className="grid md:grid-cols-2 gap-3">
                       {healthData.vaccines.map((v, idx) => {
                         const dueDate = v.next_due_date ? new Date(v.next_due_date) : null;
                         const isOverdue = dueDate && dueDate < new Date();
@@ -821,12 +810,12 @@ const UnifiedPetPage = () => {
                             <div>
                               <p className="font-medium">{v.vaccine_name}</p>
                               <p className="text-sm text-gray-600">
-                                Given: {v.date_given ? new Date(v.date_given).toLocaleDateString() : 'Unknown'}
+                                Given: {v.date_given ? new Date(v.date_given).toLocaleDateString('en-GB') : 'Unknown'}
                               </p>
                             </div>
                             {dueDate && (
                               <Badge className={isOverdue ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}>
-                                {isOverdue ? 'Overdue' : `Next: ${dueDate.toLocaleDateString()}`}
+                                {isOverdue ? 'Overdue' : `Next: ${dueDate.toLocaleDateString('en-GB')}`}
                               </Badge>
                             )}
                           </div>
@@ -834,7 +823,7 @@ const UnifiedPetPage = () => {
                       })}
                     </div>
                   ) : (
-                    <p className="text-gray-500">No vaccination records found</p>
+                    <p className="text-gray-500 text-center py-4">No vaccination records found</p>
                   )}
                 </Card>
                 
@@ -842,12 +831,47 @@ const UnifiedPetPage = () => {
                   <Link to={`/pet-vault/${pet.id}`}>
                     <Button className="bg-purple-600 hover:bg-purple-700">
                       <Stethoscope className="w-4 h-4 mr-2" />
-                      Manage in Health Vault
+                      Open Full Health Vault
                     </Button>
                   </Link>
                 </div>
               </>
             )}
+          </TabsContent>
+
+          {/* Mira Chats History Tab */}
+          <TabsContent value="mira-history" className="mt-0 space-y-6">
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                  <MessageCircle className="w-5 h-5 text-purple-600" />
+                  Your Conversations with Mira
+                </h3>
+                <Button 
+                  onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Start New Chat
+                </Button>
+              </div>
+              
+              {/* Placeholder for Mira conversation history */}
+              <div className="text-center py-12 bg-gray-50 rounded-xl">
+                <MessageCircle className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                <h4 className="font-semibold text-gray-700 mb-2">Conversation History Coming Soon</h4>
+                <p className="text-gray-500 max-w-md mx-auto">
+                  Your chats with Mira will appear here, helping us personalise {pet.name}&apos;s experience based on your conversations.
+                </p>
+                <Button 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+                >
+                  Chat with Mira Now
+                </Button>
+              </div>
+            </Card>
           </TabsContent>
 
           {/* Pillars/Services Tab */}
