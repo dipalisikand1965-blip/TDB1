@@ -14,13 +14,14 @@ import {
   Utensils, Zap, Smile, ChevronRight, ChevronDown, ChevronUp,
   Heart, Sparkles, Stethoscope, Syringe, Pill, AlertCircle,
   RefreshCw, Loader2, Check, MessageCircle, Upload, 
-  LayoutGrid, List, Brain, Home, CreditCard
+  LayoutGrid, List, Brain, Home, CreditCard, HelpCircle
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { toast } from '../hooks/use-toast';
 import FamilyDashboard from '../components/FamilyDashboard';
 import MemoryTimeline from '../components/MemoryTimeline';
 import PetPassCard from '../components/PetPassCard';
+import { getPetPhotoUrl } from '../utils/petPhoto';
 
 // Persona icons mapping
 const PERSONA_ICONS = {
