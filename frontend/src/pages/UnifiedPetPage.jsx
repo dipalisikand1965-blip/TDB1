@@ -154,7 +154,8 @@ const UnifiedPetPage = () => {
     
     // Update previous achievements
     setPreviousAchievements(unlockedAchievements);
-  }, [unlockedAchievements.join(',')]); // Only trigger when achievement list changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(unlockedAchievements)]); // Only trigger when achievement list changes
 
   // Fetch pet data
   useEffect(() => {
