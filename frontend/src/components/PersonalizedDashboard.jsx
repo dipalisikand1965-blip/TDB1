@@ -173,7 +173,7 @@ const PersonalizedDashboard = ({ user, pets = [], onOpenMira }) => {
             Welcome to The Doggy Company
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Add your pet to unlock a personalized experience. 
+            Add your pet to unlock a personalised experience. 
             We'll remember everything about them, so you never have to repeat yourself.
           </p>
           <Link to="/pet-soul-onboard">
