@@ -88,7 +88,7 @@ const AdoptManager = ({ authHeaders }) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      if (petFilter.status) params.append('status', petFilter.status);
+      if (petFilter.status && petFilter.status !== 'all') params.append('status', petFilter.status);
       params.append('limit', '100');
       
       const res = await fetch(`${getApiUrl()}/api/adopt/pets?${params}`, { headers: authHeaders });
@@ -106,7 +106,7 @@ const AdoptManager = ({ authHeaders }) => {
   const fetchApplications = async () => {
     try {
       const params = new URLSearchParams();
-      if (appFilter.status) params.append('status', appFilter.status);
+      if (appFilter.status && appFilter.status !== 'all') params.append('status', appFilter.status);
       params.append('limit', '100');
       
       const res = await fetch(`${getApiUrl()}/api/adopt/applications?${params}`, { headers: authHeaders });
