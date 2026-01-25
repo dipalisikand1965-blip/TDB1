@@ -24,8 +24,8 @@ const Login = () => {
         title: "Welcome back!",
         description: "Successfully logged in.",
       });
-      // Redirect to homepage, not dashboard - let members explore naturally
-      navigate('/');
+      // Redirect to dashboard (My Account) after login
+      navigate('/dashboard');
     } catch (error) {
       toast({
         variant: "destructive",
