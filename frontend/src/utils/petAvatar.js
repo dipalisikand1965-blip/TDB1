@@ -240,7 +240,7 @@ export function petNeedsPhoto(pet) {
   return resolvePetAvatar(pet).needsUpload;
 }
 
-// Export breed photos for reference
-export { BREED_PHOTOS };
+// Export breed photos and normalization for reference
+export { BREED_PHOTOS, BREED_VARIATIONS, normalizeBreed };
 
 export default resolvePetAvatar;
