@@ -629,7 +629,7 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
                   
                   {/* Fill More Questions Button */}
                   <div className="pt-3 border-t border-gray-100">
-                    <Link to={`/questionnaire/${selectedPet?.id}?pillar=${selectedPillar}`}>
+                    <Link to={`/pet-soul-journey/${selectedPet?.id}?section=${selectedPillar}`}>
                       <Button 
                         size="sm" 
                         className="bg-purple-600 hover:bg-purple-700 text-white"
