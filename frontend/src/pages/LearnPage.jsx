@@ -712,6 +712,41 @@ const LearnPage = () => {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Guest Contact Info - only show if not logged in */}
+            {!user && (
+              <div className="space-y-3 pt-3 border-t">
+                <Label className="text-sm font-medium">Your Contact Details</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Your Name *</Label>
+                    <Input
+                      placeholder="Full name"
+                      value={requestForm.guest_name || ''}
+                      onChange={(e) => setRequestForm({...requestForm, guest_name: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Phone *</Label>
+                    <Input
+                      placeholder="Mobile number"
+                      value={requestForm.guest_phone || ''}
+                      onChange={(e) => setRequestForm({...requestForm, guest_phone: e.target.value})}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs">Email</Label>
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={requestForm.guest_email || ''}
+                    onChange={(e) => setRequestForm({...requestForm, guest_email: e.target.value})}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Training Type */}
             <div>
