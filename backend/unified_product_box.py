@@ -773,10 +773,10 @@ async def get_reward_triggers():
 # Category to pillar mapping
 CATEGORY_TO_PILLARS = {
     # Food & Treats
-    "treats": ["feed", "shop"],
-    "food": ["feed", "shop"],
-    "snacks": ["feed", "shop"],
-    "nutrition": ["feed", "shop"],
+    "treats": ["shop"],
+    "food": ["shop"],
+    "snacks": ["shop"],
+    "nutrition": ["shop"],
     
     # Celebration
     "cakes": ["celebrate", "shop"],
@@ -785,27 +785,31 @@ CATEGORY_TO_PILLARS = {
     "gifts": ["celebrate", "shop"],
     "gifting": ["celebrate", "shop"],
     
-    # Grooming
-    "grooming": ["groom", "care", "shop"],
-    "hygiene": ["groom", "care", "shop"],
-    "shampoo": ["groom", "shop"],
-    "spa": ["groom", "care"],
+    # Grooming & Care
+    "grooming": ["care", "shop"],
+    "hygiene": ["care", "shop"],
+    "shampoo": ["care", "shop"],
+    "spa": ["care"],
     
-    # Toys & Play
-    "toys": ["play", "shop"],
-    "accessories": ["play", "shop"],
-    "games": ["play", "shop"],
+    # Toys & Enjoy
+    "toys": ["enjoy", "shop"],
+    "accessories": ["enjoy", "shop"],
+    "games": ["enjoy", "shop"],
     
-    # Training
-    "training": ["train", "shop"],
-    "courses": ["train", "learn"],
-    "classes": ["train", "learn"],
+    # Training & Learn
+    "training": ["learn", "fit", "shop"],
+    "courses": ["learn"],
+    "classes": ["learn"],
     
     # Health & Care
     "health": ["care", "shop"],
     "wellness": ["care", "shop"],
-    "supplements": ["care", "feed", "shop"],
+    "supplements": ["care", "shop"],
     "medication": ["care"],
+    
+    # Fitness
+    "fitness": ["fit", "shop"],
+    "exercise": ["fit", "shop"],
     
     # Travel
     "travel": ["travel", "shop"],
@@ -818,15 +822,29 @@ CATEGORY_TO_PILLARS = {
     "fashion": ["shop"],
     
     # Dining
-    "bowls": ["dine", "feed", "shop"],
-    "feeders": ["dine", "feed", "shop"],
-    
-    # Insurance
-    "insurance": ["insure"],
+    "bowls": ["dine", "shop"],
+    "feeders": ["dine", "shop"],
     
     # Stay
     "boarding": ["stay"],
     "daycare": ["stay", "care"],
+    
+    # Paperwork
+    "documents": ["paperwork"],
+    "records": ["paperwork"],
+    "certificates": ["paperwork"],
+    
+    # Emergency
+    "emergency": ["emergency"],
+    "first-aid": ["emergency", "care", "shop"],
+    
+    # Farewell
+    "memorial": ["farewell", "shop"],
+    "urn": ["farewell", "shop"],
+    
+    # Adoption
+    "adoption": ["adopt"],
+    "rescue": ["adopt"],
 }
 
 # Tag to pillar mapping
