@@ -5,6 +5,52 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
+## Session 19 - Multiple Bug Fixes (January 25, 2026)
+
+### PILLAR PRODUCTS FIX:
+**Issue:** Products not showing in pillar pages because pillar route endpoints were querying wrong collection.
+
+**Fix Applied:**
+- Updated 6 pillar route files to query `unified_products` collection:
+  - `/app/backend/advisory_routes.py` - Lines 349-369
+  - `/app/backend/emergency_routes.py` - Lines 531-548
+  - `/app/backend/enjoy_routes.py` - Lines 537-565
+  - `/app/backend/farewell_routes.py` - Lines 206-236
+  - `/app/backend/fit_routes.py` - Lines 349-363
+  - `/app/backend/learn_routes.py` - Lines 338-360
+
+**Verification:** ✅ Products now showing: Advisory(6), Emergency(6), Enjoy(3), Farewell(12), Fit(6), Learn(6)
+
+### PET PHOTOS IN FORMS FIX:
+**Issue:** Pet selection forms in pillar pages showed generic PawPrint icons instead of breed-matched photos.
+
+**Fix Applied:**
+- Added `getPetPhotoUrl` import and usage to 7 pillar pages:
+  - AdvisoryPage.jsx, EnjoyPage.jsx, TravelPage.jsx, LearnPage.jsx, CarePage.jsx, EmergencyPage.jsx, FitPage.jsx
+- Updated pet selection buttons to show actual pet photos using `<img src={getPetPhotoUrl(pet)} />`
+
+**Verification:** ✅ Pet selection now shows breed-matched stock photos or user-uploaded photos
+
+### BREED SPELLING AUTO-DETECT:
+**Issue:** Breed variations like "Shihtzu" (without space) weren't recognized for photo matching.
+
+**Fix Applied:**
+- Added `BREED_VARIATIONS` mapping in `/app/frontend/src/utils/petAvatar.js` (Lines 16-54)
+- Maps common misspellings: shihtzu→shih tzu, goldenretriever→golden retriever, etc.
+- Added `normalizeBreed()` function for consistent breed matching
+
+**Verification:** ✅ Breed normalization verified for multiple spelling variations
+
+### PUBLIC PRODUCTS PILLAR FILTER:
+**Issue:** Public `/api/products` endpoint lacked pillar filtering.
+
+**Fix Applied:**
+- Added `pillar` query parameter to `/api/products` endpoint in server.py (Line 3988)
+
+**Verification:** ✅ Can now filter products by pillar: `/api/products?pillar=advisory`
+
+---
+
 ## Session 18 - Bug Fixes (January 25, 2026)
 
 ### ADMIN PRODUCTS FIX (ADPT):
