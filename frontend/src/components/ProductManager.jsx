@@ -825,7 +825,7 @@ const ProductManager = ({ credentials }) => {
                   </td>
                   <td className="p-3 font-medium">₹{product.price || product.minPrice || 0}</td>
                   <td className="p-3 text-sm text-gray-500">
-                    {product.sizes?.length || 0} sizes, {product.flavors?.length || 0} flavors
+                    {product.sizes?.length || 0} sizes, {product.flavors?.length || 0} flavours
                   </td>
                   <td className="p-3">
                     <div className="flex gap-2">
