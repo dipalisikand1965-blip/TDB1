@@ -154,7 +154,7 @@ function AppRouter() {
 // Main layout with navbar, footer, cart, etc.
 function MainLayout() {
   return (
-    <div className="App">
+    <div className="App overflow-x-hidden">
       <ScrollToTop />
       <Navbar />
       <Routes>
