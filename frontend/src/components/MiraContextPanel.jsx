@@ -19,7 +19,7 @@ import { Badge } from './ui/badge';
 import { useMiraSignal } from '../hooks/useMiraSignal';
 import { getApiUrl } from '../utils/api';
 import { 
-  MessageCircle, ChevronUp, ChevronDown, PawPrint, 
+  MessageCircle, ChevronUp, ChevronDown, ChevronRight, PawPrint, 
   Sparkles, ShoppingCart, ArrowRight, X, Send, Loader2,
   Lightbulb, Calendar, Heart, Plus
 } from 'lucide-react';
