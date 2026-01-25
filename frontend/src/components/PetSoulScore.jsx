@@ -7,6 +7,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PawPrint } from 'lucide-react';
+import { resolvePetAvatar } from '../utils/petAvatar';
 
 const PetSoulScore = ({ score, isLoggedIn, pet, className = '' }) => {
   // Calculate stroke dasharray and dashoffset for progress ring
@@ -26,14 +27,8 @@ const PetSoulScore = ({ score, isLoggedIn, pet, className = '' }) => {
   const colors = getColor();
   const needsAttention = score < 70;
   
-  // Get pet photo URL
-  // Ensure photo URL is absolute
-  const rawPhotoUrl = pet?.photo_url || pet?.image_url;
-  const petPhotoUrl = rawPhotoUrl 
-    ? (rawPhotoUrl.startsWith('http') 
-        ? rawPhotoUrl 
-        : `${process.env.REACT_APP_BACKEND_URL || ''}${rawPhotoUrl.startsWith('/') ? '' : '/'}${rawPhotoUrl}`)
-    : null;
+  // Use centralized pet avatar resolver
+  const { photoUrl, isBreedPhoto } = resolvePetAvatar(pet);
   const petName = pet?.name || 'Pet';
 
   if (!isLoggedIn) {
@@ -57,7 +52,7 @@ const PetSoulScore = ({ score, isLoggedIn, pet, className = '' }) => {
       to="/my-pets"
       className={`flex items-center gap-2 group ${className}`}
       data-testid="pet-soul-nav-btn"
-      title={`${petName}'s Soul: ${score}% complete - Click to view`}
+      title={`${petName}'s Soul: ${score}% complete${isBreedPhoto ? ' - Click to add photo' : ''}`}
     >
       {/* Pet Photo with Progress Ring */}
       <div className={`relative ${needsAttention ? 'animate-pulse-soft' : ''}`}>
@@ -98,26 +93,31 @@ const PetSoulScore = ({ score, isLoggedIn, pet, className = '' }) => {
             style={{ transform: 'rotate(-90deg)', transformOrigin: 'center' }}
           />
           
-          {/* Pet Photo or Paw Icon in center */}
+          {/* Pet Photo in center - using resolved avatar */}
           <foreignObject x="4" y="4" width={size - 8} height={size - 8}>
             <div className="w-full h-full rounded-full overflow-hidden bg-purple-100 flex items-center justify-center">
-              {petPhotoUrl ? (
-                <img 
-                  src={petPhotoUrl} 
-                  alt={petName}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-              ) : null}
-              <div className={`w-full h-full items-center justify-center ${petPhotoUrl ? 'hidden' : 'flex'}`}>
+              <img 
+                src={photoUrl} 
+                alt={petName}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              <div className="w-full h-full items-center justify-center hidden">
                 <PawPrint className="w-4 h-4 text-purple-500" />
               </div>
             </div>
           </foreignObject>
         </svg>
+        
+        {/* Upload indicator for breed photos */}
+        {isBreedPhoto && (
+          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-purple-500 rounded-full border border-white flex items-center justify-center">
+            <span className="text-[6px] text-white">+</span>
+          </div>
+        )}
       </div>
       
       {/* Score Text */}
