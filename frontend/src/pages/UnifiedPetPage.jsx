@@ -890,6 +890,8 @@ const UnifiedPetPage = () => {
                             const value = answers[questionId];
                             const hasAnswer = value && value !== '' && value !== 'None';
                             const displayValue = Array.isArray(value) ? value.filter(v => v && v !== 'None').join(', ') : value;
+                            const isEditing = editingQuestion === questionId;
+                            const quickOptions = QUICK_OPTIONS[questionId];
                             
                             // Question labels
                             const questionLabels = {
@@ -923,28 +925,87 @@ const UnifiedPetPage = () => {
                             return (
                               <div 
                                 key={questionId}
-                                className={`p-3 rounded-lg flex items-center justify-between ${hasAnswer ? 'bg-white' : 'bg-white/50 border border-dashed border-gray-300'}`}
+                                className={`p-3 rounded-lg transition-all ${hasAnswer ? 'bg-white hover:bg-gray-50' : 'bg-white/50 border border-dashed border-gray-300'} ${isEditing ? 'ring-2 ring-purple-400 bg-purple-50' : ''}`}
                               >
-                                <div className="flex items-center gap-3">
-                                  {hasAnswer ? (
-                                    <Check className="w-5 h-5 text-green-500" />
-                                  ) : (
-                                    <HelpCircle className="w-5 h-5 text-gray-300" />
-                                  )}
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-700">{questionLabels[questionId] || questionId}</p>
-                                    {hasAnswer && <p className="text-sm text-gray-500">{displayValue}</p>}
+                                {isEditing ? (
+                                  // Inline Edit Mode
+                                  <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <p className="text-sm font-semibold text-purple-700">{questionLabels[questionId] || questionId}</p>
+                                      <Button 
+                                        size="sm" 
+                                        variant="ghost" 
+                                        onClick={() => { setEditingQuestion(null); setEditValue(''); }}
+                                        className="h-7 px-2"
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                    
+                                    {quickOptions ? (
+                                      // Quick option buttons
+                                      <div className="flex flex-wrap gap-2">
+                                        {quickOptions.map((option) => (
+                                          <Button
+                                            key={option}
+                                            size="sm"
+                                            variant={editValue === option ? 'default' : 'outline'}
+                                            disabled={savingAnswer === questionId}
+                                            onClick={() => saveInlineAnswer(questionId, option)}
+                                            className={`text-xs ${editValue === option ? 'bg-purple-600' : 'hover:bg-purple-100 hover:border-purple-400'}`}
+                                          >
+                                            {savingAnswer === questionId && editValue === option && <Loader2 className="w-3 h-3 animate-spin mr-1" />}
+                                            {option}
+                                          </Button>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      // Text input for custom answers
+                                      <div className="flex gap-2">
+                                        <Input
+                                          value={editValue}
+                                          onChange={(e) => setEditValue(e.target.value)}
+                                          placeholder={`Enter ${questionLabels[questionId]?.toLowerCase() || 'answer'}...`}
+                                          className="flex-1 h-9"
+                                          onKeyPress={(e) => e.key === 'Enter' && saveInlineAnswer(questionId, editValue)}
+                                        />
+                                        <Button
+                                          size="sm"
+                                          onClick={() => saveInlineAnswer(questionId, editValue)}
+                                          disabled={!editValue || savingAnswer === questionId}
+                                          className="bg-purple-600 hover:bg-purple-700 h-9"
+                                        >
+                                          {savingAnswer === questionId ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                                        </Button>
+                                      </div>
+                                    )}
                                   </div>
-                                </div>
-                                {!hasAnswer && (
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={() => navigate(`/pet-soul-journey/${pet.id}?section=${pillar.key}`)}
-                                    className="text-xs"
-                                  >
-                                    Answer
-                                  </Button>
+                                ) : (
+                                  // Display Mode
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3 flex-1">
+                                      {hasAnswer ? (
+                                        <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                                      ) : (
+                                        <HelpCircle className="w-5 h-5 text-gray-300 flex-shrink-0" />
+                                      )}
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-gray-700">{questionLabels[questionId] || questionId}</p>
+                                        {hasAnswer && <p className="text-sm text-gray-500 truncate">{displayValue}</p>}
+                                      </div>
+                                    </div>
+                                    <Button 
+                                      size="sm" 
+                                      variant={hasAnswer ? "ghost" : "outline"}
+                                      onClick={() => {
+                                        setEditingQuestion(questionId);
+                                        setEditValue(hasAnswer ? (Array.isArray(value) ? value.join(', ') : value) : '');
+                                      }}
+                                      className={`text-xs ml-2 ${hasAnswer ? 'text-gray-400 hover:text-purple-600' : ''}`}
+                                    >
+                                      {hasAnswer ? <Edit className="w-4 h-4" /> : 'Answer'}
+                                    </Button>
+                                  </div>
                                 )}
                               </div>
                             );
