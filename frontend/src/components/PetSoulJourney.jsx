@@ -645,7 +645,7 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
                   <p className="text-gray-500 text-sm">
                     No information yet. Talk to Mira or answer questions to build this pillar.
                   </p>
-                  <Link to={`/questionnaire/${selectedPet?.id}?pillar=${selectedPillar}`}>
+                  <Link to={`/pet-soul-journey/${selectedPet?.id}?section=${selectedPillar}`}>
                     <Button 
                       size="sm" 
                       className="bg-purple-600 hover:bg-purple-700 text-white"
