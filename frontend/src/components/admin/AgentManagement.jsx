@@ -211,6 +211,28 @@ const AgentManagement = ({ authHeaders }) => {
     });
   };
 
+  // CSV Export function
+  const handleExportCSV = () => {
+    const headers = ['Username', 'Name', 'Email', 'Phone', 'Status', 'Permissions', 'Created At'];
+    const rows = agents.map(a => [
+      a.username || '',
+      a.name || '',
+      a.email || '',
+      a.phone || '',
+      a.is_active !== false ? 'Active' : 'Inactive',
+      (a.permissions || []).join('; '),
+      a.created_at ? new Date(a.created_at).toLocaleDateString() : ''
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.map(v => `"${v}"`).join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `agents_export_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const openEditModal = (agent) => {
     setSelectedAgent(agent);
     setFormData({
