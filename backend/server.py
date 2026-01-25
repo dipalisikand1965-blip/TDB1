@@ -101,6 +101,10 @@ from pet_soul_routes import (
     pet_soul_admin_router,
     set_pet_soul_db
 )
+from pet_score_logic import (
+    pet_score_router,
+    set_pet_score_db
+)
 from pet_vault_routes import (
     pet_vault_router,
     pet_vault_admin_router,
