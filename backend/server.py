@@ -2517,7 +2517,7 @@ async def change_password(
     new_password: str = Body(...),
     username: str = Depends(verify_admin)
 ):
-    """Change password (for logged-in admin)"""
+    """Change password (for logged-in admin) and send email notification"""
     global _admin_credentials_cache
     
     expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
@@ -2541,6 +2541,58 @@ async def change_password(
     
     # Update cache
     _admin_credentials_cache["password"] = new_password
+    
+    # Send notification email to admin
+    try:
+        change_time = datetime.now(timezone.utc).strftime("%d %B %Y at %H:%M UTC")
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: 'Segoe UI', sans-serif; background: #f8f4f0; margin: 0; padding: 20px; }}
+                .container {{ max-width: 500px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }}
+                .header {{ background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); padding: 30px; text-align: center; }}
+                .header h1 {{ color: white; margin: 0; font-size: 24px; }}
+                .content {{ padding: 30px; text-align: center; }}
+                .info-box {{ background: #e8f5e9; padding: 15px; border-radius: 8px; margin: 20px 0; }}
+                .warning {{ background: #fff3e0; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 14px; color: #e65100; }}
+                .footer {{ text-align: center; padding: 20px; background: #f8f4f0; color: #666; font-size: 12px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🔐 Password Changed</h1>
+                </div>
+                <div class="content">
+                    <p>Hi Admin,</p>
+                    <p>Your admin panel password was successfully changed.</p>
+                    <div class="info-box">
+                        <strong>Changed by:</strong> {username}<br>
+                        <strong>Date:</strong> {change_time}
+                    </div>
+                    <div class="warning">
+                        ⚠️ If you did not make this change, please contact support immediately and reset your password.
+                    </div>
+                </div>
+                <div class="footer">
+                    <p>The Doggy Company - Your Pet's Life Operating System</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        resend.Emails.send({
+            "from": SENDER_EMAIL,
+            "to": ADMIN_EMAIL,
+            "subject": "🔐 Admin Password Changed - The Doggy Company",
+            "html": html_content
+        })
+        logger.info(f"Password change notification sent to {ADMIN_EMAIL}")
+    except Exception as e:
+        logger.error(f"Failed to send password change notification: {e}")
     
     logger.info("Admin password changed successfully")
     return {"success": True, "message": "Password changed successfully"}
