@@ -49,7 +49,7 @@ import Contact from "./pages/Contact";
 import PetProfile from "./pages/PetProfile";
 import MyPets from "./pages/MyPets";
 import PetSoulPage from "./pages/PetSoulPage";
-import PetSoulJourneyPage from "./pages/PetSoulJourneyPage";
+// PetSoulJourneyPage removed - deprecated, all routes redirect to UnifiedPetPage
 import PetSoulDemo from "./pages/PetSoulDemo";
 import PetVault from "./pages/PetVault";
 import Login from "./pages/Login";
