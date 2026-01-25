@@ -258,6 +258,52 @@ const Navbar = () => {
         { name: '🚑 Medical Emergency', path: '/emergency?type=medical_emergency' },
       ]
     },
+    { 
+      id: 'adopt',
+      name: 'Adopt', 
+      icon: Heart,
+      color: 'from-pink-500 to-rose-500',
+      description: 'Find your forever friend',
+      path: '/adopt',
+      isActive: true,
+      subItems: [
+        { name: '🐕 Dogs for Adoption', path: '/adopt?species=dog' },
+        { name: '🐱 Cats for Adoption', path: '/adopt?species=cat' },
+        { name: '📋 Adoption Process', path: '/adopt?type=process' },
+        { name: '❤️ Foster Program', path: '/adopt?type=foster' },
+      ]
+    },
+    { 
+      id: 'farewell',
+      name: 'Farewell', 
+      icon: Heart,
+      color: 'from-purple-500 to-violet-600',
+      description: 'Compassionate end-of-life care',
+      path: '/farewell',
+      isActive: true,
+      subItems: [
+        { name: '🕊️ Memorial Services', path: '/farewell?type=memorial' },
+        { name: '🌸 Cremation Services', path: '/farewell?type=cremation' },
+        { name: '💜 Grief Support', path: '/farewell?type=grief' },
+        { name: '🌈 Rainbow Bridge', path: '/farewell?type=rainbow_bridge' },
+      ]
+    },
+    { 
+      id: 'shop',
+      name: 'Shop', 
+      icon: PawPrint,
+      color: 'from-amber-500 to-orange-500',
+      description: 'Everything for your pet',
+      path: '/shop',
+      isActive: true,
+      subItems: [
+        { name: '🦴 Food & Treats', path: '/shop?category=food' },
+        { name: '🧸 Toys & Play', path: '/shop?category=toys' },
+        { name: '🛁 Grooming', path: '/shop?category=grooming' },
+        { name: '🏥 Health & Wellness', path: '/shop?category=health' },
+        { name: '🎀 Accessories', path: '/shop?category=accessories' },
+      ]
+    },
   ];
 
   // Split pillars into visible and "more" sections
