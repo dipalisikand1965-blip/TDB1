@@ -568,7 +568,7 @@ const UnifiedPetPage = () => {
                       <p className="text-xs text-white/70">Pet Soul™</p>
                     </div>
                     <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 text-center">
-                      <p className="text-2xl font-bold text-white">{tier || 'Newcomer'}</p>
+                      <p className="text-2xl font-bold text-white">{tier?.name || 'Newcomer'}</p>
                       <p className="text-xs text-white/70">Current Tier</p>
                     </div>
                     <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 text-center">
