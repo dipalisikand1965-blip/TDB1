@@ -62,7 +62,7 @@ const WelcomeCard = ({ user, pets, onLinkClick }) => {
           src={imageInfo.url} 
           alt={petName || 'Welcome'} 
           className="w-full h-full object-cover"
-          onError={(e) => { e.target.src = BREED_IMAGES.default; }}
+          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop'; }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         
@@ -82,6 +82,17 @@ const WelcomeCard = ({ user, pets, onLinkClick }) => {
           <div className="absolute top-2 right-2 bg-purple-600/80 text-white text-[10px] px-2 py-0.5 rounded-full">
             {petName}&apos;s Photo
           </div>
+        )}
+        
+        {/* Upload prompt for breed photos */}
+        {imageInfo.needsUpload && petName && (
+          <a 
+            href="/my-pets" 
+            className="absolute top-2 right-2 bg-purple-600/90 hover:bg-purple-700 text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1 cursor-pointer transition-colors"
+          >
+            <Upload className="w-3 h-3" />
+            Add {petName}&apos;s photo
+          </a>
         )}
         
         {/* Soul Score badge */}
