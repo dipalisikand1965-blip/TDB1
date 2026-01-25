@@ -290,6 +290,14 @@ const AgentManagement = ({ authHeaders }) => {
             Refresh
           </Button>
           <Button 
+            variant="outline"
+            onClick={handleExportCSV}
+            data-testid="export-agents-csv"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Export CSV
+          </Button>
+          <Button 
             onClick={() => { resetForm(); setShowCreateModal(true); }}
             className="bg-purple-600 hover:bg-purple-700"
           >
