@@ -1736,13 +1736,7 @@ const MemberDashboard = () => {
               {pets.map(pet => (
                 <Card key={pet.id} className="p-6 relative overflow-hidden group hover:border-purple-300 transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                      {pet.photo_url ? (
-                        <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <PawPrint className="w-10 h-10 text-purple-300" />
-                      )}
-                    </div>
+                    <PetAvatar pet={pet} size="lg" />
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-gray-900">{pet.name}</h3>
                       <p className="text-gray-600">{pet.breed} • {pet.age_years || '?'} years</p>
