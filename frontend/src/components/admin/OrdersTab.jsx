@@ -2,7 +2,8 @@ import React from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Download } from 'lucide-react';
+import { toast } from '../../hooks/use-toast';
 
 const OrdersTab = ({ 
   orders, 
@@ -13,6 +14,30 @@ const OrdersTab = ({
   updateOrderStatus,
   setSelectedOrderDetails 
 }) => {
+  // CSV Export for Orders
+  const exportOrdersCSV = () => {
+    const headers = ['Order ID', 'Customer', 'Email', 'Phone', 'Total', 'Status', 'Items', 'Date', 'Address'];
+    const rows = orders.map(o => [
+      o.order_id || o.id,
+      o.customer_name || o.user_name,
+      o.customer_email || o.user_email,
+      o.customer_phone || o.user_phone,
+      o.total_amount || o.total,
+      o.status,
+      o.items?.length || 0,
+      o.created_at?.split('T')[0],
+      (o.shipping_address || o.address || '').replace(/,/g, ';')
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    toast({ title: 'Exported!', description: `${orders.length} orders exported to CSV` });
+  };
+
   return (
     <div className="space-y-6" data-testid="orders-tab">
       {/* Order Stats */}
