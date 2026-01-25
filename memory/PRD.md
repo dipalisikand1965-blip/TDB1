@@ -1,110 +1,157 @@
 # The Doggy Company - Product Requirements Document
 
 ## Original Problem Statement
-Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-first platform. Core vision: "vision-first, commerce-later" approach, centered around "Pet Soul™" and "Mira® AI" concierge.
+Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-first platform.
 
 ---
 
-## Session 8 Completed Work (January 25, 2026)
+## Session 8 - Major Features Completed (January 25, 2026)
 
-### 1. BLANK HEALTH TAB BUG FIX ✅ (P1)
-- Created `UnifiedPetPage.jsx` for `/pet/:petId?tab=xxx` routes
-- All tabs working: Overview, Pet Soul, Health, Vaccines, Services, Pet Pass
+### 1. UNIFIED PRODUCT BOX ✅ (MAJOR FEATURE)
+**The Single Source of Truth for all products, rewards & experiences**
 
-### 2. SERVER-SIDE PET SOUL SCORE SYSTEM ✅ (P0)
-Created `/app/backend/pet_score_logic.py`:
+**Backend** (`/app/backend/unified_product_box.py`):
+- Full product schema with: Identity, Pillars, Pet Safety, Paw Rewards, Mira AI, Pricing, Shipping
+- 16 API endpoints for CRUD, filtering, bulk operations
+- Migration endpoint: Migrated 394 existing products
+
+**Admin UI** (`/app/frontend/src/components/admin/UnifiedProductBox.jsx`):
+- Stats dashboard (Total, Active, Reward Eligible, Mira Visible, Draft)
+- Product table with search, filters by Type/Pillar/Status
+- Full product editor with 6 tabs:
+  - Basic (name, type, description, status)
+  - Pillars (assign to 16 pillars)
+  - Pet Safety (life stages, sizes, dietary flags, exclusions)
+  - Rewards (Paw Reward eligibility, triggers, limits)
+  - Mira AI (reference, suggest, mention-only settings)
+  - Pricing (base price, GST, shipping)
+
+**Key Features**:
+- Products must be born here to appear anywhere else
+- Pet Safety validation required for Mira suggestions
+- Non-pushy Mira by default (mention_only_if_asked)
+- All 16 pillars supported
+
+### 2. SERVER-SIDE PET SOUL SCORE ✅
 - Weighted question configuration (100 points across 6 categories)
 - 4-tier system: Newcomer → Soul Seeker → Soul Explorer → Soul Master
-- APIs: `/score_state`, `/quick-questions`, `/tiers`, `/config`, `/recalculate`
+- APIs: `/score_state`, `/quick-questions`, `/tiers`
 
-### 3. GAMIFICATION SYSTEM ✅ (NEW)
-Created `/app/frontend/src/components/PetAchievements.jsx`:
-- **13 achievements** across categories: Tier, Category, Streak, Special
-- **Confetti celebrations** with `canvas-confetti` library
-- **Achievement badges** with lock/unlock states
-- **useAchievements hook** for automatic unlock detection
+### 3. GAMIFICATION SYSTEM ✅
+- 13 achievements across tier, category, streak, special types
+- Confetti celebrations with canvas-confetti
+- Achievement badges with lock/unlock states
 
-### 4. UNIVERSAL PET AVATAR INTEGRATION ✅ (P1)
-Updated components to use `getPetPhotoUrl()`:
-- ✅ MemberDashboard.jsx (3 places)
-- ✅ Checkout.jsx (pet selector)
-- ✅ Admin.jsx (4 places: pet table, profile modal, member details, health vault)
-- ✅ UnifiedPetPage.jsx
-- ✅ Navbar, MiraAI, PetPassCard (previous session)
+### 4. UNIVERSAL PET AVATAR ✅
+- `getPetPhotoUrl()` integrated across all components
+- Breed-based fallback photos
 
-### 5. SERVICE DESK CUSTOMER NAME FIX ✅ (P2)
-Updated `/app/backend/ticket_routes.py`:
-- Fixed fallback logic for "Website Visitor" names
-- Added email prefix extraction as name fallback
-- Improved contact field propagation
+### 5. PET PASS NUMBERS ✅
+- Unique numbers generated per pet (e.g., `TDC-I4UY18`)
+- Displayed on Pet Pass cards
 
-Updated `/app/backend/mira_routes.py`:
-- Enhanced phone pattern matching
-- Added "name:" prefix pattern
-- Email prefix name extraction
-- More robust name filtering
+### 6. BLANK HEALTH TAB FIX ✅
+- Created UnifiedPetPage.jsx for `/pet/:petId?tab=xxx`
 
 ---
 
-## Achievements System
+## Unified Product Box Schema
 
-| Achievement | Points | Type | Trigger |
-|-------------|--------|------|---------|
-| First Steps | 10 | Milestone | First answer |
-| Soul Seeker | 50 | Tier | Reach 25% |
-| Soul Explorer | 100 | Tier | Reach 50% |
-| Soul Master | 200 | Tier | Reach 75% |
-| Pet Soul Complete | 500 | Tier | Reach 100% |
-| Safety First | 75 | Category | 100% safety |
-| Personality Pro | 75 | Category | 100% personality |
-| Lifestyle Guru | 60 | Category | 100% lifestyle |
-| Nutrition Ninja | 40 | Category | 100% nutrition |
-| Training Expert | 30 | Category | 100% training |
-| Getting Started | 25 | Streak | 3-day streak |
-| On Fire | 50 | Streak | 7-day streak |
-| Picture Perfect | 20 | Special | Photo uploaded |
-| Allergy Aware | 30 | Special | Allergy info added |
+```
+Product Record:
+├── Identity (id, sku, name, type)
+├── Pillars (16 pillars mapping)
+├── Pet Safety
+│   ├── life_stages (puppy/adult/senior/all)
+│   ├── size_suitability (small/medium/large/all)
+│   ├── dietary_flags
+│   ├── known_exclusions
+│   └── is_validated (required for Mira)
+├── Paw Rewards
+│   ├── is_reward_eligible
+│   ├── is_reward_only
+│   ├── reward_value
+│   ├── max_redemptions_per_pet
+│   └── trigger_conditions
+├── Mira Visibility
+│   ├── can_reference
+│   ├── can_suggest_proactively
+│   └── mention_only_if_asked
+├── Pricing
+│   ├── base_price, compare_at_price, cost_price
+│   ├── gst_applicable, gst_rate
+│   └── shipping (requires_shipping, weight, class)
+└── Visibility (status, visible_on_site, membership_eligibility)
+```
 
 ---
 
-## Key Files Updated This Session
+## 16 Pillars
 
-| File | Changes |
-|------|---------|
-| `/backend/pet_score_logic.py` | NEW - Server-side scoring |
-| `/backend/ticket_routes.py` | Customer name fallback fix |
-| `/backend/mira_routes.py` | Enhanced contact extraction |
-| `/frontend/src/components/PetAchievements.jsx` | NEW - Gamification |
-| `/frontend/src/utils/petScore.js` | NEW - Score hook |
-| `/frontend/src/components/PetScoreCard.jsx` | NEW - Tier-aware display |
-| `/frontend/src/pages/UnifiedPetPage.jsx` | Tab-based pet view |
-| `/frontend/src/pages/MemberDashboard.jsx` | Universal avatar |
-| `/frontend/src/pages/Checkout.jsx` | Universal avatar |
-| `/frontend/src/pages/Admin.jsx` | Universal avatar (4 places) |
+| Pillar | Icon | Status |
+|--------|------|--------|
+| Feed | 🍖 | Coming Soon |
+| Celebrate | 🎂 | Active |
+| Dine | 🍽️ | Active |
+| Stay | 🏨 | Active |
+| Travel | ✈️ | Active |
+| Care | 🩺 | Active |
+| Groom | ✂️ | Coming Soon |
+| Play | 🎾 | Coming Soon |
+| Train | 🎓 | Coming Soon |
+| Insure | 🛡️ | Coming Soon |
+| Adopt | 🐕 | Coming Soon |
+| Farewell | 🌈 | Coming Soon |
+| Shop | 🛒 | Active |
+| Community | 👥 | Coming Soon |
+| Emergency | 🚨 | Active |
+| Concierge | 🛎️ | Active |
+
+---
+
+## API Endpoints - Unified Product Box
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/product-box/products` | List with filters |
+| GET | `/api/product-box/products/{id}` | Get single product |
+| POST | `/api/product-box/products` | Create product |
+| PUT | `/api/product-box/products/{id}` | Update product |
+| DELETE | `/api/product-box/products/{id}` | Archive product |
+| POST | `/api/product-box/products/{id}/clone` | Clone product |
+| POST | `/api/product-box/products/bulk-update` | Bulk update |
+| POST | `/api/product-box/products/bulk-assign-pillar` | Bulk assign pillar |
+| GET | `/api/product-box/by-pillar/{pillar}` | Products by pillar |
+| GET | `/api/product-box/rewards` | Reward products |
+| GET | `/api/product-box/mira-visible` | Mira-visible products |
+| GET | `/api/product-box/safe-for-pet` | Safe products for pet profile |
+| GET | `/api/product-box/stats` | Product statistics |
+| POST | `/api/product-box/migrate-from-products` | Migrate existing |
+| GET | `/api/product-box/config/*` | Configuration data |
 
 ---
 
 ## Prioritized Backlog
 
-### P0 - Critical (All Completed ✅)
-- ~~Session Persistence~~ ✅
-- ~~Blank Health Tab Bug~~ ✅
+### P0 - Critical (Completed ✅)
+- ~~Unified Product Box~~ ✅
 - ~~Server-Side Pet Soul Score~~ ✅
+- ~~Pet Pass Numbers~~ ✅
 
-### P1 - High Priority (Completed)
-- ~~Universal Pet Avatar Integration~~ ✅
-- ~~Gamification (Achievements, Confetti)~~ ✅
-- ~~Service Desk Customer Name Fix~~ ✅
+### P1 - Next
+- Configure products with:
+  - Pillar assignments
+  - Pet Safety validation
+  - Reward eligibility
+- Integrate Unified Product Box with:
+  - Mira AI suggestions
+  - Checkout soft-gating
+  - Service Desk attachments
 
-### P2 - Medium Priority (Pending User Bug List)
-1. "Untitled" Products from Shopify Sync (recurring)
-2. Mobile Cart View redesign
-3. Additional bugs from user's list
-
-### P3 - Future
-- Build remaining pillar pages (Adopt, Farewell, etc.)
-- Paw Rewards ledger system
-- Mira Conversation History storage
+### P2 - Pending
+- "Untitled" Shopify products fix
+- Mobile cart view redesign
+- User's bug list (awaiting)
 
 ---
 
