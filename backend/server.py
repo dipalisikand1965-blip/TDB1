@@ -5253,6 +5253,21 @@ async def create_pet_profile(pet: PetProfileCreate, current_user: dict = Depends
 async def get_my_pets(current_user: dict = Depends(get_current_user)):
     """Get pets for the logged-in user"""
     pets = await db.pets.find({"owner_email": current_user["email"]}, {"_id": 0}).to_list(50)
+    
+    # Ensure overall_score is set for consistency (use soul_score as fallback)
+    for pet in pets:
+        if "overall_score" not in pet and "soul_score" in pet:
+            pet["overall_score"] = pet["soul_score"]
+        elif "overall_score" not in pet:
+            # Calculate from doggy_soul_answers if available
+            answers = pet.get("doggy_soul_answers", {}) or pet.get("soul_answers", {})
+            if answers:
+                total_questions = 59
+                answered = len(answers)
+                pet["overall_score"] = round((answered / total_questions) * 100)
+            else:
+                pet["overall_score"] = 0
+    
     return {"pets": pets}
 
 
