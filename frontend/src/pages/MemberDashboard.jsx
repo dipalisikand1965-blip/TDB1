@@ -2474,6 +2474,101 @@ const MemberDashboard = () => {
                   </div>
                 </Card>
 
+                {/* Soul Whisper™ Settings - Premium Feature */}
+                <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+                  <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-purple-600" /> Soul Whisper™
+                    <Badge className="bg-purple-100 text-purple-700 text-xs">Pet Pass</Badge>
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Receive gentle daily reminders to deepen your bond with your pet. One soul question at a time, delivered via WhatsApp.
+                  </p>
+                  
+                  <div className="space-y-4">
+                    {/* Enable/Disable */}
+                    <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                      <div className="space-y-0.5">
+                        <label className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                          <MessageCircle className="w-4 h-4 text-green-500" />
+                          Enable Soul Whisper
+                        </label>
+                        <p className="text-xs text-gray-500">Daily soul questions via WhatsApp</p>
+                      </div>
+                      <Switch 
+                        checked={settings.soul_whisper} 
+                        onCheckedChange={() => handleSettingChange('soul_whisper')} 
+                      />
+                    </div>
+                    
+                    {/* Frequency Selection */}
+                    {settings.soul_whisper && (
+                      <>
+                        <div className="p-3 bg-white rounded-lg border">
+                          <label className="text-sm font-medium text-gray-900 mb-2 block">Frequency</label>
+                          <div className="flex gap-2">
+                            {[
+                              { value: 'daily', label: 'Daily', icon: '☀️' },
+                              { value: 'twice_weekly', label: '2x Week', icon: '📅' },
+                              { value: 'weekly', label: 'Weekly', icon: '📆' }
+                            ].map((opt) => (
+                              <button
+                                key={opt.value}
+                                onClick={() => {
+                                  setSettings(prev => ({ ...prev, soul_whisper_frequency: opt.value }));
+                                  handleSettingChange('soul_whisper_frequency', opt.value);
+                                }}
+                                className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                                  settings.soul_whisper_frequency === opt.value
+                                    ? 'bg-purple-600 text-white shadow-md'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                }`}
+                              >
+                                {opt.icon} {opt.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Preferred Time */}
+                        <div className="p-3 bg-white rounded-lg border">
+                          <label className="text-sm font-medium text-gray-900 mb-2 block">
+                            <Clock className="w-4 h-4 inline mr-1" />
+                            Preferred Time
+                          </label>
+                          <select 
+                            className="w-full p-2 border rounded-lg text-sm"
+                            value={settings.soul_whisper_time}
+                            onChange={(e) => {
+                              setSettings(prev => ({ ...prev, soul_whisper_time: e.target.value }));
+                              handleSettingChange('soul_whisper_time', e.target.value);
+                            }}
+                          >
+                            <option value="08:00">8:00 AM - Early Bird 🌅</option>
+                            <option value="10:00">10:00 AM - Morning ☀️</option>
+                            <option value="14:00">2:00 PM - Afternoon 🌤️</option>
+                            <option value="18:00">6:00 PM - Evening 🌆</option>
+                            <option value="20:00">8:00 PM - Night 🌙</option>
+                          </select>
+                        </div>
+                        
+                        {/* Preview */}
+                        <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                          <p className="text-xs text-green-700 font-medium mb-2">📱 Preview Message:</p>
+                          <div className="bg-white p-3 rounded-lg shadow-sm border-l-4 border-green-500">
+                            <p className="text-sm text-gray-700">
+                              <span className="font-medium">Soul Whisper for {pets[0]?.name || 'your pet'} 💜</span>
+                              <br />
+                              <span className="text-gray-600 italic">&quot;What&apos;s {pets[0]?.name || 'your pet'}&apos;s favourite spot in the house?&quot;</span>
+                              <br />
+                              <span className="text-xs text-purple-600">Tap to answer →</span>
+                            </p>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </Card>
+
                 {/* Privacy & Security */}
                 <Card className="p-6">
                   <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
