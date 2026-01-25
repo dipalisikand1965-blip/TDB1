@@ -2504,27 +2504,7 @@ const Admin = () => {
 
         {/* Farewell Tab */}
         {activeTab === 'farewell' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                  🌈 Farewell Pillar Management
-                </h2>
-                <p className="text-gray-600">Manage end-of-life services, memorials, and bereavement support</p>
-              </div>
-            </div>
-            <Card className="p-8 text-center">
-              <Heart className="w-16 h-16 mx-auto text-rose-400 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Farewell Services Coming Soon</h3>
-              <p className="text-gray-500 max-w-md mx-auto">
-                Memorial products, cremation services, and grief support resources will be managed here.
-                For now, farewell products can be managed in the Unified Product Box.
-              </p>
-              <Button className="mt-4" onClick={() => setActiveTab('product-box')}>
-                <Package className="w-4 h-4 mr-2" /> Go to Product Box
-              </Button>
-            </Card>
-          </div>
+          <FarewellManager getAuthHeader={getAuthHeaders} />
         )}
 
         {/* Adopt Tab */}
