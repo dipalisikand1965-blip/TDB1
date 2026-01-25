@@ -601,34 +601,60 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
               </div>
               
               {Object.keys(pillarDetails.data).length > 0 ? (
-                <div className="grid md:grid-cols-2 gap-3">
-                  {Object.entries(pillarDetails.data).map(([key, value]) => {
-                    const displayKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    let displayValue = value;
-                    
-                    if (Array.isArray(value)) {
-                      displayValue = value.join(', ');
-                    } else if (typeof value === 'object') {
-                      displayValue = JSON.stringify(value);
-                    } else if (typeof value === 'boolean') {
-                      displayValue = value ? 'Yes' : 'No';
-                    }
-                    
-                    return (
-                      <div key={key} className="flex items-start gap-2 p-2 bg-gray-50 rounded-lg">
-                        <span className="text-purple-500 text-xs">•</span>
-                        <div>
-                          <p className="text-xs text-gray-500">{displayKey}</p>
-                          <p className="text-sm text-gray-800 font-medium">{displayValue}</p>
+                <div className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-3">
+                    {Object.entries(pillarDetails.data).map(([key, value]) => {
+                      const displayKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                      let displayValue = value;
+                      
+                      if (Array.isArray(value)) {
+                        displayValue = value.join(', ');
+                      } else if (typeof value === 'object') {
+                        displayValue = JSON.stringify(value);
+                      } else if (typeof value === 'boolean') {
+                        displayValue = value ? 'Yes' : 'No';
+                      }
+                      
+                      return (
+                        <div key={key} className="flex items-start gap-2 p-2 bg-gray-50 rounded-lg">
+                          <span className="text-purple-500 text-xs">•</span>
+                          <div>
+                            <p className="text-xs text-gray-500">{displayKey}</p>
+                            <p className="text-sm text-gray-800 font-medium">{displayValue}</p>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Fill More Questions Button */}
+                  <div className="pt-3 border-t border-gray-100">
+                    <Link to={`/questionnaire/${selectedPet?.id}?pillar=${selectedPillar}`}>
+                      <Button 
+                        size="sm" 
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                      >
+                        <PawPrint className="w-4 h-4 mr-2" />
+                        Fill More Questions
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               ) : (
-                <p className="text-gray-500 text-sm text-center py-4">
-                  No information yet. Talk to Mira or answer questions to build this pillar.
-                </p>
+                <div className="text-center py-4 space-y-3">
+                  <p className="text-gray-500 text-sm">
+                    No information yet. Talk to Mira or answer questions to build this pillar.
+                  </p>
+                  <Link to={`/questionnaire/${selectedPet?.id}?pillar=${selectedPillar}`}>
+                    <Button 
+                      size="sm" 
+                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                    >
+                      <PawPrint className="w-4 h-4 mr-2" />
+                      Start Questions
+                    </Button>
+                  </Link>
+                </div>
               )}
             </Card>
           )}
