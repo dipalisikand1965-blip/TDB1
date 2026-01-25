@@ -3985,10 +3985,15 @@ async def get_public_products(
     category: Optional[str] = None, 
     collection: Optional[str] = None,
     pan_india: Optional[bool] = None,
-    search: Optional[str] = None
+    search: Optional[str] = None,
+    pillar: Optional[str] = None
 ):
     """Public endpoint for products - queries both products and unified_products collections"""
     query = {}
+    
+    # Handle pillar-based filtering (for unified_products)
+    if pillar:
+        query["pillar"] = pillar
     
     # Handle collection-based filtering (e.g., valentine)
     if collection:
