@@ -229,6 +229,122 @@ GET  /api/concierge/export-csv               # Export to CSV
         }
       ]
     },
+    'pet-soul-score': {
+      title: 'Pet Soul Score™',
+      subtitle: 'Server-Side Pet Profile Completeness & Personalization Engine',
+      badge: '🆕 New System',
+      files: {
+        frontend: '/app/frontend/src/pages/UnifiedPetPage.jsx, /app/frontend/src/components/PetScoreCard.jsx',
+        backend: '/app/backend/pet_score_logic.py'
+      },
+      sections: [
+        {
+          title: 'What It Is',
+          content: `The Pet Soul Score™ is our **single source of truth** for measuring how well we know a pet. It powers personalization across the entire platform.
+
+**Key Points:**
+• 100-point weighted scoring system (6 categories)
+• Server-side calculation (NOT frontend)
+• Drives Mira® AI personalization
+• Unlocks features at different tiers
+• Separate from Paw Rewards (transactional loyalty)`
+        },
+        {
+          title: 'Score Categories & Weights',
+          content: `| Category | Weight | Purpose |
+|----------|--------|---------|
+| Safety & Allergies | 25pts | Critical for product recommendations |
+| Personality & Behavior | 25pts | Drives Mira conversation style |
+| Lifestyle & Routine | 20pts | Activity & schedule optimization |
+| Nutrition | 15pts | Food & treat recommendations |
+| Training | 10pts | Service level customization |
+| Preferences | 5pts | General preferences |
+
+**Total: 100 points**`
+        },
+        {
+          title: 'Tier System',
+          content: `| Tier | Score Range | Unlocks |
+|------|-------------|---------|
+| 🌱 Newcomer | 0-24% | Basic Mira interactions |
+| 🔍 Soul Seeker | 25-49% | Mira remembers preferences |
+| 🗺️ Soul Explorer | 50-74% | Smart safety alerts |
+| ✨ Soul Master | 75-100% | VIP concierge experience |
+
+• Tier displayed in UnifiedPetPage and MemberDashboard
+• Mira adjusts behavior based on tier`
+        },
+        {
+          title: 'API Endpoints',
+          content: `\`\`\`
+GET /api/pet/{id}/score_state          # Complete score state
+# Returns: overall_score, tier, category_breakdown, recommendations
+
+GET /api/pet/{id}/score_state/categories  # Category details only
+
+GET /api/pet-score/tiers               # Tier definitions
+
+GET /api/pet/{id}/score_state/quick-questions?limit=N  # Unanswered questions
+\`\`\``
+        },
+        {
+          title: 'Achievements & Gamification',
+          content: `Users earn badges for completing Pet Soul milestones:
+
+**Tier Achievements:**
+• 🌱 First Steps (first answer)
+• 🔍 Soul Seeker (25%)
+• 🗺️ Soul Explorer (50%)
+• ✨ Soul Master (75%)
+• 🏆 Pet Soul Complete (100%)
+
+**Category Achievements:**
+• 🛡️ Safety First (all safety questions)
+• 🎭 Personality Pro (all personality questions)
+• 🏠 Lifestyle Guru (all lifestyle questions)
+• 🍖 Nutrition Ninja (all nutrition questions)
+• 🎓 Training Expert (all training questions)
+
+**Special:**
+• 📸 Picture Perfect (photo uploaded)
+• ⚕️ Allergy Aware (allergy info added)`
+        },
+        {
+          title: 'Frontend Integration',
+          content: `**Hook Usage:**
+\`\`\`jsx
+import usePetScore from '../utils/petScore';
+
+const { 
+  scoreState, 
+  loading, 
+  score, 
+  tier, 
+  recommendations 
+} = usePetScore(petId, token);
+\`\`\`
+
+**Display Component:**
+\`\`\`jsx
+import PetScoreCard from '../components/PetScoreCard';
+
+<PetScoreCard
+  scoreState={scoreState}
+  loading={loading}
+  petName={pet.name}
+/>
+\`\`\``
+        },
+        {
+          title: 'How to Modify',
+          content: `• **Add Questions**: Edit \`WEIGHTED_QUESTIONS\` in \`pet_score_logic.py\`
+• **Change Weights**: Modify category weights in same file
+• **Tier Thresholds**: Edit \`TIERS\` constant
+• **UI Changes**: Edit \`PetScoreCard.jsx\` or \`UnifiedPetPage.jsx\`
+• **Add Achievements**: Edit \`ACHIEVEMENTS\` in \`PetAchievements.jsx\``
+        }
+      ]
+    },
     'member-directory': {
       title: 'Pet Parent Directory',
       subtitle: 'Complete 360° CRM View - Like Zoho/Salesforce but Pet-Centric',
