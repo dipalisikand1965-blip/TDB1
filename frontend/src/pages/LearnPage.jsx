@@ -657,18 +657,10 @@ const LearnPage = () => {
           </DialogHeader>
           
           <div className="space-y-6 py-4">
-            {/* Login prompt for non-logged in users */}
-            {!user && (
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-blue-800 font-medium mb-2">Please sign in to submit a training request</p>
-                <p className="text-sm text-blue-600">You'll need to add your pet profile first to request personalized training.</p>
-              </div>
-            )}
-            
-            {/* Pet Selection */}
-            {user && userPets.length > 0 && (
-              <div>
-                <Label className="text-sm font-medium">Select Pet</Label>
+            {/* Pet Selection - Works for both logged in and guest users */}
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Your Pet's Details</Label>
+              {userPets.length > 0 ? (
                 <div className="grid grid-cols-2 gap-3 mt-2">
                   {userPets.map(pet => (
                     <Card 
@@ -688,16 +680,38 @@ const LearnPage = () => {
                     </Card>
                   ))}
                 </div>
-              </div>
-            )}
-            
-            {/* No pets message */}
-            {user && userPets.length === 0 && (
-              <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
-                <p className="text-amber-800 font-medium mb-2">No pets found</p>
-                <p className="text-sm text-amber-600">Please add your pet profile first to request training.</p>
-              </div>
-            )}
+              ) : (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs">Pet Name *</Label>
+                      <Input
+                        placeholder="e.g., Mojo"
+                        value={requestForm.guest_pet_name || ''}
+                        onChange={(e) => setRequestForm({...requestForm, guest_pet_name: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Breed</Label>
+                      <Input
+                        placeholder="e.g., Labrador"
+                        value={requestForm.guest_pet_breed || ''}
+                        onChange={(e) => setRequestForm({...requestForm, guest_pet_breed: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs">Age</Label>
+                      <Input
+                        placeholder="e.g., 2 years"
+                        value={requestForm.guest_pet_age || ''}
+                        onChange={(e) => setRequestForm({...requestForm, guest_pet_age: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
             {/* Training Type */}
             <div>
