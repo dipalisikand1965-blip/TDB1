@@ -16,7 +16,8 @@ import {
   Package, Search, Filter, Plus, Edit, Trash2, Copy, Save, X,
   Gift, Eye, EyeOff, Tag, DollarSign, Shield, Bot, Truck,
   AlertTriangle, Check, ChevronDown, ChevronRight, RefreshCw,
-  PawPrint, Heart, Sparkles, ShoppingBag, Loader2, BarChart3
+  PawPrint, Heart, Sparkles, ShoppingBag, Loader2, BarChart3,
+  Download
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
