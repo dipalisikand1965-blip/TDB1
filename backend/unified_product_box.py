@@ -860,7 +860,7 @@ async def auto_seed_pillars():
     if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
-    collection = db.products_unified
+    collection = db.unified_products
     products = await collection.find({}).to_list(length=10000)
     
     # Debug info
@@ -868,10 +868,10 @@ async def auto_seed_pillars():
     if product_count == 0:
         return {
             "success": False,
-            "message": "No products found in products_unified collection",
+            "message": "No products found in unified_products collection",
             "debug": {
                 "db_name": db.name if db is not None else "None",
-                "collection_name": "products_unified"
+                "collection_name": "unified_products"
             }
         }
     
