@@ -62,15 +62,24 @@ const ChatsTab = ({
             <h3 className="font-bold text-purple-900">Mira AI (Chatbase)</h3>
             <p className="text-sm text-purple-600">{chatbaseChats.length} conversations synced</p>
           </div>
-          <Button 
-            onClick={syncChatbase} 
-            disabled={syncingChatbase}
-            className="bg-purple-600 hover:bg-purple-700"
-            data-testid="sync-chatbase-btn"
-          >
-            <RefreshCw className={`w-4 h-4 mr-2 ${syncingChatbase ? 'animate-spin' : ''}`} />
-            {syncingChatbase ? 'Syncing...' : 'Sync from Chatbase'}
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline"
+              onClick={handleExportCSV}
+              data-testid="export-chats-csv"
+            >
+              <Download className="w-4 h-4 mr-2" /> Export CSV
+            </Button>
+            <Button 
+              onClick={syncChatbase} 
+              disabled={syncingChatbase}
+              className="bg-purple-600 hover:bg-purple-700"
+              data-testid="sync-chatbase-btn"
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${syncingChatbase ? 'animate-spin' : ''}`} />
+              {syncingChatbase ? 'Syncing...' : 'Sync from Chatbase'}
+            </Button>
+          </div>
         </div>
       </Card>
 
