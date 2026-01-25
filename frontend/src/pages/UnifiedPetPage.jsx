@@ -309,7 +309,8 @@ const UnifiedPetPage = () => {
   }
 
   const petPhoto = getPetPhotoUrl(pet);
-  const score = Math.round(pet.overall_score || 0);
+  // Use server-side score as single source of truth
+  const displayScore = scoreState?.score ?? Math.round(pet.overall_score || 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50" data-testid="unified-pet-page">
