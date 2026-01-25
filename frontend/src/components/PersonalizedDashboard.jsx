@@ -387,7 +387,7 @@ const PersonalizedDashboard = ({ user, pets = [], onOpenMira }) => {
                 <Star className="w-6 h-6 text-yellow-500" />
                 Just for {petName}
               </h2>
-              <p className="text-gray-600">Personalized recommendations based on {petName}'s profile</p>
+              <p className="text-gray-600">Personalised recommendations based on {petName}'s profile</p>
             </div>
           </div>
           
