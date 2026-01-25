@@ -1479,6 +1479,22 @@ const MemberDashboard = () => {
             )}
           </TabsContent>
 
+          {/* 🎁 Rewards Tab - Paw Points Redemption */}
+          <TabsContent value="rewards" className="animate-in fade-in-50 duration-300">
+            <PawPointsRewards 
+              token={token}
+              onPointsChange={(newBalance) => {
+                // Update local user state with new balance
+                // This would ideally update the global user context
+              }}
+            />
+          </TabsContent>
+
+          {/* 🤖 Mira AI Conversations Tab */}
+          <TabsContent value="mira" className="animate-in fade-in-50 duration-300">
+            <MiraConversationHistory token={token} limit={20} />
+          </TabsContent>
+
           {/* Orders Content */}
           <TabsContent value="orders">
             <Card className="p-6">
