@@ -440,7 +440,7 @@ const PetSoulJourneyPage = () => {
         )}
       </div>
       
-      {/* Edit Answer Modal (Single question) */}
+      {/* Edit Answer Modal (Single question) - Smart Input Types */}
       <Dialog open={editModal.open} onOpenChange={(open) => !open && setEditModal({ open: false, questionId: null })}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -453,25 +453,162 @@ const PetSoulJourneyPage = () => {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid gap-2 py-4">
-            {(QUESTION_OPTIONS[editModal.questionId] || ['Yes', 'No', 'Sometimes']).map((option) => (
-              <Button
-                key={option}
-                variant="outline"
-                className={`justify-start h-auto py-3 px-4 text-left ${
-                  pet?.doggy_soul_answers?.[editModal.questionId] === option 
-                    ? 'bg-purple-100 border-purple-500 text-purple-700' 
-                    : 'hover:bg-purple-50'
-                }`}
-                disabled={savingAnswer}
-                onClick={() => handleSaveAnswer(editModal.questionId, option)}
-              >
-                {pet?.doggy_soul_answers?.[editModal.questionId] === option && (
-                  <Check className="w-4 h-4 mr-2 text-purple-600" />
-                )}
-                {option}
-              </Button>
-            ))}
+          <div className="py-4">
+            {/* TEXT INPUT - for name, breed, weight, etc. */}
+            {QUESTION_TYPES[editModal.questionId] === 'text' && (
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder={`Enter ${editModal.questionId?.replace(/_/g, ' ')}`}
+                  defaultValue={pet?.doggy_soul_answers?.[editModal.questionId] || pet?.[editModal.questionId] || ''}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSaveAnswer(editModal.questionId, e.target.value);
+                    }
+                  }}
+                  id="text-input-field"
+                />
+                <Button
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                  disabled={savingAnswer}
+                  onClick={() => {
+                    const input = document.getElementById('text-input-field');
+                    if (input?.value) {
+                      handleSaveAnswer(editModal.questionId, input.value);
+                    }
+                  }}
+                >
+                  {savingAnswer ? 'Saving...' : 'Save Answer'}
+                </Button>
+              </div>
+            )}
+            
+            {/* DATE INPUT - for dob, last_vet_visit, etc. */}
+            {QUESTION_TYPES[editModal.questionId] === 'date' && (
+              <div className="space-y-3">
+                <input
+                  type="date"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  defaultValue={(() => {
+                    const val = pet?.doggy_soul_answers?.[editModal.questionId] || pet?.[editModal.questionId] || pet?.dob || pet?.dateOfBirth;
+                    if (val) {
+                      try {
+                        return new Date(val).toISOString().split('T')[0];
+                      } catch { return ''; }
+                    }
+                    return '';
+                  })()}
+                  id="date-input-field"
+                />
+                <Button
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                  disabled={savingAnswer}
+                  onClick={() => {
+                    const input = document.getElementById('date-input-field');
+                    if (input?.value) {
+                      handleSaveAnswer(editModal.questionId, input.value);
+                    }
+                  }}
+                >
+                  {savingAnswer ? 'Saving...' : 'Save Date'}
+                </Button>
+              </div>
+            )}
+            
+            {/* MULTISELECT - for allergies, treats, commands, etc. */}
+            {QUESTION_TYPES[editModal.questionId] === 'multiselect' && (
+              <div className="space-y-3">
+                <p className="text-sm text-gray-500 mb-2">Select all that apply:</p>
+                <div className="grid gap-2 max-h-64 overflow-y-auto">
+                  {(QUESTION_OPTIONS[`${editModal.questionId}_options`] || ['None']).map((option) => {
+                    const currentValues = Array.isArray(pet?.doggy_soul_answers?.[editModal.questionId]) 
+                      ? pet.doggy_soul_answers[editModal.questionId] 
+                      : [];
+                    const isSelected = currentValues.includes(option);
+                    
+                    return (
+                      <Button
+                        key={option}
+                        variant="outline"
+                        className={`justify-start h-auto py-2 px-3 text-left text-sm ${
+                          isSelected ? 'bg-purple-100 border-purple-500 text-purple-700' : 'hover:bg-purple-50'
+                        }`}
+                        disabled={savingAnswer}
+                        onClick={() => {
+                          let newValues;
+                          if (option === 'None') {
+                            newValues = ['None'];
+                          } else if (isSelected) {
+                            newValues = currentValues.filter(v => v !== option);
+                          } else {
+                            newValues = [...currentValues.filter(v => v !== 'None'), option];
+                          }
+                          handleSaveAnswer(editModal.questionId, newValues.length > 0 ? newValues : ['None']);
+                        }}
+                      >
+                        {isSelected && <Check className="w-4 h-4 mr-2 text-purple-600" />}
+                        {option}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            
+            {/* SINGLE SELECT (default) - for all other questions with predefined options */}
+            {!QUESTION_TYPES[editModal.questionId] && QUESTION_OPTIONS[editModal.questionId] && (
+              <div className="grid gap-2">
+                {QUESTION_OPTIONS[editModal.questionId].map((option) => (
+                  <Button
+                    key={option}
+                    variant="outline"
+                    className={`justify-start h-auto py-3 px-4 text-left ${
+                      pet?.doggy_soul_answers?.[editModal.questionId] === option 
+                        ? 'bg-purple-100 border-purple-500 text-purple-700' 
+                        : 'hover:bg-purple-50'
+                    }`}
+                    disabled={savingAnswer}
+                    onClick={() => handleSaveAnswer(editModal.questionId, option)}
+                  >
+                    {pet?.doggy_soul_answers?.[editModal.questionId] === option && (
+                      <Check className="w-4 h-4 mr-2 text-purple-600" />
+                    )}
+                    {option}
+                  </Button>
+                ))}
+              </div>
+            )}
+            
+            {/* FALLBACK TEXT INPUT - for questions with no predefined options */}
+            {!QUESTION_TYPES[editModal.questionId] && !QUESTION_OPTIONS[editModal.questionId] && (
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder={`Enter ${editModal.questionId?.replace(/_/g, ' ')}`}
+                  defaultValue={pet?.doggy_soul_answers?.[editModal.questionId] || ''}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSaveAnswer(editModal.questionId, e.target.value);
+                    }
+                  }}
+                  id="fallback-input-field"
+                />
+                <Button
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                  disabled={savingAnswer}
+                  onClick={() => {
+                    const input = document.getElementById('fallback-input-field');
+                    if (input?.value) {
+                      handleSaveAnswer(editModal.questionId, input.value);
+                    }
+                  }}
+                >
+                  {savingAnswer ? 'Saving...' : 'Save Answer'}
+                </Button>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
