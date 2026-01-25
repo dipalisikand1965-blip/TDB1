@@ -5,12 +5,57 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
+## Session 7: Major UX Consolidation (January 25, 2026) ✅
+
+### NEW LOGO ✅
+- **Design**: Teal serving cloche (concierge bell) with colorful paw print on top
+- **Colors**: Purple, Pink, Orange, Green paw pads on teal bell
+- **Text**: "the" (orange) + "doggy" (teal→purple gradient) + "company" (purple)
+- **Tagline**: "Pet Concierge"
+- **File**: `/app/frontend/public/logo-new.png`
+
+### PET PHOTO CONSISTENCY ✅
+- Created `/app/frontend/src/utils/petPhoto.js` utility
+- Priority: 1. User uploaded photo → 2. Breed-matched stock photo → 3. Default dog
+- Stock photos for 20+ breeds (Golden Retriever, Labrador, German Shepherd, Beagle, Pug, etc.)
+- Used consistently across MyPets page
+
+### CONSOLIDATED MY PETS PAGE ✅
+- **Inline Quick Questions**: Answer Pet Soul questions directly on the page without navigating away
+- **Quick Questions button** expands a section with 3 unanswered questions at a time
+- **Options displayed as clickable buttons** for easy one-tap answering
+- **Real-time score updates** when answers are saved
+- **Full Journey link** for those who want the complete questionnaire experience
+
+### PET SOUL SCORE LOGIC ✅
+- **Total Questions**: 26 Pet Soul questions across 8 categories
+- **Score Calculation**: `(answered_questions / 26) × 100`
+- **Categories**: Identity, Family, Routine, Home, Travel, Taste, Training, Health
+- **Backend Endpoint**: `POST /api/pets/{pet_id}/soul-answer` for saving individual answers
+- **Score updates in real-time** as each question is answered
+
+### MIRA CONVERSATION TRACKING ✅
+- Conversations stored in `mira_tickets` collection
+- Each session creates a ticket with full message history
+- **Member can view**: Via `/api/mira/history` endpoint
+- **Admin can view**: In Service Desk / Unified Inbox
+- Conversations DO NOT directly increase Pet Soul score (answers must be explicit)
+
+### CUSTOMER NAME CAPTURE ✅
+- `extract_contact_info()` function extracts name/email/phone from messages
+- Updates ticket `member` field when contact info detected
+- Non-logged users start as "Website Visitor" instead of "Guest"
+
+---
+
 ## Pet Pass System
 
 ### Plans
-1. **Pet Pass — Trial** (1 month): ₹499 + GST
-2. **Pet Pass — Foundation** (12 months): ₹4,999 + GST
-3. **Additional pets**: ₹2,499/year or ₹249/trial + GST
+| Plan | Price | Duration |
+|------|-------|----------|
+| Pet Pass — Trial | ₹499 + GST | 1 month |
+| Pet Pass — Foundation | ₹4,999 + GST | 12 months |
+| Additional Pet | ₹2,499/year or ₹249/trial | Per pet |
 
 ### Member Tiers
 | Tier | Emoji | Criteria |
@@ -22,99 +67,35 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
-## What's Been Implemented (January 2026)
+## 14 Life Pillars + 8 Pet Soul Pillars
 
-### Session 6: Major UX Improvements (January 25, 2026) ✅
+### 14 Life Pillars (Services)
+Feed, Celebrate, Dine, Stay, Travel, Care, Groom, Play, Train, Insure, Adopt, Farewell, Shop, Community
 
-**Logo & Branding:**
-- NEW custom AI-generated logo with concierge bell + colorful paw
-- Location: `/app/frontend/public/logo-new.png`
-
-**Pet Soul Navigation (FIXED):**
-- ✅ Pet Soul folder cards are now clickable - expand to show details
-- ✅ "Fill More Questions" button added - navigates to `/pet-soul-journey/{petId}?section={pillar}`
-- ✅ "View Full Soul" link fixed - navigates to `/pet-soul-journey/{petId}`
-- ✅ All 14 Life Pillars added to My Account dashboard page
-
-**Sign-Up Links for Non-Logged Users:**
-- ✅ MiraContextPanel: "Join Pet Pass" + "Already a member? Sign in" buttons
-- ✅ MiraPage sidebar: Same sign-up CTA buttons
-- ✅ MiraAI welcome message: Clickable markdown links to /membership and /login
-
-**Customer Name Capture for Tickets (FIXED):**
-- ✅ Added `extract_contact_info()` function in `mira_routes.py`
-- ✅ Extracts name, email, phone from user messages
-- ✅ Updates ticket member info when detected
-- ✅ Non-logged users now labeled "Website Visitor" (was "Guest")
-
-**Admin Docs Updated:**
-- ✅ Pet Pass section rewritten with new pricing, tiers, password reset flow
-
-### Previous Sessions
-- Session 1-5: Core Pet Pass Flow, My Pets Overhaul, Soul Score Consistency, Critical Bug Fixes (see previous entries)
+### 8 Pet Soul Pillars (Questionnaire Categories)
+| Pillar | Key | Questions |
+|--------|-----|-----------|
+| Identity & Temperament | identity_temperament | Personality, energy, social |
+| Family & Pack | family_pack | Bonds, other pets, kids |
+| Rhythm & Routine | rhythm_routine | Schedule, feeding, exercise |
+| Home Comforts | home_comforts | Favorite spots, alone time |
+| Travel Style | travel_style | Car, carrier, new places |
+| Taste & Treat | taste_treat | Food preferences, allergies |
+| Training & Behaviour | training_behaviour | Commands, motivation |
+| Long Horizon | long_horizon | Health, vet, grooming |
 
 ---
 
-## Navigation Architecture
+## Key Files Modified
 
-See `/app/memory/NAVIGATION_ARCHITECTURE.md` for detailed flow diagrams.
-
-### Key User Flows
-
-```
-Homepage → Login → Homepage (logged in)
-                     ↓
-              My Account (/dashboard)
-                     ↓
-              My Pets (/my-pets)
-                     ↓
-         Pet Soul Journey (/pet-soul-journey/{petId})
-```
-
-### Key Pages
-| Page | Route | Purpose |
-|------|-------|---------|
-| Homepage | `/` | Landing, pillar navigation |
-| Login | `/login` | Authentication |
-| Membership | `/membership` | Pet Pass plans, Pet Soul summary |
-| My Account | `/dashboard` | Dashboard, 14 pillars, activity |
-| My Pets | `/my-pets` | Pet list |
-| Pet Soul Journey | `/pet-soul-journey/{petId}` | Questionnaire |
-
----
-
-## 14 Life Pillars
-| Pillar | Icon | Path |
-|--------|------|------|
-| Feed | 🍖 | /feed |
-| Celebrate | 🎂 | /celebrate |
-| Dine | 🍽️ | /dine |
-| Stay | 🏨 | /stay |
-| Travel | ✈️ | /travel |
-| Care | 🩺 | /care |
-| Groom | ✂️ | /groom |
-| Play | 🎾 | /play |
-| Train | 🎓 | /train |
-| Insure | 🛡️ | /insure |
-| Adopt | 🐕 | /adopt |
-| Farewell | 🌈 | /farewell |
-| Shop | 🛒 | /products |
-| Community | 👥 | /community |
-
----
-
-## 8 Pet Soul Pillars (Questionnaire Categories)
-
-| Pillar | Key | Questions About |
-|--------|-----|-----------------|
-| Identity & Temperament | identity_temperament | Personality, nature |
-| Family & Pack | family_pack | Family members, other pets |
-| Rhythm & Routine | rhythm_routine | Daily schedule |
-| Home Comforts | home_comforts | Sleep, favorite spots |
-| Travel Style | travel_style | Car rides, carriers |
-| Taste & Treat | taste_treat | Food preferences |
-| Training & Behaviour | training_behaviour | Commands, training |
-| Long Horizon | long_horizon | Health, vet visits |
+| File | Changes |
+|------|---------|
+| `/frontend/public/logo-new.png` | New AI-generated logo |
+| `/frontend/src/components/Logo.jsx` | Updated to use new logo image |
+| `/frontend/src/utils/petPhoto.js` | NEW - Pet photo utility with breed fallbacks |
+| `/frontend/src/pages/MyPets.jsx` | Added inline Quick Questions section |
+| `/backend/server.py` | Added `POST /api/pets/{pet_id}/soul-answer` endpoint |
+| `/backend/mira_routes.py` | Added contact extraction, name capture |
 
 ---
 
@@ -122,16 +103,15 @@ Homepage → Login → Homepage (logged in)
 
 ### P0 - Critical (Completed ✅)
 - ~~Session Persistence~~ ✅
-- ~~Soul Score Consistency~~ ✅
-- ~~Logo redesign~~ ✅
-- ~~Pet Soul folders clickable~~ ✅
-- ~~Sign-up links in Mira~~ ✅
-- ~~Customer name capture~~ ✅
+- ~~Pet Photo Consistency~~ ✅
+- ~~Logo Redesign~~ ✅
+- ~~Inline Pet Soul Questions~~ ✅
+- ~~Customer Name Capture~~ ✅
 
 ### P1 - High Priority
-1. Complete 'Adopt' Pillar registration
-2. Pet Pass Renewal Reminders integration (email scheduling)
-3. Service Desk - ensure customer name always visible
+1. Complete 'Adopt' Pillar
+2. Pet Pass Renewal email scheduling
+3. Improve score display (show remaining questions count correctly)
 
 ### P2 - Medium Priority
 1. "Untitled" Products from Shopify Sync
@@ -139,16 +119,14 @@ Homepage → Login → Homepage (logged in)
 3. Member Tier Graduation logic
 
 ### P3 - Lower Priority
-1. WhatsApp Business API integration
-2. Complete backend refactoring
+1. WhatsApp Business API
+2. Backend refactoring
 
 ---
 
 ## Test Credentials
-- **Test User Email**: dipali@clubconcierge.in
-- **Test User Password**: lola4304
-- **Admin Username**: aditya
-- **Admin Password**: lola4304
+- **Test User**: dipali@clubconcierge.in / lola4304
+- **Admin**: aditya / lola4304
 
 ---
 
