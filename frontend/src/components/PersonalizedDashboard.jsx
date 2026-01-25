@@ -23,7 +23,8 @@ import {
   Sparkles, Heart, PawPrint, Brain, Calendar, Gift, Star, 
   ArrowRight, MessageCircle, Zap, TrendingUp, Clock, Bell,
   Cake, UtensilsCrossed, Plane, Home, Activity, Stethoscope,
-  ChevronRight, Plus, Sun, Moon, CloudSun
+  ChevronRight, Plus, Sun, Moon, CloudSun, GraduationCap,
+  FileText, ClipboardList, AlertTriangle, Rainbow, ShoppingCart
 } from 'lucide-react';
 import { getApiUrl } from '../utils/api';
 
@@ -35,14 +36,22 @@ const getGreeting = () => {
   return { text: 'Good evening', icon: Moon, color: 'text-indigo-500' };
 };
 
-// Pillar icons mapping
+// Pillar icons mapping - THE 14 PILLARS
 const PILLAR_ICONS = {
   celebrate: { icon: Cake, color: 'bg-pink-100 text-pink-600', gradient: 'from-pink-500 to-rose-500' },
   dine: { icon: UtensilsCrossed, color: 'bg-orange-100 text-orange-600', gradient: 'from-orange-500 to-red-500' },
-  travel: { icon: Plane, color: 'bg-blue-100 text-blue-600', gradient: 'from-blue-500 to-indigo-500' },
-  stay: { icon: Home, color: 'bg-green-100 text-green-600', gradient: 'from-green-500 to-teal-500' },
-  care: { icon: Stethoscope, color: 'bg-purple-100 text-purple-600', gradient: 'from-purple-500 to-violet-500' },
-  fit: { icon: Activity, color: 'bg-cyan-100 text-cyan-600', gradient: 'from-cyan-500 to-blue-500' },
+  stay: { icon: Home, color: 'bg-blue-100 text-blue-600', gradient: 'from-blue-500 to-indigo-500' },
+  travel: { icon: Plane, color: 'bg-cyan-100 text-cyan-600', gradient: 'from-cyan-500 to-blue-500' },
+  care: { icon: Stethoscope, color: 'bg-red-100 text-red-600', gradient: 'from-red-500 to-rose-500' },
+  enjoy: { icon: Activity, color: 'bg-violet-100 text-violet-600', gradient: 'from-violet-500 to-purple-500' },
+  fit: { icon: Activity, color: 'bg-green-100 text-green-600', gradient: 'from-green-500 to-teal-500' },
+  learn: { icon: GraduationCap, color: 'bg-teal-100 text-teal-600', gradient: 'from-teal-500 to-cyan-500' },
+  paperwork: { icon: FileText, color: 'bg-slate-100 text-slate-600', gradient: 'from-slate-500 to-gray-500' },
+  advisory: { icon: ClipboardList, color: 'bg-gray-100 text-gray-600', gradient: 'from-gray-500 to-slate-500' },
+  emergency: { icon: AlertTriangle, color: 'bg-red-100 text-red-700', gradient: 'from-red-600 to-red-500' },
+  farewell: { icon: Rainbow, color: 'bg-rose-100 text-rose-600', gradient: 'from-rose-400 to-pink-400' },
+  adopt: { icon: PawPrint, color: 'bg-purple-100 text-purple-600', gradient: 'from-purple-500 to-violet-500' },
+  shop: { icon: ShoppingCart, color: 'bg-amber-100 text-amber-600', gradient: 'from-amber-500 to-orange-500' },
 };
 
 const PersonalizedDashboard = ({ user, pets = [], onOpenMira }) => {
