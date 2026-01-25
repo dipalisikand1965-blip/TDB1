@@ -17,7 +17,7 @@ import {
   ClipboardList, MapPin, Calendar, Clock, CheckCircle, MessageCircle,
   ChevronRight, Sparkles, Package, Star, Loader2, Info, Send,
   ArrowRight, Users, Play, ChevronDown, Gift, Zap, Shield, Phone,
-  Home, Building2
+  Home, Building2, AlertCircle
 } from 'lucide-react';
 
 // Care Types Configuration
