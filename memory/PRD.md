@@ -40,25 +40,38 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
    - Category distribution chart
    - Pricing & Paw Rewards settings
 
-**Admin.jsx Updates:**
-- Imported FarewellManager and ShopManager
-- Replaced placeholder content with full manager components
+**Admin Password Change Email Notification:**
+- Updated `/app/backend/server.py` change-password endpoint
+- Sends email notification to `dipali@clubconcierge.in` when admin password is changed
 
 **Data Seeded:**
 - 6 farewell products (urns, keepsakes, portraits)
 - 3 farewell partners (cremation, burial, transport services)
 
+### VERIFIED CREDENTIALS:
+
+**🔑 ADMIN PORTAL:**
+- URL: https://miraai.preview.emergentagent.com/admin
+- Username: `aditya`
+- Password: `lola4304`
+
+**👤 MEMBER LOGIN:**
+- URL: https://miraai.preview.emergentagent.com/login
+- Email: `dipali@clubconcierge.in`
+- Password: `lola4304`
+
+**📧 Admin Notification Email:** `dipali@clubconcierge.in`
+
 ### API Endpoints Working:
 - `/api/farewell/stats` ✅
 - `/api/farewell/products` ✅
 - `/api/farewell/admin/partners` ✅
-- `/api/farewell/admin/seed-products` ✅
 - `/api/shop/stats` ✅
-- `/api/shop/categories` ✅
 - `/api/shop/products` ✅
 - `/api/shop/orders` ✅
-- `/api/shop/inventory` ✅
-- `/api/shop/reports/sales` ✅
+- `/api/admin/login` ✅
+- `/api/auth/login` ✅
+- `/api/admin/change-password` ✅ (now sends email notification)
 
 ---
 
