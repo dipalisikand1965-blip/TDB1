@@ -237,16 +237,16 @@ const MembershipPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Section - Pet Pass Introduction */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-900 text-white">
+      <div className="relative overflow-hidden bg-gradient-to-br from-teal-700 via-teal-800 to-slate-900 text-white">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-teal-500 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 -left-10 w-72 h-72 bg-teal-400 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 -right-10 w-96 h-96 bg-purple-500 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28">
+        <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
@@ -255,10 +255,10 @@ const MembershipPage = () => {
             </div>
             
             {/* Main Headline */}
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
               A Personal Concierge
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-yellow-400">
+              <span className="text-teal-300">
                 For Your Dog
               </span>
             </h1>
@@ -272,7 +272,7 @@ const MembershipPage = () => {
               <Link to="/pet-soul-onboard">
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105"
+                  className="bg-white text-teal-700 hover:bg-gray-100 px-8 py-6 text-lg rounded-full shadow-xl transition-all hover:scale-105"
                   data-testid="hero-join-now-btn"
                 >
                   <PawPrint className="w-5 h-5 mr-2" />
