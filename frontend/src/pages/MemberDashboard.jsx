@@ -582,6 +582,27 @@ const MemberDashboard = () => {
           }
         }
         
+        // Sync achievement points - credit any new achievements
+        try {
+          const syncRes = await fetch(`${API_URL}/api/paw-points/sync-achievements`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (syncRes.ok) {
+            const syncData = await syncRes.json();
+            if (syncData.points_earned > 0) {
+              toast({
+                title: `🎉 ${syncData.points_earned} Paw Points Earned!`,
+                description: syncData.message,
+                duration: 5000
+              });
+              triggerCelebration('light');
+            }
+          }
+        } catch (err) {
+          console.error('Failed to sync achievements:', err);
+        }
+        
         // Extract products from orders that user can review
         const productIds = new Set((reviewsRes.data.reviews || []).map(r => r.product_id));
         const reviewableProds = [];
