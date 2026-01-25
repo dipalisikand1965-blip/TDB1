@@ -13,7 +13,7 @@ import {
   MapPin, Settings, Lock, Bell, Shield, Phone, Mail, MessageCircle,
   RefreshCw, Calendar, Pause, Play, X, MessageSquare, Edit2, Trash2, Loader2,
   UtensilsCrossed, Users, Clock, Stethoscope, Sparkles, Home, Plane, Cake, Gift, Crown, Heart,
-  ChevronRight, Trophy, Zap, Target, Flame, Award, Medal, CheckCircle2, ArrowRight, TrendingUp
+  ChevronRight, Trophy, Zap, Target, Flame, Award, Medal, CheckCircle2, ArrowRight, TrendingUp, Wallet
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../hooks/use-toast';
@@ -21,6 +21,8 @@ import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import PetAvatar, { PetAvatarMini } from '../components/PetAvatar';
 import confetti from 'canvas-confetti';
+import PawPointsRewards from '../components/PawPointsRewards';
+import MiraConversationHistory from '../components/MiraConversationHistory';
 
 // ============================================
 // 🏆 ACHIEVEMENT SYSTEM - World Class Gamification
