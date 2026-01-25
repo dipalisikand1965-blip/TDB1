@@ -5,7 +5,7 @@ Handles points earning, redemption, and reward catalog
 
 import os
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Optional, List
 from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel
