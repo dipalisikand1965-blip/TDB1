@@ -597,10 +597,10 @@ const FarewellPage = () => {
               </div>
             </div>
             
-            {/* Pet Selection */}
-            {pets.length > 0 ? (
-              <div>
-                <Label>Select Your Pet</Label>
+            {/* Pet Selection - Works for both logged in and guest users */}
+            <div>
+              <Label className="mb-2">Your Pet's Details</Label>
+              {pets.length > 0 ? (
                 <Select 
                   value={serviceForm.pet_id}
                   onValueChange={v => {
@@ -623,35 +623,48 @@ const FarewellPage = () => {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-            ) : (
-              <div>
-                <Label>Pet&apos;s Name *</Label>
-                <Input
-                  value={serviceForm.pet_name}
-                  onChange={e => setServiceForm({...serviceForm, pet_name: e.target.value})}
-                  placeholder="Your pet's name"
-                />
-              </div>
-            )}
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Phone *</Label>
-                <Input
-                  value={serviceForm.phone}
-                  onChange={e => setServiceForm({...serviceForm, phone: e.target.value})}
-                  placeholder="Contact number"
-                />
-              </div>
-              <div>
-                <Label>Email *</Label>
-                <Input
-                  type="email"
-                  value={serviceForm.email}
-                  onChange={e => setServiceForm({...serviceForm, email: e.target.value})}
-                  placeholder="your@email.com"
-                />
+              ) : (
+                <div className="space-y-3">
+                  <Input
+                    value={serviceForm.pet_name}
+                    onChange={e => setServiceForm({...serviceForm, pet_name: e.target.value})}
+                    placeholder="Your pet's name *"
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      value={serviceForm.pet_breed || ''}
+                      onChange={e => setServiceForm({...serviceForm, pet_breed: e.target.value})}
+                      placeholder="Breed"
+                    />
+                    <Input
+                      value={serviceForm.pet_age || ''}
+                      onChange={e => setServiceForm({...serviceForm, pet_age: e.target.value})}
+                      placeholder="Age"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Contact Info */}
+            <div>
+              <Label className="mb-2">Your Contact Details</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Input
+                    value={serviceForm.phone}
+                    onChange={e => setServiceForm({...serviceForm, phone: e.target.value})}
+                    placeholder="Phone *"
+                  />
+                </div>
+                <div>
+                  <Input
+                    type="email"
+                    value={serviceForm.email}
+                    onChange={e => setServiceForm({...serviceForm, email: e.target.value})}
+                    placeholder="Email *"
+                  />
+                </div>
               </div>
             </div>
             
