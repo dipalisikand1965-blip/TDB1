@@ -105,6 +105,10 @@ from pet_score_logic import (
     pet_score_router,
     set_pet_score_db
 )
+from unified_product_box import (
+    product_box_router,
+    set_product_box_db
+)
 from pet_vault_routes import (
     pet_vault_router,
     pet_vault_admin_router,
