@@ -789,7 +789,7 @@ const MyPets = () => {
                             <HelpCircle className="w-4 h-4 mr-2" />
                             Quick Questions
                           </Button>
-                          <Link to={`/pet-soul-journey/${pet.id}`} className="flex-1">
+                          <Link to={`/pet/${pet.id}`} className="flex-1">
                             <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
                               <Sparkles className="w-4 h-4 mr-2" />
                               Full Journey →
