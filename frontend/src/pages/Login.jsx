@@ -43,11 +43,11 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-8 shadow-xl border-purple-100">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md p-8 shadow-lg border-gray-200">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <PawPrint className="w-8 h-8 text-purple-600" />
+          <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <PawPrint className="w-8 h-8 text-teal-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
           <p className="text-gray-600">Login to manage your pet's profile</p>
