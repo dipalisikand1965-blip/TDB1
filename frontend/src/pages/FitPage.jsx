@@ -595,8 +595,12 @@ const FitPage = () => {
                         selectedPet?.id === pet.id ? 'border-teal-500 bg-teal-50' : 'border-gray-200 hover:border-teal-200'
                       }`}
                     >
-                      <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center">
-                        <PawPrint className="w-5 h-5 text-teal-600" />
+                      <div className="w-10 h-10 rounded-full overflow-hidden bg-teal-100 flex items-center justify-center">
+                        <img 
+                          src={getPetPhotoUrl(pet)} 
+                          alt={pet.name}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <div>
                         <p className="font-medium">{pet.name}</p>
