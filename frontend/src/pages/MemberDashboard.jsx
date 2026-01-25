@@ -174,7 +174,7 @@ const triggerCelebration = (intensity = 'medium') => {
 // ============================================
 // 🎮 GAMIFICATION BANNER COMPONENT
 // ============================================
-const GamificationBanner = ({ pets, orders, user, onNavigateToPet }) => {
+const GamificationBanner = ({ pets, orders, user, onNavigateToPet, onOpenExplainer }) => {
   const primaryPet = pets[0];
   const soulScore = primaryPet?.overall_score || 0;
   const questionsAnswered = Object.keys(primaryPet?.doggy_soul_answers || {}).length;
