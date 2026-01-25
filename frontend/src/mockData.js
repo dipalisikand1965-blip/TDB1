@@ -596,7 +596,7 @@ export const birthdayCakes = [
     price: 649,
     originalPrice: 649,
     image: 'https://thedoggybakery.com/cdn/shop/files/Patches_2.png?v=1741098689&width=800',
-    description: 'Colorful patches design!',
+    description: 'Colourful patches design!',
     sizes: [
       { name: '500g', price: 600 },
       { name: '1kg', price: 1100 }
@@ -2040,7 +2040,7 @@ export const miniCakes = [
     price: 549,
     originalPrice: 549,
     image: 'https://thedoggybakery.com/cdn/shop/files/Untitled_design_10.png?v=1720693857&width=800',
-    description: 'Colorful celebration cake perfect for Holi!',
+    description: 'Colourful celebration cake perfect for Holi!',
     sizes: ['200g'],
     flavors: ['Chicken & Oats'],
     rating: 4.8,
@@ -2383,7 +2383,7 @@ export const panIndiaCakes = [
     price: 650,
     originalPrice: 650,
     image: 'https://thedoggybakery.com/cdn/shop/files/5_ff1b32f0-b80f-4427-bb88-17a8731df828.png?v=1743402240',
-    description: 'Colorful Patches design for a fun celebration.',
+    description: 'Colourful Patches design for a fun celebration.',
     sizes: ['500g'],
     flavors: ['Banana', 'Chicken', 'Veggies'],
     base: ['Oats', 'Ragi'],
