@@ -352,18 +352,20 @@ async def get_advisory_products(
     in_stock: bool = True,
     limit: int = 50
 ):
-    """Get advisory products"""
+    """Get advisory products from unified_products collection"""
     db = get_db()
     
-    query = {"category": "advisory"}
+    # Query unified_products with pillar="advisory"
+    query = {"pillar": "advisory"}
     if advisory_type:
-        query["advisory_type"] = advisory_type
+        query["category"] = advisory_type
     if in_stock:
-        query["in_stock"] = True
+        query["$or"] = [{"in_stock": True}, {"in_stock": {"$exists": False}}]
     
-    products = await db.products.find(query, {"_id": 0}).to_list(limit)
+    products = await db.unified_products.find(query, {"_id": 0}).to_list(limit)
+    total = await db.unified_products.count_documents(query)
     
-    return {"products": products, "total": len(products)}
+    return {"products": products, "total": total}
 
 
 @router.post("/admin/products")
