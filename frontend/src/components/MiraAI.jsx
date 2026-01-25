@@ -118,14 +118,24 @@ const WelcomeCard = ({ user, pets, onLinkClick }) => {
         {/* Quick Action Links */}
         <div className="flex flex-wrap gap-2 mt-3">
           {quickLinks.map((link, idx) => (
-            <button
-              key={idx}
-              onClick={() => onLinkClick && onLinkClick(link.query)}
-              className="flex items-center gap-1 px-2.5 py-1.5 text-xs bg-white hover:bg-purple-50 border border-purple-200 hover:border-purple-400 rounded-full text-purple-700 font-medium transition-colors cursor-pointer"
-            >
-              <span>{link.icon}</span>
-              <span>{link.label}</span>
-            </button>
+            link.href ? (
+              <a
+                key={idx}
+                href={link.href}
+                className="flex items-center gap-1 px-2.5 py-1.5 text-xs bg-gradient-to-r from-orange-500 to-red-500 hover:opacity-90 rounded-full text-white font-medium transition-colors cursor-pointer"
+              >
+                <span>{link.label}</span>
+              </a>
+            ) : (
+              <button
+                key={idx}
+                onClick={() => onLinkClick && onLinkClick(link.query)}
+                className="flex items-center gap-1 px-2.5 py-1.5 text-xs bg-white hover:bg-purple-50 border border-purple-200 hover:border-purple-400 rounded-full text-purple-700 font-medium transition-colors cursor-pointer"
+              >
+                <span>{link.icon}</span>
+                <span>{link.label}</span>
+              </button>
+            )
           ))}
         </div>
       </div>
