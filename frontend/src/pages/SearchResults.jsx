@@ -419,64 +419,85 @@ const SearchResults = () => {
                   ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'
                   : 'space-y-4'
                 }>
-                  {displayProducts.map((product, idx) => (
-                    <div 
-                      key={product.id || idx}
-                      className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow ${
-                        product.safeForPet === false ? 'opacity-60 relative' : ''
-                      } ${viewMode === 'list' ? 'flex' : ''}`}
-                    >
-                      {/* Unsafe Badge */}
-                      {product.safeForPet === false && (
-                        <div className="absolute top-2 left-2 z-10 bg-red-500 text-white text-xs px-2 py-1 rounded">
-                          ⚠️ Contains allergens
-                        </div>
-                      )}
-
-                      {/* Image */}
-                      <div className={viewMode === 'list' ? 'w-32 flex-shrink-0' : ''}>
-                        <img
-                          src={product.image || product.images?.[0] || 'https://via.placeholder.com/300x300?text=Product'}
-                          alt={product.name}
-                          className={`object-cover bg-gray-100 ${viewMode === 'list' ? 'w-32 h-32' : 'w-full aspect-square'}`}
-                        />
-                      </div>
-
-                      {/* Content */}
-                      <div className="p-4 flex-1">
-                        {/* Pillar Badge */}
-                        {product.pillar && (
-                          <span className="inline-block text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded mb-2 capitalize">
-                            {product.pillar}
-                          </span>
+                  {displayProducts.map((product, idx) => {
+                    const hasOptions = product.options?.length > 0 || product.has_variants;
+                    const productSlug = product.slug || product.handle || product.id;
+                    
+                    return (
+                      <Link 
+                        key={product.id || idx}
+                        to={`/product/${productSlug}`}
+                        className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow block ${
+                          product.safeForPet === false ? 'opacity-60 relative' : ''
+                        } ${viewMode === 'list' ? 'flex' : ''}`}
+                      >
+                        {/* Unsafe Badge */}
+                        {product.safeForPet === false && (
+                          <div className="absolute top-2 left-2 z-10 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                            ⚠️ Contains allergens
+                          </div>
                         )}
                         
-                        <h3 className="font-semibold text-gray-900 line-clamp-2 mb-1">
-                          {product.name}
-                        </h3>
-                        
-                        {viewMode === 'list' && product.description && (
-                          <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                            {product.description}
-                          </p>
+                        {/* Options Available Badge */}
+                        {hasOptions && (
+                          <div className="absolute top-2 right-2 z-10 bg-purple-600 text-white text-xs px-2 py-1 rounded">
+                            Options Available
+                          </div>
                         )}
 
-                        <div className="flex items-center justify-between mt-2">
-                          <span className="text-lg font-bold text-purple-600">
-                            ₹{product.price?.toLocaleString() || 'N/A'}
-                          </span>
-                          <Button
-                            size="sm"
-                            onClick={() => addToCart(product)}
-                            className="bg-purple-600 hover:bg-purple-700 text-xs"
-                            disabled={product.safeForPet === false}
-                          >
-                            Add
-                          </Button>
+                        {/* Image */}
+                        <div className={viewMode === 'list' ? 'w-32 flex-shrink-0' : 'relative'}>
+                          <img
+                            src={product.image || product.images?.[0] || 'https://via.placeholder.com/300x300?text=Product'}
+                            alt={product.name}
+                            className={`object-cover bg-gray-100 ${viewMode === 'list' ? 'w-32 h-32' : 'w-full aspect-square'}`}
+                          />
                         </div>
-                      </div>
-                    </div>
-                  ))}
+
+                        {/* Content */}
+                        <div className="p-4 flex-1">
+                          {/* Pillar Badge */}
+                          {product.pillar && (
+                            <span className="inline-block text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded mb-2 capitalize">
+                              {product.pillar}
+                            </span>
+                          )}
+                          
+                          <h3 className="font-semibold text-gray-900 line-clamp-2 mb-1">
+                            {product.name}
+                          </h3>
+                          
+                          {viewMode === 'list' && product.description && (
+                            <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                              {product.description}
+                            </p>
+                          )}
+
+                          <div className="flex items-center justify-between mt-2">
+                            <span className="text-lg font-bold text-purple-600">
+                              ₹{product.price?.toLocaleString() || 'N/A'}
+                            </span>
+                            <Button
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (hasOptions) {
+                                  navigate(`/product/${productSlug}`);
+                                } else {
+                                  addToCart(product);
+                                }
+                              }}
+                              className="bg-purple-600 hover:bg-purple-700 text-xs"
+                              disabled={product.safeForPet === false}
+                            >
+                              {hasOptions ? 'View Options' : 'Add'}
+                            </Button>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}
