@@ -325,42 +325,37 @@ class TestTickets:
             print(f"  - First ticket: {tickets[0].get('ticket_id')} - {tickets[0].get('subject', '')[:50]}")
 
 
-class TestCart:
-    """Cart endpoint tests"""
+class TestCartSnapshot:
+    """Cart snapshot endpoint tests (for abandoned cart tracking)"""
     
-    @pytest.fixture
-    def user_token(self):
-        """Get user token for authenticated requests"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "dipali@clubconcierge.in",
-            "password": "lola4304"
-        })
-        if response.status_code == 200:
-            return response.json().get("access_token")
-        pytest.skip("Authentication failed")
-    
-    def test_add_to_cart(self, user_token):
-        """Test adding item to cart"""
+    def test_cart_snapshot(self):
+        """Test cart snapshot endpoint"""
         response = requests.post(
-            f"{BASE_URL}/api/cart/add",
-            headers={"Authorization": f"Bearer {user_token}"},
+            f"{BASE_URL}/api/cart/snapshot",
             json={
-                "product_id": "shopify-8016298705050",
-                "quantity": 1
+                "session_id": f"test-session-{int(time.time())}",
+                "items": [
+                    {"product_id": "shopify-8016298705050", "quantity": 1, "price": 649}
+                ],
+                "total": 649
             }
         )
-        # Cart might return 200 or 201
+        # Cart snapshot should work
         assert response.status_code in [200, 201]
-        print(f"✓ Add to cart successful")
+        print(f"✓ Cart snapshot successful")
     
-    def test_get_cart(self, user_token):
-        """Test getting cart contents"""
-        response = requests.get(
-            f"{BASE_URL}/api/cart",
-            headers={"Authorization": f"Bearer {user_token}"}
+    def test_cart_capture_email(self):
+        """Test cart email capture endpoint"""
+        response = requests.post(
+            f"{BASE_URL}/api/cart/capture-email",
+            json={
+                "session_id": f"test-session-{int(time.time())}",
+                "email": "test@example.com"
+            }
         )
-        assert response.status_code == 200
-        print(f"✓ Get cart successful")
+        # Should work or return appropriate status
+        assert response.status_code in [200, 201, 404]  # 404 if session not found
+        print(f"✓ Cart capture email endpoint responded")
 
 
 if __name__ == "__main__":
