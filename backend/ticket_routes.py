@@ -259,6 +259,8 @@ def serialize_ticket(ticket: dict) -> dict:
     # Ensure messages is always an array
     if ticket.get("messages") is None:
         ticket["messages"] = []
+    # Add reply_count for frontend display
+    ticket["reply_count"] = len(ticket.get("messages", []))
     # Ensure member is always an object with proper name fallback
     if ticket.get("member") is None:
         ticket["member"] = {
