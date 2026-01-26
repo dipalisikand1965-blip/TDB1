@@ -24,6 +24,8 @@ import confetti from 'canvas-confetti';
 import PawPointsRewards from '../components/PawPointsRewards';
 import MiraConversationHistory from '../components/MiraConversationHistory';
 import SoulExplainerVideo, { SoulExplainerButton } from '../components/SoulExplainerVideo';
+import MiraPicksCard from '../components/MiraPicksCard';
+import BreedHealthCard from '../components/BreedHealthCard';
 
 // ============================================
 // 🏆 ACHIEVEMENT SYSTEM - World Class Gamification
