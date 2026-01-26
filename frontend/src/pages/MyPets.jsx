@@ -383,7 +383,7 @@ const MyPets = () => {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
       </div>
     );
   }
@@ -586,8 +586,8 @@ const MyPets = () => {
             {/* Pets List */}
             {filteredPets.length === 0 ? (
               <Card className="p-12 text-center">
-                <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <PawPrint className="w-12 h-12 text-purple-400" />
+                <div className="w-24 h-24 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <PawPrint className="w-12 h-12 text-teal-400" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-700 mb-2">No pets found</h3>
                 <p className="text-gray-500 mb-6">
@@ -595,7 +595,7 @@ const MyPets = () => {
                 </p>
                 {!searchQuery && (
                   <Link to="/pet-profile">
-                    <Button className="bg-purple-600 hover:bg-purple-700">
+                    <Button className="bg-teal-600 hover:bg-teal-700">
                       <Plus className="w-4 h-4 mr-2" />
                       Add Your First Pet
                     </Button>
@@ -732,7 +732,7 @@ const MyPets = () => {
                               <>
                                 <Button 
                                   size="sm" 
-                                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                                  className="bg-gradient-to-r from-teal-600 to-pink-600 hover:from-teal-700 hover:to-pink-700 text-white"
                                   onClick={() => navigate(`/pet/${pet.id}?tab=personality`)}
                                 >
                                   <Sparkles className="w-4 h-4 mr-1" />
@@ -783,7 +783,7 @@ const MyPets = () => {
                           </div>
                           <div className="bg-white/70 rounded-lg p-3">
                             <p className="text-xs text-gray-500 mb-1">✨ Soul Score</p>
-                            <p className="font-medium text-sm text-purple-600">{Math.round(pet.overall_score || 0)}%</p>
+                            <p className="font-medium text-sm text-teal-600">{Math.round(pet.overall_score || 0)}%</p>
                           </div>
                         </div>
                       </div>
@@ -792,11 +792,11 @@ const MyPets = () => {
                   
                   {/* PET SOUL COMPLETION PANEL - Large, Central, Always Visible */}
                   <div className="px-6 py-4 border-t border-gray-100">
-                    <Card className={`p-5 ${(pet.overall_score || 0) < 100 ? 'bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200' : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'}`}>
+                    <Card className={`p-5 ${(pet.overall_score || 0) < 100 ? 'bg-gradient-to-r from-teal-50 to-pink-50 border-teal-200' : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'}`}>
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-                            <Brain className="w-6 h-6 text-purple-600" />
+                            <Brain className="w-6 h-6 text-teal-600" />
                           </div>
                           <div>
                             <h3 className="font-bold text-gray-900">
@@ -810,7 +810,7 @@ const MyPets = () => {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-3xl font-bold text-purple-600">{Math.round(pet.overall_score || 0)}%</div>
+                          <div className="text-3xl font-bold text-teal-600">{Math.round(pet.overall_score || 0)}%</div>
                           <p className="text-xs text-gray-500">completion</p>
                         </div>
                       </div>
@@ -818,7 +818,7 @@ const MyPets = () => {
                       {/* Progress Bar */}
                       <div className="w-full bg-white/60 rounded-full h-3 mb-4">
                         <div 
-                          className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all"
+                          className="bg-gradient-to-r from-teal-500 to-pink-500 h-3 rounded-full transition-all"
                           style={{ width: `${Math.round(pet.overall_score || 0)}%` }}
                         />
                       </div>
@@ -849,13 +849,13 @@ const MyPets = () => {
                           <Button 
                             onClick={() => toggleQuestions(pet.id)}
                             variant="outline"
-                            className="flex-1 border-purple-300 text-purple-600 hover:bg-purple-50"
+                            className="flex-1 border-teal-300 text-teal-600 hover:bg-teal-50"
                           >
                             <HelpCircle className="w-4 h-4 mr-2" />
                             Quick Questions
                           </Button>
                           <Link to={`/pet/${pet.id}`} className="flex-1">
-                            <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                            <Button className="w-full bg-gradient-to-r from-teal-600 to-pink-600 hover:from-teal-700 hover:to-pink-700">
                               <Sparkles className="w-4 h-4 mr-2" />
                               Full Journey →
                             </Button>
@@ -866,9 +866,9 @@ const MyPets = () => {
                     
                     {/* INLINE QUICK QUESTIONS - Answer right here! */}
                     {questionsExpanded && (pet.overall_score || 0) < 100 && (
-                      <Card className="mt-4 p-4 bg-white border-purple-200">
+                      <Card className="mt-4 p-4 bg-white border-teal-200">
                         <div className="flex items-center gap-2 mb-4">
-                          <HelpCircle className="w-5 h-5 text-purple-600" />
+                          <HelpCircle className="w-5 h-5 text-teal-600" />
                           <h4 className="font-bold text-gray-900">Help us know {pet.name} better</h4>
                           <Badge variant="outline" className="ml-auto">
                             {Object.keys(pet.doggy_soul_answers || {}).length} answered
@@ -890,7 +890,7 @@ const MyPets = () => {
                                     variant="outline"
                                     disabled={savingAnswer === `${pet.id}-${question.id}`}
                                     onClick={() => saveQuickAnswer(pet.id, question.id, option)}
-                                    className="hover:bg-purple-100 hover:border-purple-400 hover:text-purple-700"
+                                    className="hover:bg-teal-100 hover:border-teal-400 hover:text-teal-700"
                                   >
                                     {savingAnswer === `${pet.id}-${question.id}` ? (
                                       <Loader2 className="w-3 h-3 animate-spin mr-1" />
@@ -905,7 +905,7 @@ const MyPets = () => {
                         
                         <div className="mt-4 pt-3 border-t border-gray-200 text-center">
                           <Link to={`/pet/${pet.id}`}>
-                            <Button variant="link" className="text-purple-600">
+                            <Button variant="link" className="text-teal-600">
                               Answer all {26 - Object.keys(pet.doggy_soul_answers || {}).length} remaining questions →
                             </Button>
                           </Link>
@@ -930,9 +930,9 @@ const MyPets = () => {
                         { id: 'stay', name: 'Stay', icon: '🏨', path: '/stay', color: 'from-blue-400 to-indigo-400' },
                         { id: 'travel', name: 'Travel', icon: '✈️', path: '/travel', color: 'from-cyan-400 to-blue-400' },
                         { id: 'care', name: 'Care', icon: '🩺', path: '/care', color: 'from-emerald-400 to-teal-400' },
-                        { id: 'groom', name: 'Groom', icon: '✂️', path: '/groom', color: 'from-violet-400 to-purple-400' },
+                        { id: 'groom', name: 'Groom', icon: '✂️', path: '/groom', color: 'from-violet-400 to-teal-400' },
                         { id: 'play', name: 'Play', icon: '🎾', path: '/play', color: 'from-green-400 to-emerald-400' },
-                        { id: 'train', name: 'Train', icon: '🎓', path: '/train', color: 'from-indigo-400 to-purple-400' },
+                        { id: 'train', name: 'Train', icon: '🎓', path: '/train', color: 'from-indigo-400 to-teal-400' },
                         { id: 'insure', name: 'Insure', icon: '🛡️', path: '/insure', color: 'from-slate-400 to-gray-500' },
                         { id: 'adopt', name: 'Adopt', icon: '🐕', path: '/adopt', color: 'from-rose-400 to-pink-400' },
                         { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/farewell', color: 'from-purple-400 to-indigo-400' },
@@ -944,7 +944,7 @@ const MyPets = () => {
                           to={`${pillar.path}?pet=${pet.id}`}
                           className="group"
                         >
-                          <Card className="p-3 hover:shadow-md transition-all cursor-pointer border hover:border-purple-300">
+                          <Card className="p-3 hover:shadow-md transition-all cursor-pointer border hover:border-teal-300">
                             <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition-transform`}>
                               {pillar.icon}
                             </div>
@@ -1006,7 +1006,7 @@ const MyPets = () => {
                             </Badge>
                           )}
                           {health?.activeMeds?.length > 0 && (
-                            <Badge className="bg-purple-100 text-purple-700">
+                            <Badge className="bg-teal-100 text-teal-700">
                               <Pill className="w-3 h-3 mr-1" />
                               {health.activeMeds.length} active
                             </Badge>
@@ -1122,9 +1122,9 @@ const MyPets = () => {
                                   </div>
                                   
                                   {/* Medications */}
-                                  <div className="bg-purple-50 rounded-xl p-4">
+                                  <div className="bg-teal-50 rounded-xl p-4">
                                     <div className="flex items-center gap-2 mb-3">
-                                      <Pill className="w-5 h-5 text-purple-600" />
+                                      <Pill className="w-5 h-5 text-teal-600" />
                                       <h4 className="font-semibold text-purple-800">Active Medications ({health.activeMeds?.length || 0})</h4>
                                     </div>
                                     {health.activeMeds?.length > 0 ? (
@@ -1137,7 +1137,7 @@ const MyPets = () => {
                                         ))}
                                       </div>
                                     ) : (
-                                      <p className="text-sm text-purple-600">No active medications</p>
+                                      <p className="text-sm text-teal-600">No active medications</p>
                                     )}
                                   </div>
                                 </div>
@@ -1162,7 +1162,7 @@ const MyPets = () => {
                         className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                          <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
                             <Sparkles className="w-5 h-5 text-purple-500" />
                           </div>
                           <div className="text-left">
@@ -1173,9 +1173,9 @@ const MyPets = () => {
                         <div className="flex items-center gap-3">
                           <div className="flex items-center gap-2">
                             <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
-                              <div className="h-full bg-purple-500 rounded-full" style={{ width: `${pet.overall_score || 0}%` }} />
+                              <div className="h-full bg-teal-500 rounded-full" style={{ width: `${pet.overall_score || 0}%` }} />
                             </div>
-                            <span className="text-sm text-purple-600 font-medium">{Math.round(pet.overall_score || 0)}%</span>
+                            <span className="text-sm text-teal-600 font-medium">{Math.round(pet.overall_score || 0)}%</span>
                           </div>
                           {soulExpanded ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
                         </div>
@@ -1195,7 +1195,7 @@ const MyPets = () => {
                                 {/* Show persona first if exists */}
                                 {pet.soul?.persona && (
                                   <div className="col-span-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-4 mb-2">
-                                    <p className="text-xs text-purple-600 font-semibold mb-1">🎭 Personality Type</p>
+                                    <p className="text-xs text-teal-600 font-semibold mb-1">🎭 Personality Type</p>
                                     <p className="text-lg font-bold text-purple-800 capitalize">{pet.soul.persona.replace(/_/g, ' ')}</p>
                                   </div>
                                 )}
@@ -1205,15 +1205,15 @@ const MyPets = () => {
                                   if (!value || (typeof value === 'string' && value.trim() === '')) return null;
                                   
                                   return (
-                                    <div key={key} className="bg-purple-50 rounded-lg p-3">
-                                      <p className="text-xs text-purple-600 font-semibold mb-1">{label}</p>
+                                    <div key={key} className="bg-teal-50 rounded-lg p-3">
+                                      <p className="text-xs text-teal-600 font-semibold mb-1">{label}</p>
                                       <p className="text-sm text-gray-800">{value}</p>
                                     </div>
                                   );
                                 })}
                               </div>
                             ) : (
-                              <div className="text-center py-6 bg-purple-50 rounded-xl mb-4">
+                              <div className="text-center py-6 bg-teal-50 rounded-xl mb-4">
                                 {pet.soul?.persona && (
                                   <div className="mb-3">
                                     <Badge className="bg-purple-200 text-purple-800 text-sm px-3 py-1">
@@ -1222,14 +1222,14 @@ const MyPets = () => {
                                   </div>
                                 )}
                                 <MessageCircle className="w-8 h-8 text-purple-300 mx-auto mb-2" />
-                                <p className="text-purple-700 font-medium">Soul journey started!</p>
+                                <p className="text-teal-700 font-medium">Soul journey started!</p>
                                 <p className="text-sm text-purple-500">Answer more questions to discover {pet.name}&apos;s full personality</p>
                               </div>
                             );
                           })()}
                           
                           <Link to={`/pet/${pet.id}`}>
-                            <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                            <Button className="w-full bg-gradient-to-r from-teal-600 to-pink-600 text-white">
                               <Sparkles className="w-4 h-4 mr-2" />
                               {(pet.overall_score || 0) < 100 ? 'Continue Building Soul' : 'View Full Soul Journey'}
                             </Button>
@@ -1244,12 +1244,12 @@ const MyPets = () => {
 
             {/* Add New Pet Card */}
             <Link to="/pet-profile">
-              <Card className="p-8 border-2 border-dashed border-purple-200 hover:border-purple-400 transition-all flex items-center justify-center group cursor-pointer hover:bg-purple-50/50">
+              <Card className="p-8 border-2 border-dashed border-teal-200 hover:border-teal-400 transition-all flex items-center justify-center group cursor-pointer hover:bg-teal-50/50">
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                     <Plus className="w-8 h-8 text-purple-500" />
                   </div>
-                  <h3 className="font-semibold text-purple-700 mb-2">Add Another Pet</h3>
+                  <h3 className="font-semibold text-teal-700 mb-2">Add Another Pet</h3>
                   <p className="text-sm text-gray-500">
                     Create a profile for your next furry friend
                   </p>
@@ -1264,15 +1264,15 @@ const MyPets = () => {
         {/* Empty State - No Pets Yet */}
         {pets.length === 0 && (
           <Card className="p-12 text-center">
-            <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <PawPrint className="w-12 h-12 text-purple-400" />
+            <div className="w-24 h-24 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <PawPrint className="w-12 h-12 text-teal-400" />
             </div>
             <h3 className="text-2xl font-bold text-gray-700 mb-2">No pets yet!</h3>
             <p className="text-gray-500 mb-6">
               Create a profile for your furry friend and unlock personalized celebrations
             </p>
             <Link to="/pet-profile">
-              <Button className="bg-purple-600 hover:bg-purple-700">
+              <Button className="bg-teal-600 hover:bg-teal-700">
                 <Plus className="w-4 h-4 mr-2" />
                 Add Your First Pet
               </Button>
