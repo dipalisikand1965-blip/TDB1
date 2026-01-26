@@ -3699,14 +3699,14 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Assigned To</Label>
                 <Select 
-                  value={editForm.assigned_to} 
-                  onValueChange={(value) => setEditForm(prev => ({ ...prev, assigned_to: value }))}
+                  value={editForm.assigned_to || 'unassigned'} 
+                  onValueChange={(value) => setEditForm(prev => ({ ...prev, assigned_to: value === 'unassigned' ? '' : value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Unassigned" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Unassigned</SelectItem>
+                    <SelectItem value="unassigned">Unassigned</SelectItem>
                     {teamUsers.map(user => (
                       <SelectItem key={user.email || user.username} value={user.email || user.username}>
                         {user.name || user.username}
