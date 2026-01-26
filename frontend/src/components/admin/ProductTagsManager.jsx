@@ -383,6 +383,16 @@ const ProductTagsManager = ({ credentials }) => {
         <div className="flex gap-2">
           <Button 
             variant="outline"
+            onClick={enhanceAllDescriptions}
+            disabled={aiEnhancing}
+            className="border-purple-300 text-purple-700 hover:bg-purple-50"
+            title="Generate AI descriptions for products missing them"
+          >
+            {aiEnhancing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Star className="w-4 h-4 mr-2" />}
+            AI Enhance All
+          </Button>
+          <Button 
+            variant="outline"
             onClick={exportToCSV}
             disabled={exporting}
             className="border-green-300 text-green-700 hover:bg-green-50"
