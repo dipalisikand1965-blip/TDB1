@@ -4554,6 +4554,13 @@ async def get_public_products(
     if parent_category:
         unified_query["parent_category"] = parent_category
     
+    # Apply pillar filter if specified
+    if pillar:
+        unified_query["$or"] = [
+            {"pillar": pillar},
+            {"pillars": pillar}
+        ]
+    
     # Apply category filter if specified
     if category and category not in ["all", "pan-india"] and not collection:
         unified_query["category"] = category
