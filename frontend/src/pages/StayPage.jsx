@@ -1200,9 +1200,9 @@ const BookingRequestModal = ({ property, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   
-  // Pet Soul Integration
+  // Pet Soul Integration - Multi-pet selection
   const [userPets, setUserPets] = useState([]);
-  const [selectedPetId, setSelectedPetId] = useState('');
+  const [selectedPets, setSelectedPets] = useState([]); // Array of selected pet IDs
   const [loadingPets, setLoadingPets] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -1210,10 +1210,7 @@ const BookingRequestModal = ({ property, onClose }) => {
     guest_email: user?.email || '',
     guest_phone: user?.phone || '',
     guest_whatsapp: user?.whatsapp || user?.phone || '',
-    pet_name: '',
-    pet_breed: '',
-    pet_weight_kg: '',
-    pet_age: '',
+    // Removed pet_weight_kg and pet_age as they come from Pet Soul records
     sleep_habits: '',
     fears: '',
     food_preferences: '',
@@ -1225,14 +1222,13 @@ const BookingRequestModal = ({ property, onClose }) => {
     check_out_date: '',
     num_rooms: 1,
     num_adults: 2,
-    num_pets: 1,
     room_type_preference: '',
     special_requests: '',
     pet_meal_preorder: false,
     welcome_kit: false,
     grooming_requested: false,
     // Pet Soul fields
-    selectedPetId: null
+    selectedPetIds: []
   });
   
   // Auto-populate user data when user changes
@@ -1259,7 +1255,14 @@ const BookingRequestModal = ({ property, onClose }) => {
         });
         if (response.ok) {
           const data = await response.json();
-          setUserPets(data.pets || []);
+          const pets = data.pets || [];
+          setUserPets(pets);
+          // Auto-select all pets by default
+          if (pets.length > 0) {
+            const allPetIds = pets.map(p => p.id);
+            setSelectedPets(allPetIds);
+            setFormData(prev => ({ ...prev, selectedPetIds: allPetIds }));
+          }
         }
       } catch (error) {
         console.error('Error fetching pets:', error);
@@ -1270,59 +1273,51 @@ const BookingRequestModal = ({ property, onClose }) => {
     fetchUserPets();
   }, [user, token]);
   
-  // Handle pet selection - auto-fill pet details from Pet Soul
-  const handlePetSelect = (petId) => {
-    setSelectedPetId(petId);
-    if (petId === 'manual') {
-      // User wants to type manually
-      setFormData(prev => ({ 
-        ...prev, 
-        pet_name: '', 
-        pet_breed: '', 
-        pet_weight_kg: '', 
-        pet_age: '',
-        sleep_habits: '',
-        fears: '',
-        food_preferences: '',
-        triggers: '',
-        favourite_toy: '',
-        selectedPetId: null 
-      }));
-      return;
-    }
-    const pet = userPets.find(p => p.id === petId);
-    if (pet) {
-      const identity = pet.identity || {};
-      const answers = pet.doggy_soul_answers || {};
-      
-      // Calculate age from birthday
-      let ageStr = '';
-      if (pet.birthday) {
-        const birthDate = new Date(pet.birthday);
-        const today = new Date();
-        const ageYears = Math.floor((today - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
-        ageStr = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : 'Less than 1 year';
-      }
-      
-      setFormData(prev => ({ 
-        ...prev, 
-        pet_name: pet.name || '',
-        pet_breed: identity.breed || pet.breed || '',
-        pet_weight_kg: identity.weight?.replace(/[^0-9.]/g, '') || '',
-        pet_age: ageStr || identity.age || '',
-        sleep_habits: answers.sleep_habits || '',
-        fears: answers.fears || answers.fear_triggers || '',
-        food_preferences: answers.favorite_treats || answers.food_preferences || '',
-        triggers: answers.behavior_with_strangers || '',
-        favourite_toy: answers.favorite_toy || '',
-        selectedPetId: pet.id
-      }));
-    }
+  // Handle pet toggle - multi-select
+  const togglePetSelection = (petId) => {
+    setSelectedPets(prev => {
+      const newSelection = prev.includes(petId) 
+        ? prev.filter(id => id !== petId)
+        : [...prev, petId];
+      setFormData(f => ({ ...f, selectedPetIds: newSelection }));
+      return newSelection;
+    });
+  };
+
+  // Get combined pet info for display
+  const getSelectedPetsInfo = () => {
+    return userPets.filter(p => selectedPets.includes(p.id));
   };
 
   const handleSubmit = async () => {
+    // Validate required fields
+    if (!formData.guest_name || !formData.guest_email || !formData.guest_phone) {
+      alert('Please fill in all required guest details');
+      setStep(1);
+      return;
+    }
+    if (selectedPets.length === 0 && userPets.length > 0) {
+      alert('Please select at least one pet for your trip');
+      setStep(2);
+      return;
+    }
+    if (!formData.check_in_date || !formData.check_out_date) {
+      alert('Please select check-in and check-out dates');
+      setStep(3);
+      return;
+    }
+    
     setLoading(true);
     try {
+      // Get selected pets data
+      const petsData = getSelectedPetsInfo().map(pet => ({
+        id: pet.id,
+        name: pet.name,
+        breed: pet.identity?.breed || pet.breed,
+        weight: pet.identity?.weight,
+        age: pet.age || calculateAge(pet.birthday)
+      }));
+      
       const response = await fetch(`${API_URL}/api/stay/booking-request`, {
         method: 'POST',
         headers: { 
@@ -1332,39 +1327,44 @@ const BookingRequestModal = ({ property, onClose }) => {
         body: JSON.stringify({
           property_id: property.id,
           ...formData,
-          pet_weight_kg: formData.pet_weight_kg ? parseFloat(formData.pet_weight_kg) : null
+          num_pets: selectedPets.length,
+          pets: petsData,
+          selectedPetIds: selectedPets
         })
       });
 
       if (response.ok) {
         setSuccess(true);
         
-        // Write to Pet Soul if pet was selected
-        if (formData.selectedPetId && token) {
-          try {
-            await fetch(`${API_URL}/api/pets/${formData.selectedPetId}/soul/stay`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify({
-                type: 'stay_booking',
-                property_id: property.id,
-                property_name: property.name,
-                city: property.city,
-                check_in_date: formData.check_in_date,
-                check_out_date: formData.check_out_date,
-                property_type: property.property_type,
-                pet_fee: property.pet_policy?.pet_fee_per_night
-              })
-            });
-          } catch (error) {
-            console.error('Failed to update Pet Soul:', error);
+        // Write to Pet Soul for each selected pet
+        for (const petId of selectedPets) {
+          if (token) {
+            try {
+              await fetch(`${API_URL}/api/pets/${petId}/soul/stay`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  type: 'stay_booking',
+                  property_id: property.id,
+                  property_name: property.name,
+                  city: property.city,
+                  check_in_date: formData.check_in_date,
+                  check_out_date: formData.check_out_date,
+                  property_type: property.property_type,
+                  pet_fee: property.pet_policy?.pet_fee_per_night
+                })
+              });
+            } catch (error) {
+              console.error('Failed to update Pet Soul:', error);
+            }
           }
         }
       } else {
-        alert('Failed to submit booking request. Please try again.');
+        const errorData = await response.json().catch(() => ({}));
+        alert(errorData.detail || 'Failed to submit booking request. Please try again.');
       }
     } catch (error) {
       console.error('Error submitting booking:', error);
@@ -1372,6 +1372,15 @@ const BookingRequestModal = ({ property, onClose }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper to calculate age from birthday
+  const calculateAge = (birthday) => {
+    if (!birthday) return null;
+    const birthDate = new Date(birthday);
+    const today = new Date();
+    const ageYears = Math.floor((today - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
+    return ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : 'Less than 1 year';
   };
 
   if (success) {
@@ -1385,6 +1394,11 @@ const BookingRequestModal = ({ property, onClose }) => {
           <p className="text-gray-600 mb-6">
             Our Stay Concierge® will contact you within 4 hours to confirm availability and finalize your booking at <strong>{property.name}</strong>.
           </p>
+          <div className="bg-green-50 p-3 rounded-lg mb-4">
+            <p className="text-sm text-green-700">
+              🐕 Travelling with: <strong>{getSelectedPetsInfo().map(p => p.name).join(', ') || 'Your pets'}</strong>
+            </p>
+          </div>
           <p className="text-sm text-gray-500 mb-6">
             Check your email and WhatsApp for updates!
           </p>
@@ -1398,106 +1412,369 @@ const BookingRequestModal = ({ property, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]" onClick={onClose}>
-      {/* Bottom sheet modal */}
+      {/* Bottom sheet modal - improved UI */}
       <div 
         className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl flex flex-col z-[9999]"
-        style={{ height: '70vh', maxHeight: '700px' }}
+        style={{ height: '75vh', maxHeight: '750px' }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="p-3 border-b bg-white rounded-t-3xl flex-shrink-0">
-          <div className="flex items-center justify-between mb-2">
-            <div>
-              <h3 className="text-base font-bold">Request Booking</h3>
-              <p className="text-xs text-gray-500">{property.name}</p>
+        {/* Header - Improved with property image */}
+        <div className="border-b bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-3xl flex-shrink-0">
+          <div className="flex items-center gap-3 p-3">
+            <img 
+              src={property.photos?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=100'} 
+              alt={property.name}
+              className="w-14 h-14 rounded-xl object-cover"
+            />
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-bold text-gray-800 truncate">{property.name}</h3>
+              <p className="text-xs text-gray-500 flex items-center gap-1">
+                <MapPin className="w-3 h-3" /> {property.city}
+              </p>
             </div>
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <Button variant="ghost" size="icon" onClick={onClose} className="flex-shrink-0">
               <X className="w-5 h-5" />
             </Button>
           </div>
 
-          {/* Step Indicator */}
-          <div className="flex items-center justify-between text-xs">
-            {['Guest Details', 'Pet Profile', 'Stay Details'].map((label, idx) => (
+          {/* Step Indicator - Improved */}
+          <div className="flex items-center justify-between px-4 pb-3">
+            {['You', 'Pets', 'Trip'].map((label, idx) => (
               <div key={idx} className={`flex items-center ${idx < 2 ? 'flex-1' : ''}`}>
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
-                  step > idx ? 'bg-green-600 text-white' : step === idx + 1 ? 'bg-green-600 text-white' : 'bg-gray-200'
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                  step > idx + 1 ? 'bg-green-600 text-white' : step === idx + 1 ? 'bg-green-600 text-white ring-4 ring-green-100' : 'bg-gray-200 text-gray-500'
                 }`}>
-                  {idx + 1}
+                  {step > idx + 1 ? <CheckCircle className="w-4 h-4" /> : idx + 1}
                 </div>
-                <span className="ml-1 hidden sm:inline">{label}</span>
-                {idx < 2 && <div className={`flex-1 h-0.5 mx-1 ${step > idx + 1 ? 'bg-green-600' : 'bg-gray-200'}`} />}
+                <span className={`ml-2 text-sm font-medium ${step === idx + 1 ? 'text-green-700' : 'text-gray-500'}`}>{label}</span>
+                {idx < 2 && <div className={`flex-1 h-1 mx-3 rounded ${step > idx + 1 ? 'bg-green-600' : 'bg-gray-200'}`} />}
               </div>
             ))}
           </div>
         </div>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto px-3 flex-1">
-          <div className="py-2">
+        <div className="overflow-y-auto px-4 flex-1">
+          <div className="py-4">
+            {/* Step 1: Guest Details */}
             {step === 1 && (
-            <div className="space-y-4">
-              <h4 className="font-semibold mb-3">Your Details</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Name *</label>
-                  <Input 
-                    value={formData.guest_name}
-                    onChange={e => setFormData({...formData, guest_name: e.target.value})}
-                    placeholder="Your full name"
-                  />
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <Users className="w-5 h-5 text-green-600" />
+                  <h4 className="font-semibold text-lg">Your Details</h4>
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Email *</label>
-                  <Input 
-                    type="email"
-                    value={formData.guest_email}
-                    onChange={e => setFormData({...formData, guest_email: e.target.value})}
-                    placeholder="your@email.com"
-                  />
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Full Name *</label>
+                    <Input 
+                      value={formData.guest_name}
+                      onChange={e => setFormData({...formData, guest_name: e.target.value})}
+                      placeholder="Your full name"
+                      className="h-11"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Email *</label>
+                    <Input 
+                      type="email"
+                      value={formData.guest_email}
+                      onChange={e => setFormData({...formData, guest_email: e.target.value})}
+                      placeholder="your@email.com"
+                      className="h-11"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Phone *</label>
+                    <Input 
+                      value={formData.guest_phone}
+                      onChange={e => setFormData({...formData, guest_phone: e.target.value})}
+                      placeholder="+91 XXXXX XXXXX"
+                      className="h-11"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">WhatsApp (for updates)</label>
+                    <Input 
+                      value={formData.guest_whatsapp}
+                      onChange={e => setFormData({...formData, guest_whatsapp: e.target.value})}
+                      placeholder="Same as phone?"
+                      className="h-11"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Phone *</label>
-                  <Input 
-                    value={formData.guest_phone}
-                    onChange={e => setFormData({...formData, guest_phone: e.target.value})}
-                    placeholder="+91 XXXXX XXXXX"
-                  />
+              </div>
+            )}
+
+            {/* Step 2: Pet Selection - Multi-select with checkboxes */}
+            {step === 2 && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <PawPrint className="w-5 h-5 text-green-600" />
+                  <h4 className="font-semibold text-lg">Who's Coming Along?</h4>
                 </div>
+                <p className="text-sm text-gray-500 mb-4">
+                  Select all the furry friends joining this trip. Their details from Pet Soul will be shared with the property.
+                </p>
+                
+                {loadingPets ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-green-600" />
+                    <span className="ml-2 text-gray-500">Loading your pets...</span>
+                  </div>
+                ) : userPets.length > 0 ? (
+                  <div className="space-y-3">
+                    {userPets.map((pet) => {
+                      const isSelected = selectedPets.includes(pet.id);
+                      const age = calculateAge(pet.birthday);
+                      
+                      return (
+                        <div 
+                          key={pet.id}
+                          onClick={() => togglePetSelection(pet.id)}
+                          className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                            isSelected 
+                              ? 'border-green-500 bg-green-50 shadow-md' 
+                              : 'border-gray-200 hover:border-green-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            {/* Checkbox */}
+                            <div className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                              isSelected ? 'bg-green-600' : 'bg-white border-2 border-gray-300'
+                            }`}>
+                              {isSelected && <CheckCircle className="w-4 h-4 text-white" />}
+                            </div>
+                            
+                            {/* Pet Avatar */}
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center flex-shrink-0">
+                              {pet.photo_url ? (
+                                <img src={`${API_URL}${pet.photo_url}`} alt={pet.name} className="w-full h-full rounded-full object-cover" />
+                              ) : (
+                                <Dog className="w-6 h-6 text-amber-600" />
+                              )}
+                            </div>
+                            
+                            {/* Pet Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <h5 className="font-semibold text-gray-800">{pet.name}</h5>
+                                {isSelected && <Badge className="bg-green-100 text-green-700 text-xs">Travelling</Badge>}
+                              </div>
+                              <p className="text-sm text-gray-500">
+                                {pet.identity?.breed || pet.breed || 'Mixed breed'}
+                                {age && ` • ${age}`}
+                                {pet.identity?.weight && ` • ${pet.identity.weight}`}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    
+                    {/* Summary */}
+                    {selectedPets.length > 0 && (
+                      <div className="bg-green-50 p-3 rounded-lg border border-green-200 mt-4">
+                        <p className="text-sm text-green-700 font-medium">
+                          ✨ {selectedPets.length} pet{selectedPets.length > 1 ? 's' : ''} travelling: {getSelectedPetsInfo().map(p => p.name).join(', ')}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 bg-gray-50 rounded-xl">
+                    <Dog className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                    <p className="text-gray-500 mb-3">No pets in your Pet Soul yet</p>
+                    <p className="text-sm text-gray-400">Add your pets to get personalized experiences</p>
+                  </div>
+                )}
+                
+                {/* Additional pet details */}
+                {selectedPets.length > 0 && (
+                  <div className="space-y-3 mt-6 pt-4 border-t">
+                    <h5 className="font-medium text-gray-700">Additional Travel Info (Optional)</h5>
+                    <div>
+                      <label className="text-sm text-gray-600">Any special needs or requests?</label>
+                      <textarea 
+                        value={formData.special_needs}
+                        onChange={e => setFormData({...formData, special_needs: e.target.value})}
+                        className="w-full p-3 border rounded-lg text-sm mt-1"
+                        rows={2}
+                        placeholder="e.g., Needs a quiet room, scared of fireworks..."
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Step 3: Trip Details */}
+            {step === 3 && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <Calendar className="w-5 h-5 text-green-600" />
+                  <h4 className="font-semibold text-lg">Trip Details</h4>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Check-in Date *</label>
+                    <Input 
+                      type="date"
+                      value={formData.check_in_date}
+                      onChange={e => setFormData({...formData, check_in_date: e.target.value})}
+                      min={new Date().toISOString().split('T')[0]}
+                      className="h-11"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Check-out Date *</label>
+                    <Input 
+                      type="date"
+                      value={formData.check_out_date}
+                      onChange={e => setFormData({...formData, check_out_date: e.target.value})}
+                      min={formData.check_in_date || new Date().toISOString().split('T')[0]}
+                      className="h-11"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Rooms</label>
+                    <Input 
+                      type="number"
+                      min={1}
+                      value={formData.num_rooms}
+                      onChange={e => setFormData({...formData, num_rooms: parseInt(e.target.value) || 1})}
+                      className="h-11"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Adults</label>
+                    <Input 
+                      type="number"
+                      min={1}
+                      value={formData.num_adults}
+                      onChange={e => setFormData({...formData, num_adults: parseInt(e.target.value) || 1})}
+                      className="h-11"
+                    />
+                  </div>
+                </div>
+
+                {/* Travel Summary Card */}
+                {selectedPets.length > 0 && (
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200 mt-4">
+                    <h5 className="font-medium text-green-800 mb-2 flex items-center gap-2">
+                      <PawPrint className="w-4 h-4" /> Trip Summary
+                    </h5>
+                    <div className="text-sm text-green-700 space-y-1">
+                      <p>🏨 <strong>{property.name}</strong></p>
+                      <p>🐕 {selectedPets.length} pet{selectedPets.length > 1 ? 's' : ''}: {getSelectedPetsInfo().map(p => p.name).join(', ')}</p>
+                      {formData.check_in_date && formData.check_out_date && (
+                        <p>📅 {new Date(formData.check_in_date).toLocaleDateString()} - {new Date(formData.check_out_date).toLocaleDateString()}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Special Services */}
+                <div className="space-y-3 mt-4">
+                  <h5 className="font-medium text-gray-700">Add-on Services</h5>
+                  <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input 
+                      type="checkbox"
+                      checked={formData.pet_meal_preorder}
+                      onChange={e => setFormData({...formData, pet_meal_preorder: e.target.checked})}
+                      className="w-5 h-5 rounded text-green-600"
+                    />
+                    <div>
+                      <span className="font-medium">Pet Meal Pre-order</span>
+                      <p className="text-xs text-gray-500">Fresh meals waiting for your pet</p>
+                    </div>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input 
+                      type="checkbox"
+                      checked={formData.welcome_kit}
+                      onChange={e => setFormData({...formData, welcome_kit: e.target.checked})}
+                      className="w-5 h-5 rounded text-green-600"
+                    />
+                    <div>
+                      <span className="font-medium">Pet Welcome Kit</span>
+                      <p className="text-xs text-gray-500">Treats, toys & essentials</p>
+                    </div>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input 
+                      type="checkbox"
+                      checked={formData.grooming_requested}
+                      onChange={e => setFormData({...formData, grooming_requested: e.target.checked})}
+                      className="w-5 h-5 rounded text-green-600"
+                    />
+                    <div>
+                      <span className="font-medium">Grooming Service</span>
+                      <p className="text-xs text-gray-500">Spa day during your stay</p>
+                    </div>
+                  </label>
+                </div>
+
                 <div>
-                  <label className="text-sm font-medium text-gray-700">WhatsApp</label>
-                  <Input 
-                    value={formData.guest_whatsapp}
-                    onChange={e => setFormData({...formData, guest_whatsapp: e.target.value})}
-                    placeholder="For faster updates"
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Special Requests</label>
+                  <textarea 
+                    value={formData.special_requests}
+                    onChange={e => setFormData({...formData, special_requests: e.target.value})}
+                    className="w-full p-3 border rounded-lg text-sm"
+                    rows={2}
+                    placeholder="Any special arrangements needed?"
                   />
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        </div>
 
-          {step === 2 && (
-            <div className="space-y-4">
-              <h4 className="font-semibold mb-3 flex items-center gap-2">
-                <PawPrint className="w-5 h-5 text-green-600" />
-                Your Dog's Stay Profile
-              </h4>
-              <p className="text-sm text-gray-500 mb-4">
-                Help us ensure your dog feels at home. This information helps the property prepare for your pet.
-              </p>
-              
-              {/* Pet Selection - Show if user has pets */}
-              {user && userPets.length > 0 && (
-                <div className="bg-green-50 p-4 rounded-lg border border-green-100 mb-4">
-                  <label className="text-sm text-green-700 font-medium block mb-2 flex items-center gap-2">
-                    <PawPrint className="w-4 h-4" />
-                    Select your pet to auto-fill details from Pet Soul
-                  </label>
-                  <select 
-                    className="w-full px-3 py-2 border border-green-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-green-400"
-                    value={selectedPetId}
-                    onChange={(e) => handlePetSelect(e.target.value)}
-                  >
+        {/* Footer Navigation - Improved */}
+        <div className="p-4 border-t bg-white flex-shrink-0">
+          <div className="flex gap-3">
+            {step > 1 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setStep(step - 1)}
+                className="flex-1 h-12"
+              >
+                Back
+              </Button>
+            )}
+            {step < 3 ? (
+              <Button 
+                className="flex-1 h-12 bg-green-600 hover:bg-green-700"
+                onClick={() => setStep(step + 1)}
+              >
+                Continue
+              </Button>
+            ) : (
+              <Button 
+                className="flex-1 h-12 bg-green-600 hover:bg-green-700"
+                onClick={handleSubmit}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Request Booking
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
                     <option value="">Choose your furry traveler...</option>
                     {userPets.map((pet) => (
                       <option key={pet.id} value={pet.id}>
