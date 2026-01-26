@@ -839,7 +839,7 @@ const UnifiedPetPage = () => {
                     <div key={question.id} className="p-4 bg-gray-50 rounded-lg">
                       <p className="font-medium text-gray-800 mb-3 flex items-center gap-2">
                         <span className="text-xl">{question.icon}</span>
-                        {question.label.replace('{name}', pet.name)}
+                        {question.label.replace('{name}', safePet.name)}
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {question.options.map((option) => (
