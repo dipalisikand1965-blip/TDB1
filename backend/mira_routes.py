@@ -1076,6 +1076,12 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
                 persona = soul.get('persona')
                 if persona:
                     pet_context += f"- Personality type: {persona.replace('_', ' ').title()}\n"
+            
+            # 🧬 BREED-SPECIFIC HEALTH INTELLIGENCE
+            breed_tips = get_breed_health_tips(breed)
+            if breed_tips:
+                pet_context += f"\n  📋 BREED-SPECIFIC CARE TIPS FOR {pet_name} ({breed}):\n"
+                pet_context += breed_tips
     
     # KNOWN FIELDS section for selected pet
     if selected_pet:
