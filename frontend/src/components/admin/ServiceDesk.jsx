@@ -239,6 +239,9 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   const [showMergeModal, setShowMergeModal] = useState(false);
   const [merging, setMerging] = useState(false);
   
+  // Reply Modal - Full-screen popup for replies
+  const [showReplyModal, setShowReplyModal] = useState(false);
+  
   // SLA & Auto-assignment
   const [slaStats, setSlaStats] = useState(null);
   const [showSLAModal, setShowSLAModal] = useState(false);
