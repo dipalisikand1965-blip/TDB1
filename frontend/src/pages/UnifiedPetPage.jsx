@@ -1372,8 +1372,8 @@ const UnifiedPetPage = () => {
                   <div className="bg-white rounded-lg p-4">
                     <p className="text-xs text-gray-500 mb-1">Grooming</p>
                     <p className="font-semibold text-gray-900">
-                      {['Poodle', 'Golden Retriever', 'Husky', 'Shih Tzu'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'High - Regular grooming' :
-                       ['Labrador', 'Beagle', 'Indie'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Low - Easy to maintain' :
+                      {['Poodle', 'Golden Retriever', 'Husky', 'Shih Tzu'].some(b => safePet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'High - Regular grooming' :
+                       ['Labrador', 'Beagle', 'Indie'].some(b => safePet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Low - Easy to maintain' :
                        'Moderate'}
                     </p>
                   </div>
