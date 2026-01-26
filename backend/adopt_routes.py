@@ -569,7 +569,7 @@ async def get_adopt_stats():
     pending_applications = await db.adoption_applications.count_documents({"status": "pending"})
     foster_applications = await db.foster_applications.count_documents({"status": "pending"})
     upcoming_events = await db.adoption_events.count_documents({"date": {"$gte": datetime.now(timezone.utc).strftime("%Y-%m-%d")}})
-    shelters_count = await db.adopt_shelters.count_documents({"active": True})
+    shelters_count = await db.adopt_shelters.count_documents({})  # Count all shelters
     
     return {
         "available_pets": available_pets,
