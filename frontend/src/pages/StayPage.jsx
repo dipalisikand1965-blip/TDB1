@@ -329,9 +329,187 @@ const StayPage = () => {
             </button>
           ))}
         </div>
+        
+        {/* Tabs: Stays vs Boarding */}
+        <div className="flex justify-center gap-4 mt-6">
+          <button
+            onClick={() => { setActiveTab('stays'); window.history.pushState({}, '', '/stay'); }}
+            className={`px-6 py-3 rounded-xl font-semibold transition-all ${
+              activeTab === 'stays' 
+                ? 'bg-green-600 text-white shadow-lg' 
+                : 'bg-white border-2 border-green-200 text-green-700 hover:border-green-400'
+            }`}
+          >
+            <Building className="w-5 h-5 inline mr-2" />
+            Pet-Friendly Stays
+          </button>
+          <button
+            onClick={() => { setActiveTab('boarding'); window.history.pushState({}, '', '/stay?type=boarding'); fetchBoardingFacilities(); }}
+            className={`px-6 py-3 rounded-xl font-semibold transition-all ${
+              activeTab === 'boarding' 
+                ? 'bg-purple-600 text-white shadow-lg' 
+                : 'bg-white border-2 border-purple-200 text-purple-700 hover:border-purple-400'
+            }`}
+          >
+            <Home className="w-5 h-5 inline mr-2" />
+            Pet Boarding
+          </button>
+        </div>
       </div>
 
-      {/* Properties Grid */}
+      {/* Boarding Section */}
+      {activeTab === 'boarding' && (
+        <div className="max-w-6xl mx-auto px-4 pb-12">
+          {/* Boarding Header */}
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 mb-8">
+            <h2 className="text-2xl font-bold text-purple-800 mb-2">
+              🏠 Pet Boarding
+            </h2>
+            <p className="text-purple-600 mb-4">
+              Thoughtful stays, built around your dog's routine.
+            </p>
+            <p className="text-sm text-gray-600 italic">
+              Every boarding recommendation is guided by your dog's profile, habits, and comfort needs already on file.
+            </p>
+          </div>
+
+          {/* What Boarding Means */}
+          <div className="bg-white rounded-xl border p-6 mb-8">
+            <h3 className="font-bold text-gray-800 mb-3">What boarding means at The Doggy Company</h3>
+            <p className="text-gray-600 mb-4">
+              Boarding is not just a place to stay. It's continuity of care when you're away.
+            </p>
+            
+            <h4 className="font-semibold text-gray-700 mb-2">Suitable For:</h4>
+            <ul className="text-sm text-gray-600 space-y-1 mb-4">
+              <li>• Short trips and weekends away</li>
+              <li>• Longer holidays</li>
+              <li>• Transition periods or relocations</li>
+              <li>• Times when home care isn't possible</li>
+            </ul>
+            
+            <h4 className="font-semibold text-gray-700 mb-2">How we decide what's right:</h4>
+            <p className="text-sm text-gray-500">
+              We consider age, life stage, social comfort with other dogs, sleep and feeding routines, 
+              medical or behavioural notes already recorded, location and travel distance. No two dogs are placed the same way.
+            </p>
+          </div>
+
+          {/* Boarding Type Filters */}
+          <div className="flex flex-wrap gap-3 mb-6">
+            <select
+              value={boardingFilters.city}
+              onChange={(e) => setBoardingFilters({...boardingFilters, city: e.target.value})}
+              className="px-4 py-2 border rounded-lg text-sm"
+            >
+              <option value="">All Cities</option>
+              {boardingCities.map(city => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
+            <select
+              value={boardingFilters.boardingType}
+              onChange={(e) => setBoardingFilters({...boardingFilters, boardingType: e.target.value})}
+              className="px-4 py-2 border rounded-lg text-sm"
+            >
+              <option value="">All Boarding Types</option>
+              <option value="Home-style">Home-style Boarding</option>
+              <option value="Premium">Premium Facilities</option>
+              <option value="Private">Private Stays</option>
+              <option value="Luxury">Luxury Pet Hotels</option>
+            </select>
+          </div>
+
+          {/* Boarding Types Info */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+              <h4 className="font-bold text-amber-800 mb-2">🏡 Home-style Boarding</h4>
+              <p className="text-sm text-amber-700">For dogs who do best in quieter, family environments.</p>
+            </div>
+            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+              <h4 className="font-bold text-blue-800 mb-2">🏨 Premium Facilities</h4>
+              <p className="text-sm text-blue-700">For dogs comfortable with structured spaces and supervised play.</p>
+            </div>
+            <div className="bg-purple-50 rounded-xl p-4 border border-purple-200">
+              <h4 className="font-bold text-purple-800 mb-2">🔒 Private Stays</h4>
+              <p className="text-sm text-purple-700">For dogs that need space, routine, or calm continuity.</p>
+            </div>
+          </div>
+
+          {/* Boarding Facilities Grid */}
+          <h3 className="text-xl font-bold text-gray-800 mb-4">
+            {boardingFacilities.length} Boarding Facilities
+          </h3>
+          
+          {boardingFacilities.length === 0 ? (
+            <div className="text-center py-12 bg-gray-50 rounded-xl">
+              <Home className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No boarding facilities found. Try different filters.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {boardingFacilities.map((facility) => (
+                <Card key={facility.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="relative h-48">
+                    <img 
+                      src={facility.image || facility.photos?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800'} 
+                      alt={facility.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <Badge className={`absolute top-3 right-3 ${
+                      facility.boarding_type === 'Home-style' ? 'bg-amber-500' :
+                      facility.boarding_type === 'Premium' ? 'bg-blue-500' :
+                      facility.boarding_type === 'Private' ? 'bg-purple-500' : 'bg-pink-500'
+                    } text-white`}>
+                      {facility.boarding_type}
+                    </Badge>
+                  </div>
+                  <div className="p-4">
+                    <h4 className="font-bold text-gray-800 mb-1">{facility.name}</h4>
+                    <p className="text-sm text-gray-500 flex items-center gap-1 mb-2">
+                      <MapPin className="w-4 h-4" /> {facility.city}, {facility.state}
+                    </p>
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{facility.description}</p>
+                    
+                    {/* Paw Score */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center">
+                        {[1, 2, 3, 4, 5].map((paw) => (
+                          <PawPrint 
+                            key={paw}
+                            className={`w-4 h-4 ${paw <= Math.round(facility.paw_score || 4) ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`}
+                          />
+                        ))}
+                      </div>
+                      <span className="font-semibold text-purple-600">{(facility.paw_score || 4).toFixed(1)}</span>
+                    </div>
+                    
+                    {/* Price & Contact */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">{facility.price_range || '₹500-1,500/night'}</span>
+                      {facility.phone && (
+                        <a href={`tel:${facility.phone}`} className="text-purple-600 hover:text-purple-700">
+                          <Phone className="w-5 h-5" />
+                        </a>
+                      )}
+                    </div>
+                    
+                    <Button 
+                      className="w-full mt-3 bg-purple-600 hover:bg-purple-700"
+                      onClick={() => { setSelectedProperty({...facility, property_type: 'boarding'}); setShowBookingModal(true); }}
+                    >
+                      Enquire Now
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Properties Grid - Only show when activeTab is 'stays' */}
+      {activeTab === 'stays' && (
       <div className="max-w-6xl mx-auto px-4 pb-12">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-800">
