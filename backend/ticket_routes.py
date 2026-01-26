@@ -2412,23 +2412,52 @@ async def upload_ticket_attachment(
     """Upload an attachment to a ticket"""
     db = get_db()
     
-    # Verify ticket exists
+    # Verify ticket exists - check both collections
     ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    collection = db.tickets
+    
+    if not ticket:
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+        collection = db.service_desk_tickets
+    
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
     
-    # Validate file type
+    # More permissive file type validation - allow common types + fallback for octet-stream
     allowed_types = [
-        'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+        'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif',
         'application/pdf', 
         'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'text/plain', 'text/csv',
-        'audio/webm', 'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg'  # Voice recordings
+        'audio/webm', 'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/aac',
+        'video/webm', 'video/mp4', 'video/quicktime',
+        'application/octet-stream'  # Allow generic binary for browser compatibility
     ]
     
-    if file.content_type not in allowed_types:
-        raise HTTPException(status_code=400, detail=f"File type {file.content_type} not allowed")
+    # Get content type - be permissive
+    content_type = file.content_type or 'application/octet-stream'
+    
+    # If content_type is octet-stream, try to infer from filename
+    if content_type == 'application/octet-stream' and file.filename:
+        ext = file.filename.lower().split('.')[-1] if '.' in file.filename else ''
+        ext_to_mime = {
+            'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 
+            'gif': 'image/gif', 'webp': 'image/webp',
+            'pdf': 'application/pdf', 'doc': 'application/msword',
+            'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xls': 'application/vnd.ms-excel',
+            'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'txt': 'text/plain', 'csv': 'text/csv',
+            'webm': 'audio/webm', 'mp3': 'audio/mpeg', 'wav': 'audio/wav',
+            'ogg': 'audio/ogg', 'm4a': 'audio/mp4', 'aac': 'audio/aac',
+            'mp4': 'video/mp4', 'mov': 'video/quicktime'
+        }
+        if ext in ext_to_mime:
+            content_type = ext_to_mime[ext]
+    
+    if content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail=f"File type {content_type} not allowed. Allowed: images, documents, audio, video")
     
     # Check file size (max 10MB)
     file_content = await file.read()
