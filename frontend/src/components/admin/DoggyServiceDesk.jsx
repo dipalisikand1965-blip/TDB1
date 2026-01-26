@@ -1418,8 +1418,18 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           </div>
           
           <div className="flex items-center gap-2">
-            <Button className="bg-emerald-500 hover:bg-emerald-600 gap-2 shadow-sm">
-              <Plus className="w-4 h-4" /> New Ticket
+            {/* New Ticket Button with Dropdown */}
+            <div className="relative">
+              <Button 
+                onClick={() => setShowNewTicketModal(true)}
+                className="bg-emerald-500 hover:bg-emerald-600 gap-2 shadow-sm"
+                data-testid="new-ticket-btn"
+              >
+                <Plus className="w-4 h-4" /> New Ticket
+              </Button>
+            </div>
+            <Button onClick={handleRefresh} variant="outline" size="icon" className="shadow-sm" disabled={refreshing}>
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             </Button>
             <button className="p-2 hover:bg-gray-100 rounded-lg relative">
               <Bell className="w-5 h-5 text-gray-500" />
@@ -1435,6 +1445,149 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             </div>
           </div>
         </header>
+        
+        {/* ==================== NEW TICKET MODAL ==================== */}
+        {showNewTicketModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowNewTicketModal(false)}>
+            <Card className="w-[600px] max-h-[90vh] overflow-y-auto bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-900">Create New Ticket</h2>
+                  <button onClick={() => setShowNewTicketModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                
+                <div className="space-y-4">
+                  {/* Type Selection */}
+                  <div className="grid grid-cols-4 gap-2">
+                    {[
+                      { type: 'ticket', label: '📋 Ticket', desc: 'Support request' },
+                      { type: 'inquiry', label: '❓ Inquiry', desc: 'General question' },
+                      { type: 'booking', label: '📅 Booking', desc: 'Reservation' },
+                      { type: 'order', label: '🛒 Order', desc: 'Shop order' }
+                    ].map(t => (
+                      <button
+                        key={t.type}
+                        onClick={() => setNewTicketForm(prev => ({ ...prev, type: t.type, category: t.type }))}
+                        className={`p-3 rounded-lg border-2 text-center transition-all ${
+                          newTicketForm.type === t.type ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="text-lg">{t.label.split(' ')[0]}</div>
+                        <div className="text-xs text-gray-500">{t.desc}</div>
+                      </button>
+                    ))}
+                  </div>
+                  
+                  {/* Pillar Selection */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Pillar</label>
+                    <select
+                      value={newTicketForm.category}
+                      onChange={(e) => setNewTicketForm(prev => ({ ...prev, category: e.target.value }))}
+                      className="w-full h-10 px-3 rounded-lg border"
+                    >
+                      {Object.entries(PILLARS).map(([k, v]) => (
+                        <option key={k} value={k}>{v.emoji} {v.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  {/* Priority */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Priority</label>
+                    <div className="flex gap-2">
+                      {['low', 'medium', 'high', 'urgent', 'critical'].map(p => (
+                        <button
+                          key={p}
+                          onClick={() => setNewTicketForm(prev => ({ ...prev, urgency: p }))}
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium capitalize transition-all ${
+                            newTicketForm.urgency === p 
+                              ? p === 'critical' || p === 'urgent' ? 'bg-red-500 text-white' : p === 'high' ? 'bg-orange-500 text-white' : p === 'medium' ? 'bg-yellow-500 text-white' : 'bg-gray-500 text-white'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Subject */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Subject *</label>
+                    <Input
+                      value={newTicketForm.subject}
+                      onChange={(e) => setNewTicketForm(prev => ({ ...prev, subject: e.target.value }))}
+                      placeholder="Brief description of the issue or request"
+                    />
+                  </div>
+                  
+                  {/* Description */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Description</label>
+                    <Textarea
+                      value={newTicketForm.description}
+                      onChange={(e) => setNewTicketForm(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Detailed information..."
+                      rows={4}
+                    />
+                  </div>
+                  
+                  {/* Contact Info */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">Pet Parent Name</label>
+                      <Input
+                        value={newTicketForm.member_name}
+                        onChange={(e) => setNewTicketForm(prev => ({ ...prev, member_name: e.target.value }))}
+                        placeholder="Name"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">Email</label>
+                      <Input
+                        value={newTicketForm.member_email}
+                        onChange={(e) => setNewTicketForm(prev => ({ ...prev, member_email: e.target.value }))}
+                        placeholder="email@example.com"
+                        type="email"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">Phone</label>
+                      <Input
+                        value={newTicketForm.member_phone}
+                        onChange={(e) => setNewTicketForm(prev => ({ ...prev, member_phone: e.target.value }))}
+                        placeholder="+91 XXXXX XXXXX"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">Pet Name</label>
+                      <Input
+                        value={newTicketForm.pet_name}
+                        onChange={(e) => setNewTicketForm(prev => ({ ...prev, pet_name: e.target.value }))}
+                        placeholder="Pet's name"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex justify-end gap-3 mt-6 pt-6 border-t">
+                  <Button variant="outline" onClick={() => setShowNewTicketModal(false)}>Cancel</Button>
+                  <Button 
+                    onClick={handleCreateTicket}
+                    disabled={!newTicketForm.subject.trim() || sending}
+                    className="bg-emerald-500 hover:bg-emerald-600"
+                  >
+                    {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                    Create Ticket
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
         
         {/* ==================== CONTENT AREA ==================== */}
         <div className="flex-1 flex min-h-0">
