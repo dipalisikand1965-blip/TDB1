@@ -598,8 +598,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           setPetProfiles(data.pets || []);
         }
         
-        // Fetch recent orders from order routes
-        const ordersRes = await fetch(`${getApiUrl()}/api/orders`, { headers: authHeaders });
+        // Fetch recent orders from admin endpoint
+        const ordersRes = await fetch(`${getApiUrl()}/api/admin/orders?limit=50`, { headers: authHeaders });
         if (ordersRes.ok) {
           const data = await ordersRes.json();
           setOrdersData(data.orders || []);
