@@ -1436,23 +1436,36 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
       setSubmitting(false);
     }
   };
-            console.warn('Pet Soul update failed (non-blocking):', soulError);
-          }
-        }
-        
-        alert(`🍽️ Reservation request sent for ${restaurant.name}! We'll confirm shortly.`);
-        onClose();
-      } else {
-        const error = await response.json();
-        alert(error.detail || 'Failed to submit reservation');
-      }
-    } catch (error) {
-      console.error('Error submitting reservation:', error);
-      alert('Failed to submit reservation. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+
+  // Success state
+  if (success) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+        <Card className="max-w-md w-full p-8 text-center" onClick={(e) => e.stopPropagation()}>
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Check className="w-8 h-8 text-green-600" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-2">Reservation Requested!</h3>
+          <p className="text-gray-600 mb-4">
+            We've received your reservation request for <strong>{restaurant.name}</strong>.
+          </p>
+          {selectedPets.length > 0 && (
+            <div className="bg-purple-50 p-3 rounded-lg mb-4">
+              <p className="text-sm text-purple-700">
+                🐕 Dining with: <strong>{getSelectedPetsInfo().map(p => p.name).join(', ')}</strong>
+              </p>
+            </div>
+          )}
+          <p className="text-sm text-gray-500 mb-6">
+            The restaurant will confirm your booking shortly via phone or WhatsApp.
+          </p>
+          <Button className="w-full bg-purple-600 hover:bg-purple-700" onClick={onClose}>
+            Done
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
