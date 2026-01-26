@@ -644,6 +644,28 @@ const PricingHub = ({ getAuthHeader }) => {
     window.open(url, '_blank');
   };
 
+  // Seed Products from Product Box
+  const seedFromProductBox = async () => {
+    if (!confirm('This will sync all products from Unified Product Box to Pricing Hub.\nThis ensures both systems have the same products.\n\nContinue?')) return;
+    
+    setSeeding(true);
+    try {
+      // First sync from Product Box
+      const migrateRes = await fetch(`${getApiUrl()}/api/product-box/migrate-from-products`, { method: 'POST' });
+      const migrateData = await migrateRes.json();
+      
+      // Then fetch updated products
+      await fetchProducts();
+      await fetchStats();
+      
+      alert(`Sync complete! ${migrateData.migrated || 0} products synchronized.`);
+    } catch (err) {
+      console.error('Error seeding:', err);
+      alert('Sync failed. Please check console for details.');
+    }
+    setSeeding(false);
+  };
+
   // Import CSV
   const handleImport = async (e) => {
     const file = e.target.files[0];
