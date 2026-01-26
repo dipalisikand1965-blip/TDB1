@@ -5034,6 +5034,10 @@ async def mongodb_fallback_search_legacy(
             {"description": search_regex},
             {"tags": search_regex},
             {"category": search_regex},
+            {"intelligent_tags": search_regex},
+            {"breed_tags": search_regex},
+            {"health_tags": search_regex},
+            {"search_keywords": search_regex},
         ]
     }
     
