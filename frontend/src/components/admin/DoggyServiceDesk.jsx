@@ -1173,20 +1173,21 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                   
                   {/* Tabs */}
                   <div className="flex border-b flex-shrink-0">
-                    {['conversation', 'context', 'history'].map(tab => (
+                    {['conversation', 'context', 'attachments', 'history'].map(tab => (
                       <button
                         key={tab}
                         onClick={() => setDetailTab(tab)}
-                        className={`flex-1 px-4 py-2.5 text-xs font-medium capitalize border-b-2 transition-colors ${
+                        className={`flex-1 px-3 py-2.5 text-xs font-medium capitalize border-b-2 transition-colors ${
                           detailTab === tab
                             ? 'border-emerald-500 text-emerald-600'
                             : 'border-transparent text-gray-500 hover:text-gray-700'
                         }`}
                       >
-                        {tab === 'conversation' && <MessageSquare className="w-3.5 h-3.5 inline mr-1.5" />}
-                        {tab === 'context' && <PawPrint className="w-3.5 h-3.5 inline mr-1.5" />}
-                        {tab === 'history' && <History className="w-3.5 h-3.5 inline mr-1.5" />}
-                        {tab}
+                        {tab === 'conversation' && <MessageSquare className="w-3.5 h-3.5 inline mr-1" />}
+                        {tab === 'context' && <PawPrint className="w-3.5 h-3.5 inline mr-1" />}
+                        {tab === 'attachments' && <Paperclip className="w-3.5 h-3.5 inline mr-1" />}
+                        {tab === 'history' && <History className="w-3.5 h-3.5 inline mr-1" />}
+                        {tab === 'attachments' ? 'Files' : tab}
                       </button>
                     ))}
                   </div>
