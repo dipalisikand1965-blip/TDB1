@@ -65,13 +65,29 @@ const ServiceDeskPage = () => {
     }
   };
 
-  // Auth headers for API calls
+  // Auth headers for API calls - Use Basic auth for admin routes
   const getAuthHeaders = () => {
+    // For basic auth compatibility with admin endpoints
+    const storedUser = localStorage.getItem('tdc_admin_user');
+    const storedPassword = localStorage.getItem('tdc_admin_password');
+    
+    if (storedUser && storedPassword) {
+      const basicAuth = btoa(`${storedUser}:${storedPassword}`);
+      return {
+        'Authorization': `Basic ${basicAuth}`
+      };
+    }
+    
+    // Fallback to bearer token if available
     const token = localStorage.getItem('tdc_admin_token');
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    };
+    if (token) {
+      return {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+    }
+    
+    return {};
   };
 
   // Toggle browser fullscreen
