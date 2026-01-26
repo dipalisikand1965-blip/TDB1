@@ -153,21 +153,22 @@ export function resolvePetAvatar(pet) {
   }
   
   const petName = pet.name || 'your pet';
+  const petId = pet.id || '';
   
   // 1. Check if member uploaded a photo
   if (pet.photo_url) {
     let photoUrl = pet.photo_url;
     
-    // Convert old static path format to new API route format
-    // Old: /static/uploads/pets/pet_petid_hash.jpg
-    // New: /api/pet-photo/petid/pet_petid_hash.jpg
-    if (photoUrl.includes('/static/uploads/pets/')) {
-      const filename = photoUrl.split('/').pop();
-      // Extract pet_id from filename (format: pet_PETID_hash.ext)
-      const parts = filename.split('_');
-      if (parts.length >= 2) {
-        const petIdFromFilename = parts[1];
-        photoUrl = `/api/pet-photo/${petIdFromFilename}/${filename}`;
+    // Convert any old formats to new simplified API route
+    // Old format 1: /api/pet-photo/petid/filename.jpg
+    // Old format 2: /static/uploads/pets/filename.jpg
+    // New format: /api/pet-photo/petid
+    
+    if (photoUrl.includes('/static/uploads/pets/') || 
+        (photoUrl.includes('/api/pet-photo/') && photoUrl.split('/').length > 4)) {
+      // Use simplified URL with just pet ID
+      if (petId) {
+        photoUrl = `/api/pet-photo/${petId}`;
       }
     }
     
