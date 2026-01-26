@@ -162,10 +162,32 @@ const UnifiedProductBox = () => {
         ? `${API_URL}/api/product-box/products`
         : `${API_URL}/api/product-box/products/${selectedProduct.id}`;
       
+      // Sanitize the product data to avoid serialization issues
+      const sanitizedProduct = {};
+      const allowedFields = [
+        'name', 'product_type', 'short_description', 'long_description', 'description',
+        'category', 'subcategory', 'tags', 'image_url', 'images', 'pricing',
+        'variants', 'options', 'has_variants', 'in_stock', 'visibility',
+        'primary_pillar', 'pillars', 'paw_rewards', 'pet_safety', 'mira_visibility',
+        'shopify_handle', 'sku', 'intelligent_tags', 'search_keywords',
+        'breed_tags', 'health_tags', 'occasion_tags', 'diet_tags', 'lifestage_tags', 'size_tags'
+      ];
+      
+      for (const field of allowedFields) {
+        if (selectedProduct[field] !== undefined) {
+          sanitizedProduct[field] = selectedProduct[field];
+        }
+      }
+      
+      // For new products, include the ID if it's not a temp ID
+      if (isNew && selectedProduct.id && !selectedProduct.id.startsWith('NEW-')) {
+        sanitizedProduct.id = selectedProduct.id;
+      }
+      
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(selectedProduct)
+        body: JSON.stringify(sanitizedProduct)
       });
       
       if (response.ok) {
