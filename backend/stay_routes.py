@@ -552,7 +552,7 @@ async def create_booking_request(booking: BookingRequest):
             "id": f"notif-{uuid.uuid4().hex[:8]}",
             "type": "stay_booking",
             "title": f"🏨 New Stay Booking - {property.get('name')}",
-            "message": f"{booking.guest_name} requested stay for {booking.check_in_date} ({booking.pet_name})",
+            "message": f"{booking.guest_name} requested stay for {booking.check_in_date} ({pet_display})",
             "category": "stay",
             "related_id": booking_doc["id"],
             "link_to": "/admin?tab=stay&subtab=bookings",
