@@ -212,7 +212,7 @@ const CarePage = () => {
   };
 
   const handleFormSubmit = async () => {
-    if (!selectedPet || !selectedType) return;
+    if (!selectedType) return;
     
     setSubmitting(true);
     try {
