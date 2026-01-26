@@ -747,7 +747,7 @@ const CarePage = () => {
           )}
 
           {/* Step 3: Care Details */}
-          {wizardStep === 3 && selectedPet && selectedType && (
+          {wizardStep === 3 && selectedType && (selectedPet || formData.pet_name) && (
             <div className="space-y-4" ref={formRef}>
               {/* Selected Summary */}
               <Card className="p-3 bg-pink-50 border-pink-200 flex items-center gap-3">

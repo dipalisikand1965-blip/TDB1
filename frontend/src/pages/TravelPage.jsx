@@ -718,7 +718,7 @@ const TravelPage = () => {
           )}
 
           {/* Step 3: Journey Details */}
-          {wizardStep === 3 && selectedPet && selectedType && (
+          {wizardStep === 3 && selectedType && (selectedPet || formData.pet_name) && (
             <div className="space-y-4" ref={formRef}>
               {/* Selected Summary */}
               <Card className="p-3 bg-purple-50 border-purple-200 flex items-center gap-3">
