@@ -215,8 +215,83 @@ const ProductDetailPage = () => {
               </div>
             )}
             
-            {/* Variants */}
-            {(product.variants?.length > 1) && (
+            {/* Product Options (Base, Flavour, Size, etc.) */}
+            {product.options?.length > 0 && product.options.some(opt => opt.values?.length > 1 || (opt.values?.length === 1 && opt.values[0] !== 'Default Title')) && (
+              <div className="space-y-4 p-4 bg-purple-50 rounded-xl border border-purple-100">
+                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <Package className="w-5 h-5 text-purple-600" />
+                  Customize Your Order
+                </h3>
+                {product.options.map((option, optIdx) => (
+                  // Skip "Default Title" options
+                  option.values?.length > 0 && !(option.values.length === 1 && option.values[0] === 'Default Title') && (
+                    <div key={optIdx}>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {option.name} <span className="text-red-500">*</span>
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {option.values.map((value, valIdx) => {
+                          // Check if this value is selected in the current variant
+                          const isSelected = selectedVariant?.[`option${option.position}`] === value ||
+                                           selectedVariant?.[`option${optIdx + 1}`] === value;
+                          
+                          return (
+                            <Button
+                              key={valIdx}
+                              variant={isSelected ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => {
+                                // Find variant that matches this selection
+                                const optionKey = `option${option.position || optIdx + 1}`;
+                                const newVariant = product.variants?.find(v => {
+                                  // Match this option value
+                                  if (v[optionKey] !== value) return false;
+                                  // Also match other selected options
+                                  for (let i = 0; i < product.options.length; i++) {
+                                    if (i !== optIdx) {
+                                      const otherKey = `option${product.options[i].position || i + 1}`;
+                                      if (selectedVariant?.[otherKey] && v[otherKey] !== selectedVariant[otherKey]) {
+                                        return false;
+                                      }
+                                    }
+                                  }
+                                  return true;
+                                }) || product.variants?.find(v => v[optionKey] === value);
+                                
+                                if (newVariant) {
+                                  setSelectedVariant(newVariant);
+                                }
+                              }}
+                              className={isSelected 
+                                ? "bg-purple-600 hover:bg-purple-700" 
+                                : "hover:border-purple-300 hover:bg-purple-50"
+                              }
+                            >
+                              {value}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )
+                ))}
+                
+                {/* Show selected variant summary */}
+                {selectedVariant && (
+                  <div className="mt-4 p-3 bg-white rounded-lg border border-purple-200">
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium text-gray-900">Selected:</span> {selectedVariant.title}
+                    </p>
+                    <p className="text-lg font-bold text-purple-600 mt-1">
+                      ₹{selectedVariant.price?.toLocaleString()}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Legacy Variants Display (only if no structured options) */}
+            {(!product.options?.length || product.options.every(opt => opt.values?.length === 1 && opt.values[0] === 'Default Title')) && (product.variants?.length > 1) && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Options</label>
                 <div className="flex flex-wrap gap-2">
