@@ -2603,6 +2603,176 @@ async def change_password(
     return {"success": True, "message": "Password changed successfully"}
 
 
+# ==================== DATA MIGRATION ENDPOINTS ====================
+
+@admin_router.post("/data/link-pets-to-users")
+async def link_pets_to_users(username: str = Depends(verify_admin)):
+    """
+    Data migration: Link pets to their owners by adding user_id field.
+    This fixes the Smart Recommendations feature that relies on user_id.
+    
+    The script:
+    1. Iterates through all pets in the database
+    2. For each pet with an owner_email, finds the corresponding user
+    3. Updates the pet with the user's user_id
+    """
+    logger.info("Starting pet-to-user linking migration...")
+    
+    stats = {
+        "total_pets": 0,
+        "linked": 0,
+        "already_linked": 0,
+        "no_owner_email": 0,
+        "owner_not_found": 0,
+        "errors": []
+    }
+    
+    try:
+        # Get all pets
+        pets = await db.pets.find({}).to_list(None)
+        stats["total_pets"] = len(pets)
+        
+        for pet in pets:
+            pet_id = pet.get("id", str(pet.get("_id", "unknown")))
+            
+            # Skip if already has user_id
+            if pet.get("user_id"):
+                stats["already_linked"] += 1
+                continue
+            
+            # Get owner email
+            owner_email = pet.get("owner_email")
+            if not owner_email:
+                stats["no_owner_email"] += 1
+                continue
+            
+            # Find the user by email - check multiple collections
+            user = await db.users.find_one({"email": owner_email})
+            if not user:
+                user = await db.members.find_one({"email": owner_email})
+            
+            if not user:
+                stats["owner_not_found"] += 1
+                stats["errors"].append(f"Pet {pet_id}: No user found for email {owner_email}")
+                continue
+            
+            # Get user_id - try multiple field names
+            user_id = user.get("id") or user.get("user_id") or str(user.get("_id"))
+            
+            if user_id:
+                # Update the pet with user_id
+                await db.pets.update_one(
+                    {"id": pet_id} if "id" in pet else {"_id": pet["_id"]},
+                    {"$set": {"user_id": user_id}}
+                )
+                stats["linked"] += 1
+                logger.info(f"Linked pet {pet_id} to user {user_id}")
+            else:
+                stats["errors"].append(f"Pet {pet_id}: User found but no valid ID")
+        
+        logger.info(f"Migration complete: {stats}")
+        return {
+            "success": True,
+            "message": f"Linked {stats['linked']} pets to their owners",
+            "stats": stats
+        }
+        
+    except Exception as e:
+        logger.error(f"Migration failed: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "stats": stats
+        }
+
+
+@admin_router.post("/data/create-test-user")
+async def create_test_user(
+    email: str = "dipali@mindescapes.in",
+    password: str = "mynx123",
+    name: str = "Dipali Test",
+    username: str = Depends(verify_admin)
+):
+    """Create a test user for testing the member journey."""
+    logger.info(f"Creating test user: {email}")
+    
+    # Check if user exists
+    existing = await db.users.find_one({"email": email})
+    if existing:
+        return {
+            "success": False,
+            "message": f"User {email} already exists",
+            "user_id": existing.get("id") or str(existing.get("_id"))
+        }
+    
+    # Create new user
+    user_id = f"user-{uuid.uuid4().hex[:12]}"
+    hashed_password = pwd_context.hash(password)
+    
+    new_user = {
+        "id": user_id,
+        "email": email,
+        "password": hashed_password,
+        "name": name,
+        "role": "member",
+        "membership_tier": "standard",
+        "paw_points": 0,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.users.insert_one(new_user)
+    
+    # Also add to members collection for consistency
+    member_doc = {
+        "id": user_id,
+        "user_id": user_id,
+        "email": email,
+        "name": name,
+        "role": "member",
+        "membership_tier": "standard",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.members.insert_one(member_doc)
+    
+    logger.info(f"Test user created: {email} with ID {user_id}")
+    return {
+        "success": True,
+        "message": f"Test user created: {email}",
+        "user_id": user_id,
+        "credentials": {
+            "email": email,
+            "password": password
+        }
+    }
+
+
+@admin_router.get("/data/pets-status")
+async def get_pets_status(username: str = Depends(verify_admin)):
+    """Check the status of pets in the database - how many have user_id, owner_email, etc."""
+    
+    total_pets = await db.pets.count_documents({})
+    with_user_id = await db.pets.count_documents({"user_id": {"$exists": True, "$ne": None}})
+    with_owner_email = await db.pets.count_documents({"owner_email": {"$exists": True, "$ne": None}})
+    without_user_id = await db.pets.count_documents({
+        "$or": [
+            {"user_id": {"$exists": False}},
+            {"user_id": None}
+        ]
+    })
+    
+    # Sample pets
+    sample_pets = await db.pets.find({}, {"_id": 0, "id": 1, "name": 1, "user_id": 1, "owner_email": 1}).limit(10).to_list(10)
+    
+    return {
+        "total_pets": total_pets,
+        "with_user_id": with_user_id,
+        "with_owner_email": with_owner_email,
+        "without_user_id": without_user_id,
+        "sample_pets": sample_pets
+    }
+
+
 @admin_router.get("/dashboard")
 async def admin_dashboard(username: str = Depends(verify_admin)):
     """Get dashboard summary"""
