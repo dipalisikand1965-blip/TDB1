@@ -494,14 +494,14 @@ const UnifiedPetPage = () => {
     breed: pet.breed || 'Unknown Breed',
     species: pet.species || 'dog',
     gender: pet.gender || '',
-    photo_url: safePet.photo_url || null,
+    photo_url: pet.photo_url || null,
     pet_pass_number: pet.pet_pass_number || null,
-    birth_date: safePet.birth_date || null,
-    gotcha_date: safePet.gotcha_date || null,
+    birth_date: pet.birth_date || null,
+    gotcha_date: pet.gotcha_date || null,
     overall_score: pet.overall_score || 0,
-    doggy_soul_answers: safePet.doggy_soul_answers || {},
-    health: safePet.health || {},
-    weight: safePet.weight || null,
+    doggy_soul_answers: pet.doggy_soul_answers || {},
+    health: pet.health || {},
+    weight: pet.weight || null,
     ...pet
   };
 
