@@ -20,7 +20,8 @@ import {
   UserPlus, XCircle, Archive, History, ChevronDown, Sparkles, Wand2,
   Brain, Lightbulb, Copy, ThumbsUp, ThumbsDown, Maximize2, Minimize2,
   Bookmark, BookmarkPlus, Layout, PanelLeft, Activity, TrendingUp,
-  GitMerge, Flag, Share2, BellRing, MailX, FileWarning, ArrowRight, PawPrint
+  GitMerge, Flag, Share2, BellRing, MailX, FileWarning, ArrowRight, PawPrint,
+  AlertTriangle, FileText, Merge
 } from 'lucide-react';
 
 // Category icons mapping
