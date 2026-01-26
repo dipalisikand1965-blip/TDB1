@@ -502,6 +502,9 @@ async def create_booking_request(booking: BookingRequest):
     await db.stay_bookings.insert_one(booking_doc)
     
     # Send confirmation email to guest
+    # Build pet names string for email
+    pet_display = ', '.join(pet_names) if pet_names else booking.pet_name or 'your pet'
+    
     if RESEND_API_KEY and booking.guest_email:
         try:
             resend.Emails.send({
@@ -524,7 +527,7 @@ async def create_booking_request(booking: BookingRequest):
                             <hr style="border: none; border-top: 1px solid #d1fae5; margin: 15px 0;">
                             <p style="color: #4b5563;"><strong>📅 Check-in:</strong> {booking.check_in_date}</p>
                             <p style="color: #4b5563;"><strong>📅 Check-out:</strong> {booking.check_out_date}</p>
-                            <p style="color: #4b5563;"><strong>🐕 Travelling with:</strong> {booking.pet_name}</p>
+                            <p style="color: #4b5563;"><strong>🐕 Travelling with:</strong> {pet_display}</p>
                         </div>
                         
                         <p style="color: #4b5563;">Our Stay Concierge will review your request and contact you within 4 hours to confirm availability and finalize your booking.</p>
