@@ -7657,7 +7657,6 @@ async def seed_all_pillars():
     from care_routes import seed_care_products
     from travel_routes import seed_travel_products
     from celebrate_routes import seed_celebrate_data
-    from dine_routes import seed_dine_bundles, seed_dine_products
     
     # Seed each pillar (uses upsert - won't delete existing data)
     try:
@@ -7702,12 +7701,13 @@ async def seed_all_pillars():
     
     # Dine pillar (bundles and products)
     try:
-        results["dine_bundles"] = await seed_dine_bundles(username="auto-seed")
+        from dine_routes import seed_dine_bundles_data, seed_dine_products_data
+        results["dine_bundles"] = await seed_dine_bundles_data()
     except Exception as e:
         results["dine_bundles"] = {"error": str(e)}
     
     try:
-        results["dine_products"] = await seed_dine_products(username="auto-seed")
+        results["dine_products"] = await seed_dine_products_data()
     except Exception as e:
         results["dine_products"] = {"error": str(e)}
     
