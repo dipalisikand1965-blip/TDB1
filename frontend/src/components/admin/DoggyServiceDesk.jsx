@@ -535,18 +535,31 @@ const DoggyServiceDesk = ({ authHeaders }) => {
 
   // Handle reply
   const handleReply = async () => {
-    if (!replyText.trim() || !selectedTicket) return;
+    if ((!replyText.trim() && attachments.length === 0) || !selectedTicket) return;
     setSending(true);
     
     try {
+      // Include attachment URLs in the reply
+      const attachmentData = attachments.map(att => ({
+        filename: att.name,
+        file_url: att.url,
+        type: att.type,
+        size: att.size
+      }));
+      
       await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/reply`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: replyText, is_internal: isInternal })
+        body: JSON.stringify({ 
+          message: replyText || (attachments.length > 0 ? `[${attachments.length} attachment(s)]` : ''), 
+          is_internal: isInternal,
+          attachments: attachmentData
+        })
       });
       
       setReplyText('');
       setAiSuggestion(null);
+      clearAttachments(); // Clear attachments after send
       
       // Refresh ticket
       const res = await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}`, { headers: authHeaders });
