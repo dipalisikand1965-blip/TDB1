@@ -53,6 +53,46 @@ const ProductTagsManager = ({ credentials }) => {
   // Bulk selection
   const [selectedProducts, setSelectedProducts] = useState(new Set());
   const [showBulkTagModal, setShowBulkTagModal] = useState(false);
+  
+  // AI Enhancement
+  const [aiEnhancing, setAiEnhancing] = useState(false);
+  const [aiResults, setAiResults] = useState(null);
+  
+  // AI Enhance All Products
+  const enhanceAllDescriptions = async () => {
+    if (!window.confirm('This will generate AI descriptions for products missing them. This may take a few minutes. Continue?')) {
+      return;
+    }
+    
+    setAiEnhancing(true);
+    setAiResults(null);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/admin/products/enhance-descriptions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        body: JSON.stringify({ batch_size: 20, update_db: true })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAiResults(data);
+        alert(`✅ Enhanced ${data.enhanced_count} product descriptions!\n\nProcessed: ${data.processed_count}\nSkipped: ${data.skipped_count}`);
+        fetchProducts(); // Refresh products
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.detail || 'Failed to enhance descriptions'}`);
+      }
+    } catch (error) {
+      console.error('AI enhancement error:', error);
+      alert('Failed to enhance descriptions. Check console for details.');
+    }
+    
+    setAiEnhancing(false);
+  };
 
   // Export products with tags to CSV
   const exportToCSV = () => {
