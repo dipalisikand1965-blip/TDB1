@@ -242,6 +242,11 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   
   // Reply Modal - Full-screen popup for replies
   const [showReplyModal, setShowReplyModal] = useState(false);
+  const [replyAttachments, setReplyAttachments] = useState([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [recordingTime, setRecordingTime] = useState(0);
   
   // SLA & Auto-assignment
   const [slaStats, setSlaStats] = useState(null);
