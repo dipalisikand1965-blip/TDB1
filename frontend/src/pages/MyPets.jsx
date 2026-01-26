@@ -22,6 +22,7 @@ import FamilyDashboard from '../components/FamilyDashboard';
 import MemoryTimeline from '../components/MemoryTimeline';
 import PetPassCard from '../components/PetPassCard';
 import { resolvePetAvatar, getPetPhotoUrl } from '../utils/petAvatar';
+import BreedSelector from '../components/BreedSelector';
 
 // Persona icons mapping
 const PERSONA_ICONS = {
