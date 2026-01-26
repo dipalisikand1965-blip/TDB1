@@ -2477,26 +2477,28 @@ async def upload_ticket_attachment(
     with open(file_path, "wb") as f:
         f.write(file_content)
     
-    # Determine file type category
+    # Determine file type category using our inferred content_type
     file_type = 'document'
-    if file.content_type.startswith('image/'):
+    if content_type.startswith('image/'):
         file_type = 'image'
-    elif file.content_type.startswith('audio/'):
+    elif content_type.startswith('audio/'):
         file_type = 'voice'
+    elif content_type.startswith('video/'):
+        file_type = 'video'
     
-    # Update ticket with attachment info
+    # Update ticket with attachment info - use the correct collection
     attachment_info = {
         "filename": file.filename,
         "stored_filename": unique_filename,
         "path": file_path,
         "file_url": f"/api/tickets/{ticket_id}/files/{unique_filename}",
-        "content_type": file.content_type,
+        "content_type": content_type,
         "type": file_type,
         "size": len(file_content),
         "uploaded_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.tickets.update_one(
+    await collection.update_one(
         {"ticket_id": ticket_id},
         {
             "$push": {"attachments": attachment_info},
