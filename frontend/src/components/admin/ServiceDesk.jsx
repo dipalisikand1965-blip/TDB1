@@ -3633,6 +3633,141 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
         </DialogContent>
       </Dialog>
       
+      {/* Edit Ticket Modal */}
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Edit className="w-5 h-5 text-amber-600" />
+              Edit Ticket: {selectedTicket?.ticket_id}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedTicket && (
+            <div className="space-y-4 py-4">
+              {/* Subject */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Subject / Title</Label>
+                <Input
+                  value={editForm.subject}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, subject: e.target.value }))}
+                  placeholder="Ticket subject..."
+                />
+              </div>
+              
+              {/* Category (Pillar) */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Category / Pillar</Label>
+                  <Select 
+                    value={editForm.category} 
+                    onValueChange={(value) => setEditForm(prev => ({ ...prev, category: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map(cat => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {CATEGORY_ICONS[cat.id]} {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Urgency</Label>
+                  <Select 
+                    value={editForm.urgency} 
+                    onValueChange={(value) => setEditForm(prev => ({ ...prev, urgency: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select urgency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">⚪ Low</SelectItem>
+                      <SelectItem value="medium">🟡 Medium</SelectItem>
+                      <SelectItem value="high">🟠 High</SelectItem>
+                      <SelectItem value="critical">🔴 Critical</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              {/* Assigned To */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Assigned To</Label>
+                <Select 
+                  value={editForm.assigned_to} 
+                  onValueChange={(value) => setEditForm(prev => ({ ...prev, assigned_to: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Unassigned" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Unassigned</SelectItem>
+                    {teamUsers.map(user => (
+                      <SelectItem key={user.email || user.username} value={user.email || user.username}>
+                        {user.name || user.username}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Description */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Description</Label>
+                <Textarea
+                  value={editForm.description}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Ticket description..."
+                  rows={4}
+                />
+              </div>
+              
+              {/* Source Info (Read-only) */}
+              <div className="p-3 bg-slate-50 rounded-lg">
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-500 block text-xs">Source</span>
+                    <span className="font-medium capitalize">{selectedTicket.source || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 block text-xs">Created</span>
+                    <span className="font-medium">{new Date(selectedTicket.created_at).toLocaleDateString()}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 block text-xs">Status</span>
+                    <Badge className={STATUS_COLORS[selectedTicket.status]}>{selectedTicket.status}</Badge>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Actions */}
+              <div className="flex justify-end gap-3 pt-2">
+                <Button variant="outline" onClick={() => setShowEditModal(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={saveTicketEdits}
+                  disabled={saving}
+                  className="bg-amber-600 hover:bg-amber-700"
+                  data-testid="save-ticket-btn"
+                >
+                  {saving ? (
+                    <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Saving...</>
+                  ) : (
+                    <><CheckCircle className="w-4 h-4 mr-2" /> Save Changes</>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+      
       {/* Reply Modal - Full Popup for Better Visibility */}
       <Dialog open={showReplyModal} onOpenChange={setShowReplyModal}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
