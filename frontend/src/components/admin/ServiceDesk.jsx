@@ -248,6 +248,17 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
   
+  // Edit Ticket Modal
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({
+    subject: '',
+    category: '',
+    urgency: '',
+    description: '',
+    assigned_to: ''
+  });
+  const [saving, setSaving] = useState(false);
+  
   // SLA & Auto-assignment
   const [slaStats, setSlaStats] = useState(null);
   const [showSLAModal, setShowSLAModal] = useState(false);
