@@ -1322,14 +1322,32 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
   useEffect(() => {
     const fetchUserPets = async () => {
       const user = getUser();
-      if (!user?.email) return;
+      const token = localStorage.getItem('token');
+      if (!user?.email || !token) return;
       
       setLoadingPets(true);
       try {
-        const response = await fetch(`${API_URL}/api/pets?email=${encodeURIComponent(user.email)}`);
+        // Use authenticated endpoint
+        const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         if (response.ok) {
           const data = await response.json();
           setUserPets(data.pets || []);
+          
+          // Auto-select first pet if available
+          if (data.pets?.length > 0) {
+            const firstPet = data.pets[0];
+            setSelectedPetId(firstPet.id);
+            setFormData(prev => ({
+              ...prev,
+              pet_name: firstPet.name || '',
+              pet_breed: firstPet.breed || '',
+              pet_about: `${firstPet.species || 'Dog'}, ${firstPet.age || '?'} years old. ${firstPet.special_traits || ''}`.trim()
+            }));
+          }
         }
       } catch (error) {
         console.error('Error fetching pets:', error);
@@ -1346,7 +1364,7 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
         ...prev,
         name: user.name || '',
         email: user.email || '',
-        phone: user.phone || ''
+        phone: user.phone || user.whatsapp || ''
       }));
     }
   }, []);
