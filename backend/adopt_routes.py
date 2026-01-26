@@ -588,3 +588,437 @@ async def get_adopt_stats():
 async def get_adopt_categories():
     """Get adopt service categories"""
     return {"categories": ADOPT_CATEGORIES}
+
+
+# ============== SEED DATA ==============
+
+@router.post("/admin/seed")
+async def seed_adopt_data():
+    """Seed comprehensive adopt pillar data"""
+    db = get_db()
+    
+    # Sample adoptable pets
+    SAMPLE_PETS = [
+        {
+            "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
+            "name": "Bruno",
+            "species": "dog",
+            "breed": "Indie",
+            "age": "2 years",
+            "age_months": 24,
+            "gender": "male",
+            "size": "medium",
+            "color": "Brown & White",
+            "description": "Bruno is a friendly and playful Indie who loves going on walks and playing fetch. He's great with kids and other dogs.",
+            "personality_traits": ["friendly", "playful", "loyal", "good with kids"],
+            "health_status": "vaccinated",
+            "vaccinated": True,
+            "neutered": True,
+            "special_needs": None,
+            "good_with_kids": True,
+            "good_with_dogs": True,
+            "good_with_cats": False,
+            "energy_level": "high",
+            "training_level": "basic",
+            "shelter_id": "shelter-paws",
+            "shelter_name": "Paws & Claws Rescue",
+            "location": "Mumbai, Maharashtra",
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400",
+            "images": [
+                "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400",
+                "https://images.unsplash.com/photo-1598133894008-61f7fdb8cc3a?w=400"
+            ],
+            "status": "available",
+            "adoption_fee": 2500,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
+            "name": "Luna",
+            "species": "dog",
+            "breed": "Labrador Mix",
+            "age": "1 year",
+            "age_months": 14,
+            "gender": "female",
+            "size": "large",
+            "color": "Golden",
+            "description": "Luna is a sweet and gentle Lab mix who was rescued from the streets. She loves cuddles and is eager to please.",
+            "personality_traits": ["gentle", "affectionate", "eager to please", "calm"],
+            "health_status": "vaccinated",
+            "vaccinated": True,
+            "neutered": True,
+            "special_needs": None,
+            "good_with_kids": True,
+            "good_with_dogs": True,
+            "good_with_cats": True,
+            "energy_level": "medium",
+            "training_level": "intermediate",
+            "shelter_id": "shelter-hope",
+            "shelter_name": "Hope Animal Shelter",
+            "location": "Bangalore, Karnataka",
+            "image": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400",
+            "images": [
+                "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400"
+            ],
+            "status": "available",
+            "adoption_fee": 3000,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
+            "name": "Whiskers",
+            "species": "cat",
+            "breed": "Domestic Shorthair",
+            "age": "3 years",
+            "age_months": 36,
+            "gender": "male",
+            "size": "medium",
+            "color": "Orange Tabby",
+            "description": "Whiskers is a laid-back orange tabby who loves sunny spots and gentle pets. Perfect for a calm household.",
+            "personality_traits": ["calm", "independent", "affectionate", "quiet"],
+            "health_status": "vaccinated",
+            "vaccinated": True,
+            "neutered": True,
+            "special_needs": None,
+            "good_with_kids": True,
+            "good_with_dogs": False,
+            "good_with_cats": True,
+            "energy_level": "low",
+            "training_level": "litter trained",
+            "shelter_id": "shelter-meow",
+            "shelter_name": "Meow Foundation",
+            "location": "Delhi NCR",
+            "image": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400",
+            "images": [
+                "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400"
+            ],
+            "status": "available",
+            "adoption_fee": 1500,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
+            "name": "Rocky",
+            "species": "dog",
+            "breed": "German Shepherd Mix",
+            "age": "4 years",
+            "age_months": 48,
+            "gender": "male",
+            "size": "large",
+            "color": "Black & Tan",
+            "description": "Rocky is a loyal and protective companion. He needs an experienced owner who can provide consistent training.",
+            "personality_traits": ["loyal", "protective", "intelligent", "alert"],
+            "health_status": "vaccinated",
+            "vaccinated": True,
+            "neutered": True,
+            "special_needs": "needs experienced owner",
+            "good_with_kids": True,
+            "good_with_dogs": False,
+            "good_with_cats": False,
+            "energy_level": "high",
+            "training_level": "advanced",
+            "shelter_id": "shelter-paws",
+            "shelter_name": "Paws & Claws Rescue",
+            "location": "Pune, Maharashtra",
+            "image": "https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=400",
+            "images": [
+                "https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=400"
+            ],
+            "status": "available",
+            "adoption_fee": 3500,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
+            "name": "Coco",
+            "species": "dog",
+            "breed": "Beagle",
+            "age": "6 months",
+            "age_months": 6,
+            "gender": "female",
+            "size": "small",
+            "color": "Tricolor",
+            "description": "Coco is an adorable Beagle puppy full of energy and curiosity. She's learning basic commands and loves treats!",
+            "personality_traits": ["playful", "curious", "friendly", "food-motivated"],
+            "health_status": "vaccinated",
+            "vaccinated": True,
+            "neutered": False,
+            "special_needs": None,
+            "good_with_kids": True,
+            "good_with_dogs": True,
+            "good_with_cats": True,
+            "energy_level": "very high",
+            "training_level": "puppy",
+            "shelter_id": "shelter-hope",
+            "shelter_name": "Hope Animal Shelter",
+            "location": "Hyderabad, Telangana",
+            "image": "https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=400",
+            "images": [
+                "https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=400"
+            ],
+            "status": "available",
+            "adoption_fee": 5000,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
+            "name": "Shadow",
+            "species": "cat",
+            "breed": "Persian Mix",
+            "age": "2 years",
+            "age_months": 28,
+            "gender": "female",
+            "size": "medium",
+            "color": "Grey",
+            "description": "Shadow is a beautiful Persian mix with a luxurious coat. She's shy at first but becomes very loving once comfortable.",
+            "personality_traits": ["shy", "sweet", "gentle", "quiet"],
+            "health_status": "vaccinated",
+            "vaccinated": True,
+            "neutered": True,
+            "special_needs": "regular grooming needed",
+            "good_with_kids": False,
+            "good_with_dogs": False,
+            "good_with_cats": True,
+            "energy_level": "low",
+            "training_level": "litter trained",
+            "shelter_id": "shelter-meow",
+            "shelter_name": "Meow Foundation",
+            "location": "Chennai, Tamil Nadu",
+            "image": "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400",
+            "images": [
+                "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400"
+            ],
+            "status": "available",
+            "adoption_fee": 2000,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
+            "name": "Max",
+            "species": "dog",
+            "breed": "Pug",
+            "age": "5 years",
+            "age_months": 60,
+            "gender": "male",
+            "size": "small",
+            "color": "Fawn",
+            "description": "Max is a charming senior Pug looking for a quiet home. He loves naps, short walks, and being close to his humans.",
+            "personality_traits": ["calm", "affectionate", "loyal", "couch potato"],
+            "health_status": "senior care needed",
+            "vaccinated": True,
+            "neutered": True,
+            "special_needs": "senior diet, limited exercise",
+            "good_with_kids": True,
+            "good_with_dogs": True,
+            "good_with_cats": True,
+            "energy_level": "low",
+            "training_level": "fully trained",
+            "shelter_id": "shelter-golden",
+            "shelter_name": "Golden Years Rescue",
+            "location": "Kolkata, West Bengal",
+            "image": "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400",
+            "images": [
+                "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400"
+            ],
+            "status": "available",
+            "adoption_fee": 1500,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
+            "name": "Bella",
+            "species": "dog",
+            "breed": "Golden Retriever",
+            "age": "3 years",
+            "age_months": 36,
+            "gender": "female",
+            "size": "large",
+            "color": "Golden",
+            "description": "Bella is a beautiful Golden Retriever who was surrendered due to family circumstances. She's well-trained and great with everyone!",
+            "personality_traits": ["friendly", "gentle", "well-mannered", "therapy dog potential"],
+            "health_status": "excellent",
+            "vaccinated": True,
+            "neutered": True,
+            "special_needs": None,
+            "good_with_kids": True,
+            "good_with_dogs": True,
+            "good_with_cats": True,
+            "energy_level": "medium",
+            "training_level": "advanced",
+            "shelter_id": "shelter-paws",
+            "shelter_name": "Paws & Claws Rescue",
+            "location": "Ahmedabad, Gujarat",
+            "image": "https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=400",
+            "images": [
+                "https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=400"
+            ],
+            "status": "available",
+            "adoption_fee": 4000,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+    
+    # Sample shelters
+    SAMPLE_SHELTERS = [
+        {
+            "id": "shelter-paws",
+            "name": "Paws & Claws Rescue",
+            "description": "Dedicated to rescuing and rehoming stray and abandoned dogs across Maharashtra.",
+            "location": "Mumbai, Maharashtra",
+            "contact_email": "info@pawsclaws.org",
+            "contact_phone": "+91 98765 43210",
+            "website": "https://pawsclaws.org",
+            "logo": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200",
+            "verified": True,
+            "pets_count": 45,
+            "adoptions_completed": 320,
+            "founded_year": 2015,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "shelter-hope",
+            "name": "Hope Animal Shelter",
+            "description": "A no-kill shelter providing sanctuary for dogs and cats until they find their forever homes.",
+            "location": "Bangalore, Karnataka",
+            "contact_email": "adopt@hopeshelter.in",
+            "contact_phone": "+91 80 4567 8901",
+            "website": "https://hopeshelter.in",
+            "logo": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=200",
+            "verified": True,
+            "pets_count": 78,
+            "adoptions_completed": 520,
+            "founded_year": 2012,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "shelter-meow",
+            "name": "Meow Foundation",
+            "description": "Specializing in cat rescue, rehabilitation, and adoption services.",
+            "location": "Delhi NCR",
+            "contact_email": "hello@meowfoundation.org",
+            "contact_phone": "+91 11 2345 6789",
+            "website": "https://meowfoundation.org",
+            "logo": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=200",
+            "verified": True,
+            "pets_count": 35,
+            "adoptions_completed": 180,
+            "founded_year": 2018,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "shelter-golden",
+            "name": "Golden Years Rescue",
+            "description": "Focused on senior pet rescue and providing them comfortable golden years.",
+            "location": "Kolkata, West Bengal",
+            "contact_email": "care@goldenyears.org",
+            "contact_phone": "+91 33 9876 5432",
+            "website": "https://goldenyears.org",
+            "logo": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200",
+            "verified": True,
+            "pets_count": 22,
+            "adoptions_completed": 95,
+            "founded_year": 2019,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+    
+    # Sample events
+    SAMPLE_EVENTS = [
+        {
+            "id": f"event-{uuid.uuid4().hex[:8]}",
+            "title": "Weekend Adoption Drive",
+            "description": "Meet adorable dogs and cats looking for their forever homes. Free vet consultations included!",
+            "event_type": "adoption_drive",
+            "location": "Phoenix Mall, Lower Parel, Mumbai",
+            "date": "2026-02-15",
+            "start_time": "10:00",
+            "end_time": "18:00",
+            "organizer": "Paws & Claws Rescue",
+            "image": "https://images.unsplash.com/photo-1601758125946-6ec2ef64daf8?w=400",
+            "registration_required": False,
+            "pets_available": 25,
+            "status": "upcoming",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"event-{uuid.uuid4().hex[:8]}",
+            "title": "Puppy Socialization Workshop",
+            "description": "Learn how to properly socialize your newly adopted puppy with our expert trainers.",
+            "event_type": "workshop",
+            "location": "Cubbon Park, Bangalore",
+            "date": "2026-02-22",
+            "start_time": "09:00",
+            "end_time": "12:00",
+            "organizer": "Hope Animal Shelter",
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400",
+            "registration_required": True,
+            "registration_fee": 500,
+            "max_participants": 20,
+            "status": "upcoming",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"event-{uuid.uuid4().hex[:8]}",
+            "title": "Cat Cafe Adoption Day",
+            "description": "Spend time with our rescued cats in a cozy cafe setting. Adoption fees waived for the day!",
+            "event_type": "adoption_drive",
+            "location": "Cat Cafe Studio, Hauz Khas, Delhi",
+            "date": "2026-03-01",
+            "start_time": "11:00",
+            "end_time": "20:00",
+            "organizer": "Meow Foundation",
+            "image": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400",
+            "registration_required": False,
+            "pets_available": 15,
+            "status": "upcoming",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"event-{uuid.uuid4().hex[:8]}",
+            "title": "Senior Pet Adoption Fair",
+            "description": "Give a senior pet a loving home. Special adoption packages for senior animals!",
+            "event_type": "adoption_drive",
+            "location": "Salt Lake Stadium Grounds, Kolkata",
+            "date": "2026-03-08",
+            "start_time": "10:00",
+            "end_time": "16:00",
+            "organizer": "Golden Years Rescue",
+            "image": "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400",
+            "registration_required": False,
+            "pets_available": 18,
+            "status": "upcoming",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+    
+    results = {
+        "pets_seeded": 0,
+        "shelters_seeded": 0,
+        "events_seeded": 0
+    }
+    
+    try:
+        # Seed pets
+        await db.adoptable_pets.delete_many({})
+        if SAMPLE_PETS:
+            await db.adoptable_pets.insert_many(SAMPLE_PETS)
+            results["pets_seeded"] = len(SAMPLE_PETS)
+        
+        # Seed shelters
+        await db.adopt_shelters.delete_many({})
+        if SAMPLE_SHELTERS:
+            await db.adopt_shelters.insert_many(SAMPLE_SHELTERS)
+            results["shelters_seeded"] = len(SAMPLE_SHELTERS)
+        
+        # Seed events
+        await db.adopt_events.delete_many({})
+        if SAMPLE_EVENTS:
+            await db.adopt_events.insert_many(SAMPLE_EVENTS)
+            results["events_seeded"] = len(SAMPLE_EVENTS)
+        
+        return {"success": True, "message": "Adopt data seeded successfully", "results": results}
+    
+    except Exception as e:
+        logger.error(f"Error seeding adopt data: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
