@@ -277,7 +277,7 @@ def calculate_priority(pillar: str, service_date: Optional[str], pet_profile: Op
 
 async def get_pet_profile(pet_id: str) -> Optional[dict]:
     """Fetch pet profile with calculated attributes"""
-    if not pet_id or not db:
+    if not pet_id or db is None:
         return None
     
     pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
