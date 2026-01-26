@@ -3711,6 +3711,246 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                   </div>
                 </div>
               )}
+                  </div>
+                )}
+                
+                {/* INFO Tab */}
+                {activeDetailTab === 'info' && (
+                  <div className="p-4 space-y-4">
+                    {/* Contact Information */}
+                    <Card className="p-4">
+                      <h4 className="text-sm font-semibold mb-3 flex items-center gap-2 text-slate-700">
+                        <User className="w-4 h-4" /> Contact Information
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-500 block text-xs mb-1">Name</span>
+                          <span className="font-medium">{selectedTicket.member?.name || 'N/A'}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 block text-xs mb-1">Email</span>
+                          <span className="font-medium">{selectedTicket.member?.email || 'N/A'}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 block text-xs mb-1">Phone</span>
+                          <span className="font-medium">{selectedTicket.member?.phone || 'N/A'}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 block text-xs mb-1">City</span>
+                          <span className="font-medium">{selectedTicket.member?.city || 'N/A'}</span>
+                        </div>
+                      </div>
+                    </Card>
+                    
+                    {/* Ticket Details */}
+                    <Card className="p-4">
+                      <h4 className="text-sm font-semibold mb-3 flex items-center gap-2 text-slate-700">
+                        <Tag className="w-4 h-4" /> Ticket Details
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-500 block text-xs mb-1">Category</span>
+                          <span className="font-medium flex items-center gap-1">
+                            {CATEGORY_ICONS[selectedTicket.category]} {selectedTicket.category}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 block text-xs mb-1">Urgency</span>
+                          <Badge className={URGENCY_COLORS[selectedTicket.urgency]}>{selectedTicket.urgency}</Badge>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 block text-xs mb-1">Assigned To</span>
+                          <span className="font-medium">{selectedTicket.assigned_to || 'Unassigned'}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 block text-xs mb-1">Source</span>
+                          <span className="font-medium capitalize">{selectedTicket.source || 'N/A'}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 block text-xs mb-1">Created</span>
+                          <span className="font-medium">{new Date(selectedTicket.created_at).toLocaleString()}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 block text-xs mb-1">Updated</span>
+                          <span className="font-medium">{selectedTicket.updated_at ? new Date(selectedTicket.updated_at).toLocaleString() : 'N/A'}</span>
+                        </div>
+                      </div>
+                    </Card>
+                    
+                    {/* Pet Info if available */}
+                    {(selectedTicket.pet || petSoulData?.pet) && (
+                      <Card className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+                        <h4 className="text-sm font-semibold mb-3 flex items-center gap-2 text-purple-800">
+                          🐾 Pet Information
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="text-gray-500 block text-xs mb-1">Name</span>
+                            <span className="font-medium">{selectedTicket.pet?.name || petSoulData?.pet?.name || 'N/A'}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500 block text-xs mb-1">Breed</span>
+                            <span className="font-medium">{selectedTicket.pet?.breed || petSoulData?.pet?.breed || 'N/A'}</span>
+                          </div>
+                        </div>
+                      </Card>
+                    )}
+                  </div>
+                )}
+                
+                {/* TIME ENTRY Tab */}
+                {activeDetailTab === 'time' && (
+                  <div className="p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-semibold flex items-center gap-2 text-slate-700">
+                        <Clock className="w-4 h-4" /> Time Entries
+                      </h4>
+                      <Button 
+                        size="sm" 
+                        onClick={() => setShowTimeEntryModal(true)}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        <Plus className="w-4 h-4 mr-1" /> Add Entry
+                      </Button>
+                    </div>
+                    
+                    {timeEntries.length > 0 ? (
+                      <div className="space-y-2">
+                        {/* Total Time */}
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mb-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-blue-800">Total Time</span>
+                            <span className="text-lg font-bold text-blue-700">
+                              {Math.floor(timeEntries.reduce((sum, e) => sum + (e.duration_minutes || 0), 0) / 60)}h {timeEntries.reduce((sum, e) => sum + (e.duration_minutes || 0), 0) % 60}m
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {timeEntries.map((entry, idx) => (
+                          <Card key={entry.id || idx} className="p-3">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <Badge className={entry.entry_type === 'work' ? 'bg-blue-100 text-blue-700' : entry.entry_type === 'call' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
+                                    {entry.entry_type}
+                                  </Badge>
+                                  <span className="font-semibold text-sm">{entry.duration_minutes} mins</span>
+                                </div>
+                                <p className="text-sm text-gray-600">{entry.description || 'No description'}</p>
+                                <p className="text-xs text-gray-400 mt-1">
+                                  By {entry.agent || 'Unknown'} • {entry.created_at ? new Date(entry.created_at).toLocaleString() : ''}
+                                </p>
+                              </div>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <Clock className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                        <p className="text-sm">No time entries yet</p>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => setShowTimeEntryModal(true)}
+                          className="mt-2"
+                        >
+                          Add your first entry
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* ATTACHMENTS Tab */}
+                {activeDetailTab === 'attachments' && (
+                  <div className="p-4 space-y-4">
+                    <h4 className="text-sm font-semibold flex items-center gap-2 text-slate-700">
+                      <Paperclip className="w-4 h-4" /> Attachments
+                    </h4>
+                    
+                    {selectedTicket.attachments?.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-3">
+                        {selectedTicket.attachments.map((att, idx) => (
+                          <Card key={idx} className="p-3 flex items-center gap-3 hover:bg-gray-50">
+                            {att.type === 'image' || att.content_type?.startsWith('image/') ? (
+                              <div className="w-12 h-12 rounded bg-green-100 flex items-center justify-center">
+                                <Image className="w-6 h-6 text-green-600" />
+                              </div>
+                            ) : att.type === 'voice' || att.content_type?.startsWith('audio/') ? (
+                              <div className="w-12 h-12 rounded bg-purple-100 flex items-center justify-center">
+                                <Mic className="w-6 h-6 text-purple-600" />
+                              </div>
+                            ) : (
+                              <div className="w-12 h-12 rounded bg-blue-100 flex items-center justify-center">
+                                <File className="w-6 h-6 text-blue-600" />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{att.filename || att.name || 'Attachment'}</p>
+                              <p className="text-xs text-gray-500">{att.size ? `${(att.size/1024).toFixed(1)}KB` : ''}</p>
+                            </div>
+                            {att.file_url && (
+                              <a href={att.file_url} target="_blank" rel="noopener noreferrer" className="p-2 hover:bg-gray-100 rounded">
+                                <ExternalLink className="w-4 h-4 text-gray-400 hover:text-blue-600" />
+                              </a>
+                            )}
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <Paperclip className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                        <p className="text-sm">No attachments</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* ACTIVITY Tab */}
+                {activeDetailTab === 'activity' && (
+                  <div className="p-4 space-y-4">
+                    <h4 className="text-sm font-semibold flex items-center gap-2 text-slate-700">
+                      <Activity className="w-4 h-4" /> Activity Timeline
+                    </h4>
+                    
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {auditTrail.length > 0 ? (
+                        auditTrail.map((entry, idx) => (
+                          <div key={entry.id || idx} className="flex items-start gap-3 border-l-2 border-slate-200 pl-4 py-2">
+                            <div className={`w-3 h-3 rounded-full -ml-[21px] mt-1.5 ${
+                              entry.type === 'status_change' ? 'bg-blue-500' :
+                              entry.type === 'assignment' ? 'bg-purple-500' :
+                              entry.type === 'message' ? 'bg-green-500' :
+                              entry.type === 'sla_breach' ? 'bg-red-500' :
+                              'bg-gray-400'
+                            }`} />
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-sm">
+                                  {entry.type === 'status_change' ? `Status changed to ${entry.new_value}` :
+                                   entry.type === 'assignment' ? `Assigned to ${entry.new_value}` :
+                                   entry.type === 'message' ? `${entry.sender === 'member' ? 'Customer' : 'Agent'} replied` :
+                                   entry.action || entry.type}
+                                </span>
+                                {entry.user && <span className="text-gray-500 text-xs">by {entry.user}</span>}
+                              </div>
+                              <div className="text-xs text-gray-400 mt-0.5">
+                                {entry.timestamp ? new Date(entry.timestamp).toLocaleString() : ''}
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-8 text-gray-500">
+                          <Activity className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                          <p className="text-sm">No activity recorded</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Reply Section - Fixed at bottom with Modal Trigger */}
               <div className="border-t bg-gradient-to-r from-slate-50 to-slate-100 flex-shrink-0">
