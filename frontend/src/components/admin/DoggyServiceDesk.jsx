@@ -1235,15 +1235,28 @@ const DoggyServiceDesk = ({ authHeaders }) => {
               {sidebarCollapsed ? <ChevronRight className="w-5 h-5 text-gray-500" /> : <X className="w-5 h-5 text-gray-400" />}
             </button>
             
-            {/* Global Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input
-                placeholder="Search tickets, members, pets..."
-                className="w-96 pl-10 bg-gray-50 border-gray-200 focus:bg-white"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+            {/* Global Search with Type Selector */}
+            <div className="flex items-center gap-2">
+              <select
+                value={searchType}
+                onChange={(e) => setSearchType(e.target.value)}
+                className="h-10 px-2 text-xs border rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                <option value="all">All</option>
+                <option value="pet">🐕 Pet</option>
+                <option value="pet_parent">👤 Pet Parent</option>
+                <option value="subject">📝 Subject</option>
+                <option value="pillar">🏷️ Pillar</option>
+              </select>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  placeholder={searchType === 'pet' ? 'Search by pet name...' : searchType === 'pet_parent' ? 'Search by parent name/email...' : 'Search tickets...'}
+                  className="w-80 pl-10 bg-gray-50 border-gray-200 focus:bg-white"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
             </div>
           </div>
           
