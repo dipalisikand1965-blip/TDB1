@@ -1302,12 +1302,10 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
   const [loadingPets, setLoadingPets] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   
-  // Initialize form with user data from localStorage
-  const initialUser = getUser();
   const [formData, setFormData] = useState({
-    name: initialUser?.name || '',
-    phone: initialUser?.phone || initialUser?.whatsapp || '',
-    email: initialUser?.email || '',
+    name: '',
+    phone: '',
+    email: '',
     date: '',
     time: '',
     guests: 2,
@@ -1319,6 +1317,19 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
     pet_breed: '',
     pet_about: '',
   });
+
+  // Initialize form with user data when modal opens
+  useEffect(() => {
+    const user = getUser();
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.name || prev.name,
+        email: user.email || prev.email,
+        phone: user.phone || user.whatsapp || prev.phone
+      }));
+    }
+  }, []); // Run once when modal opens
 
   // Fetch user's pets on mount
   useEffect(() => {
