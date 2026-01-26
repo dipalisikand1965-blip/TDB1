@@ -2891,7 +2891,100 @@ async def seed_pet_friendly_cafes(username: str = Depends(verify_admin)):
     
     logger.info(f"Seeded cafes: {inserted} inserted, {updated} updated")
     return {"success": True, "inserted": inserted, "updated": updated, "total": len(cafes_data)}
-    with_user_id = await db.pets.count_documents({"user_id": {"$exists": True, "$ne": None}})
+
+
+@admin_router.post("/data/seed-boarding")
+async def seed_pet_boarding(username: str = Depends(verify_admin)):
+    """Seed pet boarding facilities from curated data."""
+    
+    boarding_data = [
+        # Bangalore
+        {"name": "Snouters – Pet Boarding Bangalore", "city": "Bangalore", "state": "Karnataka", "type": "Premium", "address": "Muneshwara Nagar, Ramamurthy Nagar, Bengaluru 560016", "phone": None, "description": "Professional pet boarding with dedicated care staff"},
+        {"name": "Snouters – Palace Guttahalli", "city": "Bangalore", "state": "Karnataka", "type": "Premium", "address": "Dattatreya Temple St, DNR Layout, Bengaluru 560003", "phone": None, "description": "Spacious boarding facility in central Bangalore"},
+        {"name": "Spar Pet Home", "city": "Bangalore", "state": "Karnataka", "type": "Home-style", "address": "T.C. Palya Road, Bengaluru 560036", "phone": "+91 8073650365", "description": "Cozy home environment for your pets"},
+        {"name": "Dog & Cat Boarding RT Nagar", "city": "Bangalore", "state": "Karnataka", "type": "Premium", "address": "Thimaiah Garden, RT Nagar, Bengaluru 560006", "phone": "+91 9964814408", "description": "Boarding for dogs and cats with individual attention"},
+        {"name": "R Barking Club", "city": "Bangalore", "state": "Karnataka", "type": "Premium", "address": "AK Colony, Domlur, Bengaluru 560071", "phone": None, "description": "Active play-based boarding experience"},
+        {"name": "Dilip Pet Boarding", "city": "Bangalore", "state": "Karnataka", "type": "Home-style", "address": "4th Main Rd, Ganganagar, Bengaluru 560032", "phone": "+91 9742199118", "description": "Family-run pet boarding with personal care"},
+        {"name": "Second Home Dog Boarding", "city": "Bangalore", "state": "Karnataka", "type": "Home-style", "address": "Sector 4, HSR Layout, Bengaluru 560102", "phone": "+91 7760601012", "description": "A second home for your furry friend"},
+        # Mumbai
+        {"name": "PetFelix Dog Boarding", "city": "Mumbai", "state": "Maharashtra", "type": "Premium", "address": "Chandivali Farm Rd, Powai, Mumbai 400072", "phone": "+91 9004279362", "description": "Premium boarding with grooming services"},
+        {"name": "Rohit's Pet Daycare & Boarding", "city": "Mumbai", "state": "Maharashtra", "type": "Premium", "address": "Shahaji Raje Rd, Vile Parle East, Mumbai 400057", "phone": "+91 7977987707", "description": "Daycare and overnight boarding options"},
+        {"name": "Sagar Kennels", "city": "Mumbai", "state": "Maharashtra", "type": "Private", "address": "Government Colony, Bandra East, Mumbai 400051", "phone": "+91 9869154086", "description": "Individual kennels for peaceful stays"},
+        {"name": "PETZANIA", "city": "Mumbai", "state": "Maharashtra", "type": "Premium", "address": "Punjabwadi, Chembur, Mumbai 400088", "phone": "+91 8097585008", "description": "Modern pet hotel with AC rooms"},
+        {"name": "Pupstop", "city": "Mumbai", "state": "Maharashtra", "type": "Premium", "address": "Wadala West, Mumbai 400037", "phone": "+91 9987511279", "description": "Central Mumbai boarding facility"},
+        {"name": "Bonehemian Tails", "city": "Mumbai", "state": "Maharashtra", "type": "Home-style", "address": "Mahim West, Mumbai 400016", "phone": "+91 7506070995", "description": "Bohemian-style home boarding"},
+        # Delhi
+        {"name": "High Paws", "city": "Delhi", "state": "Delhi", "type": "Premium", "address": "Mittal Garden, Chhatarpur, New Delhi 110074", "phone": "+91 6294880733", "description": "Luxury pet boarding in South Delhi"},
+        {"name": "FurBnb", "city": "Delhi", "state": "Delhi", "type": "Home-style", "address": "East Patel Nagar, New Delhi 110008", "phone": "+91 8377872735", "description": "Airbnb-style pet boarding"},
+        {"name": "Snouters – Delhi", "city": "Delhi", "state": "Delhi", "type": "Premium", "address": "Sector C, Vasant Kunj, New Delhi 110070", "phone": None, "description": "Professional boarding in Vasant Kunj"},
+        {"name": "Paws Day Outing", "city": "Delhi", "state": "Delhi", "type": "Premium", "address": "Panchsheel Vihar, New Delhi 110017", "phone": "+91 9958578535", "description": "Day boarding with outdoor activities"},
+        {"name": "Woofs-n-Wags", "city": "Delhi", "state": "Delhi", "type": "Premium", "address": "Sainik Farm, New Delhi 110080", "phone": "+91 9811560097", "description": "Farm-style boarding with open spaces"},
+        # Hyderabad
+        {"name": "Yes Paws", "city": "Hyderabad", "state": "Telangana", "type": "Luxury", "address": "Botanical Garden Rd, Kondapur, Hyderabad 500084", "phone": "+91 8125419514", "description": "Luxury pet hotel with spa services"},
+        {"name": "JSSS Farms & Kennels", "city": "Hyderabad", "state": "Telangana", "type": "Private", "address": "Marri Pally, Hyderabad 500068", "phone": "+91 9502553652", "description": "Farm kennels with rural setting"},
+        {"name": "Ocean's Pet Home", "city": "Hyderabad", "state": "Telangana", "type": "Home-style", "address": "Gachibowli, Hyderabad 500046", "phone": "+91 9381999472", "description": "Home boarding in IT hub"},
+        {"name": "Bark & Play", "city": "Hyderabad", "state": "Telangana", "type": "Premium", "address": "Shilpa Valley, Kondapur, Hyderabad 500084", "phone": "+91 9032105217", "description": "Play-focused boarding experience"},
+        {"name": "Woof Buddies", "city": "Hyderabad", "state": "Telangana", "type": "Home-style", "address": "Nallagandla, Hyderabad 500019", "phone": "+91 9500162040", "description": "Friendly home environment"},
+    ]
+    
+    inserted = 0
+    updated = 0
+    
+    # Stock images for boarding types
+    type_images = {
+        "Home-style": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800",
+        "Premium": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+        "Private": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800",
+        "Luxury": "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=800"
+    }
+    
+    for boarding in boarding_data:
+        boarding_id = f"boarding-{boarding['name'].lower().replace(' ', '-')[:30]}-{uuid.uuid4().hex[:6]}"
+        
+        # Check if exists
+        existing = await db.pet_boarding.find_one({
+            "name": boarding["name"],
+            "city": boarding["city"]
+        })
+        
+        # Generate paw score
+        import random
+        paw_score = round(random.uniform(3.8, 4.9), 1)
+        
+        boarding_doc = {
+            "id": existing.get("id", boarding_id) if existing else boarding_id,
+            "name": boarding["name"],
+            "city": boarding["city"],
+            "state": boarding["state"],
+            "boarding_type": boarding["type"],
+            "description": boarding["description"],
+            "address": boarding["address"],
+            "phone": boarding["phone"],
+            "image": type_images.get(boarding["type"], type_images["Premium"]),
+            "photos": [type_images.get(boarding["type"], type_images["Premium"])],
+            "paw_score": paw_score,
+            "price_range": "₹500-1,500/night" if boarding["type"] == "Home-style" else "₹800-2,500/night",
+            "amenities": ["24/7 Care", "Play Area", "Feeding Schedule", "Daily Updates"],
+            "services": ["Overnight Boarding", "Day Care", "Grooming (extra)"],
+            "capacity": "5-15 pets",
+            "pet_types_accepted": ["Dogs", "Cats"],
+            "status": "active",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        if existing:
+            await db.pet_boarding.update_one({"_id": existing["_id"]}, {"$set": boarding_doc})
+            updated += 1
+        else:
+            await db.pet_boarding.insert_one(boarding_doc)
+            inserted += 1
+    
+    logger.info(f"Seeded boarding: {inserted} inserted, {updated} updated")
+    return {"success": True, "inserted": inserted, "updated": updated, "total": len(boarding_data)}
+
+
+@admin_router.get("/data/pets-status")
     with_owner_email = await db.pets.count_documents({"owner_email": {"$exists": True, "$ne": None}})
     without_user_id = await db.pets.count_documents({
         "$or": [
