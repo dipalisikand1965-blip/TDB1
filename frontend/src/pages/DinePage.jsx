@@ -42,6 +42,7 @@ const freshMealsCategories = [
 
 const DinePage = () => {
   const { addToCart } = useCart();
+  const { user: authUser, token } = useAuth();
   const [restaurants, setRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [bundles, setBundles] = useState([]);
@@ -53,9 +54,16 @@ const DinePage = () => {
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showBuddyModal, setShowBuddyModal] = useState(null);
-  const [currentUser, setCurrentUser] = useState(getUser());
+  const [currentUser, setCurrentUser] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+
+  // Update currentUser when authUser changes
+  useEffect(() => {
+    if (authUser) {
+      setCurrentUser(authUser);
+    }
+  }, [authUser]);
 
   // Scroll to top on mount
   useEffect(() => {
