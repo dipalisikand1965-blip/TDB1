@@ -1,0 +1,165 @@
+"""
+Real-time WebSocket Notifications for Service Desk
+Provides instant ticket updates to all connected agents
+"""
+
+import socketio
+import logging
+from datetime import datetime, timezone
+from typing import Optional, Dict, Any
+import json
+import os
+
+logger = logging.getLogger(__name__)
+
+# Create Socket.IO server with CORS enabled
+sio = socketio.AsyncServer(
+    async_mode='asgi',
+    cors_allowed_origins='*',
+    logger=False,
+    engineio_logger=False
+)
+
+# Track connected agents
+connected_agents: Dict[str, str] = {}  # sid -> agent_id
+
+
+class NotificationManager:
+    """Manages real-time notifications for the Service Desk"""
+    
+    @staticmethod
+    async def emit_new_ticket(ticket_data: dict):
+        """Broadcast new ticket to all connected agents"""
+        try:
+            await sio.emit('ticket:new', {
+                'type': 'new_ticket',
+                'ticket': ticket_data,
+                'timestamp': datetime.now(timezone.utc).isoformat()
+            })
+            logger.info(f"Emitted new ticket: {ticket_data.get('ticket_id')}")
+        except Exception as e:
+            logger.error(f"Failed to emit new ticket: {e}")
+    
+    @staticmethod
+    async def emit_ticket_update(ticket_id: str, update_type: str, data: dict):
+        """Broadcast ticket update to all connected agents"""
+        try:
+            await sio.emit('ticket:update', {
+                'type': update_type,
+                'ticket_id': ticket_id,
+                'data': data,
+                'timestamp': datetime.now(timezone.utc).isoformat()
+            })
+            logger.info(f"Emitted ticket update: {ticket_id} - {update_type}")
+        except Exception as e:
+            logger.error(f"Failed to emit ticket update: {e}")
+    
+    @staticmethod
+    async def emit_new_message(ticket_id: str, message: dict, channel: str = 'internal'):
+        """Broadcast new message to all connected agents"""
+        try:
+            await sio.emit('ticket:message', {
+                'type': 'new_message',
+                'ticket_id': ticket_id,
+                'message': message,
+                'channel': channel,
+                'timestamp': datetime.now(timezone.utc).isoformat()
+            })
+            logger.info(f"Emitted new message for ticket: {ticket_id}")
+        except Exception as e:
+            logger.error(f"Failed to emit new message: {e}")
+    
+    @staticmethod
+    async def emit_agent_notification(agent_id: str, notification: dict):
+        """Send notification to specific agent"""
+        # Find agent's socket ID
+        for sid, aid in connected_agents.items():
+            if aid == agent_id:
+                try:
+                    await sio.emit('notification', notification, room=sid)
+                    logger.info(f"Sent notification to agent: {agent_id}")
+                except Exception as e:
+                    logger.error(f"Failed to send notification to agent: {e}")
+                break
+    
+    @staticmethod
+    async def broadcast_stats_update(stats: dict):
+        """Broadcast updated stats to all agents"""
+        try:
+            await sio.emit('stats:update', {
+                'stats': stats,
+                'timestamp': datetime.now(timezone.utc).isoformat()
+            })
+        except Exception as e:
+            logger.error(f"Failed to broadcast stats: {e}")
+
+
+# Socket.IO Event Handlers
+@sio.event
+async def connect(sid, environ):
+    """Handle new WebSocket connection"""
+    logger.info(f"Agent connected: {sid}")
+    await sio.emit('connection:status', {'status': 'connected', 'sid': sid}, room=sid)
+
+
+@sio.event
+async def disconnect(sid):
+    """Handle WebSocket disconnection"""
+    if sid in connected_agents:
+        agent_id = connected_agents.pop(sid)
+        logger.info(f"Agent disconnected: {agent_id} ({sid})")
+    else:
+        logger.info(f"Unknown client disconnected: {sid}")
+
+
+@sio.event
+async def register_agent(sid, data):
+    """Register agent with their ID for targeted notifications"""
+    agent_id = data.get('agent_id', sid)
+    connected_agents[sid] = agent_id
+    logger.info(f"Agent registered: {agent_id} ({sid})")
+    await sio.emit('registration:success', {'agent_id': agent_id}, room=sid)
+
+
+@sio.event
+async def subscribe_ticket(sid, data):
+    """Subscribe agent to a specific ticket's updates"""
+    ticket_id = data.get('ticket_id')
+    if ticket_id:
+        await sio.enter_room(sid, f'ticket:{ticket_id}')
+        logger.info(f"Agent {sid} subscribed to ticket: {ticket_id}")
+
+
+@sio.event
+async def unsubscribe_ticket(sid, data):
+    """Unsubscribe agent from a ticket's updates"""
+    ticket_id = data.get('ticket_id')
+    if ticket_id:
+        await sio.leave_room(sid, f'ticket:{ticket_id}')
+        logger.info(f"Agent {sid} unsubscribed from ticket: {ticket_id}")
+
+
+@sio.event
+async def typing_start(sid, data):
+    """Broadcast typing indicator to ticket subscribers"""
+    ticket_id = data.get('ticket_id')
+    agent_name = data.get('agent_name', 'Agent')
+    if ticket_id:
+        await sio.emit('typing:start', {
+            'ticket_id': ticket_id,
+            'agent_name': agent_name
+        }, room=f'ticket:{ticket_id}', skip_sid=sid)
+
+
+@sio.event
+async def typing_stop(sid, data):
+    """Stop typing indicator"""
+    ticket_id = data.get('ticket_id')
+    if ticket_id:
+        await sio.emit('typing:stop', {
+            'ticket_id': ticket_id
+        }, room=f'ticket:{ticket_id}', skip_sid=sid)
+
+
+# Create notification manager instance
+notification_manager = NotificationManager()
