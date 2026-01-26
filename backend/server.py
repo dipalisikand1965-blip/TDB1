@@ -4603,6 +4603,125 @@ async def get_public_products(
     return {"products": products, "total": len(products)}
 
 
+@api_router.get("/products/recommendations/for-pet/{pet_id}")
+async def get_pet_recommendations(pet_id: str, limit: int = 20):
+    """Get personalized product recommendations based on pet profile"""
+    # Fetch pet profile
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    # Extract pet attributes for filtering
+    weight = pet.get("weight")
+    birth_date = pet.get("birth_date")
+    preferences = pet.get("preferences", {})
+    allergies = preferences.get("allergies", [])
+    if isinstance(allergies, str):
+        allergies = [a.strip().lower() for a in allergies.split(",") if a.strip()]
+    treat_size = preferences.get("treat_size", "")
+    
+    # Determine size category from weight
+    size_category = "all-sizes"
+    if weight:
+        if weight < 10:
+            size_category = "small-dog"
+        elif weight < 25:
+            size_category = "medium-dog"
+        elif weight < 45:
+            size_category = "large-dog"
+        else:
+            size_category = "giant-breed"
+    
+    # Determine age category from birth date
+    age_category = "adult"
+    if birth_date:
+        try:
+            from dateutil import parser
+            from datetime import datetime, timezone
+            birth = parser.parse(birth_date)
+            age_months = (datetime.now(timezone.utc) - birth.replace(tzinfo=timezone.utc)).days / 30
+            if age_months < 12:
+                age_category = "puppy"
+            elif age_months > 84:  # 7 years
+                age_category = "senior"
+        except:
+            pass
+    
+    # Build recommendation query
+    # Find products matching size and age, excluding allergies
+    query = {
+        "in_stock": {"$ne": False},
+        "tags": {"$in": [size_category, age_category, "all-sizes", "all-ages"]}
+    }
+    
+    # Exclude products with allergy-related tags
+    if allergies:
+        allergy_exclusions = []
+        for allergy in allergies:
+            allergy_exclusions.extend([allergy, f"{allergy}-free"])
+        # Products should NOT have the allergen in tags but SHOULD have allergen-free
+        query["$or"] = [
+            {"tags": {"$nin": allergies}},  # Doesn't contain allergen
+            {"tags": {"$in": [f"{a}-free" for a in allergies]}}  # OR is allergen-free
+        ]
+    
+    # Fetch matching products
+    products = await db.products.find(query, {"_id": 0}).limit(limit * 2).to_list(limit * 2)
+    
+    # Score products based on relevance
+    scored_products = []
+    for p in products:
+        score = 0
+        tags = [t.lower() for t in (p.get("tags") or [])]
+        
+        # Size match bonus
+        if size_category in tags or "all-sizes" in tags:
+            score += 10
+        
+        # Age match bonus  
+        if age_category in tags or "all-ages" in tags:
+            score += 10
+        
+        # Allergy-safe bonus
+        is_safe = True
+        for allergy in allergies:
+            if allergy.lower() in tags:
+                is_safe = False
+                break
+            if f"{allergy.lower()}-free" in tags:
+                score += 5  # Bonus for explicitly allergen-free
+        
+        if not is_safe:
+            continue  # Skip products containing allergens
+        
+        # Treat size preference
+        if treat_size:
+            if treat_size.lower() in p.get("name", "").lower():
+                score += 5
+        
+        scored_products.append((score, p))
+    
+    # Sort by score and return top matches
+    scored_products.sort(key=lambda x: -x[0])
+    recommendations = [p for _, p in scored_products[:limit]]
+    
+    return {
+        "pet": {
+            "name": pet.get("name"),
+            "size_category": size_category,
+            "age_category": age_category,
+            "allergies": allergies
+        },
+        "recommendations": recommendations,
+        "total": len(recommendations),
+        "filters_applied": {
+            "size": size_category,
+            "age": age_category,
+            "excluded_allergens": allergies
+        }
+    }
+
+
 @api_router.get("/products/{product_id}")
 async def get_product_detail(product_id: str):
     """Get single product by ID or handle for detail page"""
