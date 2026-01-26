@@ -3330,195 +3330,101 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                 </div>
               )}
 
-              {/* Reply Section - Fixed at bottom */}
+              {/* Reply Section - Fixed at bottom with Modal Trigger */}
               <div className="border-t bg-gradient-to-r from-slate-50 to-slate-100 flex-shrink-0">
-                <div className="p-3">
-                  {/* Reply Type Selector with AI Button */}
-                  <div className="flex items-center gap-3 mb-3 p-2 bg-white/80 rounded-lg border">
-                    <span className="text-sm font-medium text-gray-700">Reply:</span>
-                    <div className="flex gap-2 flex-1">
-                      <Button 
-                        size="sm" 
-                        variant={isInternalNote ? 'default' : 'outline'}
-                        onClick={() => {
-                          setIsInternalNote(true);
-                          setSendChannel('internal');
-                        }}
-                        className={`h-8 px-3 text-xs ${isInternalNote ? 'bg-gray-600' : ''}`}
-                      >
-                        💬 Internal
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant={!isInternalNote && sendChannel === 'email' ? 'default' : 'outline'}
-                        onClick={() => {
-                          setIsInternalNote(false);
-                          setSendChannel('email');
-                        }}
-                        className={`h-8 px-3 text-xs ${!isInternalNote && sendChannel === 'email' ? 'bg-blue-600' : ''}`}
-                        disabled={!(selectedTicket?.member?.email || selectedTicket?.customer_email)}
-                      >
-                        <Mail className="w-3 h-3 mr-1" /> Email
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant={!isInternalNote && sendChannel === 'whatsapp' ? 'default' : 'outline'}
-                        onClick={() => {
-                          setIsInternalNote(false);
-                          setSendChannel('whatsapp');
-                        }}
-                        className={`h-8 px-3 text-xs ${!isInternalNote && sendChannel === 'whatsapp' ? 'bg-green-600' : ''}`}
-                        disabled={!(selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone)}
-                      >
-                        📱 WhatsApp
-                      </Button>
-                    </div>
+                <div className="p-4">
+                  {/* Quick Actions Bar */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <Button 
+                      onClick={() => setShowReplyModal(true)}
+                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                      data-testid="open-reply-modal-btn"
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" /> Reply to Ticket
+                    </Button>
                     
-                    {/* Canned Responses Button */}
-                    <DropdownMenu open={showCannedResponses} onOpenChange={setShowCannedResponses}>
-                      <DropdownMenuTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="h-8 px-3"
-                        >
-                          📝 Templates
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-72 max-h-80 overflow-y-auto">
-                        {cannedResponses.map(resp => (
-                          <DropdownMenuItem 
-                            key={resp.id} 
-                            onClick={() => applyCannedResponse(resp.content)}
-                            className="flex flex-col items-start py-2"
-                          >
-                            <span className="font-medium text-sm">{resp.name}</span>
-                            <span className="text-xs text-gray-500 line-clamp-1">{resp.content.substring(0, 50)}...</span>
-                          </DropdownMenuItem>
-                        ))}
-                        {cannedResponses.length === 0 && (
-                          <div className="p-4 text-center text-sm text-gray-500">No templates available</div>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    
-                    {/* AI Draft Button */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button 
-                          size="sm" 
-                          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-8 px-3"
+                          variant="outline"
+                          className="bg-white"
                           disabled={aiLoading}
                         >
                           {aiLoading ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
                           ) : (
                             <>
-                              <Sparkles className="w-3 h-3 mr-1" /> AI Draft
+                              <Sparkles className="w-4 h-4 mr-2" /> AI Draft
                             </>
                           )}
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem onClick={() => { setAiTone('professional'); generateAiDraft('professional'); }}>
+                        <DropdownMenuItem onClick={() => { setShowReplyModal(true); generateAiDraft('professional'); }}>
                           <Wand2 className="w-4 h-4 mr-2 text-blue-600" /> Professional
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setAiTone('friendly'); generateAiDraft('friendly'); }}>
+                        <DropdownMenuItem onClick={() => { setShowReplyModal(true); generateAiDraft('friendly'); }}>
                           <span className="mr-2">😊</span> Friendly & Warm
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setAiTone('empathetic'); generateAiDraft('empathetic'); }}>
+                        <DropdownMenuItem onClick={() => { setShowReplyModal(true); generateAiDraft('empathetic'); }}>
                           <span className="mr-2">💝</span> Empathetic
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setAiTone('quick'); generateAiDraft('quick'); }}>
+                        <DropdownMenuItem onClick={() => { setShowReplyModal(true); generateAiDraft('quick'); }}>
                           <Zap className="w-4 h-4 mr-2 text-amber-500" /> Quick Response
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={getAiSummary}>
-                          <Brain className="w-4 h-4 mr-2 text-purple-600" /> Summarize Ticket
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={getAiActions}>
-                          <Lightbulb className="w-4 h-4 mr-2 text-yellow-600" /> Suggest Actions
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-
-                  {/* AI Summary Display */}
-                  {aiSummary && (
-                    <div className="mb-3 p-2 bg-purple-50 rounded-lg border border-purple-200">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Brain className="w-4 h-4 text-purple-600" />
-                        <span className="text-xs font-semibold text-purple-800">AI Summary</span>
-                        <Button variant="ghost" size="sm" className="ml-auto h-5 w-5 p-0" onClick={() => setAiSummary(null)}>
-                          <X className="w-3 h-3" />
-                        </Button>
-                      </div>
-                      <p className="text-xs text-purple-700">{aiSummary}</p>
-                    </div>
-                  )}
-
-                  {/* AI Suggested Actions */}
-                  {aiActions.length > 0 && (
-                    <div className="mb-3 p-2 bg-amber-50 rounded-lg border border-amber-200">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Lightbulb className="w-4 h-4 text-amber-600" />
-                        <span className="text-xs font-semibold text-amber-800">Suggested Actions</span>
-                        <Button variant="ghost" size="sm" className="ml-auto h-5 w-5 p-0" onClick={() => setAiActions([])}>
-                          <X className="w-3 h-3" />
-                        </Button>
-                      </div>
-                      <ul className="text-xs text-amber-700 space-y-1">
-                        {(Array.isArray(aiActions) ? aiActions : aiActions ? [aiActions] : []).slice(0, 4).map((action, idx) => (
-                          <li key={idx} className="flex items-start gap-1">
-                            <span className="text-amber-500">•</span> {action}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                   
-                  {/* Channel indicator banner */}
-                  {!isInternalNote && sendChannel !== 'internal' && (
-                    <div className={`mb-2 p-2 rounded text-xs ${sendChannel === 'email' ? 'bg-blue-50 text-blue-700' : 'bg-green-50 text-green-700'}`}>
-                      {sendChannel === 'email' ? (
-                        <>📧 Sending email to: <strong>{selectedTicket?.member?.email || selectedTicket?.customer_email}</strong></>
-                      ) : (
-                        <>📱 Sending WhatsApp to: <strong>{selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone}</strong></>
-                      )}
-                    </div>
-                  )}
-                  
-                  <div className="flex gap-2">
-                    <Textarea
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
-                      placeholder={
-                        isInternalNote 
-                          ? "Add internal note (only visible to team)..." 
-                          : sendChannel === 'email'
-                            ? "Type your email reply... or use AI Draft ✨"
-                            : sendChannel === 'whatsapp'
-                              ? "Type your WhatsApp message..."
-                              : "Type your reply..."
-                      }
-                      className="resize-none bg-white"
-                      rows={3}
-                    />
-                    <div className="flex flex-col gap-1">
-                      <Button 
-                        onClick={handleReply} 
-                        disabled={sendingReply || !replyText.trim()} 
-                        data-testid="send-reply-btn"
-                        className={`flex-1 min-h-[60px] ${!isInternalNote && sendChannel === 'email' ? 'bg-blue-600 hover:bg-blue-700' : !isInternalNote && sendChannel === 'whatsapp' ? 'bg-green-600 hover:bg-green-700' : ''}`}
-                        title={replyText.trim() ? 'Send Reply' : 'Type a message first'}
-                      >
-                        {sendingReply ? (
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                        ) : (
-                          <Send className="w-5 h-5" />
-                        )}
-                      </Button>
-                    </div>
+                  {/* Quick Reply Buttons */}
+                  <div className="flex gap-2 flex-wrap">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        setIsInternalNote(true);
+                        setSendChannel('internal');
+                        setShowReplyModal(true);
+                      }}
+                      className="text-xs"
+                    >
+                      💬 Internal Note
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        setIsInternalNote(false);
+                        setSendChannel('email');
+                        setShowReplyModal(true);
+                      }}
+                      className="text-xs"
+                      disabled={!(selectedTicket?.member?.email || selectedTicket?.customer_email)}
+                    >
+                      <Mail className="w-3 h-3 mr-1" /> Email
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        setIsInternalNote(false);
+                        setSendChannel('whatsapp');
+                        setShowReplyModal(true);
+                      }}
+                      className="text-xs"
+                      disabled={!(selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone)}
+                    >
+                      📱 WhatsApp
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost"
+                      onClick={getAiSummary}
+                      className="text-xs ml-auto"
+                      disabled={aiLoading}
+                    >
+                      <Brain className="w-3 h-3 mr-1" /> Summarize
+                    </Button>
                   </div>
                 </div>
               </div>
