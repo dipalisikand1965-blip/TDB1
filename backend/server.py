@@ -4611,6 +4611,104 @@ async def get_public_products(
     return {"products": products, "total": len(products)}
 
 
+# ==================== SERVICES API (Concierge® Services) ====================
+
+@api_router.get("/services")
+async def get_services(
+    pillar: Optional[str] = None,
+    category: Optional[str] = None,
+    limit: int = 50
+):
+    """Get Concierge® services - can filter by pillar"""
+    query = {"is_active": {"$ne": False}}
+    
+    if pillar:
+        query["pillar"] = pillar.lower()
+    
+    if category:
+        query["category"] = category
+    
+    services = await db.services.find(query, {"_id": 0}).limit(limit).to_list(limit)
+    
+    return {"services": services, "total": len(services)}
+
+
+@api_router.get("/services/{service_id}")
+async def get_service_detail(service_id: str):
+    """Get single service details"""
+    service = await db.services.find_one(
+        {"$or": [{"id": service_id}, {"name": service_id}]},
+        {"_id": 0}
+    )
+    
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    return service
+
+
+@api_router.post("/services/book")
+async def book_service(
+    service_id: str = Body(...),
+    pet_id: Optional[str] = Body(None),
+    preferred_date: Optional[str] = Body(None),
+    notes: Optional[str] = Body(None),
+    contact_name: str = Body(...),
+    contact_phone: str = Body(...),
+    contact_email: Optional[str] = Body(None),
+    authorization: Optional[str] = Header(None)
+):
+    """Book a Concierge® service - creates a ticket in the service desk"""
+    # Fetch service details
+    service = await db.services.find_one({"id": service_id}, {"_id": 0})
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    # Create booking/ticket
+    booking_id = f"BK-{uuid.uuid4().hex[:8].upper()}"
+    ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
+    
+    # Get pet info if provided
+    pet_info = None
+    if pet_id:
+        pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "name": 1, "breed": 1, "weight": 1})
+        if pet:
+            pet_info = pet
+    
+    # Create ticket for service desk
+    ticket = {
+        "id": ticket_id,
+        "booking_id": booking_id,
+        "type": "service_booking",
+        "service_id": service_id,
+        "service_name": service.get("name"),
+        "pillar": service.get("pillar"),
+        "price": service.get("price"),
+        "status": "new",
+        "priority": "normal",
+        "contact": {
+            "name": contact_name,
+            "phone": contact_phone,
+            "email": contact_email
+        },
+        "pet_id": pet_id,
+        "pet_info": pet_info,
+        "preferred_date": preferred_date,
+        "notes": notes,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.tickets.insert_one(ticket)
+    
+    return {
+        "success": True,
+        "booking_id": booking_id,
+        "ticket_id": ticket_id,
+        "message": f"Your booking for {service.get('name')} has been received. Our team will contact you shortly."
+    }
+
+
 @api_router.get("/products/recommendations/for-pet/{pet_id}")
 async def get_pet_recommendations(pet_id: str, limit: int = 20):
     """Get personalized product recommendations based on pet profile"""
