@@ -136,7 +136,6 @@ async def process_incoming_message(message: dict, contacts: list):
         # Extract message details
         from_number = message.get("from", "")
         message_id = message.get("id", "")
-        timestamp = message.get("timestamp", "")
         message_type = message.get("type", "text")
         
         # Get sender name from contacts
