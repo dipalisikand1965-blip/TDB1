@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Search, RefreshCw, Tag, Check, X, Save, Filter, 
-  ChevronDown, ChevronUp, Loader2, Package, Star, Plus, Trash2, Edit, Download
+  ChevronDown, ChevronUp, Loader2, Package, Star, Plus, Trash2, Edit, Download, ExternalLink
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
