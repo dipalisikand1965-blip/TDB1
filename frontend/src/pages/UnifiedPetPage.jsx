@@ -520,11 +520,11 @@ const UnifiedPetPage = () => {
             </Button>
             <div className="h-6 w-px bg-gray-200" />
             <div className="flex items-center gap-2">
-              <img src={petPhoto} alt={pet.name} className="w-8 h-8 rounded-full object-cover border-2 border-purple-200" />
-              <span className="font-semibold text-gray-900">{pet.name}</span>
-              {pet.pet_pass_number && (
+              <img src={petPhoto} alt={safePet.name} className="w-8 h-8 rounded-full object-cover border-2 border-purple-200" />
+              <span className="font-semibold text-gray-900">{safePet.name}</span>
+              {safePet.pet_pass_number && (
                 <Badge className="bg-purple-600 text-white text-xs ml-1">
-                  {pet.pet_pass_number}
+                  {safePet.pet_pass_number}
                 </Badge>
               )}
             </div>
