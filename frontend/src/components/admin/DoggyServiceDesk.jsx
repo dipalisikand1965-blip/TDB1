@@ -183,6 +183,17 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [detailTab, setDetailTab] = useState('conversation');
   const [contextTab, setContextTab] = useState('pet');
   
+  // Attachments & Voice Recording
+  const [attachments, setAttachments] = useState([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const recordingIntervalRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const imageInputRef = useRef(null);
+  
   const conversationEndRef = useRef(null);
 
   // ==================== DATA FETCHING ====================
