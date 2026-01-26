@@ -584,8 +584,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       
       // Fetch sidebar data (Pet Parents, Pets, Orders, Analytics)
       try {
-        // Fetch pet parents/members from admin endpoint
-        const membersRes = await fetch(`${getApiUrl()}/api/admin/members?limit=100`, { headers: authHeaders });
+        // Fetch pet parents/members from admin directory endpoint
+        const membersRes = await fetch(`${getApiUrl()}/api/admin/members/directory`, { headers: authHeaders });
         if (membersRes.ok) {
           const data = await membersRes.json();
           setPetParents(data.members || []);
@@ -598,8 +598,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           setPetProfiles(data.pets || []);
         }
         
-        // Fetch recent orders from admin endpoint
-        const ordersRes = await fetch(`${getApiUrl()}/api/admin/orders?limit=50`, { headers: authHeaders });
+        // Fetch recent orders from order routes
+        const ordersRes = await fetch(`${getApiUrl()}/api/orders`, { headers: authHeaders });
         if (ordersRes.ok) {
           const data = await ordersRes.json();
           setOrdersData(data.orders || []);
