@@ -547,6 +547,7 @@ const StayPage = () => {
           </div>
         )}
       </div>
+      )}
 
       {/* Stay Products / Travel Essentials Section */}
       {bundles.length > 0 && (
