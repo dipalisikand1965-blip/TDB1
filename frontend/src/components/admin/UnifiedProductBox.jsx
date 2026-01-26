@@ -539,11 +539,22 @@ const UnifiedProductBox = () => {
             <option value="archived">Archived</option>
           </select>
           
+          <select 
+            value={filterShipping} 
+            onChange={(e) => setFilterShipping(e.target.value)}
+            className="h-10 px-3 rounded-md border border-gray-200 text-sm"
+          >
+            <option value="">All Shipping</option>
+            <option value="pan-india">🚚 Pan India</option>
+            <option value="local">📍 Local Only</option>
+          </select>
+          
           <Button variant="outline" size="sm" onClick={() => {
             setSearchTerm('');
             setFilterType('');
             setFilterPillar('');
             setFilterStatus('');
+            setFilterShipping('');
             setFilterRewardEligible(null);
           }}>
             <RefreshCw className="w-4 h-4 mr-1" /> Clear
