@@ -4215,6 +4215,167 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
         </DialogContent>
       </Dialog>
       
+      {/* Time Entry Modal */}
+      <Dialog open={showTimeEntryModal} onOpenChange={setShowTimeEntryModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-blue-600" />
+              Add Time Entry
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Duration (minutes)</Label>
+              <div className="flex gap-2">
+                {[15, 30, 45, 60].map(mins => (
+                  <Button
+                    key={mins}
+                    type="button"
+                    variant={timeEntryForm.duration_minutes === mins ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setTimeEntryForm(prev => ({ ...prev, duration_minutes: mins }))}
+                    className={timeEntryForm.duration_minutes === mins ? 'bg-blue-600' : ''}
+                  >
+                    {mins}m
+                  </Button>
+                ))}
+                <Input
+                  type="number"
+                  min="1"
+                  max="480"
+                  value={timeEntryForm.duration_minutes}
+                  onChange={(e) => setTimeEntryForm(prev => ({ ...prev, duration_minutes: parseInt(e.target.value) || 15 }))}
+                  className="w-20"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Entry Type</Label>
+              <Select 
+                value={timeEntryForm.entry_type} 
+                onValueChange={(value) => setTimeEntryForm(prev => ({ ...prev, entry_type: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="work">Work</SelectItem>
+                  <SelectItem value="call">Call</SelectItem>
+                  <SelectItem value="research">Research</SelectItem>
+                  <SelectItem value="follow_up">Follow Up</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Description</Label>
+              <Textarea
+                value={timeEntryForm.description}
+                onChange={(e) => setTimeEntryForm(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="What did you work on?"
+                rows={3}
+              />
+            </div>
+            
+            <div className="flex justify-end gap-3 pt-2">
+              <Button variant="outline" onClick={() => setShowTimeEntryModal(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={addTimeEntry}
+                disabled={savingTimeEntry}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {savingTimeEntry ? (
+                  <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Saving...</>
+                ) : (
+                  <><Plus className="w-4 h-4 mr-2" /> Add Entry</>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* AI Summary Modal */}
+      <Dialog open={showAiSummaryModal} onOpenChange={setShowAiSummaryModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-purple-600" />
+              Generate AI Summary
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Number of Conversations</Label>
+              <div className="flex gap-2">
+                {[10, 20, 30, 50].map(num => (
+                  <Button
+                    key={num}
+                    type="button"
+                    variant={aiSummaryConfig.num_conversations === num ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setAiSummaryConfig(prev => ({ ...prev, num_conversations: num }))}
+                    className={aiSummaryConfig.num_conversations === num ? 'bg-purple-600' : ''}
+                  >
+                    {num}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Include</Label>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Checkbox 
+                    checked={aiSummaryConfig.include_incoming}
+                    onCheckedChange={(checked) => setAiSummaryConfig(prev => ({ ...prev, include_incoming: checked }))}
+                  />
+                  <span className="text-sm">Incoming (from customer)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Checkbox 
+                    checked={aiSummaryConfig.include_outgoing}
+                    onCheckedChange={(checked) => setAiSummaryConfig(prev => ({ ...prev, include_outgoing: checked }))}
+                  />
+                  <span className="text-sm">Outgoing (to customer)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Checkbox 
+                    checked={aiSummaryConfig.include_internal}
+                    onCheckedChange={(checked) => setAiSummaryConfig(prev => ({ ...prev, include_internal: checked }))}
+                  />
+                  <span className="text-sm">Internal notes</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3 pt-2">
+              <Button variant="outline" onClick={() => setShowAiSummaryModal(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={generateTicketSummary}
+                disabled={generatingSummary}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              >
+                {generatingSummary ? (
+                  <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Generating...</>
+                ) : (
+                  <><Brain className="w-4 h-4 mr-2" /> Generate</>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
       {/* Reply Modal - Full Popup for Better Visibility */}
       <Dialog open={showReplyModal} onOpenChange={setShowReplyModal}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
