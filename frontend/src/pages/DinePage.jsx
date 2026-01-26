@@ -1658,38 +1658,6 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
             {loadingPets && (
               <p className="text-xs text-gray-500 mb-2">Loading your pets...</p>
             )}
-            
-            <div className="grid grid-cols-2 gap-3 mb-2">
-              <div>
-                <label className="text-xs font-medium text-gray-600">Pet's Name *</label>
-                <Input
-                  value={formData.pet_name}
-                  onChange={(e) => setFormData({...formData, pet_name: e.target.value})}
-                  placeholder="e.g., Bruno"
-                  className="text-sm"
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-gray-600">Breed (optional)</label>
-                <Input
-                  value={formData.pet_breed}
-                  onChange={(e) => setFormData({...formData, pet_breed: e.target.value})}
-                  placeholder="e.g., Golden Retriever"
-                  className="text-sm"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-xs font-medium text-gray-600">Tell us about your pet (optional)</label>
-              <textarea
-                value={formData.pet_about}
-                onChange={(e) => setFormData({...formData, pet_about: e.target.value})}
-                className="w-full p-2 border rounded text-sm"
-                rows={2}
-                placeholder="e.g., Friendly 2-year-old, loves treats, good with other dogs"
-              />
-            </div>
           </div>
 
           {restaurant.petMenuAvailable === 'yes' && restaurant.petMenuItems?.length > 0 && (
@@ -1744,7 +1712,7 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
 
           <p className="text-xs text-center text-gray-500">
             Our team will confirm availability within 2 hours
-            {selectedPetId && <span className="block text-pink-600 mt-1">🐾 Reservation linked to Pet Soul</span>}
+            {selectedPets.length > 0 && <span className="block text-pink-600 mt-1">🐾 Reservation linked to Pet Soul</span>}
           </p>
         </form>
       </Card>
