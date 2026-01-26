@@ -4403,13 +4403,57 @@ async def get_public_hero():
     return {"heroSlides": []}
 
 
+@api_router.get("/categories/hierarchy")
+async def get_category_hierarchy():
+    """Get the full category hierarchy with product counts for shop navigation"""
+    # Get hierarchy config from DB
+    config = await db.config.find_one({"key": "category_hierarchy"}, {"_id": 0})
+    hierarchy = config.get("hierarchy", {}) if config else {}
+    
+    # Add product counts for each parent category
+    result = []
+    for parent_id, parent_data in hierarchy.items():
+        parent_count = await db.products.count_documents({"parent_category": parent_id})
+        
+        # Get subcategory counts
+        subcategories = []
+        for sub_id, sub_data in parent_data.get("subcategories", {}).items():
+            db_cats = sub_data.get("db_categories", [])
+            sub_count = 0
+            for db_cat in db_cats:
+                sub_count += await db.products.count_documents({"category": db_cat})
+            
+            subcategories.append({
+                "id": sub_id,
+                "name": sub_data.get("name"),
+                "db_categories": db_cats,
+                "count": sub_count
+            })
+        
+        result.append({
+            "id": parent_id,
+            "name": parent_data.get("name"),
+            "emoji": parent_data.get("emoji"),
+            "pillar": parent_data.get("pillar"),
+            "count": parent_count,
+            "subcategories": subcategories
+        })
+    
+    # Sort by count descending
+    result.sort(key=lambda x: x["count"], reverse=True)
+    
+    return {"categories": result}
+
+
 @api_router.get("/products")
 async def get_public_products(
     category: Optional[str] = None, 
+    parent_category: Optional[str] = None,
     collection: Optional[str] = None,
     pan_india: Optional[bool] = None,
     search: Optional[str] = None,
-    pillar: Optional[str] = None
+    pillar: Optional[str] = None,
+    limit: int = 100
 ):
     """Public endpoint for products - queries both products and unified_products collections"""
     query = {}
