@@ -366,8 +366,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     }
   }, [authHeaders]);
 
-  // Apply filters
-  useEffect(() => {
+  // Filtered and sorted tickets (derived state using useMemo)
+  const tickets = useMemo(() => {
     let filtered = [...allTickets];
     
     // Filter by view
@@ -423,7 +423,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       }
     });
     
-    setTickets(filtered);
+    return filtered;
   }, [allTickets, selectedView, selectedPillar, priorityFilter, channelFilter, searchQuery, sortBy]);
 
   // Initial load
