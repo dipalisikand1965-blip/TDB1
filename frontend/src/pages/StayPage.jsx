@@ -25,7 +25,9 @@ const StayPage = () => {
   const [properties, setProperties] = useState([]);
   const [bundles, setBundles] = useState([]);
   const [socials, setSocials] = useState([]);
+  const [boardingFacilities, setBoardingFacilities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('stays'); // 'stays' or 'boarding'
   const [filters, setFilters] = useState({
     city: '',
     propertyType: '',
@@ -33,7 +35,12 @@ const StayPage = () => {
     maxPetFee: '',
     vibe: ''
   });
+  const [boardingFilters, setBoardingFilters] = useState({
+    city: '',
+    boardingType: ''
+  });
   const [cities, setCities] = useState([]);
+  const [boardingCities, setBoardingCities] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedBundle, setSelectedBundle] = useState(null);
   const [selectedSocial, setSelectedSocial] = useState(null);
