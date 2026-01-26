@@ -3009,25 +3009,135 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                   </div>
                 </div>
               </div>
-
-              {/* Content - Scrollable Area */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{minHeight: '200px', maxHeight: 'calc(100vh - 400px)'}}>
-                {/* Smart Suggestions - Magic Prompts */}
-                {petSoulData && (
-                  <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-3 shadow-sm">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">💡</span>
-                      <span className="font-semibold text-amber-800 text-sm">Smart Suggestions</span>
+              
+              {/* Tabs Bar - Zoho Style */}
+              <div className="bg-slate-100 border-b flex items-center px-1 overflow-x-auto">
+                <button
+                  onClick={() => setActiveDetailTab('conversation')}
+                  className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                    activeDetailTab === 'conversation' 
+                      ? 'border-amber-500 text-amber-700 bg-white' 
+                      : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="w-4 h-4" />
+                    <span>CONVERSATION</span>
+                    {selectedTicket.messages?.length > 0 && (
+                      <Badge className="bg-amber-100 text-amber-700 text-xs">{selectedTicket.messages.length}</Badge>
+                    )}
+                  </div>
+                </button>
+                <button
+                  onClick={() => setActiveDetailTab('info')}
+                  className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                    activeDetailTab === 'info' 
+                      ? 'border-amber-500 text-amber-700 bg-white' 
+                      : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    <span>INFO</span>
+                  </div>
+                </button>
+                <button
+                  onClick={() => { setActiveDetailTab('time'); fetchTimeEntries(selectedTicket.ticket_id); }}
+                  className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                    activeDetailTab === 'time' 
+                      ? 'border-amber-500 text-amber-700 bg-white' 
+                      : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    <span>TIME ENTRY</span>
+                    {timeEntries.length > 0 && (
+                      <Badge className="bg-blue-100 text-blue-700 text-xs">{timeEntries.length}</Badge>
+                    )}
+                  </div>
+                </button>
+                <button
+                  onClick={() => setActiveDetailTab('attachments')}
+                  className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                    activeDetailTab === 'attachments' 
+                      ? 'border-amber-500 text-amber-700 bg-white' 
+                      : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Paperclip className="w-4 h-4" />
+                    <span>ATTACHMENTS</span>
+                    {selectedTicket.attachments?.length > 0 && (
+                      <Badge className="bg-purple-100 text-purple-700 text-xs">{selectedTicket.attachments.length}</Badge>
+                    )}
+                  </div>
+                </button>
+                <button
+                  onClick={() => setActiveDetailTab('activity')}
+                  className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                    activeDetailTab === 'activity' 
+                      ? 'border-amber-500 text-amber-700 bg-white' 
+                      : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-4 h-4" />
+                    <span>ACTIVITY</span>
+                  </div>
+                </button>
+                
+                {/* AI Summary Button */}
+                <button
+                  onClick={() => setShowAiSummaryModal(true)}
+                  className="ml-auto mr-2 px-3 py-1.5 text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 flex items-center gap-1.5 whitespace-nowrap"
+                >
+                  <Brain className="w-4 h-4" />
+                  <span>AI Summary</span>
+                </button>
+              </div>
+              
+              {/* AI Summary Display */}
+              {ticketSummary && (
+                <div className="mx-4 mt-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <Brain className="w-5 h-5 text-purple-600" />
+                      <span className="font-semibold text-purple-800">AI-Generated Summary</span>
+                      <Badge className="bg-purple-100 text-purple-700 text-xs">
+                        From last {aiSummaryConfig.num_conversations} messages
+                      </Badge>
                     </div>
-                    <div className="space-y-1.5">
-                      {/* Birthday Coming Up */}
-                      {petSoulData.pet?.birth_date && (() => {
-                        const bday = new Date(petSoulData.pet.birth_date);
-                        const today = new Date();
-                        bday.setFullYear(today.getFullYear());
-                        if (bday < today) bday.setFullYear(today.getFullYear() + 1);
-                        const daysUntil = Math.ceil((bday - today) / (1000 * 60 * 60 * 24));
-                        if (daysUntil <= 30 && daysUntil > 0) {
+                    <Button variant="ghost" size="sm" onClick={() => setTicketSummary(null)} className="h-6 w-6 p-0">
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="text-sm text-purple-900 whitespace-pre-wrap">{ticketSummary}</div>
+                </div>
+              )}
+
+              {/* Content - Based on Active Tab */}
+              <div className="flex-1 overflow-y-auto" style={{minHeight: '200px', maxHeight: 'calc(100vh - 450px)'}}>
+                
+                {/* CONVERSATION Tab */}
+                {activeDetailTab === 'conversation' && (
+                  <div className="p-4 space-y-4">
+                    {/* Smart Suggestions - Magic Prompts */}
+                    {petSoulData && (
+                      <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-3 shadow-sm">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg">💡</span>
+                          <span className="font-semibold text-amber-800 text-sm">Smart Suggestions</span>
+                        </div>
+                        <div className="space-y-1.5">
+                          {/* Birthday Coming Up */}
+                          {petSoulData.pet?.birth_date && (() => {
+                            const bday = new Date(petSoulData.pet.birth_date);
+                            const today = new Date();
+                            bday.setFullYear(today.getFullYear());
+                            if (bday < today) bday.setFullYear(today.getFullYear() + 1);
+                            const daysUntil = Math.ceil((bday - today) / (1000 * 60 * 60 * 24));
+                            if (daysUntil <= 30 && daysUntil > 0) {
                           return (
                             <div className="flex items-center gap-2 text-sm text-amber-700 bg-white/60 rounded-lg px-3 py-2">
                               <span>🎂</span>
