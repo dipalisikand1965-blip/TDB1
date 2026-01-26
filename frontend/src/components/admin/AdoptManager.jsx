@@ -17,7 +17,7 @@ import { toast } from '../../hooks/use-toast';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   Plus, Edit, Trash2, Search, Filter, Eye, CheckCircle, XCircle,
-  Building2, Clock, RefreshCw, FileText, Loader2, Download
+  Building2, Clock, RefreshCw, FileText, Loader2, Download, Sparkles
 } from 'lucide-react';
 
 const getApiUrl = () => {
