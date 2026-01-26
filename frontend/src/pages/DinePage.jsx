@@ -497,6 +497,8 @@ const DinePage = () => {
           restaurant={selectedRestaurant} 
           onClose={() => setSelectedRestaurant(null)}
           getPetMenuBadge={getPetMenuBadge}
+          currentUser={currentUser}
+          authToken={token}
         />
       )}
 
