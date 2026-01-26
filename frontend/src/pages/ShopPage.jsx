@@ -238,6 +238,7 @@ const ShopPage = () => {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
   const [selectedParentCategory, setSelectedParentCategory] = useState(searchParams.get('parent') || '');
+  const [selectedPillar, setSelectedPillar] = useState(searchParams.get('pillar') || 'all');
   const [activeFilters, setActiveFilters] = useState([]);
   const [sortBy, setSortBy] = useState('featured');
   const [priceRange, setPriceRange] = useState([0, 10000]);
@@ -265,7 +266,7 @@ const ShopPage = () => {
   // Fetch products
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory, selectedParentCategory, sortBy]);
+  }, [selectedCategory, selectedParentCategory, selectedPillar, sortBy]);
 
   // Fetch user's pets for recommendations
   useEffect(() => {
