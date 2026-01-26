@@ -4602,6 +4602,46 @@ async def get_all_pillar_products(limit: int = 100, pillar: str = None):
     
     return {"products": all_items, "total": len(all_items)}
 
+
+# NOTE: These static routes MUST come before any {product_id} routes to avoid route conflicts
+@api_router.get("/admin/products/intelligence-stats")
+async def get_intelligence_stats(
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Get statistics about product intelligence tagging"""
+    verify_admin(credentials)
+    
+    # Count products with intelligent tags
+    total = await db.products.count_documents({})
+    with_intelligent_tags = await db.products.count_documents({"intelligent_tags": {"$exists": True, "$ne": []}})
+    with_breed_tags = await db.products.count_documents({"breed_tags": {"$exists": True, "$ne": []}})
+    with_health_tags = await db.products.count_documents({"health_tags": {"$exists": True, "$ne": []}})
+    without_images = await db.products.count_documents(
+        {"$or": [{"image": None}, {"image": ""}, {"image": {"$exists": False}}]}
+    )
+    with_stock_images = await db.products.count_documents({"is_stock_image": True})
+    
+    # Get tag distribution
+    pipeline = [
+        {"$unwind": {"path": "$intelligent_tags", "preserveNullAndEmptyArrays": False}},
+        {"$group": {"_id": "$intelligent_tags", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 30}
+    ]
+    top_tags = await db.products.aggregate(pipeline).to_list(30)
+    
+    return {
+        "total_products": total,
+        "with_intelligent_tags": with_intelligent_tags,
+        "with_breed_tags": with_breed_tags,
+        "with_health_tags": with_health_tags,
+        "without_images": without_images,
+        "with_stock_images": with_stock_images,
+        "coverage_percent": round((with_intelligent_tags / total * 100) if total > 0 else 0, 1),
+        "top_tags": [{"tag": t["_id"], "count": t["count"]} for t in top_tags]
+    }
+
+
 @api_router.get("/admin/products/tag-options")
 async def get_display_tag_options():
     """Get available display tag options"""
