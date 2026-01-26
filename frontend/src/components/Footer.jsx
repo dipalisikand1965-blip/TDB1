@@ -120,6 +120,7 @@ const Footer = () => {
                   <Sparkles className="w-3 h-3" /> Mira AI
                 </button>
               </li>
+              <li><Link to="/autoship" className="hover:text-blue-400 transition-colors">🔄 Autoship & Save</Link></li>
               <li><Link to="/about" className="hover:text-pink-400 transition-colors">About Us</Link></li>
               <li><Link to="/faqs" className="hover:text-pink-400 transition-colors">FAQs</Link></li>
               <li><Link to="/insights" className="hover:text-pink-400 transition-colors">TDC Insights</Link></li>
