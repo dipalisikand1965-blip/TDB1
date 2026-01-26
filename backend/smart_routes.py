@@ -243,6 +243,7 @@ async def get_smart_recommendations(
 ):
     """
     Get personalized recommendations for a user based on their pets' profiles.
+    user_id can be the user's ID or email address.
     
     Returns:
     - breed_picks: Products recommended based on breed health needs
@@ -253,12 +254,21 @@ async def get_smart_recommendations(
     """
     db = get_db()
     
-    # Get user's pets
+    # Get user's pets - try by pet_id first, then by user_id/email
     if pet_id:
         pet = await db.pets.find_one({'id': pet_id}, {'_id': 0})
         pets = [pet] if pet else []
     else:
+        # Try finding by user_id first, then by owner_email
         pets = await db.pets.find({'user_id': user_id}, {'_id': 0}).to_list(10)
+        if not pets:
+            # Try by owner_email (user_id might be an email)
+            pets = await db.pets.find({'owner_email': user_id}, {'_id': 0}).to_list(10)
+        if not pets:
+            # Try getting user by id and then their email
+            user = await db.users.find_one({'id': user_id}, {'_id': 0})
+            if user and user.get('email'):
+                pets = await db.pets.find({'owner_email': user['email']}, {'_id': 0}).to_list(10)
     
     if not pets:
         # Return generic recommendations for users without pets
