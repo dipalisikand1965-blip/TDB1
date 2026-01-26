@@ -790,6 +790,19 @@ const MemberDashboard = () => {
   // If not authenticated after loading, the useEffect will redirect
   if (!user) return null;
 
+  // Show loading while fetching pet and account data
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-lg font-medium text-gray-700">Loading your pet family...</p>
+          <p className="text-sm text-gray-500 mt-2">Fetching {user.name?.split(' ')[0]}'s personalized dashboard</p>
+        </div>
+      </div>
+    );
+  }
+
   // Get primary pet info with universal avatar
   const primaryPet = pets[0];
   const petPhotoUrl = primaryPet ? getPetPhotoUrl(primaryPet) : null;
