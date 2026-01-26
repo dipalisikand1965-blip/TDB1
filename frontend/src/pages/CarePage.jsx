@@ -835,10 +835,38 @@ const CarePage = () => {
                 <Textarea
                   value={formData.special_requirements}
                   onChange={(e) => setFormData({...formData, special_requirements: e.target.value})}
-                  placeholder={`Any specific needs for ${selectedPet.name}? (anxiety, handling preferences, etc.)`}
+                  placeholder={`Any specific needs for ${selectedPet?.name || 'your pet'}? (anxiety, handling preferences, etc.)`}
                   rows={2}
                 />
               </div>
+              
+              {/* Contact Info for non-logged in users */}
+              {!user && (
+                <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+                  <Label className="text-gray-700 font-medium">Your Contact Details</Label>
+                  <input
+                    type="text"
+                    placeholder="Your Name"
+                    className="w-full p-3 border rounded-lg text-sm"
+                    value={formData.contact_name}
+                    onChange={(e) => setFormData({...formData, contact_name: e.target.value})}
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email Address"
+                    className="w-full p-3 border rounded-lg text-sm"
+                    value={formData.contact_email}
+                    onChange={(e) => setFormData({...formData, contact_email: e.target.value})}
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Phone Number"
+                    className="w-full p-3 border rounded-lg text-sm"
+                    value={formData.contact_phone}
+                    onChange={(e) => setFormData({...formData, contact_phone: e.target.value})}
+                  />
+                </div>
+              )}
               
               {/* Info Box */}
               <Card className="p-4 bg-blue-50 border-blue-200">
