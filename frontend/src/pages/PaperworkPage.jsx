@@ -891,6 +891,9 @@ const PaperworkPage = () => {
       <div className="lg:hidden fixed bottom-20 right-4 w-80 max-w-[calc(100vw-2rem)] z-30">
         <MiraContextPanel pillar="paperwork" position="bottom" />
       </div>
+      
+      {/* Admin Quick Edit */}
+      <AdminQuickEdit pillar="paperwork" position="bottom-left" />
     </div>
   );
 };
