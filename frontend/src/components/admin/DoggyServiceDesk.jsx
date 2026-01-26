@@ -843,41 +843,6 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     setSending(false);
   };
 
-  // Fetch sidebar data (Pet Parents, Pets, Orders, Analytics)
-  const fetchSidebarData = async () => {
-    try {
-      // Fetch pet parents/members
-      const membersRes = await fetch(`${getApiUrl()}/api/members?limit=100`, { headers: authHeaders });
-      if (membersRes.ok) {
-        const data = await membersRes.json();
-        setPetParents(data.members || []);
-      }
-      
-      // Fetch pets
-      const petsRes = await fetch(`${getApiUrl()}/api/pets?limit=100`, { headers: authHeaders });
-      if (petsRes.ok) {
-        const data = await petsRes.json();
-        setPetProfiles(data.pets || []);
-      }
-      
-      // Fetch recent orders
-      const ordersRes = await fetch(`${getApiUrl()}/api/orders?limit=50`, { headers: authHeaders });
-      if (ordersRes.ok) {
-        const data = await ordersRes.json();
-        setOrdersData(data.orders || []);
-      }
-      
-      // Fetch analytics summary
-      const analyticsRes = await fetch(`${getApiUrl()}/api/tickets/analytics`, { headers: authHeaders });
-      if (analyticsRes.ok) {
-        const data = await analyticsRes.json();
-        setAnalyticsData(data);
-      }
-    } catch (err) {
-      console.debug('Could not fetch sidebar data:', err);
-    }
-  };
-
   // Handle reply
   const handleReply = async () => {
     if ((!replyText.trim() && attachments.length === 0) || !selectedTicket) return;
