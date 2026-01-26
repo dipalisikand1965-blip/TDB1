@@ -32,7 +32,7 @@ const PILLARS = [
     dropdown: [
       { name: 'Pet Restaurants', path: '/dine' },
       { name: 'Fresh Meals', path: '/dine?type=meals' },
-      { name: 'Meal Plans', path: '/autoship' },
+      { name: 'Meal Plans', path: '/meal-plan' },
     ]
   },
   {
