@@ -1313,9 +1313,10 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
 // Reservation Modal with Pet Soul Integration
 const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, authToken }) => {
   const [userPets, setUserPets] = useState([]);
-  const [selectedPetId, setSelectedPetId] = useState('');
+  const [selectedPets, setSelectedPets] = useState([]); // Multi-pet selection
   const [loadingPets, setLoadingPets] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
   
   const [formData, setFormData] = useState({
     name: currentUser?.name || '',
@@ -1324,13 +1325,8 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
     date: '',
     time: '',
     guests: 2,
-    pets: 1,
     petMealPreorder: false,
     specialRequests: '',
-    // Pet details
-    pet_name: '',
-    pet_breed: '',
-    pet_about: '',
   });
 
   // Fetch user's pets on mount
@@ -1340,7 +1336,6 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
       
       setLoadingPets(true);
       try {
-        // Use authenticated endpoint
         const response = await fetch(`${API_URL}/api/pets/my-pets`, {
           headers: {
             'Authorization': `Bearer ${authToken}`
@@ -1348,16 +1343,36 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
         });
         if (response.ok) {
           const data = await response.json();
-          setUserPets(data.pets || []);
+          const pets = data.pets || [];
+          setUserPets(pets);
           
-          // Auto-select first pet if available
-          if (data.pets?.length > 0) {
-            const firstPet = data.pets[0];
-            setSelectedPetId(firstPet.id);
-            setFormData(prev => ({
-              ...prev,
-              pet_name: firstPet.name || '',
-              pet_breed: firstPet.breed || '',
+          // Auto-select all pets by default
+          if (pets.length > 0) {
+            setSelectedPets(pets.map(p => p.id));
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching pets:', error);
+      } finally {
+        setLoadingPets(false);
+      }
+    };
+    fetchUserPets();
+  }, [currentUser, authToken]);
+
+  // Toggle pet selection
+  const togglePetSelection = (petId) => {
+    setSelectedPets(prev => 
+      prev.includes(petId) 
+        ? prev.filter(id => id !== petId)
+        : [...prev, petId]
+    );
+  };
+
+  // Get selected pets info
+  const getSelectedPetsInfo = () => {
+    return userPets.filter(p => selectedPets.includes(p.id));
+  };
               pet_about: `${firstPet.species || 'Dog'}, ${firstPet.age || '?'} years old. ${firstPet.special_traits || ''}`.trim()
             }));
           }
