@@ -2411,7 +2411,11 @@ async def generate_ai_summary(ticket_id: str, config: dict):
     """Generate AI summary for a ticket's conversations"""
     db = get_db()
     
+    # Search both collections like get_ticket does
     ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    if not ticket:
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+    
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
     
