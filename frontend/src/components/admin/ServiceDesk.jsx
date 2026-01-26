@@ -247,7 +247,6 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   const [audioBlob, setAudioBlob] = useState(null);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [activeDetailTab, setActiveDetailTab] = useState('conversation');
   
   // SLA & Auto-assignment
   const [slaStats, setSlaStats] = useState(null);
@@ -1212,21 +1211,6 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     fetchTicketDetails(selectedTicket.ticket_id);
     fetchStats();
     fetchTickets();
-  };
-
-  // Quick status change from ticket list (without needing to select)
-  const handleQuickStatusChange = async (ticketId, newStatus) => {
-    try {
-      await fetch(`${getApiUrl()}/api/tickets/${ticketId}`, {
-        method: 'PATCH',
-        headers: { ...authHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
-      });
-      fetchTickets();
-      fetchStats();
-    } catch (err) {
-      console.error('Error updating status:', err);
-    }
   };
 
   const handleAssign = async (assignee) => {
@@ -2737,53 +2721,18 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                         <span className="font-medium text-sm truncate">{ticket.member?.name || 'Unknown'}</span>
                       </div>
                       <p className="text-xs text-gray-600 line-clamp-2">{ticket.description?.substring(0, 100)}</p>
-                      
-                      {/* Footer Row with Status, Agent Avatar, Reply Count */}
                       <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center gap-2">
-                          {/* Status Dropdown - Quick Change */}
-                          <div onClick={(e) => e.stopPropagation()}>
-                            <Select 
-                              value={ticket.status} 
-                              onValueChange={(value) => handleQuickStatusChange(ticket.ticket_id, value)}
-                            >
-                              <SelectTrigger className={`h-6 w-auto min-w-[90px] text-xs border-0 ${STATUS_COLORS[ticket.status]}`}>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="new">New</SelectItem>
-                                <SelectItem value="open">Open</SelectItem>
-                                <SelectItem value="in_progress">In Progress</SelectItem>
-                                <SelectItem value="waiting_on_member">Waiting</SelectItem>
-                                <SelectItem value="resolved">Resolved</SelectItem>
-                                <SelectItem value="closed">Closed</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          {/* Reply Count */}
-                          {ticket.reply_count > 0 && (
-                            <div className="flex items-center gap-1 text-xs text-slate-500">
-                              <MessageSquare className="w-3 h-3" />
-                              <span>{ticket.reply_count}</span>
-                            </div>
-                          )}
-                        </div>
-                        
+                        <Badge className={`text-xs ${STATUS_COLORS[ticket.status]}`}>
+                          {ticket.status?.replace(/_/g, ' ')}
+                        </Badge>
                         <div className="flex items-center gap-2 text-xs text-gray-400">
-                          {/* Agent Avatar */}
                           {ticket.assigned_to && (
-                            <div className="flex items-center gap-1.5" title={`Assigned to: ${ticket.assigned_to}`}>
-                              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-[10px] font-bold text-white">
-                                {ticket.assigned_to.charAt(0).toUpperCase()}
-                              </div>
-                              <span className="hidden sm:inline">{ticket.assigned_to.split('@')[0]}</span>
-                            </div>
+                            <span className="flex items-center gap-1">
+                              <User className="w-3 h-3" />
+                              {ticket.assigned_to.split('@')[0]}
+                            </span>
                           )}
-                          {!ticket.assigned_to && (
-                            <span className="text-orange-500 text-[10px] bg-orange-50 px-1.5 py-0.5 rounded">Unassigned</span>
-                          )}
-                          <span className="text-[10px]">{new Date(ticket.created_at).toLocaleDateString()}</span>
+                          <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
                         </div>
                       </div>
                     </div>
@@ -2802,39 +2751,24 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
             </div>
           ) : selectedTicket ? (
             <>
-              {/* Header - Zoho Style */}
-              <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-3 text-white">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-4 py-3 border-b">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{CATEGORY_ICONS[selectedTicket.category]}</span>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-sm text-slate-300 bg-slate-700 px-2 py-0.5 rounded">{selectedTicket.ticket_id}</span>
-                        <Badge className={`${STATUS_COLORS[selectedTicket.status]} shadow-sm`}>
-                          {selectedTicket.status?.replace('_', ' ')}
-                        </Badge>
-                        {selectedTicket.source && SOURCE_CONFIG[selectedTicket.source] && (
-                          <Badge className={`${SOURCE_CONFIG[selectedTicket.source].color} opacity-90`}>
-                            {SOURCE_CONFIG[selectedTicket.source].icon}
-                          </Badge>
-                        )}
-                      </div>
-                      <h3 className="font-semibold text-lg mt-1">{selectedTicket.member?.name || selectedTicket.customer_name || 'Customer'}</h3>
-                    </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-lg">{CATEGORY_ICONS[selectedTicket.category]}</span>
+                    <span className="font-mono text-sm text-slate-500 bg-slate-200 px-2 py-0.5 rounded">{selectedTicket.ticket_id}</span>
+                    <Badge className={`${STATUS_COLORS[selectedTicket.status]} shadow-sm`}>
+                      {selectedTicket.status?.replace('_', ' ')}
+                    </Badge>
+                    {selectedTicket.source && SOURCE_CONFIG[selectedTicket.source] && (
+                      <Badge className={SOURCE_CONFIG[selectedTicket.source].color}>
+                        {SOURCE_CONFIG[selectedTicket.source].icon} {SOURCE_CONFIG[selectedTicket.source].label}
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
-                    {/* Agent Badge */}
-                    {selectedTicket.assigned_to && (
-                      <div className="flex items-center gap-2 bg-slate-700 px-3 py-1.5 rounded-full">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-xs font-bold text-white">
-                          {selectedTicket.assigned_to.charAt(0).toUpperCase()}
-                        </div>
-                        <span className="text-sm text-slate-200">{selectedTicket.assigned_to.split('@')[0]}</span>
-                      </div>
-                    )}
-                    {/* Status Dropdown */}
                     <Select value={selectedTicket.status} onValueChange={handleStatusChange}>
-                      <SelectTrigger className="h-9 w-44 bg-slate-700 border-slate-600 text-white">
+                      <SelectTrigger className="h-8 w-40">
                         <SelectValue placeholder="Change Status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -2845,105 +2779,11 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                     </Select>
                   </div>
                 </div>
-                
-                {/* Quick Contact Row */}
-                <div className="flex items-center gap-4 text-sm text-slate-300">
-                  {selectedTicket.member?.phone && (
-                    <div className="flex items-center gap-1.5">
-                      <Phone className="w-3.5 h-3.5" /> {selectedTicket.member.phone}
-                    </div>
-                  )}
-                  {selectedTicket.member?.email && (
-                    <div className="flex items-center gap-1.5">
-                      <Mail className="w-3.5 h-3.5" /> {selectedTicket.member.email}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1.5 ml-auto">
-                    <Clock className="w-3.5 h-3.5" /> {new Date(selectedTicket.created_at).toLocaleString()}
-                  </div>
-                </div>
-              </div>
-              
-              {/* Tabs - Zoho Style */}
-              <div className="bg-slate-100 border-b flex items-center px-2">
-                <button
-                  onClick={() => setActiveDetailTab('conversation')}
-                  className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-                    activeDetailTab === 'conversation' 
-                      ? 'border-amber-500 text-amber-700 bg-white' 
-                      : 'border-transparent text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4" />
-                    <span>CONVERSATION</span>
-                    {selectedTicket.messages?.length > 0 && (
-                      <Badge className="bg-amber-100 text-amber-700 text-xs">{selectedTicket.messages.length}</Badge>
-                    )}
-                  </div>
-                </button>
-                <button
-                  onClick={() => setActiveDetailTab('info')}
-                  className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-                    activeDetailTab === 'info' 
-                      ? 'border-amber-500 text-amber-700 bg-white' 
-                      : 'border-transparent text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    <span>INFO</span>
-                  </div>
-                </button>
-                <button
-                  onClick={() => setActiveDetailTab('activity')}
-                  className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-                    activeDetailTab === 'activity' 
-                      ? 'border-amber-500 text-amber-700 bg-white' 
-                      : 'border-transparent text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Activity className="w-4 h-4" />
-                    <span>ACTIVITY</span>
-                    {auditTrail?.length > 0 && (
-                      <Badge className="bg-slate-200 text-slate-600 text-xs">{auditTrail.length}</Badge>
-                    )}
-                  </div>
-                </button>
-                <button
-                  onClick={() => setActiveDetailTab('attachments')}
-                  className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-                    activeDetailTab === 'attachments' 
-                      ? 'border-amber-500 text-amber-700 bg-white' 
-                      : 'border-transparent text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Paperclip className="w-4 h-4" />
-                    <span>ATTACHMENTS</span>
-                    {selectedTicket.attachments?.length > 0 && (
-                      <Badge className="bg-blue-100 text-blue-700 text-xs">{selectedTicket.attachments.length}</Badge>
-                    )}
-                  </div>
-                </button>
-                
-                {/* AI Summary Button */}
-                <button
-                  onClick={getAiSummary}
-                  disabled={aiLoading}
-                  className="ml-auto px-3 py-1.5 text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 flex items-center gap-1.5 mr-2"
-                >
-                  {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Brain className="w-4 h-4" />}
-                  <span>AI Summary</span>
-                </button>
+                <h3 className="font-medium">{selectedTicket.member?.name}</h3>
               </div>
 
-              {/* Content - Based on Active Tab */}
-              <div className="flex-1 overflow-y-auto" style={{minHeight: '200px', maxHeight: 'calc(100vh - 400px)'}}>
-                {/* CONVERSATION Tab */}
-                {activeDetailTab === 'conversation' && (
-                  <div className="p-4 space-y-4">
+              {/* Content - Scrollable Area */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{minHeight: '200px', maxHeight: 'calc(100vh - 400px)'}}>
                 {/* Smart Suggestions - Magic Prompts */}
                 {petSoulData && (
                   <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-3 shadow-sm">
