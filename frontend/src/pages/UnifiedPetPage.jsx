@@ -837,6 +837,15 @@ const UnifiedPetPage = () => {
               />
             )}
             
+            {/* Breed Health Tips - Compact */}
+            {pet.breed && (
+              <BreedHealthCard 
+                breed={pet.breed} 
+                petName={pet.name}
+                compact={true}
+              />
+            )}
+            
             {/* All 14 Pillars Grid */}
             <Card className="p-6">
               <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
