@@ -381,15 +381,18 @@ class ProductIntelligenceEngine:
             }
         }
         
-        # Get all products
-        products = await self.db.products.find({}, {"_id": 0}).to_list(None)
-        results["total_processed"] = len(products)
+        # Get all products from BOTH collections
+        unified_products = await self.db.unified_products.find({}, {"_id": 0}).to_list(None)
+        legacy_products = await self.db.products.find({}, {"_id": 0}).to_list(None)
         
-        for product in products:
+        # Process unified_products (primary)
+        for product in unified_products:
             try:
                 product_id = product.get('id')
                 if not product_id:
                     continue
+                
+                results["total_processed"] += 1
                 
                 # Analyze product
                 analysis = self.analyze_product(product)
@@ -403,6 +406,54 @@ class ProductIntelligenceEngine:
                     results["summary"]["occasions"][occasion] = results["summary"]["occasions"].get(occasion, 0) + 1
                 for species in analysis["detected_species"]:
                     results["summary"]["species"][species] = results["summary"]["species"].get(species, 0) + 1
+                
+                if update_db:
+                    update_doc = {
+                        "intelligent_tags": {
+                            "breed_tags": analysis["detected_breeds"],
+                            "health_tags": analysis["detected_health"],
+                            "lifestage_tags": analysis["detected_lifestage"],
+                            "occasion_tags": analysis["detected_occasions"],
+                            "diet_tags": analysis["detected_diet"],
+                            "size_tags": analysis["detected_sizes"],
+                            "species_tags": analysis["detected_species"],
+                        },
+                        "search_keywords": analysis["search_keywords"],
+                        "breed_tags": analysis["detected_breeds"],
+                        "health_tags": analysis["detected_health"],
+                        "lifestage_tags": analysis["detected_lifestage"],
+                        "occasion_tags": analysis["detected_occasions"],
+                        "diet_tags": analysis["detected_diet"],
+                        "size_tags": analysis["detected_sizes"],
+                        "species_tags": analysis["detected_species"],
+                        "ai_processed_at": datetime.now(timezone.utc).isoformat()
+                    }
+                    
+                    # Update name if needed
+                    if analysis["needs_name_update"]:
+                        update_doc["name"] = analysis["cleaned_name"]
+                        results["names_cleaned"] += 1
+                    
+                    # Update unified_products
+                    await self.db.unified_products.update_one(
+                        {"id": product_id},
+                        {"$set": update_doc}
+                    )
+                    results["products_updated"] += 1
+                    results["tags_added"] += len(analysis["intelligent_tags"])
+                
+            except Exception as e:
+                results["errors"].append(f"Error processing {product.get('name', 'unknown')}: {str(e)}")
+        
+        # Also process legacy products collection
+        for product in legacy_products:
+            try:
+                product_id = product.get('id')
+                if not product_id:
+                    continue
+                
+                # Analyze product
+                analysis = self.analyze_product(product)
                 
                 if update_db:
                     update_doc = {
@@ -421,21 +472,14 @@ class ProductIntelligenceEngine:
                     # Update name if needed
                     if analysis["needs_name_update"]:
                         update_doc["name"] = analysis["cleaned_name"]
-                        results["names_cleaned"] += 1
-                    
-                    # Merge with existing display_tags
-                    existing_display_tags = product.get("display_tags", [])
-                    update_doc["display_tags"] = list(set(existing_display_tags + analysis["intelligent_tags"][:20]))  # Limit to 20
                     
                     await self.db.products.update_one(
                         {"id": product_id},
                         {"$set": update_doc}
                     )
-                    results["products_updated"] += 1
-                    results["tags_added"] += len(analysis["intelligent_tags"])
                 
             except Exception as e:
-                results["errors"].append(f"Error processing {product.get('name', 'unknown')}: {str(e)}")
+                pass  # Don't add legacy errors to report
         
         return results
 
