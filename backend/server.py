@@ -776,6 +776,10 @@ async def lifespan(app: FastAPI):
     set_orders_deps(get_current_user, create_admin_notification, notify_order_status_change, on_order_placed)
     logger.info("Orders routes initialized")
     
+    # Initialize Concierge® Order Queue
+    set_order_queue_db(db)
+    logger.info("Concierge® Order Queue initialized")
+    
     # Initialize autoship routes database connection
     set_autoship_db(db)
     set_autoship_deps(get_current_user)
