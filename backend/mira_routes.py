@@ -61,6 +61,125 @@ def get_db():
 SECRET_KEY = os.environ.get("JWT_SECRET", "tdb_super_secret_key_2025_woof")
 ALGORITHM = "HS256"
 
+# ============== BREED HEALTH INTELLIGENCE ==============
+
+BREED_HEALTH_DATA = {
+    'shih tzu': {
+        'concerns': ['Brachycephalic syndrome (breathing)', 'Eye problems', 'Dental issues'],
+        'diet_tips': ['Small kibble size', 'Avoid overfeeding (prone to obesity)'],
+        'care_tips': ['Daily eye cleaning', 'Use harness instead of collar', 'Avoid hot weather']
+    },
+    'golden retriever': {
+        'concerns': ['Hip dysplasia', 'Cancer (higher rates)', 'Obesity'],
+        'diet_tips': ['Watch weight carefully', 'Joint support supplements after age 5', 'Controlled portions'],
+        'care_tips': ['1-2 hours exercise daily', 'Annual hip screening', 'Regular cancer checks']
+    },
+    'labrador retriever': {
+        'concerns': ['Obesity (extremely prone)', 'Hip dysplasia', 'Ear infections'],
+        'diet_tips': ['STRICT portion control - Labs will overeat', 'Use puzzle feeders', 'No free feeding'],
+        'care_tips': ['Measure food precisely', 'Clean ears weekly', '1+ hour exercise daily']
+    },
+    'german shepherd': {
+        'concerns': ['Hip dysplasia', 'Degenerative myelopathy', 'Bloat'],
+        'diet_tips': ['Multiple small meals (bloat prevention)', 'Large breed puppy food for slow growth'],
+        'care_tips': ['No exercise right after meals', 'Hip/elbow screening', 'Needs mental stimulation']
+    },
+    'indian pariah': {
+        'concerns': ['Generally very healthy', 'Tick-borne diseases in India'],
+        'diet_tips': ['Not picky eaters', 'Does well on Indian home-cooked food', 'Balanced diet'],
+        'care_tips': ['Monthly tick prevention essential', 'Highly athletic - needs 1-2 hours exercise']
+    },
+    'french bulldog': {
+        'concerns': ['Severe breathing difficulties', 'Heat intolerance', 'Spinal issues'],
+        'diet_tips': ['Easy-to-digest food', 'Use slow feeder bowl', 'Weight control critical'],
+        'care_tips': ['AC essential', 'NEVER fly in cargo', 'Clean face folds daily', 'Short walks only']
+    },
+    'pomeranian': {
+        'concerns': ['Dental disease', 'Tracheal collapse', 'Luxating patella'],
+        'diet_tips': ['Small frequent meals', 'Dental treats recommended', 'High-quality protein'],
+        'care_tips': ['Use harness (protect trachea)', 'Daily teeth brushing ideal', 'Prevent hypoglycemia']
+    },
+    'beagle': {
+        'concerns': ['Obesity (very food motivated)', 'Ear infections', 'Epilepsy'],
+        'diet_tips': ['STRICT portion control - will eat anything', 'Low-calorie treats', 'Use puzzle feeders'],
+        'care_tips': ['Secure fencing required', 'Check/clean ears weekly', '1+ hour exercise daily']
+    },
+    'pug': {
+        'concerns': ['Breathing problems', 'Eye injuries', 'Obesity'],
+        'diet_tips': ['Low-calorie diet', 'Measured portions', 'No table scraps'],
+        'care_tips': ['Heat intolerant - AC essential', 'Check eyes daily', 'Clean face folds daily']
+    },
+    'siberian husky': {
+        'concerns': ['Eye problems', 'Zinc deficiency', 'Heat intolerance'],
+        'diet_tips': ['High-protein diet', 'Zinc supplements if deficient', 'Fish oil for coat'],
+        'care_tips': ['NOT suited for hot Indian climate without AC', '2+ hours exercise DAILY', 'Expert escape artists']
+    },
+    'rottweiler': {
+        'concerns': ['Hip dysplasia', 'Bone cancer', 'Heart disease'],
+        'diet_tips': ['Large breed formula', 'Joint supplements from age 2', 'Keep lean'],
+        'care_tips': ['Early socialization essential', 'Annual hip/cardiac screening', 'Weight management']
+    },
+    'dachshund': {
+        'concerns': ['IVDD (back problems - very common)', 'Obesity worsens back issues', 'Dental disease'],
+        'diet_tips': ['Keep VERY lean', 'Weight management food', 'Glucosamine supplements'],
+        'care_tips': ['NO jumping on/off furniture - use ramps!', 'Support back when lifting', 'Avoid stairs']
+    }
+}
+
+def normalize_breed_for_health(breed: str) -> str:
+    """Normalize breed name for health data lookup"""
+    if not breed:
+        return ''
+    
+    breed = breed.lower().strip()
+    variations = {
+        'shihtzu': 'shih tzu', 'shitzu': 'shih tzu', 'shih-tzu': 'shih tzu',
+        'golden': 'golden retriever', 'goldenretriever': 'golden retriever',
+        'lab': 'labrador retriever', 'labrador': 'labrador retriever', 'labradorretriever': 'labrador retriever',
+        'gsd': 'german shepherd', 'germanshepherd': 'german shepherd', 'alsatian': 'german shepherd',
+        'indie': 'indian pariah', 'desi': 'indian pariah', 'indian pariah dog': 'indian pariah',
+        'frenchie': 'french bulldog', 'frenchbulldog': 'french bulldog',
+        'pom': 'pomeranian',
+        'husky': 'siberian husky', 'siberianhusky': 'siberian husky',
+        'rottie': 'rottweiler', 'rotweiler': 'rottweiler',
+        'doxie': 'dachshund', 'wiener': 'dachshund', 'sausage dog': 'dachshund'
+    }
+    
+    no_spaces = breed.replace(' ', '')
+    if no_spaces in variations:
+        return variations[no_spaces]
+    if breed in variations:
+        return variations[breed]
+    return breed
+
+def get_breed_health_tips(breed: str) -> str:
+    """Get formatted breed health tips for Mira's context"""
+    normalized = normalize_breed_for_health(breed)
+    data = BREED_HEALTH_DATA.get(normalized)
+    
+    if not data:
+        # Try partial match
+        for key in BREED_HEALTH_DATA:
+            if normalized in key or key in normalized:
+                data = BREED_HEALTH_DATA[key]
+                break
+    
+    if not data:
+        return ""
+    
+    tips = []
+    
+    if data.get('concerns'):
+        tips.append(f"  ⚠️ Health watch: {', '.join(data['concerns'][:2])}")
+    
+    if data.get('diet_tips'):
+        tips.append(f"  🍖 Diet: {data['diet_tips'][0]}")
+    
+    if data.get('care_tips'):
+        tips.append(f"  💡 Care: {data['care_tips'][0]}")
+    
+    return '\n'.join(tips) + '\n' if tips else ""
+
 # ============== CONSTANTS ==============
 
 # The 14 Pillars - Complete Set
