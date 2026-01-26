@@ -496,12 +496,84 @@ async def register_for_event(event_id: str, name: str, email: str, phone: Option
     if event.get("max_attendees") and len(event.get("attendees", [])) >= event["max_attendees"]:
         raise HTTPException(status_code=400, detail="This event is fully booked")
     
+    registration_id = f"REG-{uuid.uuid4().hex[:6].upper()}"
+    
     await db.adoption_events.update_one(
         {"event_id": event_id},
-        {"$push": {"attendees": {"name": name, "email": email, "phone": phone, "registered_at": datetime.now(timezone.utc).isoformat()}}}
+        {"$push": {"attendees": {
+            "registration_id": registration_id,
+            "name": name, 
+            "email": email, 
+            "phone": phone, 
+            "registered_at": datetime.now(timezone.utc).isoformat()
+        }}}
     )
     
-    return {"success": True, "message": f"You're registered for {event.get('title')}!"}
+    # Create notification for admin
+    notification_doc = {
+        "id": f"NOTIF-{uuid.uuid4().hex[:8].upper()}",
+        "type": "adopt_event_registration",
+        "pillar": "adopt",
+        "title": f"New Event Registration: {event.get('title')}",
+        "message": f"{name} registered for {event.get('title')} on {event.get('event_date')}",
+        "priority": "normal",
+        "status": "unread",
+        "source": "adopt_pillar",
+        "reference_id": registration_id,
+        "reference_type": "event_registration",
+        "customer": {"name": name, "email": email, "phone": phone},
+        "metadata": {
+            "event_id": event_id,
+            "event_title": event.get("title"),
+            "event_date": event.get("event_date"),
+            "venue": event.get("venue")
+        },
+        "action_required": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.admin_notifications.insert_one(notification_doc)
+    
+    # Create service desk ticket
+    ticket_doc = {
+        "ticket_id": registration_id,
+        "source": "adopt_pillar",
+        "channel": "web",
+        "pillar": "adopt",
+        "category": "event_registration",
+        "status": "info",
+        "priority": "low",
+        "subject": f"Event Registration: {event.get('title')} - {name}",
+        "description": f"{name} has registered for the adoption event '{event.get('title')}' on {event.get('event_date')}.",
+        "customer": {"name": name, "email": email, "phone": phone},
+        "metadata": {
+            "event_id": event_id,
+            "event_title": event.get("title"),
+            "event_date": event.get("event_date")
+        },
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.service_desk_tickets.insert_one(ticket_doc)
+    
+    # Create unified inbox entry
+    inbox_entry = {
+        "request_id": registration_id,
+        "channel": "web",
+        "request_type": "adopt_event_registration",
+        "pillar": "adopt",
+        "status": "confirmed",
+        "customer_name": name,
+        "customer_email": email,
+        "customer_phone": phone,
+        "message": f"Registered for {event.get('title')} on {event.get('event_date')}",
+        "metadata": {"event_id": event_id, "registration_id": registration_id},
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.channel_intakes.insert_one(inbox_entry)
+    
+    logger.info(f"Event registration: {registration_id} for {event_id}")
+    
+    return {"success": True, "registration_id": registration_id, "message": f"You're registered for {event.get('title')}!"}
 
 
 # ============== SHELTERS/RESCUES ==============
