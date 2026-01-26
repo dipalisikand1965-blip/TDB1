@@ -359,14 +359,14 @@ async def create_care_request(request: CareRequestCreate):
             "subject": f"Care Request: {care_config['name']} - {pet_name}",
             "description": f"{user_name or 'Customer'} needs {care_config['name'].lower()} for {pet_name} ({pet_breed or 'pet'}). {description}",
             "member": {
-                "name": request.user_name,
-                "email": request.user_email,
-                "phone": request.user_phone
+                "name": user_name,
+                "email": user_email,
+                "phone": user_phone
             },
             "pet_context": {
-                "pet_id": request.pet_id,
-                "pet_name": request.pet_name,
-                "pet_breed": request.pet_breed,
+                "pet_id": request.pet_id or "",
+                "pet_name": pet_name,
+                "pet_breed": pet_breed,
                 "care_context": care_context
             },
             "metadata": {
