@@ -4458,9 +4458,17 @@ async def get_public_products(
     """Public endpoint for products - queries both products and unified_products collections"""
     query = {}
     
+    # Handle parent_category filtering (new hierarchy system)
+    if parent_category:
+        query["parent_category"] = parent_category
+    
     # Handle pillar-based filtering (for unified_products)
     if pillar:
         query["pillar"] = pillar
+    
+    # Handle category filtering (subcategory level)
+    if category and category not in ["all", "pan-india"]:
+        query["category"] = category
     
     # Handle collection-based filtering (e.g., valentine)
     if collection:
