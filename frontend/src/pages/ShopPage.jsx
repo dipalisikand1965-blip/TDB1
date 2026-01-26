@@ -162,14 +162,27 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
         
         {/* Quick Add Button */}
         <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button 
-            onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
-            className="w-full bg-white text-teal-700 hover:bg-white/90 text-sm"
-            size="sm"
-          >
-            <ShoppingBag className="w-4 h-4 mr-1" />
-            Quick Add
-          </Button>
+          {/* If product has options, go to product page instead of quick add */}
+          {(product.has_variants || product.variants?.length > 1 || 
+            (product.options?.length > 0 && product.options.some(o => o.values?.length > 1))) ? (
+            <Button 
+              onClick={(e) => { e.stopPropagation(); handleClick(); }}
+              className="w-full bg-white text-purple-700 hover:bg-white/90 text-sm"
+              size="sm"
+            >
+              <Package className="w-4 h-4 mr-1" />
+              Select Options
+            </Button>
+          ) : (
+            <Button 
+              onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
+              className="w-full bg-white text-teal-700 hover:bg-white/90 text-sm"
+              size="sm"
+            >
+              <ShoppingBag className="w-4 h-4 mr-1" />
+              Quick Add
+            </Button>
+          )}
         </div>
       </div>
       
