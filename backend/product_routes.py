@@ -96,14 +96,19 @@ async def mongodb_fallback_search(
     or_conditions.extend([
         {"name": full_regex},
         {"description": full_regex},
+        {"short_description": full_regex},
+        {"long_description": full_regex},
     ])
     
     # Individual word matching across all searchable fields
     searchable_fields = [
-        "name", "description", "category", "tags",
-        "intelligent_tags", "breed_tags", "health_tags", 
-        "occasion_tags", "diet_tags", "lifestage_tags",
-        "size_tags", "search_keywords"
+        "name", "description", "short_description", "long_description",
+        "category", "subcategory", "tags", "collections",
+        "intelligent_tags.breed_tags", "intelligent_tags.health_tags",
+        "intelligent_tags.occasion_tags", "intelligent_tags.diet_tags",
+        "intelligent_tags.lifestage_tags", "intelligent_tags.size_tags",
+        "breed_tags", "health_tags", "occasion_tags", "diet_tags",
+        "lifestage_tags", "size_tags", "search_keywords"
     ]
     
     for word in query_words:
@@ -117,59 +122,69 @@ async def mongodb_fallback_search(
     if category:
         query["category"] = category
     if min_price is not None:
-        query["price"] = {"$gte": min_price}
+        query["$or"] = query.get("$or", [])
+        query["pricing.base_price"] = {"$gte": min_price}
     if max_price is not None:
-        if "price" in query:
-            query["price"]["$lte"] = max_price
+        if "pricing.base_price" in query:
+            query["pricing.base_price"]["$lte"] = max_price
         else:
-            query["price"] = {"$lte": max_price}
+            query["pricing.base_price"] = {"$lte": max_price}
     
-    # Get total count
-    total = await db.products.count_documents(query)
+    # Search in BOTH products and unified_products collections
+    products_from_unified = []
+    products_from_legacy = []
     
-    # Get products with relevance scoring using aggregation
-    pipeline = [
-        {"$match": query},
-        {
-            "$addFields": {
-                "relevance_score": {
-                    "$add": [
-                        # High weight for name match
-                        {"$cond": [{"$regexMatch": {"input": {"$toLower": "$name"}, "regex": q.lower()}}, 100, 0]},
-                        # Medium weight for breed tags
-                        {"$cond": [{"$in": [q.lower(), {"$ifNull": [{"$map": {"input": {"$ifNull": ["$breed_tags", []]}, "as": "t", "in": {"$toLower": "$$t"}}}, []]}]}, 50, 0]},
-                        # Weight for occasion tags
-                        {"$cond": [{"$gt": [{"$size": {"$ifNull": ["$occasion_tags", []]}}, 0]}, 20, 0]},
-                        # Base weight for any match
-                        10
-                    ]
-                }
-            }
-        },
-        {"$sort": {"relevance_score": -1, "name": 1}},
-        {"$skip": offset},
-        {"$limit": limit},
-        {"$project": {"relevance_score": 0}}  # Remove the score from output
-    ]
+    # Search unified_products (primary source)
+    try:
+        unified_total = await db.unified_products.count_documents(query)
+        unified_products = await db.unified_products.find(
+            query, {"_id": 0}
+        ).sort("name", 1).skip(offset).limit(limit).to_list(limit)
+        products_from_unified = unified_products
+    except Exception as e:
+        logger.warning(f"Error searching unified_products: {e}")
+        unified_total = 0
     
-    # Apply custom sort if specified
-    if sort == "price_asc":
-        pipeline[3] = {"$sort": {"price": 1}}
-    elif sort == "price_desc":
-        pipeline[3] = {"$sort": {"price": -1}}
-    elif sort == "name_desc":
-        pipeline[3] = {"$sort": {"name": -1}}
+    # Also search legacy products collection
+    try:
+        legacy_query = {"$or": or_conditions}
+        if category:
+            legacy_query["category"] = category
+        legacy_products = await db.products.find(
+            legacy_query, {"_id": 0}
+        ).sort("name", 1).limit(limit - len(products_from_unified)).to_list(limit)
+        products_from_legacy = legacy_products
+    except Exception as e:
+        logger.warning(f"Error searching products: {e}")
     
-    products = await db.products.aggregate(pipeline).to_list(limit)
+    # Combine and dedupe by name
+    all_products = []
+    seen_names = set()
+    for p in products_from_unified + products_from_legacy:
+        name = p.get("name", "").lower()
+        if name not in seen_names:
+            seen_names.add(name)
+            all_products.append(p)
     
-    # Remove _id from results
-    for p in products:
-        p.pop("_id", None)
+    # Sort by relevance (name match gets priority)
+    def relevance_score(product):
+        name = product.get("name", "").lower()
+        score = 0
+        if q.lower() in name:
+            score += 100
+        for word in query_words:
+            if word in name:
+                score += 50
+        return score
+    
+    all_products.sort(key=relevance_score, reverse=True)
     
     return {
-        "hits": products,
+        "products": all_products[:limit],
+        "hits": all_products[:limit],
         "query": q,
-        "estimatedTotalHits": total,
+        "total": len(all_products),
+        "estimatedTotalHits": unified_total + len(products_from_legacy),
         "limit": limit,
         "offset": offset,
         "fallback": True
