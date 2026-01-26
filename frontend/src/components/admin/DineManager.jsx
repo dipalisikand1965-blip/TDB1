@@ -2318,6 +2318,11 @@ const BundleModal = ({ bundle, onSave, onClose }) => {
               onChange={(e) => setFormData({ ...formData, image: e.target.value })}
               placeholder="https://..."
             />
+            {formData.image && (
+              <div className="mt-2 w-24 h-24 rounded-lg overflow-hidden border">
+                <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
+              </div>
+            )}
           </div>
           
           <div className="grid grid-cols-2 gap-4">
