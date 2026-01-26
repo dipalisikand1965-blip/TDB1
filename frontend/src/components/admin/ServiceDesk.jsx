@@ -3665,22 +3665,223 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                           ? "Type your WhatsApp message..."
                           : "Type your reply..."
                   }
-                  className="min-h-[150px] resize-none"
-                  rows={6}
+                  className="min-h-[120px] resize-none"
+                  rows={5}
                 />
+              </div>
+              
+              {/* Attachments Section */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Attachments</Label>
+                
+                {/* Attachment Buttons */}
+                <div className="flex gap-2 flex-wrap">
+                  {/* Document Upload */}
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.txt,.csv,.xlsx"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.size > 10 * 1024 * 1024) {
+                            alert('File too large. Maximum 10MB allowed.');
+                            return;
+                          }
+                          setReplyAttachments(prev => [...prev, {
+                            id: Date.now(),
+                            type: 'document',
+                            name: file.name,
+                            size: file.size,
+                            file: file
+                          }]);
+                        }
+                        e.target.value = '';
+                      }}
+                    />
+                    <div className="flex items-center gap-2 px-3 py-2 border rounded-lg hover:bg-gray-50 transition-colors">
+                      <File className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm">Document</span>
+                    </div>
+                  </label>
+                  
+                  {/* Image Upload */}
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.size > 5 * 1024 * 1024) {
+                            alert('Image too large. Maximum 5MB allowed.');
+                            return;
+                          }
+                          const url = URL.createObjectURL(file);
+                          setReplyAttachments(prev => [...prev, {
+                            id: Date.now(),
+                            type: 'image',
+                            name: file.name,
+                            size: file.size,
+                            file: file,
+                            preview: url
+                          }]);
+                        }
+                        e.target.value = '';
+                      }}
+                    />
+                    <div className="flex items-center gap-2 px-3 py-2 border rounded-lg hover:bg-gray-50 transition-colors">
+                      <Image className="w-4 h-4 text-green-600" />
+                      <span className="text-sm">Image</span>
+                    </div>
+                  </label>
+                  
+                  {/* Voice Recording */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={async () => {
+                      if (isRecording) {
+                        // Stop recording
+                        if (mediaRecorder) {
+                          mediaRecorder.stop();
+                          setIsRecording(false);
+                        }
+                      } else {
+                        // Start recording
+                        try {
+                          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                          const recorder = new MediaRecorder(stream);
+                          const chunks = [];
+                          
+                          recorder.ondataavailable = (e) => chunks.push(e.data);
+                          recorder.onstop = () => {
+                            const blob = new Blob(chunks, { type: 'audio/webm' });
+                            setAudioBlob(blob);
+                            setReplyAttachments(prev => [...prev, {
+                              id: Date.now(),
+                              type: 'voice',
+                              name: `Voice Recording ${new Date().toLocaleTimeString()}`,
+                              size: blob.size,
+                              blob: blob,
+                              duration: recordingTime
+                            }]);
+                            setRecordingTime(0);
+                            stream.getTracks().forEach(track => track.stop());
+                          };
+                          
+                          recorder.start();
+                          setMediaRecorder(recorder);
+                          setIsRecording(true);
+                          
+                          // Recording timer
+                          const startTime = Date.now();
+                          const timer = setInterval(() => {
+                            setRecordingTime(Math.floor((Date.now() - startTime) / 1000));
+                          }, 1000);
+                          
+                          recorder.onstop = () => {
+                            clearInterval(timer);
+                            const blob = new Blob(chunks, { type: 'audio/webm' });
+                            setReplyAttachments(prev => [...prev, {
+                              id: Date.now(),
+                              type: 'voice',
+                              name: `Voice Recording ${new Date().toLocaleTimeString()}`,
+                              size: blob.size,
+                              blob: blob,
+                              duration: recordingTime
+                            }]);
+                            setRecordingTime(0);
+                            stream.getTracks().forEach(track => track.stop());
+                          };
+                        } catch (err) {
+                          console.error('Error accessing microphone:', err);
+                          alert('Could not access microphone. Please check permissions.');
+                        }
+                      }
+                    }}
+                    className={`flex items-center gap-2 ${isRecording ? 'bg-red-100 border-red-300 text-red-700' : ''}`}
+                  >
+                    {isRecording ? (
+                      <>
+                        <StopCircle className="w-4 h-4 text-red-600 animate-pulse" />
+                        <span className="text-sm">Stop ({recordingTime}s)</span>
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="w-4 h-4 text-purple-600" />
+                        <span className="text-sm">Voice</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
+                
+                {/* Attachments Preview */}
+                {replyAttachments.length > 0 && (
+                  <div className="space-y-2 p-3 bg-gray-50 rounded-lg border">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-gray-700">{replyAttachments.length} attachment(s)</span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 text-xs text-red-600 hover:text-red-700"
+                        onClick={() => setReplyAttachments([])}
+                      >
+                        Clear All
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {replyAttachments.map(att => (
+                        <div 
+                          key={att.id} 
+                          className="flex items-center gap-2 px-2 py-1 bg-white border rounded-lg text-xs"
+                        >
+                          {att.type === 'document' && <File className="w-3 h-3 text-blue-600" />}
+                          {att.type === 'image' && (
+                            att.preview ? (
+                              <img src={att.preview} alt="" className="w-6 h-6 rounded object-cover" />
+                            ) : (
+                              <Image className="w-3 h-3 text-green-600" />
+                            )
+                          )}
+                          {att.type === 'voice' && <Mic className="w-3 h-3 text-purple-600" />}
+                          <span className="max-w-[100px] truncate">{att.name}</span>
+                          <span className="text-gray-400">({(att.size / 1024).toFixed(1)}KB)</span>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-5 w-5 p-0 hover:bg-red-100"
+                            onClick={() => setReplyAttachments(prev => prev.filter(a => a.id !== att.id))}
+                          >
+                            <X className="w-3 h-3 text-red-500" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               
               {/* Action Buttons */}
               <div className="flex justify-end gap-3 pt-2">
-                <Button variant="outline" onClick={() => setShowReplyModal(false)}>
+                <Button variant="outline" onClick={() => {
+                  setShowReplyModal(false);
+                  setReplyAttachments([]);
+                  setAudioBlob(null);
+                }}>
                   Cancel
                 </Button>
                 <Button 
                   onClick={async () => {
                     await handleReply();
                     setShowReplyModal(false);
+                    setReplyAttachments([]);
+                    setAudioBlob(null);
                   }} 
-                  disabled={sendingReply || !replyText.trim()} 
+                  disabled={sendingReply || (!replyText.trim() && replyAttachments.length === 0)} 
                   className={`min-w-[120px] ${
                     isInternalNote ? 'bg-gray-600 hover:bg-gray-700' :
                     sendChannel === 'email' ? 'bg-blue-600 hover:bg-blue-700' : 
@@ -3694,6 +3895,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                     <>
                       <Send className="w-4 h-4 mr-2" /> 
                       {isInternalNote ? 'Add Note' : sendChannel === 'email' ? 'Send Email' : 'Open WhatsApp'}
+                      {replyAttachments.length > 0 && ` (${replyAttachments.length})`}
                     </>
                   )}
                 </Button>
