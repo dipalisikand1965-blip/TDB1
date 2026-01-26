@@ -631,6 +631,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     setSelectedTicket(ticket);
     setConversationSummary(null);
     setIsEditingTicket(false);
+    setPetSoulPrompts(null);
     await fetchContext(ticket);
     
     // Fetch full ticket details if it's from the tickets collection
@@ -643,6 +644,10 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           // Generate summary for tickets with messages
           if (data.ticket?.messages?.length > 0) {
             generateConversationSummary(data.ticket);
+          }
+          // Fetch Pet Soul prompts if pet is linked
+          if (data.ticket?.pet_info?.id || data.ticket?.pet_id) {
+            fetchPetSoulPrompts(data.ticket.pet_info?.id || data.ticket.pet_id);
           }
         }
       } catch (e) {
