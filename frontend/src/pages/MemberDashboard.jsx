@@ -873,7 +873,7 @@ const MemberDashboard = () => {
                 {primaryPet ? (
                   <>
                     <span className="text-white/90">{user.name?.split(' ')[0]}</span>, we&apos;re here to take care of {primaryPet.name}.
-                    {primaryPet.breed && <span className="text-purple-300"> Your beautiful {primaryPet.breed}.</span>}
+                    {primaryPet.breed && <span className="text-teal-300"> Your beautiful {primaryPet.breed}.</span>}
                   </>
                 ) : (
                   <>Add your first pet to unlock the full Pet Concierge experience.</>
