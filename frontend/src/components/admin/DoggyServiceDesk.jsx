@@ -469,7 +469,9 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 const ordersData = await ordersRes.json();
                 setOrderHistory(ordersData.orders || []);
               }
-            } catch (e) {}
+            } catch (e) {
+              console.debug('Could not fetch orders:', e);
+            }
           }
         }
       }
@@ -492,7 +494,9 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           const data = await res.json();
           setSelectedTicket(prev => ({ ...prev, ...data.ticket, messages: data.ticket?.messages || prev.messages }));
         }
-      } catch (e) {}
+      } catch (e) {
+        console.debug('Could not fetch full ticket details:', e);
+      }
     }
   };
 
