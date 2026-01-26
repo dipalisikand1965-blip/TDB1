@@ -2298,3 +2298,36 @@ async def delete_ticket_attachment(ticket_id: str, filename: str):
     )
     
     return {"success": True, "message": "Attachment deleted"}
+
+
+@router.get("/{ticket_id}/files/{filename}")
+async def serve_ticket_file(ticket_id: str, filename: str):
+    """Serve a ticket attachment file"""
+    from fastapi.responses import FileResponse
+    
+    file_path = f"uploads/tickets/{ticket_id}/{filename}"
+    
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    # Determine content type
+    content_type = "application/octet-stream"
+    if filename.endswith(('.jpg', '.jpeg')):
+        content_type = "image/jpeg"
+    elif filename.endswith('.png'):
+        content_type = "image/png"
+    elif filename.endswith('.gif'):
+        content_type = "image/gif"
+    elif filename.endswith('.webp'):
+        content_type = "image/webp"
+    elif filename.endswith('.pdf'):
+        content_type = "application/pdf"
+    elif filename.endswith('.webm'):
+        content_type = "audio/webm"
+    elif filename.endswith('.mp3'):
+        content_type = "audio/mpeg"
+    elif filename.endswith('.wav'):
+        content_type = "audio/wav"
+    
+    return FileResponse(file_path, media_type=content_type)
+
