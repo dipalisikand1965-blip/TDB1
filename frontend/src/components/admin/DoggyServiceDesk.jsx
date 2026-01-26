@@ -214,6 +214,12 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     pet_name: ''
   });
   
+  // Settings Modal
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [newStatusName, setNewStatusName] = useState('');
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryEmoji, setNewCategoryEmoji] = useState('📁');
+  
   // Sidebar data for Pet Parents, Orders, Analytics
   const [petParents, setPetParents] = useState([]);
   const [petProfiles, setPetProfiles] = useState([]);
