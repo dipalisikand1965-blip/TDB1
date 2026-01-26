@@ -97,6 +97,7 @@ const UnifiedProductBox = () => {
   const [filterType, setFilterType] = useState('');
   const [filterPillar, setFilterPillar] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [filterShipping, setFilterShipping] = useState('');
   const [filterRewardEligible, setFilterRewardEligible] = useState(null);
   
   // Pagination
