@@ -1955,6 +1955,26 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                           </Card>
                         )}
                         
+                        {/* ==================== PET SOUL PROMPTS ==================== */}
+                        {petSoulPrompts && (
+                          <Card className="p-3 mb-4 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Sparkles className="w-4 h-4 text-amber-600" />
+                              <span className="text-xs font-semibold text-amber-700 uppercase tracking-wide">Pet Soul Insights</span>
+                            </div>
+                            <div className="space-y-2">
+                              {Array.isArray(petSoulPrompts) ? petSoulPrompts.slice(0, 3).map((prompt, idx) => (
+                                <div key={idx} className="text-xs text-amber-800 flex items-start gap-2">
+                                  <span className="text-amber-500">•</span>
+                                  <span>{prompt}</span>
+                                </div>
+                              )) : (
+                                <p className="text-xs text-amber-700">{petSoulPrompts}</p>
+                              )}
+                            </div>
+                          </Card>
+                        )}
+                        
                         {/* Customer & Pet Info Bar */}
                         <Card className="p-3 mb-4 bg-gray-50 border-gray-100">
                           <div className="flex items-center gap-3">
