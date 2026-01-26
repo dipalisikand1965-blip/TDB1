@@ -99,7 +99,14 @@ const TravelPage = () => {
     is_round_trip: false,
     special_requirements: '',
     pet_weight: '',
-    crate_trained: null
+    crate_trained: null,
+    // Manual pet entry (for users without profile)
+    pet_name: '',
+    pet_breed: '',
+    // Contact info (for non-logged in users)
+    contact_name: '',
+    contact_email: '',
+    contact_phone: ''
   });
 
   // Scroll to top on mount, or to hash if present
