@@ -1244,6 +1244,53 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     }
   };
 
+  // Open Edit Modal with current ticket data
+  const openEditModal = () => {
+    if (!selectedTicket) return;
+    setEditForm({
+      subject: selectedTicket.subject || selectedTicket.description?.substring(0, 100) || '',
+      category: selectedTicket.category || '',
+      urgency: selectedTicket.urgency || 'medium',
+      description: selectedTicket.description || '',
+      assigned_to: selectedTicket.assigned_to || ''
+    });
+    setShowEditModal(true);
+  };
+
+  // Save Ticket Edits
+  const saveTicketEdits = async () => {
+    if (!selectedTicket) return;
+    setSaving(true);
+    
+    try {
+      const response = await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}`, {
+        method: 'PATCH',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subject: editForm.subject,
+          category: editForm.category,
+          urgency: editForm.urgency,
+          description: editForm.description,
+          assigned_to: editForm.assigned_to || null
+        })
+      });
+      
+      if (response.ok) {
+        setShowEditModal(false);
+        fetchTicketDetails(selectedTicket.ticket_id);
+        fetchTickets();
+      } else {
+        const error = await response.json();
+        alert(error.detail || 'Failed to save changes');
+      }
+    } catch (err) {
+      console.error('Error saving ticket:', err);
+      alert('Failed to save changes');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   // New Ticket Form Component
   const NewTicketForm = () => {
     const [formData, setFormData] = useState({
