@@ -23,13 +23,17 @@ import {
 
 // ==================== PILLAR CONFIGURATION ====================
 const PILLARS = {
+  celebrate: { 
+    icon: PartyPopper, emoji: '🎂', color: 'bg-pink-500', name: 'Celebrate',
+    sources: ['party_booking', 'cake_order', 'photoshoot', 'birthday']
+  },
   dine: { 
     icon: Utensils, emoji: '🍽️', color: 'bg-orange-500', name: 'Dine',
     sources: ['reservation', 'meal_order', 'dine_inquiry']
   },
   stay: { 
     icon: Hotel, emoji: '🏨', color: 'bg-blue-500', name: 'Stay',
-    sources: ['booking', 'stay_inquiry', 'boarding']
+    sources: ['booking', 'stay_inquiry', 'boarding', 'stay_booking']
   },
   travel: { 
     icon: Plane, emoji: '✈️', color: 'bg-cyan-500', name: 'Travel',
@@ -37,11 +41,7 @@ const PILLARS = {
   },
   care: { 
     icon: Stethoscope, emoji: '💊', color: 'bg-red-500', name: 'Care',
-    sources: ['care_request', 'grooming', 'vet_coordination']
-  },
-  celebrate: { 
-    icon: PartyPopper, emoji: '🎂', color: 'bg-pink-500', name: 'Celebrate',
-    sources: ['party_booking', 'cake_order', 'photoshoot']
+    sources: ['care_request', 'grooming', 'vet_coordination', 'health']
   },
   enjoy: { 
     icon: Target, emoji: '🎾', color: 'bg-violet-500', name: 'Enjoy',
@@ -49,28 +49,44 @@ const PILLARS = {
   },
   fit: { 
     icon: Dumbbell, emoji: '🏃', color: 'bg-green-500', name: 'Fit',
-    sources: ['fitness_program', 'assessment_booking']
+    sources: ['fitness_program', 'assessment_booking', 'training']
+  },
+  learn: { 
+    icon: GraduationCap, emoji: '🎓', color: 'bg-indigo-500', name: 'Learn',
+    sources: ['training_enrollment', 'workshop', 'course']
+  },
+  paperwork: { 
+    icon: FileText, emoji: '📄', color: 'bg-gray-500', name: 'Paperwork',
+    sources: ['documentation', 'certificate', 'registration']
+  },
+  advisory: { 
+    icon: BookOpen, emoji: '📋', color: 'bg-slate-500', name: 'Advisory',
+    sources: ['consultation', 'advice_request', 'guidance']
+  },
+  emergency: { 
+    icon: Siren, emoji: '🚨', color: 'bg-red-600', name: 'Emergency',
+    sources: ['emergency_request', 'urgent_care', 'sos']
+  },
+  farewell: { 
+    icon: Heart, emoji: '🌈', color: 'bg-purple-400', name: 'Farewell',
+    sources: ['memorial', 'farewell_service', 'cremation']
+  },
+  adopt: { 
+    icon: PawPrint, emoji: '🐾', color: 'bg-teal-500', name: 'Adopt',
+    sources: ['adoption_inquiry', 'rehoming', 'foster']
   },
   shop: { 
     icon: ShoppingBag, emoji: '🛒', color: 'bg-amber-500', name: 'Shop',
     sources: ['order', 'product_inquiry', 'return_request']
-  },
-  emergency: { 
-    icon: Siren, emoji: '🚨', color: 'bg-red-600', name: 'Emergency',
-    sources: ['emergency_request', 'urgent_care']
-  },
-  advisory: { 
-    icon: BookOpen, emoji: '📋', color: 'bg-slate-500', name: 'Advisory',
-    sources: ['consultation', 'advice_request']
-  },
-  insure: { 
-    icon: Shield, emoji: '🛡️', color: 'bg-indigo-500', name: 'Insure',
-    sources: ['insurance_inquiry', 'claim']
-  },
-  community: { 
-    icon: Heart, emoji: '🤝', color: 'bg-rose-500', name: 'Community',
-    sources: ['community_post', 'report']
   }
+};
+
+// Special sections (not pillars but important categories)
+const SPECIAL_SECTIONS = {
+  mira: { icon: Sparkles, emoji: '✨', color: 'bg-gradient-to-r from-purple-500 to-pink-500', name: 'Mira AI', sources: ['mira_chat', 'ai_conversation'] },
+  membership: { icon: CreditCard, emoji: '💳', color: 'bg-emerald-500', name: 'Membership', sources: ['membership', 'subscription', 'upgrade'] },
+  pet_parent: { icon: User, emoji: '👤', color: 'bg-blue-400', name: 'Pet Parent', sources: ['member_inquiry', 'account'] },
+  pet_profile: { icon: Dog, emoji: '🐕', color: 'bg-amber-400', name: 'Pet Profile', sources: ['pet_inquiry', 'pet_update'] }
 };
 
 // ==================== STATUS & PRIORITY CONFIG ====================
