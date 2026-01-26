@@ -1621,7 +1621,7 @@ const UnifiedPetPage = () => {
 
           {/* Pet Pass Identity Tab */}
           <TabsContent value="identity" className="mt-0">
-            {pet.pet_pass_number ? (
+            {safePet.pet_pass_number ? (
               <div className="max-w-md mx-auto">
                 <PetPassCard 
                   pet={{
