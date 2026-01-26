@@ -5,6 +5,44 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
+## Session 31 - Anonymous Form Submissions & Admin Enhancements (January 26, 2026)
+
+### ✅ ALL BUGS FIXED (100% Pass Rate)
+
+**1. Travel & Care Forms - Anonymous Submissions**
+- Backend models (`TravelRequestCreate`, `CareRequestCreate`) now have all fields optional except type
+- Frontend forms allow manual pet entry for users without pet profiles
+- Contact info fields (name, email, phone) added for non-logged-in users
+- Field validator added to handle empty pet_weight strings
+- Files: `/app/backend/travel_routes.py`, `/app/backend/care_routes.py`
+- Files: `/app/frontend/src/pages/TravelPage.jsx`, `/app/frontend/src/pages/CarePage.jsx`
+
+**2. Stay Admin - Photo URLs Field**
+- Added Photo URLs textarea to PropertyModal in StayManager
+- Supports multiple image URLs (one per line)
+- Includes image preview functionality
+- File: `/app/frontend/src/components/StayManager.jsx` (lines 1502-1518)
+
+**3. Auto-Seed Enhancement**
+- Updated `seed_all_pillars` to include Dine bundles and products
+- Added standalone seed functions for Dine pillar
+- File: `/app/backend/server.py`, `/app/backend/dine_routes.py`
+
+### 📊 Testing Results (Iteration 86)
+| Test | Status |
+|------|--------|
+| Travel anonymous submission | ✅ PASS |
+| Care anonymous submission | ✅ PASS |
+| Dine fresh meals (22 products) | ✅ PASS |
+| Stay photo URLs field | ✅ VERIFIED |
+
+### 🔑 Key Changes
+- All pillar forms (Stay, Dine, Travel, Care) now work WITHOUT LOGIN
+- Users can enter pet details manually if not logged in
+- Contact info collected inline for anonymous submissions
+
+---
+
 ## Session 30 - Multi-Pet Booking Forms & Navigation Fixes (January 26, 2026)
 
 ### ✅ ALL BUGS FIXED (100% Pass Rate)
