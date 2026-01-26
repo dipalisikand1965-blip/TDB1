@@ -2699,9 +2699,15 @@ async def create_test_user(
     # Check if user exists
     existing = await db.users.find_one({"email": email})
     if existing:
+        # Update the password if user exists (useful for resetting test accounts)
+        hashed_password = pwd_context.hash(password)
+        await db.users.update_one(
+            {"email": email},
+            {"$set": {"password_hash": hashed_password, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
         return {
-            "success": False,
-            "message": f"User {email} already exists",
+            "success": True,
+            "message": f"User {email} password updated",
             "user_id": existing.get("id") or str(existing.get("_id"))
         }
     
@@ -2712,7 +2718,7 @@ async def create_test_user(
     new_user = {
         "id": user_id,
         "email": email,
-        "password": hashed_password,
+        "password_hash": hashed_password,  # Use password_hash field name
         "name": name,
         "role": "member",
         "membership_tier": "standard",
