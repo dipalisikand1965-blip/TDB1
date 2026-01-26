@@ -834,6 +834,12 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   return (
     <div className="flex h-screen bg-gray-100" data-testid="doggy-service-desk">
       
+      {/* Real-time Notification Toast */}
+      <TicketNotificationToast 
+        notification={realtimeNotification} 
+        onDismiss={() => setRealtimeNotification(null)} 
+      />
+      
       {/* ==================== LEFT SIDEBAR ==================== */}
       <div className={`bg-slate-800 text-white transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'w-16' : 'w-60'}`}>
         {/* Logo */}
@@ -850,6 +856,16 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             )}
           </div>
         </div>
+        
+        {/* WebSocket Connection Status */}
+        {!sidebarCollapsed && (
+          <div className="px-4 py-2 border-b border-slate-700">
+            <div className={`flex items-center gap-2 text-xs ${connected ? 'text-emerald-400' : 'text-amber-400'}`}>
+              {connected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
+              <span>{connected ? 'Live Updates Active' : 'Connecting...'}</span>
+            </div>
+          </div>
+        )}
         
         {/* Navigation */}
         <nav className="flex-1 p-2 overflow-y-auto">
