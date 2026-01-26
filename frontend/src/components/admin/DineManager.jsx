@@ -137,6 +137,7 @@ const DineManager = ({ credentials }) => {
   // Fetch reservations
   const fetchReservations = async () => {
     setIsLoading(true);
+    setReservations([]); // Clear first to show loading state
     try {
       const url = reservationFilter === 'all' 
         ? `${API_URL}/api/admin/dine/reservations`
@@ -147,6 +148,11 @@ const DineManager = ({ credentials }) => {
       if (response.ok) {
         const data = await response.json();
         setReservations(data.reservations || []);
+        setReservationStats(data.stats || {
+          pending: (data.reservations || []).filter(r => r.status === 'pending').length,
+          confirmed: (data.reservations || []).filter(r => r.status === 'confirmed').length,
+          completed: (data.reservations || []).filter(r => r.status === 'completed').length
+        });
       }
     } catch (error) {
       console.error('Error fetching reservations:', error);
