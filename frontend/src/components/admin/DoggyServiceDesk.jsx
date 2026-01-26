@@ -535,11 +535,35 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      await Promise.all([fetchAllTickets(), fetchCustomSettings()]);
+      await fetchAllTickets();
       setLoading(false);
     };
     load();
   }, [fetchAllTickets]);
+  
+  // Load custom settings on mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const [statusRes, catRes] = await Promise.all([
+          fetch(`${getApiUrl()}/api/tickets/statuses`, { headers: authHeaders }),
+          fetch(`${getApiUrl()}/api/tickets/categories`, { headers: authHeaders })
+        ]);
+        
+        if (statusRes.ok) {
+          const data = await statusRes.json();
+          setCustomStatuses(data.statuses?.filter(s => !s.is_default) || []);
+        }
+        if (catRes.ok) {
+          const data = await catRes.json();
+          setCustomCategories(data.categories?.filter(c => !c.is_default) || []);
+        }
+      } catch (err) {
+        console.debug('Could not fetch custom settings:', err);
+      }
+    };
+    loadSettings();
+  }, [authHeaders]);
 
   // Fetch pet & member context when ticket selected
   const fetchContext = async (ticket) => {
