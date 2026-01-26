@@ -555,7 +555,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     load();
   }, [fetchAllTickets]);
   
-  // Load custom settings on mount
+  // Load custom settings and sidebar data on mount
   useEffect(() => {
     const loadSettings = async () => {
       try {
@@ -577,6 +577,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       }
     };
     loadSettings();
+    fetchSidebarData();
   }, [authHeaders]);
 
   // Fetch pet & member context when ticket selected
@@ -586,6 +587,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     setPetProfile(null);
     setMemberProfile(null);
     setOrderHistory([]);
+    setPetSoulPrompts(null);
     
     try {
       // Try to fetch pet profile
