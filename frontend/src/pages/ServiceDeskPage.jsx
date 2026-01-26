@@ -28,7 +28,9 @@ const ServiceDeskPage = () => {
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem('tdc_admin_token');
-      if (token) {
+      const storedUser = localStorage.getItem('tdc_admin_user');
+      const storedPassword = localStorage.getItem('tdc_admin_password');
+      if (token || (storedUser && storedPassword)) {
         setIsAuthenticated(true);
       }
       setIsLoading(false);
