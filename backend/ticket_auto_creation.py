@@ -130,6 +130,43 @@ async def create_auto_ticket(
         await database.service_desk_tickets.insert_one(ticket)
         logger.info(f"Auto-created ticket {ticket_id} for {event_type}")
         
+        # Also create admin notification for the Command Center bell
+        notification = {
+            "id": f"NOTIF-{uuid.uuid4().hex[:8].upper()}",
+            "type": event_type,
+            "pillar": pillar,
+            "title": subject,
+            "message": description[:200] if len(description) > 200 else description,
+            "priority": urgency,
+            "status": "unread",
+            "source": "auto_system",
+            "reference_id": reference_id,
+            "reference_type": reference_type,
+            "ticket_id": ticket_id,
+            "customer": member,
+            "pet": pet,
+            "action_required": action_required,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await database.admin_notifications.insert_one(notification)
+        
+        # Also add to channel_intakes for Unified Inbox visibility
+        inbox_entry = {
+            "request_id": ticket_id,
+            "channel": "system",
+            "request_type": event_type,
+            "pillar": pillar,
+            "status": "pending" if action_required else "info",
+            "customer_name": member.get("name") if member else None,
+            "customer_email": member.get("email") if member else None,
+            "customer_phone": member.get("phone") if member else None,
+            "pet_info": pet,
+            "message": description,
+            "metadata": {"ticket_id": ticket_id, "event_type": event_type, **(metadata or {})},
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await database.channel_intakes.insert_one(inbox_entry)
+        
         return {
             "success": True,
             "ticket_id": ticket_id,
