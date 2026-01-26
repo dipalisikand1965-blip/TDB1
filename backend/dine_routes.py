@@ -2500,14 +2500,23 @@ async def get_dine_products(
     query = {"category": {"$in": ["dine", "fresh-meals"]}}
     if dine_type:
         query["dine_type"] = dine_type
-    if in_stock is not None:
-        query["in_stock"] = in_stock
     
-    products = await db.products.find(query, {"_id": 0}).to_list(100)
+    # Get from products collection (dine accessories)
+    dine_products = await db.products.find({"category": "dine"}, {"_id": 0}).to_list(50)
+    
+    # Get fresh meals from unified_products
+    fresh_meals_query = {"category": "fresh-meals"}
+    if in_stock is not None:
+        fresh_meals_query["in_stock"] = {"$ne": False}  # Include if not explicitly false
+    
+    fresh_meals = await db.unified_products.find(fresh_meals_query, {"_id": 0}).to_list(50)
+    
+    # Combine both
+    all_products = dine_products + fresh_meals
     
     return {
-        "products": products,
-        "total": len(products)
+        "products": all_products,
+        "total": len(all_products)
     }
 
 
