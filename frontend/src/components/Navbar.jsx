@@ -224,7 +224,7 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Fetch search suggestions
+  // Fetch search suggestions - Universal Search (Google of the site)
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (searchQuery.length < 2) {
@@ -232,26 +232,116 @@ const Navbar = () => {
         return;
       }
       try {
-        const res = await fetch(`${API_URL}/api/search/typeahead?q=${encodeURIComponent(searchQuery)}&limit=8`);
+        const res = await fetch(`${API_URL}/api/search/universal?q=${encodeURIComponent(searchQuery)}&limit=12`);
         if (res.ok) {
           const data = await res.json();
-          // API returns products, transform to suggestion format
-          const products = data.products || [];
-          const suggestions = products.map(p => ({
-            type: 'product',
-            text: p.name || p.title,
-            name: p.name || p.title,
-            id: p.id,
-            image: p.image || p.image_url || p.images?.[0],
-            price: p.price || p.pricing?.base_price,
-            url: `/product/${p.shopify_handle || p.handle || p.id}`,
-            hasVariants: p.has_variants || p.variants?.length > 1 || p.options?.some(o => o.values?.length > 1)
-          }));
-          setSearchSuggestions(suggestions);
+          
+          // Combine all result types into unified suggestions
+          const suggestions = [];
+          
+          // Add page matches first (highest priority for navigation queries)
+          (data.pages || []).forEach(page => {
+            suggestions.push({
+              type: 'page',
+              text: page.name,
+              name: page.name,
+              description: page.description,
+              url: page.url,
+              icon: page.icon,
+              pilllarType: page.type
+            });
+          });
+          
+          // Add products
+          (data.products || []).forEach(p => {
+            suggestions.push({
+              type: 'product',
+              text: p.name || p.title,
+              name: p.name || p.title,
+              id: p.id,
+              image: p.image || p.image_url || p.images?.[0],
+              price: p.price || p.pricing?.base_price,
+              url: p.url || `/product/${p.shopify_handle || p.handle || p.id}`,
+              hasVariants: p.has_variants
+            });
+          });
+          
+          // Add events
+          (data.events || []).forEach(e => {
+            suggestions.push({
+              type: 'event',
+              text: e.name,
+              name: e.name,
+              description: `${e.venue_name || ''} • ${e.event_date ? new Date(e.event_date).toLocaleDateString() : ''}`,
+              url: e.url,
+              image: e.image,
+              price: e.price
+            });
+          });
+          
+          // Add restaurants
+          (data.restaurants || []).forEach(r => {
+            suggestions.push({
+              type: 'restaurant',
+              text: r.name,
+              name: r.name,
+              description: `${r.cuisine || ''} • ${r.location || ''}`,
+              url: r.url,
+              image: r.image,
+              rating: r.rating
+            });
+          });
+          
+          // Add adopt pets
+          (data.adopt_pets || []).forEach(pet => {
+            suggestions.push({
+              type: 'adopt_pet',
+              text: pet.name,
+              name: pet.name,
+              description: pet.description,
+              url: pet.url,
+              image: pet.image
+            });
+          });
+          
+          // Add FAQs
+          (data.faqs || []).forEach(f => {
+            suggestions.push({
+              type: 'faq',
+              text: f.name,
+              name: f.name,
+              description: f.description,
+              url: f.url
+            });
+          });
+          
+          setSearchSuggestions(suggestions.slice(0, 10));
           setShowSearchSuggestions(suggestions.length > 0);
         }
       } catch (error) {
-        console.error('Typeahead error:', error);
+        console.error('Universal search error:', error);
+        // Fallback to basic product search
+        try {
+          const fallbackRes = await fetch(`${API_URL}/api/search/typeahead?q=${encodeURIComponent(searchQuery)}&limit=8`);
+          if (fallbackRes.ok) {
+            const data = await fallbackRes.json();
+            const products = data.products || [];
+            const suggestions = products.map(p => ({
+              type: 'product',
+              text: p.name || p.title,
+              name: p.name || p.title,
+              id: p.id,
+              image: p.image || p.image_url || p.images?.[0],
+              price: p.price || p.pricing?.base_price,
+              url: `/product/${p.shopify_handle || p.handle || p.id}`,
+              hasVariants: p.has_variants || p.variants?.length > 1
+            }));
+            setSearchSuggestions(suggestions);
+            setShowSearchSuggestions(suggestions.length > 0);
+          }
+        } catch (fallbackError) {
+          console.error('Fallback search error:', fallbackError);
+        }
       }
     };
     const debounce = setTimeout(fetchSuggestions, 200);
