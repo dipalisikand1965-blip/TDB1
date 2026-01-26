@@ -86,28 +86,30 @@ async def mongodb_fallback_search(
 ):
     """Fallback search using MongoDB when Meilisearch is unavailable"""
     # Split query into words for better matching
-    query_words = q.lower().split()
-    search_regex = {"$regex": q, "$options": "i"}
+    query_words = [w.strip() for w in q.lower().split() if w.strip()]
     
-    # Build OR conditions for each search term
-    or_conditions = [
-        {"name": search_regex},
-        {"description": search_regex},
-        {"tags": search_regex},
-        {"category": search_regex},
+    # Build comprehensive OR conditions
+    or_conditions = []
+    
+    # Full query match
+    full_regex = {"$regex": q, "$options": "i"}
+    or_conditions.extend([
+        {"name": full_regex},
+        {"description": full_regex},
+    ])
+    
+    # Individual word matching across all searchable fields
+    searchable_fields = [
+        "name", "description", "category", "tags",
+        "intelligent_tags", "breed_tags", "health_tags", 
+        "occasion_tags", "diet_tags", "lifestage_tags",
+        "size_tags", "search_keywords"
     ]
     
-    # Add intelligent tags matching
     for word in query_words:
         word_regex = {"$regex": word, "$options": "i"}
-        or_conditions.extend([
-            {"intelligent_tags": word_regex},
-            {"breed_tags": word_regex},
-            {"health_tags": word_regex},
-            {"occasion_tags": word_regex},
-            {"diet_tags": word_regex},
-            {"search_keywords": word_regex},
-        ])
+        for field in searchable_fields:
+            or_conditions.append({field: word_regex})
     
     query = {"$or": or_conditions}
     
