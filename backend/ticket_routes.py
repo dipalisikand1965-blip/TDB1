@@ -2483,12 +2483,3 @@ Messages included: {len(filtered_messages)} (incoming: {sum(1 for m in filtered_
         
         return {"summary": basic_summary}
 
-                    "user": time_entry["agent"],
-                    "timestamp": time_entry["created_at"]
-                }
-            }
-        }
-    )
-    
-    return {"success": True, "entry": time_entry}
-
