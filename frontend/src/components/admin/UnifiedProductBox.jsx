@@ -252,7 +252,7 @@ const UnifiedProductBox = () => {
         'Primary Pillar', 'All Pillars', 'Base Price', 'GST Rate',
         'In Stock', 'Reward Eligible', 'Reward Value', 'Reward Triggers',
         'Life Stages', 'Size Suitability', 'Dietary Flags',
-        'Mira Can Reference', 'Mira Can Suggest', 'Short Description'
+        'Mira Can Reference', 'Mira Can Suggest', 'Short Description', 'Image URL'
       ];
       
       // Build CSV rows
@@ -276,7 +276,8 @@ const UnifiedProductBox = () => {
         `"${(p.pet_safety?.dietary_flags || []).join(', ')}"`,
         p.mira_visibility?.can_reference ? 'Yes' : 'No',
         p.mira_visibility?.can_suggest_proactively ? 'Yes' : 'No',
-        `"${(p.short_description || '').replace(/"/g, '""').substring(0, 200)}"`
+        `"${(p.short_description || '').replace(/"/g, '""').substring(0, 200)}"`,
+        `"${p.image_url || p.images?.[0] || p.thumbnail || ''}"`
       ]);
       
       // Create CSV content
