@@ -6480,6 +6480,7 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
             "total_fetched": len(shopify_products),
             "added": added,
             "updated": updated,
+            "unified_products_synced": synced,
             "problematic_products": problematic_products,
             "problematic_count": len(problematic_products)
         }
