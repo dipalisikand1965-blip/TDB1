@@ -699,27 +699,6 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     setSending(false);
   };
 
-  // Fetch custom statuses and categories from admin settings
-  const fetchCustomSettings = async () => {
-    try {
-      const [statusRes, catRes] = await Promise.all([
-        fetch(`${getApiUrl()}/api/tickets/statuses`, { headers: authHeaders }),
-        fetch(`${getApiUrl()}/api/tickets/categories`, { headers: authHeaders })
-      ]);
-      
-      if (statusRes.ok) {
-        const data = await statusRes.json();
-        setCustomStatuses(data.statuses || []);
-      }
-      if (catRes.ok) {
-        const data = await catRes.json();
-        setCustomCategories(data.categories || []);
-      }
-    } catch (err) {
-      console.debug('Could not fetch custom settings:', err);
-    }
-  };
-
   // Generate AI reply suggestion
   const generateAiReply = async () => {
     if (!selectedTicket) return;
