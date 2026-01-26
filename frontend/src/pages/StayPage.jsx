@@ -551,7 +551,7 @@ const StayPage = () => {
 
       {/* Stay Products / Travel Essentials Section */}
       {bundles.length > 0 && (
-        <div className="bg-gradient-to-b from-amber-50 to-white py-12 px-4">
+        <div id="essentials" className="bg-gradient-to-b from-amber-50 to-white py-12 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-8">
               <div className="flex items-center justify-center gap-2 mb-2">
