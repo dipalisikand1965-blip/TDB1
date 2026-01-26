@@ -408,6 +408,50 @@ async def get_stay_property(property_id: str):
         "commercials": 0,
         "incident_history": 0
     }
+
+
+@stay_router.get("/boarding")
+async def get_boarding_facilities(
+    city: Optional[str] = None,
+    boarding_type: Optional[str] = None,
+    min_rating: Optional[float] = None,
+    limit: int = 50,
+    skip: int = 0
+):
+    """Get pet boarding facilities (public)"""
+    query = {"status": "active"}
+    
+    if city:
+        query["city"] = {"$regex": city, "$options": "i"}
+    if boarding_type:
+        query["boarding_type"] = boarding_type
+    if min_rating:
+        query["paw_score"] = {"$gte": min_rating}
+    
+    projection = {"_id": 0}
+    
+    facilities = await db.pet_boarding.find(query, projection).skip(skip).limit(limit).to_list(limit)
+    total = await db.pet_boarding.count_documents(query)
+    
+    # Get cities and types for filters
+    cities = await db.pet_boarding.distinct("city", {"status": "active"})
+    types = await db.pet_boarding.distinct("boarding_type", {"status": "active"})
+    
+    return {
+        "facilities": facilities,
+        "total": total,
+        "cities": sorted(cities),
+        "boarding_types": types or ["Home-style", "Premium", "Private", "Luxury"]
+    }
+
+
+@stay_router.get("/boarding/{facility_id}")
+async def get_boarding_facility(facility_id: str):
+    """Get a specific boarding facility"""
+    facility = await db.pet_boarding.find_one({"id": facility_id}, {"_id": 0})
+    if not facility:
+        raise HTTPException(status_code=404, detail="Boarding facility not found")
+    return facility
     
     property = await db.stay_properties.find_one(
         {"id": property_id, "status": "live"}, 
