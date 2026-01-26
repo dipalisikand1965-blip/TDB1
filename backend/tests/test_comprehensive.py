@@ -335,9 +335,14 @@ class TestCartSnapshot:
             json={
                 "session_id": f"test-session-{int(time.time())}",
                 "items": [
-                    {"product_id": "shopify-8016298705050", "quantity": 1, "price": 649}
+                    {
+                        "product_id": "shopify-8016298705050",
+                        "name": "Mynx Shih Tzu Cake",
+                        "price": 649.0,
+                        "quantity": 1
+                    }
                 ],
-                "total": 649
+                "subtotal": 649.0
             }
         )
         # Cart snapshot should work
@@ -346,15 +351,13 @@ class TestCartSnapshot:
     
     def test_cart_capture_email(self):
         """Test cart email capture endpoint"""
+        # Note: This endpoint expects query parameters, not JSON body
+        session_id = f"test-session-{int(time.time())}"
         response = requests.post(
-            f"{BASE_URL}/api/cart/capture-email",
-            json={
-                "session_id": f"test-session-{int(time.time())}",
-                "email": "test@example.com"
-            }
+            f"{BASE_URL}/api/cart/capture-email?session_id={session_id}&email=test@example.com"
         )
         # Should work or return appropriate status
-        assert response.status_code in [200, 201, 404]  # 404 if session not found
+        assert response.status_code in [200, 201]
         print(f"✓ Cart capture email endpoint responded")
 
 
