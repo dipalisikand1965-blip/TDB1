@@ -871,7 +871,7 @@ const UnifiedPetPage = () => {
             )}
             
             {/* Breed Health Tips - Compact */}
-            {pet.breed && (
+            {safePet.breed && (
               <BreedHealthCard 
                 breed={safePet.breed} 
                 petName={safePet.name}
@@ -1342,7 +1342,7 @@ const UnifiedPetPage = () => {
             </Card>
             
             {/* BREED INFO CARD */}
-            {pet.breed && (
+            {safePet.breed && (
               <Card className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
                 <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Heart className="w-5 h-5 text-amber-600" />
@@ -1544,7 +1544,7 @@ const UnifiedPetPage = () => {
                 </Card>
                 
                 {/* Breed-Specific Health Guide */}
-                {pet.breed && (
+                {safePet.breed && (
                   <BreedHealthCard 
                     breed={safePet.breed} 
                     petName={safePet.name}
