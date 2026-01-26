@@ -796,19 +796,88 @@ const PaperworkPage = () => {
           <DialogHeader>
             <DialogTitle>Request Document Assistance</DialogTitle>
           </DialogHeader>
-          <div className="text-center py-6">
-            <FileText className="w-16 h-16 mx-auto text-blue-300 mb-4" />
-            <p className="text-gray-600 mb-4">
-              Our concierge team can help organize, digitize, and manage your pet's paperwork.
-            </p>
-            {user ? (
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                Submit Request
-              </Button>
-            ) : (
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                Submit Request
-              </Button>
+          <div className="py-4 space-y-4">
+            <div className="text-center">
+              <FileText className="w-12 h-12 mx-auto text-blue-500 mb-2" />
+              <p className="text-sm text-gray-600">
+                Our concierge team can help organize, digitize, and manage your pet's paperwork.
+              </p>
+            </div>
+            
+            {selectedPet && (
+              <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                <PawPrint className="w-5 h-5 text-blue-600" />
+                <span className="font-medium">{selectedPet.name}</span>
+              </div>
+            )}
+            
+            <div className="space-y-3">
+              <div>
+                <Label>What do you need help with?</Label>
+                <Select 
+                  value={requestForm.request_type}
+                  onValueChange={(value) => setRequestForm(prev => ({ ...prev, request_type: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="document_assistance">Document Organization</SelectItem>
+                    <SelectItem value="digitization">Scan & Digitize Papers</SelectItem>
+                    <SelectItem value="travel_docs">Travel Document Prep</SelectItem>
+                    <SelectItem value="insurance_claim">Insurance Claim Help</SelectItem>
+                    <SelectItem value="record_retrieval">Retrieve Medical Records</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label>Describe your request</Label>
+                <Textarea
+                  placeholder="Tell us what you need help with..."
+                  value={requestForm.description}
+                  onChange={(e) => setRequestForm(prev => ({ ...prev, description: e.target.value }))}
+                  rows={3}
+                />
+              </div>
+              
+              <div>
+                <Label>Urgency</Label>
+                <Select 
+                  value={requestForm.urgency}
+                  onValueChange={(value) => setRequestForm(prev => ({ ...prev, urgency: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low - When convenient</SelectItem>
+                    <SelectItem value="normal">Normal - Within a few days</SelectItem>
+                    <SelectItem value="high">High - Within 24 hours</SelectItem>
+                    <SelectItem value="urgent">Urgent - ASAP</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <Button 
+              onClick={handleSubmitRequest}
+              disabled={submitting || !requestForm.description.trim()}
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              data-testid="submit-paperwork-request-btn"
+            >
+              {submitting ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+              ) : (
+                <><FileText className="w-4 h-4 mr-2" /> Submit Request</>
+              )}
+            </Button>
+            
+            {!user && (
+              <p className="text-xs text-center text-gray-500">
+                Sign in to submit requests and track your documents.
+              </p>
             )}
           </div>
         </DialogContent>
