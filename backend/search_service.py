@@ -338,7 +338,7 @@ class SearchService:
         """
         if not self._initialized:
             logger.warning("Search service not initialized")
-            return {"hits": [], "estimatedTotalHits": 0, "query": query}
+            return {"hits": [], "products": [], "estimatedTotalHits": 0, "query": query}
         
         try:
             index = self.client.index(PRODUCTS_INDEX)
