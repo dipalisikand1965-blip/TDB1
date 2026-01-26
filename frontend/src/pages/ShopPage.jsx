@@ -145,6 +145,11 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
           {product.tags?.includes('new') && (
             <Badge className="bg-green-500 text-white text-xs">✨ New</Badge>
           )}
+          {/* Show options indicator for products with variants */}
+          {(product.has_variants || product.variants?.length > 1 || 
+            (product.options?.length > 0 && product.options.some(o => o.values?.length > 1))) && (
+            <Badge className="bg-purple-500 text-white text-xs">Options Available</Badge>
+          )}
         </div>
         
         {/* Wishlist Button */}
