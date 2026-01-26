@@ -29,6 +29,7 @@ const AdoptManager = ({ authHeaders }) => {
   const [activeTab, setActiveTab] = useState('pets');
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState(null);
+  const [seeding, setSeeding] = useState(false);
   
   // Data state
   const [pets, setPets] = useState([]);
@@ -37,6 +38,38 @@ const AdoptManager = ({ authHeaders }) => {
   const [events, setEvents] = useState([]);
   const [shelters, setShelters] = useState([]);
   
+  // Seed sample data function
+  const seedAdoptData = async () => {
+    if (!confirm('This will seed sample pets, shelters, and events for testing.\n\nContinue?')) return;
+    
+    setSeeding(true);
+    try {
+      const res = await fetch(`${getApiUrl()}/api/adopt/admin/seed`, {
+        method: 'POST',
+        headers: authHeaders
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        toast({ 
+          title: 'Seed Complete!', 
+          description: `Pets: ${data.results?.pets_seeded || 0}, Shelters: ${data.results?.shelters_seeded || 0}, Events: ${data.results?.events_seeded || 0}` 
+        });
+        fetchPets();
+        fetchShelters();
+        fetchEvents();
+        fetchStats();
+      } else {
+        const err = await res.json();
+        toast({ title: 'Error', description: err.detail || 'Failed to seed data', variant: 'destructive' });
+      }
+    } catch (err) {
+      console.error('Error seeding:', err);
+      toast({ title: 'Error', description: 'Failed to seed data', variant: 'destructive' });
+    }
+    setSeeding(false);
+  };
+
   // CSV Export functions
   const exportPetsCSV = () => {
     const headers = ['Name', 'Species', 'Breed', 'Age', 'Gender', 'Size', 'Status', 'Location', 'Description'];
