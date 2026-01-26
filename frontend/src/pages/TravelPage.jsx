@@ -175,26 +175,26 @@ const TravelPage = () => {
   };
 
   const handleFormSubmit = async () => {
-    if (!selectedPet || !selectedType) return;
+    if (!selectedType) return;
     
     setSubmitting(true);
     try {
       const requestPayload = {
         travel_type: selectedType,
-        pet_id: selectedPet.id,
-        pet_name: selectedPet.name,
-        pet_breed: selectedPet.breed,
+        pet_id: selectedPet?.id !== 'manual' ? selectedPet?.id : null,
+        pet_name: selectedPet?.name || formData.pet_name || '',
+        pet_breed: selectedPet?.breed || formData.pet_breed || '',
         ...formData,
-        user_email: user?.email,
-        user_phone: user?.phone,
-        user_name: user?.name
+        user_email: user?.email || formData.contact_email,
+        user_phone: user?.phone || formData.contact_phone,
+        user_name: user?.name || formData.contact_name
       };
 
       const response = await fetch(`${API_URL}/api/travel/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
         body: JSON.stringify(requestPayload)
       });
