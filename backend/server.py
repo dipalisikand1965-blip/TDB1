@@ -9143,6 +9143,29 @@ async def get_pet_soul_summary():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ==================== ADMIN ORDERS ====================
+@admin_router.get("/orders")
+async def admin_get_orders(
+    limit: int = 50,
+    skip: int = 0,
+    status: Optional[str] = None,
+    username: str = Depends(verify_admin)
+):
+    """Get orders for admin dashboard"""
+    try:
+        query = {}
+        if status:
+            query["status"] = status
+        
+        orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+        total = await db.orders.count_documents(query)
+        
+        return {"orders": orders, "total": total}
+    except Exception as e:
+        logger.error(f"Failed to fetch admin orders: {e}")
+        return {"orders": [], "total": 0}
+
+
 # ==================== PUBLIC INITIALIZATION ENDPOINT ====================
 @api_router.get("/init-database")
 async def initialize_database():
