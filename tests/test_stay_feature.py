@@ -14,7 +14,7 @@ import requests
 import os
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://paws-support-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://petosdesk.preview.emergentagent.com')
 ADMIN_USERNAME = "aditya"
 ADMIN_PASSWORD = "doggy2026"
 
