@@ -397,7 +397,7 @@ class SearchService:
             
         except Exception as e:
             logger.error(f"Search failed for query '{query}': {e}")
-            return {"hits": [], "estimatedTotalHits": 0, "query": query, "error": str(e)}
+            return {"hits": [], "products": [], "estimatedTotalHits": 0, "query": query, "error": str(e)}
     
     async def typeahead(self, query: str, limit: int = 8) -> Dict[str, Any]:
         """
