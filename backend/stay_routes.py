@@ -477,10 +477,19 @@ async def create_booking_request(booking: BookingRequest):
     
     now = datetime.now(timezone.utc).isoformat()
     
+    # Extract pet names from pets array if provided
+    pet_names = []
+    if booking.pets and isinstance(booking.pets, list):
+        pet_names = [p.get("name", "") for p in booking.pets if p.get("name")]
+        # Use first pet name for backward compat if pet_name not set
+        if not booking.pet_name and pet_names:
+            booking.pet_name = pet_names[0]
+    
     # Create booking request
     booking_doc = {
         "id": f"stay-bk-{uuid.uuid4().hex[:12]}",
         **booking.model_dump(),
+        "pet_names": pet_names,  # Store all pet names for easy reference
         "property_name": property.get("name"),
         "property_city": property.get("city"),
         "property_type": property.get("property_type"),
