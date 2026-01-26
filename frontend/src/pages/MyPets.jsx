@@ -389,62 +389,125 @@ const MyPets = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50 py-12">
-      <div className="max-w-6xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
-            My Furry Family 🐾
-          </h1>
-          <p className="text-xl text-gray-600">
-            {pets.length === 0 
-              ? "Let&apos;s add your first fur baby!" 
-              : `${pets.length} ${pets.length === 1 ? 'pet' : 'pets'} in your family`
-            }
-          </p>
-        </div>
-
-        {/* View Toggle & Actions */}
-        {pets.length > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-            {/* View Mode Tabs */}
-            <div className="flex items-center gap-2 bg-white rounded-lg p-1 shadow-sm border">
-              <Button
-                variant={viewMode === 'family' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('family')}
-                className={viewMode === 'family' ? 'bg-purple-600' : ''}
-              >
-                <Home className="w-4 h-4 mr-2" />
-                Family Dashboard
-              </Button>
-              <Button
-                variant={viewMode === 'detailed' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('detailed')}
-                className={viewMode === 'detailed' ? 'bg-purple-600' : ''}
-              >
-                <List className="w-4 h-4 mr-2" />
-                Detailed View
-              </Button>
+    <div className="min-h-screen bg-gradient-to-b from-teal-50/50 via-white to-gray-50" data-testid="my-pets-page">
+      {/* Modern Header */}
+      <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            {/* Title Section */}
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                My Pets
+              </h1>
+              <p className="text-gray-500 mt-1">
+                {pets.length === 0 
+                  ? "Add your first fur baby to get started" 
+                  : `Managing ${pets.length} ${pets.length === 1 ? 'pet' : 'pets'} in your family`
+                }
+              </p>
             </div>
             
             {/* Actions */}
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                onClick={() => window.location.reload()}
-                size="sm"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
-              </Button>
+            <div className="flex items-center gap-3">
+              {pets.length > 0 && (
+                <>
+                  {/* Search */}
+                  <div className="relative hidden sm:block">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input
+                      type="text"
+                      placeholder="Search pets..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 w-48 h-10 bg-gray-50 border-transparent focus:bg-white focus:border-teal-500 rounded-xl"
+                    />
+                  </div>
+                  
+                  {/* View Toggle */}
+                  <div className="flex items-center bg-gray-100 rounded-xl p-1">
+                    <button
+                      onClick={() => setViewMode('family')}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                        viewMode === 'family' 
+                          ? 'bg-white text-teal-600 shadow-sm' 
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      <LayoutGrid className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setViewMode('detailed')}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                        viewMode === 'detailed' 
+                          ? 'bg-white text-teal-600 shadow-sm' 
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      <List className="w-4 h-4" />
+                    </button>
+                  </div>
+                </>
+              )}
+              
+              {/* Add Pet Button */}
               <Link to="/pet-profile">
-                <Button size="sm" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                <Button 
+                  className="bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-lg hover:shadow-teal-500/25 transition-all hover:-translate-y-0.5"
+                  data-testid="add-pet-btn"
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Pet
                 </Button>
               </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Empty State */}
+        {pets.length === 0 && (
+          <div className="text-center py-16">
+            <div className="relative inline-block mb-8">
+              <div className="w-32 h-32 bg-gradient-to-br from-teal-100 to-teal-50 rounded-full flex items-center justify-center mx-auto">
+                <PawPrint className="w-16 h-16 text-teal-600" />
+              </div>
+              <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                <Heart className="w-6 h-6 text-amber-500" />
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'Outfit, sans-serif' }}>
+              Welcome to Your Pet Family
+            </h2>
+            <p className="text-gray-500 mb-8 max-w-md mx-auto">
+              Add your first furry family member to start tracking their health, 
+              celebrations, and create beautiful memories together.
+            </p>
+            <Link to="/pet-profile">
+              <Button 
+                size="lg"
+                className="bg-teal-600 hover:bg-teal-700 text-white rounded-xl px-8 shadow-lg hover:shadow-teal-500/25"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Add Your First Pet
+              </Button>
+            </Link>
+            
+            {/* Feature highlights */}
+            <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+              {[
+                { icon: Heart, title: 'Health Tracking', desc: 'Monitor vaccinations & vet visits' },
+                { icon: Calendar, title: 'Celebrations', desc: 'Never miss a birthday or gotcha day' },
+                { icon: Sparkles, title: 'Pet Soul Score', desc: 'Personalized care recommendations' }
+              ].map((feature, i) => (
+                <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                  <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                    <feature.icon className="w-6 h-6 text-teal-600" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-1">{feature.title}</h3>
+                  <p className="text-sm text-gray-500">{feature.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         )}
