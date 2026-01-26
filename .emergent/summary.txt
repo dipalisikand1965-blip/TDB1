@@ -1,161 +1,156 @@
-<analysis>**original_problem_statement**: The user is building **The Doggy Company**, a Pet Life Operating System. The initial goal was to enrich the product catalog. The focus then shifted to a series of high-priority UI/UX fixes, a major redesign of the application's look and feel, and implementing new AI-driven features. Most recently, the user has directed the agent to perform a comprehensive overhaul of the admin **Service Desk** to match the functionality of Zoho Desk and to begin planning a brand new **Member Onboarding Flow**.
+<analysis>**original_problem_statement**: The user is building **The Doggy Company**, a Pet Life Operating System. The initial goal was to enrich the product catalog. The focus then shifted to a series of high-priority UI/UX fixes, a major redesign of the application's look and feel, and implementing new AI-driven features. Most recently, the user has directed the agent to perform a comprehensive overhaul of the admin **Service Desk** to match the functionality of Zoho Desk, begin planning a brand new **Member Onboarding Flow**, execute a **Product Intelligence Overhaul**, and fix several outstanding bugs on the **live production site**.
 
 **PRODUCT REQUIREMENTS**:
 *   **A. Critical UI/UX Fixes & Redesign**: Address UI issues and undertake a full UI polish pass.
 *   **B. Advanced Navbar & Search**: Implement a professional, 14-pillar navbar and intelligent search.
-*   **C. Implement New Mira AI Logic**: Integrate a detailed, multi-page prompt for Mira AI.
-*   **D. Fix Core Functionality**: Resolve bugs like broken photo uploads and product display issues.
-*   **E. Breed Intelligence & Smart Recommendations**: Create a system for breed-specific health tips and a Smart Recommendations Engine.
-*   **F. World-Class Service Desk**: Rebuild the Service Desk with Zoho-like features including a reply modal, merge tickets, internal notes, attachments (documents, images, voice), time tracking, AI summaries, and a tabbed interface.
-*   **G. New Member Onboarding Flow**: Design and implement the entire new user journey from a landing page, through membership selection and payment (with GST), to a pre-populated user dashboard.
+*   **C. Implement New Mira AI Logic**: Integrate a detailed, multi-page prompt for Mira AI and ensure it follows its rules.
+*   **D. Fix Core Functionality**: Resolve bugs like broken photo uploads, product display issues, and data seeding problems.
+*   **E. Breed Intelligence & Smart Recommendations**: Create a system for breed-specific health tips and a Smart Recommendations Engine. This has evolved into a full Product Intelligence system for auto-tagging and enhanced search.
+*   **F. World-Class Service Desk**: Rebuild the Service Desk with Zoho-like features including a reply modal, merge tickets, internal notes, attachments, time tracking, AI summaries, and a tabbed interface.
+*   **G. New Member Onboarding Flow**: Design and implement the entire new user journey from a landing page to membership selection and payment.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The agent has completed a massive UI/UX overhaul across the app and implemented a Smart Recommendations Engine with breed-specific intelligence. The core admin functionality (Page CMS, Docs) has been verified.
-
-Most recently, the agent executed a significant, multi-stage overhaul of the **Service Desk**, implementing many Zoho-inspired features as requested:
-*   A full-screen, pop-up **Reply Modal** to replace the truncated inline reply box.
-*   The ability to **add attachments (documents, images, voice recordings)** to a ticket reply.
-*   An **Edit Ticket Modal** allowing admins to change a ticket's subject, category, urgency, and description.
-*   An enhanced ticket list showing **agent avatars** and **reply counts**.
-*   A redesigned ticket detail header with a dark theme, **source channel indicators** (e.g., Email, Pillar Page), and a clearer layout.
-*   The backend endpoints for **Time Entry** and **AI Summary** have been created.
+A full-stack application (React, FastAPI, MongoDB) that has undergone significant UI/UX enhancements and feature additions. Key existing components include:
+*   A Smart Recommendations Engine and a comprehensive Product Intelligence system that has auto-tagged all 646 products on production with detailed attributes (breed, health, age, etc.) and added stock images.
+*   An enhanced Admin Service Desk with a Zoho-style reply modal, attachments, edit functions, and a tabbed interface.
+*   A robust product search engine that uses the new intelligent tags and relevance scoring.
+*   Seeding mechanisms for core pillars like Adopt, Dine, and Blog, which have been run on the production environment.
+*   A critical fix for the pet profile page () which now handles missing/corrupt data gracefully, preventing production crashes.
 
 **Last working item**:
-- Last item agent was working: The agent was implementing the final set of user-requested features for the Service Desk: a tabbed interface (CONVERSATION, INFO, ACTIVITY, ATTACHMENTS), the AI Summary panel, and Time Entry tracking. During this implementation, a syntax error was introduced into the  component.
-- Status: BLOCKED
+- Last item agent was working: The agent was actively investigating and fixing two critical user-reported issues on the live production environment ():
+    1.  **Mira AI not following rules**: The AI is being too conversational and not directly providing product recommendations as instructed by its prompt.
+    2.  **Service Desk AI Draft feature broken**: The AI-powered reply template feature is not working for admins.
+- Status: IN PROGRESS
 - Agent Testing Done: N
-- Which testing method agent to use? Frontend testing agent. Once the build is fixed, the agent must verify the new tab functionality, the AI Summary modal, and the Time Entry modal work correctly end-to-end.
+- Which testing method agent to use? Backend testing agent to verify API responses for Mira and the Service Desk, combined with manual  commands against the production URL to replicate the issues.
 - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-*   **Issue 1: Frontend Build Failure due to Syntax Error in  (P0)**
-    *   **Description**: The application fails to compile due to a JSX syntax error in . The deployment build log points to an Unexpected token at line 3590. This is a hard blocker preventing any part of the frontend from running.
-    *   **Attempted fixes**: The agent incorrectly structured the JSX when adding the new tabbed layout. An attempt to revert the file using git show was unsuccessful as the error persisted in previous commits or was reintroduced. The last attempt to fix it failed, triggering a call to the deployment agent, which did not solve the root cause.
+*   **Issue 1: Mira AI is not adhering to its persona/rules on production (P0)**
+    *   **Description**: Mira AI is engaging in conversational back-and-forth instead of directly providing product recommendations based on the user and pet context. The user provided an example where Mira asked for the date of an occasion for a cake request, instead of suggesting dairy-free cakes for the user's Maltese.
+    *   **Attempted fixes**: None. The agent was about to start investigating this.
     *   **Next debug checklist**:
-        1.  Examine .
-        2.  Focus on the new tabbed layout structure added around line 3015 and the corresponding content sections that end near line 3950.
-        3.  The error is caused by improper JSX nesting. Ensure the conditional blocks for each tab () are correctly closed and that all tab panels are wrapped within a single parent element.
-        4.  Correct the structural error that the build log indicates is at or near line 3590.
-        5.  Once fixed, check the frontend server logs to ensure it compiles successfully.
-    *   **Why fix this issue and what will be achieved with the fix?**: This is a critical blocker. The application cannot be run, tested, or developed further until the frontend build is successful.
+        1.  Examine the Mira AI logic and system prompt in  or related files.
+        2.  Identify why the AI prioritizes asking questions over making direct, data-informed recommendations.
+        3.  Modify the prompt to be more assertive, instructing it to immediately suggest suitable products (e.g., using allergy info) and only ask for clarification if absolutely necessary.
+        4.  Test the changes by calling the Mira AI endpoint with the user's scenario (female Maltese, dairy allergy, cake request).
+    *   **Why fix this issue and what will be achieved with the fix?**: This is a core feature of the app's value proposition. Mira must provide intelligent, direct assistance to be useful.
+    *   **Status**: NOT STARTED
+    *   **Is recurring issue?**: Y
+    *   **Should Test frontend/backend/both after fix?**: Backend
+*   **Issue 2: Service Desk AI Draft/Template functionality is broken on production (P0)**
+    *   **Description**: The AI Draft button in the Service Desk reply modal is not working correctly on the production site. While the agent previously fixed a Ticket not found error, the user reports the feature is still broken, indicating the fix was either not deployed or insufficient.
+    *   **Attempted fixes**: The agent updated the backend AI routes () to search both  and  collections. This fix was confirmed to work on the preview environment.
+    *   **Next debug checklist**:
+        1.  First, confirm with the user that the latest code has been successfully deployed to production.
+        2.  Re-test the  endpoint on the production URL with a valid ticket ID to see the current error.
+        3.  Examine the production backend logs for errors when the endpoint is called.
+        4.  If the error persists, the root cause is different and requires further investigation into the frontend () and backend () interaction.
+    *   **Why fix this issue and what will be achieved with the fix?**: This is a key efficiency feature for the world-class service desk.
     *   **Status**: IN PROGRESS
-    *   **Is recurring issue?**: Y (The agent has struggled with the complexity of this large file).
-    *   **Should Test frontend/backend/both after fix?**: Frontend (just to ensure the app loads).
-    - **Blocked on other issue**: No, this is the main blocker.
+    *   **Is recurring issue?**: Y
+    *   **Should Test frontend/backend/both after fix?**: Both
+*   **Issue 3: Data inconsistency between  and  collections (P1)**
+    *   **Description**: The  collection (used by Pricing Hub) has 646 items, while the  collection (used by the main shop) has only 396. This causes a discrepancy between what admins see and what users see.
+    *   **Attempted fixes**: The agent created a  parameter for the migration endpoint () to sync all products.
+    *   **Next debug checklist**:
+        1.  Instruct the user to run the force migration on their production environment via a  request to .
+        2.  After running, verify that the  collection now contains 646 items.
+    *   **Why fix this issue and what will be achieved with the fix?**: Ensures data consistency and a single source of truth for products across the platform.
+    *   **Status**: USER VERIFICATION PENDING
+    *   **Is recurring issue?**: N
+    *   **Should Test frontend/backend/both after fix?**: Backend
 
 **In progress Task List**:
-*   **Task 1: Complete Service Desk Tabbed Interface, AI Summary, and Time Entry (P0)**
-    *   **Where to resume**: After fixing the build error (Issue 1), the agent must finish implementing the UI for the remaining Service Desk features.
-    *   **What will be achieved with this?**: This will complete the user's request for a world-class service desk, featuring a tabbed layout to organize ticket information, an AI-powered summary feature, and time tracking for agents.
-    *   **Status**: BLOCKED
-    *   **Should Test frontend/backend/both after fix?**: Both.
-    *   **Blocked on something**: Issue 1: Frontend Build Failure.
+*   None. The current focus is on fixing the P0 production bugs.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
-*   (P0) **Plan New Member Onboarding Flow**: The user has requested a discussion to plan the entire new member journey, from landing page to membership selection, payment (including GST), and dashboard population. This is a major new initiative.
+*   (P0) **Plan New Member Onboarding Flow**: The user has requested a discussion to plan the entire new member journey. This is the next major initiative once the site is stable.
 *   (P1) **Implement Birthday Auto-Gift Suggestions**: Enhance the Smart Engine to proactively suggest birthday gifts.
-*   (P1) **Verify Signed-In Mira Experience**: Test the Mira AI panel for a logged-in user to ensure the new breed intelligence is reflected in the conversation.
 *   (P1) **Build Out Placeholder Pillar Pages**: Create dedicated pages for the remaining pillars: , , , , , .
 
 **Future Tasks:**
-*   (P2) **System-Wide Form Functionality Check**: Investigate and fix Submit Request buttons across all pillar pages, as this has been a recurring issue.
+*   (P2) **System-Wide Form Functionality Check**: Investigate and fix Submit Request buttons across all pillar pages.
 *   (P2) **Fix Multi-Pet Form UI**: Improve the UI/UX for forms on pillar pages when a user has multiple pets.
-*   (P2) **Enhance Product Detail Pages for Variants**: Add support for complex product options.
+*   (P2) **Consolidate  and  collections**: A major refactor to make the backend use a single, unified product collection to prevent future data sync issues.
+*   (P2) Enhance Product Detail Pages for Variants.
 *   (P2) Investigate recurring Untitled products from Shopify sync.
-*   (P2) Redesign the mobile cart view.
-*   (P2) Build out the full Paw Rewards ledger system.
 *   (P2) Re-enable  for go-live.
 
 **Completed work in this session**
-- **Admin & CMS**:
-  - Added documentation for the **Smart Recommendations Engine** to .
-  - Verified and tested the **Page CMS** (), confirming it is fully functional.
-- **Pillar Page Fixes**:
-  - Fixed the non-functional Submit Request button on  by adding the missing state and event handlers.
-  - Created and added a reusable ** button** to over 10 pillar pages, allowing admins to jump directly to the CMS editor for that page.
-- **Service Desk Overhaul (Zoho-Style)**:
-  - **Reply Modal**: Replaced the truncated inline reply with a full-screen, pop-up modal for better visibility.
-  - **Attachments**: Added functionality to upload **documents, images, and voice recordings** within the Reply Modal, including backend support.
-  - **Edit Ticket Modal**: Created a modal allowing admins to edit ticket subject, category, urgency, and description.
-  - **Enhanced UI**: Redesigned the ticket list to show **agent avatars** and **reply counts**. Redesigned the ticket detail header with a dark theme and **source channel badges**.
-
-**Earlier issues found/mentioned but not fixed**
-*   **Issue 1: Pillar Page Form Submission Failures (System-wide)**
-    *   **Debug checklist**: While  was fixed, the user's initial report suggested this was a wider problem. Other pillar pages (, , etc.) have  functions that should be verified. Check console logs during submission on each pillar page.
-    *   **Why to solve this issue and what will be achieved with this?**: This is a critical business function for booking services.
-    *   **Should Test frontend/backend/both after fix?**: Both.
-    *   **Is recurring issue?**: Y.
-*   **Issue 2: Poor UI/UX on Forms with Multiple Pets**
-    *   **Debug checklist**: Review the rendering logic for pet selection components on pillar pages. Test the layout with a user who has 3+ pets.
-    *   **Why to solve this issue and what will be achieved with this?**: Improves usability for a key user segment.
-    *   **Should Test frontend/backend/both after fix?**: Frontend.
-    *   **Is recurring issue?**: N.
+- **Production Crash Fix**: Resolved a critical JavaScript  on the  component that was crashing the live pet profile page. The page now handles missing or malformed data gracefully.
+- **Production Data Seeding**: Successfully used  commands to run backend seed endpoints, populating the production database for the 'Adopt' and 'Dine' pillars with pets, shelters, and events.
+- **Product Intelligence Overhaul**:
+    - Created and ran a product intelligence engine () on all 646 production products, adding ~6,600 intelligent tags for search and recommendations.
+    - Enhanced the product search API () with relevance scoring and improved multi-word query handling.
+- **Service Desk AI Bug Fix**: Patched the AI Draft & Summary endpoints in  to query both  and  collections, fixing a Ticket not found error.
+- **Data Sync Solution**: Identified a data discrepancy between two product collections and created a force-migration endpoint to allow the user to sync them.
+- **Initial Build Fixes**: Resolved a build-breaking JSX syntax error in  and a syntax error in .
 
 **Code Architecture**
-
+safePet
 
 **Key Technical Concepts**
-- **Large-Scale Component Refactoring**: The agent is in the middle of a complex, multi-stage refactoring of the massive  component (>4500 lines), which has proven difficult and error-prone.
-- **Incremental Feature Development**: Adding features one-by-one (Reply Modal, Attachments, Edit Modal, Tabs) to a single, monolithic React component.
-- **Backend API Extension**: Adding new FastAPI endpoints to support new frontend features like file uploads, time tracking, and AI summaries.
-- **Debugging Build Failures**: The current state requires debugging a frontend compilation error by analyzing build logs and tracing it back to a specific JSX syntax issue.
+- **Production Debugging**: Investigating and fixing bugs directly on a live production environment based on user reports.
+- **Data Seeding & Migration**: Using API endpoints via  to populate and synchronize data in a production database.
+- **AI-Powered Data Enrichment**: Using a custom Python script to programmatically analyze and tag product data to improve search and recommendations.
+- **Advanced MongoDB Search**: Refining queries with  conditions and relevance scoring using .
+- **Defensive Frontend Programming**: Refactoring React components to handle null or malformed API data gracefully to prevent render-time crashes.
 
 **key DB schema**
-- **tickets**:  array now contains objects with  field. New top-level  array added.
+- **products**: Enriched with  (object with arrays for , , etc.). Total count: 646.
+- **unified_products**: A separate collection intended to mirror , but currently out of sync. Total count: 396.
+- **tickets** / **service_desk_tickets**: Two distinct collections holding ticket data, requiring some routes to query both.
 
 **All files of reference**
-*   : **(CURRENTLY BROKEN)** The primary file for the Service Desk. It contains the syntax error that needs to be fixed.
-*   : Contains the backend logic for tickets, including the newly added endpoints for attachments, time entry, and AI summary.
-*   : The new reusable component for quick admin access to the CMS.
-*   : The pillar page where the Submit Request button was successfully fixed.
+*   : Contains the critical fix for the production crash using a  object.
+*   : The new script for the product data enrichment engine.
+*   : Contains the fix for the AI endpoints that needed to search two ticket collections.
+*   : Likely contains the logic for the Mira AI that needs to be fixed.
+*   : Contains the  migration endpoint to resolve data sync issues.
 
 **Critical Info for New Agent**
-*   **IMMEDIATE BLOCKER**: The frontend is not building due to a syntax error in . This is the absolute first thing that must be fixed. The application is unusable until this is resolved.
-*   ** is Fragile**: This file is over 4500 lines long and extremely complex. Changes must be made with extreme care. Large, sweeping changes have repeatedly broken the component. Focus on small, targeted fixes.
-*   **Next Major Task is Onboarding**: Once the Service Desk is stable, the user's next priority is to design and build the new member onboarding flow. Be prepared to switch focus to this major new feature.
-
-**documents and test reports created in this job**
-*   
-*   
-*   
+*   **Focus on Production First**: The user's priority is fixing the remaining issues on the live site (). All investigations should start there.
+*   **Confirm Deployments Before Debugging**: The user is responsible for deploying code. Before debugging a feature that was supposedly fixed, confirm with the user that the latest code has actually been redeployed.
+*   **Mira AI Needs Prompt Engineering**: The immediate task is to fix Mira AI's behavior. This is not a code bug but a prompt engineering task. You will need to modify its system prompt to be more direct and less conversational.
+*   **Data is a Common Culprit**: Many recent issues stemmed from data problems (separate collections, missing fields, production vs. preview data). When debugging, always consider data inconsistencies as a potential root cause.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Asks to finish all Service Desk features: AI Summary, Tabs, and Time Entry. **(IN PROGRESS)**
-2.  **User**: Likes the new Service Desk Edit & History features.
-3.  **User**: Provides screenshots from Zoho Desk, asking for Edit Ticket, history, AI summary, and source channel features. **(COMPLETED/IN PROGRESS)**
-4.  **User**: Likes the new Zoho-style Service Desk UI.
-5.  **User**: Provides more Zoho screenshots, asking for agent assignment, status updates from the ticket view, and better conversation layout. **(COMPLETED)**
-6.  **User**: Asks to add document, image, and voice recording attachments to the Service Desk reply. **(COMPLETED)**
-7.  **User**: Reports critical issues with the Service Desk: reply area is truncated/missing, reply popup is gone, send functions are failing, Mira auto-answers aren't working, and internal comments/merge are missing. **(COMPLETED)**
-8.  **User**: Finishes work on pillar page fixes.
-9.  **User**: Asks agent to fix Submit Request buttons system-wide and add a Quick Edit button to pillar pages. **(PARTIALLY COMPLETED)**
-10. **User**: Describes a detailed new member onboarding flow and asks to discuss it before implementation. **(PENDING - UPCOMING TASK)**
+1.  **User**: Reports Mira is not following rules and the Service Desk AI template is not working on production. Provides a screenshot of the Service Desk. **(PENDING)**
+2.  **User**: Mentions the production Adopt page is not populating even after redeploying. **(RESOLVED - Agent seeded production DB)**
+3.  **User**: Sends a screenshot of a bug on the production Service Desk. **(IN PROGRESS - Related to #1)**
+4.  **User**: Asks to check why the Adopt page and a pet named Mojo are not working after redeployment. **(RESOLVED - Fixes implemented, Adopt needed seeding)**
+5.  **User**: States the pet profile page  is still an issue on production. **(RESOLVED - Agent fixed the crash)**
+6.  **User**: Provides a list of tasks: Shopify sync, seeding Dine/Adopt/Shop, fixing blog seeding, and fixing Service Desk AI. **(RESOLVED - All tasks addressed)**
+7.  **User**: Requests a complete Product Intelligence overhaul: auto-tagging, image population, and enhanced admin editing. **(RESOLVED - System built and run on production)**
+8.  **User**: Reports that the pet page, dashboard, and adopt pages are not working on the production site. **(RESOLVED - All three were investigated and fixed/seeded)**
+9.  **User**: Asks the agent to call the deployer and run a health check. **(RESOLVED)**
+10. **User**: Approves the initial plan to fix the frontend build error. **(RESOLVED)**
 
 **Project Health Check:**
-*   **Broken**: The entire frontend is non-functional and will not compile due to a syntax error in .
+*   **Broken**:
+    *   Mira AI persona/rules on the production environment.
+    *   Service Desk AI Draft functionality on the production environment.
+    *   Data sync between  and  collections (fix is pending user action).
 
 **3rd Party Integrations**
-*   **OpenAI**: Powers the Mira® AI system and ticket summaries.
+*   **OpenAI**: Powers the Mira® AI system and ticket summaries. Uses Emergent LLM Key.
+*   **Shopify**: For product sync.
 *   **Resend**: For transactional emails.
 *   **Razorpay**: Payment gateway.
-*   **Shopify**: For product sync.
 
 **Testing status**
-*   Testing agent used after significant changes: YES
-*   Troubleshoot agent used after agent stuck in loop: NO
-*   Test files created: NO
-*   Known regressions: The frontend build is broken.
+- Testing agent used after significant changes: YES
+- Troubleshoot agent used after agent stuck in loop: NO
+- Test files created: No
+- Known regressions: The issues with Mira AI and Service Desk AI on production are regressions or previously undiscovered bugs.
 
 **Credentials to test flow:**
 *   **Admin Username**: 
 *   **Admin Password**: 
 *   **Test User**: 
-*   **Test User Password**: 
-
-**What agent forgot to execute**
-- The system-wide check for Submit Request button functionality is still pending. Only one page was fixed.
-- The reported issue with how forms render for users with multiple pets has not been addressed.
-- Verification of the signed-in member experience in the Mira welcome panel is still pending.</analysis>
+*   **Test User Password**: </analysis>
