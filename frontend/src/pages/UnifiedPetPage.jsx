@@ -1672,7 +1672,7 @@ const UnifiedPetPage = () => {
                 )}
               </div>
               <h3 className="text-2xl font-bold">{safePet.name}</h3>
-              <p className="text-white/80">{pet.breed || 'Adorable Pet'}</p>
+              <p className="text-white/80">{safePet.breed || 'Adorable Pet'}</p>
               <div className="mt-3 flex items-center justify-center gap-2">
                 <Badge className="bg-white/20 text-white border-none">
                   🐾 Pet Soul™ {Math.round(displayScore)}%
