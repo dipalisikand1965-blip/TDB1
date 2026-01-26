@@ -438,9 +438,9 @@ const Navbar = () => {
                 </div>
               </form>
 
-              {/* Search Suggestions Dropdown */}
+              {/* Search Suggestions Dropdown - Universal Search Results */}
               {showSearchSuggestions && searchSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50 max-h-[70vh] overflow-y-auto">
                   {searchSuggestions.map((suggestion, idx) => (
                     <Link
                       key={idx}
@@ -449,22 +449,114 @@ const Navbar = () => {
                         setShowSearchSuggestions(false);
                         setSearchQuery('');
                       }}
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-purple-50 border-b border-gray-100 last:border-0"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-purple-50 border-b border-gray-100 last:border-0 group"
                     >
-                      {suggestion.image && (
-                        <img src={suggestion.image} alt="" className="w-10 h-10 rounded object-cover" />
+                      {/* Type Icon or Image */}
+                      {suggestion.type === 'page' || suggestion.type === 'pillar' ? (
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          suggestion.type === 'pillar' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'
+                        }`}>
+                          {suggestion.icon === 'info' && <span className="text-lg">ℹ️</span>}
+                          {suggestion.icon === 'plane' && <span className="text-lg">✈️</span>}
+                          {suggestion.icon === 'utensils' && <span className="text-lg">🍽️</span>}
+                          {suggestion.icon === 'home' && <span className="text-lg">🏨</span>}
+                          {suggestion.icon === 'heart' && <span className="text-lg">❤️</span>}
+                          {suggestion.icon === 'scissors' && <span className="text-lg">✂️</span>}
+                          {suggestion.icon === 'award' && <span className="text-lg">🏆</span>}
+                          {suggestion.icon === 'gamepad' && <span className="text-lg">🎮</span>}
+                          {suggestion.icon === 'calendar' && <span className="text-lg">📅</span>}
+                          {suggestion.icon === 'star' && <span className="text-lg">⭐</span>}
+                          {suggestion.icon === 'cake' && <span className="text-lg">🎂</span>}
+                          {suggestion.icon === 'bowl' && <span className="text-lg">🍲</span>}
+                          {suggestion.icon === 'shopping' && <span className="text-lg">🛒</span>}
+                          {suggestion.icon === 'shield' && <span className="text-lg">🛡️</span>}
+                          {suggestion.icon === 'book' && <span className="text-lg">📚</span>}
+                          {suggestion.icon === 'lightbulb' && <span className="text-lg">💡</span>}
+                          {suggestion.icon === 'alert' && <span className="text-lg">🚨</span>}
+                          {suggestion.icon === 'file' && <span className="text-lg">📄</span>}
+                          {suggestion.icon === 'activity' && <span className="text-lg">🏃</span>}
+                          {suggestion.icon === 'stethoscope' && <span className="text-lg">🩺</span>}
+                          {suggestion.icon === 'user' && <span className="text-lg">👤</span>}
+                          {suggestion.icon === 'users' && <span className="text-lg">👥</span>}
+                          {suggestion.icon === 'paw' && <span className="text-lg">🐾</span>}
+                          {suggestion.icon === 'package' && <span className="text-lg">📦</span>}
+                          {suggestion.icon === 'help' && <span className="text-lg">❓</span>}
+                          {suggestion.icon === 'phone' && <span className="text-lg">📞</span>}
+                          {!suggestion.icon && <span className="text-lg">📄</span>}
+                        </div>
+                      ) : suggestion.image ? (
+                        <img src={suggestion.image} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                      ) : (
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          suggestion.type === 'event' ? 'bg-orange-100 text-orange-600' :
+                          suggestion.type === 'restaurant' ? 'bg-red-100 text-red-600' :
+                          suggestion.type === 'adopt_pet' ? 'bg-pink-100 text-pink-600' :
+                          suggestion.type === 'faq' ? 'bg-yellow-100 text-yellow-600' :
+                          'bg-gray-100 text-gray-600'
+                        }`}>
+                          {suggestion.type === 'event' && <span className="text-lg">📅</span>}
+                          {suggestion.type === 'restaurant' && <span className="text-lg">🍽️</span>}
+                          {suggestion.type === 'adopt_pet' && <span className="text-lg">🐕</span>}
+                          {suggestion.type === 'faq' && <span className="text-lg">❓</span>}
+                          {suggestion.type === 'product' && <span className="text-lg">🛍️</span>}
+                        </div>
                       )}
-                      <div className="flex-1">
-                        <div className="text-sm font-medium text-gray-900">{suggestion.name || suggestion.text}</div>
-                        {suggestion.category && (
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-gray-900 truncate">
+                          {suggestion.name || suggestion.text}
+                        </div>
+                        {suggestion.description && (
+                          <div className="text-xs text-gray-500 truncate">{suggestion.description}</div>
+                        )}
+                        {suggestion.category && !suggestion.description && (
                           <div className="text-xs text-gray-500">{suggestion.category}</div>
                         )}
                       </div>
-                      {suggestion.price && (
-                        <div className="text-sm font-bold text-purple-600">₹{suggestion.price}</div>
-                      )}
+                      
+                      {/* Type badge */}
+                      <div className="flex items-center gap-2">
+                        {suggestion.price && suggestion.type === 'product' && (
+                          <span className="text-sm font-bold text-purple-600">₹{suggestion.price.toLocaleString()}</span>
+                        )}
+                        {suggestion.rating && (
+                          <span className="text-xs text-yellow-600 flex items-center gap-0.5">
+                            ⭐ {suggestion.rating}
+                          </span>
+                        )}
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                          suggestion.type === 'page' ? 'bg-blue-100 text-blue-700' :
+                          suggestion.type === 'pillar' ? 'bg-purple-100 text-purple-700' :
+                          suggestion.type === 'event' ? 'bg-orange-100 text-orange-700' :
+                          suggestion.type === 'restaurant' ? 'bg-red-100 text-red-700' :
+                          suggestion.type === 'adopt_pet' ? 'bg-pink-100 text-pink-700' :
+                          suggestion.type === 'faq' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-gray-100 text-gray-700'
+                        }`}>
+                          {suggestion.type === 'page' ? 'Page' :
+                           suggestion.type === 'pillar' ? 'Service' :
+                           suggestion.type === 'event' ? 'Event' :
+                           suggestion.type === 'restaurant' ? 'Dine' :
+                           suggestion.type === 'adopt_pet' ? 'Adopt' :
+                           suggestion.type === 'faq' ? 'FAQ' :
+                           'Product'}
+                        </span>
+                      </div>
                     </Link>
                   ))}
+                  
+                  {/* "See all results" footer */}
+                  <Link
+                    to={`/search?q=${encodeURIComponent(searchQuery)}`}
+                    onClick={() => {
+                      setShowSearchSuggestions(false);
+                      setSearchQuery('');
+                    }}
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-50 text-purple-600 font-medium text-sm hover:bg-purple-50"
+                  >
+                    See all results for "{searchQuery}"
+                    <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
+                  </Link>
                 </div>
               )}
             </div>
