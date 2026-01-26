@@ -179,8 +179,8 @@ function MainLayout() {
         <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         <Route path="/about" element={<AboutPage />} />
         {/* Membership route is defined outside MainLayout for clean entry */}
-        <Route path="/autoship" element={<ProtectedRoute><Autoship /></ProtectedRoute>} />
-        <Route path="/autoship-products" element={<ProtectedRoute><ProductListing category="autoship" /></ProtectedRoute>} />
+        <Route path="/autoship" element={<Autoship />} />
+        <Route path="/autoship-products" element={<ProductListing category="autoship" />} />
         <Route path="/admin/forgot-password" element={<ForgotPassword />} />
         <Route path="/admin/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<Admin />} />
