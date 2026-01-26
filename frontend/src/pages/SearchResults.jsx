@@ -90,24 +90,34 @@ const SearchResults = () => {
 
     setIsLoading(true);
     try {
-      // Search products
-      const productRes = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(searchQuery)}&limit=50`);
-      const productData = productRes.ok ? await productRes.json() : { hits: [] };
+      // Primary search using /api/products with search param (works reliably)
+      const productRes = await fetch(`${API_URL}/api/products?search=${encodeURIComponent(searchQuery)}&limit=100`);
+      const productData = productRes.ok ? await productRes.json() : { products: [] };
       
-      // Search unified products for more comprehensive results
-      const unifiedRes = await fetch(`${API_URL}/api/unified-product-box/products?search=${encodeURIComponent(searchQuery)}&limit=50`);
-      const unifiedData = unifiedRes.ok ? await unifiedRes.json() : { products: [] };
+      // Get products from response
+      let allProducts = productData.products || [];
       
-      // Combine and dedupe products
-      const allProducts = [...(productData.hits || []), ...(unifiedData.products || [])];
-      const uniqueProducts = allProducts.filter((p, i, arr) => 
-        arr.findIndex(x => x.id === p.id || x.name === p.name) === i
-      );
+      // Also try Meilisearch for additional results (may fail if not running)
+      try {
+        const searchRes = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(searchQuery)}&limit=50`);
+        if (searchRes.ok) {
+          const searchData = await searchRes.json();
+          const searchHits = searchData.hits || [];
+          // Add any new products from search
+          for (const hit of searchHits) {
+            if (!allProducts.find(p => p.id === hit.id || p.name === hit.name)) {
+              allProducts.push(hit);
+            }
+          }
+        }
+      } catch (e) {
+        // Meilisearch not available, that's fine
+      }
 
       // Filter by pet allergies if available
-      let filteredProducts = uniqueProducts;
+      let filteredProducts = allProducts;
       if (pet?.allergies?.length > 0) {
-        filteredProducts = uniqueProducts.map(p => ({
+        filteredProducts = allProducts.map(p => ({
           ...p,
           safeForPet: !pet.allergies.some(allergy => 
             p.name?.toLowerCase().includes(allergy.toLowerCase()) ||
