@@ -1579,45 +1579,78 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Pets</label>
-              <Input 
-                type="number"
-                min="1"
-                value={formData.pets}
-                onChange={(e) => setFormData({...formData, pets: parseInt(e.target.value)})}
-              />
+              <label className="text-sm font-medium text-gray-700">Number of Pets</label>
+              <div className="h-10 flex items-center text-sm text-gray-700 bg-gray-50 px-3 rounded-md border">
+                {selectedPets.length || 'Select below'}
+              </div>
             </div>
           </div>
 
-          {/* Pet Details Section with Pet Soul Integration */}
+          {/* Pet Selection - Multi-select with checkboxes */}
           <div className="p-4 bg-pink-50 border border-pink-200 rounded-lg">
             <h4 className="font-semibold text-pink-800 mb-3 flex items-center gap-2">
-              <Dog className="w-4 h-4" /> About Your Pet
+              <Dog className="w-4 h-4" /> Who's Dining With You?
             </h4>
+            <p className="text-sm text-pink-600 mb-3">
+              Select all the furry friends joining this meal
+            </p>
             
-            {/* Pet Soul Selector - Show if user has registered pets */}
-            {userPets.length > 0 && (
-              <div className="mb-4 p-3 bg-white rounded-lg border border-pink-200">
-                <label className="text-xs font-medium text-pink-700 mb-1 block">
-                  🐾 Select from your Pet Soul profiles
-                </label>
-                <select
-                  value={selectedPetId}
-                  onChange={(e) => handlePetSelect(e.target.value)}
-                  className="w-full h-10 px-3 py-2 text-sm border border-pink-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 bg-white"
-                  data-testid="dine-pet-selector"
-                >
-                  <option value="">-- Enter details manually --</option>
-                  {userPets.map(pet => (
-                    <option key={pet.id} value={pet.id}>
-                      {pet.name} ({pet.breed || pet.species || 'Pet'})
-                    </option>
-                  ))}
-                </select>
-                {selectedPetId && (
-                  <p className="text-xs text-pink-600 mt-1">
-                    ✨ Dining history will be saved to {userPets.find(p => p.id === selectedPetId)?.name}'s Pet Soul
-                  </p>
+            {loadingPets ? (
+              <div className="text-center py-4 text-pink-600">Loading your pets...</div>
+            ) : userPets.length > 0 ? (
+              <div className="space-y-2">
+                {userPets.map((pet) => {
+                  const isSelected = selectedPets.includes(pet.id);
+                  return (
+                    <div 
+                      key={pet.id}
+                      onClick={() => togglePetSelection(pet.id)}
+                      className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
+                        isSelected 
+                          ? 'bg-pink-100 border-2 border-pink-400' 
+                          : 'bg-white border border-pink-200 hover:border-pink-300'
+                      }`}
+                    >
+                      <div className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${
+                        isSelected ? 'bg-pink-500' : 'border-2 border-pink-300'
+                      }`}>
+                        {isSelected && <Check className="w-3 h-3 text-white" />}
+                      </div>
+                      <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0">
+                        <Dog className="w-5 h-5 text-pink-600" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="font-medium text-gray-800">{pet.name}</span>
+                        <span className="text-sm text-gray-500 ml-2">
+                          {pet.identity?.breed || pet.breed || pet.species || 'Pet'}
+                        </span>
+                      </div>
+                      {isSelected && (
+                        <Badge className="bg-pink-500 text-white text-xs">Dining</Badge>
+                      )}
+                    </div>
+                  );
+                })}
+                
+                {/* Summary */}
+                {selectedPets.length > 0 && (
+                  <div className="mt-3 p-2 bg-pink-100 rounded-lg">
+                    <p className="text-sm text-pink-700 font-medium">
+                      🐕 {selectedPets.length} pet{selectedPets.length > 1 ? 's' : ''} joining: {getSelectedPetsInfo().map(p => p.name).join(', ')}
+                    </p>
+                    <p className="text-xs text-pink-600 mt-1">
+                      ✨ Dining history will be saved to their Pet Soul
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-4 text-pink-600">
+                <Dog className="w-8 h-8 mx-auto text-pink-300 mb-2" />
+                <p className="text-sm">No pets in your Pet Soul yet</p>
+                <p className="text-xs text-pink-500">Your furry friend details will enhance the experience!</p>
+              </div>
+            )}
                 )}
               </div>
             )}
