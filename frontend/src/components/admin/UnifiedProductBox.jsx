@@ -134,7 +134,7 @@ const UnifiedProductBox = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, searchTerm, filterType, filterPillar, filterStatus, filterRewardEligible]);
+  }, [page, searchTerm, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible]);
 
   // Fetch stats
   const fetchStats = async () => {
