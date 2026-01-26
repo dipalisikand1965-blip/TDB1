@@ -6349,6 +6349,67 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
                 await db.products.insert_one(transformed)
                 added += 1
             
+            # ALSO sync to unified_products for Product Box
+            unified_id = f"shopify-{sp['id']}"
+            existing_unified = await db.unified_products.find_one({"id": unified_id})
+            
+            # Build unified product document with full options
+            unified_doc = {
+                "id": unified_id,
+                "shopify_id": sp.get("id"),
+                "shopify_handle": sp.get("handle"),
+                "name": transformed.get("name"),
+                "title": transformed.get("title"),
+                "description": transformed.get("description"),
+                "short_description": transformed.get("description", "")[:200] if transformed.get("description") else "",
+                "category": transformed.get("category"),
+                "tags": transformed.get("tags", []),
+                "image_url": transformed.get("image_url"),
+                "images": transformed.get("images", []),
+                "options": transformed.get("options", []),
+                "variants": transformed.get("variants", []),
+                "has_variants": len(transformed.get("variants", [])) > 1,
+                "pricing": {
+                    "base_price": transformed.get("price", 0),
+                    "compare_price": transformed.get("originalPrice", 0),
+                    "gst_rate": 18
+                },
+                "in_stock": transformed.get("in_stock", True),
+                "visibility": {"status": "active"},
+                "primary_pillar": "celebrate",
+                "pillars": ["celebrate", "shop"],
+                "source": "shopify",
+                "synced_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            if existing_unified:
+                # Update existing - preserve intelligent_tags if present
+                await db.unified_products.update_one(
+                    {"id": unified_id},
+                    {"$set": {
+                        "name": unified_doc["name"],
+                        "title": unified_doc["title"],
+                        "description": unified_doc["description"],
+                        "short_description": unified_doc["short_description"],
+                        "category": unified_doc["category"],
+                        "tags": unified_doc["tags"],
+                        "image_url": unified_doc["image_url"],
+                        "images": unified_doc["images"],
+                        "options": unified_doc["options"],
+                        "variants": unified_doc["variants"],
+                        "has_variants": unified_doc["has_variants"],
+                        "pricing": unified_doc["pricing"],
+                        "in_stock": unified_doc["in_stock"],
+                        "synced_at": unified_doc["synced_at"],
+                        "updated_at": unified_doc["updated_at"]
+                    }}
+                )
+            else:
+                # Insert new
+                unified_doc["created_at"] = datetime.now(timezone.utc).isoformat()
+                await db.unified_products.insert_one(unified_doc)
+            
             synced += 1
         
         
