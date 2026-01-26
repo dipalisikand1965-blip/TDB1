@@ -182,8 +182,9 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     by_pillar: {}, by_channel: {}, by_priority: {}
   });
   
-  // Filters
+  // Filters & Search
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchType, setSearchType] = useState('all'); // all, pet, pet_parent, subject, pillar
   const [sortBy, setSortBy] = useState('newest');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [channelFilter, setChannelFilter] = useState('all');
@@ -194,6 +195,16 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [sending, setSending] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState(null);
+  
+  // Intelligent Summary
+  const [conversationSummary, setConversationSummary] = useState(null);
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  
+  // Ticket Editing
+  const [isEditingTicket, setIsEditingTicket] = useState(false);
+  const [editForm, setEditForm] = useState({});
+  const [customStatuses, setCustomStatuses] = useState([]);
+  const [customCategories, setCustomCategories] = useState([]);
   
   // Detail panel
   const [detailTab, setDetailTab] = useState('conversation');
