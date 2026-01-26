@@ -1052,6 +1052,9 @@ const LearnPage = () => {
           )}
         </DialogContent>
       </Dialog>
+      
+      {/* Admin Quick Edit */}
+      <AdminQuickEdit pillar="learn" position="bottom-left" />
     </div>
   );
 };

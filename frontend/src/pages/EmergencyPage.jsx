@@ -736,6 +736,9 @@ const EmergencyPage = () => {
       <div className="lg:hidden fixed bottom-20 right-4 w-80 max-w-[calc(100vw-2rem)] z-30">
         <MiraContextPanel pillar="emergency" position="bottom" />
       </div>
+      
+      {/* Admin Quick Edit */}
+      <AdminQuickEdit pillar="emergency" position="bottom-left" />
     </div>
   );
 };
