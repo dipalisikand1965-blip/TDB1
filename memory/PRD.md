@@ -5,6 +5,55 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
+## Session 26 - Service Desk Edit & History Features (January 26, 2026)
+
+### ✏️ EDIT TICKET MODAL
+**Feature:** Full edit capability for tickets like Zoho
+
+**Fields Editable:**
+- Subject / Title
+- Category / Pillar (dropdown with all pillars)
+- Urgency (Low, Medium, High, Critical)
+- Assigned To (dropdown with team members)
+- Description (textarea)
+
+**Read-Only Info:**
+- Source (channel ticket came from)
+- Created date
+- Current status
+
+**Implementation:**
+- Added `showEditModal` state
+- Added `editForm` state with all editable fields
+- Created `openEditModal()` function to populate form
+- Created `saveTicketEdits()` function to save via PATCH API
+- Edit button added to ticket detail header
+
+### 📱 SOURCE CHANNEL BADGE
+**Feature:** Visual indicator showing where ticket came from
+
+**Channel Colors:**
+| Channel | Color | Icon |
+|---------|-------|------|
+| WhatsApp | Green | 📱 |
+| Email | Blue | 📧 |
+| Chat | Purple | 💬 |
+| Phone | Orange | 📞 |
+| Website | Slate | 🌐 |
+| Mira | Slate | 🤖 |
+
+**Location:** In ticket detail header, before Edit button
+
+### 🕐 ACTIVITY TIMELINE
+**Already Existing Features:**
+- Status changes with timestamps
+- Assignment changes with user info
+- Message events (customer vs agent replies)
+- SLA breach warnings
+- Ticket creation event with source
+
+---
+
 ## Session 25 - Service Desk Zoho-Style UI Enhancement (January 26, 2026)
 
 ### 🎨 ZOHO-INSPIRED UI ENHANCEMENTS
