@@ -18,16 +18,21 @@ export const useServiceDeskSocket = (agentId, onNewTicket, onTicketUpdate, onNew
   useEffect(() => {
     // Create socket connection
     const apiUrl = getApiUrl();
-    const socketUrl = apiUrl.replace('/api', '').replace('https://', 'wss://').replace('http://', 'ws://');
+    // Remove /api suffix if present and use http/https (Socket.IO handles transport)
+    const baseUrl = apiUrl.replace('/api', '').replace(/\/$/, '');
+    
+    console.log('🔌 Connecting to Socket.IO at:', baseUrl);
     
     if (!socketInstance) {
-      socketInstance = io(apiUrl, {
+      socketInstance = io(baseUrl, {
         transports: ['websocket', 'polling'],
         autoConnect: true,
         reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-        path: '/socket.io/'
+        reconnectionAttempts: 3,
+        reconnectionDelay: 2000,
+        timeout: 10000,
+        path: '/socket.io/',
+        forceNew: false
       });
     }
     
