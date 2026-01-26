@@ -2528,16 +2528,28 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                           <span className={isInternal ? 'text-amber-600 font-medium' : 'text-gray-500'}>Internal Note</span>
                         </label>
                         
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={generateAiReply}
-                          disabled={aiLoading}
-                          className="text-purple-600 hover:text-purple-700 text-xs h-7"
-                        >
-                          {aiLoading ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Brain className="w-3 h-3 mr-1" />}
-                          Ask Mira
-                        </Button>
+                        {/* AI Reply Styles Dropdown */}
+                        <div className="flex items-center gap-1">
+                          <select
+                            value={aiReplyStyle}
+                            onChange={(e) => setAiReplyStyle(e.target.value)}
+                            className="h-7 px-2 text-xs border rounded bg-purple-50 text-purple-700"
+                          >
+                            {AI_REPLY_STYLES.map(style => (
+                              <option key={style.id} value={style.id}>{style.icon} {style.label}</option>
+                            ))}
+                          </select>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => generateAiReply(aiReplyStyle)}
+                            disabled={aiLoading}
+                            className="text-purple-600 hover:text-purple-700 text-xs h-7"
+                          >
+                            {aiLoading ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Brain className="w-3 h-3 mr-1" />}
+                            Ask Mira
+                          </Button>
+                        </div>
                       </div>
                       
                       <Textarea
@@ -2573,7 +2585,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                           {/* Voice recording */}
                           <button 
                             onClick={isRecording ? stopRecording : startRecording}
-                            disabled={uploadingAttachment || audioBlob}
+                            disabled={uploadingAttachment || !!audioBlob}
                             className={`p-2 rounded transition-colors disabled:opacity-50 ${
                               isRecording ? 'bg-red-100 hover:bg-red-200' : 'hover:bg-white'
                             }`}
