@@ -354,7 +354,7 @@ async def create_auto_tasks(order: dict, routing: dict, service_date: datetime) 
 @order_queue_router.post("/orders")
 async def create_concierge_order(request: CreateOrderRequest):
     """Create a new Concierge® order with smart routing"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     # Get routing rules for pillar
@@ -459,7 +459,7 @@ async def get_concierge_orders(
     skip: int = 0
 ):
     """Get Concierge® orders with filtering"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     query = {}
@@ -499,7 +499,7 @@ async def get_concierge_orders(
 @order_queue_router.get("/orders/{order_id}")
 async def get_order_details(order_id: str):
     """Get detailed order information including tasks"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     order = await db.concierge_orders.find_one({"order_id": order_id}, {"_id": 0})
@@ -529,7 +529,7 @@ async def get_order_details(order_id: str):
 @order_queue_router.put("/orders/{order_id}/status")
 async def update_order_status(order_id: str, status: str, notes: Optional[str] = None):
     """Update order status with timeline tracking"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     order = await db.concierge_orders.find_one({"order_id": order_id})
@@ -563,7 +563,7 @@ async def update_order_status(order_id: str, status: str, notes: Optional[str] =
 @order_queue_router.post("/orders/{order_id}/assign")
 async def assign_order(order_id: str, request: AssignTaskRequest):
     """Assign order to staff/vendor"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     order = await db.concierge_orders.find_one({"order_id": order_id})
@@ -618,7 +618,7 @@ async def get_tasks(
     limit: int = 50
 ):
     """Get Concierge® tasks for the task board"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     query = {}
@@ -653,7 +653,7 @@ async def get_tasks(
 @order_queue_router.put("/tasks/{task_id}/status")
 async def update_task_status(task_id: str, status: str, notes: Optional[str] = None):
     """Update task status"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     task = await db.concierge_tasks.find_one({"task_id": task_id})
@@ -764,7 +764,7 @@ async def get_concierge_dashboard():
 @order_queue_router.post("/from-ticket/{ticket_id}")
 async def create_order_from_ticket(ticket_id: str):
     """Create a Concierge® order from a service desk ticket"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     # Get ticket
