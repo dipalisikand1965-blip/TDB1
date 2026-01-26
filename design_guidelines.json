@@ -5,166 +5,174 @@
       "Fusion over Imitation",
       "Emotion First",
       "Content is King",
-      "Zoom In",
+      "Zoom in",
       "Negative Space",
       "Contrast"
+    ],
+    "anti_patterns": [
+      "Generic Bootstrap/Tailwind look",
+      "Center-everything layouts",
+      "Gradient overload",
+      "Inter font for headings"
     ]
   },
-  "project_context": {
-    "app_name": "The Doggy Company - Pet Life OS",
-    "theme": "light",
-    "primary_color": "#0d9488",
-    "aesthetic": "Chewy-inspired Professional E-commerce + Premium SaaS",
-    "target_audience": "Pet owners, Concierge members"
+  "context": {
+    "pillar": "Fit",
+    "app_type": "SaaS / Pet Lifestyle Platform",
+    "target_audience": "Premium pet parents in India",
+    "emotional_tone": "Vitality, Precision, Trust, Scientific Warmth"
   },
-  "typography": {
-    "strategy": "The Soft Utility",
-    "headings": {
-      "font_family": "Outfit, sans-serif",
-      "weights": ["600", "700"],
-      "usage": "Main headers, Section titles, Card titles",
-      "letter_spacing": "-0.02em"
-    },
-    "body": {
-      "font_family": "Inter, sans-serif",
-      "weights": ["400", "500"],
-      "usage": "Paragraphs, UI labels, Inputs",
-      "letter_spacing": "0em"
-    },
-    "accents": {
-      "font_family": "Caveat, cursive",
-      "usage": "Personal notes, 'Pet Soul' highlights",
-      "color": "text-teal-700"
-    }
-  },
-  "colors": {
-    "palette": {
-      "primary": {
-        "DEFAULT": "#0d9488",
-        "hover": "#0f766e",
-        "light": "#ccfbf1",
-        "foreground": "#ffffff"
+  "design_system": {
+    "typography": {
+      "headings": {
+        "font_family": "Syne, sans-serif",
+        "weights": ["700", "800"],
+        "usage": "Hero titles, Section headers",
+        "letter_spacing": "tracking-tight",
+        "import_url": "https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap"
       },
-      "secondary": {
-        "DEFAULT": "#f3f4f6",
-        "foreground": "#1f2937"
+      "body": {
+        "font_family": "Manrope, sans-serif",
+        "weights": ["400", "500", "600"],
+        "usage": "Paragraphs, UI elements, Data",
+        "import_url": "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
       },
       "accent": {
-        "DEFAULT": "#f472b6",
-        "hover": "#db2777",
-        "foreground": "#ffffff"
-      },
-      "background": {
-        "DEFAULT": "#f9fafb",
-        "paper": "#ffffff"
-      },
-      "text": {
-        "primary": "#111827",
-        "secondary": "#4b5563",
-        "muted": "#9ca3af"
-      },
-      "status": {
-        "success": "#10b981",
-        "warning": "#f59e0b",
-        "error": "#ef4444"
+        "font_family": "JetBrains Mono, monospace",
+        "usage": "Data points, Price tags, Technical labels"
       }
     },
-    "gradients": {
-      "brand_subtle": "bg-gradient-to-br from-teal-50 to-white",
-      "card_hover": "hover:bg-gradient-to-br hover:from-white hover:to-teal-50/50"
+    "colors": {
+      "palette": {
+        "primary": {
+          "main": "#0F766E",
+          "light": "#14B8A6",
+          "dark": "#115E59",
+          "description": "Deep Teal/Emerald for authority and health"
+        },
+        "accent": {
+          "main": "#84CC16",
+          "hover": "#65A30D",
+          "text": "#1A2E05",
+          "description": "Electric Lime for high-energy actions (Book, Buy)"
+        },
+        "neutral": {
+          "bg": "#F0FDF4",
+          "surface": "#FFFFFF",
+          "text_primary": "#132A13",
+          "text_secondary": "#3F6212",
+          "border": "#E2E8F0"
+        }
+      },
+      "gradients": {
+        "hero": "bg-gradient-to-br from-teal-900 via-emerald-800 to-teal-950",
+        "card_hover": "bg-gradient-to-br from-white to-emerald-50"
+      }
+    },
+    "spacing": {
+      "container_padding": "px-6 md:px-12 lg:px-24",
+      "section_gap": "py-20 md:py-32",
+      "grid_gap": "gap-8 md:gap-12"
+    },
+    "visual_enhancers": {
+      "glassmorphism": "backdrop-blur-xl bg-white/70 border border-white/20 shadow-xl",
+      "shadows": "shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]",
+      "borders": "border border-emerald-100",
+      "radius": "rounded-2xl md:rounded-3xl"
     }
   },
-  "layout_strategies": {
-    "login_page": {
-      "structure": "Split Screen (50/50 on Desktop, Stacked on Mobile)",
-      "left_panel": {
-        "type": "Immersive Image",
-        "content": "High-quality lifestyle image of pet owner + pet",
-        "overlay": "Glassmorphism card with testimonial or brand promise"
-      },
-      "right_panel": {
-        "type": "Clean Form",
-        "alignment": "Center",
-        "spacing": "p-8 md:p-12",
-        "features": ["Social Login Row", "Floating Labels", "Friendly Error Messages"]
-      }
+  "layout_strategy": {
+    "hero_section": {
+      "type": "Asymmetric Split",
+      "structure": "Left: Typography + CTA (60%) | Right: Cutout Image (40%)",
+      "elements": [
+        "Massive 'Syne' Headline (text-6xl+)",
+        "Floating 3D-style elements (badges, stats)",
+        "Primary CTA: 'Book Assessment' (Lime)",
+        "Secondary CTA: 'Shop Gear' (Outline)"
+      ]
     },
-    "my_pets_dashboard": {
-      "structure": "Bento Grid (Mode A: Tetris)",
-      "grid_cols": "grid-cols-1 md:grid-cols-3 lg:grid-cols-4",
-      "gap": "gap-6",
-      "components": {
-        "hero_card": "col-span-full md:col-span-2 row-span-2 (Pet Portrait + Soul Score)",
-        "health_tracker": "col-span-1 row-span-1 (Vitals Graph)",
-        "quick_actions": "col-span-1 row-span-1 (Grid of icon buttons)",
-        "upcoming_appointments": "col-span-1 md:col-span-2 (List view)"
-      }
+    "services_section": {
+      "title": "Concierge® Services",
+      "type": "Horizontal Scroll / Bento Grid",
+      "card_style": "Glassmorphic, tall aspect ratio",
+      "interaction": "Hover expands card to show 'Book Now' button"
+    },
+    "products_section": {
+      "title": "Shop for Fit",
+      "type": "Clean Grid (5 columns)",
+      "card_style": "Minimalist, white background, focus on product image",
+      "features": ["Quick Add button", "Badges (New, Best Seller)"]
+    },
+    "programs_section": {
+      "title": "Fitness Plans",
+      "type": "Dashboard Grid",
+      "card_style": "Data-dense, technical look",
+      "features": ["Progress bars", "Week count", "Intensity level"]
     }
+  },
+  "assets": {
+    "hero_images": [
+      {
+        "url": "https://images.unsplash.com/photo-1764377720157-b10acb5c32a9?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Yellow Lab Agility Jump",
+        "usage": "Hero Background or Cutout"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1546815693-7533bae19894?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Border Collie Running",
+        "usage": "Alternative Hero"
+      }
+    ],
+    "service_images": [
+      {
+        "url": "https://images.pexels.com/photos/5482887/pexels-photo-5482887.jpeg",
+        "alt": "Dog Hydrotherapy",
+        "service": "Hydrotherapy / Swimming"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1546815693-7533bae19894?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Dog Agility Tunnel",
+        "service": "Agility Training"
+      },
+      {
+        "url": "https://images.pexels.com/photos/8846092/pexels-photo-8846092.jpeg",
+        "alt": "Dog Balance Training",
+        "service": "Fitness Assessment"
+      }
+    ]
   },
   "components": {
     "buttons": {
-      "primary": "bg-teal-600 hover:bg-teal-700 text-white rounded-full px-8 py-3 font-semibold shadow-lg hover:shadow-teal-500/30 transition-all hover:-translate-y-0.5",
-      "secondary": "bg-white border-2 border-gray-100 hover:border-teal-200 text-gray-700 rounded-full px-8 py-3 font-medium transition-all",
-      "ghost": "text-teal-600 hover:bg-teal-50 rounded-lg px-4 py-2"
+      "primary": "bg-lime-500 text-emerald-950 hover:bg-lime-400 font-bold rounded-full px-8 py-4 transition-all hover:scale-105 shadow-lg shadow-lime-500/20",
+      "secondary": "border-2 border-emerald-900/10 text-emerald-900 hover:bg-emerald-50 font-semibold rounded-full px-8 py-4"
     },
     "cards": {
-      "base": "bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300",
-      "interactive": "cursor-pointer hover:border-teal-200 group"
+      "service": "group relative overflow-hidden rounded-3xl bg-white border border-emerald-100 p-8 transition-all hover:shadow-2xl hover:-translate-y-1",
+      "product": "group rounded-2xl bg-white p-4 transition-all hover:shadow-lg border border-transparent hover:border-emerald-100"
     },
-    "inputs": {
-      "style": "bg-gray-50 border-transparent focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl h-12 transition-all"
-    },
-    "breed_autocomplete": {
-      "library": "shadcn/command",
-      "style": "Command Palette style. Floating or inline. Shows breed name + small paw icon.",
-      "interaction": "Fuzzy search, keyboard navigation"
-    }
-  },
-  "visual_enhancers": {
-    "glassmorphism": "backdrop-blur-xl bg-white/70 border border-white/20 shadow-xl",
-    "shadows": "shadow-[0_8px_30px_rgb(0,0,0,0.04)]",
-    "radius": "rounded-2xl",
-    "micro_interactions": {
-      "hover_lift": "hover:-translate-y-1 transition-transform duration-300",
-      "button_press": "active:scale-95"
-    }
-  },
-  "image_urls": {
-    "login_hero": {
-      "url": "https://images.unsplash.com/photo-1753685725777-0d1bf5796b3a?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "alt": "Happy pet owner taking selfie with dog",
-      "category": "Login Page"
-    },
-    "dashboard_pet_dog": {
-      "url": "https://images.unsplash.com/photo-1457144759132-40d119c2f120?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "alt": "Golden Retriever Portrait",
-      "category": "My Pets Dashboard"
-    },
-    "dashboard_pet_cat": {
-      "url": "https://images.unsplash.com/photo-1675191855420-c6735aa50c8f?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "alt": "Cat in basket",
-      "category": "My Pets Dashboard"
-    },
-    "empty_state": {
-      "url": "https://images.unsplash.com/photo-1555991533-a99356eb6181?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "alt": "Man carrying dog",
-      "category": "Empty State"
+    "badges": {
+      "base": "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ring-inset",
+      "success": "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+      "warning": "bg-lime-50 text-lime-700 ring-lime-600/20"
     }
   },
   "instructions_to_main_agent": [
-    "1. INSTALL DEPENDENCIES: Run 'npm install lucide-react clsx tailwind-merge cmdk' if missing.",
-    "2. FONT SETUP: Add 'Outfit' font from Google Fonts to index.css and tailwind.config.js.",
-    "3. LOGIN PAGE: Implement the Split Screen layout. Use the 'login_hero' image for the left side. Ensure the form is centered on the right.",
-    "4. MY PETS PAGE: Implement the Bento Grid layout. Use 'dashboard_pet_dog' and 'dashboard_pet_cat' as mock data images.",
-    "5. BREED AUTOCOMPLETE: Create a reusable 'BreedSelector' component using Shadcn Command or a custom input with a dropdown list. Mock a list of 20 common breeds.",
-    "6. ANIMATIONS: Apply 'animate-fade-in-up' to the dashboard cards for a staggered entrance.",
-    "7. DATA-TESTID: Add data-testid attributes to all inputs (email, password, breed-search) and buttons (login-submit, add-pet-btn)."
+    "1. REWRITE FitPage.jsx completely. Do not keep the old structure.",
+    "2. IMPLEMENT the 'Syne' and 'Manrope' fonts via Google Fonts import in the CSS.",
+    "3. USE the provided image URLs for the respective sections.",
+    "4. ENSURE the 'Concierge®' symbol is always present for services.",
+    "5. CREATE a distinct visual separation between 'Services' (Bookable) and 'Products' (Buyable).",
+    "6. INTEGRATE the 'MiraContextPanel' as a floating element or integrated sidebar.",
+    "7. MAINTAIN the 'AdminQuickEdit' component functionality.",
+    "8. USE 'sonner' for all toast notifications.",
+    "9. ADD 'data-testid' to all interactive elements."
   ],
   "universal_guidelines": [
-    "Avoid generic 'Inter' for headings. Use 'Outfit'.",
-    "Use generous padding (p-6, p-8) inside cards.",
-    "Never use pure black (#000000). Use #111827.",
-    "Ensure all text on colored backgrounds has sufficient contrast.",
-    "Use 'lucide-react' for icons (Paw, Activity, Calendar, Settings)."
+    "Avoid generic AI slop designs.",
+    "Use 2-3x more spacing than typical.",
+    "Micro-animations on every interaction.",
+    "No center-aligned text for main content.",
+    "Dark colors should be rich (tinted), not pure black."
   ]
 }
