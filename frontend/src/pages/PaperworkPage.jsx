@@ -227,6 +227,66 @@ const PaperworkPage = () => {
     return Math.round((completed / requiredDocs.length) * 100);
   };
 
+  const handleSubmitRequest = async () => {
+    if (!requestForm.description.trim()) {
+      toast({
+        title: "Description Required",
+        description: "Please describe what help you need",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const response = await fetch(`${API_URL}/api/paperwork/request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          ...requestForm,
+          pet_id: selectedPet?.id,
+          pet_name: selectedPet?.name,
+          user_email: user?.email,
+          user_name: user?.name,
+          user_phone: user?.phone
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toast({
+          title: "Request Submitted! 📄",
+          description: "Our team will help you with your paperwork within 24 hours."
+        });
+        setShowRequestModal(false);
+        setRequestForm({
+          request_type: 'document_assistance',
+          description: '',
+          urgency: 'normal'
+        });
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.detail || "Failed to submit request",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit request. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const selectedSubcategories = categories[uploadForm.category]?.subcategories || [];
 
   return (
