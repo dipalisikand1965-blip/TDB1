@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://paws-portal-12.preview.emergentagent.com
+**Preview URL:** https://paws-support.preview.emergentagent.com
 
 ---
 
