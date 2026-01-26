@@ -2667,9 +2667,94 @@ async def handle_email_reply_webhook(email: InboundEmailWebhook):
     except Exception as e:
         logger.error(f"Failed to create notification: {e}")
     
+    # Emit real-time notification
+    try:
+        from realtime_notifications import notification_manager
+        await notification_manager.emit_new_message(
+            ticket.get("ticket_id"),
+            message,
+            "email"
+        )
+    except Exception as e:
+        logger.error(f"Failed to emit real-time notification: {e}")
+    
     return {
         "success": True,
         "ticket_id": ticket.get("ticket_id"),
         "message_added": True,
         "action": "reply_appended" if ticket.get("messages") else "new_ticket_created"
     }
+
+
+# ============== RESEND INBOUND EMAIL WEBHOOK ==============
+
+class ResendInboundEmail(BaseModel):
+    """
+    Resend email.received webhook payload format
+    See: https://resend.com/docs/dashboard/receiving/introduction
+    """
+    type: str = "email.received"
+    created_at: Optional[str] = None
+    data: Optional[dict] = None
+    # Direct fields (alternative format)
+    from_: Optional[str] = Field(None, alias="from")
+    to: Optional[List[str]] = None
+    subject: Optional[str] = None
+    text: Optional[str] = None
+    html: Optional[str] = None
+
+
+@router.post("/webhook/resend-inbound")
+async def handle_resend_inbound_webhook(request: Request):
+    """
+    Handle Resend inbound email webhook (email.received event).
+    
+    Setup in Resend Dashboard:
+    1. Go to Webhooks > Add Webhook
+    2. Enter endpoint URL: https://your-domain/api/tickets/webhook/resend-inbound
+    3. Select event: email.received
+    4. Save and copy the webhook signing secret to .env as RESEND_WEBHOOK_SECRET
+    
+    Your receiving email address will be: anything@[your-resend-domain].resend.app
+    Or configure a custom domain in Resend Dashboard.
+    """
+    try:
+        body = await request.json()
+        logger.info(f"Resend webhook received: {body.get('type', 'unknown')}")
+        
+        # Handle email.received event
+        if body.get("type") == "email.received":
+            data = body.get("data", {})
+            
+            # Extract email details from Resend format
+            from_email = data.get("from", "")
+            from_name = None
+            
+            # Parse "Name <email@domain.com>" format
+            if "<" in from_email and ">" in from_email:
+                import re
+                match = re.match(r'(.+?)\s*<(.+?)>', from_email)
+                if match:
+                    from_name = match.group(1).strip().strip('"')
+                    from_email = match.group(2).strip()
+            
+            # Build standard webhook payload
+            email_payload = InboundEmailWebhook(
+                from_email=from_email,
+                from_name=from_name,
+                subject=data.get("subject", "(No Subject)"),
+                text_body=data.get("text"),
+                html_body=data.get("html"),
+                to_email=data.get("to", [""])[0] if isinstance(data.get("to"), list) else data.get("to", "")
+            )
+            
+            # Process using existing handler
+            return await handle_email_reply_webhook(email_payload)
+        
+        # Handle other event types (delivery status, etc.)
+        logger.info(f"Unhandled Resend event type: {body.get('type')}")
+        return {"status": "ok", "type": body.get("type")}
+        
+    except Exception as e:
+        logger.error(f"Resend webhook error: {e}")
+        return {"status": "error", "message": str(e)}
