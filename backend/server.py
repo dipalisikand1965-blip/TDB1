@@ -10219,3 +10219,106 @@ async def send_manual_reminder(user_email: str, username: str = Depends(verify_a
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+
+
+# ============== BULK ADD IMAGES TO PRODUCTS ==============
+
+PILLAR_STOCK_IMAGES = {
+    "fit": [
+        "https://images.unsplash.com/photo-1676729274491-579573327bd0?w=800",
+        "https://images.unsplash.com/photo-1546815693-7533bae19894?w=800",
+        "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800",
+        "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+        "https://images.unsplash.com/photo-1544568100-847a948585b9?w=800"
+    ],
+    "care": [
+        "https://images.unsplash.com/photo-1601758123927-4f7b83de9a89?w=800",
+        "https://images.unsplash.com/photo-1615751072497-5f5169febe17?w=800",
+        "https://images.unsplash.com/photo-1629740067905-bd3f515aa739?w=800",
+        "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800"
+    ],
+    "travel": [
+        "https://images.unsplash.com/photo-1560743641-3914f2c45636?w=800",
+        "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800",
+        "https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=800"
+    ],
+    "stay": [
+        "https://images.unsplash.com/photo-1587559070757-f72a388edbba?w=800",
+        "https://images.unsplash.com/photo-1601758174114-e711c0cbaa69?w=800",
+        "https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=800"
+    ],
+    "dine": [
+        "https://images.unsplash.com/photo-1599443015574-be5fe8a05783?w=800",
+        "https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?w=800",
+        "https://images.unsplash.com/photo-1615751072497-5f5169febe17?w=800"
+    ],
+    "celebrate": [
+        "https://images.unsplash.com/photo-1535930749574-1399327ce78f?w=800",
+        "https://images.unsplash.com/photo-1575223970966-76ae61ee7838?w=800",
+        "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=800"
+    ],
+    "default": [
+        "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+        "https://images.unsplash.com/photo-1544568100-847a948585b9?w=800",
+        "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=800"
+    ]
+}
+
+@api_router.post("/admin/products/add-images")
+async def bulk_add_product_images(username: str = Depends(verify_admin)):
+    """Add stock images to products that don't have images"""
+    import random
+    
+    # Get products without images
+    products_without_images = await db.products.find({
+        "$or": [
+            {"image": {"$exists": False}},
+            {"image": None},
+            {"image": ""},
+            {"images": {"$exists": False}},
+            {"images": {"$size": 0}}
+        ]
+    }).to_list(500)
+    
+    unified_without_images = await db.unified_products.find({
+        "$or": [
+            {"image": {"$exists": False}},
+            {"image": None},
+            {"image": ""},
+            {"images": {"$exists": False}},
+            {"images": {"$size": 0}}
+        ]
+    }).to_list(500)
+    
+    updated = 0
+    
+    # Update products collection
+    for product in products_without_images:
+        pillar = product.get("pillar", product.get("category", "default"))
+        images = PILLAR_STOCK_IMAGES.get(pillar, PILLAR_STOCK_IMAGES["default"])
+        selected_image = random.choice(images)
+        
+        await db.products.update_one(
+            {"_id": product["_id"]},
+            {"$set": {"image": selected_image, "images": [selected_image]}}
+        )
+        updated += 1
+    
+    # Update unified_products collection
+    for product in unified_without_images:
+        pillar = product.get("pillar", product.get("category", "default"))
+        images = PILLAR_STOCK_IMAGES.get(pillar, PILLAR_STOCK_IMAGES["default"])
+        selected_image = random.choice(images)
+        
+        await db.unified_products.update_one(
+            {"_id": product["_id"]},
+            {"$set": {"image": selected_image, "images": [selected_image]}}
+        )
+        updated += 1
+    
+    return {
+        "success": True,
+        "products_updated": updated,
+        "products_collection": len(products_without_images),
+        "unified_products_collection": len(unified_without_images)
+    }
