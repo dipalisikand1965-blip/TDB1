@@ -4863,6 +4863,158 @@ async def export_products_csv(
     }
 
 
+# ==================== PRODUCT INTELLIGENCE ENGINE ====================
+
+@api_router.post("/admin/products/run-intelligence")
+async def run_product_intelligence(
+    update_db: bool = True,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """
+    Run AI-powered product intelligence to auto-generate tags.
+    This analyzes all products and adds intelligent tags for:
+    - Breeds (labrador, golden retriever, indie, etc.)
+    - Size categories (small_breed, medium_breed, large_breed)
+    - Health/Purpose (digestive, dental, skin_coat, joint, etc.)
+    - Life stages (puppy, adult, senior)
+    - Occasions (birthday, christmas, gift)
+    - Diet/Ingredients (grain_free, chicken, peanut_butter, etc.)
+    - Product types (cake, treat, toy, etc.)
+    - Species (dog, cat)
+    """
+    verify_admin(credentials)
+    
+    engine = ProductIntelligenceEngine(db)
+    results = await engine.process_all_products(update_db=update_db)
+    
+    return {
+        "success": True,
+        "message": f"Processed {results['total_processed']} products",
+        "results": results
+    }
+
+
+@api_router.post("/admin/products/analyze-single/{product_id}")
+async def analyze_single_product(
+    product_id: str,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Analyze a single product and return suggested tags (without saving)"""
+    verify_admin(credentials)
+    
+    product = await db.products.find_one(
+        {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+        {"_id": 0}
+    )
+    
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    engine = ProductIntelligenceEngine(db)
+    analysis = engine.analyze_product(product)
+    
+    return {
+        "product_id": product_id,
+        "current_name": product.get("name"),
+        "analysis": analysis
+    }
+
+
+@api_router.post("/admin/products/add-stock-images")
+async def add_stock_images(
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Add stock images to products that don't have images"""
+    verify_admin(credentials)
+    
+    results = await add_stock_images_to_products(db)
+    
+    return {
+        "success": True,
+        "message": f"Added stock images to {results['total_updated']} products",
+        "results": results
+    }
+
+
+@api_router.get("/admin/products/intelligence-stats")
+async def get_intelligence_stats(
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Get statistics about product intelligence tagging"""
+    verify_admin(credentials)
+    
+    # Count products with intelligent tags
+    total = await db.products.count_documents({})
+    with_intelligent_tags = await db.products.count_documents({"intelligent_tags": {"$exists": True, "$ne": []}})
+    with_breed_tags = await db.products.count_documents({"breed_tags": {"$exists": True, "$ne": []}})
+    with_health_tags = await db.products.count_documents({"health_tags": {"$exists": True, "$ne": []}})
+    without_images = await db.products.count_documents(
+        {"$or": [{"image": None}, {"image": ""}, {"image": {"$exists": False}}]}
+    )
+    with_stock_images = await db.products.count_documents({"is_stock_image": True})
+    
+    # Get tag distribution
+    pipeline = [
+        {"$unwind": {"path": "$intelligent_tags", "preserveNullAndEmptyArrays": False}},
+        {"$group": {"_id": "$intelligent_tags", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 30}
+    ]
+    top_tags = await db.products.aggregate(pipeline).to_list(30)
+    
+    return {
+        "total_products": total,
+        "with_intelligent_tags": with_intelligent_tags,
+        "with_breed_tags": with_breed_tags,
+        "with_health_tags": with_health_tags,
+        "without_images": without_images,
+        "with_stock_images": with_stock_images,
+        "coverage_percent": round((with_intelligent_tags / total * 100) if total > 0 else 0, 1),
+        "top_tags": [{"tag": t["_id"], "count": t["count"]} for t in top_tags]
+    }
+
+
+@api_router.put("/admin/products/{product_id}/full-update")
+async def full_product_update(
+    product_id: str,
+    updates: dict,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """
+    Full product update including all editable fields:
+    - name, description, price, category
+    - image (URL or uploaded)
+    - display_tags, intelligent_tags
+    - gst_rate, shipping_weight, packaging_type
+    - available, is_pan_india_shippable
+    """
+    verify_admin(credentials)
+    
+    # Extended allowed fields for full update
+    allowed_fields = [
+        "name", "description", "price", "original_price", "category",
+        "image", "images", "display_tags", "intelligent_tags",
+        "breed_tags", "health_tags", "lifestage_tags", "occasion_tags", "diet_tags", "size_tags",
+        "gst_rate", "shipping_weight", "packaging_type", "packaging_cost",
+        "available", "is_pan_india_shippable", "status",
+        "bundle_type", "bundle_includes", "options", "variants",
+        "search_keywords", "seo_title", "seo_description"
+    ]
+    
+    sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
+    sanitized["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.products.update_one(
+        {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+        {"$set": sanitized}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"success": True, "updated_fields": list(sanitized.keys())}
+
+
 # ==================== SEARCH API ====================
 
 async def mongodb_fallback_search_legacy(
