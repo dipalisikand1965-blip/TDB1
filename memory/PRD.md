@@ -5,6 +5,53 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
+## Session 38 - Concierge® Order Queue System (January 26, 2026)
+
+### ✅ INTELLIGENT ORDER QUEUE BUILT
+
+**New Backend Module: `/app/backend/concierge_order_queue.py`**
+
+**Features:**
+1. **Smart Routing by Pillar** - Each pillar has custom routing rules:
+   - Celebrate: Vendor, 3-day lead time, auto-tasks for coordination/execution/follow-up
+   - Dine: Kitchen, 1-day lead time
+   - Stay: Facility, 2-day lead time
+   - Emergency: Urgent priority, immediate response
+   
+2. **Pet Profile-Aware Priority**
+   - Puppies and seniors get HIGH priority
+   - Pets with health conditions get HIGH priority
+   - Emergency pillar always URGENT
+
+3. **Auto-Task Generation**
+   - Tasks created based on pillar routing rules
+   - Scheduled relative to service date
+   - Types: coordination, service_delivery, consultation, follow_up
+
+4. **API Endpoints:**
+   - `POST /api/concierge/orders` - Create order with smart routing
+   - `GET /api/concierge/orders` - List with filters
+   - `GET /api/concierge/orders/{id}` - Order details + tasks
+   - `PUT /api/concierge/orders/{id}/status` - Update status with timeline
+   - `POST /api/concierge/orders/{id}/assign` - Assign to staff/vendor
+   - `GET /api/concierge/tasks` - Task board
+   - `PUT /api/concierge/tasks/{id}/status` - Complete tasks
+   - `GET /api/concierge/dashboard` - Summary stats
+   - `POST /api/concierge/from-ticket/{ticket_id}` - Create from Service Desk
+
+**Test Order Created:**
+```
+Order: ORD-20260126-F721C9
+Pet: Mojo (puppy, medium)
+Priority: high (auto-detected puppy)
+Tasks: 3 auto-generated
+  - Confirm celebration details (Jan 30)
+  - Execute celebration (Feb 1)
+  - Collect feedback & photos (Feb 2)
+```
+
+---
+
 ## Session 37 - Product Seeding & Recommendations (January 26, 2026)
 
 ### ✅ COMPLETED
