@@ -23,15 +23,15 @@ import {
 } from 'lucide-react';
 
 // Shop Categories
-const SHOP_CATEGORIES = [
-  { id: 'all', name: 'All Products', icon: ShoppingBag, color: 'from-purple-500 to-pink-500' },
-  { id: 'food', name: 'Food & Nutrition', icon: UtensilsCrossed, color: 'from-orange-500 to-amber-500' },
-  { id: 'treats', name: 'Treats & Snacks', icon: Bone, color: 'from-pink-500 to-rose-500' },
-  { id: 'toys', name: 'Toys & Play', icon: Dog, color: 'from-green-500 to-emerald-500' },
-  { id: 'grooming', name: 'Grooming', icon: Scissors, color: 'from-violet-500 to-purple-500' },
-  { id: 'accessories', name: 'Accessories', icon: Gift, color: 'from-blue-500 to-cyan-500' },
-  { id: 'health', name: 'Health & Wellness', icon: Heart, color: 'from-red-500 to-pink-500' },
-  { id: 'celebrations', name: 'Celebrations', icon: Cake, color: 'from-amber-500 to-yellow-500' }
+// Default categories (will be replaced by API data)
+const DEFAULT_SHOP_CATEGORIES = [
+  { id: 'all', name: 'All Products', emoji: '🛒', color: 'from-purple-500 to-pink-500' },
+  { id: 'celebrations', name: 'Celebrations', emoji: '🎂', color: 'from-amber-500 to-yellow-500' },
+  { id: 'treats', name: 'Treats', emoji: '🦴', color: 'from-pink-500 to-rose-500' },
+  { id: 'pupcakes', name: 'Pupcakes & Dognuts', emoji: '🍩', color: 'from-orange-500 to-amber-500' },
+  { id: 'accessories', name: 'Accessories & Toys', emoji: '🎁', color: 'from-blue-500 to-cyan-500' },
+  { id: 'fresh-food', name: 'Fresh Food', emoji: '🍕', color: 'from-green-500 to-emerald-500' },
+  { id: 'cat-corner', name: 'Cat Corner', emoji: '🐱', color: 'from-violet-500 to-purple-500' },
 ];
 
 // Quick Filters
