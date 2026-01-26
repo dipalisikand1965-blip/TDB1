@@ -2491,3 +2491,165 @@ Messages included: {len(filtered_messages)} (incoming: {sum(1 for m in filtered_
         
         return {"summary": basic_summary}
 
+
+
+
+# ============== EMAIL WEBHOOK FOR INBOUND REPLIES ==============
+
+class InboundEmailWebhook(BaseModel):
+    """Webhook payload for inbound email replies"""
+    from_email: str
+    from_name: Optional[str] = None
+    subject: str
+    text_body: Optional[str] = None
+    html_body: Optional[str] = None
+    to_email: str
+    # For ticket matching
+    ticket_id: Optional[str] = None  # If embedded in subject/headers
+    in_reply_to: Optional[str] = None  # Email Message-ID being replied to
+    references: Optional[List[str]] = None  # Thread references
+
+
+@router.post("/webhook/email-reply")
+async def handle_email_reply_webhook(email: InboundEmailWebhook):
+    """
+    Webhook to receive inbound email replies and append to ticket timeline.
+    Can be connected to email providers like Resend, SendGrid, Mailgun, etc.
+    
+    Matching Logic:
+    1. Check if ticket_id is in subject line (e.g., "[Ticket #TKT-123]")
+    2. Check the to_email for ticket routing (e.g., ticket-123@support.thedoggycompany.in)
+    3. Search by customer email to find their open tickets
+    """
+    db = get_db()
+    logger = get_logger()
+    
+    ticket = None
+    collection = db.tickets
+    
+    # Method 1: Extract ticket ID from subject
+    import re
+    ticket_pattern = r'\[(?:Ticket|TKT|CARE|STAY|DINE|TRV)[#\s-]*([A-Za-z0-9-]+)\]'
+    subject_match = re.search(ticket_pattern, email.subject, re.IGNORECASE)
+    
+    if subject_match:
+        potential_id = subject_match.group(1)
+        ticket = await db.tickets.find_one({"ticket_id": {"$regex": potential_id, "$options": "i"}})
+        if not ticket:
+            ticket = await db.service_desk_tickets.find_one({"ticket_id": {"$regex": potential_id, "$options": "i"}})
+            if ticket:
+                collection = db.service_desk_tickets
+    
+    # Method 2: Check explicit ticket_id in payload
+    if not ticket and email.ticket_id:
+        ticket = await db.tickets.find_one({"ticket_id": email.ticket_id})
+        if not ticket:
+            ticket = await db.service_desk_tickets.find_one({"ticket_id": email.ticket_id})
+            if ticket:
+                collection = db.service_desk_tickets
+    
+    # Method 3: Match by customer email (find most recent open ticket)
+    if not ticket:
+        ticket = await db.tickets.find_one(
+            {
+                "member.email": {"$regex": f"^{re.escape(email.from_email)}$", "$options": "i"},
+                "status": {"$nin": ["closed", "resolved"]}
+            },
+            sort=[("created_at", -1)]
+        )
+        if not ticket:
+            ticket = await db.service_desk_tickets.find_one(
+                {
+                    "member.email": {"$regex": f"^{re.escape(email.from_email)}$", "$options": "i"},
+                    "status": {"$nin": ["closed", "resolved"]}
+                },
+                sort=[("created_at", -1)]
+            )
+            if ticket:
+                collection = db.service_desk_tickets
+    
+    # If still no ticket, create a new one
+    if not ticket:
+        logger.info(f"No matching ticket found for email from {email.from_email}, creating new ticket")
+        new_ticket_id = f"EMAIL-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:6].upper()}"
+        
+        ticket = {
+            "ticket_id": new_ticket_id,
+            "source": "email",
+            "channel": "email",
+            "category": "inquiry",
+            "status": "new",
+            "urgency": "medium",
+            "subject": email.subject,
+            "description": email.text_body or email.html_body or email.subject,
+            "member": {
+                "name": email.from_name or email.from_email.split('@')[0],
+                "email": email.from_email
+            },
+            "messages": [],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.tickets.insert_one(ticket)
+        collection = db.tickets
+        logger.info(f"Created new ticket {new_ticket_id} for email from {email.from_email}")
+    
+    # Add the email as a message to the ticket timeline
+    now = datetime.now(timezone.utc).isoformat()
+    message_content = email.text_body or email.html_body or "(No message body)"
+    
+    message = {
+        "id": str(uuid.uuid4()),
+        "type": "customer_reply",
+        "content": message_content,
+        "sender": "member",
+        "sender_name": email.from_name or email.from_email,
+        "channel": "email",
+        "direction": "incoming",
+        "timestamp": now,
+        "is_internal": False,
+        "metadata": {
+            "from_email": email.from_email,
+            "subject": email.subject,
+            "via": "email_webhook"
+        }
+    }
+    
+    # Update ticket
+    await collection.update_one(
+        {"_id": ticket["_id"]},
+        {
+            "$push": {"messages": message},
+            "$set": {
+                "updated_at": now,
+                "status": "in_progress" if ticket.get("status") == "waiting_on_member" else ticket.get("status")
+            }
+        }
+    )
+    
+    logger.info(f"Added email reply to ticket {ticket.get('ticket_id')} from {email.from_email}")
+    
+    # Create admin notification for new customer reply
+    try:
+        notif_doc = {
+            "id": f"notif-{uuid.uuid4().hex[:8]}",
+            "type": "ticket_reply",
+            "title": f"📧 Customer Reply - {ticket.get('ticket_id', '')}",
+            "message": f"{email.from_name or email.from_email} replied to ticket via email",
+            "category": ticket.get("category", "inquiry"),
+            "related_id": ticket.get("ticket_id"),
+            "link_to": f"/admin/service-desk?ticket={ticket.get('ticket_id')}",
+            "read": False,
+            "priority": "high",
+            "created_at": now
+        }
+        await db.admin_notifications.insert_one(notif_doc)
+    except Exception as e:
+        logger.error(f"Failed to create notification: {e}")
+    
+    return {
+        "success": True,
+        "ticket_id": ticket.get("ticket_id"),
+        "message_added": True,
+        "action": "reply_appended" if ticket.get("messages") else "new_ticket_created"
+    }
