@@ -472,9 +472,42 @@ const UnifiedPetPage = () => {
     );
   }
 
-  const petPhoto = getPetPhotoUrl(pet);
+  // Additional safety check - ensure pet has required fields
+  if (!pet || typeof pet !== 'object') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-white p-4">
+        <Card className="max-w-md w-full p-8 text-center">
+          <AlertCircle className="w-16 h-16 mx-auto text-red-400 mb-4" />
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Pet Data Error</h2>
+          <p className="text-gray-600 mb-6">Unable to load this pet's profile data. The pet may have been removed or there's a data issue.</p>
+          <Button onClick={() => navigate('/my-pets')}>
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back to My Pets
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  // Safe defaults for pet properties
+  const safePet = {
+    name: pet.name || 'Unknown Pet',
+    breed: pet.breed || 'Unknown Breed',
+    species: pet.species || 'dog',
+    gender: pet.gender || '',
+    photo_url: pet.photo_url || null,
+    pet_pass_number: pet.pet_pass_number || null,
+    birth_date: pet.birth_date || null,
+    gotcha_date: pet.gotcha_date || null,
+    overall_score: pet.overall_score || 0,
+    doggy_soul_answers: pet.doggy_soul_answers || {},
+    health: pet.health || {},
+    weight: pet.weight || null,
+    ...pet
+  };
+
+  const petPhoto = getPetPhotoUrl(safePet);
   // Use server-side score as single source of truth
-  const displayScore = scoreState?.score ?? Math.round(pet.overall_score || 0);
+  const displayScore = scoreState?.score ?? Math.round(safePet.overall_score || 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50" data-testid="unified-pet-page">
