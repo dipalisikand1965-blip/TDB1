@@ -1637,7 +1637,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         <Card className="p-3 mb-3 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-xs font-medium text-purple-700 flex items-center gap-1">
-                              <Sparkles className="w-3 h-3" /> Mira's Suggestion
+                              <Sparkles className="w-3 h-3" /> Mira&apos;s Suggestion
                             </span>
                             <div className="flex gap-1">
                               <Button size="sm" variant="ghost" onClick={() => setAiSuggestion(null)} className="h-6 px-2 text-xs">
