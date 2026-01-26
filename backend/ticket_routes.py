@@ -5,7 +5,7 @@ Handles all concierge requests across multiple channels
 
 from fastapi import APIRouter, HTTPException, Query, Form, UploadFile, File, Depends, Header
 from fastapi.security import HTTPBasic, HTTPBasicCredentials, HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 from bson import ObjectId
