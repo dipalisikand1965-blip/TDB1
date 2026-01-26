@@ -14,15 +14,20 @@ import { Input } from '../components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import MiraContextPanel from '../components/MiraContextPanel';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 
-// Get user from localStorage
+// Get user from AuthContext or localStorage
 const getUser = () => {
   try {
+    // Try to get from localStorage user key first (for backward compatibility)
     const userData = localStorage.getItem('user');
-    return userData ? JSON.parse(userData) : null;
+    if (userData) {
+      return JSON.parse(userData);
+    }
+    return null;
   } catch {
     return null;
   }
