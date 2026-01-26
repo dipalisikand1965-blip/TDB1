@@ -1358,17 +1358,6 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
       }
     };
     fetchUserPets();
-    
-    // Pre-fill user info
-    const user = getUser();
-    if (user) {
-      setFormData(prev => ({
-        ...prev,
-        name: user.name || '',
-        email: user.email || '',
-        phone: user.phone || user.whatsapp || ''
-      }));
-    }
   }, []);
 
   // Handle pet selection - auto-fill pet details
