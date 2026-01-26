@@ -9434,6 +9434,9 @@ app.include_router(admin_review_router)  # Admin review management
 # Smart Recommendations Engine
 app.include_router(smart_router)  # AI-powered personalized recommendations
 
+# WhatsApp Integration
+app.include_router(whatsapp_router)  # WhatsApp Business API at /api/whatsapp/*
+
 # Auto Ticket Creation System
 set_auto_ticket_db(db)  # Initialize auto-ticket creation with database
 
