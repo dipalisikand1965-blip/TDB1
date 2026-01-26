@@ -1500,10 +1500,79 @@ Product Record:
 ---
 
 ## Test Credentials
-- **Test User**: dipali@clubconcierge.in / lola4304
+- **Test User 1**: dipali@clubconcierge.in / lola4304
+- **Test User 2**: dipali@mindescapes.in / mynx123 (NEW)
 - **Admin**: aditya / lola4304
 - **Test Pet ID**: pet-99a708f1722a (Mojo)
 
 ---
 
-*Last updated: January 25, 2026*
+## Session 30 - Production Bug Fixes (January 26, 2026)
+
+### 🔧 CRITICAL FIX: Smart Recommendations (P0)
+
+**Problem**: Smart Recommendations (Mira's Picks) were not showing on production because pets in the database had `owner_email` but missing `user_id` field that links them to their owners.
+
+**Solution**: Created data migration endpoints:
+
+| Endpoint | Description |
+|----------|-------------|
+| `POST /api/admin/data/link-pets-to-users` | Links pets to owners by adding user_id |
+| `POST /api/admin/data/create-test-user` | Creates test users with correct password hash |
+| `GET /api/admin/data/pets-status` | Shows migration status of pets |
+
+**Migration Results (Preview)**:
+- Total pets: 21
+- Linked: 8
+- Already linked: 1
+- No owner email: 4
+- Owner not found: 8
+
+### 🔧 FIX: Authentication Password Field
+
+**Problem**: New users created with `password` field but auth_routes.py expects `password_hash`.
+
+**Solution**: Updated create-test-user endpoint to use correct field name.
+
+### ✅ VERIFIED FEATURES
+
+1. **Smart Recommendations (Mira's Picks)** - Working!
+   - Shows "Curated for [Pet Name]"
+   - Breed-specific recommendations (e.g., "Recommended for Indies")
+   - Product images loading correctly
+   
+2. **Product Options** - Working!
+   - Multiple options shown (Grain Free Treat, Biscuit Treat, Toy)
+   - Option values selectable
+   - Variants with different prices
+   
+3. **AI-Enhanced Descriptions** - Working!
+   - Rich descriptions with emojis
+   - Professional copy
+
+4. **Intelligent Tags** - Working in backend
+   - 682 products tagged
+   - Search includes tags
+
+### 📋 PRODUCTION COMMANDS TO RUN
+
+```bash
+# 1. Link pets to users on production
+curl -X POST "https://thedoggycompany.in/api/admin/data/link-pets-to-users" -u "aditya:lola4304"
+
+# 2. Create/update test user
+curl -X POST "https://thedoggycompany.in/api/admin/data/create-test-user?email=dipali%40mindescapes.in&password=mynx123" -u "aditya:lola4304"
+
+# 3. Check pets status
+curl "https://thedoggycompany.in/api/admin/data/pets-status" -u "aditya:lola4304"
+```
+
+### 🎯 REMAINING PRODUCTION TASKS
+
+1. **Run the migration commands above on production** (thedoggycompany.in)
+2. **Test member login on production**
+3. **Debug auth issues if they persist** (check production logs)
+
+---
+
+*Last updated: January 26, 2026*
