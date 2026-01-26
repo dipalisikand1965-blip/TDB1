@@ -939,21 +939,32 @@ const MemberDashboard = () => {
                     Complete Pet Soul
                   </Button>
                 )}
-                <Button 
-                  onClick={() => {
-                    // Go directly to unified pet page for primary pet
-                    if (pets.length > 0) {
-                      navigate(`/pet/${pets[0].id}?tab=personality`);
-                    } else {
-                      navigate('/my-pets');
-                    }
-                  }}
-                  variant="outline"
-                  className="bg-white/10 border-white/30 text-white hover:bg-white/20"
-                >
-                  <PawPrint className="w-4 h-4 mr-2" />
-                  {pets.length > 1 ? 'View All Pets' : 'My Pet Profile'}
-                </Button>
+                {primaryPet ? (
+                  <Button 
+                    onClick={() => {
+                      // Go directly to unified pet page for primary pet
+                      if (pets.length > 0) {
+                        navigate(`/pet/${pets[0].id}?tab=personality`);
+                      } else {
+                        navigate('/my-pets');
+                      }
+                    }}
+                    variant="outline"
+                    className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                  >
+                    <PawPrint className="w-4 h-4 mr-2" />
+                    {pets.length > 1 ? 'View All Pets' : 'My Pet Profile'}
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={() => navigate('/shop')}
+                    variant="outline"
+                    className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                  >
+                    <ShoppingBag className="w-4 h-4 mr-2" />
+                    Browse Shop
+                  </Button>
+                )}
                 <Button 
                   onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
                   variant="outline"
