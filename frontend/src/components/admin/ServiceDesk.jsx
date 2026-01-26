@@ -1315,6 +1315,79 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     }
   };
 
+  // Fetch Time Entries for a ticket
+  const fetchTimeEntries = async (ticketId) => {
+    try {
+      const response = await fetch(`${getApiUrl()}/api/tickets/${ticketId}/time-entries`, {
+        headers: authHeaders
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setTimeEntries(data.entries || []);
+      }
+    } catch (err) {
+      console.error('Error fetching time entries:', err);
+    }
+  };
+
+  // Add Time Entry
+  const addTimeEntry = async () => {
+    if (!selectedTicket) return;
+    setSavingTimeEntry(true);
+    
+    try {
+      const response = await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/time-entries`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...timeEntryForm,
+          agent: username
+        })
+      });
+      
+      if (response.ok) {
+        setShowTimeEntryModal(false);
+        setTimeEntryForm({ duration_minutes: 15, description: '', entry_type: 'work' });
+        fetchTimeEntries(selectedTicket.ticket_id);
+      } else {
+        alert('Failed to add time entry');
+      }
+    } catch (err) {
+      console.error('Error adding time entry:', err);
+      alert('Failed to add time entry');
+    } finally {
+      setSavingTimeEntry(false);
+    }
+  };
+
+  // Generate AI Summary for ticket
+  const generateTicketSummary = async () => {
+    if (!selectedTicket) return;
+    setGeneratingSummary(true);
+    setTicketSummary(null);
+    
+    try {
+      const response = await fetch(`${getApiUrl()}/api/tickets/ai/summary/${selectedTicket.ticket_id}`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify(aiSummaryConfig)
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setTicketSummary(data.summary);
+        setShowAiSummaryModal(false);
+      } else {
+        alert('Failed to generate summary');
+      }
+    } catch (err) {
+      console.error('Error generating summary:', err);
+      alert('Failed to generate summary');
+    } finally {
+      setGeneratingSummary(false);
+    }
+  };
+
   // New Ticket Form Component
   const NewTicketForm = () => {
     const [formData, setFormData] = useState({
