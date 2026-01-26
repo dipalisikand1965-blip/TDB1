@@ -1113,3 +1113,88 @@ async def seed_fit_data():
         "bundles_seeded": len(default_bundles),
         "partners_seeded": len(default_partners)
     }
+
+
+# ============== ADDITIONAL FITNESS PRODUCTS SEED ==============
+
+@router.post("/admin/seed-extra")
+async def seed_extra_fit_products():
+    """Seed additional fitness products with images"""
+    db = get_db()
+    
+    new_products = [
+        {
+            "id": f"fit-prod-{uuid.uuid4().hex[:8]}",
+            "name": "Dog Yoga Mat",
+            "description": "Non-slip yoga mat designed for pet stretching and relaxation exercises. Perfect for doga sessions with your furry friend.",
+            "price": 1299,
+            "category": "fit",
+            "pillar": "fit",
+            "image": "https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=800",
+            "in_stock": True,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"fit-prod-{uuid.uuid4().hex[:8]}",
+            "name": "Interactive Fetch Launcher",
+            "description": "Automatic ball launcher with adjustable distance settings. Great for high-energy dogs who love fetch.",
+            "price": 2499,
+            "category": "fit",
+            "pillar": "fit",
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "in_stock": True,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"fit-prod-{uuid.uuid4().hex[:8]}",
+            "name": "Agility Training Kit",
+            "description": "Complete agility set with hurdles, tunnel, weave poles, and training guide. Build your backyard agility course.",
+            "price": 4999,
+            "category": "fit",
+            "pillar": "fit",
+            "image": "https://images.unsplash.com/photo-1546815693-7533bae19894?w=800",
+            "in_stock": True,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"fit-prod-{uuid.uuid4().hex[:8]}",
+            "name": "Swimming Vest (All Sizes)",
+            "description": "High-visibility flotation vest for water-loving dogs. Adjustable straps and handle for easy lifting.",
+            "price": 1799,
+            "category": "fit",
+            "pillar": "fit",
+            "image": "https://images.unsplash.com/photo-1560743641-3914f2c45636?w=800",
+            "in_stock": True,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": f"fit-prod-{uuid.uuid4().hex[:8]}",
+            "name": "Treadmill for Dogs",
+            "description": "Indoor exercise solution for dogs. Variable speed settings and safety rails. Perfect for rainy days or apartment living.",
+            "price": 15999,
+            "category": "fit",
+            "pillar": "fit",
+            "image": "https://images.unsplash.com/photo-1676729274491-579573327bd0?w=800",
+            "in_stock": True,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+    
+    inserted = 0
+    for product in new_products:
+        existing = await db.fit_products.find_one({"name": product["name"]})
+        if not existing:
+            await db.fit_products.insert_one(product)
+            # Also add to unified_products
+            await db.unified_products.update_one(
+                {"name": product["name"]},
+                {"$set": product},
+                upsert=True
+            )
+            inserted += 1
+    
+    return {
+        "success": True,
+        "products_seeded": inserted,
+        "total_new_products": len(new_products)
+    }
