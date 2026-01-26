@@ -459,20 +459,50 @@ const DinePage = () => {
           </section>
         )}
 
-        {/* Dine Products Section */}
-        {products.length > 0 && (
+        {/* Fresh Meals Products Section */}
+        {products.filter(p => p.category === 'fresh-meals').length > 0 && (
+          <section className="mt-12" data-testid="fresh-meals-products-section">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                  <Truck className="w-6 h-6 text-green-500" />
+                  Fresh Pet Meals
+                </h3>
+                <p className="text-gray-600">Vet-approved fresh meals delivered to your door</p>
+              </div>
+              <Link to="/search?q=fresh-meals">
+                <Button variant="outline" className="gap-2">
+                  View All <ChevronRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {products.filter(p => p.category === 'fresh-meals').slice(0, 10).map((product) => (
+                <ProductCard key={product.id} product={product} pillar="dine" />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Dine Accessories Section */}
+        {products.filter(p => p.category === 'dine').length > 0 && (
           <section className="mt-12" data-testid="dine-products-section">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                   <ShoppingBag className="w-6 h-6 text-orange-500" />
-                  Dine Accessories
+                  Dining Accessories
                 </h3>
                 <p className="text-gray-600">Essentials for pet-friendly dining</p>
               </div>
+              <Link to="/search?q=dining-accessories">
+                <Button variant="outline" className="gap-2">
+                  View All <ChevronRight className="w-4 h-4" />
+                </Button>
+              </Link>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {products.slice(0, 10).map((product) => (
+              {products.filter(p => p.category === 'dine').slice(0, 10).map((product) => (
                 <ProductCard key={product.id} product={product} pillar="dine" />
               ))}
             </div>
