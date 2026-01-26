@@ -6391,6 +6391,12 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
             existing_unified = await db.unified_products.find_one({"id": unified_id})
             
             # Build unified product document with full options
+            # Get images from transformed data - transform uses "image" not "image_url"
+            product_image = transformed.get("image") or transformed.get("image_url") or ""
+            product_images = transformed.get("images", [])
+            if product_image and product_image not in product_images:
+                product_images = [product_image] + product_images
+            
             unified_doc = {
                 "id": unified_id,
                 "shopify_id": sp.get("id"),
@@ -6401,8 +6407,9 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
                 "short_description": transformed.get("description", "")[:200] if transformed.get("description") else "",
                 "category": transformed.get("category"),
                 "tags": transformed.get("tags", []),
-                "image_url": transformed.get("image_url"),
-                "images": transformed.get("images", []),
+                "image_url": product_image,
+                "image": product_image,
+                "images": product_images,
                 "options": transformed.get("options", []),
                 "variants": transformed.get("variants", []),
                 "has_variants": len(transformed.get("variants", [])) > 1,
@@ -6411,7 +6418,7 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
                     "compare_price": transformed.get("originalPrice", 0),
                     "gst_rate": 18
                 },
-                "in_stock": transformed.get("in_stock", True),
+                "in_stock": transformed.get("available", True),
                 "visibility": {"status": "active"},
                 "primary_pillar": "celebrate",
                 "pillars": ["celebrate", "shop"],
