@@ -514,9 +514,9 @@ async def list_shelters(
     """List partner shelters and rescues"""
     db = get_db()
     
-    query = {"active": True}
+    query = {}  # Don't filter by active to show all shelters
     if city:
-        query["city"] = {"$regex": city, "$options": "i"}
+        query["location"] = {"$regex": city, "$options": "i"}
     
     cursor = db.adopt_shelters.find(query, {"_id": 0}).sort("name", 1).limit(limit)
     shelters = await cursor.to_list(length=limit)
