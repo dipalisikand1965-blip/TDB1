@@ -13,6 +13,7 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraContextPanel from '../components/MiraContextPanel';
 import ProductCard from '../components/ProductCard';
+import AdminQuickEdit from '../components/AdminQuickEdit';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import {
   PartyPopper, Calendar, MapPin, Users, Clock, PawPrint,
