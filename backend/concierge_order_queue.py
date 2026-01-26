@@ -706,7 +706,7 @@ async def update_task_status(task_id: str, status: str, notes: Optional[str] = N
 @order_queue_router.get("/dashboard")
 async def get_concierge_dashboard():
     """Get Concierge® dashboard summary"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     now = datetime.now(timezone.utc)
