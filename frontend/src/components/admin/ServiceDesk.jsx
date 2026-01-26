@@ -3711,8 +3711,6 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                   </div>
                 </div>
               )}
-                  </div>
-                )}
                 
                 {/* INFO Tab */}
                 {activeDetailTab === 'info' && (
