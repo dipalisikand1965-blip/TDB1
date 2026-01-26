@@ -9013,6 +9013,33 @@ async def get_members_directory():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@admin_router.get("/members/search")
+async def search_members(
+    email: Optional[str] = None,
+    phone: Optional[str] = None,
+    name: Optional[str] = None,
+    username: str = Depends(verify_admin)
+):
+    """Search members by email, phone, or name"""
+    try:
+        query = {}
+        if email:
+            query["email"] = {"$regex": email, "$options": "i"}
+        if phone:
+            query["phone"] = {"$regex": phone, "$options": "i"}
+        if name:
+            query["name"] = {"$regex": name, "$options": "i"}
+        
+        if not query:
+            return {"members": []}
+        
+        members = await db.users.find(query, {"_id": 0, "password_hash": 0}).limit(20).to_list(20)
+        return {"members": members}
+    except Exception as e:
+        logger.error(f"Member search error: {e}")
+        return {"members": []}
+
+
 @admin_router.get("/members/{member_id}/full-profile")
 async def get_member_full_profile(member_id: str):
     """Get complete member profile including pets, activity, notes"""
