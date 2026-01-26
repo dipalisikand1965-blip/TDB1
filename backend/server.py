@@ -127,6 +127,7 @@ from admin_auth import (
     set_admin_env_credentials
 )
 from product_intelligence import ProductIntelligenceEngine, add_stock_images_to_products
+from ai_description_enhancer import AIDescriptionEnhancer
 
 # Stay pillar routes
 from stay_routes import (
