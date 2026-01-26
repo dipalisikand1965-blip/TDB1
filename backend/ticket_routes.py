@@ -2390,6 +2390,91 @@ async def add_time_entry(ticket_id: str, entry: dict):
                 "audit_trail": {
                     "type": "time_entry",
                     "action": f"Added {time_entry['duration_minutes']} minutes of {time_entry['entry_type']}",
+
+
+# ==================== AI TICKET SUMMARY ====================
+
+@router.post("/ai/summary/{ticket_id}")
+async def generate_ai_summary(ticket_id: str, config: dict):
+    """Generate AI summary for a ticket's conversations"""
+    db = get_db()
+    
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    # Get messages based on config
+    messages = ticket.get("messages", [])
+    num_conversations = config.get("num_conversations", 30)
+    include_incoming = config.get("include_incoming", True)
+    include_outgoing = config.get("include_outgoing", True)
+    include_internal = config.get("include_internal", False)
+    
+    # Filter messages
+    filtered_messages = []
+    for msg in messages[-num_conversations:]:
+        sender = msg.get("sender", "")
+        is_internal = msg.get("is_internal", False)
+        
+        if is_internal and not include_internal:
+            continue
+        if sender == "member" and not include_incoming:
+            continue
+        if sender in ["agent", "system"] and not include_outgoing:
+            continue
+        
+        filtered_messages.append(msg)
+    
+    if not filtered_messages:
+        return {"summary": "No messages found to summarize based on the selected filters."}
+    
+    # Build conversation text for AI
+    conversation_text = ""
+    for msg in filtered_messages:
+        sender_label = "Customer" if msg.get("sender") == "member" else "Agent" if msg.get("sender") == "agent" else "System"
+        if msg.get("is_internal"):
+            sender_label = "Internal Note"
+        content = msg.get("content", msg.get("message", ""))
+        conversation_text += f"{sender_label}: {content}\n\n"
+    
+    # Try to use AI for summary
+    try:
+        from emergentintegrations.llm.chat import chat, Message
+        
+        prompt = f"""Summarize this customer support conversation concisely. Focus on:
+1. The main issue or request
+2. Key actions taken
+3. Current status/outcome
+4. Any pending items
+
+Conversation:
+{conversation_text}
+
+Provide a clear, bullet-point summary."""
+        
+        response = await chat(
+            api_key=os.environ.get("EMERGENT_LLM_KEY"),
+            model="gpt-4o",
+            messages=[Message(role="user", content=prompt)]
+        )
+        
+        return {"summary": response.content}
+    except Exception as e:
+        # Fallback to basic summary
+        logger.error(f"AI summary error: {str(e)}")
+        basic_summary = f"""📊 Ticket Summary (Last {len(filtered_messages)} messages)
+
+• Customer: {ticket.get('member', {}).get('name', 'Unknown')}
+• Category: {ticket.get('category', 'N/A')}
+• Status: {ticket.get('status', 'N/A')}
+• Total Messages: {len(messages)}
+• First Contact: {messages[0].get('timestamp', 'N/A') if messages else 'N/A'}
+• Latest Update: {messages[-1].get('timestamp', 'N/A') if messages else 'N/A'}
+
+Messages included: {len(filtered_messages)} (incoming: {sum(1 for m in filtered_messages if m.get('sender') == 'member')}, outgoing: {sum(1 for m in filtered_messages if m.get('sender') != 'member')})"""
+        
+        return {"summary": basic_summary}
+
                     "user": time_entry["agent"],
                     "timestamp": time_entry["created_at"]
                 }
