@@ -1031,8 +1031,22 @@ const MemberDashboard = () => {
 
           {/* Overview Content */}
           <TabsContent value="overview" className="animate-in fade-in-50 duration-300">
+            {/* MIRA'S PICKS - Smart Recommendations */}
+            {user?.id && (
+              <div className="mb-8">
+                <MiraPicksCard 
+                  userId={user.id}
+                  petId={pets[0]?.id}
+                  title="Mira's Picks"
+                  subtitle={pets[0] ? `Personalized for ${pets[0].name}` : "Discover products for your pet"}
+                  maxItems={4}
+                  showInsights={true}
+                />
+              </div>
+            )}
+            
             {/* ALL 14 LIFE PILLARS - PROMINENT AT TOP */}
-            <Card className="p-6 bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-800 text-white border-none shadow-xl mb-8">
+            <Card className="p-6 bg-gradient-to-r from-teal-800 via-teal-700 to-teal-800 text-white border-none shadow-xl mb-8">
               <div className="flex items-center gap-3 mb-5">
                 <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
                   <Crown className="w-6 h-6 text-yellow-400" />
