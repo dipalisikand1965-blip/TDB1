@@ -1384,12 +1384,178 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         
         {/* Bottom */}
         <div className="p-2 border-t border-slate-700">
-          <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-700/50 text-sm">
+          <button 
+            onClick={() => setShowSettingsModal(true)}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-700/50 text-sm"
+          >
             <Settings className="w-5 h-5" />
             {!sidebarCollapsed && <span>Settings</span>}
           </button>
         </div>
       </div>
+      
+      {/* ==================== SETTINGS MODAL ==================== */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSettingsModal(false)}>
+          <Card className="w-[600px] max-h-[90vh] overflow-y-auto bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-900">Service Desk Settings</h2>
+                <button onClick={() => setShowSettingsModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              {/* Custom Statuses Section */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-800 mb-3">Custom Ticket Statuses</h3>
+                <div className="flex gap-2 mb-3">
+                  <Input
+                    value={newStatusName}
+                    onChange={(e) => setNewStatusName(e.target.value)}
+                    placeholder="New status name..."
+                    className="flex-1"
+                  />
+                  <Button
+                    onClick={async () => {
+                      if (!newStatusName.trim()) return;
+                      try {
+                        await fetch(`${getApiUrl()}/api/tickets/statuses`, {
+                          method: 'POST',
+                          headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ id: newStatusName.toLowerCase().replace(/\s+/g, '_'), label: newStatusName, color: 'blue' })
+                        });
+                        setNewStatusName('');
+                        // Refresh custom statuses
+                        const res = await fetch(`${getApiUrl()}/api/tickets/statuses`, { headers: authHeaders });
+                        if (res.ok) {
+                          const data = await res.json();
+                          setCustomStatuses(data.statuses?.filter(s => !s.is_default) || []);
+                        }
+                      } catch (err) { console.error(err); }
+                    }}
+                    className="bg-emerald-500 hover:bg-emerald-600"
+                  >
+                    <Plus className="w-4 h-4 mr-1" /> Add
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {customStatuses.map(s => (
+                    <Badge key={s.id} className="bg-blue-100 text-blue-700 pr-1">
+                      {s.label || s.name}
+                      <button
+                        onClick={async () => {
+                          await fetch(`${getApiUrl()}/api/tickets/statuses/${s.id}`, { method: 'DELETE', headers: authHeaders });
+                          setCustomStatuses(prev => prev.filter(x => x.id !== s.id));
+                        }}
+                        className="ml-1 p-0.5 hover:bg-blue-200 rounded"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                  {customStatuses.length === 0 && <span className="text-sm text-gray-400">No custom statuses</span>}
+                </div>
+              </div>
+              
+              {/* Custom Categories/Pillars Section */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-800 mb-3">Custom Categories/Pillars</h3>
+                <div className="flex gap-2 mb-3">
+                  <Input
+                    value={newCategoryEmoji}
+                    onChange={(e) => setNewCategoryEmoji(e.target.value)}
+                    placeholder="📁"
+                    className="w-16 text-center"
+                  />
+                  <Input
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    placeholder="New category name..."
+                    className="flex-1"
+                  />
+                  <Button
+                    onClick={async () => {
+                      if (!newCategoryName.trim()) return;
+                      try {
+                        await fetch(`${getApiUrl()}/api/tickets/categories`, {
+                          method: 'POST',
+                          headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ id: newCategoryName.toLowerCase().replace(/\s+/g, '_'), name: newCategoryName, emoji: newCategoryEmoji || '📁' })
+                        });
+                        setNewCategoryName('');
+                        setNewCategoryEmoji('📁');
+                        // Refresh custom categories
+                        const res = await fetch(`${getApiUrl()}/api/tickets/categories`, { headers: authHeaders });
+                        if (res.ok) {
+                          const data = await res.json();
+                          setCustomCategories(data.categories?.filter(c => !c.is_default) || []);
+                        }
+                      } catch (err) { console.error(err); }
+                    }}
+                    className="bg-emerald-500 hover:bg-emerald-600"
+                  >
+                    <Plus className="w-4 h-4 mr-1" /> Add
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {customCategories.map(c => (
+                    <Badge key={c.id} className="bg-purple-100 text-purple-700 pr-1">
+                      {c.emoji} {c.name}
+                      <button
+                        onClick={async () => {
+                          await fetch(`${getApiUrl()}/api/tickets/categories/${c.id}`, { method: 'DELETE', headers: authHeaders });
+                          setCustomCategories(prev => prev.filter(x => x.id !== c.id));
+                        }}
+                        className="ml-1 p-0.5 hover:bg-purple-200 rounded"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                  {customCategories.length === 0 && <span className="text-sm text-gray-400">No custom categories</span>}
+                </div>
+              </div>
+              
+              {/* Notification Settings */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-800 mb-3">Notifications</h3>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-sm">
+                    <input type="checkbox" className="rounded" defaultChecked />
+                    <span>New ticket alerts</span>
+                  </label>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input type="checkbox" className="rounded" defaultChecked />
+                    <span>New message alerts</span>
+                  </label>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input type="checkbox" className="rounded" defaultChecked />
+                    <span>Sound notifications</span>
+                  </label>
+                </div>
+              </div>
+              
+              {/* WebSocket Status */}
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Real-time Connection</span>
+                  <div className={`flex items-center gap-2 text-sm ${connected ? 'text-emerald-600' : 'text-amber-600'}`}>
+                    {connected ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
+                    {connected ? 'Connected' : 'Reconnecting...'}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end mt-6 pt-6 border-t">
+                <Button onClick={() => setShowSettingsModal(false)} className="bg-emerald-500 hover:bg-emerald-600">
+                  Done
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
       
       {/* ==================== MAIN CONTENT ==================== */}
       <div className="flex-1 flex flex-col min-w-0">
