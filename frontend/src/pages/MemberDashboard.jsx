@@ -876,9 +876,31 @@ const MemberDashboard = () => {
                     {primaryPet.breed && <span className="text-teal-300"> Your beautiful {primaryPet.breed}.</span>}
                   </>
                 ) : (
-                  <>Add your first pet to unlock the full Pet Concierge experience.</>
+                  <>Start your pet parenting journey with personalized care & services.</>
                 )}
               </p>
+              
+              {/* No Pet - Prominent Add Pet CTA */}
+              {!primaryPet && (
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-6">
+                  <div className="flex flex-col md:flex-row items-center gap-4">
+                    <div className="w-20 h-20 bg-gradient-to-r from-teal-400 to-cyan-400 rounded-full flex items-center justify-center">
+                      <PawPrint className="w-10 h-10 text-white" />
+                    </div>
+                    <div className="flex-1 text-center md:text-left">
+                      <h3 className="text-xl font-bold text-white mb-1">Add Your First Pet</h3>
+                      <p className="text-white/70 text-sm">Tell us about your furry friend to unlock personalized recommendations, health tips, and exclusive services.</p>
+                    </div>
+                    <Button 
+                      onClick={() => navigate('/my-pets')}
+                      className="bg-gradient-to-r from-teal-400 to-cyan-400 hover:from-teal-500 hover:to-cyan-500 text-white font-semibold px-6 py-3"
+                    >
+                      <PawPrint className="w-5 h-5 mr-2" />
+                      Add Pet Now
+                    </Button>
+                  </div>
+                </div>
+              )}
               
               {/* Pet Quick Info Cards */}
               {primaryPet && (
