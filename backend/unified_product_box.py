@@ -213,7 +213,8 @@ async def get_all_products(
     pillar: Optional[str] = None,
     status: Optional[str] = None,
     reward_eligible: Optional[bool] = None,
-    search: Optional[str] = None
+    search: Optional[str] = None,
+    shipping: Optional[str] = None
 ):
     """Get all products with filtering"""
     if db is None:
@@ -225,24 +226,52 @@ async def get_all_products(
     if product_type:
         query["product_type"] = product_type
     if pillar:
-        query["pillars"] = pillar
+        # Check both 'pillar' (singular) and 'pillars' (array) fields
+        query["$or"] = [
+            {"pillar": pillar},
+            {"pillars": pillar},
+            {"primary_pillar": pillar}
+        ]
     if status:
         query["visibility.status"] = status
     if reward_eligible is not None:
         query["paw_rewards.is_reward_eligible"] = reward_eligible
+    if shipping:
+        if shipping == "pan-india":
+            query["is_pan_india_shippable"] = True
+        elif shipping == "local":
+            query["is_pan_india_shippable"] = {"$ne": True}
     if search:
-        query["$or"] = [
-            {"name": {"$regex": search, "$options": "i"}},
-            {"sku": {"$regex": search, "$options": "i"}},
-            {"tags": {"$regex": search, "$options": "i"}}
-        ]
+        search_query = {
+            "$or": [
+                {"name": {"$regex": search, "$options": "i"}},
+                {"sku": {"$regex": search, "$options": "i"}},
+                {"tags": {"$regex": search, "$options": "i"}},
+                {"category": {"$regex": search, "$options": "i"}},
+                {"description": {"$regex": search, "$options": "i"}}
+            ]
+        }
+        # Merge search query with existing query
+        if "$or" in query:
+            query = {"$and": [query, search_query]}
+        else:
+            query.update(search_query)
     
-    # Execute query
+    # Execute query - check both products and unified_products collections
     products = await db.unified_products.find(
         query, {"_id": 0}
     ).skip(skip).limit(limit).to_list(limit)
     
+    # If no results from unified_products, try products collection
+    if not products:
+        products_query = query.copy()
+        products = await db.products.find(
+            products_query, {"_id": 0}
+        ).skip(skip).limit(limit).to_list(limit)
+    
     total = await db.unified_products.count_documents(query)
+    if total == 0:
+        total = await db.products.count_documents(query)
     
     return {
         "products": products,
