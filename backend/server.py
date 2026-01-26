@@ -7657,6 +7657,7 @@ async def seed_all_pillars():
     from care_routes import seed_care_products
     from travel_routes import seed_travel_products
     from celebrate_routes import seed_celebrate_data
+    from dine_routes import seed_dine_bundles, seed_dine_products
     
     # Seed each pillar (uses upsert - won't delete existing data)
     try:
@@ -7698,6 +7699,17 @@ async def seed_all_pillars():
         results["travel"] = await seed_travel_products()
     except Exception as e:
         results["travel"] = {"error": str(e)}
+    
+    # Dine pillar (bundles and products)
+    try:
+        results["dine_bundles"] = await seed_dine_bundles(username="auto-seed")
+    except Exception as e:
+        results["dine_bundles"] = {"error": str(e)}
+    
+    try:
+        results["dine_products"] = await seed_dine_products(username="auto-seed")
+    except Exception as e:
+        results["dine_products"] = {"error": str(e)}
     
     # Calculate totals
     total_products = sum(r.get("products_seeded", 0) for r in results.values() if isinstance(r, dict))
