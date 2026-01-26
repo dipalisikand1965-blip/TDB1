@@ -4541,47 +4541,36 @@ async def get_public_products(
     
     # Second, query unified_products collection with adapted query
     unified_query = {}
-    if category and not collection:
-        # Unified products use 'pillars' array for category mapping
-        category_lower = category.lower()
-        # Map categories to pillars/tags
-        category_mappings = {
-            "cakes": ["celebrate", "cakes", "birthday-cakes"],
-            "treats": ["feed", "treats", "training-treats"],
-            "desi": ["celebrate", "desi-treats", "festive"],
-            "desi-treats": ["celebrate", "desi-treats", "festive"],
-            "hampers": ["celebrate", "hampers", "gift-boxes"],
-            "frozen-treats": ["celebrate", "frozen-treats"],
-            "mini-cakes": ["celebrate", "mini-cakes"],
-            "dognuts": ["celebrate", "dognuts", "pupcakes"],
-            "meals": ["dine", "meals"],
-            "fresh-meals": ["dine", "fresh-meals"],
-            "cat-treats": ["shop", "cat-treats"],
-        }
-        
-        search_terms = category_mappings.get(category_lower, [category_lower])
-        unified_query = {
-            "$or": [
-                {"category": {"$regex": f"^{category}$", "$options": "i"}},
-                {"tags": {"$in": search_terms}},
-                {"pillars": {"$in": search_terms}},
-                {"primary_pillar": {"$in": search_terms}}
-            ],
-            "visibility.status": "active"
-        }
-    elif search:
+    
+    # Apply parent_category filter if specified
+    if parent_category:
+        unified_query["parent_category"] = parent_category
+    
+    # Apply category filter if specified
+    if category and category not in ["all", "pan-india"] and not collection:
+        unified_query["category"] = category
+    
+    # Apply search filter
+    if search:
         search_regex = {"$regex": search, "$options": "i"}
-        unified_query = {
+        search_filter = {
             "$or": [
                 {"name": search_regex},
                 {"tags": search_regex},
                 {"category": search_regex},
                 {"short_description": search_regex}
-            ],
-            "visibility.status": "active"
+            ]
         }
+        if unified_query:
+            unified_query = {"$and": [unified_query, search_filter]}
+        else:
+            unified_query = search_filter
+    
+    # Only add visibility filter if we have other filters
+    if unified_query:
+        unified_query = {"$and": [unified_query, {"visibility.status": {"$in": ["active", None]}}]}
     else:
-        unified_query = {"visibility.status": "active"}
+        unified_query = {"visibility.status": {"$in": ["active", None]}}
     
     try:
         unified_products = await db.unified_products.find(unified_query, {"_id": 0}).to_list(500)
