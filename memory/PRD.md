@@ -5,49 +5,72 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
-## Session 20 - UX Improvements & Breed Intelligence (January 26, 2026)
+## Session 20 - Smart Recommendations Engine & Dashboard Redesign (January 26, 2026)
 
-### BREED-SPECIFIC HEALTH INTELLIGENCE ✨
-**Feature:** Comprehensive breed health data with personalized care tips
+### 🧠 SMART RECOMMENDATIONS ENGINE
+**Feature:** AI-powered personalized product and service recommendations
+
+**Backend Implementation:**
+- New file: `/app/backend/smart_routes.py`
+- Endpoints:
+  - `GET /api/smart/recommendations/{user_id}` - Full personalized recommendations
+  - `GET /api/smart/mira-context/{pet_id}` - Breed context for Mira AI
+  - `GET /api/smart/birthday-reminders` - Upcoming birthday alerts
+
+**Recommendation Types:**
+- **breed_picks**: Products recommended based on breed health needs (tick prevention for Indies, joint support for large breeds)
+- **allergy_safe**: Products safe for pets with food allergies
+- **birthday_gifts**: Upcoming birthday gift suggestions with urgency levels
+- **mira_picks**: AI-curated top picks combining all factors
+- **insights**: Breed-specific care tips
+
+**Breed Data:**
+- 10+ breeds with health focus, care tips, product priorities
+- Breed normalization for variations (shihtzu→shih tzu)
+- Indian climate suitability ratings
+
+### 🎯 MIRA AI BREED INTELLIGENCE
+**Feature:** Mira now includes breed-specific health tips in conversations
 
 **Implementation:**
-- New utility: `/app/frontend/src/utils/breedHealth.js`
-  - 15+ breeds with detailed health data (Indian Pariah, Golden Retriever, Shih Tzu, Labrador, German Shepherd, Pomeranian, Beagle, French Bulldog, Siberian Husky, Pug, Rottweiler, Dachshund, Boxer, etc.)
-  - Each breed includes: Life expectancy, temperament, health concerns (with severity), care tips (with frequency), vaccinations, dietary needs
-  - Indian climate suitability ratings
-  - Breed variation matching (shihtzu→Shih Tzu)
+- Updated `/app/backend/mira_routes.py`
+- Added `BREED_HEALTH_DATA` with 12+ breeds
+- Added `get_breed_health_tips()` function
+- Integrated into system prompt builder
 
-- New component: `/app/frontend/src/components/BreedHealthCard.jsx`
-  - Full and compact display modes
-  - Shows temperament badges, health watch areas with severity colors
-  - Care tips categorized by frequency (always, daily, weekly, monthly, yearly)
-  - Indian climate suitability indicator
-  - Expandable for full details
+**Example Output:**
+```
+User: "What should I feed Mojo?"
+Mira: "Since Mojo is an Indian Pariah, he's naturally hardy and not prone 
+to food allergies. Monthly tick prevention is essential in India..."
+```
 
-**Integration:**
-- Added to UnifiedPetPage.jsx health tab (full card)
-- Added to UnifiedPetPage.jsx overview tab (compact card)
-- Automatically detects breed from pet profile
+### 📊 MIRA'S PICKS CARD
+**Feature:** Personalized product recommendations widget
 
-**Verification:** ✅ Screenshot shows "Indie Health Guide" for Mojo with 13-16 years life expectancy, exercise/grooming levels, health watch areas
+**Implementation:**
+- New component: `/app/frontend/src/components/MiraPicksCard.jsx`
+- Shows curated products with breed-specific badges
+- Birthday alerts with urgency indicators
+- Care tips section with breed insights
+- Full and compact display modes
 
-### LOGIN PAGE REDESIGN:
-- Split-screen layout with hero image
-- Google OAuth + email/password
-- Testimonial card and feature highlights
+### 🎨 DASHBOARD UX REDESIGN
+**Changes:**
+- Teal color scheme (replacing purple)
+- Mira's Picks section prominently displayed
+- Breed-specific care tips visible
+- Products show "Recommended for [Breed]" badges
+- "Your Pet Life Pillars" section with teal gradient
 
-### BREED AUTOCOMPLETE:
-- New `BreedSelector.jsx` with 50+ breeds
-- Fuzzy search with alias support
-
-### MY PETS PAGE IMPROVEMENTS:
-- Clean sticky header with search/view toggle
-- Teal color scheme
-- Integrated breed selector in edit mode
+**Verification:** ✅ Screenshots show:
+- Mira's Picks with 4 products for Mojo (Indie)
+- "Recommended for Indies" badges on tick prevention products
+- Care tips: "Monthly tick prevention essential", "Generally very healthy breed"
 
 ---
 
-## Session 19 - Multiple Bug Fixes (January 25, 2026)
+## Session 19 - UX Improvements & Breed Autocomplete (January 26, 2026)
 
 ### PILLAR PRODUCTS FIX:
 **Issue:** Products not showing in pillar pages because pillar route endpoints were querying wrong collection.
