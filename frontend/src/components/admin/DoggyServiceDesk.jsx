@@ -16,7 +16,8 @@ import {
   ShoppingBag, Utensils, Hotel, Plane, Stethoscope, PartyPopper,
   Dumbbell, GraduationCap, Shield, MapPin, Package, CreditCard,
   MessageCircle, History, Brain, Target, AlertTriangle, Cake,
-  Dog, Cat, Scissors, Car, Home, Siren
+  Dog, Cat, Scissors, Car, Home, Siren, Mic, MicOff, StopCircle, 
+  Play, Pause, Volume2, File, Upload, Trash, Eye, Download
 } from 'lucide-react';
 
 // ==================== PILLAR CONFIGURATION ====================
