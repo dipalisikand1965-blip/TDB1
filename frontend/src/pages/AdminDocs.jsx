@@ -68,6 +68,7 @@ const AdminDocs = () => {
         { id: 'reviews', title: 'Reviews', icon: Star },
         { id: 'nps', title: 'Net Pawmoter Score (NPS) 🆕', icon: Star },
         { id: 'mira-rules', title: 'Mira LLM Rules 🆕', icon: Brain },
+        { id: 'smart-engine', title: 'Smart Recommendations 🆕', icon: Sparkles },
       ]
     },
     'pillar-tools': {
