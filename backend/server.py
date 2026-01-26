@@ -897,9 +897,10 @@ async def lifespan(app: FastAPI):
 # Create the main app with lifespan
 app = FastAPI(lifespan=lifespan)
 
-# Wrap with Socket.IO for WebSocket support
+# Mount Socket.IO at /socket.io path for WebSocket support
 import socketio
-socket_app = socketio.ASGIApp(sio, app)
+socket_asgi_app = socketio.ASGIApp(sio, socketio_path='socket.io')
+app.mount('/socket.io', socket_asgi_app)
 
 # Create routers
 @app.get("/api/health")
