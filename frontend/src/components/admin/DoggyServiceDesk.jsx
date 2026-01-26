@@ -5,6 +5,7 @@ import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
 import { API_URL, getApiUrl } from '../../utils/api';
+import { useServiceDeskSocket, TicketNotificationToast } from '../../hooks/useServiceDeskSocket';
 import {
   Search, Plus, RefreshCw, X, Send, Clock, User, Phone, Mail,
   Calendar, AlertCircle, CheckCircle, Loader2, MessageSquare,
@@ -17,7 +18,7 @@ import {
   Dumbbell, GraduationCap, Shield, MapPin, Package, CreditCard,
   MessageCircle, History, Brain, Target, AlertTriangle, Cake,
   Dog, Cat, Scissors, Car, Home, Siren, Mic, MicOff, StopCircle, 
-  Play, Pause, Volume2, File, Upload, Trash, Eye, Download
+  Play, Pause, Volume2, File, Upload, Trash, Eye, Download, Wifi, WifiOff
 } from 'lucide-react';
 
 // ==================== PILLAR CONFIGURATION ====================
