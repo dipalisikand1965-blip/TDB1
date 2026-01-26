@@ -2390,6 +2390,14 @@ async def add_time_entry(ticket_id: str, entry: dict):
                 "audit_trail": {
                     "type": "time_entry",
                     "action": f"Added {time_entry['duration_minutes']} minutes of {time_entry['entry_type']}",
+                    "agent": time_entry['agent'],
+                    "timestamp": time_entry['created_at']
+                }
+            }
+        }
+    )
+    
+    return {"success": True, "time_entry": time_entry}
 
 
 # ==================== AI TICKET SUMMARY ====================
