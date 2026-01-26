@@ -883,12 +883,12 @@ to food allergies. Monthly tick prevention is essential in India..."
 ### VERIFIED CREDENTIALS:
 
 **🔑 ADMIN PORTAL:**
-- URL: https://pawpal-admin.preview.emergentagent.com/admin
+- URL: https://petlifeopsys.preview.emergentagent.com/admin
 - Username: `aditya`
 - Password: `lola4304`
 
 **👤 MEMBER LOGIN:**
-- URL: https://pawpal-admin.preview.emergentagent.com/login
+- URL: https://petlifeopsys.preview.emergentagent.com/login
 - Email: `dipali@clubconcierge.in`
 - Password: `lola4304`
 
