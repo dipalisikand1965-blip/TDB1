@@ -2722,15 +2722,29 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                       </div>
                       <p className="text-xs text-gray-600 line-clamp-2">{ticket.description?.substring(0, 100)}</p>
                       <div className="flex items-center justify-between mt-2">
-                        <Badge className={`text-xs ${STATUS_COLORS[ticket.status]}`}>
-                          {ticket.status?.replace(/_/g, ' ')}
-                        </Badge>
-                        <div className="flex items-center gap-2 text-xs text-gray-400">
-                          {ticket.assigned_to && (
-                            <span className="flex items-center gap-1">
-                              <User className="w-3 h-3" />
-                              {ticket.assigned_to.split('@')[0]}
+                        <div className="flex items-center gap-2">
+                          <Badge className={`text-xs ${STATUS_COLORS[ticket.status]}`}>
+                            {ticket.status?.replace(/_/g, ' ')}
+                          </Badge>
+                          {/* Reply Count */}
+                          {ticket.reply_count > 0 && (
+                            <span className="flex items-center gap-1 text-xs text-slate-500">
+                              <MessageSquare className="w-3 h-3" />
+                              {ticket.reply_count}
                             </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                          {/* Agent Avatar with Initials */}
+                          {ticket.assigned_to ? (
+                            <div className="flex items-center gap-1.5" title={`Assigned to: ${ticket.assigned_to}`}>
+                              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
+                                {ticket.assigned_to.charAt(0).toUpperCase()}
+                              </div>
+                              <span className="hidden sm:inline">{ticket.assigned_to.split('@')[0]}</span>
+                            </div>
+                          ) : (
+                            <span className="text-orange-500 text-[10px] bg-orange-50 px-1.5 py-0.5 rounded">Unassigned</span>
                           )}
                           <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
                         </div>
