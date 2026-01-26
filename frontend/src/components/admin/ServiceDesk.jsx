@@ -770,10 +770,45 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
 
   // Handlers
   const handleReply = async () => {
-    if (!replyText.trim() || !selectedTicket) return;
+    if ((!replyText.trim() && replyAttachments.length === 0) || !selectedTicket) return;
     
     setSendingReply(true);
     try {
+      // Upload attachments first if any
+      let attachmentUrls = [];
+      if (replyAttachments.length > 0) {
+        for (const att of replyAttachments) {
+          const formData = new FormData();
+          if (att.file) {
+            formData.append('file', att.file);
+          } else if (att.blob) {
+            formData.append('file', att.blob, `voice_${Date.now()}.webm`);
+          }
+          formData.append('ticket_id', selectedTicket.ticket_id);
+          formData.append('type', att.type);
+          
+          try {
+            const uploadRes = await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/attachments`, {
+              method: 'POST',
+              headers: { 'Authorization': authHeaders.Authorization },
+              body: formData
+            });
+            
+            if (uploadRes.ok) {
+              const uploadResult = await uploadRes.json();
+              attachmentUrls.push({
+                type: att.type,
+                name: att.name,
+                url: uploadResult.url || uploadResult.file_url,
+                size: att.size
+              });
+            }
+          } catch (uploadErr) {
+            console.error('Error uploading attachment:', uploadErr);
+          }
+        }
+      }
+      
       if (isInternalNote || sendChannel === 'internal') {
         // Internal note - use existing endpoint
         await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/reply`, {
@@ -781,7 +816,8 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
           headers: { ...authHeaders, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             message: replyText,
-            is_internal: isInternalNote
+            is_internal: isInternalNote,
+            attachments: attachmentUrls
           })
         });
       } else {
@@ -793,7 +829,8 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
             ticket_id: selectedTicket.ticket_id,
             message: replyText,
             channel: sendChannel,
-            is_internal: false
+            is_internal: false,
+            attachments: attachmentUrls
           })
         });
         
@@ -810,6 +847,8 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
       }
       
       setReplyText('');
+      setReplyAttachments([]);
+      setAudioBlob(null);
       fetchTicketDetails(selectedTicket.ticket_id);
     } catch (err) {
       console.error('Error sending reply:', err);
