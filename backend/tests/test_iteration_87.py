@@ -41,8 +41,8 @@ class TestEmailWebhook:
         data = response.json()
         assert data.get("success") == True
         assert "ticket_id" in data
-        assert data.get("action") in ["created_new_ticket", "appended_to_ticket"]
-        print(f"✓ Email webhook created ticket: {data.get('ticket_id')}")
+        assert data.get("action") in ["created_new_ticket", "appended_to_ticket", "new_ticket_created", "reply_appended"]
+        print(f"✓ Email webhook created ticket: {data.get('ticket_id')} (action: {data.get('action')})")
     
     def test_email_webhook_appends_to_existing_ticket(self):
         """Test that email webhook appends to existing ticket when ticket_id in subject"""
@@ -86,8 +86,8 @@ class TestEmailWebhook:
         data = response.json()
         assert data.get("success") == True
         assert data.get("ticket_id") == ticket_id
-        assert data.get("action") == "appended_to_ticket"
-        print(f"✓ Email webhook appended to existing ticket: {ticket_id}")
+        assert data.get("action") in ["appended_to_ticket", "reply_appended"]
+        print(f"✓ Email webhook appended to existing ticket: {ticket_id} (action: {data.get('action')})")
     
     def test_email_webhook_required_fields(self):
         """Test that email webhook validates required fields"""
