@@ -951,7 +951,7 @@ const MemberDashboard = () => {
         {/* Account Header Bar */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-lg font-bold text-white shadow-md">
+            <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-lg font-bold text-white shadow-md">
               {user.name?.charAt(0) || 'U'}
             </div>
             <div>
