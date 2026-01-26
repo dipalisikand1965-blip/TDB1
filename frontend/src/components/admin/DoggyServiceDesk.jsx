@@ -1900,7 +1900,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                       
                       return (
                         <div
-                          key={ticket.ticket_id}
+                          key={`${ticket.ticket_id}-${ticket.source || 'ticket'}-${idx}`}
                           onClick={() => handleSelectTicket(ticket)}
                           className={`px-4 py-3 border-b cursor-pointer transition-all hover:bg-gray-50 ${
                             selectedTicket?.ticket_id === ticket.ticket_id ? 'bg-emerald-50 border-l-4 border-l-emerald-500' : ''
