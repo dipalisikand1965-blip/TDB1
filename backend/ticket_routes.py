@@ -2333,3 +2333,69 @@ async def serve_ticket_file(ticket_id: str, filename: str):
     
     return FileResponse(file_path, media_type=content_type)
 
+
+
+# ==================== TIME ENTRIES ====================
+
+@router.get("/{ticket_id}/time-entries")
+async def get_time_entries(ticket_id: str):
+    """Get all time entries for a ticket"""
+    db = get_db()
+    
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    entries = ticket.get("time_entries", [])
+    total_minutes = sum(e.get("duration_minutes", 0) for e in entries)
+    
+    return {
+        "entries": entries,
+        "total_entries": len(entries),
+        "total_minutes": total_minutes,
+        "total_hours": round(total_minutes / 60, 2)
+    }
+
+@router.post("/{ticket_id}/time-entries")
+async def add_time_entry(ticket_id: str, entry: dict):
+    """Add a time entry to a ticket"""
+    db = get_db()
+    
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    time_entry = {
+        "id": f"TE-{uuid.uuid4().hex[:8].upper()}",
+        "duration_minutes": entry.get("duration_minutes", 15),
+        "description": entry.get("description", ""),
+        "entry_type": entry.get("entry_type", "work"),
+        "agent": entry.get("agent", "Unknown"),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"time_entries": time_entry},
+            "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+        }
+    )
+    
+    # Also add to audit trail
+    await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {
+                "audit_trail": {
+                    "type": "time_entry",
+                    "action": f"Added {time_entry['duration_minutes']} minutes of {time_entry['entry_type']}",
+                    "user": time_entry["agent"],
+                    "timestamp": time_entry["created_at"]
+                }
+            }
+        }
+    )
+    
+    return {"success": True, "entry": time_entry}
+
