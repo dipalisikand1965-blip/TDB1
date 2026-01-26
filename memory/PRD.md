@@ -5,52 +5,72 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
-## Session 34 - Ultimate Intelligent Service Desk (January 26, 2026)
+## Session 34 - Ultimate Intelligent Service Desk + Multi-Channel (January 26, 2026)
 
-### ✅ MAJOR FEATURE COMPLETE: Ultimate Doggy Service Desk
+### ✅ MAJOR FEATURES COMPLETE
 
-**Complete Zoho-Style Integration with Deep Data Connectivity**
+**1. Ultimate Doggy Service Desk - Complete**
 
-The Service Desk now includes all the features requested for an "intelligent" workspace:
+- 📎 **Document/Image/Voice Attachments**: Full multimedia support in replies
+- 🤖 **AI "Ask Mira"**: Context-aware reply suggestions
+- 📝 **4-Tab Detail Panel**: Conversation, Context, Files, History
+- 🔔 **Real-time WebSocket Notifications**: Live updates without refresh
 
-**1. Enhanced Reply Composer with Multi-Media Support**
-- 📎 **Document Attachments**: Click paperclip to attach PDF, DOC, XLS, TXT, CSV files
-- 🖼️ **Image Attachments**: Click image icon to attach JPG, PNG, GIF, WEBP images
-- 🎤 **Voice Recording**: Click microphone to record voice messages
-  - Live recording timer shows duration
-  - Preview before attaching
-  - Uploads as WebM audio files
-- 🤖 **AI Suggestions**: "Ask Mira" button generates context-aware reply suggestions
-- 📝 **Internal Notes**: Toggle for private agent-only notes
+**2. Email Reply Webhook - Ready**
 
-**2. Four-Tab Detail Panel**
-- **Conversation**: Full message thread with attachments displayed inline
-- **Context**: Pet Soul profiles, member info, contact details
-- **Files**: Dedicated tab showing all ticket attachments with preview/download
-- **History**: Order history and ticket metadata
+- Endpoint: `POST /api/tickets/webhook/resend-inbound`
+- Handles Resend's `email.received` webhook format
+- Auto-matches emails to existing tickets by:
+  - Ticket ID in subject line `[Ticket #TKT-123]`
+  - Customer email address
+- Creates new tickets for unmatched emails
+- Emits real-time notifications to Service Desk
 
-**3. Message Attachments Display**
-- Images shown inline with click-to-expand
-- Voice messages with audio player controls
-- Documents with download links
-- Channel indicators (via Email, via WhatsApp, etc.)
+**3. WhatsApp Business API Integration - Ready for Keys**
 
-**4. Backend Enhancements**
-- `TicketReply` model now accepts `attachments` array
-- Attachments stored per-message for complete audit trail
-- File uploads via FormData to `/api/tickets/{id}/attachments`
+- Endpoints:
+  - `GET /api/whatsapp/status` - Check config status
+  - `POST /api/whatsapp/send` - Send text message
+  - `POST /api/whatsapp/send-template` - Send template message
+  - `POST /api/whatsapp/send-media` - Send media (image/doc/audio)
+  - `GET/POST /api/whatsapp/webhook` - Receive incoming messages
+- Incoming messages auto-create/update tickets
+- Full conversation history stored per ticket
 
-**Files Modified:**
-- `/app/frontend/src/components/admin/DoggyServiceDesk.jsx` (1700+ lines)
-- `/app/backend/ticket_routes.py` (AttachmentInfo model, TicketReply update)
+**4. Real-time WebSocket Notifications**
+
+- Socket.IO server mounted at `/socket.io`
+- Events:
+  - `ticket:new` - New ticket created
+  - `ticket:update` - Ticket status/assignment changed
+  - `ticket:message` - New message in conversation
+  - `stats:update` - Dashboard stats changed
+- Connection status indicator in Service Desk sidebar
+- Toast notifications for incoming messages
+
+**Files Created:**
+- `/app/backend/realtime_notifications.py` - WebSocket server & NotificationManager
+- `/app/backend/whatsapp_routes.py` - WhatsApp Business API integration
+- `/app/frontend/src/hooks/useServiceDeskSocket.js` - WebSocket client hook
+- `/app/memory/MULTICHANNEL_SETUP.md` - Setup guide for user
+
+**Environment Variables Added (.env):**
+```
+# WhatsApp (add your keys)
+WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
+WHATSAPP_ACCESS_TOKEN=your_access_token
+WHATSAPP_BUSINESS_ACCOUNT_ID=your_business_account_id
+WHATSAPP_VERIFY_TOKEN=doggy_company_webhook_verify_2025
+
+# Resend Webhook
+RESEND_WEBHOOK_SECRET=your_webhook_secret
+```
 
 ### 📊 Testing Results
-- ✅ 100% Backend tests passed (9/9)
-- ✅ 100% Frontend features verified
-- ✅ All 4 tabs functional
-- ✅ All attachment types working
-- ✅ AI suggestions working
-- ✅ Filtering by pillar/channel/priority working
+- ✅ Service Desk 100% functional with all features
+- ✅ Email webhook endpoint tested
+- ✅ WhatsApp status endpoint returning setup instructions
+- ✅ WebSocket connection indicator showing in UI
 
 ---
 
