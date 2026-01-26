@@ -1094,6 +1094,18 @@ async def add_reply(ticket_id: str, reply: TicketReply):
     
     now = datetime.now(timezone.utc).isoformat()
     
+    # Build attachments list
+    attachment_list = []
+    if reply.attachments:
+        for att in reply.attachments:
+            attachment_list.append({
+                "filename": att.filename,
+                "file_url": att.file_url,
+                "type": att.type,
+                "size": att.size,
+                "uploaded_at": now
+            })
+    
     message = {
         "id": str(uuid.uuid4()),
         "type": "internal_note" if reply.is_internal else "reply",
@@ -1101,7 +1113,8 @@ async def add_reply(ticket_id: str, reply: TicketReply):
         "sender": "concierge",
         "channel": reply.channel or "internal",
         "timestamp": now,
-        "is_internal": reply.is_internal
+        "is_internal": reply.is_internal,
+        "attachments": attachment_list
     }
     
     update_doc = {"updated_at": now}
