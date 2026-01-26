@@ -552,10 +552,10 @@ const UnifiedPetPage = () => {
                 setEditing(!editing);
                 if (!editing) {
                   setEditForm({
-                    name: pet.name || '',
-                    breed: pet.breed || '',
-                    species: pet.species || 'dog',
-                    gender: pet.gender || 'male',
+                    name: safePet.name || '',
+                    breed: safePet.breed || '',
+                    species: safePet.species || 'dog',
+                    gender: safePet.gender || 'male',
                     birth_date: safePet.birth_date || '',
                     gotcha_date: safePet.gotcha_date || ''
                   });
