@@ -713,27 +713,31 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     setSending(false);
   };
 
-  // Generate AI reply suggestion
-  const generateAiReply = async () => {
+  // AI Reply Style Options
+  const AI_REPLY_STYLES = [
+    { id: 'professional', label: 'Professional', icon: '💼', desc: 'Formal and business-like' },
+    { id: 'friendly', label: 'Friendly', icon: '😊', desc: 'Warm and personable' },
+    { id: 'empathetic', label: 'Empathetic', icon: '💝', desc: 'Understanding and caring' },
+    { id: 'concise', label: 'Concise', icon: '⚡', desc: 'Short and to the point' },
+    { id: 'detailed', label: 'Detailed', icon: '📝', desc: 'Comprehensive and thorough' }
+  ];
+
+  // Generate AI reply suggestion with selected style
+  const generateAiReply = async (style = aiReplyStyle) => {
     if (!selectedTicket) return;
     setAiLoading(true);
     setAiSuggestion(null);
     
     try {
-      const context = {
-        ticket: selectedTicket,
-        pet: petProfile,
-        member: memberProfile
-      };
-      
       const res = await fetch(`${getApiUrl()}/api/tickets/ai/draft-reply`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ticket_id: selectedTicket.ticket_id,
-          reply_type: 'professional',
-          pet_context: petProfile?.soul,
-          member_name: memberProfile?.name || selectedTicket.member?.name
+          reply_type: style,
+          pet_context: petProfile?.soul || petSoulPrompts,
+          member_name: memberProfile?.name || selectedTicket.member?.name,
+          pet_name: petProfile?.name || selectedTicket.pet_info?.name
         })
       });
       
@@ -745,6 +749,94 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       console.error('AI error:', err);
     }
     setAiLoading(false);
+  };
+
+  // Fetch Pet Soul prompts for quick reminders
+  const fetchPetSoulPrompts = async (petId) => {
+    if (!petId) return;
+    try {
+      const res = await fetch(`${getApiUrl()}/api/pet-soul/${petId}/prompts`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setPetSoulPrompts(data.prompts);
+      }
+    } catch (err) {
+      console.debug('Could not fetch pet soul prompts:', err);
+    }
+  };
+
+  // Create new ticket
+  const handleCreateTicket = async () => {
+    if (!newTicketForm.subject.trim()) return;
+    setSending(true);
+    
+    try {
+      const res = await fetch(`${getApiUrl()}/api/tickets/`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category: newTicketForm.category,
+          urgency: newTicketForm.urgency,
+          subject: newTicketForm.subject,
+          description: newTicketForm.description,
+          channel: 'web',
+          member: {
+            name: newTicketForm.member_name,
+            email: newTicketForm.member_email,
+            phone: newTicketForm.member_phone
+          },
+          pet_info: newTicketForm.pet_name ? { name: newTicketForm.pet_name } : null
+        })
+      });
+      
+      if (res.ok) {
+        setShowNewTicketModal(false);
+        setNewTicketForm({
+          type: 'ticket', category: 'inquiry', urgency: 'medium',
+          subject: '', description: '', member_email: '', member_name: '', member_phone: '',
+          pet_name: ''
+        });
+        await fetchAllTickets();
+      }
+    } catch (err) {
+      console.error('Create ticket error:', err);
+    }
+    setSending(false);
+  };
+
+  // Fetch sidebar data (Pet Parents, Pets, Orders, Analytics)
+  const fetchSidebarData = async () => {
+    try {
+      // Fetch pet parents/members
+      const membersRes = await fetch(`${getApiUrl()}/api/members?limit=100`, { headers: authHeaders });
+      if (membersRes.ok) {
+        const data = await membersRes.json();
+        setPetParents(data.members || []);
+      }
+      
+      // Fetch pets
+      const petsRes = await fetch(`${getApiUrl()}/api/pets?limit=100`, { headers: authHeaders });
+      if (petsRes.ok) {
+        const data = await petsRes.json();
+        setPetProfiles(data.pets || []);
+      }
+      
+      // Fetch recent orders
+      const ordersRes = await fetch(`${getApiUrl()}/api/orders?limit=50`, { headers: authHeaders });
+      if (ordersRes.ok) {
+        const data = await ordersRes.json();
+        setOrdersData(data.orders || []);
+      }
+      
+      // Fetch analytics summary
+      const analyticsRes = await fetch(`${getApiUrl()}/api/tickets/analytics`, { headers: authHeaders });
+      if (analyticsRes.ok) {
+        const data = await analyticsRes.json();
+        setAnalyticsData(data);
+      }
+    } catch (err) {
+      console.debug('Could not fetch sidebar data:', err);
+    }
   };
 
   // Handle reply
