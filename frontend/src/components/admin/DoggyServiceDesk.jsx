@@ -1891,7 +1891,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                       <p>No tickets found</p>
                     </div>
                   ) : (
-                    tickets.map(ticket => {
+                    tickets.map((ticket, idx) => {
                       const status = STATUS_CONFIG[ticket.status] || STATUS_CONFIG.new;
                       const priority = PRIORITY_CONFIG[ticket.urgency] || PRIORITY_CONFIG.medium;
                       const pillar = PILLARS[ticket.category];
