@@ -1473,18 +1473,37 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 <div className="w-[500px] flex-shrink-0 flex flex-col bg-white">
                   {/* Detail Header */}
                   <div className="px-4 py-3 border-b flex items-center justify-between flex-shrink-0 bg-gradient-to-r from-emerald-50 to-teal-50">
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         {PILLARS[selectedTicket.category] && (
                           <span className="text-lg">{PILLARS[selectedTicket.category].emoji}</span>
                         )}
                         <span className="font-mono text-xs text-gray-500">{selectedTicket.ticket_id}</span>
+                        <button 
+                          onClick={startEditingTicket}
+                          className="p-1 hover:bg-white/50 rounded"
+                          title="Edit Ticket"
+                        >
+                          <Edit className="w-3 h-3 text-gray-400 hover:text-emerald-600" />
+                        </button>
                       </div>
-                      <h3 className="font-semibold text-gray-900 text-sm">
+                      <h3 className="font-semibold text-gray-900 text-sm truncate">
                         {selectedTicket.subject || selectedTicket.description?.slice(0, 40)}
                       </h3>
                     </div>
                     <div className="flex items-center gap-1">
+                      {/* Pillar Selector */}
+                      <select
+                        value={selectedTicket.category || ''}
+                        onChange={(e) => handleStatusChange(selectedTicket.status)} // Will update via edit
+                        className="text-xs rounded px-2 py-1 bg-white border mr-1"
+                        title="Change Pillar"
+                      >
+                        {Object.entries(PILLARS).map(([k, v]) => (
+                          <option key={k} value={k}>{v.emoji} {v.name}</option>
+                        ))}
+                      </select>
+                      {/* Status Selector */}
                       <select
                         value={selectedTicket.status}
                         onChange={(e) => handleStatusChange(e.target.value)}
@@ -1493,12 +1512,94 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         {Object.entries(STATUS_CONFIG).map(([k, v]) => (
                           <option key={k} value={k}>{v.label}</option>
                         ))}
+                        {customStatuses.map(s => (
+                          <option key={s.id} value={s.id}>{s.label}</option>
+                        ))}
                       </select>
                       <button onClick={() => setSelectedTicket(null)} className="p-1.5 hover:bg-gray-100 rounded ml-2">
                         <X className="w-4 h-4 text-gray-400" />
                       </button>
                     </div>
                   </div>
+                  
+                  {/* ==================== TICKET EDIT MODAL ==================== */}
+                  {isEditingTicket && (
+                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-50">
+                      <Card className="w-[400px] p-6 bg-white shadow-xl">
+                        <h3 className="font-bold text-lg mb-4">Edit Ticket</h3>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="text-xs font-medium text-gray-500 mb-1 block">Subject</label>
+                            <Input
+                              value={editForm.subject || ''}
+                              onChange={(e) => setEditForm(prev => ({ ...prev, subject: e.target.value }))}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-gray-500 mb-1 block">Pillar</label>
+                            <select
+                              value={editForm.category || ''}
+                              onChange={(e) => setEditForm(prev => ({ ...prev, category: e.target.value }))}
+                              className="w-full h-10 px-3 rounded-md border"
+                            >
+                              {Object.entries(PILLARS).map(([k, v]) => (
+                                <option key={k} value={k}>{v.emoji} {v.name}</option>
+                              ))}
+                              {customCategories.map(c => (
+                                <option key={c.id} value={c.id}>{c.emoji || '📁'} {c.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="text-xs font-medium text-gray-500 mb-1 block">Status</label>
+                              <select
+                                value={editForm.status || ''}
+                                onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value }))}
+                                className="w-full h-10 px-3 rounded-md border"
+                              >
+                                {Object.entries(STATUS_CONFIG).map(([k, v]) => (
+                                  <option key={k} value={k}>{v.label}</option>
+                                ))}
+                                {customStatuses.map(s => (
+                                  <option key={s.id} value={s.id}>{s.label}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium text-gray-500 mb-1 block">Priority</label>
+                              <select
+                                value={editForm.urgency || 'medium'}
+                                onChange={(e) => setEditForm(prev => ({ ...prev, urgency: e.target.value }))}
+                                className="w-full h-10 px-3 rounded-md border"
+                              >
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                                <option value="critical">Critical</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-gray-500 mb-1 block">Assigned To</label>
+                            <Input
+                              value={editForm.assigned_to || ''}
+                              onChange={(e) => setEditForm(prev => ({ ...prev, assigned_to: e.target.value }))}
+                              placeholder="Agent name or ID"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex justify-end gap-2 mt-6">
+                          <Button variant="ghost" onClick={() => setIsEditingTicket(false)}>Cancel</Button>
+                          <Button onClick={saveTicketEdits} disabled={sending} className="bg-emerald-500 hover:bg-emerald-600">
+                            {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                            Save Changes
+                          </Button>
+                        </div>
+                      </Card>
+                    </div>
+                  )}
                   
                   {/* Tabs */}
                   <div className="flex border-b flex-shrink-0">
