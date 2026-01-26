@@ -2758,6 +2758,139 @@ async def get_pets_status(username: str = Depends(verify_admin)):
     """Check the status of pets in the database - how many have user_id, owner_email, etc."""
     
     total_pets = await db.pets.count_documents({})
+
+
+@admin_router.post("/data/seed-stays")
+async def seed_pet_friendly_stays(username: str = Depends(verify_admin)):
+    """Seed pet-friendly stays from curated data."""
+    
+    stays_data = [
+        {"name": "Wildernest Nature Resort", "city": "Chorao", "state": "Goa", "type": "Resort", "description": "Pet-friendly nature resort with cottage stays", "image_url": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800", "website": "https://wildernest.in", "phone": None, "address": "Chorao Island, Goa", "pet_policy": "Dogs welcome, size restrictions may apply", "price_range": "₹5,000-15,000", "amenities": "Nature trails, Bird watching, Cottages"},
+        {"name": "Shaam-e-Sarhad Village Resort", "city": "Hodka", "state": "Gujarat", "type": "Homestay", "description": "Traditional Kutchi bhunga stays with pet-friendly policies", "image_url": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800", "website": "https://hodkavillage.com", "phone": None, "address": "Hodka Village, Kutch", "pet_policy": "Pets welcome with prior notice", "price_range": "₹3,000-8,000", "amenities": "Traditional stays, Cultural experience, Open spaces"},
+        {"name": "The Paul Bangalore", "city": "Bangalore", "state": "Karnataka", "type": "Hotel", "description": "Luxury urban hotel welcoming pets", "image_url": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800", "website": "https://thepaul.in", "phone": None, "address": "Domlur, Bangalore", "pet_policy": "Pet-friendly rooms available", "price_range": "₹8,000-20,000", "amenities": "City hotel, Room service, Garden"},
+        {"name": "Reni Pani Jungle Lodge", "city": "Satpura", "state": "Madhya Pradesh", "type": "Resort", "description": "Safari lodge with pet-friendly cottages", "image_url": "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=800", "website": "https://renipanijunglelodge.com", "phone": None, "address": "Satpura Tiger Reserve", "pet_policy": "Dogs welcome in designated cottages", "price_range": "₹15,000-30,000", "amenities": "Safari, Nature walks, Pool"},
+        {"name": "The Postcard Gir", "city": "Gir", "state": "Gujarat", "type": "Resort", "description": "Luxury wildlife resort near Gir National Park", "image_url": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800", "website": "https://postcard.in", "phone": None, "address": "Near Gir National Park", "pet_policy": "Pet-friendly with restrictions", "price_range": "₹20,000-50,000", "amenities": "Wildlife safari, Spa, Fine dining"},
+        {"name": "Zostel Mukteshwar", "city": "Mukteshwar", "state": "Uttarakhand", "type": "Hostel", "description": "Budget-friendly hostel with mountain views", "image_url": "https://images.unsplash.com/photo-1587061949409-02df41d5e562?w=800", "website": "https://zostel.com", "phone": None, "address": "Mukteshwar, Uttarakhand", "pet_policy": "Pets welcome in private rooms", "price_range": "₹1,500-4,000", "amenities": "Mountain views, Common areas, Budget stays"},
+        {"name": "SaffronStays Himalaica", "city": "Jibhi", "state": "Himachal Pradesh", "type": "Villa", "description": "Cozy mountain villa with pet-friendly policies", "image_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800", "website": "https://saffronstays.com", "phone": None, "address": "Jibhi, Tirthan Valley", "pet_policy": "Dogs welcome", "price_range": "₹6,000-12,000", "amenities": "Mountain views, Bonfire, Trekking"},
+        {"name": "Ahilya Fort", "city": "Maheshwar", "state": "Madhya Pradesh", "type": "Heritage", "description": "Historic fort hotel on the Narmada river", "image_url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800", "website": "https://ahilyafort.com", "phone": None, "address": "Maheshwar, MP", "pet_policy": "Pet-friendly with advance notice", "price_range": "₹25,000-50,000", "amenities": "River views, Heritage architecture, Spa"},
+        {"name": "Barefoot at Havelock", "city": "Havelock", "state": "Andaman", "type": "Resort", "description": "Beach resort with pet-friendly cottages", "image_url": "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800", "website": "https://barefoot-andaman.com", "phone": None, "address": "Radhanagar Beach, Havelock", "pet_policy": "Pets welcome in select cottages", "price_range": "₹15,000-35,000", "amenities": "Beach access, Diving, Restaurant"},
+        {"name": "Evolve Back Coorg", "city": "Coorg", "state": "Karnataka", "type": "Resort", "description": "Luxury plantation resort", "image_url": "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=800", "website": "https://evolveback.com", "phone": None, "address": "Karadigodu, Coorg", "pet_policy": "Pet-friendly villas available", "price_range": "₹30,000-60,000", "amenities": "Plantation tours, Spa, Pool"},
+        {"name": "TUTC Kohima Camp", "city": "Kohima", "state": "Nagaland", "type": "Camp", "description": "Luxury camping during Hornbill Festival", "image_url": "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800", "website": "https://tutc.in", "phone": None, "address": "Kisama, Kohima", "pet_policy": "Pets allowed with prior approval", "price_range": "₹20,000-40,000", "amenities": "Luxury tents, Cultural events, Dining"},
+        {"name": "Dune Eco Village", "city": "Pondicherry", "state": "Tamil Nadu", "type": "Resort", "description": "Eco-friendly beach resort", "image_url": "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=800", "website": "https://duneecogroup.com", "phone": None, "address": "Pudhukuppam, Pondicherry", "pet_policy": "Pet-friendly cottages", "price_range": "₹8,000-18,000", "amenities": "Beach, Yoga, Organic food"},
+    ]
+    
+    inserted = 0
+    updated = 0
+    
+    for stay in stays_data:
+        stay_id = f"stay-{stay['name'].lower().replace(' ', '-')[:30]}-{uuid.uuid4().hex[:6]}"
+        
+        # Check if exists by name and city
+        existing = await db.pet_friendly_stays.find_one({
+            "name": stay["name"],
+            "city": stay["city"]
+        })
+        
+        property_doc = {
+            "id": existing.get("id", stay_id) if existing else stay_id,
+            "name": stay["name"],
+            "city": stay["city"],
+            "state": stay["state"],
+            "property_type": stay["type"],
+            "description": stay["description"],
+            "photos": [stay["image_url"]] if stay["image_url"] else ["https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"],
+            "website": stay["website"],
+            "phone": stay["phone"],
+            "address": stay["address"],
+            "pet_policy": {
+                "description": stay["pet_policy"],
+                "max_pets_per_room": 2,
+                "pet_fee_per_night": 500
+            },
+            "price_range": stay["price_range"],
+            "amenities": stay["amenities"].split(", ") if stay["amenities"] else [],
+            "paw_rating": {"overall": 4.0, "comfort": 4.0, "safety": 4.0, "freedom": 4.0, "care": 4.0, "joy": 4.0},
+            "status": "active",
+            "featured": False,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        if existing:
+            await db.pet_friendly_stays.update_one({"_id": existing["_id"]}, {"$set": property_doc})
+            updated += 1
+        else:
+            await db.pet_friendly_stays.insert_one(property_doc)
+            inserted += 1
+    
+    logger.info(f"Seeded stays: {inserted} inserted, {updated} updated")
+    return {"success": True, "inserted": inserted, "updated": updated, "total": len(stays_data)}
+
+
+@admin_router.post("/data/seed-cafes")
+async def seed_pet_friendly_cafes(username: str = Depends(verify_admin)):
+    """Seed pet-friendly cafes/restaurants from curated data."""
+    
+    cafes_data = [
+        {"name": "Third Wave Coffee", "city": "Bangalore", "state": "Karnataka", "type": "Cafe", "description": "Popular coffee chain with pet-friendly outdoor seating", "image_url": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800", "website": "https://thirdwavecoffee.in", "phone": None, "address": "Multiple locations, Bangalore", "pet_policy": "Dogs welcome in outdoor area", "cuisine": "Coffee, Light bites", "price_range": "₹300-600"},
+        {"name": "Cafe Duco", "city": "Delhi", "state": "Delhi", "type": "Cafe", "description": "Pet-friendly cafe in Hauz Khas", "image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800", "website": None, "phone": None, "address": "Hauz Khas Village, Delhi", "pet_policy": "All pets welcome", "cuisine": "Continental, Italian", "price_range": "₹500-1,000"},
+        {"name": "Dyu Art Cafe", "city": "Bangalore", "state": "Karnataka", "type": "Cafe", "description": "Art cafe with pet-friendly garden", "image_url": "https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=800", "website": None, "phone": None, "address": "Koramangala, Bangalore", "pet_policy": "Dogs welcome in garden area", "cuisine": "Cafe, Light meals", "price_range": "₹400-800"},
+        {"name": "Smoke House Deli", "city": "Mumbai", "state": "Maharashtra", "type": "Restaurant", "description": "Popular deli with outdoor pet seating", "image_url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800", "website": "https://smokehousedeli.in", "phone": None, "address": "Multiple locations, Mumbai", "pet_policy": "Pets welcome outdoors", "cuisine": "Continental, Deli", "price_range": "₹800-1,500"},
+        {"name": "Diggin", "city": "Delhi", "state": "Delhi", "type": "Cafe", "description": "Charming cafe with pet-friendly seating", "image_url": "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=800", "website": None, "phone": None, "address": "Chanakyapuri, Delhi", "pet_policy": "Dogs welcome", "cuisine": "Italian, Continental", "price_range": "₹600-1,200"},
+        {"name": "Cafe Zoe", "city": "Mumbai", "state": "Maharashtra", "type": "Cafe", "description": "Industrial-style cafe welcoming pets", "image_url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800", "website": None, "phone": None, "address": "Parel, Mumbai", "pet_policy": "Pet-friendly outdoor seating", "cuisine": "European, Fusion", "price_range": "₹700-1,400"},
+        {"name": "Blue Tokai Coffee", "city": "Multiple", "state": "Pan India", "type": "Cafe", "description": "Specialty coffee chain with select pet-friendly locations", "image_url": "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=800", "website": "https://bluetokaicoffee.com", "phone": None, "address": "Multiple cities", "pet_policy": "Pets welcome in outdoor seating", "cuisine": "Coffee, Bakery", "price_range": "₹300-600"},
+        {"name": "The Fatty Bao", "city": "Bangalore", "state": "Karnataka", "type": "Restaurant", "description": "Asian restaurant with pet-friendly patio", "image_url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800", "website": None, "phone": None, "address": "Indiranagar, Bangalore", "pet_policy": "Dogs welcome on patio", "cuisine": "Asian, Pan-Asian", "price_range": "₹800-1,500"},
+        {"name": "Artsy Cafe", "city": "Pune", "state": "Maharashtra", "type": "Cafe", "description": "Creative cafe space welcoming pets", "image_url": "https://images.unsplash.com/photo-1513267048331-5611cad62e41?w=800", "website": None, "phone": None, "address": "Koregaon Park, Pune", "pet_policy": "All pets welcome", "cuisine": "Cafe, Snacks", "price_range": "₹400-800"},
+        {"name": "Mocha", "city": "Delhi", "state": "Delhi", "type": "Cafe", "description": "Hookah cafe with pet-friendly outdoor area", "image_url": "https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=800", "website": None, "phone": None, "address": "GK-2, Delhi", "pet_policy": "Pets allowed in outdoor section", "cuisine": "Cafe, Middle Eastern", "price_range": "₹500-1,000"},
+        {"name": "Effingut", "city": "Pune", "state": "Maharashtra", "type": "Restaurant", "description": "Brewpub with pet-friendly seating", "image_url": "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=800", "website": "https://effingut.com", "phone": None, "address": "Koregaon Park, Pune", "pet_policy": "Dogs welcome in designated areas", "cuisine": "Brewery, Continental", "price_range": "₹800-1,600"},
+        {"name": "The Brew Room", "city": "Goa", "state": "Goa", "type": "Cafe", "description": "Beachside cafe welcoming pets", "image_url": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800", "website": None, "phone": None, "address": "Anjuna, Goa", "pet_policy": "Pet-friendly beach cafe", "cuisine": "Cafe, Cocktails", "price_range": "₹400-900"},
+    ]
+    
+    inserted = 0
+    updated = 0
+    
+    for cafe in cafes_data:
+        cafe_id = f"cafe-{cafe['name'].lower().replace(' ', '-')[:30]}-{uuid.uuid4().hex[:6]}"
+        
+        # Check if exists by name and city
+        existing = await db.restaurants.find_one({
+            "name": cafe["name"],
+            "city": cafe["city"]
+        })
+        
+        restaurant_doc = {
+            "id": existing.get("id", cafe_id) if existing else cafe_id,
+            "name": cafe["name"],
+            "city": cafe["city"],
+            "state": cafe.get("state"),
+            "type": cafe["type"],
+            "description": cafe["description"],
+            "image": cafe["image_url"] or "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800",
+            "photos": [cafe["image_url"]] if cafe["image_url"] else [],
+            "website": cafe["website"],
+            "phone": cafe["phone"],
+            "address": cafe["address"],
+            "pet_policy": cafe["pet_policy"],
+            "cuisine": cafe["cuisine"],
+            "price_range": cafe["price_range"],
+            "rating": 4.2,
+            "pet_friendly": True,
+            "outdoor_seating": True,
+            "water_bowls": True,
+            "status": "active",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        if existing:
+            await db.restaurants.update_one({"_id": existing["_id"]}, {"$set": restaurant_doc})
+            updated += 1
+        else:
+            await db.restaurants.insert_one(restaurant_doc)
+            inserted += 1
+    
+    logger.info(f"Seeded cafes: {inserted} inserted, {updated} updated")
+    return {"success": True, "inserted": inserted, "updated": updated, "total": len(cafes_data)}
     with_user_id = await db.pets.count_documents({"user_id": {"$exists": True, "$ne": None}})
     with_owner_email = await db.pets.count_documents({"owner_email": {"$exists": True, "$ne": None}})
     without_user_id = await db.pets.count_documents({
