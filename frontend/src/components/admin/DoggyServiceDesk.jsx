@@ -2413,12 +2413,12 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         className="hidden"
                       />
                       
-                      {/* AI Suggestion */}
+                      {/* AI Suggestion with 5 Styles */}
                       {aiSuggestion && (
                         <Card className="p-3 mb-3 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-xs font-medium text-purple-700 flex items-center gap-1">
-                              <Sparkles className="w-3 h-3" /> Mira&apos;s Suggestion
+                              <Sparkles className="w-3 h-3" /> Mira&apos;s Suggestion ({AI_REPLY_STYLES.find(s => s.id === aiReplyStyle)?.label})
                             </span>
                             <div className="flex gap-1">
                               <Button size="sm" variant="ghost" onClick={() => setAiSuggestion(null)} className="h-6 px-2 text-xs">
@@ -2429,7 +2429,24 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                               </Button>
                             </div>
                           </div>
-                          <p className="text-sm text-gray-700">{aiSuggestion}</p>
+                          <p className="text-sm text-gray-700 mb-3">{aiSuggestion}</p>
+                          
+                          {/* 5 AI Reply Styles */}
+                          <div className="border-t pt-2">
+                            <div className="text-[10px] text-purple-600 mb-1.5">Try a different style:</div>
+                            <div className="flex flex-wrap gap-1">
+                              {AI_REPLY_STYLES.filter(s => s.id !== aiReplyStyle).map(style => (
+                                <button
+                                  key={style.id}
+                                  onClick={() => { setAiReplyStyle(style.id); generateAiReply(style.id); }}
+                                  disabled={aiLoading}
+                                  className="px-2 py-1 text-[10px] rounded-full bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors"
+                                >
+                                  {style.icon} {style.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
                         </Card>
                       )}
                       
