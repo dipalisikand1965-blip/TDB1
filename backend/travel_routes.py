@@ -5,7 +5,7 @@ Every request goes through concierge assessment - never instant confirm
 """
 
 from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 from bson import ObjectId
