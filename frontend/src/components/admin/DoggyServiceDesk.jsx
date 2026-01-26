@@ -1305,27 +1305,68 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             </div>
           )}
           
-          {/* Other nav */}
-          <div className="mt-4 space-y-1">
-            {[
-              { id: 'analytics', label: 'Analytics', icon: BarChart3 }
-            ].map(item => (
-              <button
-                key={item.id}
-                onClick={() => setActiveNav(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                  activeNav === item.id ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-700/50'
-                }`}
-              >
-                <item.icon className="w-5 h-5" />
-                {!sidebarCollapsed && (
-                  <>
-                    <span className="text-sm flex-1">{item.label}</span>
-                    {item.badge && <Badge className="bg-red-500 text-white text-xs">{item.badge}</Badge>}
-                  </>
-                )}
-              </button>
-            ))}
+          {/* ==================== DATA SECTIONS ==================== */}
+          <div className="mt-4 space-y-1 px-1">
+            {/* Pet Parents */}
+            <button
+              onClick={() => setActiveNav('pet_parents')}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
+                activeNav === 'pet_parents' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-700/50'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Users className="w-5 h-5" />
+                {!sidebarCollapsed && <span className="text-sm">Pet Parents</span>}
+              </div>
+              {!sidebarCollapsed && petParents.length > 0 && (
+                <span className="text-xs opacity-60">{petParents.length}</span>
+              )}
+            </button>
+            
+            {/* Pet Profiles */}
+            <button
+              onClick={() => setActiveNav('pet_profiles')}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
+                activeNav === 'pet_profiles' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-700/50'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Dog className="w-5 h-5" />
+                {!sidebarCollapsed && <span className="text-sm">Pet Profiles</span>}
+              </div>
+              {!sidebarCollapsed && petProfiles.length > 0 && (
+                <span className="text-xs opacity-60">{petProfiles.length}</span>
+              )}
+            </button>
+            
+            {/* Orders */}
+            <button
+              onClick={() => setActiveNav('orders')}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
+                activeNav === 'orders' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-700/50'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Package className="w-5 h-5" />
+                {!sidebarCollapsed && <span className="text-sm">Orders</span>}
+              </div>
+              {!sidebarCollapsed && ordersData.length > 0 && (
+                <Badge className="bg-red-500 text-white text-xs">{ordersData.length}</Badge>
+              )}
+            </button>
+            
+            {/* Analytics */}
+            <button
+              onClick={() => setActiveNav('analytics')}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
+                activeNav === 'analytics' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-700/50'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <BarChart3 className="w-5 h-5" />
+                {!sidebarCollapsed && <span className="text-sm">Analytics</span>}
+              </div>
+            </button>
           </div>
         </nav>
         
