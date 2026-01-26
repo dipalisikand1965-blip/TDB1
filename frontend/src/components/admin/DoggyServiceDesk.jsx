@@ -928,9 +928,13 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       const formData = new FormData();
       formData.append('file', file);
       
+      // For FormData, don't set Content-Type header - browser sets it automatically
+      const uploadHeaders = { ...authHeaders };
+      delete uploadHeaders['Content-Type'];
+      
       const res = await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/attachments`, {
         method: 'POST',
-        headers: authHeaders,
+        headers: uploadHeaders,
         body: formData
       });
       
@@ -945,7 +949,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           preview: type === 'image' ? URL.createObjectURL(file) : null
         }]);
       } else {
-        alert('Failed to upload file');
+        const errData = await res.json().catch(() => ({}));
+        alert(errData.detail || 'Failed to upload file');
       }
     } catch (err) {
       console.error('Upload error:', err);
@@ -982,7 +987,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       
     } catch (err) {
       console.error('Recording error:', err);
-      alert('Could not access microphone');
+      alert('Could not access microphone. Please check browser permissions.');
     }
   };
   
@@ -1005,9 +1010,13 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       const formData = new FormData();
       formData.append('file', audioBlob, `voice-${Date.now()}.webm`);
       
+      // For FormData, don't set Content-Type header
+      const uploadHeaders = { ...authHeaders };
+      delete uploadHeaders['Content-Type'];
+      
       const res = await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/attachments`, {
         method: 'POST',
-        headers: authHeaders,
+        headers: uploadHeaders,
         body: formData
       });
       
