@@ -1214,6 +1214,21 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     fetchTickets();
   };
 
+  // Quick status change from ticket list (without needing to select)
+  const handleQuickStatusChange = async (ticketId, newStatus) => {
+    try {
+      await fetch(`${getApiUrl()}/api/tickets/${ticketId}`, {
+        method: 'PATCH',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      fetchTickets();
+      fetchStats();
+    } catch (err) {
+      console.error('Error updating status:', err);
+    }
+  };
+
   const handleAssign = async (assignee) => {
     if (!selectedTicket) return;
     
