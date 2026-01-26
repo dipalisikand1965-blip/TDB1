@@ -6439,6 +6439,7 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
                         "category": unified_doc["category"],
                         "tags": unified_doc["tags"],
                         "image_url": unified_doc["image_url"],
+                        "image": unified_doc["image"],
                         "images": unified_doc["images"],
                         "options": unified_doc["options"],
                         "variants": unified_doc["variants"],
