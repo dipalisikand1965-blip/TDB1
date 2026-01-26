@@ -686,16 +686,17 @@ const MyPets = () => {
                             
                             {isEditing ? (
                               <div className="flex gap-2 mt-2">
-                                <Input
-                                  value={editForm.breed}
-                                  onChange={(e) => setEditForm({ ...editForm, breed: e.target.value })}
-                                  placeholder="Breed"
-                                  className="h-8 w-32"
-                                />
+                                <div className="w-48">
+                                  <BreedSelector
+                                    value={editForm.breed}
+                                    onChange={(breed) => setEditForm({ ...editForm, breed })}
+                                    placeholder="Select breed"
+                                  />
+                                </div>
                                 <select
                                   value={editForm.species}
                                   onChange={(e) => setEditForm({ ...editForm, species: e.target.value })}
-                                  className="h-8 px-2 rounded border border-gray-200"
+                                  className="h-12 px-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-teal-500"
                                 >
                                   <option value="dog">Dog</option>
                                   <option value="cat">Cat</option>
@@ -703,7 +704,7 @@ const MyPets = () => {
                                 <select
                                   value={editForm.gender}
                                   onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
-                                  className="h-8 px-2 rounded border border-gray-200"
+                                  className="h-12 px-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-teal-500"
                                 >
                                   <option value="male">Male</option>
                                   <option value="female">Female</option>
