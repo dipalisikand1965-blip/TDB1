@@ -379,6 +379,83 @@ async def create_rsvp(rsvp: ExperienceRSVP):
     }
     await db.channel_intakes.insert_one(inbox_entry)
     
+    # Create Admin Notification
+    notification_doc = {
+        "id": f"NOTIF-{uuid.uuid4().hex[:8].upper()}",
+        "type": "enjoy_rsvp",
+        "pillar": "enjoy",
+        "title": f"New RSVP: {experience.get('name')}",
+        "message": f"{rsvp.user_name} wants to attend {experience.get('name')} with {rsvp.pet_name} ({rsvp.pet_breed})",
+        "priority": "normal",
+        "status": "unread",
+        "source": "enjoy_pillar",
+        "reference_id": rsvp_id,
+        "reference_type": "rsvp",
+        "customer": {
+            "name": rsvp.user_name,
+            "email": rsvp.user_email,
+            "phone": rsvp.user_phone
+        },
+        "pet": {
+            "name": rsvp.pet_name,
+            "breed": rsvp.pet_breed
+        },
+        "metadata": {
+            "experience_id": rsvp.experience_id,
+            "experience_name": experience.get("name"),
+            "event_date": experience.get("event_date"),
+            "venue": experience.get("venue_name"),
+            "number_of_pets": rsvp.number_of_pets,
+            "number_of_humans": rsvp.number_of_humans,
+            "total_price": experience.get("price", 0) * (rsvp.number_of_pets + rsvp.number_of_humans)
+        },
+        "action_required": True,
+        "action_type": "confirm_rsvp",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.admin_notifications.insert_one(notification_doc)
+    
+    # Also add to service_desk_tickets for Command Center visibility
+    service_desk_entry = {
+        "ticket_id": rsvp_id,
+        "source": "enjoy_pillar",
+        "channel": "web",
+        "pillar": "enjoy",
+        "category": "rsvp",
+        "subcategory": experience.get("experience_type"),
+        "status": "new",
+        "priority": "normal",
+        "subject": f"RSVP: {experience.get('name')} - {rsvp.pet_name}",
+        "description": f"{rsvp.user_name} has requested to attend {experience.get('name')} with {rsvp.pet_name}. Event Date: {experience.get('event_date')}",
+        "customer": {
+            "name": rsvp.user_name,
+            "email": rsvp.user_email,
+            "phone": rsvp.user_phone
+        },
+        "pet_context": {
+            "pet_id": rsvp.pet_id,
+            "pet_name": rsvp.pet_name,
+            "pet_breed": rsvp.pet_breed
+        },
+        "metadata": {
+            "rsvp_id": rsvp_id,
+            "experience_id": rsvp.experience_id,
+            "event_date": experience.get("event_date"),
+            "venue": experience.get("venue_name"),
+            "total_price": experience.get("price", 0) * (rsvp.number_of_pets + rsvp.number_of_humans)
+        },
+        "messages": [{
+            "id": f"MSG-{uuid.uuid4().hex[:6]}",
+            "sender": "customer",
+            "sender_name": rsvp.user_name,
+            "content": f"I would like to attend {experience.get('name')} with my pet {rsvp.pet_name}.",
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }],
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.service_desk_tickets.insert_one(service_desk_entry)
+    
     # Update pet profile with experience preferences
     if rsvp.pet_id and rsvp.pet_personality:
         await db.pets.update_one(
