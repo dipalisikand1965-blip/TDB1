@@ -460,9 +460,19 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       filtered = filtered.filter(t => !t.assigned_to);
     }
     
-    // Filter by pillar
+    // Filter by pillar (including special sections)
     if (selectedPillar !== 'all') {
-      filtered = filtered.filter(t => t.category === selectedPillar);
+      if (selectedPillar === 'mira') {
+        filtered = filtered.filter(t => t.source === 'mira_chat' || t.category === 'mira');
+      } else if (selectedPillar === 'membership') {
+        filtered = filtered.filter(t => t.category === 'membership' || t.source?.includes('membership'));
+      } else if (selectedPillar === 'pet_parent') {
+        filtered = filtered.filter(t => t.category === 'member_inquiry' || t.source === 'account');
+      } else if (selectedPillar === 'pet_profile') {
+        filtered = filtered.filter(t => t.category === 'pet_inquiry' || t.source === 'pet_update');
+      } else {
+        filtered = filtered.filter(t => t.category === selectedPillar || t.pillar === selectedPillar);
+      }
     }
     
     // Filter by priority
@@ -475,16 +485,34 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       filtered = filtered.filter(t => t.channel === channelFilter);
     }
     
-    // Search
+    // Advanced Search - by type
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      filtered = filtered.filter(t => 
-        t.ticket_id?.toLowerCase().includes(q) ||
-        t.subject?.toLowerCase().includes(q) ||
-        t.description?.toLowerCase().includes(q) ||
-        t.member?.name?.toLowerCase().includes(q) ||
-        t.member?.email?.toLowerCase().includes(q)
-      );
+      filtered = filtered.filter(t => {
+        switch (searchType) {
+          case 'pet':
+            return t.pet_info?.name?.toLowerCase().includes(q) ||
+                   t.metadata?.pet_name?.toLowerCase().includes(q);
+          case 'pet_parent':
+            return t.member?.name?.toLowerCase().includes(q) ||
+                   t.member?.email?.toLowerCase().includes(q) ||
+                   t.member?.phone?.includes(q);
+          case 'subject':
+            return t.subject?.toLowerCase().includes(q) ||
+                   t.description?.toLowerCase().includes(q);
+          case 'pillar':
+            return t.category?.toLowerCase().includes(q) ||
+                   t.pillar?.toLowerCase().includes(q);
+          default: // 'all'
+            return t.ticket_id?.toLowerCase().includes(q) ||
+                   t.subject?.toLowerCase().includes(q) ||
+                   t.description?.toLowerCase().includes(q) ||
+                   t.member?.name?.toLowerCase().includes(q) ||
+                   t.member?.email?.toLowerCase().includes(q) ||
+                   t.pet_info?.name?.toLowerCase().includes(q) ||
+                   t.category?.toLowerCase().includes(q);
+        }
+      });
     }
     
     // Sort
@@ -501,13 +529,13 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     });
     
     return filtered;
-  }, [allTickets, selectedView, selectedPillar, priorityFilter, channelFilter, searchQuery, sortBy]);
+  }, [allTickets, selectedView, selectedPillar, priorityFilter, channelFilter, searchQuery, searchType, sortBy]);
 
   // Initial load
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      await fetchAllTickets();
+      await Promise.all([fetchAllTickets(), fetchCustomSettings()]);
       setLoading(false);
     };
     load();
