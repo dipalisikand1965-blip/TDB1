@@ -5979,7 +5979,7 @@ async def patch_pet_soul_answers(pet_id: str, answers: dict):
 
 @api_router.post("/pets/{pet_id}/photo")
 async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
-    """Upload or update a pet's photo"""
+    """Upload or update a pet's photo - stores as base64 in database for persistence"""
     import base64
     import os
     
@@ -5995,32 +5995,29 @@ async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
     # Read file content
     content = await photo.read()
     
-    # Validate file size (max 5MB)
-    if len(content) > 5 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="Image must be less than 5MB")
+    # Validate file size (max 2MB for base64 storage)
+    if len(content) > 2 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Image must be less than 2MB")
     
-    # Save to static directory
-    import hashlib
-    file_hash = hashlib.md5(content).hexdigest()[:10]
-    file_ext = photo.filename.split('.')[-1] if '.' in photo.filename else 'jpg'
-    filename = f"pet_{pet_id}_{file_hash}.{file_ext}"
+    # Get file extension and content type
+    file_ext = photo.filename.split('.')[-1].lower() if '.' in photo.filename else 'jpg'
+    content_type = photo.content_type or 'image/jpeg'
     
-    # Create uploads directory if needed
-    upload_dir = "/app/backend/static/uploads/pets"
-    os.makedirs(upload_dir, exist_ok=True)
+    # Convert to base64 for database storage (persists across deployments)
+    photo_base64 = base64.b64encode(content).decode('utf-8')
     
-    # Save file
-    file_path = os.path.join(upload_dir, filename)
-    with open(file_path, 'wb') as f:
-        f.write(content)
+    # Generate URL using API route that will serve from database
+    photo_url = f"/api/pet-photo/{pet_id}"
     
-    # Generate URL using API route (for K8s ingress compatibility)
-    photo_url = f"/api/pet-photo/{pet_id}/{filename}"
-    
-    # Update pet record
+    # Update pet record with both URL and base64 data
     await db.pets.update_one(
         {"id": pet_id},
-        {"$set": {"photo_url": photo_url, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {
+            "photo_url": photo_url, 
+            "photo_base64": photo_base64,
+            "photo_content_type": content_type,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
     )
     
     # Also update in member's pets array
@@ -6029,31 +6026,50 @@ async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
         {"$set": {"pets.$.photo_url": photo_url}}
     )
     
+    logger.info(f"Pet photo uploaded for {pet_id}, size: {len(content)} bytes")
     return {"photo_url": photo_url, "message": "Photo uploaded successfully"}
 
 
-@api_router.get("/pet-photo/{pet_id}/{filename}")
-async def serve_pet_photo(pet_id: str, filename: str):
-    """Serve pet photos through API route (for Kubernetes ingress compatibility)"""
-    from fastapi.responses import FileResponse
-    import os
+@api_router.get("/pet-photo/{pet_id}/{filename:path}")
+async def serve_pet_photo_legacy(pet_id: str, filename: str = ""):
+    """Legacy route - redirects to new route"""
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url=f"/api/pet-photo/{pet_id}")
+
+
+@api_router.get("/pet-photo/{pet_id}")
+async def serve_pet_photo(pet_id: str):
+    """Serve pet photos from database (base64) for persistence across deployments"""
+    from fastapi.responses import Response
+    import base64
     
-    file_path = f"/app/backend/static/uploads/pets/{filename}"
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="Photo not found")
+    # Get pet from database
+    pet = await db.pets.find_one({"id": pet_id}, {"photo_base64": 1, "photo_content_type": 1, "photo_url": 1})
     
-    # Get content type based on extension
-    ext = filename.split('.')[-1].lower() if '.' in filename else 'jpg'
-    content_types = {
-        'jpg': 'image/jpeg',
-        'jpeg': 'image/jpeg',
-        'png': 'image/png',
-        'gif': 'image/gif',
-        'webp': 'image/webp'
-    }
-    content_type = content_types.get(ext, 'image/jpeg')
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
     
-    return FileResponse(file_path, media_type=content_type)
+    # Check if we have base64 photo in database
+    if pet.get("photo_base64"):
+        content = base64.b64decode(pet["photo_base64"])
+        content_type = pet.get("photo_content_type", "image/jpeg")
+        return Response(content=content, media_type=content_type)
+    
+    # Fallback: try to serve from old file path (for backward compatibility)
+    old_photo_url = pet.get("photo_url", "")
+    if old_photo_url and "/" in old_photo_url:
+        filename = old_photo_url.split("/")[-1]
+        file_path = f"/app/backend/static/uploads/pets/{filename}"
+        if os.path.exists(file_path):
+            from fastapi.responses import FileResponse
+            ext = filename.split('.')[-1].lower() if '.' in filename else 'jpg'
+            content_types = {
+                'jpg': 'image/jpeg', 'jpeg': 'image/jpeg',
+                'png': 'image/png', 'gif': 'image/gif', 'webp': 'image/webp'
+            }
+            return FileResponse(file_path, media_type=content_types.get(ext, 'image/jpeg'))
+    
+    raise HTTPException(status_code=404, detail="Photo not found")
 
 
 @api_router.post("/pets/{pet_id}/celebrations")
