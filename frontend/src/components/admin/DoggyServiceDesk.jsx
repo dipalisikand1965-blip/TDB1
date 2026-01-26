@@ -195,6 +195,56 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const imageInputRef = useRef(null);
   
   const conversationEndRef = useRef(null);
+  
+  // Real-time notification state
+  const [realtimeNotification, setRealtimeNotification] = useState(null);
+  
+  // WebSocket callbacks for real-time updates
+  const handleNewTicket = useCallback((data) => {
+    // Add new ticket to the list
+    setAllTickets(prev => {
+      const exists = prev.some(t => t.ticket_id === data.ticket?.ticket_id);
+      if (exists) return prev;
+      return [data.ticket, ...prev];
+    });
+    // Show notification
+    setRealtimeNotification({ ...data, type: 'new_ticket' });
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => setRealtimeNotification(null), 5000);
+  }, []);
+  
+  const handleTicketUpdate = useCallback((data) => {
+    setAllTickets(prev => prev.map(t => 
+      t.ticket_id === data.ticket_id ? { ...t, ...data.data } : t
+    ));
+    // Update selected ticket if it's the one being updated
+    if (selectedTicket?.ticket_id === data.ticket_id) {
+      setSelectedTicket(prev => ({ ...prev, ...data.data }));
+    }
+  }, [selectedTicket?.ticket_id]);
+  
+  const handleNewMessage = useCallback((data) => {
+    // Update ticket messages if viewing this ticket
+    if (selectedTicket?.ticket_id === data.ticket_id) {
+      setSelectedTicket(prev => ({
+        ...prev,
+        messages: [...(prev.messages || []), data.message]
+      }));
+    }
+    // Show notification if not viewing this ticket
+    if (selectedTicket?.ticket_id !== data.ticket_id) {
+      setRealtimeNotification({ ...data, type: 'new_message' });
+      setTimeout(() => setRealtimeNotification(null), 5000);
+    }
+  }, [selectedTicket?.ticket_id]);
+  
+  // Initialize WebSocket connection
+  const { connected, subscribeToTicket, unsubscribeFromTicket } = useServiceDeskSocket(
+    'admin', // Agent ID
+    handleNewTicket,
+    handleTicketUpdate,
+    handleNewMessage
+  );
 
   // ==================== DATA FETCHING ====================
   
