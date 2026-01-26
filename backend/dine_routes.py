@@ -2495,8 +2495,9 @@ async def get_dine_products(
     dine_type: Optional[str] = None,
     in_stock: Optional[bool] = True
 ):
-    """Get all active dine products (public)"""
-    query = {"category": "dine"}
+    """Get all active dine products (public) - includes dine and fresh-meals categories"""
+    # Include both dine accessories and fresh meals
+    query = {"category": {"$in": ["dine", "fresh-meals"]}}
     if dine_type:
         query["dine_type"] = dine_type
     if in_stock is not None:
