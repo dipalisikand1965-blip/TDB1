@@ -393,14 +393,14 @@ async def create_care_request(request: CareRequestCreate):
             "request_type": "care",
             "pillar": "care",
             "status": "pending",
-            "customer_name": request.user_name,
-            "customer_email": request.user_email,
-            "customer_phone": request.user_phone,
+            "customer_name": user_name,
+            "customer_email": user_email,
+            "customer_phone": user_phone,
             "pet_info": {
-                "name": request.pet_name,
-                "breed": request.pet_breed
+                "name": pet_name,
+                "breed": pet_breed
             },
-            "message": f"Care Request: {care_config['name']} - {request.description[:100]}...",
+            "message": f"Care Request: {care_config['name']} - {description[:100] if description else 'No description'}...",
             "metadata": {
                 "care_request_id": request_id,
                 "care_type": request.care_type,
