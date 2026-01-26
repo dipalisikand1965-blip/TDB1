@@ -1075,26 +1075,116 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             )}
           </div>
           
-          {/* Pillar Channels - Collapsed into section */}
+          {/* ==================== ALL PILLARS ==================== */}
           {!sidebarCollapsed && (
-            <div className="mt-4 mb-2">
+            <div className="mt-3 mb-2">
               <div className="text-[10px] text-slate-500 uppercase tracking-wider px-3 mb-2">Pillars</div>
-              <div className="grid grid-cols-4 gap-1 px-2">
-                {Object.entries(PILLARS).slice(0, 8).map(([key, pillar]) => (
-                  <button
-                    key={key}
-                    onClick={() => { setActiveNav('tickets'); setSelectedPillar(key); }}
-                    className={`p-2 rounded-lg text-center transition-colors ${
-                      selectedPillar === key ? 'bg-emerald-600' : 'hover:bg-slate-700/50'
-                    }`}
-                    title={pillar.name}
-                  >
-                    <span className="text-lg">{pillar.emoji}</span>
-                    {stats.by_pillar[key] > 0 && (
-                      <div className="text-[9px] text-slate-400">{stats.by_pillar[key]}</div>
-                    )}
-                  </button>
-                ))}
+              <div className="space-y-0.5 px-1">
+                {/* First 7 pillars (main) */}
+                {['celebrate', 'dine', 'stay', 'travel', 'care', 'enjoy', 'fit'].map(key => {
+                  const pillar = PILLARS[key];
+                  const Icon = pillar.icon;
+                  const count = stats.by_pillar[key] || 0;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => { setActiveNav('tickets'); setSelectedPillar(key); }}
+                      className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs transition-colors ${
+                        selectedPillar === key ? 'bg-emerald-600/80 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span>{pillar.emoji}</span>
+                        <span>{pillar.name}</span>
+                      </div>
+                      {count > 0 && <span className="opacity-60">{count}</span>}
+                    </button>
+                  );
+                })}
+                
+                {/* "More" expandable section */}
+                <div className="mt-2">
+                  <div className="text-[10px] text-slate-600 uppercase tracking-wider px-3 mb-1">More</div>
+                  {['learn', 'paperwork', 'advisory', 'emergency', 'farewell', 'adopt', 'shop'].map(key => {
+                    const pillar = PILLARS[key];
+                    const count = stats.by_pillar[key] || 0;
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => { setActiveNav('tickets'); setSelectedPillar(key); }}
+                        className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs transition-colors ${
+                          selectedPillar === key ? 'bg-emerald-600/80 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span>{pillar.emoji}</span>
+                          <span>{pillar.name}</span>
+                        </div>
+                        {count > 0 && <span className="opacity-60">{count}</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* ==================== SPECIAL SECTIONS ==================== */}
+          {!sidebarCollapsed && (
+            <div className="mt-3 mb-2">
+              <div className="text-[10px] text-slate-500 uppercase tracking-wider px-3 mb-2">Special</div>
+              <div className="space-y-0.5 px-1">
+                {/* Mira AI */}
+                <button
+                  onClick={() => { setActiveNav('tickets'); setSelectedPillar('mira'); }}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors ${
+                    selectedPillar === 'mira' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-purple-400" />
+                    <span>Mira AI</span>
+                  </div>
+                </button>
+                
+                {/* Membership */}
+                <button
+                  onClick={() => { setActiveNav('tickets'); setSelectedPillar('membership'); }}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors ${
+                    selectedPillar === 'membership' ? 'bg-emerald-600/80 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-emerald-400" />
+                    <span>Membership</span>
+                  </div>
+                </button>
+                
+                {/* Pet Parent */}
+                <button
+                  onClick={() => { setActiveNav('tickets'); setSelectedPillar('pet_parent'); }}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors ${
+                    selectedPillar === 'pet_parent' ? 'bg-blue-600/80 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-blue-400" />
+                    <span>Pet Parent</span>
+                  </div>
+                </button>
+                
+                {/* Pet Profile */}
+                <button
+                  onClick={() => { setActiveNav('tickets'); setSelectedPillar('pet_profile'); }}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors ${
+                    selectedPillar === 'pet_profile' ? 'bg-amber-600/80 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Dog className="w-4 h-4 text-amber-400" />
+                    <span>Pet Profile</span>
+                  </div>
+                </button>
               </div>
             </div>
           )}
@@ -1102,9 +1192,6 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           {/* Other nav */}
           <div className="mt-4 space-y-1">
             {[
-              { id: 'members', label: 'Pet Parents', icon: Users, badge: null },
-              { id: 'pets', label: 'Pet Profiles', icon: Dog, badge: null },
-              { id: 'orders', label: 'Orders', icon: Package, badge: 12 },
               { id: 'analytics', label: 'Analytics', icon: BarChart3 }
             ].map(item => (
               <button
