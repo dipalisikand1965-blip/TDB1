@@ -488,7 +488,8 @@ async def register_for_event(event_id: str, name: str, email: str, phone: Option
     """Register for an adoption event"""
     db = get_db()
     
-    event = await db.adoption_events.find_one({"event_id": event_id})
+    # Support both 'id' and 'event_id' field names for compatibility
+    event = await db.adoption_events.find_one({"$or": [{"event_id": event_id}, {"id": event_id}]})
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
     
@@ -498,8 +499,10 @@ async def register_for_event(event_id: str, name: str, email: str, phone: Option
     
     registration_id = f"REG-{uuid.uuid4().hex[:6].upper()}"
     
+    # Update using the correct field name
+    event_field = "event_id" if event.get("event_id") else "id"
     await db.adoption_events.update_one(
-        {"event_id": event_id},
+        {event_field: event_id},
         {"$push": {"attendees": {
             "registration_id": registration_id,
             "name": name, 
