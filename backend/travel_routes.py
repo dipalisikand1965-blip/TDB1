@@ -127,6 +127,18 @@ async def create_travel_request(request: TravelRequestCreate):
         # Get travel type config
         travel_config = TRAVEL_TYPES.get(request.travel_type, TRAVEL_TYPES["cab"])
         
+        # Handle field aliases - use provided or aliased values
+        pickup_loc = request.pickup_location or ""
+        pickup_city = request.pickup_city or pickup_loc  # Use pickup_location as city if city not provided
+        drop_loc = request.drop_location or request.dropoff_location or ""
+        drop_city = request.drop_city or drop_loc  # Use drop_location as city if city not provided
+        travel_date = request.travel_date or request.date or ""
+        travel_time = request.travel_time or request.time or ""
+        user_name = request.user_name or request.contact_name or ""
+        user_email = request.user_email or request.contact_email or ""
+        user_phone = request.user_phone or request.contact_phone or ""
+        additional_notes = request.additional_notes or request.notes or ""
+        
         # Calculate risk assessment
         risk_factors = []
         if request.travel_type == "flight":
@@ -151,8 +163,8 @@ async def create_travel_request(request: TravelRequestCreate):
             
             # Pet info
             "pet": {
-                "id": request.pet_id,
-                "name": request.pet_name,
+                "id": request.pet_id or "",
+                "name": request.pet_name or "",
                 "breed": request.pet_breed,
                 "size": request.pet_size,
                 "weight": request.pet_weight,
@@ -163,21 +175,21 @@ async def create_travel_request(request: TravelRequestCreate):
             
             # Journey details
             "journey": {
-                "pickup_location": request.pickup_location,
-                "pickup_city": request.pickup_city,
-                "drop_location": request.drop_location,
-                "drop_city": request.drop_city,
-                "travel_date": request.travel_date,
-                "travel_time": request.travel_time,
+                "pickup_location": pickup_loc,
+                "pickup_city": pickup_city,
+                "drop_location": drop_loc,
+                "drop_city": drop_city,
+                "travel_date": travel_date,
+                "travel_time": travel_time,
                 "return_date": request.return_date,
                 "is_round_trip": request.is_round_trip
             },
             
             # Customer info
             "customer": {
-                "name": request.user_name,
-                "email": request.user_email,
-                "phone": request.user_phone
+                "name": user_name,
+                "email": user_email,
+                "phone": user_phone
             },
             
             # Additional info
