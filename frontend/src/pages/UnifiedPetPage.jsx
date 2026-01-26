@@ -749,7 +749,7 @@ const UnifiedPetPage = () => {
                     )}
                   </div>
                   <p className="text-white/80 text-lg mb-4 mt-2">
-                    {pet.breed || 'Adorable Furball'} • {pet.species === 'cat' ? '🐱 Cat' : '🐕 Dog'} • {pet.gender === 'male' ? '♂️ Male' : '♀️ Female'}
+                    {safePet.breed || 'Adorable Furball'} • {safePet.species === 'cat' ? '🐱 Cat' : '🐕 Dog'} • {safePet.gender === 'male' ? '♂️ Male' : '♀️ Female'}
                   </p>
                   
                   <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-4">
