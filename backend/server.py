@@ -1127,6 +1127,9 @@ from adopt_routes import router as adopt_router
 from farewell_routes import router as farewell_router
 from shop_routes import router as shop_router
 
+# Import Smart Recommendations Engine
+from smart_routes import router as smart_router
+
 # Import Mira AI Concierge System
 from mira_routes import router as mira_router, set_mira_db
 from mira_intelligence import router as mira_intelligence_router, set_intelligence_db
