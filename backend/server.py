@@ -150,6 +150,12 @@ from stay_social_routes import (
 # Communication System (Unified Reminder & Mailing)
 from communication_routes import setup_communication_routes
 
+# Real-time WebSocket Notifications
+from realtime_notifications import sio, notification_manager
+
+# WhatsApp Integration
+from whatsapp_routes import router as whatsapp_router
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
