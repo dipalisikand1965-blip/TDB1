@@ -124,20 +124,47 @@ async def mongodb_fallback_search(
         else:
             query["price"] = {"$lte": max_price}
     
-    # Determine sort
-    sort_field = [("name", 1)]  # default
-    if sort == "price_asc":
-        sort_field = [("price", 1)]
-    elif sort == "price_desc":
-        sort_field = [("price", -1)]
-    elif sort == "name_desc":
-        sort_field = [("name", -1)]
-    
     # Get total count
     total = await db.products.count_documents(query)
     
-    # Get products
-    products = await db.products.find(query, {"_id": 0}).sort(sort_field).skip(offset).limit(limit).to_list(limit)
+    # Get products with relevance scoring using aggregation
+    pipeline = [
+        {"$match": query},
+        {
+            "$addFields": {
+                "relevance_score": {
+                    "$add": [
+                        # High weight for name match
+                        {"$cond": [{"$regexMatch": {"input": {"$toLower": "$name"}, "regex": q.lower()}}, 100, 0]},
+                        # Medium weight for breed tags
+                        {"$cond": [{"$in": [q.lower(), {"$ifNull": [{"$map": {"input": {"$ifNull": ["$breed_tags", []]}, "as": "t", "in": {"$toLower": "$$t"}}}, []]}]}, 50, 0]},
+                        # Weight for occasion tags
+                        {"$cond": [{"$gt": [{"$size": {"$ifNull": ["$occasion_tags", []]}}, 0]}, 20, 0]},
+                        # Base weight for any match
+                        10
+                    ]
+                }
+            }
+        },
+        {"$sort": {"relevance_score": -1, "name": 1}},
+        {"$skip": offset},
+        {"$limit": limit},
+        {"$project": {"relevance_score": 0}}  # Remove the score from output
+    ]
+    
+    # Apply custom sort if specified
+    if sort == "price_asc":
+        pipeline[3] = {"$sort": {"price": 1}}
+    elif sort == "price_desc":
+        pipeline[3] = {"$sort": {"price": -1}}
+    elif sort == "name_desc":
+        pipeline[3] = {"$sort": {"name": -1}}
+    
+    products = await db.products.aggregate(pipeline).to_list(limit)
+    
+    # Remove _id from results
+    for p in products:
+        p.pop("_id", None)
     
     return {
         "hits": products,
