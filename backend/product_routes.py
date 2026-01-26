@@ -424,7 +424,9 @@ async def universal_search(
         p["type"] = "product"
         p["url"] = f"/product/{p.get('shopify_handle') or p.get('id')}"
         p["price"] = p.get("pricing", {}).get("base_price") or p.get("price")
-        p["image"] = p.get("image_url") or (p.get("images", [None])[0])
+        # Safely get image - handle empty images array
+        images = p.get("images", [])
+        p["image"] = p.get("image_url") or (images[0] if images else None)
     results["products"] = products
     
     # ==================== EVENT SEARCH ====================
