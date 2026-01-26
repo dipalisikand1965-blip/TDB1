@@ -2844,6 +2844,34 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    {/* Source Channel Badge */}
+                    {selectedTicket.source && (
+                      <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                        selectedTicket.source === 'whatsapp' ? 'bg-green-600 text-white' :
+                        selectedTicket.source === 'email' ? 'bg-blue-600 text-white' :
+                        selectedTicket.source === 'chat' ? 'bg-purple-600 text-white' :
+                        selectedTicket.source === 'phone' ? 'bg-orange-600 text-white' :
+                        'bg-slate-600 text-white'
+                      }`}>
+                        {selectedTicket.source === 'whatsapp' && '📱'}
+                        {selectedTicket.source === 'email' && '📧'}
+                        {selectedTicket.source === 'chat' && '💬'}
+                        {selectedTicket.source === 'phone' && '📞'}
+                        {selectedTicket.source === 'website' && '🌐'}
+                        {selectedTicket.source === 'mira' && '🤖'}
+                        <span className="capitalize">{selectedTicket.source}</span>
+                      </div>
+                    )}
+                    {/* Edit Button */}
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={openEditModal}
+                      className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                      data-testid="edit-ticket-btn"
+                    >
+                      <Edit className="w-4 h-4 mr-1" /> Edit
+                    </Button>
                     {/* Agent Badge */}
                     {selectedTicket.assigned_to && (
                       <div className="flex items-center gap-2 bg-slate-700 px-3 py-1.5 rounded-full">
