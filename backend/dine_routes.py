@@ -288,9 +288,28 @@ async def create_reservation(reservation: ReservationRequest):
     if not restaurant:
         raise HTTPException(status_code=404, detail="Restaurant not found")
     
+    # Handle pets field - can be int or list of pet objects
+    pet_count = 1
+    pet_names = []
+    if isinstance(reservation.pets, list):
+        pet_names = [p.get("name", "") for p in reservation.pets if isinstance(p, dict) and p.get("name")]
+        pet_count = len(reservation.pets)
+    elif isinstance(reservation.pets, int):
+        pet_count = reservation.pets
+    elif reservation.pets_count:
+        pet_count = reservation.pets_count
+    
+    # Use first pet name for backward compat if pet_name not set
+    if not reservation.pet_name and pet_names:
+        reservation.pet_name = pet_names[0]
+    
+    reservation_data = reservation.model_dump()
+    reservation_data["pets_count"] = pet_count  # Store normalized count
+    reservation_data["pet_names"] = pet_names  # Store all pet names
+    
     reservation_doc = {
         "id": f"res-{uuid.uuid4().hex[:12]}",
-        **reservation.model_dump(),
+        **reservation_data,
         "restaurant_name": restaurant.get("name"),
         "restaurant_city": restaurant.get("city"),
         "restaurant_area": restaurant.get("area"),
@@ -303,11 +322,20 @@ async def create_reservation(reservation: ReservationRequest):
     
     logger.info(f"New reservation: {reservation_doc['id']} at {restaurant.get('name')}")
     
+    # Build pet display string for email
+    pet_display = ', '.join(pet_names) if pet_names else reservation.pet_name or f'{pet_count} pet(s)'
+    
     # Send confirmation email to customer
     if RESEND_API_KEY and reservation.email:
         try:
             pet_info_html = ""
-            if reservation.pet_name:
+            if pet_names:
+                pet_info_html = f"""
+                <div style="background: #fdf2f8; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #fbcfe8;">
+                    <p style="color: #be185d; margin: 0;"><strong>🐕 Bringing:</strong> {pet_display}</p>
+                </div>
+                """
+            elif reservation.pet_name:
                 pet_info_html = f"""
                 <div style="background: #fdf2f8; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #fbcfe8;">
                     <p style="color: #be185d; margin: 0;"><strong>🐕 Bringing:</strong> {reservation.pet_name}{f' ({reservation.pet_breed})' if reservation.pet_breed else ''}</p>
@@ -336,7 +364,7 @@ async def create_reservation(reservation: ReservationRequest):
                             <p style="color: #4b5563;"><strong>📅 Date:</strong> {reservation.date}</p>
                             <p style="color: #4b5563;"><strong>🕐 Time:</strong> {reservation.time}</p>
                             <p style="color: #4b5563;"><strong>👥 Guests:</strong> {reservation.guests}</p>
-                            <p style="color: #4b5563;"><strong>🐕 Pets:</strong> {reservation.pets}</p>
+                            <p style="color: #4b5563;"><strong>🐕 Pets:</strong> {pet_count}</p>
                             {f'<p style="color: #16a34a;"><strong>🍽️ Pet Meal Pre-order:</strong> Yes</p>' if reservation.petMealPreorder else ''}
                         </div>
                         
