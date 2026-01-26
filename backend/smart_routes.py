@@ -331,7 +331,11 @@ async def get_smart_recommendations(
         soul_answers = pet.get('doggy_soul_answers', {})
         allergies = soul_answers.get('food_allergies', '')
         if allergies and allergies != 'No allergies':
-            all_allergies.append(allergies)
+            # Handle list or string allergies
+            if isinstance(allergies, list):
+                all_allergies.extend([str(a) for a in allergies if a])
+            elif isinstance(allergies, str):
+                all_allergies.append(allergies)
         
         # 3. Birthday gifts
         birthday = pet.get('birthday')
