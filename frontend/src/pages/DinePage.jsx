@@ -1302,10 +1302,12 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
   const [loadingPets, setLoadingPets] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   
+  // Initialize form with user data from localStorage
+  const initialUser = getUser();
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
+    name: initialUser?.name || '',
+    phone: initialUser?.phone || initialUser?.whatsapp || '',
+    email: initialUser?.email || '',
     date: '',
     time: '',
     guests: 2,
