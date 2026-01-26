@@ -259,6 +259,30 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   });
   const [saving, setSaving] = useState(false);
   
+  // Detail Panel Tabs
+  const [activeDetailTab, setActiveDetailTab] = useState('conversation');
+  
+  // Time Entry
+  const [timeEntries, setTimeEntries] = useState([]);
+  const [showTimeEntryModal, setShowTimeEntryModal] = useState(false);
+  const [timeEntryForm, setTimeEntryForm] = useState({
+    duration_minutes: 15,
+    description: '',
+    entry_type: 'work'
+  });
+  const [savingTimeEntry, setSavingTimeEntry] = useState(false);
+  
+  // AI Summary
+  const [showAiSummaryModal, setShowAiSummaryModal] = useState(false);
+  const [aiSummaryConfig, setAiSummaryConfig] = useState({
+    num_conversations: 30,
+    include_incoming: true,
+    include_outgoing: true,
+    include_internal: false
+  });
+  const [generatingSummary, setGeneratingSummary] = useState(false);
+  const [ticketSummary, setTicketSummary] = useState(null);
+  
   // SLA & Auto-assignment
   const [slaStats, setSlaStats] = useState(null);
   const [showSLAModal, setShowSLAModal] = useState(false);
