@@ -53,6 +53,7 @@ const ServiceDeskPage = () => {
         const data = await res.json();
         localStorage.setItem('tdc_admin_token', data.token);
         localStorage.setItem('tdc_admin_user', username);
+        localStorage.setItem('tdc_admin_password', password);
         setIsAuthenticated(true);
       } else {
         const error = await res.json();
