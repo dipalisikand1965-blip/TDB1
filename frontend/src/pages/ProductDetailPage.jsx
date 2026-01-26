@@ -68,19 +68,37 @@ const ProductDetailPage = () => {
   const handleAddToCart = () => {
     if (!product) return;
     
+    // Check if product has options that need to be selected
+    const hasOptions = product.options?.length > 0 && 
+      product.options.some(opt => opt.values?.length > 1 || (opt.values?.length === 1 && opt.values[0] !== 'Default Title'));
+    
+    if (hasOptions && !selectedVariant) {
+      toast({
+        title: "Please select options",
+        description: "Choose your preferred options before adding to cart",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     const cartItem = {
       id: product.id,
       name: product.name || product.title,
       price: selectedVariant?.price || product.price || product.pricing?.base_price,
       image: product.image || product.image_url || product.images?.[0],
       quantity,
-      variant: selectedVariant?.title
+      variant: selectedVariant?.title,
+      variantId: selectedVariant?.id,
+      options: product.options?.map((opt, idx) => ({
+        name: opt.name,
+        value: selectedVariant?.[`option${opt.position || idx + 1}`]
+      })).filter(o => o.value)
     };
     
     addToCart(cartItem);
     toast({
       title: "Added to Cart! 🛒",
-      description: `${quantity}x ${cartItem.name} added to your cart`,
+      description: `${quantity}x ${cartItem.name}${cartItem.variant ? ` (${cartItem.variant})` : ''} added to your cart`,
     });
   };
   
