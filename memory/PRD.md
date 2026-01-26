@@ -5,6 +5,52 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
+## Session 23 - Service Desk UX Overhaul (January 26, 2026)
+
+### 🛠️ SERVICE DESK REPLY MODAL RESTORED
+**Issue:** Reply area was truncated/not visible, popup was missing
+
+**Fix Implemented:**
+- Created new **Reply Modal** (full-screen popup) for better visibility
+- Added `showReplyModal` state to control modal display
+- Modal includes:
+  - Ticket Summary section
+  - Reply Type buttons (Internal Note, Email, WhatsApp)
+  - Templates dropdown with 8 default canned responses
+  - AI Draft button with Professional, Friendly, Empathetic, Quick options
+  - Message textarea
+  - Cancel and Send buttons (text changes by channel)
+
+**New Reply Section:**
+- Replaced inline reply section with cleaner button-based UI
+- "Reply to Ticket" button opens the modal
+- Quick action buttons for Internal Note, Email, WhatsApp, Summarize
+
+### 🔀 MERGE TICKETS MODAL ADDED
+**Feature:** Added Merge Tickets modal accessible via ticket context menu
+
+**Implementation:**
+- Warning about irreversible merge action
+- Shows selected tickets with Primary ticket highlighted
+- Merge button triggers `mergeTickets()` function
+
+### 📧 EMAIL/WHATSAPP SENDING STATUS
+- **Email:** Uses Resend API with HTML templates (requires RESEND_API_KEY)
+- **WhatsApp:** Opens wa.me URL in new tab with pre-filled message
+
+### 🤖 AI DRAFT WORKING
+- Uses EMERGENT_LLM_KEY for GPT-4o integration
+- Generates professional, friendly, empathetic, or quick responses
+- AI Summary and Suggested Actions also available
+
+### 📝 INTERNAL NOTES
+- Internal notes display with yellow "Internal Note" badge in conversation
+- Warning shown in modal: "Internal notes are only visible to the team"
+
+**Testing:** 100% pass rate (all backend APIs + frontend UI verified)
+
+---
+
 ## Session 22 - Pillar Page Fixes & Admin Quick Edit (January 26, 2026)
 
 ### 🔧 FIX: SUBMIT REQUEST BUTTONS ON PILLAR PAGES
