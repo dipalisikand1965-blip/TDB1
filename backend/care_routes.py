@@ -234,6 +234,16 @@ async def create_care_request(request: CareRequestCreate):
         # Get care type config
         care_config = CARE_TYPES.get(request.care_type, CARE_TYPES["grooming"])
         
+        # Handle field aliases - use provided or aliased values
+        description = request.description or request.notes or f"{care_config['name']} service request"
+        preferred_date = request.preferred_date or request.date or ""
+        preferred_time = request.preferred_time or request.time or ""
+        user_name = request.user_name or request.contact_name or ""
+        user_email = request.user_email or request.contact_email or ""
+        user_phone = request.user_phone or request.contact_phone or ""
+        pet_name = request.pet_name or "Pet"
+        pet_breed = request.pet_breed or ""
+        
         # Fetch pet profile for context
         pet_profile = None
         profile_enrichment = {}
@@ -282,9 +292,9 @@ async def create_care_request(request: CareRequestCreate):
             
             # Pet info
             "pet": {
-                "id": request.pet_id,
-                "name": request.pet_name,
-                "breed": request.pet_breed,
+                "id": request.pet_id or "",
+                "name": pet_name,
+                "breed": pet_breed,
                 "profile_score": pet_profile.get("soul", {}).get("profile_score") if pet_profile else None
             },
             
@@ -293,27 +303,27 @@ async def create_care_request(request: CareRequestCreate):
             
             # Request details
             "details": {
-                "description": request.description,
-                "preferred_date": request.preferred_date,
-                "preferred_time": request.preferred_time,
+                "description": description,
+                "preferred_date": preferred_date,
+                "preferred_time": preferred_time,
                 "frequency": request.frequency,
                 "duration": request.duration,
                 "location_type": request.location_type,
                 "location_address": request.location_address,
+                "city": request.city,
                 "handling_notes": request.handling_notes
             },
             
             # Customer info
             "customer": {
-                "name": request.user_name,
-                "email": request.user_email,
-                "phone": request.user_phone
+                "name": user_name,
+                "email": user_email,
+                "phone": user_phone
             },
             
             # AI context
             "mira_context": {
-                "conversation_id": request.mira_conversation_id,
-                "freeform_query": request.freeform_query
+                "conversation_id": request.mira_conversation_id
             },
             
             # Profile gaps identified
@@ -346,8 +356,8 @@ async def create_care_request(request: CareRequestCreate):
             "category": request.care_type,
             "status": "new",
             "priority": priority,
-            "subject": f"Care Request: {care_config['name']} - {request.pet_name}",
-            "description": f"{request.user_name or 'Customer'} needs {care_config['name'].lower()} for {request.pet_name} ({request.pet_breed or 'pet'}). {request.description}",
+            "subject": f"Care Request: {care_config['name']} - {pet_name}",
+            "description": f"{user_name or 'Customer'} needs {care_config['name'].lower()} for {pet_name} ({pet_breed or 'pet'}). {description}",
             "member": {
                 "name": request.user_name,
                 "email": request.user_email,
