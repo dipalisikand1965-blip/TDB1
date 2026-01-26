@@ -117,7 +117,14 @@ const CarePage = () => {
     pet_size: '',
     pet_anxiety_level: '',
     handling_notes: '',
-    special_requirements: ''
+    special_requirements: '',
+    // Manual pet entry (for users without profile)
+    pet_name: '',
+    pet_breed: '',
+    // Contact info (for non-logged in users)
+    contact_name: '',
+    contact_email: '',
+    contact_phone: ''
   });
 
   // Scroll to top on mount or to hash
