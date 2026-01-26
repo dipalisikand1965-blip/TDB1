@@ -393,7 +393,7 @@ const UnifiedPetPage = () => {
       if (response.ok) {
         const data = await response.json();
         setPet({ ...pet, photo_url: data.photo_url });
-        toast({ title: 'Photo Updated!', description: `${pet.name}'s photo has been updated` });
+        toast({ title: 'Photo Updated!', description: `${safePet.name}'s photo has been updated` });
       } else {
         const err = await response.json();
         toast({ title: 'Error', description: err.detail || 'Failed to upload photo', variant: 'destructive' });
@@ -425,7 +425,7 @@ const UnifiedPetPage = () => {
           ...pet,
           overall_score: data.new_score || pet.overall_score,
           doggy_soul_answers: {
-            ...pet.doggy_soul_answers,
+            ...safePet.doggy_soul_answers,
             [questionId]: answer
           }
         });
@@ -433,7 +433,7 @@ const UnifiedPetPage = () => {
         refetchScore();
         toast({
           title: "Answer saved!",
-          description: `${pet.name}'s Pet Soul updated!`,
+          description: `${safePet.name}'s Pet Soul updated!`,
         });
       }
     } catch (err) {
@@ -494,14 +494,14 @@ const UnifiedPetPage = () => {
     breed: pet.breed || 'Unknown Breed',
     species: pet.species || 'dog',
     gender: pet.gender || '',
-    photo_url: pet.photo_url || null,
+    photo_url: safePet.photo_url || null,
     pet_pass_number: pet.pet_pass_number || null,
-    birth_date: pet.birth_date || null,
-    gotcha_date: pet.gotcha_date || null,
+    birth_date: safePet.birth_date || null,
+    gotcha_date: safePet.gotcha_date || null,
     overall_score: pet.overall_score || 0,
-    doggy_soul_answers: pet.doggy_soul_answers || {},
-    health: pet.health || {},
-    weight: pet.weight || null,
+    doggy_soul_answers: safePet.doggy_soul_answers || {},
+    health: safePet.health || {},
+    weight: safePet.weight || null,
     ...pet
   };
 
@@ -556,8 +556,8 @@ const UnifiedPetPage = () => {
                     breed: pet.breed || '',
                     species: pet.species || 'dog',
                     gender: pet.gender || 'male',
-                    birth_date: pet.birth_date || '',
-                    gotcha_date: pet.gotcha_date || ''
+                    birth_date: safePet.birth_date || '',
+                    gotcha_date: safePet.gotcha_date || ''
                   });
                 }
               }}>
@@ -582,7 +582,7 @@ const UnifiedPetPage = () => {
             {/* Pet Photo - Larger and More Prominent */}
             <div className="relative group">
               <div className="w-40 h-40 rounded-3xl bg-white shadow-2xl overflow-hidden border-4 border-white/50 ring-4 ring-white/20">
-                <img src={petPhoto} alt={pet.name} className="w-full h-full object-cover" />
+                <img src={petPhoto} alt={safePet.name} className="w-full h-full object-cover" />
                 {token && (
                   <>
                     <input
@@ -624,10 +624,10 @@ const UnifiedPetPage = () => {
               </div>
               
               {/* Pet Pass Number Badge - Prominent */}
-              {pet.pet_pass_number && (
+              {safePet.pet_pass_number && (
                 <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-white/20 backdrop-blur-md text-white text-xs px-4 py-1.5 rounded-full font-mono border border-white/30 shadow-lg">
                   <CreditCard className="w-3 h-3 inline mr-1.5" />
-                  {pet.pet_pass_number}
+                  {safePet.pet_pass_number}
                 </div>
               )}
             </div>
@@ -694,7 +694,7 @@ const UnifiedPetPage = () => {
               ) : (
                 <>
                   <div className="flex items-center gap-3 justify-center md:justify-start">
-                    <h1 className="text-4xl font-bold text-white">{pet.name}</h1>
+                    <h1 className="text-4xl font-bold text-white">{safePet.name}</h1>
                     
                     {/* PET SWITCHER - For multi-pet households */}
                     {allPets.length > 1 && (
@@ -753,14 +753,14 @@ const UnifiedPetPage = () => {
                   </p>
                   
                   <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-4">
-                    {pet.birth_date && (
+                    {safePet.birth_date && (
                       <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
-                        🎂 Birthday: {new Date(pet.birth_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                        🎂 Birthday: {new Date(safePet.birth_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </Badge>
                     )}
-                    {pet.gotcha_date && (
+                    {safePet.gotcha_date && (
                       <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
-                        💝 Gotcha: {new Date(pet.gotcha_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                        💝 Gotcha: {new Date(safePet.gotcha_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </Badge>
                     )}
                   </div>
@@ -776,7 +776,7 @@ const UnifiedPetPage = () => {
                       <p className="text-xs text-white/70">Current Tier</p>
                     </div>
                     <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 text-center">
-                      <p className="text-2xl font-bold text-white">{Object.keys(pet.doggy_soul_answers || {}).length}</p>
+                      <p className="text-2xl font-bold text-white">{Object.keys(safePet.doggy_soul_answers || {}).length}</p>
                       <p className="text-xs text-white/70">Questions Answered</p>
                     </div>
                   </div>
@@ -821,7 +821,7 @@ const UnifiedPetPage = () => {
             <PetScoreCard
               scoreState={scoreState}
               loading={scoreLoading}
-              petName={pet.name}
+              petName={safePet.name}
               onQuickQuestions={() => setShowQuestions(!showQuestions)}
               onFullJourney={() => handleTabChange('personality')}
             />
@@ -831,11 +831,11 @@ const UnifiedPetPage = () => {
               <Card className="p-4 bg-white border-purple-200">
                 <div className="flex items-center gap-2 mb-4">
                   <HelpCircle className="w-5 h-5 text-purple-600" />
-                  <h4 className="font-bold text-gray-900">Help us know {pet.name} better</h4>
+                  <h4 className="font-bold text-gray-900">Help us know {safePet.name} better</h4>
                 </div>
                 
                 <div className="space-y-4">
-                  {QUICK_QUESTIONS.filter(q => !(pet.doggy_soul_answers || {})[q.id]).slice(0, 3).map((question) => (
+                  {QUICK_QUESTIONS.filter(q => !(safePet.doggy_soul_answers || {})[q.id]).slice(0, 3).map((question) => (
                     <div key={question.id} className="p-4 bg-gray-50 rounded-lg">
                       <p className="font-medium text-gray-800 mb-3 flex items-center gap-2">
                         <span className="text-xl">{question.icon}</span>
@@ -866,15 +866,15 @@ const UnifiedPetPage = () => {
             {unlockedAchievements.length > 0 && (
               <AchievementsGrid 
                 unlockedAchievements={unlockedAchievements}
-                petName={pet.name}
+                petName={safePet.name}
               />
             )}
             
             {/* Breed Health Tips - Compact */}
             {pet.breed && (
               <BreedHealthCard 
-                breed={pet.breed} 
-                petName={pet.name}
+                breed={safePet.breed} 
+                petName={safePet.name}
                 compact={true}
               />
             )}
@@ -882,7 +882,7 @@ const UnifiedPetPage = () => {
             {/* All 14 Pillars Grid */}
             <Card className="p-6">
               <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                🏛️ Life Pillars for {pet.name}
+                🏛️ Life Pillars for {safePet.name}
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
                 {LIFE_PILLARS.map((pillar) => (
@@ -918,13 +918,13 @@ const UnifiedPetPage = () => {
                 <div className="bg-white rounded-lg p-3 border border-red-100">
                   <p className="text-xs text-gray-500 mb-1">Allergies</p>
                   <p className="font-semibold text-gray-900 text-sm">
-                    {(pet.doggy_soul_answers?.food_allergies || []).filter(a => a && a !== 'None').join(', ') || 'None recorded'}
+                    {(safePet.doggy_soul_answers?.food_allergies || []).filter(a => a && a !== 'None').join(', ') || 'None recorded'}
                   </p>
                 </div>
                 <div className="bg-white rounded-lg p-3 border border-red-100">
                   <p className="text-xs text-gray-500 mb-1">Medical Conditions</p>
                   <p className="font-semibold text-gray-900 text-sm">
-                    {(pet.doggy_soul_answers?.medical_conditions || []).filter(m => m && m !== 'None').join(', ') || 'None recorded'}
+                    {(safePet.doggy_soul_answers?.medical_conditions || []).filter(m => m && m !== 'None').join(', ') || 'None recorded'}
                   </p>
                 </div>
                 <div className="bg-white rounded-lg p-3 border border-red-100">
@@ -936,7 +936,7 @@ const UnifiedPetPage = () => {
                 <div className="bg-white rounded-lg p-3 border border-red-100">
                   <p className="text-xs text-gray-500 mb-1">Vet Contact</p>
                   <p className="font-semibold text-gray-900 text-sm">
-                    {pet.doggy_soul_answers?.vet_name || 'Not specified'}
+                    {safePet.doggy_soul_answers?.vet_name || 'Not specified'}
                   </p>
                 </div>
               </div>
@@ -967,11 +967,11 @@ const UnifiedPetPage = () => {
               <Card className="p-6 md:col-span-2">
                 <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Brain className="w-5 h-5 text-purple-600" />
-                  {pet.name}&apos;s Soul Profile
+                  {safePet.name}&apos;s Soul Profile
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="bg-purple-50 rounded-lg p-3 text-center">
-                    <p className="text-2xl font-bold text-purple-600">{Object.keys(pet.doggy_soul_answers || {}).length}</p>
+                    <p className="text-2xl font-bold text-purple-600">{Object.keys(safePet.doggy_soul_answers || {}).length}</p>
                     <p className="text-xs text-gray-600">Questions Answered</p>
                   </div>
                   <div className="bg-pink-50 rounded-lg p-3 text-center">
@@ -1011,7 +1011,7 @@ const UnifiedPetPage = () => {
                   { key: 'training_behaviour', name: 'Training & Behaviour', icon: '🎓', color: 'indigo', questions: ['training_level', 'commands_known', 'leash_behavior', 'recall', 'problematic_behaviors', 'anxiety_triggers'] },
                   { key: 'long_horizon', name: 'Health & Long-Term', icon: '💊', color: 'rose', questions: ['medical_conditions', 'medications', 'vet_name', 'last_vet_visit', 'vaccination_status', 'spayed_neutered', 'insurance', 'special_needs'] }
                 ].map((pillar) => {
-                  const answers = pet.doggy_soul_answers || {};
+                  const answers = safePet.doggy_soul_answers || {};
                   // For progress calculation, include core pet fields
                   const coreFields = {
                     name: pet?.name,
@@ -1241,8 +1241,8 @@ const UnifiedPetPage = () => {
               <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
                 {/* Main Pet Photo */}
                 <div className="col-span-2 row-span-2 aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
-                  {pet.photo_url ? (
-                    <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
+                  {safePet.photo_url ? (
+                    <img src={safePet.photo_url} alt={safePet.name} className="w-full h-full object-cover" />
                   ) : (
                     <PawPrint className="w-16 h-16 text-purple-300" />
                   )}
@@ -1272,16 +1272,16 @@ const UnifiedPetPage = () => {
                 
                 <div className="space-y-4">
                   {/* Birthday */}
-                  {pet.birth_date && (
+                  {safePet.birth_date && (
                     <div className="flex gap-4 items-start">
                       <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center z-10 border-2 border-white shadow">
                         <span className="text-lg">🎂</span>
                       </div>
                       <div className="flex-1 bg-pink-50 rounded-lg p-3">
                         <p className="font-semibold text-gray-900">Born</p>
-                        <p className="text-sm text-gray-600">{new Date(pet.birth_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                        <p className="text-sm text-gray-600">{new Date(safePet.birth_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                         {(() => {
-                          const birth = new Date(pet.birth_date);
+                          const birth = new Date(safePet.birth_date);
                           const today = new Date();
                           const nextBirthday = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
                           if (nextBirthday < today) nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
@@ -1297,30 +1297,30 @@ const UnifiedPetPage = () => {
                   )}
                   
                   {/* Gotcha Day */}
-                  {pet.gotcha_date && (
+                  {safePet.gotcha_date && (
                     <div className="flex gap-4 items-start">
                       <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center z-10 border-2 border-white shadow">
                         <span className="text-lg">🏠</span>
                       </div>
                       <div className="flex-1 bg-purple-50 rounded-lg p-3">
                         <p className="font-semibold text-gray-900">Gotcha Day</p>
-                        <p className="text-sm text-gray-600">{new Date(pet.gotcha_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                        <p className="text-sm text-gray-600">{new Date(safePet.gotcha_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                         <p className="text-xs text-purple-600 mt-1">
-                          {Math.floor((new Date() - new Date(pet.gotcha_date)) / (1000 * 60 * 60 * 24 * 365))} years with the family
+                          {Math.floor((new Date() - new Date(safePet.gotcha_date)) / (1000 * 60 * 60 * 24 * 365))} years with the family
                         </p>
                       </div>
                     </div>
                   )}
                   
                   {/* Pet Pass Joined */}
-                  {pet.pet_pass_number && (
+                  {safePet.pet_pass_number && (
                     <div className="flex gap-4 items-start">
                       <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center z-10 border-2 border-white shadow">
                         <span className="text-lg">🎫</span>
                       </div>
                       <div className="flex-1 bg-amber-50 rounded-lg p-3">
                         <p className="font-semibold text-gray-900">Pet Pass Member</p>
-                        <p className="text-sm text-gray-600">ID: {pet.pet_pass_number}</p>
+                        <p className="text-sm text-gray-600">ID: {safePet.pet_pass_number}</p>
                         <p className="text-xs text-amber-600 mt-1">All 14 Life Pillars unlocked</p>
                       </div>
                     </div>
@@ -1333,7 +1333,7 @@ const UnifiedPetPage = () => {
                     </div>
                     <div className="flex-1 bg-blue-50 rounded-lg p-3">
                       <p className="font-semibold text-gray-900">Soul Journey Started</p>
-                      <p className="text-sm text-gray-600">{Object.keys(pet.doggy_soul_answers || {}).length} questions answered</p>
+                      <p className="text-sm text-gray-600">{Object.keys(safePet.doggy_soul_answers || {}).length} questions answered</p>
                       <p className="text-xs text-blue-600 mt-1">Pet Soul™ Score: {displayScore}%</p>
                     </div>
                   </div>
@@ -1346,7 +1346,7 @@ const UnifiedPetPage = () => {
               <Card className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
                 <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Heart className="w-5 h-5 text-amber-600" />
-                  About {pet.breed}s
+                  About {safePet.breed}s
                 </h3>
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="bg-white rounded-lg p-4">
@@ -1385,7 +1385,7 @@ const UnifiedPetPage = () => {
             {unlockedAchievements.length > 0 && (
               <AchievementsGrid 
                 unlockedAchievements={unlockedAchievements}
-                petName={pet.name}
+                petName={safePet.name}
               />
             )}
             
@@ -1393,7 +1393,7 @@ const UnifiedPetPage = () => {
             <Card className="p-6">
               <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <Crown className="w-5 h-5 text-purple-600" />
-                Life Pillars for {pet.name}
+                Life Pillars for {safePet.name}
                 <span className="text-xs text-gray-500 font-normal ml-2">All 14 services unlocked with Pet Pass</span>
               </h3>
               <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
@@ -1450,32 +1450,32 @@ const UnifiedPetPage = () => {
                     Health Profile
                   </h3>
                   <div className="grid md:grid-cols-2 gap-4">
-                    {pet.health?.vet_name && (
+                    {safePet.health?.vet_name && (
                       <div className="bg-white rounded-lg p-4 shadow-sm">
                         <p className="text-xs text-gray-500 mb-1">Primary Vet</p>
-                        <p className="font-medium">{pet.health.vet_name}</p>
-                        {pet.health.vet_clinic && <p className="text-sm text-gray-600">{pet.health.vet_clinic}</p>}
+                        <p className="font-medium">{safePet.health.vet_name}</p>
+                        {safePet.health.vet_clinic && <p className="text-sm text-gray-600">{safePet.health.vet_clinic}</p>}
                       </div>
                     )}
-                    {pet.health?.medical_conditions && (
+                    {safePet.health?.medical_conditions && (
                       <div className="bg-white rounded-lg p-4 shadow-sm">
                         <p className="text-xs text-gray-500 mb-1">Medical Conditions</p>
-                        <p className="font-medium">{pet.health.medical_conditions}</p>
+                        <p className="font-medium">{safePet.health.medical_conditions}</p>
                       </div>
                     )}
-                    {pet.health?.dietary_restrictions && (
+                    {safePet.health?.dietary_restrictions && (
                       <div className="bg-white rounded-lg p-4 shadow-sm">
                         <p className="text-xs text-gray-500 mb-1">Dietary Restrictions</p>
-                        <p className="font-medium">{pet.health.dietary_restrictions}</p>
+                        <p className="font-medium">{safePet.health.dietary_restrictions}</p>
                       </div>
                     )}
-                    {pet.weight && (
+                    {safePet.weight && (
                       <div className="bg-white rounded-lg p-4 shadow-sm">
                         <p className="text-xs text-gray-500 mb-1">Weight</p>
-                        <p className="font-medium">{pet.weight} kg</p>
+                        <p className="font-medium">{safePet.weight} kg</p>
                       </div>
                     )}
-                    {!pet.health && !pet.weight && (
+                    {!safePet.health && !safePet.weight && (
                       <div className="col-span-2 text-center py-6 bg-white rounded-lg">
                         <Heart className="w-10 h-10 mx-auto text-gray-300 mb-2" />
                         <p className="text-gray-500">No health information recorded yet</p>
@@ -1546,8 +1546,8 @@ const UnifiedPetPage = () => {
                 {/* Breed-Specific Health Guide */}
                 {pet.breed && (
                   <BreedHealthCard 
-                    breed={pet.breed} 
-                    petName={pet.name}
+                    breed={safePet.breed} 
+                    petName={safePet.name}
                   />
                 )}
                 
@@ -1585,7 +1585,7 @@ const UnifiedPetPage = () => {
                 <MessageCircle className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                 <h4 className="font-semibold text-gray-700 mb-2">Conversation History Coming Soon</h4>
                 <p className="text-gray-500 max-w-md mx-auto">
-                  Your chats with Mira will appear here, helping us personalise {pet.name}&apos;s experience based on your conversations.
+                  Your chats with Mira will appear here, helping us personalise {safePet.name}&apos;s experience based on your conversations.
                 </p>
                 <Button 
                   variant="outline" 
@@ -1610,7 +1610,7 @@ const UnifiedPetPage = () => {
                       </div>
                       <div>
                         <h3 className="font-bold text-gray-900">{pillar.name}</h3>
-                        <p className="text-sm text-gray-500">Explore {pillar.name.toLowerCase()} options for {pet.name}</p>
+                        <p className="text-sm text-gray-500">Explore {pillar.name.toLowerCase()} options for {safePet.name}</p>
                       </div>
                     </div>
                   </Card>
@@ -1626,7 +1626,7 @@ const UnifiedPetPage = () => {
                 <PetPassCard 
                   pet={{
                     ...pet,
-                    photo: pet.photo_url
+                    photo: safePet.photo_url
                   }} 
                 />
               </div>
@@ -1635,7 +1635,7 @@ const UnifiedPetPage = () => {
                 <CreditCard className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                 <h3 className="font-bold text-gray-900 mb-2">No Pet Pass Yet</h3>
                 <p className="text-gray-500 mb-6">
-                  Get a Pet Pass to unlock premium services and exclusive benefits for {pet.name}
+                  Get a Pet Pass to unlock premium services and exclusive benefits for {safePet.name}
                 </p>
                 <Link to="/membership">
                   <Button className="bg-gradient-to-r from-purple-600 to-pink-600">
@@ -1663,15 +1663,15 @@ const UnifiedPetPage = () => {
               
               {/* Pet Preview Card */}
               <div className="w-24 h-24 mx-auto rounded-full bg-white/20 border-4 border-white overflow-hidden mb-4">
-                {pet.photo_url ? (
-                  <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
+                {safePet.photo_url ? (
+                  <img src={safePet.photo_url} alt={safePet.name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <PawPrint className="w-12 h-12 text-white/80" />
                   </div>
                 )}
               </div>
-              <h3 className="text-2xl font-bold">{pet.name}</h3>
+              <h3 className="text-2xl font-bold">{safePet.name}</h3>
               <p className="text-white/80">{pet.breed || 'Adorable Pet'}</p>
               <div className="mt-3 flex items-center justify-center gap-2">
                 <Badge className="bg-white/20 text-white border-none">
@@ -1686,14 +1686,14 @@ const UnifiedPetPage = () => {
             
             {/* Share Options */}
             <div className="p-6">
-              <h4 className="font-semibold text-gray-900 mb-4 text-center">Share {pet.name}&apos;s Profile</h4>
+              <h4 className="font-semibold text-gray-900 mb-4 text-center">Share {safePet.name}&apos;s Profile</h4>
               
               <div className="grid grid-cols-4 gap-3 mb-6">
                 {/* Facebook */}
                 <button
                   onClick={() => {
                     const url = encodeURIComponent(`${window.location.origin}/pet/${pet.id}`);
-                    const text = encodeURIComponent(`Meet ${pet.name}! 🐾 Check out their Pet Soul™ profile on The Doggy Company - India's #1 Pet Life Platform!`);
+                    const text = encodeURIComponent(`Meet ${safePet.name}! 🐾 Check out their Pet Soul™ profile on The Doggy Company - India's #1 Pet Life Platform!`);
                     window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank', 'width=600,height=400');
                   }}
                   className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-blue-50 transition-colors group"
@@ -1726,7 +1726,7 @@ const UnifiedPetPage = () => {
                 <button
                   onClick={() => {
                     const url = encodeURIComponent(`${window.location.origin}/pet/${pet.id}`);
-                    const text = encodeURIComponent(`Meet ${pet.name}! 🐾✨\n\nCheck out their Pet Soul™ profile on The Doggy Company - India's #1 Pet Life Platform!\n\n${decodeURIComponent(url)}`);
+                    const text = encodeURIComponent(`Meet ${safePet.name}! 🐾✨\n\nCheck out their Pet Soul™ profile on The Doggy Company - India's #1 Pet Life Platform!\n\n${decodeURIComponent(url)}`);
                     window.open(`https://wa.me/?text=${text}`, '_blank');
                   }}
                   className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-green-50 transition-colors group"
@@ -1741,7 +1741,7 @@ const UnifiedPetPage = () => {
                 <button
                   onClick={() => {
                     const url = encodeURIComponent(`${window.location.origin}/pet/${pet.id}`);
-                    const text = encodeURIComponent(`Meet ${pet.name}! 🐾 Check out their Pet Soul™ profile on @TheDoggyCompany - India's #1 Pet Life Platform! #PetSoul #Dogs #Pets`);
+                    const text = encodeURIComponent(`Meet ${safePet.name}! 🐾 Check out their Pet Soul™ profile on @TheDoggyCompany - India's #1 Pet Life Platform! #PetSoul #Dogs #Pets`);
                     window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'width=600,height=400');
                   }}
                   className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-100 transition-colors group"
