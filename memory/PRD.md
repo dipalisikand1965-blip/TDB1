@@ -5,6 +5,44 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
+## Session 24 - Service Desk Attachments Feature (January 26, 2026)
+
+### 📎 ATTACHMENTS IN REPLY MODAL
+**Feature:** Added ability to attach documents, images, and voice recordings to ticket replies
+
+**Frontend Implementation (`ServiceDesk.jsx`):**
+- Added new states: `replyAttachments`, `isRecording`, `audioBlob`, `mediaRecorder`, `recordingTime`
+- Added new icons: `Mic`, `MicOff`, `Image`, `File`, `Upload`, `StopCircle`, `Play`
+
+**Attachment Types:**
+| Type | Max Size | Formats |
+|------|----------|---------|
+| Document | 10MB | PDF, DOC, DOCX, TXT, CSV, XLSX |
+| Image | 5MB | JPEG, PNG, GIF, WEBP |
+| Voice | 10MB | WebM (recorded), MP3, WAV, OGG |
+
+**UI Components:**
+- Document upload button with file icon
+- Image upload button with preview thumbnail
+- Voice recording button with live timer
+- Attachments preview panel with remove functionality
+- "Clear All" button to remove all attachments
+
+**Backend Implementation (`ticket_routes.py`):**
+- Updated `POST /{ticket_id}/attachments` to accept audio files
+- Added `GET /{ticket_id}/files/{filename}` to serve attachment files
+- Added `file_url`, `type`, and `url` fields to attachment response
+
+**Voice Recording Flow:**
+1. Click "Voice" button → Requests microphone permission
+2. Recording starts with live timer display
+3. Click "Stop" → Recording saved as WebM blob
+4. Attachment added to list with duration info
+
+**Testing:** Screenshot verified attachment buttons and voice recording UI
+
+---
+
 ## Session 23 - Service Desk UX Overhaul (January 26, 2026)
 
 ### 🛠️ SERVICE DESK REPLY MODAL RESTORED
