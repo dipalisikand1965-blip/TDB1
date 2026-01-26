@@ -1352,12 +1352,12 @@ const UnifiedPetPage = () => {
                   <div className="bg-white rounded-lg p-4">
                     <p className="text-xs text-gray-500 mb-1">Typical Temperament</p>
                     <p className="font-semibold text-gray-900">
-                      {['Labrador', 'Golden Retriever', 'Lab'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Friendly, Active, Outgoing' :
-                       ['Beagle'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Curious, Friendly, Merry' :
-                       ['German Shepherd', 'GSD'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Loyal, Confident, Courageous' :
-                       ['Poodle'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Intelligent, Active, Alert' :
-                       ['Bulldog'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Calm, Courageous, Friendly' :
-                       ['Indie', 'Indian', 'Desi'].some(b => pet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Adaptable, Loyal, Alert' :
+                      {['Labrador', 'Golden Retriever', 'Lab'].some(b => safePet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Friendly, Active, Outgoing' :
+                       ['Beagle'].some(b => safePet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Curious, Friendly, Merry' :
+                       ['German Shepherd', 'GSD'].some(b => safePet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Loyal, Confident, Courageous' :
+                       ['Poodle'].some(b => safePet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Intelligent, Active, Alert' :
+                       ['Bulldog'].some(b => safePet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Calm, Courageous, Friendly' :
+                       ['Indie', 'Indian', 'Desi'].some(b => safePet.breed?.toLowerCase().includes(b.toLowerCase())) ? 'Adaptable, Loyal, Alert' :
                        'Unique & Lovable'}
                     </p>
                   </div>
