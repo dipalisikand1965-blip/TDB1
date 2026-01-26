@@ -61,6 +61,12 @@ const PaperworkPage = () => {
     file_url: ''
   });
   const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [requestForm, setRequestForm] = useState({
+    request_type: 'document_assistance',
+    description: '',
+    urgency: 'normal'
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
