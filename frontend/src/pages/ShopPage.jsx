@@ -397,28 +397,114 @@ const ShopPage = () => {
         </div>
       </section>
 
-      {/* Category Navigation */}
+      {/* Category Navigation with Subcategories */}
       <section className="bg-white border-b sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 py-4">
+          {/* Main Categories */}
           <div className="flex gap-2 overflow-x-auto pb-2">
-            {SHOP_CATEGORIES.map((cat) => {
-              const Icon = cat.icon;
-              return (
+            {/* All Products */}
+            <button
+              onClick={() => {
+                setSelectedCategory('all');
+                setSelectedParentCategory('');
+                setExpandedCategory(null);
+              }}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
+                selectedCategory === 'all' && !selectedParentCategory
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <ShoppingBag className="w-4 h-4" />
+              All Products
+            </button>
+            
+            {/* Dynamic Categories from API */}
+            {categoryHierarchy.map((cat) => (
+              <div key={cat.id} className="relative group">
                 <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
+                  onClick={() => {
+                    setSelectedParentCategory(cat.id);
+                    setSelectedCategory('all');
+                    setExpandedCategory(expandedCategory === cat.id ? null : cat.id);
+                  }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
-                    selectedCategory === cat.id
-                      ? `bg-gradient-to-r ${cat.color} text-white shadow-md`
+                    selectedParentCategory === cat.id
+                      ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-md'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <span>{cat.emoji}</span>
                   {cat.name}
+                  <span className="text-xs opacity-70">({cat.count})</span>
+                  {cat.subcategories?.length > 0 && (
+                    <ChevronDown className={`w-3 h-3 transition-transform ${expandedCategory === cat.id ? 'rotate-180' : ''}`} />
+                  )}
                 </button>
-              );
-            })}
+                
+                {/* Subcategory Dropdown */}
+                {cat.subcategories?.length > 0 && expandedCategory === cat.id && (
+                  <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border py-2 min-w-48 z-50">
+                    <button
+                      onClick={() => {
+                        setSelectedParentCategory(cat.id);
+                        setSelectedCategory('all');
+                      }}
+                      className={`w-full text-left px-4 py-2 hover:bg-gray-50 flex justify-between items-center ${
+                        selectedParentCategory === cat.id && selectedCategory === 'all' ? 'bg-teal-50 text-teal-700' : ''
+                      }`}
+                    >
+                      <span>All {cat.name}</span>
+                      <span className="text-xs text-gray-400">{cat.count}</span>
+                    </button>
+                    {cat.subcategories.map((sub) => (
+                      <button
+                        key={sub.id}
+                        onClick={() => {
+                          setSelectedCategory(sub.db_categories?.[0] || sub.id);
+                          setSelectedParentCategory('');
+                          setExpandedCategory(null);
+                        }}
+                        className={`w-full text-left px-4 py-2 hover:bg-gray-50 flex justify-between items-center ${
+                          selectedCategory === (sub.db_categories?.[0] || sub.id) ? 'bg-teal-50 text-teal-700' : ''
+                        }`}
+                      >
+                        <span>{sub.name}</span>
+                        <span className="text-xs text-gray-400">{sub.count}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
+          
+          {/* Active Category Breadcrumb */}
+          {(selectedParentCategory || (selectedCategory && selectedCategory !== 'all')) && (
+            <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+              <button onClick={() => { setSelectedCategory('all'); setSelectedParentCategory(''); }} className="hover:text-teal-600">
+                Shop
+              </button>
+              <ChevronRight className="w-4 h-4" />
+              {selectedParentCategory && (
+                <>
+                  <span className="font-medium text-teal-700">
+                    {categoryHierarchy.find(c => c.id === selectedParentCategory)?.emoji}{' '}
+                    {categoryHierarchy.find(c => c.id === selectedParentCategory)?.name}
+                  </span>
+                  {selectedCategory !== 'all' && (
+                    <>
+                      <ChevronRight className="w-4 h-4" />
+                      <span className="text-gray-900">{selectedCategory}</span>
+                    </>
+                  )}
+                </>
+              )}
+              {!selectedParentCategory && selectedCategory !== 'all' && (
+                <span className="font-medium text-teal-700">{selectedCategory}</span>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
