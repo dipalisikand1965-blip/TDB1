@@ -1500,6 +1500,24 @@ const PropertyModal = ({ property, onClose, onSave, getAuthHeader }) => {
               </div>
 
               <div>
+                <Label>Photo URLs (one per line)</Label>
+                <Textarea 
+                  value={formData.photos?.join('\n') || ''}
+                  onChange={(e) => updateField('photos', e.target.value.split('\n').map(t => t.trim()).filter(Boolean))}
+                  placeholder="https://images.unsplash.com/...&#10;https://images.unsplash.com/..."
+                  rows={4}
+                />
+                <p className="text-xs text-gray-500 mt-1">Add image URLs - first image will be the primary photo</p>
+                {formData.photos?.length > 0 && (
+                  <div className="flex gap-2 mt-2 overflow-x-auto pb-2">
+                    {formData.photos.slice(0, 4).map((photo, idx) => (
+                      <img key={idx} src={photo} alt={`Preview ${idx + 1}`} className="w-16 h-16 object-cover rounded border" />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div>
                 <Label>Status</Label>
                 <select
                   value={formData.status}
