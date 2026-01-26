@@ -4935,6 +4935,42 @@ async def run_product_intelligence(
     }
 
 
+@api_router.post("/admin/products/enhance-descriptions")
+async def enhance_product_descriptions(
+    update_db: bool = True,
+    batch_size: int = 20,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """
+    Use AI to enhance all product descriptions.
+    This creates professional, engaging descriptions for Mira AI to reference.
+    """
+    verify_admin(credentials)
+    
+    enhancer = AIDescriptionEnhancer(db)
+    results = await enhancer.enhance_all_products(batch_size=batch_size, update_db=update_db)
+    
+    return {
+        "success": True,
+        "message": f"Enhanced {results['enhanced']} product descriptions",
+        "results": results
+    }
+
+
+@api_router.post("/admin/products/enhance-single/{product_id}")
+async def enhance_single_product_description(
+    product_id: str,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Enhance description for a single product using AI"""
+    verify_admin(credentials)
+    
+    enhancer = AIDescriptionEnhancer(db)
+    result = await enhancer.enhance_single_product(product_id)
+    
+    return result
+
+
 @api_router.post("/admin/products/analyze-single/{product_id}")
 async def analyze_single_product(
     product_id: str,
