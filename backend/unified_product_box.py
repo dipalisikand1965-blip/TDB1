@@ -607,58 +607,83 @@ async def get_product_stats():
 # ==================== MIGRATION / SEEDING ====================
 
 @product_box_router.post("/migrate-from-products")
-async def migrate_existing_products():
-    """Migrate existing products to unified product box"""
+async def migrate_existing_products(force: bool = False):
+    """Migrate existing products to unified product box
+    
+    Args:
+        force: If True, will update existing products with latest data from products collection
+    """
     if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
-    # Get existing products
-    existing = await db.products.find({}, {"_id": 0}).to_list(1000)
+    # Get existing products from main products collection
+    existing = await db.products.find({}, {"_id": 0}).to_list(5000)
     
     migrated = 0
+    updated = 0
     skipped = 0
     
     for product in existing:
-        # Check if already migrated
-        exists = await db.unified_products.find_one({
+        product_name = product.get("title") or product.get("name")
+        shopify_id = product.get("shopify_id")
+        product_id = product.get("id")
+        
+        # Check if already exists in unified_products
+        existing_unified = await db.unified_products.find_one({
             "$or": [
-                {"shopify_id": product.get("shopify_id")},
-                {"name": product.get("title") or product.get("name")}
+                {"shopify_id": shopify_id} if shopify_id else {"id": "__no_match__"},
+                {"name": product_name} if product_name else {"name": "__no_match__"},
+                {"original_product_id": product_id} if product_id else {"id": "__no_match__"}
             ]
         })
         
-        if exists:
+        if existing_unified and not force:
             skipped += 1
             continue
         
         # Transform to unified format
         unified = {
-            "id": f"PROD-{secrets.token_hex(6).upper()}",
+            "id": existing_unified.get("id") if existing_unified else f"PROD-{secrets.token_hex(6).upper()}",
+            "original_product_id": product_id,
+            "shopify_id": shopify_id,
             "sku": product.get("sku") or f"SKU-PHY-{secrets.token_hex(4).upper()}",
-            "name": product.get("title") or product.get("name") or "Untitled Product",
+            "name": product_name or "Untitled Product",
             "product_type": "physical",
             "short_description": product.get("description", "")[:200] if product.get("description") else None,
             "long_description": product.get("description"),
             "category": product.get("category"),
             "subcategory": product.get("subcategory"),
             "tags": product.get("tags", []),
+            "intelligent_tags": product.get("intelligent_tags", []),
+            "breed_tags": product.get("breed_tags", []),
+            "health_tags": product.get("health_tags", []),
             "collections": product.get("collections", []),
-            "pillars": ["shop"],  # Default to shop pillar
+            "pillars": ["shop"],
             "primary_pillar": "shop",
             "images": product.get("images", []),
-            "thumbnail": product.get("images", [None])[0] if product.get("images") else None,
+            "thumbnail": product.get("image") or (product.get("images", [None])[0] if product.get("images") else None),
             
-            # Pet Safety - default safe for all
+            # Pricing
+            "pricing": {
+                "cost": product.get("cost", 0),
+                "price": product.get("price", 0),
+                "compare_at_price": product.get("compare_at_price"),
+                "gst_percent": product.get("gst_percent", 5),
+                "shipping_weight": product.get("shipping_weight"),
+                "packaging_type": product.get("packaging_type")
+            },
+            
+            # Pet Safety
             "pet_safety": {
-                "life_stages": ["all"],
-                "size_suitability": ["all"],
-                "dietary_flags": [],
+                "life_stages": product.get("lifestage_tags", ["all"]),
+                "size_suitability": product.get("size_tags", ["all"]),
+                "dietary_flags": product.get("diet_tags", []),
                 "known_exclusions": [],
                 "safety_notes": None,
                 "is_validated": False
             },
             
-            # Paw Rewards - not eligible by default
+            # Paw Rewards
             "paw_rewards": {
                 "is_reward_eligible": False,
                 "is_reward_only": False,
@@ -669,14 +694,46 @@ async def migrate_existing_products():
                 "pillar_specific": None
             },
             
-            # Mira - visible but not suggestable
+            # Mira visibility
             "mira_visibility": {
                 "can_reference": True,
-                "can_suggest_proactively": False,
-                "mention_only_if_asked": True,
+                "can_suggest_proactively": bool(product.get("intelligent_tags")),
+                "mention_only_if_asked": False,
                 "suggestion_context": None,
                 "exclusion_reasons": []
             },
+            
+            # Visibility
+            "visibility": {
+                "status": "active" if product.get("available", True) else "archived",
+                "visible_on_website": True,
+                "visible_to_mira": True,
+                "visible_in_search": True
+            },
+            
+            "created_at": product.get("created_at") or datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        if existing_unified and force:
+            # Update existing
+            await db.unified_products.update_one(
+                {"id": existing_unified["id"]},
+                {"$set": unified}
+            )
+            updated += 1
+        else:
+            # Insert new
+            await db.unified_products.insert_one(unified)
+            migrated += 1
+    
+    return {
+        "message": "Migration complete",
+        "migrated": migrated,
+        "updated": updated,
+        "skipped": skipped,
+        "total_in_products": len(existing)
+    }
             
             # Pricing
             "pricing": {
