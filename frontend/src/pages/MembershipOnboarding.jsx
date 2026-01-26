@@ -10,8 +10,9 @@ import {
   ChevronRight, ChevronLeft, Camera, Calendar, Scale, Heart,
   Dog, Sparkles, Crown, ArrowRight, CreditCard, Loader2
 } from 'lucide-react';
-import { getApiUrl } from '../utils/api';
+import { getApiUrl, API_URL } from '../utils/api';
 import BreedAutocomplete from '../components/BreedAutocomplete';
+import { getPetPhotoUrl } from '../utils/petAvatar';
 
 // Indian cities for autocomplete
 const INDIAN_CITIES = [
