@@ -2144,6 +2144,9 @@ const SocialDetailsModal = ({ social, onClose }) => {
           </div>
         </div>
       </Card>
+      
+      {/* Admin Quick Edit */}
+      <AdminQuickEdit pillar="stay" position="bottom-left" />
     </div>
   );
 };
