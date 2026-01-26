@@ -640,14 +640,37 @@ const TravelPage = () => {
               <p className="text-gray-600">Who's traveling?</p>
               
               {userPets.length === 0 ? (
-                <Card className="p-6 text-center bg-amber-50 border-amber-200">
-                  <PawPrint className="w-12 h-12 text-amber-400 mx-auto mb-3" />
-                  <h4 className="font-semibold text-amber-900 mb-2">No pets found</h4>
-                  <p className="text-sm text-amber-700 mb-4">Add your pet's profile first for safe travel planning</p>
-                  <Button onClick={() => window.location.href = '/pet-profile'}>
-                    Add Pet Profile
+                <div className="space-y-4">
+                  <Card className="p-4 bg-amber-50 border-amber-200">
+                    <p className="text-sm text-amber-700 mb-3">No pets on profile yet? No problem! Enter details below:</p>
+                    <div className="space-y-3">
+                      <input
+                        type="text"
+                        placeholder="Pet's Name"
+                        className="w-full p-3 border rounded-lg text-sm"
+                        value={formData.pet_name || ''}
+                        onChange={(e) => setFormData({...formData, pet_name: e.target.value})}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Breed (optional)"
+                        className="w-full p-3 border rounded-lg text-sm"
+                        value={formData.pet_breed || ''}
+                        onChange={(e) => setFormData({...formData, pet_breed: e.target.value})}
+                      />
+                    </div>
+                  </Card>
+                  <Button 
+                    onClick={() => {
+                      setSelectedPet({ id: 'manual', name: formData.pet_name || 'Pet', breed: formData.pet_breed });
+                      setWizardStep(3);
+                    }}
+                    className="w-full"
+                    disabled={!formData.pet_name}
+                  >
+                    Continue <ChevronRight className="w-4 h-4 ml-2" />
                   </Button>
-                </Card>
+                </div>
               ) : (
                 <div className="space-y-3">
                   {userPets.map((pet) => (
