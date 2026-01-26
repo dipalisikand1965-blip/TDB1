@@ -1812,9 +1812,6 @@ const DineBundleModal = ({ bundle, onClose, addToCart }) => {
         </div>
       </DialogContent>
     </Dialog>
-    
-    {/* Admin Quick Edit */}
-    <AdminQuickEdit pillar="dine" position="bottom-left" />
   );
 };
 
