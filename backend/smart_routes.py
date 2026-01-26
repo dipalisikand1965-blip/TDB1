@@ -372,10 +372,19 @@ async def get_smart_recommendations(
     
     # Get allergy-safe products
     if all_allergies:
-        allergy_products = await get_allergy_safe_products(db, all_allergies, limit=4)
-        for p in allergy_products:
-            p['reason'] = f"Safe for pets with {', '.join(all_allergies)}"
-        recommendations['allergy_safe'] = allergy_products
+        # Flatten and stringify allergies
+        flat_allergies = []
+        for a in all_allergies:
+            if isinstance(a, str):
+                flat_allergies.append(a)
+            elif isinstance(a, list):
+                flat_allergies.extend([str(x) for x in a if x])
+        
+        if flat_allergies:
+            allergy_products = await get_allergy_safe_products(db, flat_allergies, limit=4)
+            for p in allergy_products:
+                p['reason'] = f"Safe for pets with {', '.join(flat_allergies[:3])}"
+            recommendations['allergy_safe'] = allergy_products
     
     # 5. Create Mira's Picks - curated top recommendations
     mira_picks = []
