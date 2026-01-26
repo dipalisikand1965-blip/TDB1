@@ -1373,66 +1373,39 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
   const getSelectedPetsInfo = () => {
     return userPets.filter(p => selectedPets.includes(p.id));
   };
-              pet_about: `${firstPet.species || 'Dog'}, ${firstPet.age || '?'} years old. ${firstPet.special_traits || ''}`.trim()
-            }));
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching pets:', error);
-      } finally {
-        setLoadingPets(false);
-      }
-    };
-    fetchUserPets();
-  }, [currentUser, authToken]);
-
-  // Handle pet selection - auto-fill pet details
-  const handlePetSelect = (petId) => {
-    setSelectedPetId(petId);
-    if (petId) {
-      const pet = userPets.find(p => p.id === petId);
-      if (pet) {
-        setFormData(prev => ({
-          ...prev,
-          pet_name: pet.name || '',
-          pet_breed: pet.breed || '',
-          pet_about: `${pet.species || 'Dog'}, ${pet.age || '?'} years old. ${pet.special_traits || ''}`.trim()
-        }));
-      }
-    } else {
-      // Clear pet details if no pet selected
-      setFormData(prev => ({
-        ...prev,
-        pet_name: '',
-        pet_breed: '',
-        pet_about: ''
-      }));
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     
     try {
-      // 1. Submit reservation
+      // Get selected pets data
+      const petsData = getSelectedPetsInfo().map(pet => ({
+        id: pet.id,
+        name: pet.name,
+        breed: pet.identity?.breed || pet.breed
+      }));
+      
+      // Submit reservation
       const response = await fetch(`${API_URL}/api/dine/reservations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           restaurant_id: restaurant.id,
           ...formData,
-          pet_id: selectedPetId || null
+          pets: petsData,
+          pets_count: selectedPets.length,
+          pet_ids: selectedPets
         })
       });
       
       if (response.ok) {
         const reservationData = await response.json();
         
-        // 2. Write to Pet Soul if a pet was selected
-        if (selectedPetId) {
+        // Write to Pet Soul for each selected pet
+        for (const petId of selectedPets) {
           try {
-            await fetch(`${API_URL}/api/pet-vault/${selectedPetId}/record-dine-reservation`, {
+            await fetch(`${API_URL}/api/pet-vault/${petId}/record-dine-reservation`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -1442,12 +1415,27 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
                 date: formData.date,
                 time: formData.time,
                 guests: formData.guests,
-                pets_count: formData.pets,
+                pets_count: selectedPets.length,
                 pet_meal_preorder: formData.petMealPreorder,
                 reservation_id: reservationData.reservation_id || reservationData.id
               })
             });
           } catch (soulError) {
+            console.error('Failed to record in Pet Soul:', soulError);
+          }
+        }
+        
+        setSuccess(true);
+      } else {
+        alert('Failed to submit reservation. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting reservation:', error);
+      alert('Failed to submit reservation. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
             console.warn('Pet Soul update failed (non-blocking):', soulError);
           }
         }
