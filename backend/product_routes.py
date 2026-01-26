@@ -388,6 +388,13 @@ async def universal_search(
         "orders": {"name": "My Orders", "url": "/dashboard", "description": "Track your orders", "type": "page", "icon": "package"},
         "cart": {"name": "Shopping Cart", "url": "/cart", "description": "View your cart", "type": "page", "icon": "cart"},
         "checkout": {"name": "Checkout", "url": "/checkout", "description": "Complete your purchase", "type": "page", "icon": "credit-card"},
+        
+        # Autoship & Subscription
+        "autoship": {"name": "Autoship & Save", "url": "/autoship", "description": "Subscribe for automatic deliveries & save up to 50%", "type": "page", "icon": "refresh"},
+        "subscription": {"name": "Autoship Subscriptions", "url": "/autoship", "description": "Never run out of your pet's favorites", "type": "page", "icon": "refresh"},
+        "subscribe": {"name": "Subscribe & Save", "url": "/autoship", "description": "Get automatic deliveries with discounts", "type": "page", "icon": "refresh"},
+        "auto ship": {"name": "Autoship Program", "url": "/autoship", "description": "Set it once, spoil them always", "type": "page", "icon": "refresh"},
+        "recurring": {"name": "Recurring Orders", "url": "/autoship", "description": "Automatic repeat deliveries", "type": "page", "icon": "refresh"},
     }
     
     # Check for page matches
