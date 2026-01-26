@@ -182,6 +182,7 @@ function MainLayout() {
         {/* Membership route is defined outside MainLayout for clean entry */}
         <Route path="/autoship" element={<Autoship />} />
         <Route path="/autoship-products" element={<ProductListing category="autoship" />} />
+        <Route path="/meal-plan" element={<MealPlanPage />} />
         <Route path="/admin/forgot-password" element={<ForgotPassword />} />
         <Route path="/admin/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<Admin />} />
