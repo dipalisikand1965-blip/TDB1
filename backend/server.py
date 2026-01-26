@@ -5066,6 +5066,7 @@ async def mongodb_fallback_search_legacy(
     
     return {
         "hits": products,
+        "products": products,
         "query": q,
         "estimatedTotalHits": total,
         "limit": limit,
