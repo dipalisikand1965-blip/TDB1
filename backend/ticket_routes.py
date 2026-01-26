@@ -22,8 +22,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/tickets", tags=["tickets"], redirect_slashes=False)
 
-# Security - support both Basic Auth and Bearer Token
-security_basic = HTTPBasic(auto_error=False)
+# Security - Bearer Token only (no HTTP Basic to avoid browser popup)
 security_bearer = HTTPBearer(auto_error=False)
 
 # Get MongoDB connection from server.py
@@ -31,15 +30,14 @@ def get_db():
     from server import db
     return db
 
-# Admin credentials verification - supports both Basic Auth and Bearer Token
+# Admin credentials verification - Bearer Token only
 async def verify_token(
-    basic_creds: HTTPBasicCredentials = Depends(security_basic),
     bearer_creds: HTTPAuthorizationCredentials = Depends(security_bearer)
 ):
-    """Verify admin credentials for ticket operations - supports Basic Auth and Bearer Token"""
+    """Verify admin credentials for ticket operations - Bearer Token from JWT login"""
     from server import ADMIN_USERNAME, ADMIN_PASSWORD, _admin_credentials_cache, SECRET_KEY, ALGORITHM
     
-    # Try Bearer Token first (from JWT login)
+    # Check Bearer Token (from JWT login)
     if bearer_creds and bearer_creds.credentials:
         try:
             payload = jwt.decode(bearer_creds.credentials, SECRET_KEY, algorithms=[ALGORITHM])
@@ -48,21 +46,10 @@ async def verify_token(
             if username and role == "admin":
                 return username
         except jwt.PyJWTError:
-            pass  # Fall through to try Basic Auth
+            pass
     
-    # Try Basic Auth
-    if basic_creds:
-        expected_username = _admin_credentials_cache.get("username") or ADMIN_USERNAME
-        expected_password = _admin_credentials_cache.get("password") or ADMIN_PASSWORD
-        
-        correct_username = secrets.compare_digest(basic_creds.username, expected_username)
-        correct_password = secrets.compare_digest(basic_creds.password, expected_password)
-        
-        if correct_username and correct_password:
-            return basic_creds.username
-    
-    # Neither auth method worked
-    raise HTTPException(status_code=401, detail="Invalid credentials")
+    # No valid token - return None but don't require auth for all endpoints
+    return None
 
 # Get Resend for email notifications
 def get_resend():
