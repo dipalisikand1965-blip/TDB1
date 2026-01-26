@@ -43,7 +43,7 @@ const PILLARS = [
     dropdown: [
       { name: 'Pet Hotels', path: '/stay' },
       { name: 'Boarding', path: '/stay?type=boarding' },
-      { name: 'Day Care', path: '/stay?type=daycare' },
+      { name: 'Stay Essentials', path: '/stay#essentials' },
     ]
   },
   {
