@@ -109,6 +109,10 @@ from unified_product_box import (
     product_box_router,
     set_product_box_db
 )
+from concierge_order_queue import (
+    order_queue_router,
+    set_order_queue_db
+)
 from pet_vault_routes import (
     pet_vault_router,
     pet_vault_admin_router,
