@@ -5,6 +5,71 @@ Building **The Doggy Company**, a "Pet Life Operating System" designed as a pet-
 
 ---
 
+## Session 37 - Product Seeding & Recommendations (January 26, 2026)
+
+### ✅ COMPLETED
+
+**1. Product Seeding Across All 14 Pillars**
+Created `/app/backend/scripts/seed_pillar_products.py` and seeded 127 new products:
+
+| Pillar | Products | Sample Items |
+|--------|----------|--------------|
+| Celebrate | 10 | Custom Birthday Cake, Breed Cakes, Hampers |
+| Dine | 10 | Fresh Meals, Subscriptions, Meal Plans |
+| Stay | 10 | Boarding, Daycare, Home Stay |
+| Travel | 10 | Pet Carrier, GPS Tracker, Passport Service |
+| Care | 10 | Grooming, Spa, Supplements, Vet Consult |
+| Enjoy | 10 | Toys, Puzzle Games, Playdates |
+| Fit | 10 | Training Sessions, Weight Loss Programs |
+| Learn | 10 | Obedience Courses, Workshops |
+| Paperwork | 8 | Registration, Insurance, Documentation |
+| Advisory | 8 | Nutrition, Behavior Consultations |
+| Emergency | 6 | 24/7 Hotline, Transport, First Aid |
+| Farewell | 8 | Cremation, Memorials, Counseling |
+| Adopt | 8 | Counseling, Starter Kits, Foster Programs |
+| Shop | 9 | Collars, Beds, Clothing, Accessories |
+
+**2. Product Recommendations API**
+New endpoint: `GET /api/products/recommendations/for-pet/{pet_id}`
+
+Features:
+- Detects pet size category from weight (small/medium/large/giant)
+- Detects age category from birth_date (puppy/adult/senior)
+- Excludes products containing pet's allergies
+- Prioritizes allergen-free products
+- Scores and ranks recommendations
+
+**3. Fixed Product Box Filters**
+- Added shipping filter (Pan-India / Local Only)
+- Fixed pillar filter to check both `pillar` and `pillars` fields
+- Added search across multiple fields (name, tags, category, description)
+- Falls back to `products` collection if `unified_products` empty
+
+**4. Verified "Get Fitness" Button - WORKING**
+- Opens assessment modal with fitness goals
+- Form includes: Pet details, Activity level, Goals, Contact info
+
+### 📊 Current Product Counts (557 total)
+| Pillar | Count |
+|--------|-------|
+| None (legacy) | 396 |
+| Dine | 22 |
+| Care | 22 |
+| Travel | 20 |
+| Celebrate | 10 |
+| Stay | 10 |
+| Enjoy | 10 |
+| Learn | 10 |
+| Fit | 10 |
+| Shop | 9 |
+| Adopt | 8 |
+| Paperwork | 8 |
+| Advisory | 8 |
+| Farewell | 8 |
+| Emergency | 6 |
+
+---
+
 ## Session 36 - Product Architecture Overhaul (January 26, 2026)
 
 ### ✅ MAJOR PRODUCT RESTRUCTURING COMPLETE
