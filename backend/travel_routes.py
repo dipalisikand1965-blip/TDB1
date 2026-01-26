@@ -58,6 +58,14 @@ class TravelRequestCreate(BaseModel):
     user_name: Optional[str] = None
     contact_name: Optional[str] = None  # Alias
     freeform_query: Optional[str] = None
+    
+    # Validator to handle empty strings for optional float fields
+    @field_validator('pet_weight', mode='before')
+    @classmethod
+    def empty_str_to_none_float(cls, v):
+        if v == '' or v is None:
+            return None
+        return v
 
 
 class TravelRequestUpdate(BaseModel):
