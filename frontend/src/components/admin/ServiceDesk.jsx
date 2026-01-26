@@ -2765,24 +2765,39 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
             </div>
           ) : selectedTicket ? (
             <>
-              {/* Header */}
-              <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-4 py-3 border-b">
+              {/* Header - Enhanced Zoho-style */}
+              <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-3 text-white">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-lg">{CATEGORY_ICONS[selectedTicket.category]}</span>
-                    <span className="font-mono text-sm text-slate-500 bg-slate-200 px-2 py-0.5 rounded">{selectedTicket.ticket_id}</span>
-                    <Badge className={`${STATUS_COLORS[selectedTicket.status]} shadow-sm`}>
-                      {selectedTicket.status?.replace('_', ' ')}
-                    </Badge>
-                    {selectedTicket.source && SOURCE_CONFIG[selectedTicket.source] && (
-                      <Badge className={SOURCE_CONFIG[selectedTicket.source].color}>
-                        {SOURCE_CONFIG[selectedTicket.source].icon} {SOURCE_CONFIG[selectedTicket.source].label}
-                      </Badge>
-                    )}
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{CATEGORY_ICONS[selectedTicket.category]}</span>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-mono text-sm text-slate-300 bg-slate-700 px-2 py-0.5 rounded">{selectedTicket.ticket_id}</span>
+                        <Badge className={`${STATUS_COLORS[selectedTicket.status]} shadow-sm`}>
+                          {selectedTicket.status?.replace('_', ' ')}
+                        </Badge>
+                        {selectedTicket.source && SOURCE_CONFIG[selectedTicket.source] && (
+                          <Badge className={`${SOURCE_CONFIG[selectedTicket.source].color} opacity-90`}>
+                            {SOURCE_CONFIG[selectedTicket.source].icon}
+                          </Badge>
+                        )}
+                      </div>
+                      <h3 className="font-semibold text-lg mt-1">{selectedTicket.member?.name || selectedTicket.customer_name || 'Customer'}</h3>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    {/* Agent Badge */}
+                    {selectedTicket.assigned_to && (
+                      <div className="flex items-center gap-2 bg-slate-700 px-3 py-1.5 rounded-full">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-xs font-bold text-white">
+                          {selectedTicket.assigned_to.charAt(0).toUpperCase()}
+                        </div>
+                        <span className="text-sm text-slate-200">{selectedTicket.assigned_to.split('@')[0]}</span>
+                      </div>
+                    )}
+                    {/* Status Dropdown */}
                     <Select value={selectedTicket.status} onValueChange={handleStatusChange}>
-                      <SelectTrigger className="h-8 w-40">
+                      <SelectTrigger className="h-9 w-44 bg-slate-700 border-slate-600 text-white">
                         <SelectValue placeholder="Change Status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -2793,7 +2808,23 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                     </Select>
                   </div>
                 </div>
-                <h3 className="font-medium">{selectedTicket.member?.name}</h3>
+                
+                {/* Quick Contact Row */}
+                <div className="flex items-center gap-4 text-sm text-slate-300">
+                  {selectedTicket.member?.phone && (
+                    <div className="flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5" /> {selectedTicket.member.phone}
+                    </div>
+                  )}
+                  {selectedTicket.member?.email && (
+                    <div className="flex items-center gap-1.5">
+                      <Mail className="w-3.5 h-3.5" /> {selectedTicket.member.email}
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5 ml-auto">
+                    <Clock className="w-3.5 h-3.5" /> {new Date(selectedTicket.created_at).toLocaleString()}
+                  </div>
+                </div>
               </div>
 
               {/* Content - Scrollable Area */}
