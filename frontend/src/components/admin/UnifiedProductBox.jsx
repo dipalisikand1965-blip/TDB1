@@ -120,6 +120,7 @@ const UnifiedProductBox = () => {
       if (filterType) params.append('product_type', filterType);
       if (filterPillar) params.append('pillar', filterPillar);
       if (filterStatus) params.append('status', filterStatus);
+      if (filterShipping) params.append('shipping', filterShipping);
       if (filterRewardEligible !== null) params.append('reward_eligible', filterRewardEligible.toString());
       
       const response = await fetch(`${API_URL}/api/product-box/products?${params}`);
@@ -258,6 +259,7 @@ const UnifiedProductBox = () => {
       if (filterType) params.append('product_type', filterType);
       if (filterPillar) params.append('pillar', filterPillar);
       if (filterStatus) params.append('status', filterStatus);
+      if (filterShipping) params.append('shipping', filterShipping);
       if (filterRewardEligible !== null) params.append('reward_eligible', filterRewardEligible.toString());
       
       const response = await fetch(`${API_URL}/api/product-box/products?${params}`);
