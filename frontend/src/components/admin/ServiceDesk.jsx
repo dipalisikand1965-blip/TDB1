@@ -3587,7 +3587,8 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                   ))}
                 </div>
               </div>
-              {/* END of scrollable Content area */}
+                )}
+              {/* END of conversation tab */}
 
               {/* AI Draft Working Surface Panel - REDESIGNED */}
               {showAiPanel && aiDraft && (
