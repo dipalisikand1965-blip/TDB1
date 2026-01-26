@@ -952,9 +952,9 @@ const UnifiedPetPage = () => {
                   </div>
                   <h3 className="font-bold text-lg mb-1">Pet Soul™ Score</h3>
                   <p className="text-white/70 text-sm">
-                    {displayScore >= 80 ? "We truly know " + pet.name :
+                    {displayScore >= 80 ? "We truly know " + safePet.name :
                      displayScore >= 50 ? "Patterns are emerging" :
-                     displayScore >= 25 ? "Getting to know " + pet.name :
+                     displayScore >= 25 ? "Getting to know " + safePet.name :
                      "Just getting started"}
                   </p>
                   <Badge className="mt-3 bg-white/20 text-white border-none">
