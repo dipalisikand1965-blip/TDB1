@@ -147,7 +147,6 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [selectedPillar, setSelectedPillar] = useState('all');
   
   // Data
-  const [tickets, setTickets] = useState([]);
   const [allTickets, setAllTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [loading, setLoading] = useState(true);
