@@ -1010,10 +1010,10 @@ async def seed_adopt_data():
             await db.adopt_shelters.insert_many(SAMPLE_SHELTERS)
             results["shelters_seeded"] = len(SAMPLE_SHELTERS)
         
-        # Seed events
-        await db.adopt_events.delete_many({})
+        # Seed events (using adoption_events collection to match route)
+        await db.adoption_events.delete_many({})
         if SAMPLE_EVENTS:
-            await db.adopt_events.insert_many(SAMPLE_EVENTS)
+            await db.adoption_events.insert_many(SAMPLE_EVENTS)
             results["events_seeded"] = len(SAMPLE_EVENTS)
         
         return {"success": True, "message": "Adopt data seeded successfully", "results": results}
