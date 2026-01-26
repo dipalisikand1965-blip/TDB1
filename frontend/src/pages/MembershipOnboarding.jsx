@@ -718,7 +718,7 @@ const MembershipOnboarding = () => {
                         <div className="relative">
                           <div className="w-24 h-24 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
                             {pet.photo_url ? (
-                              <img src={pet.photo_url} alt="Pet" className="w-full h-full object-cover" />
+                              <img src={getPetPhotoUrl(pet)} alt="Pet" className="w-full h-full object-cover" />
                             ) : (
                               <Camera className="w-6 h-6 text-gray-400" />
                             )}
