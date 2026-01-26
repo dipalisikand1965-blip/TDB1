@@ -44,6 +44,20 @@ const QUICK_FILTERS = [
   { id: 'subscription', label: '📦 Subscribe & Save', filter: { subscription: true } }
 ];
 
+// Pillar Filters for cross-pillar shopping
+const PILLAR_FILTERS = [
+  { id: 'all', label: 'All Pillars', icon: '🛒' },
+  { id: 'celebrate', label: 'Celebrate', icon: '🎂' },
+  { id: 'dine', label: 'Dine', icon: '🍖' },
+  { id: 'stay', label: 'Stay', icon: '🏠' },
+  { id: 'travel', label: 'Travel', icon: '✈️' },
+  { id: 'care', label: 'Care', icon: '💊' },
+  { id: 'enjoy', label: 'Enjoy', icon: '🎾' },
+  { id: 'fit', label: 'Fit', icon: '💪' },
+  { id: 'learn', label: 'Learn', icon: '📚' },
+  { id: 'shop', label: 'Shop', icon: '🛍️' }
+];
+
 // Product Card Component
 const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
