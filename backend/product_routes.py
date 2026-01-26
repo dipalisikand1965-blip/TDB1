@@ -85,15 +85,31 @@ async def mongodb_fallback_search(
     sort: Optional[str] = None
 ):
     """Fallback search using MongoDB when Meilisearch is unavailable"""
+    # Split query into words for better matching
+    query_words = q.lower().split()
     search_regex = {"$regex": q, "$options": "i"}
-    query = {
-        "$or": [
-            {"name": search_regex},
-            {"description": search_regex},
-            {"tags": search_regex},
-            {"category": search_regex},
-        ]
-    }
+    
+    # Build OR conditions for each search term
+    or_conditions = [
+        {"name": search_regex},
+        {"description": search_regex},
+        {"tags": search_regex},
+        {"category": search_regex},
+    ]
+    
+    # Add intelligent tags matching
+    for word in query_words:
+        word_regex = {"$regex": word, "$options": "i"}
+        or_conditions.extend([
+            {"intelligent_tags": word_regex},
+            {"breed_tags": word_regex},
+            {"health_tags": word_regex},
+            {"occasion_tags": word_regex},
+            {"diet_tags": word_regex},
+            {"search_keywords": word_regex},
+        ])
+    
+    query = {"$or": or_conditions}
     
     # Add filters
     if category:
