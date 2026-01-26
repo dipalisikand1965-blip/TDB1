@@ -55,8 +55,54 @@ async def notify_admin(notification_type, title, message, category="dine", relat
         except Exception as e:
             logger.error(f"Failed to create admin notification: {e}")
 
-# Database reference
-db: AsyncIOMotorDatabase = None
+
+# Standalone seed functions (callable from server.py seed_all_pillars)
+async def seed_dine_bundles_data():
+    """Seed dine bundles - standalone version for auto-seed"""
+    sample_bundles = [
+        {
+            "id": "dine-bundle-birthday",
+            "name": "Pawty Birthday Package",
+            "description": "Complete birthday celebration kit!",
+            "image": "https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=800",
+            "bundle_price": 2499,
+            "original_price": 3200,
+            "category": "party_package",
+            "items": ["Birthday Cake (500g)", "Gourmet Treats Pack", "Party Hat Set"],
+            "for_occasion": "birthday",
+            "discount_percent": 22,
+            "featured": True,
+            "active": True,
+            "tags": ["birthday", "celebration"]
+        }
+    ]
+    existing = await db.dine_bundles.count_documents({})
+    if existing > 0:
+        return {"bundles_seeded": 0, "message": "Bundles exist"}
+    for b in sample_bundles:
+        b["created_at"] = datetime.now(timezone.utc).isoformat()
+        await db.dine_bundles.insert_one(b)
+    return {"bundles_seeded": len(sample_bundles)}
+
+async def seed_dine_products_data():
+    """Seed dine products - standalone version for auto-seed"""
+    sample_products = [
+        {
+            "id": "dine-prod-bowl",
+            "name": "Portable Travel Bowl Set",
+            "price": 599,
+            "category": "dine",
+            "dine_type": "accessories",
+            "in_stock": True
+        }
+    ]
+    existing = await db.products.count_documents({"category": "dine"})
+    if existing > 0:
+        return {"products_seeded": 0, "message": "Products exist"}
+    for p in sample_products:
+        p["created_at"] = datetime.now(timezone.utc).isoformat()
+        await db.products.insert_one(p)
+    return {"products_seeded": len(sample_products)}
 
 # Admin credentials
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
