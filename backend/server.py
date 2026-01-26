@@ -2985,6 +2985,11 @@ async def seed_pet_boarding(username: str = Depends(verify_admin)):
 
 
 @admin_router.get("/data/pets-status")
+async def get_pets_status(username: str = Depends(verify_admin)):
+    """Check the status of pets in the database - how many have user_id, owner_email, etc."""
+    
+    total_pets = await db.pets.count_documents({})
+    with_user_id = await db.pets.count_documents({"user_id": {"$exists": True, "$ne": None}})
     with_owner_email = await db.pets.count_documents({"owner_email": {"$exists": True, "$ne": None}})
     without_user_id = await db.pets.count_documents({
         "$or": [
