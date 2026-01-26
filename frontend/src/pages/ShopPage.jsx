@@ -685,8 +685,24 @@ const ShopPage = () => {
             </div>
 
             {/* Active Filters Pills */}
-            {activeFilters.length > 0 && (
+            {(activeFilters.length > 0 || selectedPillar !== 'all') && (
               <div className="flex flex-wrap gap-2 mb-4">
+                {/* Pillar filter pill */}
+                {selectedPillar !== 'all' && (
+                  <Badge 
+                    className="bg-teal-100 text-teal-700 px-3 py-1 cursor-pointer hover:bg-teal-200"
+                    onClick={() => {
+                      setSelectedPillar('all');
+                      setSearchParams(prev => {
+                        prev.delete('pillar');
+                        return prev;
+                      });
+                    }}
+                  >
+                    {PILLAR_FILTERS.find(p => p.id === selectedPillar)?.icon} {PILLAR_FILTERS.find(p => p.id === selectedPillar)?.label}
+                    <X className="w-3 h-3 ml-2" />
+                  </Badge>
+                )}
                 {activeFilters.map(filterId => {
                   const filter = QUICK_FILTERS.find(f => f.id === filterId);
                   return (
