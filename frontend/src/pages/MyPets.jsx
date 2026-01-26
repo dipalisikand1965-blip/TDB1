@@ -665,7 +665,7 @@ const MyPets = () => {
                             )}
                           </button>
                         </div>
-                        <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white shadow-sm text-purple-700 border-purple-200">
+                        <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white shadow-sm text-teal-700 border-teal-200">
                           {personaInfo.emoji} {personaInfo.name}
                         </Badge>
                       </div>
