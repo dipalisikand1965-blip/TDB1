@@ -1501,9 +1501,17 @@ const UnifiedPetPage = () => {
                   )}
                 </Card>
                 
+                {/* Breed-Specific Health Guide */}
+                {pet.breed && (
+                  <BreedHealthCard 
+                    breed={pet.breed} 
+                    petName={pet.name}
+                  />
+                )}
+                
                 <div className="text-center">
                   <Link to={`/pet-vault/${pet.id}`}>
-                    <Button className="bg-purple-600 hover:bg-purple-700">
+                    <Button className="bg-teal-600 hover:bg-teal-700">
                       <Stethoscope className="w-4 h-4 mr-2" />
                       Open Full Health Vault
                     </Button>
