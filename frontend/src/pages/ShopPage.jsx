@@ -288,6 +288,11 @@ const ShopPage = () => {
         url += `&category=${selectedCategory}`;
       }
       
+      // Add pillar filter
+      if (selectedPillar && selectedPillar !== 'all') {
+        url += `&pillar=${selectedPillar}`;
+      }
+      
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
