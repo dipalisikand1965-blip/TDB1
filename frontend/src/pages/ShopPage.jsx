@@ -539,8 +539,41 @@ const ShopPage = () => {
                 Filters
               </h3>
               
+              {/* Pillar Filter */}
+              <div className="mb-6">
+                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Shop by Pillar</h4>
+                <div className="space-y-1">
+                  {PILLAR_FILTERS.map((pillar) => (
+                    <button
+                      key={pillar.id}
+                      onClick={() => {
+                        setSelectedPillar(pillar.id);
+                        setSearchParams(prev => {
+                          if (pillar.id === 'all') prev.delete('pillar');
+                          else prev.set('pillar', pillar.id);
+                          return prev;
+                        });
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ${
+                        selectedPillar === pillar.id
+                          ? 'bg-teal-100 text-teal-700 font-medium'
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
+                      data-testid={`pillar-filter-${pillar.id}`}
+                    >
+                      <span>{pillar.icon}</span>
+                      <span>{pillar.label}</span>
+                      {selectedPillar === pillar.id && (
+                        <Check className="w-4 h-4 ml-auto" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
               {/* Quick Filters */}
-              <div className="space-y-2 mb-6">
+              <div className="space-y-2 mb-6 border-t pt-4">
+                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Quick Filters</h4>
                 {QUICK_FILTERS.map((filter) => (
                   <button
                     key={filter.id}
@@ -582,11 +615,18 @@ const ShopPage = () => {
               </div>
               
               {/* Clear Filters */}
-              {activeFilters.length > 0 && (
+              {(activeFilters.length > 0 || selectedPillar !== 'all') && (
                 <Button 
                   variant="outline" 
                   className="w-full mt-4"
-                  onClick={() => setActiveFilters([])}
+                  onClick={() => {
+                    setActiveFilters([]);
+                    setSelectedPillar('all');
+                    setSearchParams(prev => {
+                      prev.delete('pillar');
+                      return prev;
+                    });
+                  }}
                 >
                   Clear All Filters
                 </Button>
