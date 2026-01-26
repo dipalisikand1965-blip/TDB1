@@ -639,7 +639,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       
       // Try to fetch member profile by email
       if (ticket.member?.email) {
-        const memberRes = await fetch(`${getApiUrl()}/api/admin/members?email=${ticket.member.email}`, { headers: authHeaders });
+        const memberRes = await fetch(`${getApiUrl()}/api/admin/members/search?email=${encodeURIComponent(ticket.member.email)}`, { headers: authHeaders });
         if (memberRes.ok) {
           const memberData = await memberRes.json();
           if (memberData.members?.[0]) {
@@ -647,10 +647,12 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             
             // Fetch their order history
             try {
-              const ordersRes = await fetch(`${getApiUrl()}/api/orders/user/${memberData.members[0].id}`, { headers: authHeaders });
+              const ordersRes = await fetch(`${getApiUrl()}/api/admin/orders?limit=20`, { headers: authHeaders });
               if (ordersRes.ok) {
                 const ordersData = await ordersRes.json();
-                setOrderHistory(ordersData.orders || []);
+                // Filter orders by email
+                const userOrders = (ordersData.orders || []).filter(o => o.email === ticket.member.email);
+                setOrderHistory(userOrders);
               }
             } catch (e) {
               console.debug('Could not fetch orders:', e);
