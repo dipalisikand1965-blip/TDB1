@@ -1311,16 +1311,16 @@ const PetBuddyModal = ({ restaurant, onClose }) => {
 };
 
 // Reservation Modal with Pet Soul Integration
-const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
+const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, authToken }) => {
   const [userPets, setUserPets] = useState([]);
   const [selectedPetId, setSelectedPetId] = useState('');
   const [loadingPets, setLoadingPets] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
+    name: currentUser?.name || '',
+    phone: currentUser?.phone || currentUser?.whatsapp || '',
+    email: currentUser?.email || '',
     date: '',
     time: '',
     guests: 2,
@@ -1333,32 +1333,17 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
     pet_about: '',
   });
 
-  // Initialize form with user data when modal opens
-  useEffect(() => {
-    const user = getUser();
-    if (user) {
-      setFormData(prev => ({
-        ...prev,
-        name: user.name || prev.name,
-        email: user.email || prev.email,
-        phone: user.phone || user.whatsapp || prev.phone
-      }));
-    }
-  }, []); // Run once when modal opens
-
   // Fetch user's pets on mount
   useEffect(() => {
     const fetchUserPets = async () => {
-      const user = getUser();
-      const token = localStorage.getItem('token');
-      if (!user?.email || !token) return;
+      if (!currentUser?.email || !authToken) return;
       
       setLoadingPets(true);
       try {
         // Use authenticated endpoint
         const response = await fetch(`${API_URL}/api/pets/my-pets`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${authToken}`
           }
         });
         if (response.ok) {
@@ -1384,7 +1369,7 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge }) => {
       }
     };
     fetchUserPets();
-  }, []);
+  }, [currentUser, authToken]);
 
   // Handle pet selection - auto-fill pet details
   const handlePetSelect = (petId) => {
