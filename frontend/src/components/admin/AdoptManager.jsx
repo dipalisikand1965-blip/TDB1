@@ -355,6 +355,26 @@ const AdoptManager = ({ authHeaders }) => {
 
   return (
     <div className="space-y-6">
+      {/* Header with Seed Button */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <PawPrint className="w-7 h-7 text-purple-600" />
+            Adopt Manager
+          </h2>
+          <p className="text-gray-500 text-sm">Manage adoptable pets, applications, events, and shelters</p>
+        </div>
+        <Button 
+          onClick={seedAdoptData}
+          disabled={seeding}
+          variant="outline"
+          className="border-amber-300 text-amber-700 hover:bg-amber-50"
+        >
+          {seeding ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+          Seed Sample Data
+        </Button>
+      </div>
+
       {/* Stats */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
