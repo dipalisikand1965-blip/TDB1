@@ -235,7 +235,20 @@ const Navbar = () => {
         const res = await fetch(`${API_URL}/api/search/typeahead?q=${encodeURIComponent(searchQuery)}&limit=8`);
         if (res.ok) {
           const data = await res.json();
-          setSearchSuggestions(data.suggestions || []);
+          // API returns products, transform to suggestion format
+          const products = data.products || [];
+          const suggestions = products.map(p => ({
+            type: 'product',
+            text: p.name || p.title,
+            name: p.name || p.title,
+            id: p.id,
+            image: p.image || p.image_url || p.images?.[0],
+            price: p.price || p.pricing?.base_price,
+            url: `/product/${p.shopify_handle || p.handle || p.id}`,
+            hasVariants: p.has_variants || p.variants?.length > 1 || p.options?.some(o => o.values?.length > 1)
+          }));
+          setSearchSuggestions(suggestions);
+          setShowSearchSuggestions(suggestions.length > 0);
         }
       } catch (error) {
         console.error('Typeahead error:', error);
