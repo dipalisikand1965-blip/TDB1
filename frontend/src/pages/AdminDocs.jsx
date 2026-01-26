@@ -1461,6 +1461,221 @@ POST /api/learn/admin/seed       # Seed sample data`
 • Revenue calculated from completed orders only`
         }
       ]
+    },
+    'smart-engine': {
+      title: 'Smart Recommendations Engine',
+      subtitle: 'AI-Powered Personalized Product & Service Recommendations',
+      badge: '🆕 Core AI Feature',
+      files: {
+        frontend: '/app/frontend/src/pages/MemberDashboard.jsx, /app/frontend/src/components/MiraPicksCard.jsx',
+        backend: '/app/backend/smart_routes.py'
+      },
+      sections: [
+        {
+          title: 'What It Is',
+          content: `The Smart Recommendations Engine powers **personalized product suggestions** based on:
+
+**Data Sources:**
+• Pet Soul profile (allergies, preferences, health conditions)
+• Breed-specific health needs & care tips
+• Upcoming celebrations (birthdays, gotcha days)
+• Purchase history and preferences
+
+**Output Locations:**
+• **Member Dashboard**: "Mira's Picks" section
+• **Mira AI**: Enriched product recommendations in conversations
+• **Pillar Pages**: Contextual product suggestions`
+        },
+        {
+          title: 'Recommendation Types',
+          content: `| Type | Description | Trigger |
+|------|-------------|---------|
+| **Mira's Picks** | AI-curated top 6 products | Every dashboard visit |
+| **Breed Picks** | Products for breed health needs | Based on pet breed |
+| **Allergy Safe** | Products without allergens | If pet has allergies |
+| **Birthday Gifts** | Celebration products | 30 days before birthday |
+| **Health Essentials** | Medical/wellness products | Based on health conditions |`
+        },
+        {
+          title: 'Breed Intelligence',
+          content: `The engine has **breed-specific knowledge** for 10+ popular breeds:
+
+**Supported Breeds:**
+• Shih Tzu, Golden Retriever, Labrador, German Shepherd
+• Indian Pariah (Indie), French Bulldog, Pomeranian
+• Beagle, Pug, Siberian Husky
+
+**Per-Breed Data:**
+• Priority product categories (e.g., joint support for Goldens)
+• Health focus areas (e.g., eye care for Shih Tzus)
+• Products to avoid (e.g., high-calorie treats for Labs)
+• Care tips (e.g., "Use harness instead of collar")`
+        },
+        {
+          title: 'API Endpoints',
+          content: `\`\`\`
+# Main Recommendations
+GET /api/smart/recommendations/{user_id}
+# Query params: pet_id (optional), limit (default: 12)
+# Returns: mira_picks, breed_picks, allergy_safe, birthday_gifts, health_essentials, insights
+
+# Mira AI Context
+GET /api/smart/mira-context/{pet_id}
+# Returns: breed-specific context for Mira conversations
+
+# Birthday Reminders
+GET /api/smart/birthday-reminders?days_ahead=30
+# Returns: pets with birthdays in next N days
+\`\`\``
+        },
+        {
+          title: 'Response Structure',
+          content: `\`\`\`json
+{
+  "mira_picks": [
+    {
+      "id": "prod_123",
+      "name": "Joint Support Chews",
+      "price": 899,
+      "reason": "Recommended for Golden Retrievers",
+      "pet_name": "Max"
+    }
+  ],
+  "breed_picks": [...],
+  "allergy_safe": [...],
+  "birthday_gifts": [
+    {
+      "urgency": "Order soon - 5 days left!",
+      "urgency_level": "medium"
+    }
+  ],
+  "insights": [
+    "💡 Max (Golden Retriever): Watch weight carefully",
+    "💡 Max (Golden Retriever): Annual hip screening recommended"
+  ],
+  "upcoming_events": [
+    {
+      "type": "birthday",
+      "pet_name": "Max",
+      "days_until": 5,
+      "message": "🎂 Max's birthday in 5 days!"
+    }
+  ],
+  "primary_pet": {
+    "name": "Max",
+    "breed": "Golden Retriever",
+    "photo_url": "..."
+  }
+}
+\`\`\``
+        },
+        {
+          title: 'Product Matching Logic',
+          content: `The engine matches products using these category keywords:
+
+| Category | Keywords Searched |
+|----------|-------------------|
+| joint_support | joint, glucosamine, hip, mobility, arthritis |
+| dental_care | dental, teeth, oral, breath |
+| eye_care | eye, tear, vision, optical |
+| grooming | groom, brush, shampoo, coat, fur |
+| tick_prevention | tick, flea, nexgard, frontline, parasite |
+| weight_management | weight, diet, calorie, lean, portion |
+| cooling_products | cool, summer, temperature, heat |
+| birthday | birthday, cake, party, celebration |
+
+**Matching Priority:**
+1. Product name (regex, case-insensitive)
+2. Product description
+3. Product tags array`
+        },
+        {
+          title: 'Allergy Filtering',
+          content: `When a pet has allergies, products containing these ingredients are excluded:
+
+| Allergy | Excluded Keywords |
+|---------|-------------------|
+| Chicken | chicken, poultry |
+| Grain | grain, wheat, corn, rice |
+| Beef | beef, cattle |
+| Dairy | dairy, milk, cheese |
+
+**Note:** Allergies are read from \`doggy_soul_answers.food_allergies\``
+        },
+        {
+          title: 'Integration with Mira AI',
+          content: `The Smart Engine enriches Mira AI conversations:
+
+1. **GET /api/smart/mira-context/{pet_id}** returns:
+   - Breed-specific care tips
+   - Health focus areas
+   - Products to recommend/avoid
+   - Pet's allergies and preferences
+
+2. **Mira's system prompt** includes breed health knowledge
+   - When discussing products, Mira uses breed recommendations
+   - Allergy warnings are surfaced automatically
+   - Birthday gift suggestions are proactive
+
+**Example Mira Response:**
+"Since Max is a Golden Retriever, I'd recommend our Joint Support Chews - they're great for hip health. And with his birthday coming up in 5 days, how about our Birthday Cake Box?"`
+        },
+        {
+          title: 'How to Modify',
+          content: `**Add a new breed:**
+Edit \`BREED_RECOMMENDATIONS\` in \`smart_routes.py\`:
+\`\`\`python
+BREED_RECOMMENDATIONS = {
+    'new_breed': {
+        'priority_products': ['joint_support', 'dental_care'],
+        'health_focus': ['hip_supplements'],
+        'avoid': ['high_calorie_treats'],
+        'tips': ['Care tip 1', 'Care tip 2']
+    }
+}
+\`\`\`
+
+**Add a product category:**
+Edit \`PRODUCT_CATEGORIES\` in \`smart_routes.py\`:
+\`\`\`python
+PRODUCT_CATEGORIES = {
+    'new_category': {
+        'keywords': ['keyword1', 'keyword2'],
+        'pillar': 'care'
+    }
+}
+\`\`\`
+
+**Modify Mira's Pick priority:**
+Edit the \`get_smart_recommendations()\` function, specifically the "Create Mira's Picks" section.`
+        },
+        {
+          title: 'Frontend Display (MiraPicksCard)',
+          content: `The \`MiraPicksCard.jsx\` component displays recommendations:
+
+**Features:**
+• Gradient header with Mira's avatar
+• Product cards with images, prices, and "reason" badge
+• "View All" link to shop
+• Shimmer loading state
+
+**Usage:**
+\`\`\`jsx
+import MiraPicksCard from '../components/MiraPicksCard';
+
+<MiraPicksCard 
+  recommendations={smartData}
+  petName="Max"
+  loading={isLoading}
+/>
+\`\`\`
+
+**Data Requirements:**
+• \`recommendations.mira_picks\` - Array of products
+• \`recommendations.insights\` - Array of tip strings
+• \`recommendations.upcoming_events\` - Birthday alerts`
+        }
+      ]
     }
   };
 
