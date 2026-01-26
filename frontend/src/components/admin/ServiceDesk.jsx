@@ -247,6 +247,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   const [audioBlob, setAudioBlob] = useState(null);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [activeDetailTab, setActiveDetailTab] = useState('conversation');
   
   // SLA & Auto-assignment
   const [slaStats, setSlaStats] = useState(null);
