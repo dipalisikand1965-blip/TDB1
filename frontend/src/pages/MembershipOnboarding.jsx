@@ -105,6 +105,7 @@ const MembershipOnboarding = () => {
     if (!parentData.whatsapp.trim()) errors.whatsapp = 'WhatsApp number is required';
     else if (!/^\+?[0-9]{10,13}$/.test(parentData.whatsapp.replace(/\s/g, ''))) 
       errors.whatsapp = 'Invalid WhatsApp number';
+    if (!parentData.address.trim()) errors.address = 'Address is required for deliveries';
     if (!parentData.city.trim()) errors.city = 'City is required';
     if (!parentData.pincode.trim()) errors.pincode = 'Pincode is required';
     else if (!/^[0-9]{6}$/.test(parentData.pincode)) errors.pincode = 'Invalid pincode (6 digits)';
