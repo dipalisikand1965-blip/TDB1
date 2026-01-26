@@ -1551,21 +1551,11 @@ async def ai_draft_reply(request: AIReplyRequest):
     """
     db = get_db()
     
-    # Debug logging
-    import logging
-    logger = logging.getLogger(__name__)
-    logger.info(f"AI Draft: Looking for ticket_id={request.ticket_id}")
-    
-    # Get the ticket - try multiple query approaches
+    # Search both collections like get_ticket does
     ticket = await db.tickets.find_one({"ticket_id": request.ticket_id})
     
-    # If not found, try with string stripping
     if not ticket:
-        ticket = await db.tickets.find_one({"ticket_id": request.ticket_id.strip()})
-    
-    # Debug: count tickets
-    total_tickets = await db.tickets.count_documents({})
-    logger.info(f"AI Draft: Total tickets in DB: {total_tickets}, Found: {ticket is not None}")
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": request.ticket_id})
     
     if not ticket:
         raise HTTPException(status_code=404, detail=f"Ticket not found: {request.ticket_id}")
