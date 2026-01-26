@@ -62,6 +62,16 @@ const StayPage = () => {
   const [tripOptions, setTripOptions] = useState({ cities: [], trip_types: [] });
 
   useEffect(() => {
+    // Check URL params for type=boarding
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get('type');
+    if (type === 'boarding') {
+      setActiveTab('boarding');
+      fetchBoardingFacilities();
+    } else {
+      setActiveTab('stays');
+    }
+    
     fetchProperties();
     fetchBundles();
     fetchSocials();
@@ -70,6 +80,28 @@ const StayPage = () => {
     const savedFavorites = JSON.parse(localStorage.getItem('stay_favorites') || '[]');
     setFavorites(savedFavorites);
   }, []);
+  
+  const fetchBoardingFacilities = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (boardingFilters.city) params.append('city', boardingFilters.city);
+      if (boardingFilters.boardingType) params.append('boarding_type', boardingFilters.boardingType);
+      
+      const response = await fetch(`${API_URL}/api/stay/boarding?${params}`);
+      const data = await response.json();
+      setBoardingFacilities(data.facilities || []);
+      setBoardingCities(data.cities || []);
+    } catch (error) {
+      console.error('Error fetching boarding facilities:', error);
+    }
+  };
+  
+  // Re-fetch boarding when filters change
+  useEffect(() => {
+    if (activeTab === 'boarding') {
+      fetchBoardingFacilities();
+    }
+  }, [boardingFilters, activeTab]);
   
   const fetchTripPlannerOptions = async () => {
     try {
