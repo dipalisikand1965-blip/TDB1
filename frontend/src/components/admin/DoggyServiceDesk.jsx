@@ -195,16 +195,30 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [sending, setSending] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState(null);
+  const [aiReplyStyle, setAiReplyStyle] = useState('professional'); // 5 styles
   
-  // Intelligent Summary
+  // Intelligent Summary & Pet Soul Prompts
   const [conversationSummary, setConversationSummary] = useState(null);
   const [summaryLoading, setSummaryLoading] = useState(false);
+  const [petSoulPrompts, setPetSoulPrompts] = useState(null);
   
-  // Ticket Editing
+  // Ticket Editing & New Ticket
   const [isEditingTicket, setIsEditingTicket] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [customStatuses, setCustomStatuses] = useState([]);
   const [customCategories, setCustomCategories] = useState([]);
+  const [showNewTicketModal, setShowNewTicketModal] = useState(false);
+  const [newTicketForm, setNewTicketForm] = useState({
+    type: 'ticket', category: 'inquiry', urgency: 'medium',
+    subject: '', description: '', member_email: '', member_name: '', member_phone: '',
+    pet_name: ''
+  });
+  
+  // Sidebar data for Pet Parents, Orders, Analytics
+  const [petParents, setPetParents] = useState([]);
+  const [petProfiles, setPetProfiles] = useState([]);
+  const [ordersData, setOrdersData] = useState([]);
+  const [analyticsData, setAnalyticsData] = useState(null);
   
   // Detail panel
   const [detailTab, setDetailTab] = useState('conversation');
