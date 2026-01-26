@@ -1527,7 +1527,24 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                     {/* CONVERSATION TAB */}
                     {detailTab === 'conversation' && (
                       <div className="p-4">
-                        {/* Customer Info Bar */}
+                        
+                        {/* ==================== INTELLIGENT SUMMARY ==================== */}
+                        {(conversationSummary || summaryLoading) && (
+                          <Card className="p-3 mb-4 bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Brain className="w-4 h-4 text-purple-600" />
+                              <span className="text-xs font-semibold text-purple-700 uppercase tracking-wide">AI Summary</span>
+                              {summaryLoading && <Loader2 className="w-3 h-3 animate-spin text-purple-500" />}
+                            </div>
+                            {conversationSummary ? (
+                              <p className="text-sm text-gray-700 leading-relaxed">{conversationSummary}</p>
+                            ) : (
+                              <p className="text-sm text-purple-400 italic">Generating summary...</p>
+                            )}
+                          </Card>
+                        )}
+                        
+                        {/* Customer & Pet Info Bar */}
                         <Card className="p-3 mb-4 bg-gray-50 border-gray-100">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">
@@ -1548,10 +1565,18 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                                 )}
                               </div>
                             </div>
-                            {selectedTicket.pet_info?.name && (
+                            {/* Pet Info Badge */}
+                            {(selectedTicket.pet_info?.name || petProfile?.name) && (
                               <Badge className="bg-purple-100 text-purple-700 text-xs">
                                 <PawPrint className="w-3 h-3 mr-1" />
-                                {selectedTicket.pet_info.name}
+                                {selectedTicket.pet_info?.name || petProfile?.name}
+                              </Badge>
+                            )}
+                            {/* Auto-populated Pet Parent & Pet */}
+                            {memberProfile && !selectedTicket.member?.name && (
+                              <Badge className="bg-blue-100 text-blue-700 text-xs">
+                                <User className="w-3 h-3 mr-1" />
+                                {memberProfile.name}
                               </Badge>
                             )}
                           </div>
