@@ -79,6 +79,17 @@ const StayPage = () => {
     // Load favorites from localStorage
     const savedFavorites = JSON.parse(localStorage.getItem('stay_favorites') || '[]');
     setFavorites(savedFavorites);
+    
+    // Handle hash-based scrolling (e.g., /stay#essentials)
+    const hash = window.location.hash;
+    if (hash) {
+      setTimeout(() => {
+        const element = document.getElementById(hash.substring(1));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500); // Delay to ensure content is loaded
+    }
   }, []);
   
   const fetchBoardingFacilities = async () => {
