@@ -223,16 +223,35 @@ const ShopPage = () => {
   const [viewMode, setViewMode] = useState('grid'); // grid or list
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
+  const [selectedParentCategory, setSelectedParentCategory] = useState(searchParams.get('parent') || '');
   const [activeFilters, setActiveFilters] = useState([]);
   const [sortBy, setSortBy] = useState('featured');
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [showFilters, setShowFilters] = useState(false);
   const [pets, setPets] = useState([]);
+  const [categoryHierarchy, setCategoryHierarchy] = useState([]);
+  const [expandedCategory, setExpandedCategory] = useState(null);
+
+  // Fetch category hierarchy on mount
+  useEffect(() => {
+    const fetchHierarchy = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/categories/hierarchy`);
+        if (res.ok) {
+          const data = await res.json();
+          setCategoryHierarchy(data.categories || []);
+        }
+      } catch (err) {
+        console.debug('Could not fetch category hierarchy:', err);
+      }
+    };
+    fetchHierarchy();
+  }, []);
 
   // Fetch products
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory, sortBy]);
+  }, [selectedCategory, selectedParentCategory, sortBy]);
 
   // Fetch user's pets for recommendations
   useEffect(() => {
@@ -244,8 +263,13 @@ const ShopPage = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      let url = `${API_URL}/api/products?limit=100`;
-      if (selectedCategory !== 'all') {
+      let url = `${API_URL}/api/products?limit=200`;
+      
+      // Use parent_category if selected (shows all subcategories)
+      if (selectedParentCategory && selectedParentCategory !== 'all') {
+        url += `&parent_category=${selectedParentCategory}`;
+      } else if (selectedCategory && selectedCategory !== 'all') {
+        // Use specific category (subcategory level)
         url += `&category=${selectedCategory}`;
       }
       
