@@ -387,6 +387,7 @@ class SearchService:
             
             return {
                 "hits": results.hits,
+                "products": results.hits,
                 "query": query,
                 "processingTimeMs": results.processing_time_ms,
                 "estimatedTotalHits": results.estimated_total_hits or 0,
