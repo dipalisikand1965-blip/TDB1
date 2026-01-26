@@ -180,6 +180,11 @@ async def get_allergy_safe_products(db, allergies: List[str], limit: int = 6) ->
     # Build exclusion query
     exclude_keywords = []
     for allergy in allergies:
+        # Handle case where allergy might be a list or non-string
+        if isinstance(allergy, list):
+            allergy = ' '.join(str(a) for a in allergy)
+        if not isinstance(allergy, str):
+            continue
         allergy_lower = allergy.lower()
         if 'chicken' in allergy_lower:
             exclude_keywords.extend(['chicken', 'poultry'])
