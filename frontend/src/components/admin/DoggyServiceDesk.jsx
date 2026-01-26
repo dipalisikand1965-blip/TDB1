@@ -1256,7 +1256,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                           
                           {/* Conversation messages */}
                           {selectedTicket.messages?.map((msg, idx) => {
-                            const isAgent = msg.direction === 'outgoing' || msg.is_agent_reply;
+                            const isAgent = msg.direction === 'outgoing' || msg.is_agent_reply || msg.sender === 'concierge';
+                            const hasAttachments = msg.attachments?.length > 0;
                             return (
                               <div key={idx} className={`flex gap-3 ${isAgent ? 'flex-row-reverse' : ''}`}>
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 ${
@@ -1280,9 +1281,61 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                                     <p className={`text-sm whitespace-pre-wrap ${isAgent && !msg.is_internal ? 'text-white' : 'text-gray-800'}`}>
                                       {msg.content || msg.message}
                                     </p>
+                                    
+                                    {/* Attachments in message */}
+                                    {hasAttachments && (
+                                      <div className="mt-2 pt-2 border-t border-white/20 space-y-2">
+                                        {msg.attachments.map((att, attIdx) => (
+                                          <div key={attIdx} className={`flex items-center gap-2 p-2 rounded ${isAgent && !msg.is_internal ? 'bg-white/10' : 'bg-gray-50'}`}>
+                                            {att.type === 'image' ? (
+                                              <>
+                                                <img 
+                                                  src={`${getApiUrl()}${att.file_url || att.url}`} 
+                                                  alt={att.filename} 
+                                                  className="w-16 h-16 rounded object-cover cursor-pointer"
+                                                  onClick={() => window.open(`${getApiUrl()}${att.file_url || att.url}`, '_blank')}
+                                                />
+                                                <span className={`text-xs ${isAgent && !msg.is_internal ? 'text-white/80' : 'text-gray-600'}`}>
+                                                  {att.filename}
+                                                </span>
+                                              </>
+                                            ) : att.type === 'voice' ? (
+                                              <>
+                                                <Volume2 className={`w-5 h-5 ${isAgent && !msg.is_internal ? 'text-white' : 'text-blue-500'}`} />
+                                                <audio 
+                                                  controls 
+                                                  src={`${getApiUrl()}${att.file_url || att.url}`}
+                                                  className="h-8 max-w-[200px]"
+                                                />
+                                              </>
+                                            ) : (
+                                              <>
+                                                <FileText className={`w-5 h-5 ${isAgent && !msg.is_internal ? 'text-white' : 'text-gray-500'}`} />
+                                                <a 
+                                                  href={`${getApiUrl()}${att.file_url || att.url}`}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className={`text-xs underline ${isAgent && !msg.is_internal ? 'text-white' : 'text-blue-600'}`}
+                                                >
+                                                  {att.filename}
+                                                </a>
+                                              </>
+                                            )}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
                                   </div>
-                                  <div className={`text-[10px] text-gray-400 mt-1 ${isAgent ? 'text-right' : ''}`}>
-                                    {formatTime(msg.timestamp || msg.created_at)}
+                                  <div className={`flex items-center gap-2 text-[10px] text-gray-400 mt-1 ${isAgent ? 'justify-end' : ''}`}>
+                                    {msg.channel && msg.channel !== 'internal' && (
+                                      <>
+                                        <span className={CHANNELS[msg.channel]?.color}>
+                                          via {CHANNELS[msg.channel]?.label || msg.channel}
+                                        </span>
+                                        <span>•</span>
+                                      </>
+                                    )}
+                                    <span>{formatTime(msg.timestamp || msg.created_at)}</span>
                                   </div>
                                 </div>
                               </div>
