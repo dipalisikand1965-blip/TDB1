@@ -165,10 +165,12 @@ class ReservationRequest(BaseModel):
     date: str
     time: str
     guests: int = 2
-    pets: int = 1
+    pets: Optional[Any] = 1  # Can be int (count) or list of pet objects
+    pets_count: Optional[int] = None  # Explicit pet count for multi-pet
+    pet_ids: Optional[List[str]] = None  # Array of selected pet IDs
     petMealPreorder: bool = False
     specialRequests: Optional[str] = None
-    # Pet details
+    # Pet details - for single pet (backward compat)
     pet_name: str = ""
     pet_breed: Optional[str] = None
     pet_about: Optional[str] = None

@@ -301,12 +301,15 @@ class BookingRequest(BaseModel):
     guest_email: str
     guest_phone: str
     guest_whatsapp: Optional[str] = None
-    # Pet details
-    pet_name: str
+    # Pet details - supports both single pet and multi-pet
+    pet_name: Optional[str] = None  # For backward compatibility
     pet_breed: Optional[str] = None
     pet_weight_kg: Optional[float] = None
     pet_age: Optional[str] = None
     pet_gender: Optional[str] = None
+    # Multi-pet support (new)
+    pets: Optional[List[Dict[str, Any]]] = None  # Array of pet objects
+    selectedPetIds: Optional[List[str]] = None  # Array of selected pet IDs
     # Stay profile (comprehensive)
     sleep_habits: Optional[str] = None
     fears: Optional[str] = None
