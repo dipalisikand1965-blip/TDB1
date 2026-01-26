@@ -375,12 +375,16 @@ const MembershipOnboarding = () => {
                         onChange={(e) => setParentData({...parentData, address: e.target.value})}
                         placeholder="House/Flat No., Street, Landmark..."
                         rows={2}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className={`w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent ${parentErrors.address ? 'border-red-500' : 'border-gray-300'}`}
                         data-testid="parent-address-input"
                         required
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Required for deliveries and service visits</p>
+                    {parentErrors.address ? (
+                      <p className="text-xs text-red-500 mt-1">{parentErrors.address}</p>
+                    ) : (
+                      <p className="text-xs text-gray-500 mt-1">Required for deliveries and service visits</p>
+                    )}
                   </div>
 
                   {/* City & Pincode */}
