@@ -14,7 +14,7 @@ import ProductCard from '../components/ProductCard';
 import {
   Search, Filter, MapPin, Star, Heart, Dog, Calendar, Phone, Globe, 
   ChevronRight, Sparkles, Shield, TreePine, Sun, Waves, Mountain,
-  Home, Building2, Tent, CheckCircle, X, Users, Clock, Loader2,
+  Home, Building2, Building, Tent, CheckCircle, X, Users, Clock, Loader2,
   PawPrint, AlertTriangle, MessageCircle, ChevronDown, ShoppingBag,
   Package, Percent, PartyPopper, Camera, Footprints, Gift
 } from 'lucide-react';
