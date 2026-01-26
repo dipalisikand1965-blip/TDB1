@@ -110,17 +110,21 @@ CARE_TYPES = {
 class CareRequestCreate(BaseModel):
     care_type: str  # grooming, walks, training, etc.
     subtype: Optional[str] = None
-    pet_id: str
-    pet_name: str
+    pet_id: Optional[str] = None  # Optional for non-logged-in users
+    pet_name: Optional[str] = None
     pet_breed: Optional[str] = None
     # Request details
-    description: str
+    description: Optional[str] = None  # Made optional
+    notes: Optional[str] = None  # Alias for description
     preferred_date: Optional[str] = None
+    date: Optional[str] = None  # Alias for preferred_date
     preferred_time: Optional[str] = None
+    time: Optional[str] = None  # Alias for preferred_time
     frequency: Optional[str] = None  # one_time, daily, weekly, monthly
     duration: Optional[str] = None
     location_type: Optional[str] = None  # home, salon, outdoor
     location_address: Optional[str] = None
+    city: Optional[str] = None
     # Pet context (auto-filled or user-provided)
     pet_size: Optional[str] = None
     pet_energy_level: Optional[str] = None
@@ -129,8 +133,11 @@ class CareRequestCreate(BaseModel):
     special_requirements: Optional[str] = None
     # User info
     user_email: Optional[str] = None
+    contact_email: Optional[str] = None  # Alias
     user_phone: Optional[str] = None
+    contact_phone: Optional[str] = None  # Alias
     user_name: Optional[str] = None
+    contact_name: Optional[str] = None  # Alias
     # AI/Mira context
     mira_conversation_id: Optional[str] = None
     freeform_query: Optional[str] = None

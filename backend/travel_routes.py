@@ -27,15 +27,18 @@ def get_logger():
 # Travel Request Models
 class TravelRequestCreate(BaseModel):
     travel_type: str  # cab, train, flight, relocation
-    pet_id: str
-    pet_name: str
+    pet_id: Optional[str] = None  # Optional for non-logged-in users
+    pet_name: Optional[str] = None
     pet_breed: Optional[str] = None
-    pickup_location: str
-    pickup_city: str
-    drop_location: str
-    drop_city: str
-    travel_date: str
+    pickup_location: Optional[str] = None
+    pickup_city: Optional[str] = None
+    drop_location: Optional[str] = None
+    dropoff_location: Optional[str] = None  # Alias for drop_location
+    drop_city: Optional[str] = None
+    travel_date: Optional[str] = None
+    date: Optional[str] = None  # Alias for travel_date
     travel_time: Optional[str] = None
+    time: Optional[str] = None  # Alias for travel_time
     return_date: Optional[str] = None
     is_round_trip: bool = False
     special_requirements: Optional[str] = None
@@ -46,10 +49,14 @@ class TravelRequestCreate(BaseModel):
     travel_anxiety: Optional[str] = None
     motion_sickness: bool = False
     additional_notes: Optional[str] = None
+    notes: Optional[str] = None  # Alias for additional_notes
     # User info
     user_email: Optional[str] = None
+    contact_email: Optional[str] = None  # Alias
     user_phone: Optional[str] = None
+    contact_phone: Optional[str] = None  # Alias
     user_name: Optional[str] = None
+    contact_name: Optional[str] = None  # Alias
     freeform_query: Optional[str] = None
 
 
