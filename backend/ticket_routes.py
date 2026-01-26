@@ -187,10 +187,17 @@ class TicketUpdate(BaseModel):
     internal_notes: Optional[str] = None
     tags: Optional[List[str]] = None
 
+class AttachmentInfo(BaseModel):
+    filename: str
+    file_url: str
+    type: str = "document"
+    size: Optional[int] = None
+
 class TicketReply(BaseModel):
     message: str
     is_internal: bool = False
     channel: Optional[str] = None
+    attachments: Optional[List[AttachmentInfo]] = []
 
 class MemberNote(BaseModel):
     note: str
