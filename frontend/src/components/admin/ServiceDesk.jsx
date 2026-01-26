@@ -3550,6 +3550,312 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
           />
         </DialogContent>
       </Dialog>
+      
+      {/* Reply Modal - Full Popup for Better Visibility */}
+      <Dialog open={showReplyModal} onOpenChange={setShowReplyModal}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-purple-600" />
+              Reply to Ticket: {selectedTicket?.ticket_id}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedTicket && (
+            <div className="space-y-4">
+              {/* Ticket Summary */}
+              <div className="p-3 bg-slate-50 rounded-lg border">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="text-xs">{selectedTicket.category}</Badge>
+                  <Badge variant="outline" className="text-xs">{selectedTicket.status}</Badge>
+                </div>
+                <h3 className="font-semibold text-sm">{selectedTicket.subject}</h3>
+                <p className="text-xs text-gray-500 mt-1">From: {selectedTicket.member?.name || selectedTicket.customer_name || 'Unknown'}</p>
+              </div>
+              
+              {/* Reply Type Selection */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Reply Type</Label>
+                <div className="flex gap-2 flex-wrap">
+                  <Button 
+                    size="sm" 
+                    variant={isInternalNote ? 'default' : 'outline'}
+                    onClick={() => {
+                      setIsInternalNote(true);
+                      setSendChannel('internal');
+                    }}
+                    className={`${isInternalNote ? 'bg-gray-600 hover:bg-gray-700' : ''}`}
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" /> Internal Note
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant={!isInternalNote && sendChannel === 'email' ? 'default' : 'outline'}
+                    onClick={() => {
+                      setIsInternalNote(false);
+                      setSendChannel('email');
+                    }}
+                    className={`${!isInternalNote && sendChannel === 'email' ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                    disabled={!(selectedTicket?.member?.email || selectedTicket?.customer_email)}
+                  >
+                    <Mail className="w-4 h-4 mr-2" /> Email
+                    {(selectedTicket?.member?.email || selectedTicket?.customer_email) && (
+                      <span className="ml-1 text-xs opacity-75">({selectedTicket?.member?.email || selectedTicket?.customer_email})</span>
+                    )}
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant={!isInternalNote && sendChannel === 'whatsapp' ? 'default' : 'outline'}
+                    onClick={() => {
+                      setIsInternalNote(false);
+                      setSendChannel('whatsapp');
+                    }}
+                    className={`${!isInternalNote && sendChannel === 'whatsapp' ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                    disabled={!(selectedTicket?.member?.phone || selectedTicket?.member?.whatsapp || selectedTicket?.customer_phone)}
+                  >
+                    <Phone className="w-4 h-4 mr-2" /> WhatsApp
+                    {(selectedTicket?.member?.phone || selectedTicket?.customer_phone) && (
+                      <span className="ml-1 text-xs opacity-75">({selectedTicket?.member?.phone || selectedTicket?.customer_phone})</span>
+                    )}
+                  </Button>
+                </div>
+                
+                {/* Channel Info Banner */}
+                {isInternalNote && (
+                  <div className="p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
+                    ⚠️ Internal notes are only visible to the team, not the customer.
+                  </div>
+                )}
+                {!isInternalNote && sendChannel === 'email' && (
+                  <div className="p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+                    📧 Email will be sent to: <strong>{selectedTicket?.member?.email || selectedTicket?.customer_email}</strong>
+                  </div>
+                )}
+                {!isInternalNote && sendChannel === 'whatsapp' && (
+                  <div className="p-2 bg-green-50 border border-green-200 rounded text-xs text-green-800">
+                    📱 WhatsApp will open in a new tab to: <strong>{selectedTicket?.member?.phone || selectedTicket?.customer_phone}</strong>
+                  </div>
+                )}
+              </div>
+              
+              {/* Templates & AI */}
+              <div className="flex gap-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <FileText className="w-4 h-4 mr-2" /> Templates
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-72 max-h-60 overflow-y-auto">
+                    {cannedResponses.map(resp => (
+                      <DropdownMenuItem 
+                        key={resp.id} 
+                        onClick={() => {
+                          setReplyText(resp.content);
+                        }}
+                        className="flex flex-col items-start py-2"
+                      >
+                        <span className="font-medium text-sm">{resp.name}</span>
+                        <span className="text-xs text-gray-500 line-clamp-1">{resp.content.substring(0, 50)}...</span>
+                      </DropdownMenuItem>
+                    ))}
+                    {cannedResponses.length === 0 && (
+                      <div className="p-4 text-center text-sm text-gray-500">No templates available</div>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      size="sm" 
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                      disabled={aiLoading}
+                    >
+                      {aiLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      ) : (
+                        <Sparkles className="w-4 h-4 mr-2" />
+                      )}
+                      AI Draft
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-48">
+                    <DropdownMenuItem onClick={() => generateAiDraft('professional')}>
+                      <Wand2 className="w-4 h-4 mr-2 text-blue-600" /> Professional
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => generateAiDraft('friendly')}>
+                      <span className="mr-2">😊</span> Friendly & Warm
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => generateAiDraft('empathetic')}>
+                      <span className="mr-2">💝</span> Empathetic
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => generateAiDraft('quick')}>
+                      <Zap className="w-4 h-4 mr-2 text-amber-500" /> Quick Response
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={getAiSummary}>
+                      <Brain className="w-4 h-4 mr-2 text-purple-600" /> Summarize Ticket
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={getAiActions}>
+                      <Lightbulb className="w-4 h-4 mr-2 text-yellow-600" /> Suggest Actions
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              
+              {/* AI Summary Display */}
+              {aiSummary && (
+                <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Brain className="w-4 h-4 text-purple-600" />
+                    <span className="text-sm font-semibold text-purple-800">AI Summary</span>
+                    <Button variant="ghost" size="sm" className="ml-auto h-6 w-6 p-0" onClick={() => setAiSummary(null)}>
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <p className="text-sm text-purple-700">{aiSummary}</p>
+                </div>
+              )}
+              
+              {/* AI Actions Display */}
+              {aiActions.length > 0 && (
+                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Lightbulb className="w-4 h-4 text-amber-600" />
+                    <span className="text-sm font-semibold text-amber-800">Suggested Actions</span>
+                    <Button variant="ghost" size="sm" className="ml-auto h-6 w-6 p-0" onClick={() => setAiActions([])}>
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <ul className="text-sm text-amber-700 space-y-1">
+                    {(Array.isArray(aiActions) ? aiActions : [aiActions]).slice(0, 4).map((action, idx) => (
+                      <li key={idx} className="flex items-start gap-1">
+                        <span className="text-amber-500">•</span> {action}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {/* Reply Text */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Message</Label>
+                <Textarea
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  placeholder={
+                    isInternalNote 
+                      ? "Add internal note (only visible to team)..." 
+                      : sendChannel === 'email'
+                        ? "Type your email reply..."
+                        : sendChannel === 'whatsapp'
+                          ? "Type your WhatsApp message..."
+                          : "Type your reply..."
+                  }
+                  className="min-h-[150px] resize-none"
+                  rows={6}
+                />
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 pt-2">
+                <Button variant="outline" onClick={() => setShowReplyModal(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={async () => {
+                    await handleReply();
+                    setShowReplyModal(false);
+                  }} 
+                  disabled={sendingReply || !replyText.trim()} 
+                  className={`min-w-[120px] ${
+                    isInternalNote ? 'bg-gray-600 hover:bg-gray-700' :
+                    sendChannel === 'email' ? 'bg-blue-600 hover:bg-blue-700' : 
+                    sendChannel === 'whatsapp' ? 'bg-green-600 hover:bg-green-700' : ''
+                  }`}
+                  data-testid="modal-send-reply-btn"
+                >
+                  {sendingReply ? (
+                    <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Sending...</>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" /> 
+                      {isInternalNote ? 'Add Note' : sendChannel === 'email' ? 'Send Email' : 'Open WhatsApp'}
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+      
+      {/* Merge Tickets Modal */}
+      <Dialog open={showMergeModal} onOpenChange={setShowMergeModal}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Merge className="w-5 h-5 text-purple-600" />
+              Merge Tickets
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {selectedTickets.size < 2 ? (
+              <div className="text-center py-8">
+                <AlertTriangle className="w-12 h-12 mx-auto text-amber-400 mb-3" />
+                <p className="text-gray-600">Select at least 2 tickets from the list to merge.</p>
+                <p className="text-sm text-gray-400 mt-2">Use the checkboxes in the ticket list.</p>
+              </div>
+            ) : (
+              <>
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-sm text-amber-800">
+                    <strong>⚠️ Warning:</strong> Merging tickets cannot be undone. All messages from selected tickets will be combined into the primary ticket.
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Selected Tickets ({selectedTickets.size})</Label>
+                  <div className="max-h-40 overflow-y-auto space-y-1">
+                    {Array.from(selectedTickets).map((ticketId, idx) => {
+                      const ticket = tickets.find(t => t.ticket_id === ticketId);
+                      return (
+                        <div key={ticketId} className={`p-2 rounded text-sm ${idx === 0 ? 'bg-purple-50 border-2 border-purple-300' : 'bg-gray-50 border'}`}>
+                          <div className="flex items-center gap-2">
+                            {idx === 0 && <Badge className="bg-purple-600 text-xs">Primary</Badge>}
+                            <span className="font-mono text-xs">{ticketId}</span>
+                          </div>
+                          <p className="text-xs text-gray-600 truncate">{ticket?.subject || 'Unknown'}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs text-gray-500">The first selected ticket will be the primary (all others merge into it).</p>
+                </div>
+                
+                <div className="flex justify-end gap-3 pt-2">
+                  <Button variant="outline" onClick={() => setShowMergeModal(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={mergeTickets}
+                    disabled={merging || selectedTickets.size < 2}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    {merging ? (
+                      <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Merging...</>
+                    ) : (
+                      <><Merge className="w-4 h-4 mr-2" /> Merge Tickets</>
+                    )}
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
