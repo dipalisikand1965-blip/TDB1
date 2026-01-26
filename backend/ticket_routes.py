@@ -2522,7 +2522,7 @@ async def handle_email_reply_webhook(email: InboundEmailWebhook):
     3. Search by customer email to find their open tickets
     """
     db = get_db()
-    logger = get_logger()
+    # Use module-level logger
     
     ticket = None
     collection = db.tickets
