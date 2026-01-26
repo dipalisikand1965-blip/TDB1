@@ -1513,6 +1513,100 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         )}
                       </div>
                     )}
+                    
+                    {/* ATTACHMENTS TAB */}
+                    {detailTab === 'attachments' && (
+                      <div className="p-4">
+                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
+                          Ticket Attachments
+                        </h4>
+                        
+                        {selectedTicket.attachments?.length > 0 ? (
+                          <div className="space-y-3">
+                            {selectedTicket.attachments.map((att, idx) => (
+                              <Card key={idx} className="p-3">
+                                <div className="flex items-center gap-3">
+                                  {/* File Type Icon */}
+                                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                                    att.type === 'image' ? 'bg-purple-100' :
+                                    att.type === 'voice' ? 'bg-blue-100' :
+                                    'bg-gray-100'
+                                  }`}>
+                                    {att.type === 'image' ? (
+                                      <Image className="w-5 h-5 text-purple-600" />
+                                    ) : att.type === 'voice' ? (
+                                      <Volume2 className="w-5 h-5 text-blue-600" />
+                                    ) : (
+                                      <FileText className="w-5 h-5 text-gray-600" />
+                                    )}
+                                  </div>
+                                  
+                                  {/* File Info */}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-medium text-sm text-gray-900 truncate">
+                                      {att.filename || att.stored_filename}
+                                    </div>
+                                    <div className="text-xs text-gray-500 flex items-center gap-2">
+                                      <span>{att.type}</span>
+                                      {att.size && <span>• {Math.round(att.size / 1024)}KB</span>}
+                                      {att.uploaded_at && <span>• {formatTime(att.uploaded_at)}</span>}
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Actions */}
+                                  <div className="flex items-center gap-1">
+                                    {att.type === 'image' && (
+                                      <button
+                                        onClick={() => window.open(`${getApiUrl()}${att.file_url}`, '_blank')}
+                                        className="p-2 hover:bg-gray-100 rounded-lg"
+                                        title="Preview"
+                                      >
+                                        <Eye className="w-4 h-4 text-gray-500" />
+                                      </button>
+                                    )}
+                                    {att.type === 'voice' && (
+                                      <audio 
+                                        controls 
+                                        src={`${getApiUrl()}${att.file_url}`}
+                                        className="h-8 max-w-[150px]"
+                                      />
+                                    )}
+                                    <a
+                                      href={`${getApiUrl()}${att.file_url}`}
+                                      download
+                                      className="p-2 hover:bg-gray-100 rounded-lg"
+                                      title="Download"
+                                    >
+                                      <Download className="w-4 h-4 text-gray-500" />
+                                    </a>
+                                  </div>
+                                </div>
+                                
+                                {/* Image Preview */}
+                                {att.type === 'image' && (
+                                  <div className="mt-3">
+                                    <img 
+                                      src={`${getApiUrl()}${att.file_url}`}
+                                      alt={att.filename}
+                                      className="w-full max-h-48 object-cover rounded-lg cursor-pointer"
+                                      onClick={() => window.open(`${getApiUrl()}${att.file_url}`, '_blank')}
+                                    />
+                                  </div>
+                                )}
+                              </Card>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center text-gray-400 py-12">
+                            <Paperclip className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                            <p className="text-sm">No attachments yet</p>
+                            <p className="text-xs mt-1">
+                              Attachments will appear here when added to the conversation
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                   
                   {/* ==================== REPLY COMPOSER ==================== */}
