@@ -750,6 +750,15 @@ const PricingHub = ({ getAuthHeader }) => {
           <p className="text-gray-500">Manage all pricing, shipping rules, and pillar commissions</p>
         </div>
         <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            onClick={seedFromProductBox}
+            disabled={seeding}
+            className="border-amber-300 text-amber-700 hover:bg-amber-50"
+          >
+            {seeding ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Database className="w-4 h-4 mr-2" />}
+            Seed from Product Box
+          </Button>
           <Button variant="outline" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" /> Export CSV
           </Button>
