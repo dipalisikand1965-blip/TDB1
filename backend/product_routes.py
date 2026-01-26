@@ -256,10 +256,41 @@ async def search_typeahead(
     # Use MongoDB fallback if Meilisearch is not available
     if not search_service or not search_service._initialized:
         search_regex = {"$regex": q, "$options": "i"}
-        products = await db.products.find(
-            {"$or": [{"name": search_regex}, {"tags": search_regex}, {"category": search_regex}]},
-            {"_id": 0, "id": 1, "name": 1, "image": 1, "price": 1, "category": 1}
+        
+        # Search unified_products (primary) with more fields
+        products = await db.unified_products.find(
+            {"$or": [
+                {"name": search_regex}, 
+                {"tags": search_regex}, 
+                {"category": search_regex},
+                {"intelligent_tags.breed_tags": search_regex},
+                {"intelligent_tags.occasion_tags": search_regex},
+                {"short_description": search_regex}
+            ]},
+            {"_id": 0, "id": 1, "name": 1, "image_url": 1, "images": 1, "pricing": 1, "category": 1, "has_variants": 1, "variants": 1, "options": 1}
         ).limit(limit).to_list(limit)
+        
+        # Also search legacy products collection for completeness
+        if len(products) < limit:
+            legacy_products = await db.products.find(
+                {"$or": [{"name": search_regex}, {"tags": search_regex}, {"category": search_regex}]},
+                {"_id": 0, "id": 1, "name": 1, "image": 1, "price": 1, "category": 1}
+            ).limit(limit - len(products)).to_list(limit - len(products))
+            
+            # Dedupe by name
+            existing_names = {p.get("name", "").lower() for p in products}
+            for lp in legacy_products:
+                if lp.get("name", "").lower() not in existing_names:
+                    products.append(lp)
+        
+        # Normalize price field for frontend
+        for p in products:
+            if "pricing" in p and "base_price" in p.get("pricing", {}):
+                p["price"] = p["pricing"]["base_price"]
+            if "image_url" in p:
+                p["image"] = p["image_url"]
+            elif "images" in p and p["images"]:
+                p["image"] = p["images"][0]
         
         collections = await db.collections.find(
             {"$or": [{"name": search_regex}, {"description": search_regex}]},
