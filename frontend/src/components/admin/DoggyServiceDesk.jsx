@@ -583,6 +583,146 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     }
   };
 
+  // ==================== ATTACHMENT HANDLING ====================
+  
+  // Handle file/image selection
+  const handleFileSelect = async (e, type) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedTicket) return;
+    
+    // Validate file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size must be under 10MB');
+      return;
+    }
+    
+    setUploadingAttachment(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const res = await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/attachments`, {
+        method: 'POST',
+        headers: authHeaders,
+        body: formData
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setAttachments(prev => [...prev, {
+          id: Date.now(),
+          name: file.name,
+          type: data.type,
+          size: file.size,
+          url: data.file_url,
+          preview: type === 'image' ? URL.createObjectURL(file) : null
+        }]);
+      } else {
+        alert('Failed to upload file');
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('Failed to upload file');
+    }
+    
+    setUploadingAttachment(false);
+    e.target.value = '';
+  };
+  
+  // Start voice recording
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      
+      const chunks = [];
+      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+      
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        setAudioBlob(blob);
+        stream.getTracks().forEach(track => track.stop());
+      };
+      
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingTime(0);
+      
+      recordingIntervalRef.current = setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
+      
+    } catch (err) {
+      console.error('Recording error:', err);
+      alert('Could not access microphone');
+    }
+  };
+  
+  // Stop voice recording
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      clearInterval(recordingIntervalRef.current);
+    }
+  };
+  
+  // Upload voice recording
+  const uploadVoiceRecording = async () => {
+    if (!audioBlob || !selectedTicket) return;
+    
+    setUploadingAttachment(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', audioBlob, `voice-${Date.now()}.webm`);
+      
+      const res = await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/attachments`, {
+        method: 'POST',
+        headers: authHeaders,
+        body: formData
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setAttachments(prev => [...prev, {
+          id: Date.now(),
+          name: `Voice Recording (${Math.floor(recordingTime / 60)}:${(recordingTime % 60).toString().padStart(2, '0')})`,
+          type: 'voice',
+          duration: recordingTime,
+          url: data.file_url
+        }]);
+        setAudioBlob(null);
+        setRecordingTime(0);
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+    }
+    
+    setUploadingAttachment(false);
+  };
+  
+  // Remove attachment before sending
+  const removeAttachment = (id) => {
+    setAttachments(prev => prev.filter(a => a.id !== id));
+  };
+  
+  // Clear all attachments
+  const clearAttachments = () => {
+    setAttachments([]);
+    setAudioBlob(null);
+    setRecordingTime(0);
+  };
+  
+  // Format recording time
+  const formatRecordingTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   // Refresh
   const handleRefresh = async () => {
     setRefreshing(true);
