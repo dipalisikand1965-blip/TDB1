@@ -561,6 +561,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   // Handle ticket selection
   const handleSelectTicket = async (ticket) => {
     setSelectedTicket(ticket);
+    setConversationSummary(null);
+    setIsEditingTicket(false);
     await fetchContext(ticket);
     
     // Fetch full ticket details if it's from the tickets collection
@@ -570,10 +572,99 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         if (res.ok) {
           const data = await res.json();
           setSelectedTicket(prev => ({ ...prev, ...data.ticket, messages: data.ticket?.messages || prev.messages }));
+          // Generate summary for tickets with messages
+          if (data.ticket?.messages?.length > 0) {
+            generateConversationSummary(data.ticket);
+          }
         }
       } catch (e) {
         console.debug('Could not fetch full ticket details:', e);
       }
+    }
+  };
+
+  // Generate intelligent conversation summary
+  const generateConversationSummary = async (ticket) => {
+    if (!ticket || !ticket.messages?.length) return;
+    setSummaryLoading(true);
+    
+    try {
+      const res = await fetch(`${getApiUrl()}/api/tickets/ai/summarize`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticket_id: ticket.ticket_id,
+          description: ticket.description,
+          messages: ticket.messages?.slice(-10) || [],
+          pet_name: petProfile?.name || ticket.pet_info?.name,
+          member_name: ticket.member?.name
+        })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setConversationSummary(data.summary);
+      }
+    } catch (err) {
+      console.debug('Summary generation error:', err);
+    }
+    setSummaryLoading(false);
+  };
+
+  // Edit ticket - start editing
+  const startEditingTicket = () => {
+    if (!selectedTicket) return;
+    setEditForm({
+      category: selectedTicket.category || selectedTicket.pillar || '',
+      status: selectedTicket.status || 'new',
+      urgency: selectedTicket.urgency || 'medium',
+      subject: selectedTicket.subject || '',
+      assigned_to: selectedTicket.assigned_to || ''
+    });
+    setIsEditingTicket(true);
+  };
+
+  // Save ticket edits
+  const saveTicketEdits = async () => {
+    if (!selectedTicket) return;
+    setSending(true);
+    
+    try {
+      const res = await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}`, {
+        method: 'PATCH',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm)
+      });
+      
+      if (res.ok) {
+        setSelectedTicket(prev => ({ ...prev, ...editForm }));
+        setIsEditingTicket(false);
+        await fetchAllTickets();
+      }
+    } catch (err) {
+      console.error('Edit error:', err);
+    }
+    setSending(false);
+  };
+
+  // Fetch custom statuses and categories from admin settings
+  const fetchCustomSettings = async () => {
+    try {
+      const [statusRes, catRes] = await Promise.all([
+        fetch(`${getApiUrl()}/api/tickets/statuses`, { headers: authHeaders }),
+        fetch(`${getApiUrl()}/api/tickets/categories`, { headers: authHeaders })
+      ]);
+      
+      if (statusRes.ok) {
+        const data = await statusRes.json();
+        setCustomStatuses(data.statuses || []);
+      }
+      if (catRes.ok) {
+        const data = await catRes.json();
+        setCustomCategories(data.categories || []);
+      }
+    } catch (err) {
+      console.debug('Could not fetch custom settings:', err);
     }
   };
 
