@@ -2187,7 +2187,8 @@ async def upload_ticket_attachment(
         'application/pdf', 
         'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/plain', 'text/csv'
+        'text/plain', 'text/csv',
+        'audio/webm', 'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg'  # Voice recordings
     ]
     
     if file.content_type not in allowed_types:
@@ -2211,12 +2212,21 @@ async def upload_ticket_attachment(
     with open(file_path, "wb") as f:
         f.write(file_content)
     
+    # Determine file type category
+    file_type = 'document'
+    if file.content_type.startswith('image/'):
+        file_type = 'image'
+    elif file.content_type.startswith('audio/'):
+        file_type = 'voice'
+    
     # Update ticket with attachment info
     attachment_info = {
         "filename": file.filename,
         "stored_filename": unique_filename,
         "path": file_path,
+        "file_url": f"/api/tickets/{ticket_id}/files/{unique_filename}",
         "content_type": file.content_type,
+        "type": file_type,
         "size": len(file_content),
         "uploaded_at": datetime.now(timezone.utc).isoformat()
     }
@@ -2233,6 +2243,9 @@ async def upload_ticket_attachment(
         "success": True,
         "filename": file.filename,
         "path": file_path,
+        "file_url": attachment_info["file_url"],
+        "url": attachment_info["file_url"],
+        "type": file_type,
         "size": len(file_content)
     }
 
