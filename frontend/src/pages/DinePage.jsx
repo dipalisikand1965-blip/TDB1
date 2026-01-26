@@ -1651,13 +1651,6 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
                 <p className="text-xs text-pink-500">Your furry friend details will enhance the experience!</p>
               </div>
             )}
-                )}
-              </div>
-            )}
-            
-            {loadingPets && (
-              <p className="text-xs text-gray-500 mb-2">Loading your pets...</p>
-            )}
           </div>
 
           {restaurant.petMenuAvailable === 'yes' && restaurant.petMenuItems?.length > 0 && (
