@@ -513,7 +513,20 @@ const ProductTagsManager = ({ credentials }) => {
                 
                 {/* Product Info */}
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-gray-900 truncate">{product.title || product.name || 'Unnamed Product'}</h4>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-semibold text-gray-900 truncate">{product.title || product.name || 'Unnamed Product'}</h4>
+                    {product.handle && (
+                      <a 
+                        href={`/shop/${product.handle}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-purple-500 hover:text-purple-700"
+                        title="View on frontend"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Badge variant="outline" className="text-xs capitalize">{product.pillar || 'general'}</Badge>
                     <Badge variant="outline" className="text-xs">{product.category || 'Uncategorized'}</Badge>
