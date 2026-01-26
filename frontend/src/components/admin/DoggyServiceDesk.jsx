@@ -1464,6 +1464,22 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                   {/* ==================== REPLY COMPOSER ==================== */}
                   {detailTab === 'conversation' && (
                     <div className="border-t p-4 flex-shrink-0 bg-gray-50">
+                      {/* Hidden file inputs */}
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={(e) => handleFileSelect(e, 'document')}
+                        accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv"
+                        className="hidden"
+                      />
+                      <input
+                        type="file"
+                        ref={imageInputRef}
+                        onChange={(e) => handleFileSelect(e, 'image')}
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        className="hidden"
+                      />
+                      
                       {/* AI Suggestion */}
                       {aiSuggestion && (
                         <Card className="p-3 mb-3 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
@@ -1481,6 +1497,72 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                             </div>
                           </div>
                           <p className="text-sm text-gray-700">{aiSuggestion}</p>
+                        </Card>
+                      )}
+                      
+                      {/* Voice Recording UI */}
+                      {isRecording && (
+                        <Card className="p-3 mb-3 bg-red-50 border-red-200">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                              <span className="text-sm font-medium text-red-700">Recording...</span>
+                              <span className="text-lg font-mono text-red-600">{formatRecordingTime(recordingTime)}</span>
+                            </div>
+                            <Button size="sm" onClick={stopRecording} variant="destructive" className="h-7">
+                              <StopCircle className="w-4 h-4 mr-1" /> Stop
+                            </Button>
+                          </div>
+                        </Card>
+                      )}
+                      
+                      {/* Audio Preview */}
+                      {audioBlob && !isRecording && (
+                        <Card className="p-3 mb-3 bg-blue-50 border-blue-200">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <Volume2 className="w-5 h-5 text-blue-600" />
+                              <span className="text-sm text-blue-700">Voice Recording ({formatRecordingTime(recordingTime)})</span>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button size="sm" variant="ghost" onClick={() => { setAudioBlob(null); setRecordingTime(0); }} className="h-7 text-xs">
+                                Discard
+                              </Button>
+                              <Button size="sm" onClick={uploadVoiceRecording} disabled={uploadingAttachment} className="h-7 text-xs bg-blue-600 hover:bg-blue-700">
+                                {uploadingAttachment ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Upload className="w-3 h-3 mr-1" />}
+                                Attach
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      )}
+                      
+                      {/* Attachments Preview */}
+                      {attachments.length > 0 && (
+                        <Card className="p-3 mb-3 bg-gray-100 border-gray-200">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-medium text-gray-600">{attachments.length} attachment(s)</span>
+                            <Button size="sm" variant="ghost" onClick={clearAttachments} className="h-6 text-xs text-red-600">
+                              Clear All
+                            </Button>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {attachments.map(att => (
+                              <div key={att.id} className="flex items-center gap-2 bg-white rounded-lg px-2 py-1 border">
+                                {att.type === 'image' && att.preview ? (
+                                  <img src={att.preview} alt="" className="w-8 h-8 rounded object-cover" />
+                                ) : att.type === 'voice' ? (
+                                  <Volume2 className="w-4 h-4 text-blue-500" />
+                                ) : (
+                                  <FileText className="w-4 h-4 text-gray-500" />
+                                )}
+                                <span className="text-xs text-gray-700 max-w-[100px] truncate">{att.name}</span>
+                                <button onClick={() => removeAttachment(att.id)} className="text-red-500 hover:text-red-700">
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
                         </Card>
                       )}
                       
@@ -1518,12 +1600,45 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                       
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1">
-                          <button className="p-2 hover:bg-white rounded transition-colors">
+                          {/* Document attachment */}
+                          <button 
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploadingAttachment}
+                            className="p-2 hover:bg-white rounded transition-colors disabled:opacity-50"
+                            title="Attach Document"
+                          >
                             <Paperclip className="w-4 h-4 text-gray-400" />
                           </button>
-                          <button className="p-2 hover:bg-white rounded transition-colors">
+                          
+                          {/* Image attachment */}
+                          <button 
+                            onClick={() => imageInputRef.current?.click()}
+                            disabled={uploadingAttachment}
+                            className="p-2 hover:bg-white rounded transition-colors disabled:opacity-50"
+                            title="Attach Image"
+                          >
                             <Image className="w-4 h-4 text-gray-400" />
                           </button>
+                          
+                          {/* Voice recording */}
+                          <button 
+                            onClick={isRecording ? stopRecording : startRecording}
+                            disabled={uploadingAttachment || audioBlob}
+                            className={`p-2 rounded transition-colors disabled:opacity-50 ${
+                              isRecording ? 'bg-red-100 hover:bg-red-200' : 'hover:bg-white'
+                            }`}
+                            title={isRecording ? 'Stop Recording' : 'Record Voice Message'}
+                          >
+                            {isRecording ? (
+                              <MicOff className="w-4 h-4 text-red-500" />
+                            ) : (
+                              <Mic className="w-4 h-4 text-gray-400" />
+                            )}
+                          </button>
+                          
+                          {uploadingAttachment && (
+                            <Loader2 className="w-4 h-4 animate-spin text-gray-400 ml-2" />
+                          )}
                         </div>
                         
                         <Button
