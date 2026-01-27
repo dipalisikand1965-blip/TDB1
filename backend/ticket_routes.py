@@ -370,13 +370,24 @@ async def get_urgency_levels():
     """Get all urgency levels"""
     return {"urgency_levels": URGENCY_LEVELS}
 
+def calculate_sla_due_at(urgency: str) -> str:
+    """Calculate SLA due datetime based on urgency level"""
+    from datetime import timedelta
+    sla_hours_map = {"low": 48, "medium": 24, "high": 8, "critical": 2, "urgent": 4}
+    hours = sla_hours_map.get(urgency, 24)
+    due_at = datetime.now(timezone.utc) + timedelta(hours=hours)
+    return due_at.isoformat()
+
 @router.post("/")
 async def create_ticket(ticket: TicketCreate):
-    """Create a new ticket"""
+    """Create a new ticket with SLA tracking"""
     db = get_db()
     
     ticket_id = await generate_ticket_id()
     now = datetime.now(timezone.utc).isoformat()
+    
+    # Calculate SLA due time based on urgency
+    sla_due_at = calculate_sla_due_at(ticket.urgency)
     
     ticket_doc = {
         "ticket_id": ticket_id,
@@ -407,6 +418,9 @@ async def create_ticket(ticket: TicketCreate):
         }],
         "internal_notes": "",
         "tags": [],
+        "reminders": [],  # NEW: Reminder/task list
+        "sla_due_at": sla_due_at,  # NEW: SLA deadline
+        "sla_breached": False,  # NEW: SLA breach flag
         "created_at": now,
         "updated_at": now,
         "first_response_at": None,
@@ -418,7 +432,7 @@ async def create_ticket(ticket: TicketCreate):
     ticket_doc["id"] = str(result.inserted_id)
     del ticket_doc["_id"]
     
-    # Send email notifications
+    # Send auto-acknowledge email to customer
     await send_ticket_notification(ticket_doc, "created")
     
     return {"success": True, "ticket": ticket_doc}
