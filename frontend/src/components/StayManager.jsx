@@ -530,8 +530,9 @@ const StayManager = ({ getAuthHeader }) => {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-6 w-full max-w-4xl">
+        <TabsList className="grid grid-cols-7 w-full max-w-5xl">
           <TabsTrigger value="properties">Properties</TabsTrigger>
+          <TabsTrigger value="boarding">Boarding</TabsTrigger>
           <TabsTrigger value="products">Products</TabsTrigger>
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
           <TabsTrigger value="issues">Issues</TabsTrigger>
