@@ -137,7 +137,8 @@ const SearchBar = ({ onClose, isOverlay = false }) => {
     };
   }, []);
 
-  const hasResults = results.products.length > 0 || results.collections.length > 0;
+  const hasResults = results.products?.length > 0 || results.collections?.length > 0 || 
+                     results.services?.length > 0 || results.stays?.length > 0 || results.boarding?.length > 0;
 
   return (
     <div className="relative w-full" data-testid="search-bar">
@@ -147,7 +148,7 @@ const SearchBar = ({ onClose, isOverlay = false }) => {
           <Input
             ref={inputRef}
             type="text"
-            placeholder="Search for cakes, treats, or ingredients..."
+            placeholder="Search products, services, stays, boarding..."
             value={query}
             onChange={handleInputChange}
             className="w-full pl-10 pr-12 h-12 text-base rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500"
