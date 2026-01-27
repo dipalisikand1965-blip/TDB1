@@ -1349,15 +1349,25 @@ const UnifiedPetPage = () => {
                                         ))}
                                       </div>
                                     ) : (
-                                      // Text input for custom answers
+                                      // Text input for custom answers - Use BreedAutocomplete for breed field
                                       <div className="flex gap-2">
-                                        <Input
-                                          value={editValue}
-                                          onChange={(e) => setEditValue(e.target.value)}
-                                          placeholder={`Enter ${questionLabels[questionId]?.toLowerCase() || 'answer'}...`}
-                                          className="flex-1 h-9"
-                                          onKeyPress={(e) => e.key === 'Enter' && saveInlineAnswer(questionId, editValue)}
-                                        />
+                                        {questionId === 'breed' ? (
+                                          <BreedAutocomplete
+                                            value={editValue}
+                                            onChange={(e) => setEditValue(e.target.value)}
+                                            placeholder="Enter breed..."
+                                            className="flex-1 h-9"
+                                            onKeyPress={(e) => e.key === 'Enter' && saveInlineAnswer(questionId, editValue)}
+                                          />
+                                        ) : (
+                                          <Input
+                                            value={editValue}
+                                            onChange={(e) => setEditValue(e.target.value)}
+                                            placeholder={`Enter ${questionLabels[questionId]?.toLowerCase() || 'answer'}...`}
+                                            className="flex-1 h-9"
+                                            onKeyPress={(e) => e.key === 'Enter' && saveInlineAnswer(questionId, editValue)}
+                                          />
+                                        )}
                                         <Button
                                           size="sm"
                                           onClick={() => saveInlineAnswer(questionId, editValue)}
