@@ -1353,6 +1353,16 @@ const StayManager = ({ getAuthHeader }) => {
           onSave={handleSaveEvent}
         />
       )}
+      
+      {/* Boarding Facility Modal */}
+      {showBoardingModal && (
+        <BoardingModal
+          facility={selectedBoarding}
+          onClose={() => { setShowBoardingModal(false); setSelectedBoarding(null); }}
+          onSave={fetchData}
+          getAuthHeader={getAuthHeader}
+        />
+      )}
     </div>
   );
 };
