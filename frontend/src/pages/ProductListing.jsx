@@ -6,6 +6,7 @@ import { SlidersHorizontal, Loader2, ChevronDown, Sparkles, PawPrint, Cake, Gift
 import { useSearchParams } from 'react-router-dom';
 import { API_URL, getApiUrl } from '../utils/api';
 import MiraContextPanel from '../components/MiraContextPanel';
+import CelebrateConcierePicker from '../components/CelebrateConcierePicker';
 import { useAuth } from '../context/AuthContext';
 
 const PRODUCTS_PER_PAGE = 20;
