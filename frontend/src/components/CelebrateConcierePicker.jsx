@@ -109,25 +109,20 @@ const CelebrateConcierePicker = ({ category = 'cakes', onClose }) => {
     try {
       const celebrationType = CELEBRATION_TYPES.find(t => t.id === selectedType);
       
-      // Create a Service Desk ticket
+      // Create a Service Desk ticket (format expected by backend TicketCreate model)
       const ticketData = {
-        subject: `${celebrationType.emoji} ${celebrationType.name} - ${selectedPet?.name || 'New Pet'}`,
-        description: `Celebration planning started from ${category} page.\n\nType: ${celebrationType.name}\nLocation: ${city || 'Not specified'}\nDate: ${selectedDate ? format(selectedDate, 'PPP') : 'Flexible'}\nPet: ${selectedPet?.name || 'Not specified'}`,
+        member: {
+          name: user?.name || 'Member',
+          email: user?.email || '',
+          phone: user?.phone || '',
+          city: city || ''
+        },
         category: 'celebrate',
-        subcategory: selectedType,
-        priority: 'medium',
+        sub_category: selectedType,
+        urgency: 'medium',
+        description: `${celebrationType.emoji} ${celebrationType.name} - ${selectedPet?.name || 'New Pet'}\n\nCelebration planning started from ${category} page.\n\nType: ${celebrationType.name}\nLocation: ${city || 'Not specified'}\nDate: ${selectedDate ? format(selectedDate, 'PPP') : 'Flexible'}\nPet: ${selectedPet?.name || 'Not specified'}`,
         source: 'web',
-        customer_email: user?.email,
-        customer_name: user?.name || 'Member',
-        pet_id: selectedPet?.id,
-        pet_name: selectedPet?.name,
-        metadata: {
-          celebration_type: selectedType,
-          city: city,
-          preferred_date: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null,
-          page_source: `/${category}`,
-          pillar: 'celebrate'
-        }
+        attachments: []
       };
       
       const response = await fetch(`${API_URL}/api/tickets`, {
