@@ -18,6 +18,7 @@ const PILLARS = [
     path: '/celebrate',
     dropdown: [
       { name: 'Birthday Cakes', path: '/cakes' },
+      { name: 'Custom Cake', path: '/custom-cake' },
       { name: 'Breed Cakes', path: '/celebrate/breed-cakes' },
       { name: 'Pupcakes & Dognuts', path: '/celebrate/pupcakes' },
       { name: 'Desi Treats', path: '/celebrate/desi' },
