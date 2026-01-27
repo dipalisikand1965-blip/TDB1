@@ -16,6 +16,7 @@ import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import SEOHead from '../components/SEOHead';
+import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import {
   PartyPopper, Calendar, MapPin, Users, Clock, PawPrint,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -23,6 +24,60 @@ import {
   Heart, Shield, Ticket, Filter, ChevronLeft, Globe, List, CalendarDays, X,
   ShoppingBag
 } from 'lucide-react';
+
+// Elevated Concierge® Enjoy Experiences
+const ENJOY_EXPERIENCES = [
+  {
+    title: "Event Scout®",
+    description: "Never miss a pet-friendly event again. We discover, vet, and book exciting experiences — from pop-up markets to breed meetups — curated around your pet's social comfort zone.",
+    icon: "🎉",
+    gradient: "from-amber-500 to-orange-600",
+    badge: "Popular",
+    badgeColor: "bg-amber-500",
+    highlights: [
+      "Curated event discovery",
+      "Pet temperament matching",
+      "RSVP & logistics handling",
+      "Post-event follow-ups & photos"
+    ]
+  },
+  {
+    title: "Adventure Architect®",
+    description: "Ready for something beyond the usual walk? We plan outdoor adventures, trail days, and pet-friendly excursions that match your pet's energy level and your sense of adventure.",
+    icon: "🏕️",
+    gradient: "from-green-500 to-teal-600",
+    highlights: [
+      "Trail & hike planning",
+      "Pet-friendly picnic spots",
+      "Water activity coordination",
+      "Safety gear recommendations"
+    ]
+  },
+  {
+    title: "Social Circle Creator®",
+    description: "Looking for playmates for your pup? We connect you with compatible pets and their humans — organizing playdates, breed meetups, and social gatherings that become lasting friendships.",
+    icon: "🐾",
+    gradient: "from-purple-500 to-violet-600",
+    highlights: [
+      "Temperament-based matching",
+      "Playdate coordination",
+      "Breed-specific meetups",
+      "Ongoing social scheduling"
+    ]
+  },
+  {
+    title: "Pet-Friendly Dining Curator®",
+    description: "Brunch with your bestie? We find cafés and restaurants that truly welcome pets — not just tolerate them. Expect water bowls, treats, and maybe even a menu for your four-legged friend.",
+    icon: "☕",
+    gradient: "from-rose-500 to-pink-600",
+    highlights: [
+      "Pet-welcoming venue discovery",
+      "Reservation handling",
+      "Menu pre-checks for pet treats",
+      "Outdoor seating arrangements"
+    ]
+  }
+];
 
 // Experience Type Configuration - Using warm, playful colors
 const EXPERIENCE_TYPES = {
