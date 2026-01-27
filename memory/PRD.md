@@ -7,7 +7,7 @@
 - **Frontend**: React + Tailwind CSS + Shadcn/UI
 - **Backend**: FastAPI + Python
 - **Database**: MongoDB
-- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks
+- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat
 
 ---
 
@@ -19,6 +19,41 @@
 - Shopify product sync (604+ products)
 - Member dashboard and pet profiles
 - AI-powered Mira® assistant
+
+### Phase 12: Service Desk Overhaul (Jan 27, 2025)
+
+**Major UI/UX Improvements:**
+- **3/4 Screen Slide-out Drawer**: Ticket details open in full-width drawer from right side
+- **Inline Subject Editing**: Click subject to edit directly in drawer header
+- **Agent Collision Detection**: Shows warning when another agent is viewing same ticket
+- **Bulk Actions**: Checkbox selection on tickets for bulk status change and assignment
+
+**Template Manager (Settings → Templates):**
+- Create/edit/delete Email & SMS templates
+- Variables support: {{customer_name}}, {{ticket_id}}, {{pet_name}}, {{status}}
+- Trigger options: manual, new_ticket, status_change
+- Default templates seeded: Welcome Acknowledgment, Resolution Confirmation, Escalation Notice, On Hold Notice, SMS Quick Acknowledgment
+
+**Automation Settings (Settings → Automation):**
+- Auto-acknowledge new tickets with template selection
+- Status change triggers (map status → template)
+- Save automation settings to database
+
+**Notification System:**
+- Browser notification permission request
+- Notification bell with unread count badge
+- Enable/disable notifications from Settings
+
+**Customer Satisfaction (CSAT):**
+- CSAT rating endpoint: POST /api/tickets/{ticket_id}/csat
+- CSAT analytics endpoint: GET /api/tickets/analytics/csat
+- NPS-style score calculation
+
+**Production Fixes:**
+- Boarding facilities seeded (36 facilities across 4 cities)
+- Celebrate Concierge ticket creation fixed
+- Stay page boarding navigation working
+- Product options/variants synced (257 products with variants)
 
 ### Phase 2: Product & Service Architecture (Completed Jan 2025)
 - **Shop Page Hierarchy**: Dynamic hierarchical category menu driven by `/api/categories/hierarchy`
