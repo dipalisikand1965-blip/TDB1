@@ -173,8 +173,13 @@ def get_pillar_services():
             {'id': 'svc-farewell-grief', 'name': 'Grief Support', 'description': 'Counseling and support', 'price': 1999, 'duration': '3 sessions', 'features': ['Counseling', 'Resources', 'Community']},
         ],
         'dine': [
-            {'id': 'svc-dine-reservation', 'name': 'VIP Reservation Service', 'description': 'Premium restaurant booking', 'price': 499, 'duration': 'Booking', 'features': ['Search', 'Booking', 'Special Requests']},
-            {'id': 'svc-dine-picnic', 'name': 'Gourmet Picnic Setup', 'description': 'Complete picnic arrangement', 'price': 2999, 'duration': 'Setup', 'features': ['Food', 'Setup', 'Cleanup']},
+            {'id': 'svc-dine-chefs-table', 'name': "Chef's Table Experience", 'description': 'Private chef dining at pet-friendly restaurants', 'price': 7999, 'duration': '3-4 hours', 'features': ['Private Chef', 'Custom Menu', 'Pet-Safe Options']},
+            {'id': 'svc-dine-private-home', 'name': 'Private Home Dining', 'description': 'Chef comes to your home with pet-safe menu', 'price': 9999, 'duration': '4-5 hours', 'features': ['Home Service', 'Full Course', 'Cleanup Included']},
+            {'id': 'svc-dine-catering', 'name': 'Pet Party Catering', 'description': 'Catering for pet birthdays & events', 'price': 4999, 'duration': 'Event', 'features': ['Pet Menu', 'Human Menu', 'Decorations']},
+            {'id': 'svc-dine-reservation', 'name': 'VIP Restaurant Reservations', 'description': 'Priority booking at pet-friendly restaurants', 'price': 499, 'duration': 'Booking', 'features': ['Priority Seating', 'Special Requests', 'Confirmation']},
+            {'id': 'svc-dine-subscription', 'name': 'Fresh Meal Subscription', 'description': 'Weekly fresh pet meals delivered', 'price': 2499, 'duration': 'Weekly', 'features': ['Fresh Meals', 'Customized Diet', 'Doorstep Delivery']},
+            {'id': 'svc-dine-group-event', 'name': 'Group Dining Events', 'description': 'Organize pet parent meetups', 'price': 1999, 'duration': 'Event', 'features': ['Venue Booking', 'Pet Activities', 'Networking']},
+            {'id': 'svc-dine-picnic', 'name': 'Gourmet Picnic Setup', 'description': 'Complete pet-friendly picnic arrangement', 'price': 2999, 'duration': 'Setup', 'features': ['Food', 'Setup', 'Cleanup']},
         ],
         'insure': [
             {'id': 'svc-insure-consult', 'name': 'Insurance Consultation', 'description': 'Find the right coverage', 'price': 0, 'duration': '30 min', 'features': ['Assessment', 'Comparison', 'Recommendation']},
