@@ -854,9 +854,11 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     setSending(false);
   };
 
-  // Handle reply
+  // Handle reply - supports rich HTML content
   const handleReply = async () => {
-    if ((!replyText.trim() && attachments.length === 0) || !selectedTicket) return;
+    // Check if there's actual content (strip HTML tags for validation)
+    const textContent = replyText ? replyText.replace(/<[^>]*>/g, '').trim() : '';
+    if ((!textContent && attachments.length === 0) || !selectedTicket) return;
     setSending(true);
     
     try {
