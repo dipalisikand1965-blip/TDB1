@@ -13,6 +13,42 @@
 
 ## What's Been Implemented
 
+### Phase 13B: Concierge® Dashboard & Bug Fixes (Jan 27, 2025)
+
+**New Features:**
+
+1. **Concierge® Requests Dashboard** (`/admin/concierge`)
+   - Admin dashboard for managing all Concierge® experience requests
+   - Stats cards showing: Total Requests, New (Action Needed), by Pillar (Travel, Stay, Care, Enjoy, Learn)
+   - Filters: By Pillar, By Status, Search
+   - Request detail modal with status updates and timeline
+   - Quick actions: Mark Contacted, In Progress, Complete, Archive
+   
+2. **Backend API Endpoints for Dashboard:**
+   - `GET /api/concierge/requests` - List all requests with filters
+   - `GET /api/concierge/stats` - Get dashboard statistics
+   - `PUT /api/concierge/requests/{id}` - Update request status
+   - `POST /api/concierge/request` - General concierge request handler
+
+**Bug Fixes:**
+
+3. **Breed Autocomplete Not Working in Soul Questionnaire** (FIXED)
+   - Added BreedAutocomplete component for breed field in UnifiedPetPage.jsx inline edit mode
+   - Typing "shihtzu" now autocorrects to "Shih Tzu"
+
+4. **Soul Questionnaire Crash on Food Allergies** (FIXED)
+   - Fixed `computeUnlockedAchievements()` to handle food_allergies as array or string
+   - Fixed Emergency Info Card to safely display food_allergies and medical_conditions
+   - Page no longer crashes when editing allergy data
+
+5. **Soul Score Showing >100% (e.g., 320%)** (FIXED)
+   - Added `Math.min(100, ...)` wrapper to all score displays in MemberDashboard.jsx
+   - Scores now always display correctly in 0-100% range
+
+6. **Concierge® Branding** (FIXED)
+   - Updated all user-facing "Concierge" text to "Concierge®"
+   - Updated Mira system prompt to use "Concierge®"
+
 ### Phase 13: Elevated Concierge® Experiences (Jan 27, 2025)
 
 **New Features:**
