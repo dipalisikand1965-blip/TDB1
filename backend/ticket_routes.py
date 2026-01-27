@@ -190,6 +190,13 @@ class MemberNote(BaseModel):
     note: str
     category: str = "general"
 
+class TicketReminder(BaseModel):
+    title: str
+    description: Optional[str] = None
+    due_at: str  # ISO datetime string
+    reminder_type: str = "follow_up"  # follow_up, call_back, task, deadline
+    priority: str = "medium"  # low, medium, high
+
 class IntegrationConfig(BaseModel):
     provider: str
     config: Dict[str, Any]
