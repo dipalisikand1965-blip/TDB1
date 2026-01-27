@@ -39,7 +39,13 @@
 - **Service Booking Modal**: Pet selection, contact details, activity level, fitness goals, preferred date
 - **Data Seeding**: 8 Fit Concierge® services + bundles seeded into database
 
-### Phase 5: Shop Page Pillar Filter (Completed Jan 2025)
+### Phase 6: Mira Memory System Enhancements (Jan 2025)
+- **Enhanced Memory Extraction**: Added 50+ new patterns across all memory types and pillars
+- **Pillar-Aware Extraction**: Memories now tagged with pillar context (fit, care, travel, etc.)
+- **Pet Memories API**: New `/api/mira/memory/pet/{pet_id}` endpoint
+- **Pet Profile Memories Tab**: New "Mira Memories" tab on `/pet/:petId` page showing grouped memories
+- **Memory Display**: Grouped by type (Events, Health, Shopping, General) with icons and colours
+- **Soul Whisper Integration**: Already exists in Member Dashboard settings (Daily/Weekly/2x Week options)
 - **New "Shop by Pillar" Filter**: 10 pillars (All, Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Shop)
 - **Active Filter Pills**: Visual feedback showing selected pillar
 - **API Fix**: unified_products now respects pillar filter
