@@ -17,12 +17,69 @@ import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import SEOHead from '../components/SEOHead';
+import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import {
   GraduationCap, BookOpen, Brain, Star, Award, Trophy,
   CheckCircle, ChevronRight, Sparkles, Loader2, Send,
   ArrowRight, Play, ChevronDown, Target, Users, Calendar,
   MapPin, Clock, PawPrint, Heart, Shield, Zap
 } from 'lucide-react';
+
+// Elevated Concierge® Learn Experiences
+const LEARN_EXPERIENCES = [
+  {
+    title: "Behavior Architect®",
+    description: "Beyond basic training — we understand your pet's unique psychology and connect you with specialists who address root causes, not just symptoms. For pulling, barking, anxiety, or aggression.",
+    icon: "🧠",
+    gradient: "from-blue-500 to-indigo-600",
+    badge: "Most Requested",
+    badgeColor: "bg-blue-600",
+    highlights: [
+      "Behavioral assessment & diagnosis",
+      "Specialist matching by issue type",
+      "Progress tracking & adjustment",
+      "Home environment optimization"
+    ]
+  },
+  {
+    title: "Puppy Foundations Builder®",
+    description: "The first year matters most. We guide you through socialization windows, foundational training, and confidence building — ensuring your puppy grows into a well-adjusted companion.",
+    icon: "🐶",
+    gradient: "from-pink-500 to-rose-600",
+    badge: "Critical Period",
+    badgeColor: "bg-pink-600",
+    highlights: [
+      "Age-appropriate milestone planning",
+      "Socialization scheduling",
+      "Vet & trainer coordination",
+      "Fear prevention protocols"
+    ]
+  },
+  {
+    title: "Advanced Skills Coach®",
+    description: "Ready to level up? From agility to therapy dog certification, we connect you with specialized trainers who take your pet from good to exceptional. Perfect for those who want more.",
+    icon: "🏆",
+    gradient: "from-amber-500 to-orange-600",
+    highlights: [
+      "Agility & sport training",
+      "Therapy dog preparation",
+      "Trick & performance training",
+      "Competition preparation"
+    ]
+  },
+  {
+    title: "Rescue Rehabilitation Partner®",
+    description: "Adopted a rescue with unknown history? We specialize in rehabilitation journeys — building trust, addressing trauma, and helping your new family member feel safe and loved.",
+    icon: "💚",
+    gradient: "from-green-500 to-teal-600",
+    highlights: [
+      "Trauma-informed approach",
+      "Trust building protocols",
+      "Gradual exposure therapy",
+      "Long-term support planning"
+    ]
+  }
+];
 
 // Learn Type Configuration
 const LEARN_TYPES = {
