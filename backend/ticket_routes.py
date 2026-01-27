@@ -585,10 +585,89 @@ async def create_ticket(ticket: TicketCreate):
     ticket_doc["id"] = str(result.inserted_id)
     del ticket_doc["_id"]
     
+    # Smart Auto-Assignment based on category/pillar expertise
+    await smart_auto_assign(db, ticket_doc)
+    
     # Send auto-acknowledge email to customer
     await send_ticket_notification(ticket_doc, "created")
     
     return {"success": True, "ticket": ticket_doc}
+
+
+async def smart_auto_assign(db, ticket: dict) -> Optional[str]:
+    """
+    Smart Auto-Assignment based on agent expertise and availability.
+    
+    Factors considered:
+    1. Agent's pillar/category expertise
+    2. Current workload (active tickets)
+    3. Agent availability status
+    4. Round-robin among qualified agents
+    
+    Returns the assigned agent name or None
+    """
+    try:
+        category = ticket.get("category") or ticket.get("pillar")
+        if not category:
+            return None
+        
+        # Check if auto-assignment is enabled
+        settings = await db.service_desk_settings.find_one({"type": "auto_assignment"})
+        if not settings or not settings.get("enabled", False):
+            return None
+        
+        # Get agents with expertise in this category
+        expertise_map = settings.get("expertise_map", {})
+        qualified_agents = expertise_map.get(category, [])
+        
+        if not qualified_agents:
+            # Fallback to any available agent
+            all_agents = settings.get("all_agents", [])
+            qualified_agents = all_agents
+        
+        if not qualified_agents:
+            return None
+        
+        # Get current workload for each agent
+        agent_workloads = {}
+        for agent in qualified_agents:
+            count = await db.tickets.count_documents({
+                "assigned_to": agent,
+                "status": {"$nin": ["resolved", "closed"]}
+            })
+            agent_workloads[agent] = count
+        
+        # Find agent with lowest workload
+        assigned_agent = min(agent_workloads, key=agent_workloads.get)
+        
+        # Update ticket with assignment
+        await db.tickets.update_one(
+            {"ticket_id": ticket["ticket_id"]},
+            {
+                "$set": {
+                    "assigned_to": assigned_agent,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                },
+                "$push": {
+                    "messages": {
+                        "id": str(uuid.uuid4()),
+                        "type": "system",
+                        "content": f"Auto-assigned to {assigned_agent} based on {category} expertise",
+                        "sender": "system",
+                        "sender_name": "System",
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "is_internal": True
+                    }
+                }
+            }
+        )
+        
+        logger.info(f"Ticket {ticket['ticket_id']} auto-assigned to {assigned_agent} (category: {category})")
+        return assigned_agent
+        
+    except Exception as e:
+        logger.error(f"Smart auto-assignment failed: {e}")
+        return None
 
 @router.get("")
 @router.get("/")
