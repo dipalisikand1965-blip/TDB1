@@ -1,7 +1,7 @@
 /**
  * FitPage.jsx
  * Premium Pillar Page - Fit (Fitness & Wellness)
- * Consistent with other pillar pages, spectacular design
+ * Airbnb-inspired services layout with expandable cards and detail modals
  */
 
 import React, { useState, useEffect } from 'react';
@@ -12,8 +12,9 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Badge } from '../components/ui/badge';
 import { Textarea } from '../components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -27,28 +28,76 @@ import {
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
   ArrowRight, Play, ChevronDown, Target, Zap, Timer, PawPrint,
   Users, Calendar, MapPin, Award, ShoppingBag, AlertCircle,
-  Clock, ArrowUpRight, Plus, Check, X, Phone, Package, Shield
+  Clock, ArrowUpRight, Plus, Check, X, Phone, Package, Shield,
+  MessageCircle, Info, ChevronUp, Bookmark, Share2, ExternalLink
 } from 'lucide-react';
 
-// Service Category Icons & Config
-const SERVICE_ICONS = {
-  assessment: { icon: Activity, color: 'from-teal-500 to-emerald-500', bg: 'bg-teal-50', text: 'text-teal-600' },
-  training: { icon: Dumbbell, color: 'from-green-500 to-teal-500', bg: 'bg-green-50', text: 'text-green-600' },
-  weight: { icon: Scale, color: 'from-emerald-500 to-cyan-500', bg: 'bg-emerald-50', text: 'text-emerald-600' },
-  therapy: { icon: Heart, color: 'from-cyan-500 to-teal-500', bg: 'bg-cyan-50', text: 'text-cyan-600' },
-  senior: { icon: Award, color: 'from-teal-500 to-green-500', bg: 'bg-teal-50', text: 'text-teal-600' },
-  puppy: { icon: PawPrint, color: 'from-lime-500 to-green-500', bg: 'bg-lime-50', text: 'text-lime-600' },
-  agility: { icon: Zap, color: 'from-yellow-500 to-lime-500', bg: 'bg-yellow-50', text: 'text-yellow-600' },
-  wellness: { icon: Sparkles, color: 'from-purple-500 to-pink-500', bg: 'bg-purple-50', text: 'text-purple-600' }
-};
-
-// Fitness Types for sticky nav
-const FIT_TYPES = {
-  assessment: { name: 'Fitness Assessment', icon: Activity, color: 'from-teal-500 to-emerald-500', bgColor: 'bg-teal-50', textColor: 'text-teal-600' },
-  exercise_plan: { name: 'Exercise Plans', icon: Dumbbell, color: 'from-green-500 to-teal-500', bgColor: 'bg-green-50', textColor: 'text-green-600' },
-  weight_management: { name: 'Weight Management', icon: Scale, color: 'from-emerald-500 to-cyan-500', bgColor: 'bg-emerald-50', textColor: 'text-emerald-600' },
-  agility: { name: 'Agility Training', icon: Zap, color: 'from-cyan-500 to-teal-500', bgColor: 'bg-cyan-50', textColor: 'text-cyan-600' },
-  senior_fitness: { name: 'Senior Fitness', icon: Award, color: 'from-teal-500 to-green-500', bgColor: 'bg-teal-50', textColor: 'text-teal-600' }
+// Service Categories with metadata
+const SERVICE_CATEGORIES = {
+  assessment: { 
+    icon: Activity, 
+    color: 'bg-teal-500', 
+    lightBg: 'bg-teal-50', 
+    text: 'text-teal-700',
+    gradient: 'from-teal-500 to-emerald-500',
+    name: 'Assessment' 
+  },
+  training: { 
+    icon: Dumbbell, 
+    color: 'bg-green-500', 
+    lightBg: 'bg-green-50', 
+    text: 'text-green-700',
+    gradient: 'from-green-500 to-teal-500',
+    name: 'Training' 
+  },
+  weight: { 
+    icon: Scale, 
+    color: 'bg-emerald-500', 
+    lightBg: 'bg-emerald-50', 
+    text: 'text-emerald-700',
+    gradient: 'from-emerald-500 to-cyan-500',
+    name: 'Weight Management' 
+  },
+  therapy: { 
+    icon: Heart, 
+    color: 'bg-cyan-500', 
+    lightBg: 'bg-cyan-50', 
+    text: 'text-cyan-700',
+    gradient: 'from-cyan-500 to-blue-500',
+    name: 'Therapy' 
+  },
+  senior: { 
+    icon: Award, 
+    color: 'bg-amber-500', 
+    lightBg: 'bg-amber-50', 
+    text: 'text-amber-700',
+    gradient: 'from-amber-500 to-orange-500',
+    name: 'Senior Care' 
+  },
+  puppy: { 
+    icon: PawPrint, 
+    color: 'bg-pink-500', 
+    lightBg: 'bg-pink-50', 
+    text: 'text-pink-700',
+    gradient: 'from-pink-500 to-rose-500',
+    name: 'Puppy' 
+  },
+  agility: { 
+    icon: Zap, 
+    color: 'bg-yellow-500', 
+    lightBg: 'bg-yellow-50', 
+    text: 'text-yellow-700',
+    gradient: 'from-yellow-500 to-lime-500',
+    name: 'Agility' 
+  },
+  wellness: { 
+    icon: Sparkles, 
+    color: 'bg-purple-500', 
+    lightBg: 'bg-purple-50', 
+    text: 'text-purple-700',
+    gradient: 'from-purple-500 to-violet-500',
+    name: 'Wellness' 
+  }
 };
 
 // Activity levels for form
@@ -61,13 +110,13 @@ const ACTIVITY_LEVELS = [
 ];
 
 const FITNESS_GOALS = [
-  { value: 'weight_loss', label: 'Weight Loss' },
-  { value: 'muscle_building', label: 'Build Muscle' },
-  { value: 'endurance', label: 'Improve Endurance' },
-  { value: 'flexibility', label: 'Better Flexibility' },
-  { value: 'senior_mobility', label: 'Senior Mobility' },
-  { value: 'energy_management', label: 'Energy Management' },
-  { value: 'rehabilitation', label: 'Rehabilitation' }
+  { value: 'weight_loss', label: 'Weight Loss', icon: '⚖️' },
+  { value: 'muscle_building', label: 'Build Muscle', icon: '💪' },
+  { value: 'endurance', label: 'Improve Endurance', icon: '🏃' },
+  { value: 'flexibility', label: 'Better Flexibility', icon: '🧘' },
+  { value: 'senior_mobility', label: 'Senior Mobility', icon: '🦮' },
+  { value: 'energy_management', label: 'Energy Management', icon: '⚡' },
+  { value: 'rehabilitation', label: 'Rehabilitation', icon: '🩹' }
 ];
 
 const HERO_IMAGES = [
@@ -75,6 +124,258 @@ const HERO_IMAGES = [
   'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1200&q=80',
   'https://images.unsplash.com/photo-1546815693-7533bae19894?w=1200&q=80'
 ];
+
+// ==================== AIRBNB-STYLE SERVICE CARD ====================
+const ServiceCard = ({ service, onViewDetails, onQuickBook }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const category = SERVICE_CATEGORIES[service.category] || SERVICE_CATEGORIES.assessment;
+  const Icon = category.icon;
+  
+  return (
+    <div 
+      className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-100"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={() => onViewDetails(service)}
+      data-testid={`service-card-${service.id}`}
+    >
+      {/* Image/Visual Area */}
+      <div className={`relative h-44 bg-gradient-to-br ${category.gradient} overflow-hidden`}>
+        {service.image ? (
+          <img 
+            src={service.image} 
+            alt={service.name}
+            className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Icon className="w-20 h-20 text-white/30" />
+          </div>
+        )}
+        
+        {/* Overlay on hover */}
+        <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+          <Button 
+            variant="secondary"
+            className="bg-white text-gray-900 hover:bg-gray-100 rounded-full px-6"
+            onClick={(e) => {
+              e.stopPropagation();
+              onViewDetails(service);
+            }}
+          >
+            View Details
+          </Button>
+        </div>
+        
+        {/* Category Badge */}
+        <div className="absolute top-3 left-3">
+          <Badge className={`${category.color} text-white border-0 shadow-lg`}>
+            <Icon className="w-3 h-3 mr-1" />
+            {category.name}
+          </Badge>
+        </div>
+        
+        {/* Concierge Badge */}
+        <div className="absolute top-3 right-3">
+          <Badge className="bg-white/90 text-purple-700 border-0 shadow-lg">
+            Concierge®
+          </Badge>
+        </div>
+        
+        {/* Price Tag */}
+        <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5 shadow-lg">
+          <span className="text-lg font-bold text-gray-900">₹{service.price?.toLocaleString()}</span>
+          {service.is_subscription && <span className="text-xs text-gray-500">/mo</span>}
+        </div>
+      </div>
+      
+      {/* Content */}
+      <div className="p-4">
+        <h3 className="font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-teal-600 transition-colors">
+          {service.name}
+        </h3>
+        <p className="text-sm text-gray-500 line-clamp-2 mb-3">{service.description}</p>
+        
+        {/* Duration & Key Info */}
+        <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+          <span className="flex items-center gap-1">
+            <Clock className="w-3.5 h-3.5" />
+            {service.duration}
+          </span>
+          {service.includes && (
+            <span className="flex items-center gap-1">
+              <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+              {service.includes.length} inclusions
+            </span>
+          )}
+        </div>
+        
+        {/* Quick Action Buttons */}
+        <div className="flex gap-2 pt-3 border-t border-gray-100">
+          <Button 
+            size="sm"
+            className="flex-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg"
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuickBook(service);
+            }}
+            data-testid={`quick-book-${service.id}`}
+          >
+            <Calendar className="w-3.5 h-3.5 mr-1" />
+            Book Now
+          </Button>
+          <Button 
+            size="sm"
+            variant="outline"
+            className="rounded-lg"
+            onClick={(e) => {
+              e.stopPropagation();
+              onViewDetails(service);
+            }}
+          >
+            <Info className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ==================== SERVICE DETAIL MODAL ====================
+const ServiceDetailModal = ({ service, isOpen, onClose, onBook, onAskConcierge, userPets }) => {
+  if (!service) return null;
+  
+  const category = SERVICE_CATEGORIES[service.category] || SERVICE_CATEGORIES.assessment;
+  const Icon = category.icon;
+  
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto p-0">
+        {/* Header Image */}
+        <div className={`relative h-52 bg-gradient-to-br ${category.gradient}`}>
+          {service.image ? (
+            <img 
+              src={service.image} 
+              alt={service.name}
+              className="w-full h-full object-cover opacity-90"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Icon className="w-24 h-24 text-white/30" />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          
+          {/* Title Overlay */}
+          <div className="absolute bottom-4 left-6 right-6">
+            <Badge className={`${category.color} text-white border-0 mb-2`}>
+              <Icon className="w-3 h-3 mr-1" />
+              {category.name}
+            </Badge>
+            <h2 className="text-2xl font-bold text-white">{service.name}</h2>
+          </div>
+          
+          {/* Close button */}
+          <button 
+            onClick={onClose}
+            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 flex items-center justify-center text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        
+        {/* Content */}
+        <div className="p-6 space-y-6">
+          {/* Price & Duration Bar */}
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+            <div>
+              <p className="text-sm text-gray-500">Service Fee</p>
+              <p className="text-2xl font-bold text-gray-900">
+                ₹{service.price?.toLocaleString()}
+                {service.is_subscription && <span className="text-sm font-normal text-gray-500">/month</span>}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-500">Duration</p>
+              <p className="text-lg font-semibold text-gray-900">{service.duration}</p>
+            </div>
+          </div>
+          
+          {/* Description */}
+          <div>
+            <h3 className="font-semibold text-gray-900 mb-2">About this service</h3>
+            <p className="text-gray-600 leading-relaxed">{service.description}</p>
+          </div>
+          
+          {/* What's Included */}
+          {service.includes && service.includes.length > 0 && (
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-3">What's included</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {service.includes.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2 p-2 rounded-lg bg-teal-50">
+                    <CheckCircle className="w-4 h-4 text-teal-600 flex-shrink-0" />
+                    <span className="text-sm text-gray-700">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Best For Section */}
+          <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-purple-900 mb-1">Why Concierge®?</h4>
+                <p className="text-sm text-purple-700">
+                  Our Concierge® team handles all coordination - scheduling, follow-ups, and personalised recommendations based on your pet's profile.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+            <Button 
+              size="lg"
+              className="flex-1 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-semibold rounded-xl h-12"
+              onClick={() => onBook(service)}
+              data-testid="modal-book-btn"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Enrol Now
+            </Button>
+            <Button 
+              size="lg"
+              variant="outline"
+              className="flex-1 border-2 border-purple-200 text-purple-700 hover:bg-purple-50 rounded-xl h-12"
+              onClick={() => onAskConcierge(service)}
+              data-testid="modal-ask-concierge-btn"
+            >
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Ask Concierge®
+            </Button>
+          </div>
+          
+          {/* Share & Save */}
+          <div className="flex items-center justify-center gap-4 pt-2">
+            <button className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+              <Share2 className="w-4 h-4" />
+              Share
+            </button>
+            <button className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+              <Bookmark className="w-4 h-4" />
+              Save
+            </button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 // ==================== MAIN FIT PAGE COMPONENT ====================
 const FitPage = () => {
@@ -89,11 +390,12 @@ const FitPage = () => {
   const [bundles, setBundles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [heroIndex, setHeroIndex] = useState(0);
-  const [selectedType, setSelectedType] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   
   // UI states
-  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  const [showBookingModal, setShowBookingModal] = useState(false);
   const [userPets, setUserPets] = useState([]);
   const [selectedPet, setSelectedPet] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -183,20 +485,19 @@ const FitPage = () => {
     }
   };
   
-  const handleBookService = (service) => {
+  const handleViewDetails = (service) => {
+    setSelectedService(service);
+    setShowDetailModal(true);
+  };
+  
+  const handleQuickBook = (service) => {
     setSelectedService(service);
     setShowBookingModal(true);
   };
   
-  const handleStartPlan = (plan) => {
-    setSelectedService({
-      id: `plan-${plan.id}`,
-      name: plan.name,
-      price: plan.price,
-      description: plan.description,
-      category: 'training'
-    });
-    setShowBookingModal(true);
+  const handleAskConcierge = (service) => {
+    // Navigate to Mira with context
+    navigate(`/mira?context=fit&service=${encodeURIComponent(service.name)}`);
   };
   
   const toggleGoal = (goal) => {
@@ -242,6 +543,7 @@ const FitPage = () => {
           description: result.message || `Your booking #${result.booking_id} has been received.`
         });
         setShowBookingModal(false);
+        setShowDetailModal(false);
         setSelectedService(null);
         setSelectedPet(null);
         setBookingForm(prev => ({
@@ -268,28 +570,14 @@ const FitPage = () => {
       setSubmitting(false);
     }
   };
+
+  // Filter services by category
+  const filteredServices = selectedCategory 
+    ? services.filter(s => s.category === selectedCategory)
+    : services;
   
-  const handleAddToCart = (product) => {
-    addItem({
-      id: product.id,
-      name: product.name || product.title,
-      price: product.price,
-      image: product.image || product.image_url || product.images?.[0],
-      quantity: 1
-    });
-    toast({
-      title: "Added to cart",
-      description: `${product.name || product.title} added to your cart`
-    });
-  };
-
-  const scrollToServices = () => {
-    document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const scrollToProducts = () => {
-    document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
-  };
+  // Get unique categories from services
+  const availableCategories = [...new Set(services.map(s => s.category))];
   
   if (loading) {
     return (
@@ -302,9 +590,8 @@ const FitPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       
-      {/* ==================== HERO SECTION (Same style as CarePage) ==================== */}
+      {/* ==================== HERO SECTION ==================== */}
       <div className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-emerald-800 to-green-900 text-white">
-        {/* Background Image */}
         <div className="absolute inset-0">
           <img 
             src={HERO_IMAGES[heroIndex]} 
@@ -314,16 +601,13 @@ const FitPage = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-teal-900/90 via-emerald-800/80 to-transparent" />
         </div>
         
-        {/* Content */}
         <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28">
           <div className="max-w-2xl">
-            {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
               <Dumbbell className="w-4 h-4 text-lime-400" />
               <span className="text-sm font-medium">Pet Fitness & Wellness</span>
             </div>
             
-            {/* Main Headline */}
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Fit Paws,
               <br />
@@ -336,30 +620,27 @@ const FitPage = () => {
               Expert fitness programmes, weight management, and activity tracking. Build a healthier, happier life together with your furry athlete.
             </p>
             
-            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
-                onClick={scrollToServices}
+                onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
                 size="lg"
                 className="bg-gradient-to-r from-lime-500 to-emerald-500 hover:from-lime-600 hover:to-emerald-600 text-emerald-950 font-semibold px-8 py-6 text-lg rounded-full shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105"
                 data-testid="get-fit-btn"
               >
                 <Play className="w-5 h-5 mr-2 fill-current" />
-                Book Assessment
+                Explore Services
               </Button>
               <Button 
-                onClick={scrollToProducts}
+                onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
                 variant="outline"
                 size="lg"
                 className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
-                data-testid="shop-fit-btn"
               >
                 <Package className="w-5 h-5 mr-2" />
                 Shop Fitness Gear
               </Button>
             </div>
             
-            {/* Trust Indicators */}
             <div className="flex flex-wrap gap-6 mt-12">
               <div className="flex items-center gap-2 text-white/70">
                 <Trophy className="w-5 h-5 text-lime-400" />
@@ -377,37 +658,51 @@ const FitPage = () => {
           </div>
         </div>
         
-        {/* Scroll Indicator */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
           <ChevronDown className="w-6 h-6 text-white/50" />
         </div>
       </div>
 
-      {/* === FITNESS TYPES STRIP (Same as CarePage) === */}
+      {/* ==================== CATEGORY FILTER BAR ==================== */}
       <div className="bg-white border-b shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4 overflow-x-auto scrollbar-hide">
+          <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-1">
             <button
-              onClick={() => setSelectedType(null)}
-              className={`px-4 py-2 rounded-full transition-all whitespace-nowrap ${
-                !selectedType ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              onClick={() => setSelectedCategory(null)}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full transition-all whitespace-nowrap font-medium ${
+                !selectedCategory 
+                  ? 'bg-teal-600 text-white shadow-lg' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               All Services
+              <Badge variant="secondary" className={!selectedCategory ? 'bg-white/20 text-white' : 'bg-gray-200'}>
+                {services.length}
+              </Badge>
             </button>
-            {Object.entries(FIT_TYPES).map(([key, type]) => {
-              const Icon = type.icon;
+            {availableCategories.map((catKey) => {
+              const cat = SERVICE_CATEGORIES[catKey] || SERVICE_CATEGORIES.assessment;
+              const Icon = cat.icon;
+              const count = services.filter(s => s.category === catKey).length;
+              
               return (
                 <button
-                  key={key}
-                  onClick={() => setSelectedType(selectedType === key ? null : key)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all whitespace-nowrap ${
-                    selectedType === key ? `bg-gradient-to-r ${type.color} text-white` : `${type.bgColor} ${type.textColor} hover:scale-105`
+                  key={catKey}
+                  onClick={() => setSelectedCategory(selectedCategory === catKey ? null : catKey)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-full transition-all whitespace-nowrap ${
+                    selectedCategory === catKey 
+                      ? `bg-gradient-to-r ${cat.gradient} text-white shadow-lg` 
+                      : `${cat.lightBg} ${cat.text} hover:shadow-md`
                   }`}
-                  data-testid={`fit-type-${key}`}
+                  data-testid={`category-${catKey}`}
                 >
                   <Icon className="w-4 h-4" />
-                  <span className="text-sm font-medium">{type.name}</span>
+                  <span className="text-sm font-medium">{cat.name}</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                    selectedCategory === catKey ? 'bg-white/20' : 'bg-white'
+                  }`}>
+                    {count}
+                  </span>
                 </button>
               );
             })}
@@ -416,104 +711,70 @@ const FitPage = () => {
       </div>
       
       {/* ==================== CONCIERGE® SERVICES SECTION ==================== */}
-      <section id="services" className="py-16 bg-gradient-to-b from-teal-50/50 to-white">
+      <section id="services" className="py-12 md:py-16 bg-gradient-to-b from-teal-50/30 to-white">
         <div className="max-w-7xl mx-auto px-4">
-          {/* Section header */}
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-5 h-5 text-teal-600" />
-            <span className="text-sm font-medium text-teal-600 uppercase tracking-wider">Concierge® Services</span>
+          {/* Section Header */}
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-5 h-5 text-teal-600" />
+                <span className="text-sm font-medium text-teal-600 uppercase tracking-wider">Concierge® Services</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+                {selectedCategory 
+                  ? `${SERVICE_CATEGORIES[selectedCategory]?.name || 'Fitness'} Services`
+                  : 'Premium Fitness Services'
+                }
+              </h2>
+              <p className="text-gray-500 mt-2 max-w-xl">
+                Click on any service to see details, or book directly. Our Concierge® team handles all coordination.
+              </p>
+            </div>
+            {selectedCategory && (
+              <Button 
+                variant="ghost" 
+                onClick={() => setSelectedCategory(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-4 h-4 mr-1" />
+                Clear filter
+              </Button>
+            )}
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">Premium Fitness Services</h2>
-          <p className="text-gray-600 mb-10 max-w-2xl">
-            Expert-led programmes tailored to your pet's needs. Book a service and our Concierge® team will coordinate everything.
-          </p>
           
-          {/* Services grid */}
-          {services.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {services.map((service) => {
-                const config = SERVICE_ICONS[service.category] || SERVICE_ICONS.assessment;
-                const Icon = config.icon;
-                
-                return (
-                  <Card 
-                    key={service.id} 
-                    className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                    data-testid={`service-card-${service.id}`}
-                  >
-                    {/* Gradient header */}
-                    <div className={`h-24 bg-gradient-to-br ${config.color} p-4 relative`}>
-                      <div className="absolute -right-4 -bottom-4 opacity-20">
-                        <Icon className="w-24 h-24 text-white" />
-                      </div>
-                      <div className="flex items-center gap-2 text-white">
-                        <Icon className="w-5 h-5" />
-                        <span className="text-sm font-medium">{service.category}</span>
-                      </div>
-                      <Badge className="absolute top-3 right-3 bg-white/20 text-white backdrop-blur-sm text-xs">
-                        Concierge®
-                      </Badge>
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="p-5">
-                      <h3 className="font-bold text-gray-900 mb-2 line-clamp-2">{service.name}</h3>
-                      <p className="text-sm text-gray-500 line-clamp-2 mb-3">{service.description}</p>
-                      
-                      {/* Duration */}
-                      <div className="flex items-center gap-1 text-xs text-gray-400 mb-3">
-                        <Clock className="w-3.5 h-3.5" />
-                        {service.duration}
-                      </div>
-                      
-                      {/* Includes tags */}
-                      {service.includes && (
-                        <div className="flex flex-wrap gap-1 mb-4">
-                          {service.includes.slice(0, 2).map((item, idx) => (
-                            <span key={idx} className={`text-xs px-2 py-0.5 rounded-full ${config.bg} ${config.text}`}>
-                              {item}
-                            </span>
-                          ))}
-                          {service.includes.length > 2 && (
-                            <span className="text-xs text-gray-400">+{service.includes.length - 2}</span>
-                          )}
-                        </div>
-                      )}
-                      
-                      {/* Price & CTA */}
-                      <div className="flex items-center justify-between pt-3 border-t">
-                        <div>
-                          <span className="text-xl font-bold text-gray-900">₹{service.price?.toLocaleString()}</span>
-                          {service.is_subscription && (
-                            <span className="text-xs text-gray-400 ml-1">/mo</span>
-                          )}
-                        </div>
-                        <Button 
-                          size="sm"
-                          onClick={() => handleBookService(service)}
-                          className="bg-teal-600 hover:bg-teal-700 rounded-full"
-                          data-testid={`book-${service.id}`}
-                        >
-                          Book Now
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                );
-              })}
+          {/* Services Grid - Airbnb Style */}
+          {filteredServices.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredServices.map((service) => (
+                <ServiceCard 
+                  key={service.id} 
+                  service={service} 
+                  onViewDetails={handleViewDetails}
+                  onQuickBook={handleQuickBook}
+                />
+              ))}
             </div>
           ) : (
-            <Card className="p-12 text-center bg-teal-50/50 border-teal-100">
-              <Activity className="w-16 h-16 text-teal-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Services Coming Soon</h3>
-              <p className="text-gray-500">Our Concierge® fitness services are being set up. Check back soon!</p>
+            <Card className="p-12 text-center bg-gray-50 border-dashed border-2">
+              <Activity className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Services Found</h3>
+              <p className="text-gray-500 mb-4">
+                {selectedCategory 
+                  ? `No ${SERVICE_CATEGORIES[selectedCategory]?.name} services available yet.`
+                  : 'Services are being set up. Check back soon!'}
+              </p>
+              {selectedCategory && (
+                <Button variant="outline" onClick={() => setSelectedCategory(null)}>
+                  View All Services
+                </Button>
+              )}
             </Card>
           )}
         </div>
       </section>
       
-      {/* ==================== PRODUCTS & BUNDLES SECTION ==================== */}
-      <section id="products" className="py-16 bg-white">
+      {/* ==================== PRODUCTS SECTION ==================== */}
+      <section id="products" className="py-12 md:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -527,7 +788,6 @@ const FitPage = () => {
               variant="outline" 
               onClick={() => navigate('/shop?pillar=fit')}
               className="hidden md:flex items-center gap-2 rounded-full"
-              data-testid="view-all-fit-products"
             >
               View All <ArrowRight className="w-4 h-4" />
             </Button>
@@ -542,7 +802,7 @@ const FitPage = () => {
               </h3>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {bundles.map((bundle) => (
-                  <Card key={bundle.id} className="p-4 border-2 border-teal-200 bg-gradient-to-br from-teal-50 to-emerald-50">
+                  <Card key={bundle.id} className="p-4 border-2 border-teal-200 bg-gradient-to-br from-teal-50 to-emerald-50 hover:shadow-lg transition-shadow">
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-semibold text-gray-900">{bundle.name}</h4>
                       {bundle.is_recommended && (
@@ -579,101 +839,13 @@ const FitPage = () => {
             <Card className="p-12 text-center border-gray-100">
               <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Products Coming Soon</h3>
-              <p className="text-gray-500 mb-4">Fitness products are being curated for your pets.</p>
               <Button onClick={() => navigate('/shop')} variant="outline" className="rounded-full">
                 Browse All Products
               </Button>
             </Card>
           )}
-          
-          {/* Mobile view all */}
-          <div className="md:hidden mt-6 text-center">
-            <Button 
-              onClick={() => navigate('/shop?pillar=fit')}
-              className="rounded-full bg-teal-600 hover:bg-teal-700"
-            >
-              View All Products <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
         </div>
       </section>
-      
-      {/* ==================== FITNESS PLANS SECTION ==================== */}
-      {plans.length > 0 && (
-        <section id="plans" className="py-16 bg-gradient-to-b from-white to-teal-50/30">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Calendar className="w-5 h-5 text-teal-600" />
-              <span className="text-sm font-medium text-teal-600 uppercase tracking-wider">Programmes</span>
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Fitness Plans</h2>
-            <p className="text-gray-600 mb-10 max-w-2xl">
-              Structured programmes designed by certified trainers. Pick a plan that suits your pet's needs and goals.
-            </p>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {plans.map((plan) => {
-                const typeConfig = FIT_TYPES[plan.plan_type] || FIT_TYPES.exercise_plan;
-                const Icon = typeConfig.icon;
-                
-                return (
-                  <Card key={plan.id} className="overflow-hidden hover:shadow-lg transition-all" data-testid={`plan-${plan.id}`}>
-                    <div className={`h-28 bg-gradient-to-br ${typeConfig.color} p-4 relative`}>
-                      <div className="absolute -right-2 -bottom-2 opacity-20">
-                        <Icon className="w-20 h-20 text-white" />
-                      </div>
-                      {plan.is_featured && (
-                        <Badge className="absolute top-3 right-3 bg-amber-400 text-amber-900">
-                          <Star className="w-3 h-3 mr-1 fill-current" /> Featured
-                        </Badge>
-                      )}
-                      <div className="flex items-center gap-2 text-white">
-                        <Icon className="w-5 h-5" />
-                        <span className="text-sm font-medium">{typeConfig.name}</span>
-                      </div>
-                    </div>
-                    <div className="p-5">
-                      <h4 className="font-bold text-gray-900 mb-1">{plan.name}</h4>
-                      <p className="text-sm text-gray-500 line-clamp-2 mb-3">{plan.description}</p>
-                      
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {plan.pet_sizes?.slice(0, 2).map((size, i) => (
-                          <Badge key={i} variant="outline" className="text-xs capitalize">{size}</Badge>
-                        ))}
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-xs text-gray-500 mb-4">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5" /> {plan.duration_weeks} weeks
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Activity className="w-3.5 h-3.5" /> {plan.sessions_per_week}x/week
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center justify-between pt-3 border-t">
-                        <div>
-                          <span className="text-xl font-bold text-gray-900">₹{plan.price?.toLocaleString()}</span>
-                          {plan.paw_reward_points > 0 && (
-                            <p className="text-xs text-teal-600">🐾 {plan.paw_reward_points} pts</p>
-                          )}
-                        </div>
-                        <Button 
-                          size="sm" 
-                          onClick={() => handleStartPlan(plan)}
-                          className="bg-teal-600 hover:bg-teal-700"
-                        >
-                          Enrol
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
       
       {/* ==================== CTA SECTION ==================== */}
       <section className="py-16 bg-gradient-to-br from-teal-600 to-emerald-700">
@@ -684,26 +856,52 @@ const FitPage = () => {
           <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
             Start with a free consultation. Our Concierge® team will help you find the perfect programme.
           </p>
-          <Button 
-            size="lg"
-            onClick={() => handleBookService(services[0] || { id: 'consultation', name: 'Free Consultation', price: 0 })}
-            className="bg-white text-teal-700 hover:bg-gray-100 font-semibold px-10 py-6 text-lg rounded-full shadow-2xl transition-all hover:scale-105"
-            data-testid="cta-book-btn"
-          >
-            <Phone className="w-5 h-5 mr-2" />
-            Book Free Consultation
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg"
+              onClick={() => handleQuickBook(services[0] || { id: 'consultation', name: 'Free Consultation', price: 0 })}
+              className="bg-white text-teal-700 hover:bg-gray-100 font-semibold px-10 py-6 text-lg rounded-full shadow-2xl transition-all hover:scale-105"
+            >
+              <Phone className="w-5 h-5 mr-2" />
+              Book Free Consultation
+            </Button>
+            <Button 
+              size="lg"
+              variant="outline"
+              onClick={() => navigate('/mira?context=fit')}
+              className="border-2 border-white/50 text-white hover:bg-white/10 font-semibold px-10 py-6 text-lg rounded-full"
+            >
+              <MessageCircle className="w-5 h-5 mr-2" />
+              Ask Mira
+            </Button>
+          </div>
         </div>
       </section>
+      
+      {/* ==================== SERVICE DETAIL MODAL ==================== */}
+      <ServiceDetailModal 
+        service={selectedService}
+        isOpen={showDetailModal}
+        onClose={() => {
+          setShowDetailModal(false);
+          setSelectedService(null);
+        }}
+        onBook={handleQuickBook}
+        onAskConcierge={handleAskConcierge}
+        userPets={userPets}
+      />
       
       {/* ==================== BOOKING MODAL ==================== */}
       <Dialog open={showBookingModal} onOpenChange={setShowBookingModal}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Activity className="w-5 h-5 text-teal-600" />
+              <Calendar className="w-5 h-5 text-teal-600" />
               Book {selectedService?.name}
             </DialogTitle>
+            <DialogDescription>
+              Complete your booking and our Concierge® team will confirm within 24 hours.
+            </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-5 py-4">
@@ -714,8 +912,11 @@ const FitPage = () => {
                   <span className="font-medium text-gray-900">{selectedService.name}</span>
                   <span className="font-bold text-teal-700">₹{selectedService.price?.toLocaleString()}</span>
                 </div>
-                {selectedService.description && (
-                  <p className="text-sm text-gray-600 mt-1 line-clamp-2">{selectedService.description}</p>
+                {selectedService.duration && (
+                  <p className="text-sm text-gray-500 mt-1 flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" />
+                    {selectedService.duration}
+                  </p>
                 )}
               </div>
             )}
@@ -791,29 +992,13 @@ const FitPage = () => {
             
             {/* Preferred date */}
             <div>
-              <Label className="text-sm text-gray-500">Preferred Date (Optional)</Label>
+              <Label className="text-sm text-gray-500">Preferred Date</Label>
               <Input
                 type="date"
                 value={bookingForm.preferred_date}
                 onChange={(e) => setBookingForm({ ...bookingForm, preferred_date: e.target.value })}
                 min={new Date().toISOString().split('T')[0]}
               />
-            </div>
-            
-            {/* Activity Level */}
-            <div>
-              <Label className="mb-2 block">Current Activity Level</Label>
-              <Select 
-                value={bookingForm.current_activity_level} 
-                onValueChange={(val) => setBookingForm({...bookingForm, current_activity_level: val})}
-              >
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {ACTIVITY_LEVELS.map((level) => (
-                    <SelectItem key={level.value} value={level.value}>{level.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
             
             {/* Fitness goals */}
@@ -824,13 +1009,14 @@ const FitPage = () => {
                   <Badge
                     key={goal.value}
                     variant={bookingForm.fitness_goals.includes(goal.value) ? 'default' : 'outline'}
-                    className={`cursor-pointer transition-all ${
+                    className={`cursor-pointer transition-all px-3 py-1.5 ${
                       bookingForm.fitness_goals.includes(goal.value) 
                         ? 'bg-teal-600 hover:bg-teal-700' 
                         : 'hover:bg-teal-50'
                     }`}
                     onClick={() => toggleGoal(goal.value)}
                   >
+                    <span className="mr-1">{goal.icon}</span>
                     {goal.label}
                   </Badge>
                 ))}
@@ -860,7 +1046,7 @@ const FitPage = () => {
               <Button
                 onClick={submitBooking}
                 disabled={!bookingForm.contact_name || !bookingForm.contact_phone || submitting}
-                className="flex-1 bg-teal-600 hover:bg-teal-700"
+                className="flex-1 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600"
               >
                 {submitting ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Booking...</>
