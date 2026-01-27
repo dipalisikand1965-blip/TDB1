@@ -448,11 +448,24 @@ async def admin_sync_products(username: str = Depends(verify_admin)):
         synced = 0
         new_products = []
         updated_products = []
+        preserved_options = 0
         
         for sp in shopify_products:
             existing = await db.products.find_one({"shopify_id": sp["id"]})
             
             transformed = transform_shopify_product(sp)
+            
+            # IMPORTANT: Preserve hardcoded options - don't overwrite!
+            if existing and existing.get("hardcoded_options") == True:
+                # Remove options/variants from update to preserve hardcoded data
+                transformed.pop("options", None)
+                transformed.pop("variants", None)
+                transformed.pop("has_variants", None)
+                transformed.pop("sizes", None)
+                transformed.pop("flavors", None)
+                preserved_options += 1
+                logger.debug(f"Preserved hardcoded options for: {transformed.get('name')}")
+            
             await db.products.update_one(
                 {"shopify_id": sp["id"]},
                 {"$set": transformed},
