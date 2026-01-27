@@ -3067,6 +3067,36 @@ async def universal_seed_endpoint():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@admin_router.post("/hardcode-product-options")
+async def hardcode_product_options_endpoint():
+    """
+    HARDCODE Product Options & Variants
+    ====================================
+    Permanently adds Base, Flavour, Size options and variants to cake products.
+    This data is HARDCODED and will NOT be overwritten by Shopify sync.
+    
+    Products updated:
+    - All cake products get Base + Flavour + Size options (96 variants each)
+    - Treat products get Size options
+    - Flavour products get Flavour options
+    
+    Run this after deployment or when options are missing.
+    """
+    from scripts.hardcode_product_options import hardcode_product_options
+    
+    try:
+        results = await hardcode_product_options(db)
+        logger.info(f"Hardcode product options completed: {results}")
+        return {
+            "success": True,
+            "message": "Product options hardcoded successfully",
+            "results": results
+        }
+    except Exception as e:
+        logger.error(f"Hardcode product options failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== DATA MIGRATION ENDPOINTS ====================
 
 @admin_router.post("/data/link-pets-to-users")
