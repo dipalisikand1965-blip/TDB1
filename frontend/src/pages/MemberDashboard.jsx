@@ -1035,44 +1035,44 @@ const MemberDashboard = () => {
         )}
         
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="bg-white p-1 rounded-xl border shadow-sm w-full md:w-auto flex overflow-x-auto">
-            <TabsTrigger value="overview" className="rounded-lg flex-1 md:flex-none">Overview</TabsTrigger>
-            <TabsTrigger value="rewards" className="rounded-lg flex-1 md:flex-none">
+          <TabsList className="bg-white p-1 rounded-xl border shadow-sm w-full flex overflow-x-auto scrollbar-hide">
+            <TabsTrigger value="overview" className="rounded-lg flex-shrink-0 whitespace-nowrap">Overview</TabsTrigger>
+            <TabsTrigger value="services" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+              <Crown className="w-4 h-4 mr-1" />
+              All Services
+            </TabsTrigger>
+            <TabsTrigger value="rewards" className="rounded-lg flex-shrink-0 whitespace-nowrap">
               <Gift className="w-4 h-4 mr-1" />
               Rewards
             </TabsTrigger>
-            <TabsTrigger value="mira" className="rounded-lg flex-1 md:flex-none">
+            <TabsTrigger value="mira" className="rounded-lg flex-shrink-0 whitespace-nowrap">
               <Sparkles className="w-4 h-4 mr-1" />
               Mira AI
             </TabsTrigger>
-            <TabsTrigger value="orders" className="rounded-lg flex-1 md:flex-none">Orders</TabsTrigger>
-            <TabsTrigger value="celebrations" className="rounded-lg flex-1 md:flex-none">
-              <Cake className="w-4 h-4 mr-1" />
-              Celebrations
+            <TabsTrigger value="orders" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+              <Package className="w-4 h-4 mr-1" />
+              Orders
             </TabsTrigger>
-            <TabsTrigger value="dining" className="rounded-lg flex-1 md:flex-none">
-              <UtensilsCrossed className="w-4 h-4 mr-1" />
-              Dining
-            </TabsTrigger>
-            <TabsTrigger value="stay" className="rounded-lg flex-1 md:flex-none">
-              <Home className="w-4 h-4 mr-1" />
-              Stay
-            </TabsTrigger>
-            <TabsTrigger value="travel" className="rounded-lg flex-1 md:flex-none">
-              <Plane className="w-4 h-4 mr-1" />
-              Travel
-            </TabsTrigger>
-            <TabsTrigger value="autoship" className="rounded-lg flex-1 md:flex-none">
+            <TabsTrigger value="autoship" className="rounded-lg flex-shrink-0 whitespace-nowrap">
               <RefreshCw className="w-4 h-4 mr-1" />
               Autoship
             </TabsTrigger>
-            <TabsTrigger value="reviews" className="rounded-lg flex-1 md:flex-none">
+            <TabsTrigger value="reviews" className="rounded-lg flex-shrink-0 whitespace-nowrap">
               <MessageSquare className="w-4 h-4 mr-1" />
               Reviews
             </TabsTrigger>
-            <TabsTrigger value="pets" className="rounded-lg flex-1 md:flex-none">Pets</TabsTrigger>
-            <TabsTrigger value="addresses" className="rounded-lg flex-1 md:flex-none">Addresses</TabsTrigger>
-            <TabsTrigger value="settings" className="rounded-lg flex-1 md:flex-none">Settings</TabsTrigger>
+            <TabsTrigger value="pets" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+              <PawPrint className="w-4 h-4 mr-1" />
+              Pets
+            </TabsTrigger>
+            <TabsTrigger value="addresses" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+              <MapPin className="w-4 h-4 mr-1" />
+              Addresses
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+              <Settings className="w-4 h-4 mr-1" />
+              Settings
+            </TabsTrigger>
           </TabsList>
 
           {/* Overview Content */}
