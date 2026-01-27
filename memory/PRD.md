@@ -142,8 +142,9 @@
 
 ## Pending Issues
 1. **Mira Memories Auth Issue** (P1): Pet profile "Mira Memories" tab stuck on loading - frontend auth token not being passed correctly
-2. **WebSocket Connection** (P2): Shows "Reconnecting..." - prevents real-time updates
+2. **WebSocket Connection** (P2): Shows "Connecting..." - prevents real-time updates (core functionality unaffected)
 3. **Product Tags**: Most products lack best-seller/new-arrivals tags (filters return 0 results)
+4. **Aggregated Ticket Detail** (P3): Some tickets from reservations/stay bookings return 404 on detail endpoint
 
 ---
 
@@ -153,7 +154,8 @@
 1. ✅ ~~Admin Orders Tab Fix~~ (DONE)
 2. ✅ ~~Custom Cake Submenu~~ (DONE)
 3. ✅ ~~Cake Availability Filter UI~~ (DONE)
-4. **Admin Product Editor**: Add UI to manage `fresh_delivery_cities` and tag fields
+4. ✅ ~~Service Desk Overhaul~~ (DONE - Rich Text Editor, Kanban Board, All Pillars)
+5. **Admin Product Editor**: Add UI to manage `fresh_delivery_cities` and tag fields
 
 ### P1 - Next Sprint
 5. **Fix Mira Memories Auth**: Debug token flow in UnifiedPetPage.jsx
