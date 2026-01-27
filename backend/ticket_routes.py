@@ -3,7 +3,7 @@ Universal Ticketing System / Service Desk
 Handles all concierge requests across multiple channels
 """
 
-from fastapi import APIRouter, HTTPException, Query, Form, UploadFile, File, Depends, Header, Request
+from fastapi import APIRouter, HTTPException, Query, Form, UploadFile, File, Depends, Header, Request, Body
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
