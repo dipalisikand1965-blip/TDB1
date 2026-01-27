@@ -1279,6 +1279,14 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     }
   }, []);
   
+  // Fetch templates when settings modal opens
+  useEffect(() => {
+    if (showSettingsModal && settingsTab === 'templates') {
+      fetchTemplates();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showSettingsModal, settingsTab]);
+  
   // ==================== INLINE SUBJECT EDITING ====================
   
   const startEditingSubject = () => {
