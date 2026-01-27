@@ -2881,7 +2881,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         
                         <Button
                           onClick={handleReply}
-                          disabled={!replyText.trim() || sending}
+                          disabled={(!replyText || !replyText.replace(/<[^>]*>/g, '').trim()) && attachments.length === 0 || sending}
                           className={`${isInternal ? 'bg-amber-500 hover:bg-amber-600' : 'bg-emerald-500 hover:bg-emerald-600'}`}
                         >
                           {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
