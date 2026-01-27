@@ -1,173 +1,209 @@
-# The Doggy Company - Product Roadmap
+# The Doggy Company - Vision & Roadmap Summary
+## "World's First Pet Life Operating System"
 
-## 🎯 Vision
-Build the world's most intelligent "Pet Life Operating System" - a comprehensive platform that manages every aspect of a pet parent's journey.
-
----
-
-## ✅ COMPLETED (Session 34 - January 26, 2026)
-
-### Ultimate Intelligent Service Desk
-- ✅ All 14 Pillars with ticket counts in sidebar
-- ✅ Special sections: Mira AI, Membership, Pet Parent, Pet Profile
-- ✅ Data sections: Pet Parents, Pet Profiles, Orders, Analytics
-- ✅ New Ticket Modal (Zoho-style with 4 types)
-- ✅ Settings Modal (custom statuses, categories, notifications)
-- ✅ 5 AI Reply Styles (Professional, Friendly, Empathetic, Concise, Detailed)
-- ✅ Pet Soul Prompts in ticket view
-- ✅ Intelligent AI Summary per ticket
-- ✅ Advanced Search (by Pet, Pet Parent, Subject, Pillar)
-- ✅ Rich Reply Composer (voice, image, document attachments)
-- ✅ Ticket Editing (pillar, status, priority, assignee)
-- ✅ WebSocket infrastructure for real-time updates
-- ✅ Email webhook ready (`/api/tickets/webhook/resend-inbound`)
-- ✅ WhatsApp integration ready (endpoints built, awaiting keys)
+*Last Updated: January 27, 2025*
 
 ---
 
-## 🔴 P0 - CRITICAL (Next Up)
+## 🎯 VISION STATEMENT
 
-### 1. Multi-Channel Communication Activation
-- [ ] **WhatsApp Business API**
-  - Add keys: `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_BUSINESS_ACCOUNT_ID`
-  - Configure Meta webhook callback URL
-  - Test send/receive messages
-  - See: `/app/memory/MULTICHANNEL_SETUP.md`
-
-- [ ] **Resend Inbound Email**
-  - Configure Resend webhook to forward to `/api/tickets/webhook/resend-inbound`
-  - Set up receiving email address (e.g., `support@thedoggycompany.in`)
-  - Add `RESEND_WEBHOOK_SECRET` to `.env`
-
-### 2. Real-time WebSocket Connection
-- [ ] Fix Socket.IO connection (currently showing "Reconnecting...")
-- [ ] Enable live ticket notifications
-- [ ] Agent typing indicators
-- [ ] Sound notifications for new tickets
-
-### 3. AI Product Description Enhancement
-- [ ] Run bulk AI enhancement for all 430+ products
-- [ ] Verify enhanced descriptions are saved
+To become India's #1 Pet Life Operating System - a comprehensive platform that manages every aspect of a pet's life across 14 pillars, powered by AI concierge (Mira®) and world-class service delivery.
 
 ---
 
-## 🟡 P1 - HIGH PRIORITY
+## ✅ COMPLETED FEATURES
 
-### 4. Complete Pillar Pages
-Currently placeholder pages - need full implementation:
-- [ ] 🎓 **Learn** - Training courses, workshops enrollment
-- [ ] 📄 **Paperwork** - Document management, certificates
-- [ ] 📋 **Advisory** - Consultation booking, expert advice
-- [ ] 🚨 **Emergency** - 24/7 emergency contacts, SOS
-- [ ] 🌈 **Farewell** - Memorial services, cremation
-- [ ] 🐾 **Adopt** - Adoption listings, foster care
-- [ ] 🎾 **Enjoy** - Activities, playdates, events
-- [ ] 🏃 **Fit** - Fitness programs, assessments (partially done)
+### Core Platform
+- [x] **14 Pillar Architecture**: Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt, Shop
+- [x] **Multi-tenant Service Desk**: Zoho/Salesforce-style ticket management
+- [x] **Mira® AI Concierge**: Context-aware chat with memory system
+- [x] **Product Catalog**: 600+ products synced from Shopify
+- [x] **User Authentication**: JWT-based auth with member profiles
+- [x] **Pet Profiles**: Pet registration with health data, birthdays, memories
 
-### 5. Analytics Dashboard
-- [ ] Build out `/admin/service-desk` Analytics tab
-- [ ] Ticket volume by pillar, channel, time
-- [ ] Response time metrics
-- [ ] Agent performance
-- [ ] Customer satisfaction scores
+### Service Desk (Phase 12)
+- [x] Ticket CRUD with statuses, categories, urgency levels
+- [x] Slide-out drawer UI for ticket details
+- [x] Template management (Email & SMS)
+- [x] Custom status & category creation
+- [x] CSV export functionality
+- [x] Agent collision detection
+- [x] CSAT ratings
+- [x] Ticket tags
+- [x] Smart auto-assignment settings
+- [x] SLA breach alerts & monitoring
+- [x] Voice order processing
+- [x] Bulk actions
 
-### 6. Member Onboarding Flow Redesign
-- [ ] Multi-step wizard
-- [ ] Pet profile creation during onboarding
-- [ ] Membership tier selection
-- [ ] Payment integration
+### Concierge® Features
+- [x] Celebrate Concierge (Birthday planning)
+- [x] Dining Concierge (Restaurant & chef bookings)
+- [x] Stay Concierge (Boarding facilities)
+- [x] Service booking flow → Ticket creation
 
----
+### Communication
+- [x] Floating contact button (all pages)
+- [x] Call Now / WhatsApp / Voice Order
+- [x] Callback Request feature
+- [x] Mira "Speak to Us" section
 
-## 🟢 P2 - MEDIUM PRIORITY
-
-### 7. Technical Debt
-- [ ] **Consolidate `products` and `unified_products` collections**
-  - Currently data split across two MongoDB collections
-  - Need migration script and code updates
-  
-- [ ] **Search Service (Meilisearch)**
-  - Currently showing connection warnings
-  - Set up or remove if not needed
-
-### 8. Pet Soul Enhancements
-- [ ] Complete Pet Soul questionnaire flow
-- [ ] AI-generated personality insights
-- [ ] Pet birthday reminders
-- [ ] Health tracking integration
-
-### 9. E-commerce Features
-- [ ] Order tracking page
-- [ ] Return/refund flow
-- [ ] Subscription management (auto-delivery)
-- [ ] Wishlist functionality
-
-### 10. Community Features
-- [ ] Pet parent forums
-- [ ] Photo sharing
-- [ ] Events calendar
-- [ ] Referral program
+### SEO & Marketing
+- [x] Dynamic meta tags per pillar
+- [x] Sitemap.xml with all pages
+- [x] Canonical URL configuration
+- [x] Open Graph & Twitter Cards
 
 ---
 
-## 🔵 P3 - FUTURE / BACKLOG
+## 🚧 IN PROGRESS / PARTIALLY COMPLETE
 
-### 11. Mobile App
-- [ ] React Native or Flutter app
-- [ ] Push notifications
-- [ ] Pet profile widgets
-- [ ] Quick booking
+### WhatsApp Integration
+- [x] Backend routes created
+- [x] Webhook endpoint ready
+- [ ] **BLOCKED**: Awaiting WhatsApp Business API keys
+- [ ] Message sending functionality
+- [ ] Inbound message → ticket creation
 
-### 12. Advanced AI Features
-- [ ] Pet behavior analysis
-- [ ] Health prediction models
-- [ ] Personalized product recommendations
-- [ ] Voice assistant (talk to Mira)
-
-### 13. B2B Features
-- [ ] Vet clinic dashboard
-- [ ] Groomer appointment management
-- [ ] Pet hotel admin panel
-- [ ] API for partners
-
-### 14. Internationalization
-- [ ] Multi-language support
-- [ ] Multi-currency
-- [ ] Regional content
+### Email Integration (Resend)
+- [x] Routes prepared
+- [ ] **BLOCKED**: Awaiting RESEND_API_KEY
+- [ ] Auto-acknowledgment emails
+- [ ] Status change notifications
 
 ---
 
-## 📊 Metrics to Track
+## 📋 REMAINING FEATURES (PRIORITY ORDER)
 
-| Metric | Target | Current |
-|--------|--------|---------|
-| Ticket Response Time | < 2 hours | TBD |
-| Customer Satisfaction | > 4.5/5 | TBD |
-| Booking Conversion | > 15% | TBD |
-| Member Retention | > 80% | TBD |
-| App Load Time | < 2s | TBD |
+### P0 - Critical (Revenue Impact)
+1. **Production Product Options Fix**
+   - Run: `curl -X POST https://thedoggycompany.in/api/admin/universal-seed`
+   - This seeds product variants (Base, Flavour, Size)
+
+2. **Fix Production WebSocket**
+   - Service Desk real-time updates not working on production
+   - Needs infrastructure-level fix (Cloudflare/Ingress)
+
+### P1 - High Priority
+3. **Ticket Merging UI**
+   - Backend ready: `POST /api/tickets/merge`
+   - Need frontend UI for selecting tickets to merge
+
+4. **Agent Performance Dashboard**
+   - Backend ready: `GET /api/tickets/analytics/agent-performance`
+   - Need visualization (charts, graphs)
+
+5. **Excel Export (.xlsx)**
+   - Add styled Excel export alongside CSV
+
+6. **Product Tags Manager**
+   - Seed from Unified Product Box
+   - Admin UI for tag management
+
+### P2 - Medium Priority
+7. **Smart Auto-Assignment Configuration UI**
+   - Add UI in Settings modal for pillar-agent mapping
+   - Enable/disable toggle
+
+8. **SLA Breach Alerts UI**
+   - Visual alerts in Service Desk sidebar
+   - Browser notifications for breaches
+
+9. **Follow-up Reminders UI**
+   - Add reminder UI to ticket detail drawer
+   - Show overdue reminders list
+
+10. **Voice Order Processing Improvements**
+    - Better speech-to-text accuracy
+    - Order confirmation flow
+
+### P3 - Future Enhancements
+11. **Mobile App** (React Native)
+12. **Partner Portal** (for service providers)
+13. **Loyalty/Rewards Program**
+14. **Subscription Box Feature**
+15. **Pet Insurance Integration**
+16. **Telemedicine (Video Vet Calls)**
 
 ---
 
-## 🔑 Required API Keys
+## 💡 ENHANCEMENT SUGGESTIONS
 
-| Service | Status | Environment Variable |
-|---------|--------|---------------------|
-| OpenAI (Mira AI) | ✅ Active | `EMERGENT_LLM_KEY` |
-| Resend (Email) | ✅ Active | `RESEND_API_KEY` |
-| Razorpay | ⚠️ Test Mode | `RAZORPAY_KEY_ID` |
-| WhatsApp | ❌ Pending | `WHATSAPP_ACCESS_TOKEN` |
-| Shopify | ✅ Active | N/A (public API) |
+### Revenue Boosters
+1. **Upsell Engine**: Show related products/services at checkout
+2. **Abandoned Cart Recovery**: Email/WhatsApp reminders
+3. **Membership Tiers**: Gold/Silver/Bronze with benefits
+4. **Referral Program**: Reward pet parents for referrals
+5. **Gift Cards**: Digital gift cards for pet services
+
+### Engagement Boosters
+1. **Pet Birthday Reminders**: Auto-notification with offers
+2. **Health Milestone Alerts**: Vaccination due, checkup reminders
+3. **Pet Social Feed**: Share pet moments with community
+4. **Achievement Badges**: Gamify pet parent activities
+5. **Photo Contest/Events**: Monthly themed contests
+
+### Operational Excellence
+1. **Inventory Alerts**: Low stock notifications
+2. **Route Optimization**: For delivery planning
+3. **Partner Rating System**: Rate service providers
+4. **Automated Reporting**: Daily/weekly email digests
+5. **Multi-language Support**: Hindi, regional languages
+
+### AI/ML Features
+1. **Pet Health Predictor**: Based on breed, age, history
+2. **Product Recommendations**: ML-based suggestions
+3. **Sentiment Analysis**: On customer feedback
+4. **Demand Forecasting**: For inventory planning
+5. **Chatbot Training**: Improve Mira with feedback
 
 ---
 
-## 📁 Key Documentation
+## 🗂️ DOCUMENT LOCATIONS
 
-- `/app/memory/PRD.md` - Product Requirements Document
-- `/app/memory/MULTICHANNEL_SETUP.md` - WhatsApp & Email webhook setup guide
-- `/app/memory/ROADMAP.md` - This file
-- `/app/test_reports/` - All testing iterations
+| Document | Location |
+|----------|----------|
+| PRD | `/app/memory/PRD.md` |
+| Roadmap | `/app/memory/ROADMAP.md` (this file) |
+| Test Reports | `/app/test_reports/` |
+| Sitemap | `/app/frontend/public/sitemap.xml` |
+| Robots.txt | `/app/frontend/public/robots.txt` |
 
 ---
 
-*Last Updated: January 26, 2026 - Session 34*
+## 🔑 CREDENTIALS (DEV/TEST)
+
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | aditya | lola4304 |
+| Member | dipali@clubconcierge.in | test123 |
+
+---
+
+## 📞 CONTACT INTEGRATION
+
+| Channel | Details |
+|---------|---------|
+| Phone | +91 96631 85747 |
+| WhatsApp | wa.me/919663185747 |
+| Support Email | (Configure with Resend) |
+
+---
+
+## 🚀 DEPLOYMENT CHECKLIST
+
+After every deployment to production:
+
+```bash
+# 1. Run Universal Seed (includes templates, pet parents, product options)
+curl -X POST https://thedoggycompany.in/api/admin/universal-seed
+
+# 2. Verify templates loaded
+curl https://thedoggycompany.in/api/tickets/templates
+
+# 3. Verify product options
+curl "https://thedoggycompany.in/api/products?limit=5"
+```
+
+---
+
+*This document is auto-generated and maintained by the development system.*
