@@ -304,7 +304,7 @@ const RichTextEditor = ({
               onClick={() => editor.chain().focus().unsetLink().run()}
               title="Remove Link"
             >
-              <LinkOff className="w-4 h-4" />
+              <Unlink className="w-4 h-4" />
             </ToolbarButton>
           )}
         </div>
