@@ -178,16 +178,17 @@
 - ✅ **Proper Auth Handling**: 401 responses show login prompt, setLoading(false) called correctly
 - ✅ **Grouped Memories Display**: Events & Milestones, Health & Medical, Shopping & Preferences, Life Context
 
-**Testing Status:** Backend 100% (10/10), Frontend 100% (Verified via testing agent iteration 94)
+**Testing Status:** Backend 100% (12/12), Frontend 100% (Verified via testing agent iteration 95)
 
 ---
 
 ## Pending Issues
 1. ✅ ~~**Mira Memories Auth Issue** (P1)~~ - FIXED: Shows login prompt for unauthenticated users
-2. **WebSocket Connection** (P2): Shows "Connecting..." - prevents real-time updates (core functionality unaffected)
-3. **Product Tags**: Most products lack best-seller/new-arrivals tags (filters return 0 results)
-4. **Aggregated Ticket Detail** (P3): Some tickets from reservations/stay bookings return 404 on detail endpoint
-5. **Auto-Acknowledge Email** (P2): Requires Resend API key - currently MOCKED (logs only)
+2. ✅ ~~**WebSocket Connection** (P2)~~ - FIXED: URL resolution now uses window.location.origin when API URL is empty
+3. ✅ ~~**Product Options Display** (P0)~~ - FIXED: Options count now calculated from actual Shopify options array
+4. ✅ ~~**Aggregated Ticket Detail** (P3)~~ - VERIFIED WORKING: Tickets with different prefixes (ADV-, TKT-, PET-) work correctly
+5. ✅ ~~**Pet Score / Pawmoter Score** (P1)~~ - VERIFIED WORKING: Shows in navbar, dashboard, and product modals
+6. **Auto-Acknowledge Email** (P2): Requires Resend API key - currently MOCKED (logs only)
 
 ---
 
