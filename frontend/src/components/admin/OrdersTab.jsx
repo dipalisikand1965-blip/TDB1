@@ -17,17 +17,21 @@ const OrdersTab = ({
   // CSV Export for Orders
   const exportOrdersCSV = () => {
     const headers = ['Order ID', 'Customer', 'Email', 'Phone', 'Total', 'Status', 'Items', 'Date', 'Address'];
-    const rows = orders.map(o => [
-      o.order_id || o.id,
-      o.customer_name || o.user_name,
-      o.customer_email || o.user_email,
-      o.customer_phone || o.user_phone,
-      o.total_amount || o.total,
-      o.status,
-      o.items?.length || 0,
-      o.created_at?.split('T')[0],
-      (o.shipping_address || o.address || '').replace(/,/g, ';')
-    ]);
+    const rows = orders.map(o => {
+      const addr = o.shipping_address || o.address || '';
+      const addrStr = typeof addr === 'string' ? addr : (addr?.line1 || addr?.street || '');
+      return [
+        o.order_id || o.id,
+        o.customer_name || o.user_name || o.customer?.parentName,
+        o.customer_email || o.user_email || o.customer?.email,
+        o.customer_phone || o.user_phone || o.customer?.phone,
+        o.total_amount || o.total,
+        o.status,
+        o.items?.length || 0,
+        o.created_at?.split('T')[0],
+        addrStr.replace(/,/g, ';')
+      ];
+    });
     const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
