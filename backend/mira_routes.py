@@ -2251,7 +2251,7 @@ CRITICAL CONCIERGE DOCTRINE:
 
 @router.get("/session/{session_id}")
 async def get_mira_session(session_id: str):
-    """Get full session data including ticket info"""
+    """Get full session data including ticket info and messages"""
     db = get_db()
     
     ticket = await db.mira_tickets.find_one({"mira_session_id": session_id}, {"_id": 0})
@@ -2259,9 +2259,32 @@ async def get_mira_session(session_id: str):
     if not ticket:
         raise HTTPException(status_code=404, detail="Session not found")
     
+    # Extract and format messages for frontend
+    raw_messages = ticket.get("messages", [])
+    formatted_messages = []
+    
+    for msg in raw_messages:
+        # Map internal sender types to frontend format
+        sender = msg.get("sender", "member")
+        if sender in ["member", "user"]:
+            sender = "member"
+        elif sender in ["mira", "ai", "system", "mira_created"]:
+            sender = "mira"
+        
+        formatted_messages.append({
+            "sender": sender,
+            "content": msg.get("content", ""),
+            "timestamp": msg.get("timestamp"),
+            "type": msg.get("type")
+        })
+    
     return {
         "session_id": session_id,
-        "ticket": ticket
+        "ticket_id": ticket.get("ticket_id"),
+        "pillar": ticket.get("pillar"),
+        "created_at": ticket.get("created_at"),
+        "messages": formatted_messages,  # Frontend expects this at root
+        "ticket": ticket  # Keep full ticket for backward compatibility
     }
 
 @router.post("/session/new")
