@@ -245,16 +245,29 @@ const ProductListing = ({ category = 'all' }) => {
             const data = await res.json();
             setUserPets(data.pets || []);
             
-            // Generate personalized message
+            // Set first pet as selected and generate message
             if (data.pets && data.pets.length > 0) {
               const pet = data.pets[0];
+              setSelectedPet(pet);
+              
               const messages = [
+                `🎂 Perfect picks for ${pet.name}!`,
                 `${pet.name} would love these! 🐾`,
-                `Perfect picks for ${pet.name}!`,
                 `${pet.name}'s tail will wag for these! 🎉`,
-                `Treats ${pet.name} will adore!`,
+                `Made with love for ${pet.name}! 💕`,
               ];
               setPersonalizedMessage(messages[Math.floor(Math.random() * messages.length)]);
+              
+              // Fetch personalized recommendations for this pet
+              try {
+                const recRes = await fetch(`${getApiUrl()}/api/products/recommendations/for-pet/${pet.id}?limit=8`);
+                if (recRes.ok) {
+                  const recData = await recRes.json();
+                  setPetRecommendations(recData.recommendations || []);
+                }
+              } catch (recErr) {
+                console.debug('Could not fetch recommendations:', recErr);
+              }
             }
           }
         } catch (err) {
@@ -264,6 +277,25 @@ const ProductListing = ({ category = 'all' }) => {
     };
     fetchPets();
   }, [token]);
+  
+  // Fetch recommendations when pet changes
+  const handlePetChange = async (petId) => {
+    const pet = userPets.find(p => p.id === petId);
+    if (pet) {
+      setSelectedPet(pet);
+      setPersonalizedMessage(`🎂 Perfect picks for ${pet.name}!`);
+      
+      try {
+        const recRes = await fetch(`${getApiUrl()}/api/products/recommendations/for-pet/${pet.id}?limit=8`);
+        if (recRes.ok) {
+          const recData = await recRes.json();
+          setPetRecommendations(recData.recommendations || []);
+        }
+      } catch (err) {
+        console.debug('Could not fetch recommendations:', err);
+      }
+    }
+  };
 
   // Fetch products from API
   useEffect(() => {
