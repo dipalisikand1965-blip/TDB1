@@ -156,6 +156,27 @@ const TICKET_TYPES = {
 
 // ==================== MAIN COMPONENT ====================
 const DoggyServiceDesk = ({ authHeaders }) => {
+  
+  // SLA Timer Helper - calculates and formats remaining time
+  const formatSlaTime = (slaStatus) => {
+    if (!slaStatus) return null;
+    const seconds = slaStatus.seconds_remaining;
+    const isBreached = seconds < 0;
+    const absSeconds = Math.abs(seconds);
+    
+    const hours = Math.floor(absSeconds / 3600);
+    const mins = Math.floor((absSeconds % 3600) / 60);
+    
+    if (hours >= 24) {
+      const days = Math.floor(hours / 24);
+      return { text: isBreached ? `${days}d overdue` : `${days}d ${hours % 24}h`, isBreached, status: slaStatus.status };
+    }
+    if (hours > 0) {
+      return { text: isBreached ? `${hours}h ${mins}m overdue` : `${hours}h ${mins}m`, isBreached, status: slaStatus.status };
+    }
+    return { text: isBreached ? `${mins}m overdue` : `${mins}m`, isBreached, status: slaStatus.status };
+  };
+  
   // Navigation
   const [activeNav, setActiveNav] = useState('tickets');
   const [ticketsExpanded, setTicketsExpanded] = useState(true);
