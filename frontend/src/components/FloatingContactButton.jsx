@@ -1,16 +1,26 @@
 /**
  * FloatingContactButton.jsx
- * Floating contact button that appears on all pages
+ * Floating contact button that appears on most pages
  * Allows users to quickly call, WhatsApp, voice order, or request callback
+ * 
+ * Hidden on Mira pages where dedicated contact options exist in the sidebar
  */
 
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Phone, MessageCircle, Mic, X, Headphones, PhoneIncoming } from 'lucide-react';
 import CallbackRequestModal from './CallbackRequestModal';
 
 const FloatingContactButton = () => {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [showCallbackModal, setShowCallbackModal] = useState(false);
+  
+  // Hide on Mira-related pages where dedicated contact options exist
+  const hiddenPaths = ['/mira', '/ask-mira', '/voice-order', '/agent', '/admin/service-desk'];
+  if (hiddenPaths.some(path => location.pathname.startsWith(path))) {
+    return null;
+  }
 
   const handleCallbackClick = () => {
     setIsOpen(false);
