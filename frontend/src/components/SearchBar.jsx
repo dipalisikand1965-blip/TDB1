@@ -165,7 +165,7 @@ const SearchBar = ({ onClose, isOverlay = false }) => {
               className="absolute right-2 h-8 w-8"
               onClick={() => {
                 setQuery('');
-                setResults({ products: [], collections: [] });
+                setResults({ products: [], collections: [], services: [], stays: [], boarding: [] });
                 setIsOpen(false);
               }}
             >
