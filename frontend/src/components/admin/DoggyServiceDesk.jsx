@@ -1979,6 +1979,58 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 </div>
               </div>
               
+              {/* ==================== KANBAN VIEW ==================== */}
+              {viewMode === 'kanban' && (
+                <div className="flex-1 flex flex-col min-w-0 bg-white border-r">
+                  {/* Kanban Header */}
+                  <div className="px-4 py-2 border-b flex items-center justify-between flex-shrink-0 bg-gray-50">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <span className="font-semibold">Kanban Board</span>
+                      <span>•</span>
+                      <span className="font-medium">{tickets.length}</span>
+                      <span>tickets</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      {/* View Mode Toggle */}
+                      <div className="flex items-center bg-white rounded-lg border shadow-sm p-0.5 mr-1">
+                        <button
+                          onClick={() => setViewMode('list')}
+                          className={`p-1.5 rounded transition-all ${viewMode === 'list' ? 'bg-emerald-100 text-emerald-700' : 'text-gray-400 hover:text-gray-600'}`}
+                          title="List View (Alt+1)"
+                        >
+                          <LayoutList className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => setViewMode('kanban')}
+                          className={`p-1.5 rounded transition-all ${viewMode === 'kanban' ? 'bg-emerald-100 text-emerald-700' : 'text-gray-400 hover:text-gray-600'}`}
+                          title="Kanban Board (Alt+2)"
+                        >
+                          <Columns3 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      
+                      <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={refreshing}>
+                        <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Kanban Board */}
+                  <div className="flex-1 overflow-auto p-4 bg-gray-100">
+                    <KanbanBoard 
+                      tickets={tickets} 
+                      onSelectTicket={(ticketId) => {
+                        const ticket = tickets.find(t => t.ticket_id === ticketId);
+                        if (ticket) handleSelectTicket(ticket);
+                      }}
+                      onStatusChange={handleStatusChange}
+                      loading={loading}
+                    />
+                  </div>
+                </div>
+              )}
+              
               {/* ==================== TICKET DETAIL PANEL ==================== */}
               {selectedTicket ? (
                 <div className="w-[500px] flex-shrink-0 flex flex-col bg-white">
