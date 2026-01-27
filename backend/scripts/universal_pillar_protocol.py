@@ -326,6 +326,128 @@ async def universal_seed(db):
     
     results['stay_synced'] = stay_synced
     
+    # ========== 7. SEED BOARDING FACILITIES ==========
+    logger.info("Seeding boarding facilities...")
+    boarding_facilities = [
+        {
+            'id': 'board-bangalore-1',
+            'name': 'Happy Tails Boarding',
+            'city': 'Bangalore',
+            'state': 'Karnataka',
+            'boarding_type': 'Home-style',
+            'description': 'Loving home environment for your pet while you\'re away. 24/7 supervision and care.',
+            'price_range': '₹800-1,200/night',
+            'paw_score': 4.8,
+            'phone': '+91-9876543210',
+            'amenities': ['AC Rooms', 'Garden', 'CCTV', 'Daily Updates'],
+            'image': 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800'
+        },
+        {
+            'id': 'board-bangalore-2',
+            'name': 'Pawsome Pet Resort',
+            'city': 'Bangalore',
+            'state': 'Karnataka',
+            'boarding_type': 'Premium',
+            'description': 'Premium boarding with grooming, training, and swimming pool access.',
+            'price_range': '₹1,500-2,500/night',
+            'paw_score': 4.9,
+            'phone': '+91-9876543211',
+            'amenities': ['Swimming Pool', 'Grooming', 'Training', 'Vet on Call'],
+            'image': 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800'
+        },
+        {
+            'id': 'board-mumbai-1',
+            'name': 'Canine Castle Mumbai',
+            'city': 'Mumbai',
+            'state': 'Maharashtra',
+            'boarding_type': 'Luxury',
+            'description': 'Five-star luxury boarding experience with individual suites and spa services.',
+            'price_range': '₹2,500-4,000/night',
+            'paw_score': 5.0,
+            'phone': '+91-9876543212',
+            'amenities': ['Private Suites', 'Spa', 'Gourmet Meals', 'Live Webcam'],
+            'image': 'https://images.unsplash.com/photo-1601758125946-6ec2ef64daf8?w=800'
+        },
+        {
+            'id': 'board-delhi-1',
+            'name': 'Paws & Play Delhi',
+            'city': 'Delhi',
+            'state': 'Delhi',
+            'boarding_type': 'Home-style',
+            'description': 'Cozy home boarding with experienced pet parents. Perfect for anxious pets.',
+            'price_range': '₹700-1,000/night',
+            'paw_score': 4.7,
+            'phone': '+91-9876543213',
+            'amenities': ['Home Environment', 'One-on-One Care', 'Daily Walks'],
+            'image': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800'
+        },
+        {
+            'id': 'board-gurgaon-1',
+            'name': 'The Dog Lodge Gurgaon',
+            'city': 'Gurgaon',
+            'state': 'Haryana',
+            'boarding_type': 'Premium',
+            'description': 'Modern facility with climate-controlled rooms and play areas.',
+            'price_range': '₹1,200-1,800/night',
+            'paw_score': 4.6,
+            'phone': '+91-9876543214',
+            'amenities': ['AC Rooms', 'Play Area', 'Webcam Access', 'Pickup Available'],
+            'image': 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800'
+        },
+        {
+            'id': 'board-pune-1',
+            'name': 'Furry Friends Pune',
+            'city': 'Pune',
+            'state': 'Maharashtra',
+            'boarding_type': 'Home-style',
+            'description': 'Family-run boarding with lots of love and attention for each pet.',
+            'price_range': '₹600-900/night',
+            'paw_score': 4.5,
+            'phone': '+91-9876543215',
+            'amenities': ['Garden', 'Home Cooked Meals', 'Daily Updates'],
+            'image': 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800'
+        },
+        {
+            'id': 'board-hyderabad-1',
+            'name': 'Wagging Tails Hyderabad',
+            'city': 'Hyderabad',
+            'state': 'Telangana',
+            'boarding_type': 'Premium',
+            'description': 'Spacious facility with indoor and outdoor play areas.',
+            'price_range': '₹1,000-1,500/night',
+            'paw_score': 4.7,
+            'phone': '+91-9876543216',
+            'amenities': ['Large Play Area', 'Training', 'Grooming', 'Vet Visits'],
+            'image': 'https://images.unsplash.com/photo-1601758125946-6ec2ef64daf8?w=800'
+        },
+        {
+            'id': 'board-chennai-1',
+            'name': 'Pet Paradise Chennai',
+            'city': 'Chennai',
+            'state': 'Tamil Nadu',
+            'boarding_type': 'Private',
+            'description': 'Private boarding in a peaceful farm setting. Ideal for dogs who need space.',
+            'price_range': '₹1,500-2,000/night',
+            'paw_score': 4.8,
+            'phone': '+91-9876543217',
+            'amenities': ['Farm Setting', 'Swimming', 'Large Grounds', 'Individual Care'],
+            'image': 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800'
+        }
+    ]
+    
+    boarding_seeded = 0
+    for facility in boarding_facilities:
+        facility['created_at'] = now
+        result = await db.stay_boarding_facilities.update_one(
+            {'id': facility['id']},
+            {'$set': facility},
+            upsert=True
+        )
+        if result.upserted_id or result.modified_count:
+            boarding_seeded += 1
+    
+    results['boarding_seeded'] = boarding_seeded
+    
     logger.info(f"Universal seed complete: {results}")
     return results
 
