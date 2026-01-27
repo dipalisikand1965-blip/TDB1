@@ -8,7 +8,7 @@ import requests
 import os
 import json
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://petpillar-dash.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://petplatform.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 ADMIN_USERNAME = "aditya"
