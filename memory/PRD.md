@@ -131,7 +131,27 @@
   - Files tab for ticket attachments
   - History tab for activity timeline
 
-**Testing Status:** Backend 87.5%, Frontend 100% (Verified via testing agent)
+**Phase 9.2: SLA Timers, Reminders & Auto-Acknowledge (Jan 27, 2025):**
+- ✅ **SLA Timer Display**: Visual countdown in ticket list and detail header
+  - Format: "SLA: Xh Xm" with color-coded backgrounds
+  - Green (ok), Amber (warning <2h), Orange (critical <1h), Red (breached)
+  - Pulsing animation when SLA is breached
+- ✅ **SLA Calculation**: Automatic based on urgency level
+  - Low: 48 hours, Medium: 24 hours, High: 8 hours
+  - Critical: 2 hours, Urgent: 4 hours
+  - Calculated on ticket creation, stored in `sla_due_at` field
+- ✅ **Reminder/Task System**: Full CRUD with visual management
+  - Add Reminder modal: Title, Description, Due Date & Time, Type, Priority
+  - Types: Follow Up, Call Back, Task, Deadline
+  - Priorities: Low, Medium, High (color-coded buttons)
+  - Reminders list shows checkboxes, titles, due dates, pending count
+  - Overdue reminders highlighted in red with warning indicator
+  - Backend endpoints: GET/POST/PATCH/DELETE `/api/tickets/{id}/reminders`
+- ✅ **Auto-Acknowledge Emails**: Triggered on ticket creation
+  - Uses `send_ticket_notification()` function
+  - REQUIRES Resend API key for actual delivery (currently MOCKED - logs only)
+
+**Testing Status:** Backend 100% (13/13), Frontend 100% (Verified via testing agent iteration 93)
 
 **Files Modified:**
 - `/app/frontend/src/components/admin/DoggyServiceDesk.jsx` - Main component
