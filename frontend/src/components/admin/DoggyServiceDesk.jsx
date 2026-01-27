@@ -2120,9 +2120,6 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           </Card>
         </div>
       )}
-          </Card>
-        </div>
-      )}
       
       {/* ==================== MAIN CONTENT ==================== */}
       <div className="flex-1 flex flex-col min-w-0">
