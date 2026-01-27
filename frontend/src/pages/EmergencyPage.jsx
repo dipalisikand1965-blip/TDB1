@@ -16,6 +16,7 @@ import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import {
+import SEOHead from '../components/SEOHead';
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
   ChevronRight, Sparkles, Star, Loader2, Send, ArrowRight, Play,
   ChevronDown, Users, Shield, Wind, Skull, CloudLightning, ShieldAlert,

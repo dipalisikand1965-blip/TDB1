@@ -13,6 +13,7 @@ import {
   ShoppingBag, Users, Award, Zap, X, Stethoscope, CreditCard, Crown
 } from 'lucide-react';
 import { getApiUrl } from '../utils/api';
+import SEOHead from '../components/SEOHead';
 
 // Tenure Recognition levels (Not gamified - reflects depth of relationship)
 const TENURE_LEVELS = [

@@ -19,6 +19,7 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraContextPanel from '../components/MiraContextPanel';
 import {
+import SEOHead from '../components/SEOHead';
   Heart, Rainbow, Flower2, Star, Calendar, Phone, Mail, MapPin,
   Clock, ChevronRight, Sparkles, Home, CheckCircle, Users,
   MessageCircle, ArrowRight, Book, Camera, Music, Loader2, X, ShoppingCart

@@ -12,6 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
 import MiraContextPanel from '../components/MiraContextPanel';
 import {
+import SEOHead from '../components/SEOHead';
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   ChevronRight, Sparkles, Search, Filter, Clock, CheckCircle,
   Building2, Gift, Star, ArrowRight, X, Send, Info, Loader2

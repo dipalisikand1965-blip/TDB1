@@ -16,6 +16,7 @@ import AdminQuickEdit from '../components/AdminQuickEdit';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedAutocomplete from '../components/BreedAutocomplete';
 import {
+import SEOHead from '../components/SEOHead';
   Car, Train, Plane, Truck, MapPin, Calendar, Clock, PawPrint,
   Shield, Heart, CheckCircle, AlertTriangle, MessageCircle, Phone,
   ChevronRight, Sparkles, Package, Star, Loader2, Info, Send,
