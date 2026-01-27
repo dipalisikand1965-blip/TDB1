@@ -548,6 +548,28 @@ const ProductListing = ({ category = 'all' }) => {
           </div>
         )}
 
+        {/* Location Detection Banner - Only for cake categories */}
+        {isCakeCategory && detectedCity && detectedCity !== 'other' && (
+          <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl flex items-center gap-3" data-testid="location-detected-banner">
+            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+              <MapPin className="w-4 h-4 text-green-600" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-green-800">
+                📍 Detected: {detectedCity.charAt(0).toUpperCase() + detectedCity.slice(1)} - Showing fresh delivery cakes!
+              </p>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-green-700 hover:text-green-800"
+              onClick={() => { setDetectedCity(null); setDeliveryCity('all'); }}
+            >
+              Clear
+            </Button>
+          </div>
+        )}
+
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-4 mb-8 p-4 bg-white rounded-xl shadow-sm">
           <div className="flex items-center gap-2 text-gray-700">
@@ -557,18 +579,41 @@ const ProductListing = ({ category = 'all' }) => {
           
           {/* Delivery City Filter - Only for cake categories */}
           {isCakeCategory && (
-            <Select value={deliveryCity} onValueChange={setDeliveryCity} data-testid="delivery-city-filter">
-              <SelectTrigger className="w-[180px] border-purple-200 bg-purple-50">
-                <SelectValue placeholder="Select City" />
-              </SelectTrigger>
-              <SelectContent>
-                {FRESH_DELIVERY_CITIES.map(city => (
-                  <SelectItem key={city.value} value={city.value}>
-                    {city.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Select value={deliveryCity} onValueChange={setDeliveryCity} data-testid="delivery-city-filter">
+                <SelectTrigger className="w-[180px] border-purple-200 bg-purple-50">
+                  <SelectValue placeholder="Select City" />
+                </SelectTrigger>
+                <SelectContent>
+                  {FRESH_DELIVERY_CITIES.map(city => (
+                    <SelectItem key={city.value} value={city.value}>
+                      {city.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {!detectedCity && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-purple-600 border-purple-200"
+                  onClick={detectLocation}
+                  disabled={detectingLocation}
+                >
+                  {detectingLocation ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                      Detecting...
+                    </>
+                  ) : (
+                    <>
+                      <MapPin className="w-4 h-4 mr-1" />
+                      Detect Location
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
           )}
           
           <Select value={priceRange} onValueChange={setPriceRange}>
