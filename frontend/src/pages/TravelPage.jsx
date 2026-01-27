@@ -503,6 +503,46 @@ const TravelPage = () => {
         </div>
       </div>
 
+      {/* === ELEVATED CONCIERGE® EXPERIENCES === */}
+      <div className="py-16 bg-gradient-to-br from-violet-50 via-purple-50 to-pink-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-violet-100 text-violet-700 px-4 py-2 rounded-full mb-4">
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm font-medium">Elevated Experiences</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Travel <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-purple-600">Concierge®</span> Experiences
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              These aren't bookable services — they're curated experiences that evolve through conversation, judgment, and care. Every journey is unique, just like your pet.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            {TRAVEL_EXPERIENCES.map((exp, idx) => (
+              <ConciergeExperienceCard
+                key={idx}
+                pillar="travel"
+                title={exp.title}
+                description={exp.description}
+                icon={exp.icon}
+                gradient={exp.gradient}
+                badge={exp.badge}
+                badgeColor={exp.badgeColor}
+                highlights={exp.highlights}
+              />
+            ))}
+          </div>
+          
+          <div className="mt-10 text-center">
+            <p className="text-sm text-gray-500">
+              💬 Not sure which experience fits your needs? <button onClick={handleStartPlanning} className="text-violet-600 hover:underline font-medium">Start a conversation</button> and let us guide you.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* === TRAVEL BUNDLES === */}
       <div id="travel-kits" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
