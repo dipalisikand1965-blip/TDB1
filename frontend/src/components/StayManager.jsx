@@ -46,6 +46,13 @@ const StayManager = ({ getAuthHeader }) => {
   const [importingProperties, setImportingProperties] = useState(false);
   const bundleCsvRef = useRef(null);
   const propertyCsvRef = useRef(null);
+  
+  // Boarding state
+  const [boardingFacilities, setBoardingFacilities] = useState([]);
+  const [boardingStats, setBoardingStats] = useState({});
+  const [selectedBoarding, setSelectedBoarding] = useState(null);
+  const [showBoardingModal, setShowBoardingModal] = useState(false);
+  const [boardingFilters, setBoardingFilters] = useState({ city: '', type: '' });
 
   const fetchData = useCallback(async () => {
     setLoading(true);
