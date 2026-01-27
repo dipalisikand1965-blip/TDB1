@@ -3024,6 +3024,26 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                           <Badge className={`text-xs ${STATUS_COLORS[ticket.status]}`}>
                             {ticket.status?.replace(/_/g, ' ')}
                           </Badge>
+                          {/* SLA Timer */}
+                          {ticket.sla_due_at && (() => {
+                            const due = new Date(ticket.sla_due_at);
+                            const now = new Date();
+                            const diff = due - now;
+                            const hours = Math.floor(diff / (1000 * 60 * 60));
+                            const isBreached = diff < 0;
+                            const isWarning = !isBreached && hours < 4;
+                            
+                            return (
+                              <span className={`flex items-center gap-1 text-xs px-1.5 py-0.5 rounded ${
+                                isBreached ? 'bg-red-100 text-red-700' : 
+                                isWarning ? 'bg-amber-100 text-amber-700' : 
+                                'bg-green-100 text-green-700'
+                              }`}>
+                                <Timer className="w-3 h-3" />
+                                {isBreached ? 'SLA Breached' : `${hours}h`}
+                              </span>
+                            );
+                          })()}
                           {/* Reply Count */}
                           {ticket.reply_count > 0 && (
                             <span className="flex items-center gap-1 text-xs text-slate-500">
