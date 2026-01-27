@@ -20,7 +20,7 @@ import {
   Dumbbell, GraduationCap, Shield, MapPin, Package, CreditCard,
   MessageCircle, History, Brain, Target, AlertTriangle, Cake,
   Dog, Cat, Scissors, Car, Home, Siren, Mic, MicOff, StopCircle,
-  LayoutList, Columns3, Keyboard, Timer 
+  LayoutList, Columns3, Keyboard, Timer,
   Play, Pause, Volume2, File, Upload, Trash, Eye, Download, Wifi, WifiOff
 } from 'lucide-react';
 
