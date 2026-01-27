@@ -1214,6 +1214,134 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     setShowSettingsModal(false);
   };
 
+  // ==================== NOTIFICATION SYSTEM ====================
+  
+  // Request notification permission
+  const requestNotificationPermission = async () => {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      setNotificationPermission(permission);
+      setNotificationsEnabled(permission === 'granted');
+      return permission === 'granted';
+    }
+    return false;
+  };
+  
+  // Show browser notification
+  const showBrowserNotification = (title, body, onClick) => {
+    if (notificationsEnabled && notificationPermission === 'granted') {
+      const notification = new Notification(title, {
+        body,
+        icon: '🐾',
+        tag: 'service-desk',
+        requireInteraction: true
+      });
+      
+      notification.onclick = () => {
+        window.focus();
+        if (onClick) onClick();
+        notification.close();
+      };
+      
+      // Auto-close after 10 seconds
+      setTimeout(() => notification.close(), 10000);
+    }
+  };
+  
+  // Check notification permission on mount
+  useEffect(() => {
+    if ('Notification' in window) {
+      setNotificationPermission(Notification.permission);
+      setNotificationsEnabled(Notification.permission === 'granted');
+    }
+  }, []);
+  
+  // ==================== INLINE SUBJECT EDITING ====================
+  
+  const startEditingSubject = () => {
+    setEditedSubject(selectedTicket?.subject || selectedTicket?.description?.slice(0, 60) || '');
+    setEditingSubject(true);
+  };
+  
+  const saveSubject = async () => {
+    if (!selectedTicket || !editedSubject.trim()) return;
+    
+    try {
+      await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}`, {
+        method: 'PATCH',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject: editedSubject.trim() })
+      });
+      
+      setSelectedTicket(prev => ({ ...prev, subject: editedSubject.trim() }));
+      setEditingSubject(false);
+      await fetchAllTickets();
+    } catch (err) {
+      console.error('Error saving subject:', err);
+    }
+  };
+  
+  // ==================== AGENT COLLISION DETECTION ====================
+  
+  // Report agent viewing a ticket
+  const reportTicketView = async (ticketId) => {
+    try {
+      await fetch(`${getApiUrl()}/api/tickets/${ticketId}/viewing`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agent: adminUser || 'Unknown Agent' })
+      });
+    } catch (err) {
+      console.debug('Viewing report error:', err);
+    }
+  };
+  
+  // Check who else is viewing
+  const checkActiveViewers = async (ticketId) => {
+    try {
+      const res = await fetch(`${getApiUrl()}/api/tickets/${ticketId}/viewers`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setActiveAgents(prev => ({ ...prev, [ticketId]: data.viewers || [] }));
+      }
+    } catch (err) {
+      console.debug('Viewers check error:', err);
+    }
+  };
+  
+  // Report viewing when ticket is selected
+  useEffect(() => {
+    if (selectedTicket) {
+      reportTicketView(selectedTicket.ticket_id);
+      checkActiveViewers(selectedTicket.ticket_id);
+      setViewingTicketSince(new Date());
+      
+      // Refresh viewers every 30 seconds
+      const interval = setInterval(() => {
+        reportTicketView(selectedTicket.ticket_id);
+        checkActiveViewers(selectedTicket.ticket_id);
+      }, 30000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [selectedTicket?.ticket_id]);
+  
+  // ==================== CUSTOMER SATISFACTION (CSAT) ====================
+  
+  const sendCSATRequest = async (ticketId, rating, feedback) => {
+    try {
+      await fetch(`${getApiUrl()}/api/tickets/${ticketId}/csat`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating, feedback })
+      });
+      setShowCSATModal(false);
+      setCsatData({ rating: 0, feedback: '' });
+    } catch (err) {
+      console.error('CSAT error:', err);
+    }
+  };
+
   // ==================== ATTACHMENT HANDLING ====================
   
   // Handle file/image selection
