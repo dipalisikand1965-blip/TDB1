@@ -1,454 +1,456 @@
-# 🐕 The Doggy Company - Master Feature List
-## "World's First Pet Life Operating System"
+# 🐕 The Doggy Company - Pet Life Operating System
+## B2B2C Platform Architecture Document
 
-*From a Pet Parent's Perspective - What Would Make Their Life Complete?*
+*Last Updated: January 2025*
 
 ---
 
-## 🎯 THE PET PARENT JOURNEY
+# 🎯 STRATEGIC VISION: B2B2C PET OPERATING SYSTEM
 
-Think like a pet parent from Day 1 of getting a pet to the end of their journey:
+## What We're Building
+
+A **white-label Pet Life Operating System** that businesses (B2B) can use to serve their pet-owning customers (B2C). Think of it as "Zoho for Pet Businesses" or "Salesforce for Vets".
 
 ```
-ADOPT → REGISTER → DAILY CARE → CELEBRATE → EMERGENCY → FAREWELL
-   ↓         ↓           ↓           ↓           ↓          ↓
-Find Pet  Profile    Food/Health  Birthdays   24/7 Help  Memorial
+┌─────────────────────────────────────────────────────────────────────┐
+│                    PET LIFE OPERATING SYSTEM                        │
+│                    (Multi-Tenant SaaS Platform)                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐            │
+│   │  VET CLINIC │    │    BANK     │    │  LIFESTYLE  │            │
+│   │  INSTANCE   │    │  INSTANCE   │    │   BRAND     │            │
+│   │             │    │             │    │  INSTANCE   │            │
+│   │ • Pet Health│    │ • Pet       │    │ • Pet       │            │
+│   │ • Care      │    │   Insurance │    │   Products  │            │
+│   │ • Emergency │    │ • Loans     │    │ • Services  │            │
+│   │ • Vaccines  │    │ • Rewards   │    │ • Lifestyle │            │
+│   └──────┬──────┘    └──────┬──────┘    └──────┬──────┘            │
+│          │                  │                  │                    │
+│          └──────────────────┼──────────────────┘                    │
+│                             │                                       │
+│                    ┌────────▼────────┐                              │
+│                    │   SHARED CORE   │                              │
+│                    │   PLATFORM      │                              │
+│                    │                 │                              │
+│                    │ • Pet Database  │                              │
+│                    │ • Service Desk  │                              │
+│                    │ • Mira AI       │                              │
+│                    │ • 14 Pillars    │                              │
+│                    │ • Payments      │                              │
+│                    │ • Analytics     │                              │
+│                    └─────────────────┘                              │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-# 📋 MASTER FEATURE LIST
+## 🏢 TARGET B2B CUSTOMERS
 
-## 1. ADOPTION & ONBOARDING 🐾
+### Tier 1: Primary Targets
+| Business Type | Why They Need Us | Key Pillars |
+|---------------|------------------|-------------|
+| **Vet Clinics/Hospitals** | Patient management, appointments, follow-ups | Care, Emergency, Advisory |
+| **Pet Insurance Companies** | Claims, wellness tracking, risk assessment | Insure, Care, Health |
+| **Banks & Credit Cards** | Pet rewards programs, lifestyle benefits | All Pillars (Rewards focus) |
+| **Pet Food Brands** | D2C + subscription management | Dine, Feed, Shop |
+| **Pet Retail Chains** | Omnichannel retail + services | Shop, Care, Groom |
 
-### Adopt Pillar
-- [ ] Pet adoption marketplace (verified shelters)
-- [ ] Breed finder quiz ("Which pet is right for you?")
-- [ ] Adoption application flow
-- [ ] Background verification for adopters
-- [ ] Post-adoption support & checkups
-- [ ] Foster program management
-- [ ] Stray animal reporting
-- [ ] **Missing Pet Finder** (lost & found network)
-- [ ] **Dog Rescues NGO Integration**
-- [ ] Microchipping registry integration
-
-### Pet Registration & Profile
-- [x] Basic pet profile (name, breed, age, weight)
-- [ ] Health records digitization
-- [ ] Vaccination tracker with reminders
-- [ ] Deworming schedule
-- [ ] Allergy & dietary restrictions
-- [ ] Vet history & prescriptions
-- [ ] Pet insurance documents
-- [ ] **Microchip Registration** (KCI, IKC)
-- [ ] Pet passport for travel
-- [ ] Multi-pet household management
+### Tier 2: Secondary Targets
+| Business Type | Why They Need Us | Key Pillars |
+|---------------|------------------|-------------|
+| **Boarding/Daycare** | Booking, customer management | Stay, Care |
+| **Groomers** | Appointments, loyalty | Groom, Shop |
+| **Trainers** | Course management, progress tracking | Learn, Train |
+| **Breeders** | Puppy management, new parent education | Adopt, Care |
+| **Pet-Friendly Hotels** | Pet amenities, concierge | Stay, Travel |
+| **Pet Photographers** | Booking, galleries | Celebrate, Enjoy |
 
 ---
 
-## 2. DAILY NUTRITION & FOOD 🍽️
+## 🏗️ MULTI-TENANT ARCHITECTURE
 
-### Dine Pillar - Expanded
-- [x] Pet-friendly restaurants finder
-- [x] Dining Concierge (Chef's Table, Private Dining)
-- [ ] **Fresh Home-Made Meals** subscription
-- [ ] **Subscription Food Boxes** (weekly/monthly)
-- [ ] Customized diet plans by nutritionist
-- [ ] Breed-specific nutrition guides
-- [ ] Calorie calculator based on activity
-- [ ] Treats & snacks marketplace
-- [ ] Special diet foods (diabetic, renal, etc.)
-- [ ] Meal prep recipes for DIY parents
-- [ ] Food allergy management
+### Tenant Configuration Model
 
-### Inventory & Products
-- [ ] **Unified Inventory Management**
-  - Real-time stock across all pillars
-  - Auto-reorder on low stock
-  - Expiry date tracking
-- [ ] **Unified Pricing Engine**
-  - Cost of Goods (COG)
-  - Margin management
-  - Commission structure
-  - GST calculation
-  - Packaging costs
-  - Shipping costs
-  - Pillar-wise pricing rules
+```python
+class TenantConfig:
+    # Identity
+    tenant_id: str              # "apollo_vets", "hdfc_pets", etc.
+    tenant_name: str            # "Apollo Veterinary Clinics"
+    tenant_type: str            # "vet_clinic", "bank", "retail", "brand"
+    
+    # Branding
+    branding:
+        logo_url: str
+        primary_color: str      # Hex code
+        secondary_color: str
+        font_family: str
+        custom_domain: str      # "pets.apolloclinic.com"
+    
+    # Feature Flags (Which pillars are enabled)
+    enabled_pillars: [
+        "care",      # Always on for vets
+        "emergency", # Always on for vets
+        "shop",      # Optional add-on
+        # ... etc
+    ]
+    
+    # Pricing Tier
+    subscription_tier: str      # "starter", "professional", "enterprise"
+    
+    # Integration Keys
+    integrations:
+        payment_gateway: str    # "razorpay", "stripe"
+        sms_provider: str       # "twilio", "msg91"
+        email_provider: str     # "resend", "sendgrid"
+    
+    # Custom Fields
+    custom_pet_fields: []       # Tenant-specific pet data fields
+    custom_service_types: []    # Tenant-specific services
+```
 
----
+### Database Strategy
 
-## 3. HEALTH & WELLNESS 💊
+```
+MongoDB Collections (Multi-Tenant):
 
-### Care Pillar - Expanded
-- [x] Vet consultation booking
-- [ ] **Home Visit Vaccinations**
-- [ ] **Home Visit Deworming**
-- [ ] Online vet consultations (telemedicine)
-- [ ] Lab test bookings
-- [ ] Prescription management
-- [ ] Health checkup packages
-- [ ] Dental care services
-- [ ] **First Aid & CPR Training** for parents
-- [ ] Senior pet care programs
-- [ ] Weight management programs
-- [ ] Chronic condition management
-
-### Pet Insurance & Wellness Plans
-- [ ] Insurance plan comparison
-- [ ] Claim submission portal
-- [ ] Wellness plan subscriptions
-- [ ] Pre-existing condition coverage
-- [ ] Accident & illness coverage
-- [ ] Routine care coverage
-
----
-
-## 4. GROOMING & SPA 🛁
-
-### Care Pillar - Grooming
-- [ ] **Home Visit Grooming** (Spa & Haircut)
-- [ ] Salon booking system
-- [ ] Breed-specific grooming packages
-- [ ] Skin & coat treatments
-- [ ] Nail trimming
-- [ ] Ear cleaning
-- [ ] Teeth brushing
-- [ ] De-shedding treatments
-- [ ] Flea & tick treatments
-- [ ] Subscription grooming plans
+├── tenants                    # Tenant configurations
+├── tenant_users               # Staff/admin per tenant
+├── pets                       # All pets (tenant_id field)
+├── pet_parents               # All pet parents (tenant_id field)
+├── tickets                   # Service desk (tenant_id field)
+├── products                  # Products catalog (tenant_id field)
+├── services                  # Services (tenant_id field)
+├── bookings                  # Appointments (tenant_id field)
+├── orders                    # Orders (tenant_id field)
+├── mira_conversations        # AI chat history (tenant_id field)
+└── analytics                 # Aggregated metrics (tenant_id field)
+```
 
 ---
 
-## 5. STAY & BOARDING 🏨
+## 🔌 PILLAR-AS-MODULE ARCHITECTURE
 
-### Stay Pillar - Expanded
-- [x] Pet hotels & boarding
-- [x] Boarding facilities listing
-- [ ] **Dog Walking Services** (daily, scheduled)
-- [ ] Daycare services
-- [ ] In-home pet sitting
-- [ ] Webcam live streaming
-- [ ] Daily report cards
-- [ ] Pickup & drop service
-- [ ] Special needs boarding
-- [ ] Long-term stays
-- [ ] Trial night bookings
+Each pillar becomes a **toggleable module** that tenants can enable/disable:
 
----
+### Core Pillars (Always Available)
+| Pillar | Module ID | Default | Description |
+|--------|-----------|---------|-------------|
+| **Care** | `care` | ON | Health services, vet visits |
+| **Shop** | `shop` | ON | Product catalog & orders |
+| **Service Desk** | `desk` | ON | Ticket management |
+| **Mira AI** | `mira` | ON | AI assistant |
 
-## 6. TRAVEL & ADVENTURES ✈️
-
-### Travel Pillar - Expanded
-- [x] Pet-friendly hotels
-- [ ] Pet relocation services (domestic & international)
-- [ ] Pet-friendly vacation packages
-- [ ] Travel health certificates
-- [ ] Airline pet booking assistance
-- [ ] Car travel accessories
-- [ ] Travel insurance
-- [ ] Pet passport services
-- [ ] Quarantine assistance
-- [ ] Pet-friendly road trip guides
+### Optional Pillars
+| Pillar | Module ID | Price | Best For |
+|--------|-----------|-------|----------|
+| **Emergency** | `emergency` | ₹5K/mo | Vet Clinics |
+| **Stay** | `stay` | ₹3K/mo | Boarding facilities |
+| **Dine** | `dine` | ₹2K/mo | Pet cafes, food brands |
+| **Celebrate** | `celebrate` | ₹2K/mo | Bakeries, gift shops |
+| **Travel** | `travel` | ₹3K/mo | Relocation services |
+| **Fit** | `fitness` | ₹2K/mo | Trainers, gyms |
+| **Learn** | `learn` | ₹2K/mo | Training academies |
+| **Groom** | `groom` | ₹2K/mo | Grooming salons |
+| **Adopt** | `adopt` | ₹1K/mo | Shelters, NGOs |
+| **Farewell** | `farewell` | ₹1K/mo | Pet cremation |
+| **Paperwork** | `paperwork` | ₹1K/mo | Documentation |
+| **Advisory** | `advisory` | ₹2K/mo | Consultancies |
+| **Insure** | `insure` | ₹5K/mo | Insurance companies |
 
 ---
 
-## 7. TRAINING & BEHAVIOR 🎓
+## 💰 B2B PRICING MODEL
 
-### Learn Pillar - Expanded
-- [x] Training course bookings
-- [ ] **Training Videos Library** (on-demand)
-- [ ] Puppy socialization classes
-- [ ] Obedience training
-- [ ] Behavioral consultations
-- [ ] Aggression management
-- [ ] Separation anxiety programs
-- [ ] Agility training
-- [ ] Therapy dog certification
-- [ ] Trick training
-- [ ] Breed-specific training
-- [ ] Online courses with certificates
+### Subscription Tiers
 
----
+```
+┌────────────────────────────────────────────────────────────────┐
+│                        PRICING TIERS                           │
+├──────────────┬──────────────┬──────────────┬──────────────────┤
+│   STARTER    │ PROFESSIONAL │  ENTERPRISE  │   CUSTOM         │
+│   ₹9,999/mo  │  ₹24,999/mo  │  ₹49,999/mo  │   Contact Us     │
+├──────────────┼──────────────┼──────────────┼──────────────────┤
+│ 3 Pillars    │ 7 Pillars    │ All Pillars  │ All + Custom     │
+│ 1,000 Pets   │ 10,000 Pets  │ Unlimited    │ Unlimited        │
+│ 3 Staff      │ 15 Staff     │ Unlimited    │ Unlimited        │
+│ Basic Mira   │ Full Mira    │ Custom Mira  │ Trained Mira     │
+│ Email Support│ Phone Support│ Dedicated AM │ Dedicated Team   │
+│              │ API Access   │ White Label  │ On-Premise       │
+└──────────────┴──────────────┴──────────────┴──────────────────┘
+```
 
-## 8. ACTIVITIES & FUN 🎾
-
-### Enjoy Pillar - Expanded
-- [x] Dog parks listing
-- [ ] Pet events calendar
-- [ ] Playdates matching
-- [ ] Swimming pools for dogs
-- [ ] Hiking & adventure groups
-- [ ] Beach days organization
-- [ ] Pet photography sessions
-- [ ] **Pet Photography & Portraits** studio
-- [ ] Pet-friendly cafes
-- [ ] Doggy birthday parties venue
-- [ ] Agility course access
-- [ ] Seasonal activities (rain walks, snow play)
+### Add-On Pricing
+- **Per SMS**: ₹0.25
+- **Per Email**: ₹0.10
+- **Per WhatsApp**: ₹0.50
+- **Mira AI Queries**: ₹0.05 per query (after 10K free)
+- **Storage**: ₹100/GB after 5GB free
+- **Custom Integration**: One-time ₹25K-100K
 
 ---
 
-## 9. FITNESS & EXERCISE 🏃
+## 🤖 MIRA AI - TENANT-AWARE
 
-### Fit Pillar - Expanded
-- [x] Fitness programs
-- [ ] Personal trainer matching
-- [ ] Weight tracking dashboard
-- [ ] Activity tracking (GPS walks)
-- [ ] Breed-specific exercise guides
-- [ ] Swimming sessions
-- [ ] Treadmill sessions
-- [ ] Hydrotherapy
-- [ ] Post-surgery rehabilitation
-- [ ] Senior pet mobility programs
+### How Mira Works Per Tenant
 
----
+```python
+def get_mira_context(tenant_id: str, user_id: str) -> dict:
+    """
+    Mira's context changes based on tenant configuration
+    """
+    tenant = get_tenant_config(tenant_id)
+    
+    return {
+        "tenant_name": tenant.name,                    # "Apollo Vets"
+        "tenant_type": tenant.type,                    # "vet_clinic"
+        "enabled_pillars": tenant.enabled_pillars,    # ["care", "emergency"]
+        "brand_voice": tenant.ai_config.voice,        # "professional", "friendly"
+        "products": get_tenant_products(tenant_id),   # Only show their products
+        "services": get_tenant_services(tenant_id),   # Only their services
+        "faq": tenant.ai_config.custom_faq,          # Tenant-specific FAQs
+        "escalation_flow": tenant.escalation_config   # How to escalate
+    }
+```
 
-## 10. CELEBRATIONS & GIFTS 🎂
+### Example: Same User, Different Experience
 
-### Celebrate Pillar - Expanded
-- [x] Birthday cakes & treats
-- [x] Celebrate Concierge
-- [ ] **Gotcha Day** celebrations
-- [ ] Party planning services
-- [ ] Custom cakes designer
-- [ ] Party venue bookings
-- [ ] Photoshoot packages
-- [ ] Party supplies marketplace
-- [ ] E-invitations for pet parties
-- [ ] Gift registry for pets
-- [ ] Surprise box subscriptions
+**At Apollo Vets (Vet Clinic):**
+> "Hi! I'm Mira, Apollo Vets' assistant. I can help you book a consultation, check vaccination schedules, or arrange emergency care for your pet."
 
----
-
-## 11. SHOPPING & ACCESSORIES 🛒
-
-### Shop Pillar - Expanded
-- [x] Products marketplace
-- [ ] **Breed-Specific Products** recommendations
-- [ ] **Pet Clothes & Costumes**
-- [ ] **Parent Accessories** (matching outfits!)
-- [ ] **Toys by Age/Size/Breed**
-- [ ] Beds & furniture
-- [ ] Carriers & travel gear
-- [ ] Collars, leashes, harnesses
-- [ ] Bowls & feeders
-- [ ] Smart pet gadgets (GPS, cameras)
-- [ ] Eco-friendly products section
-- [ ] Personalized items (name tags, bowls)
+**At HDFC Pet Rewards (Bank):**
+> "Hi! I'm Mira, your HDFC Pet Rewards concierge. I can help you redeem your pet rewards points, find participating stores, or explore exclusive member benefits."
 
 ---
 
-## 12. COMMUNITY & SOCIAL 👥
+## 📊 ANALYTICS DASHBOARD
 
-### New: Community Pillar
-- [ ] Pet parent social feed
-- [ ] Breed-specific groups
-- [ ] Local pet parent meetups
-- [ ] Expert Q&A forums
-- [ ] Photo & video sharing
-- [ ] Pet parent dating (find pet-friendly partners!)
-- [ ] Neighborhood pet groups
-- [ ] Success story sharing
-- [ ] Tips & tricks exchange
-- [ ] Review & ratings system
+### Per-Tenant Metrics
 
----
+| Metric | Description | Value For |
+|--------|-------------|-----------|
+| **Active Pets** | Registered pets | All tenants |
+| **Monthly Bookings** | Appointments/orders | All tenants |
+| **Revenue** | GMV through platform | All tenants |
+| **Ticket Volume** | Service desk load | All tenants |
+| **Mira Conversations** | AI assistant usage | All tenants |
+| **NPS Score** | Customer satisfaction | All tenants |
 
-## 13. EMERGENCY SERVICES 🚨
+### Platform-Wide Metrics (Our Internal)
 
-### Emergency Pillar - Expanded
-- [x] 24/7 helpline
-- [ ] Emergency vet locator
-- [ ] Pet ambulance booking
-- [ ] Poison helpline
-- [ ] Lost pet alert network
-- [ ] Emergency contact sharing
-- [ ] First aid guides
-- [ ] Natural disaster preparedness
-- [ ] Emergency kit marketplace
+| Metric | Description |
+|--------|-------------|
+| **Total Tenants** | Active B2B customers |
+| **MRR** | Monthly recurring revenue |
+| **Tenant Churn** | % tenants leaving |
+| **Pet Database Size** | Total pets across all tenants |
+| **API Calls** | Platform usage |
+| **Uptime** | SLA compliance |
 
 ---
 
-## 14. END OF LIFE CARE 🌈
+## 🛠️ IMPLEMENTATION ROADMAP
 
-### Farewell Pillar - Expanded
-- [x] Memorial services
-- [ ] Pet cremation services
-- [ ] Home euthanasia services
-- [ ] Grief counseling
-- [ ] Memorial products (urns, jewelry)
-- [ ] Rainbow bridge ceremonies
-- [ ] Memory books
-- [ ] Digital memorial pages
-- [ ] Support groups
+### Phase 1: Platform Foundation (Current State)
+- [x] 14 Pillar architecture
+- [x] Service Desk with templates
+- [x] Mira AI assistant
+- [x] Product catalog (600+ products)
+- [x] Pet profiles with Soul Score
+- [x] Member authentication
 
----
+### Phase 2: Multi-Tenancy Core (Next)
+- [ ] Tenant configuration model
+- [ ] Tenant-scoped data access
+- [ ] Custom domain support
+- [ ] White-label branding
+- [ ] Tenant admin portal
 
-## 15. DOCUMENTATION & LEGAL 📄
+### Phase 3: Pillar Modularization
+- [ ] Pillar toggle system
+- [ ] Per-pillar pricing
+- [ ] Feature flags per tenant
+- [ ] Module marketplace
 
-### Paperwork Pillar - Expanded
-- [x] KCI registration
-- [ ] **Microchipping Service**
-- [ ] Breed certificates
-- [ ] Health certificates
-- [ ] Travel permits
-- [ ] Housing society NOCs
-- [ ] Import/export permits
-- [ ] Breeding licenses
-- [ ] Service dog certification
+### Phase 4: B2B Sales Infrastructure
+- [ ] Self-service signup
+- [ ] Tenant billing (Stripe/Razorpay)
+- [ ] Usage metering
+- [ ] Trial management
+- [ ] Partner portal
 
----
-
-## 16. PROFESSIONAL SERVICES 💼
-
-### Advisory Pillar - Expanded
-- [x] Expert consultations
-- [ ] Nutritionist consultations
-- [ ] Behaviorist consultations
-- [ ] Breed selection guidance
-- [ ] Legal advice (pet laws)
-- [ ] Pet business consulting
-- [ ] Breeding guidance
-- [ ] Show preparation coaching
+### Phase 5: Enterprise Features
+- [ ] SSO integration
+- [ ] API rate limiting
+- [ ] Custom Mira training
+- [ ] On-premise deployment
+- [ ] Data export/import
 
 ---
 
-# 🏗️ PLATFORM FEATURES
+## 🎯 GO-TO-MARKET STRATEGY
 
-## Checkout & Payments 💳
-- [x] Cart functionality
-- [x] Razorpay integration
-- [ ] **Unified Checkout** across all pillars
-- [ ] Multiple payment methods (UPI, Cards, NetBanking)
-- [ ] EMI options
-- [ ] Wallet system
-- [ ] Gift card redemption
-- [ ] Promo code system
-- [ ] Auto-apply best discount
-- [ ] Order tracking
-- [ ] Easy returns/refunds
+### Launch Partners (Target 5 for Beta)
 
-## Membership Program 👑
-- [x] Basic membership tiers
-- [ ] **Membership Logic Overhaul**
-  - Bronze / Silver / Gold / Platinum tiers
-  - Points accumulation
-  - Tier upgrades
-  - Exclusive benefits per tier
-  - Birthday rewards
-  - Anniversary rewards
-  - Referral bonuses
-  - Early access to sales
+1. **1 Vet Clinic Chain** - Validate Care pillar
+2. **1 Pet Food Brand** - Validate Shop + Dine
+3. **1 Boarding Facility** - Validate Stay pillar
+4. **1 Insurance Company** - Validate Insure + Care
+5. **1 Bank/Credit Card** - Validate Rewards + All Pillars
 
-## Loyalty Program 🎁
-- [ ] **Separate from Soul Score**
-- [ ] Points earning rules
-- [ ] Points redemption catalog
-- [ ] Partner rewards (Swiggy, Zomato, etc.)
-- [ ] Cashback options
-- [ ] Exclusive member pricing
-- [ ] Free shipping thresholds
-- [ ] Birthday multipliers
+### Positioning
 
-## Soul Score (Pawmoter Score) ✨
-- [x] Basic soul score
-- [ ] **Separate metric from Loyalty**
-- [ ] Score components:
-  - Health compliance (vaccinations, checkups)
-  - Activity level
-  - Social engagement
-  - Purchase history
-  - Community contribution
-- [ ] Score-based recommendations
-- [ ] Leaderboard
-- [ ] Badges & achievements
+> "Give your customers the world's best pet experience without building it yourself."
 
-## Concierge Services 🎩
-- [x] Celebrate Concierge
-- [x] Dining Concierge
-- [ ] **Concierge in ALL Pillars**
-  - Stay Concierge
-  - Travel Concierge
-  - Care Concierge
-  - Enjoy Concierge
-  - Fit Concierge
-  - Learn Concierge
-  - Emergency Concierge
-  - Farewell Concierge
-  - Adopt Concierge
-  - Shop Concierge (Personal Shopper)
+### Key Selling Points
 
-## Service Desk 🎫
-- [x] Ticket management
-- [x] Templates
-- [x] CSV Export
-- [ ] **Ticket Merging UI**
-- [ ] **Excel Export (.xlsx)**
-- [ ] **Follow-up Reminders UI**
-- [ ] Escalation workflow
-- [ ] SLA dashboard
-- [ ] Agent performance charts
-- [ ] Customer satisfaction trends
-
-## Mira AI 🤖
-- [x] Basic chat
-- [ ] **Smarter Context Understanding**
-- [ ] Voice commands
-- [ ] Proactive suggestions
-- [ ] Order placement via chat
-- [ ] Booking via chat
-- [ ] Multi-language support
-- [ ] Personality customization
-- [ ] Learning from feedback
-- [ ] Product recommendations
+1. **Speed**: Launch pet services in weeks, not months
+2. **Complete**: 14 pillars covering entire pet lifecycle
+3. **AI-Powered**: Mira handles customer queries 24/7
+4. **Proven**: Running our own B2C for 2+ years
+5. **Flexible**: Enable only what you need
 
 ---
 
-# 🔧 TECHNICAL PRIORITIES
+# 📋 FEATURE CHECKLIST BY TENANT TYPE
 
-## P0 - This Week
-1. [ ] Fix Production WebSocket
-2. [ ] Run Universal Seed on Production
-3. [ ] Ticket Merging UI
-4. [ ] Excel Export
+## For Vet Clinics
 
-## P1 - Next 2 Weeks
-5. [ ] Product Tags Manager (sync with products)
-6. [ ] Follow-up Reminders UI
-7. [ ] Concierge templates for remaining pillars
-8. [ ] Unified Checkout flow
+### Must Have
+- [x] Patient (pet) registration
+- [x] Appointment booking
+- [x] Service desk for follow-ups
+- [x] Health records storage
+- [ ] **Vaccination reminders** (automated)
+- [ ] **Prescription management**
+- [ ] **Lab results integration**
+- [ ] **Emergency triage**
 
-## P2 - This Month
-9. [ ] Membership Program Logic
-10. [ ] Loyalty Program (separate from Soul)
-11. [ ] Unified Pricing Engine
-12. [ ] Inventory Management
-
-## P3 - Next Quarter
-13. [ ] Community features
-14. [ ] Training videos platform
-15. [ ] Mobile app
-16. [ ] ML recommendations
+### Nice to Have
+- [ ] Telemedicine (video calls)
+- [ ] E-commerce for pet products
+- [ ] Loyalty program
+- [ ] Referral tracking
 
 ---
 
-# 📊 SUCCESS METRICS
+## For Banks/Credit Cards
 
-| Metric | Target |
-|--------|--------|
-| Monthly Active Users | 10,000 |
-| Conversion Rate | 5% |
-| Repeat Purchase Rate | 40% |
-| NPS Score | 60+ |
-| Average Order Value | ₹1,500 |
-| Customer Lifetime Value | ₹15,000 |
-| Service Response Time | < 2 hours |
-| Ticket Resolution Time | < 24 hours |
+### Must Have
+- [ ] **Pet rewards program**
+- [ ] **Points redemption catalog**
+- [x] Partner network (service providers)
+- [ ] **Member tiers** (Silver/Gold/Platinum)
+- [ ] **Exclusive offers**
+
+### Nice to Have
+- [ ] Pet insurance marketplace
+- [ ] Pet loan calculator
+- [ ] Emergency fund management
+- [ ] Co-branded pet pass card
+
+---
+
+## For Pet Food Brands
+
+### Must Have
+- [ ] **Subscription management**
+- [x] Product catalog
+- [x] Order management
+- [ ] **Auto-ship scheduling**
+- [ ] **Nutrition tracking**
+
+### Nice to Have
+- [ ] Recipe recommendations
+- [ ] Portion calculator
+- [ ] Allergy management
+- [ ] Community forums
+
+---
+
+## For Boarding/Daycare
+
+### Must Have
+- [x] Booking system
+- [ ] **Check-in/Check-out**
+- [ ] **Daily report cards**
+- [ ] **Live camera feeds**
+- [x] Service desk
+
+### Nice to Have
+- [ ] Pickup/drop scheduling
+- [ ] Emergency contacts
+- [ ] Feeding schedules
+- [ ] Medication tracking
+
+---
+
+# 🔧 TECHNICAL SPECIFICATIONS
+
+## API Design for Multi-Tenancy
+
+### Authentication Header
+```
+Authorization: Bearer {token}
+X-Tenant-ID: {tenant_id}
+```
+
+### Endpoint Structure
+```
+# Tenant-specific endpoints
+GET /api/v1/{tenant_id}/pets
+GET /api/v1/{tenant_id}/bookings
+GET /api/v1/{tenant_id}/products
+
+# Cross-tenant admin (platform admin only)
+GET /api/admin/tenants
+POST /api/admin/tenants
+GET /api/admin/analytics/platform
+```
+
+### Data Isolation
+```python
+# Every query must be scoped to tenant
+def get_pets(tenant_id: str, user_id: str):
+    return db.pets.find({
+        "tenant_id": tenant_id,  # MANDATORY
+        "owner_id": user_id
+    })
+```
+
+---
+
+## Infrastructure Requirements
+
+| Component | Current | B2B Scale |
+|-----------|---------|-----------|
+| **Database** | MongoDB (single) | MongoDB Atlas (sharded) |
+| **Hosting** | Single cluster | Multi-region |
+| **CDN** | Cloudflare | Cloudflare Enterprise |
+| **Storage** | Local | S3 + CloudFront |
+| **Search** | MongoDB text | Elasticsearch |
+| **Queue** | None | Redis + Bull |
+| **Monitoring** | Basic | DataDog/New Relic |
+
+---
+
+# 📞 IMMEDIATE BUGS TO FIX
+
+## From User Report (Jan 2025)
+
+| Issue | Priority | Status |
+|-------|----------|--------|
+| Floating button hiding Mira | P0 | ✅ FIXED |
+| Voice Order not auto-populating name | P1 | 🔄 IN PROGRESS |
+| Member form auto-population | P1 | 🔄 IN PROGRESS |
+| Product box image not saving | P1 | TO DO |
+| Mira Memories not storing | P1 | TO DO |
+| Pet Profile error on personality tab | P1 | TO DO |
+| App company name missing | P2 | TO DO |
+| Notification expansion needed | P2 | TO DO |
 
 ---
 
 *Document: /app/memory/MASTER_FEATURES.md*
-*Last Updated: January 27, 2025*
-*Version: 1.0*
+*Version: 2.0 - B2B2C Architecture*
+*Last Updated: January 2025*
