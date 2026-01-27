@@ -676,7 +676,11 @@ const Navbar = () => {
                         key={item.path}
                         to={item.path}
                         onClick={() => setActiveDropdown(null)}
-                        className="block px-4 py-2.5 hover:bg-purple-50 text-sm text-gray-700 hover:text-purple-600 transition-colors border-l-2 border-transparent hover:border-purple-500"
+                        className={`block px-4 py-2.5 text-sm transition-colors border-l-2 ${
+                          item.highlight 
+                            ? 'bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 font-semibold border-purple-500 hover:from-purple-100 hover:to-pink-100' 
+                            : 'hover:bg-purple-50 text-gray-700 hover:text-purple-600 border-transparent hover:border-purple-500'
+                        }`}
                       >
                         {item.name}
                       </Link>
