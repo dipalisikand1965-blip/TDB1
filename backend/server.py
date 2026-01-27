@@ -3448,6 +3448,158 @@ async def seed_pet_boarding(username: str = Depends(verify_admin)):
     return {"success": True, "inserted": inserted, "updated": updated, "total": len(boarding_data)}
 
 
+# ==================== BOARDING ADMIN CRUD ====================
+
+@admin_router.get("/boarding/facilities")
+async def get_boarding_facilities(
+    city: Optional[str] = None,
+    boarding_type: Optional[str] = None,
+    username: str = Depends(verify_admin)
+):
+    """Get all boarding facilities with optional filters"""
+    query = {}
+    if city:
+        query["city"] = {"$regex": city, "$options": "i"}
+    if boarding_type:
+        query["boarding_type"] = boarding_type
+    
+    facilities = await db.stay_boarding_facilities.find(query, {"_id": 0}).sort("name", 1).to_list(length=500)
+    cities = await db.stay_boarding_facilities.distinct("city")
+    types = await db.stay_boarding_facilities.distinct("boarding_type")
+    
+    return {
+        "facilities": facilities,
+        "total": len(facilities),
+        "cities": sorted(cities),
+        "types": sorted(types) if types else ["Home-style", "Premium", "Private", "Luxury"]
+    }
+
+
+@admin_router.post("/boarding/facilities")
+async def create_boarding_facility(
+    facility: dict = Body(...),
+    username: str = Depends(verify_admin)
+):
+    """Create a new boarding facility"""
+    facility_id = f"boarding-{facility.get('name', 'new').lower().replace(' ', '-')[:30]}-{uuid.uuid4().hex[:6]}"
+    
+    facility_doc = {
+        "id": facility_id,
+        "name": facility.get("name"),
+        "city": facility.get("city"),
+        "state": facility.get("state", ""),
+        "boarding_type": facility.get("boarding_type", "Premium"),
+        "description": facility.get("description", ""),
+        "address": facility.get("address", ""),
+        "phone": facility.get("phone", ""),
+        "email": facility.get("email", ""),
+        "website": facility.get("website", ""),
+        "image": facility.get("image", "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800"),
+        "photos": facility.get("photos", []),
+        "paw_score": facility.get("paw_score", 4.0),
+        "price_range": facility.get("price_range", "₹800-1,500/night"),
+        "price_per_night": facility.get("price_per_night", 1000),
+        "amenities": facility.get("amenities", []),
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.stay_boarding_facilities.insert_one(facility_doc)
+    logger.info(f"Created boarding facility: {facility_doc['name']}")
+    
+    return {"success": True, "facility": {k: v for k, v in facility_doc.items() if k != "_id"}}
+
+
+@admin_router.put("/boarding/facilities/{facility_id}")
+async def update_boarding_facility(
+    facility_id: str,
+    facility: dict = Body(...),
+    username: str = Depends(verify_admin)
+):
+    """Update a boarding facility"""
+    update_data = {
+        "name": facility.get("name"),
+        "city": facility.get("city"),
+        "state": facility.get("state"),
+        "boarding_type": facility.get("boarding_type"),
+        "description": facility.get("description"),
+        "address": facility.get("address"),
+        "phone": facility.get("phone"),
+        "email": facility.get("email"),
+        "website": facility.get("website"),
+        "image": facility.get("image"),
+        "photos": facility.get("photos"),
+        "paw_score": facility.get("paw_score"),
+        "price_range": facility.get("price_range"),
+        "price_per_night": facility.get("price_per_night"),
+        "amenities": facility.get("amenities"),
+        "is_active": facility.get("is_active", True),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Remove None values
+    update_data = {k: v for k, v in update_data.items() if v is not None}
+    
+    result = await db.stay_boarding_facilities.update_one(
+        {"id": facility_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Facility not found")
+    
+    return {"success": True, "modified": result.modified_count}
+
+
+@admin_router.delete("/boarding/facilities/{facility_id}")
+async def delete_boarding_facility(
+    facility_id: str,
+    username: str = Depends(verify_admin)
+):
+    """Delete a boarding facility"""
+    result = await db.stay_boarding_facilities.delete_one({"id": facility_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Facility not found")
+    
+    return {"success": True, "deleted": result.deleted_count}
+
+
+@admin_router.get("/boarding/stats")
+async def get_boarding_stats(username: str = Depends(verify_admin)):
+    """Get boarding statistics"""
+    total = await db.stay_boarding_facilities.count_documents({})
+    by_type = await db.stay_boarding_facilities.aggregate([
+        {"$group": {"_id": "$boarding_type", "count": {"$sum": 1}}}
+    ]).to_list(length=10)
+    by_city = await db.stay_boarding_facilities.aggregate([
+        {"$group": {"_id": "$city", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10}
+    ]).to_list(length=10)
+    
+    return {
+        "total": total,
+        "by_type": {item["_id"]: item["count"] for item in by_type if item["_id"]},
+        "by_city": {item["_id"]: item["count"] for item in by_city if item["_id"]}
+    }
+
+
+@admin_router.post("/boarding/seed")
+async def seed_boarding_facilities(username: str = Depends(verify_admin)):
+    """Seed default boarding facilities"""
+    from scripts.universal_pillar_protocol import universal_seed
+    
+    # Run universal seed which includes boarding
+    results = await universal_seed(db)
+    
+    return {
+        "success": True,
+        "message": "Boarding facilities seeded",
+        "stay_synced": results.get("stay_synced", 0)
+    }
+
+
 @admin_router.get("/data/pets-status")
 async def get_pets_status(username: str = Depends(verify_admin)):
     """Check the status of pets in the database - how many have user_id, owner_email, etc."""
