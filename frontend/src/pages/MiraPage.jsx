@@ -709,6 +709,50 @@ const MiraPage = () => {
               </div>
             </div>
 
+            {/* Speak to Us Section */}
+            <div className="mt-6 pt-6 border-t border-gray-100">
+              <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <Phone className="w-4 h-4 text-green-500" />
+                Prefer to Talk?
+              </h4>
+              <div className="space-y-2">
+                <a 
+                  href="tel:+919663185747"
+                  className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg hover:from-green-100 hover:to-emerald-100 transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
+                    <Phone className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 text-sm">Call Us Now</p>
+                    <p className="text-xs text-gray-500">+91 96631 85747</p>
+                  </div>
+                </a>
+                <a 
+                  href="https://wa.me/919663185747?text=Hi%20I%20need%20help%20with..."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg hover:from-green-100 hover:to-emerald-100 transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center">
+                    <MessageCircle className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 text-sm">WhatsApp Us</p>
+                    <p className="text-xs text-gray-500">Quick response</p>
+                  </div>
+                </a>
+                <Button 
+                  variant="outline" 
+                  className="w-full border-purple-200 text-purple-600 hover:bg-purple-50"
+                  onClick={() => window.location.href = '/voice-order'}
+                >
+                  <Mic className="w-4 h-4 mr-2" />
+                  Voice Order
+                </Button>
+              </div>
+            </div>
+
             {/* Emergency CTA */}
             <div className="mt-6 pt-6 border-t border-gray-100">
               <Button 
