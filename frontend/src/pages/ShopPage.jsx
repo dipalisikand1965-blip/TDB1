@@ -388,6 +388,9 @@ const ShopPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* SEO Meta Tags */}
+      <SEOHead page="shop" path="/shop" />
+      
       {/* Hero Section */}
       <section className="bg-teal-600 text-white py-10 px-4">
         <div className="max-w-7xl mx-auto">
