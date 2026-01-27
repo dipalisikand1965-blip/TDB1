@@ -1,19 +1,17 @@
-import React, { useCallback, useEffect, useRef } from 'react';
-import { useEditor, EditorContent, BubbleMenu, FloatingMenu } from '@tiptap/react';
+import React, { useCallback, useEffect } from 'react';
+import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
 import TextAlign from '@tiptap/extension-text-align';
-import TextStyle from '@tiptap/extension-text-style';
-import Color from '@tiptap/extension-color';
 import { Button } from '../ui/button';
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   List, ListOrdered, Quote, Code, Link as LinkIcon, LinkOff,
-  AlignLeft, AlignCenter, AlignRight, AlignJustify,
-  Heading1, Heading2, Heading3, Undo, Redo, Type, Palette,
-  Sparkles, Wand2, Copy, Check, Loader2
+  AlignLeft, AlignCenter, AlignRight,
+  Heading1, Heading2, Heading3, Undo, Redo, Type,
+  Sparkles, Copy, Check, Loader2
 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '../ui/dropdown-menu';
 
