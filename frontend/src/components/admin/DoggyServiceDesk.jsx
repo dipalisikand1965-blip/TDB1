@@ -755,6 +755,71 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     setSummaryLoading(false);
   };
 
+  // Fetch reminders for a ticket
+  const fetchReminders = async (ticketId) => {
+    try {
+      const res = await fetch(`${getApiUrl()}/api/tickets/${ticketId}/reminders`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setTicketReminders(data.reminders || []);
+      }
+    } catch (err) {
+      console.debug('Could not fetch reminders:', err);
+    }
+  };
+
+  // Create reminder for ticket
+  const createReminder = async () => {
+    if (!selectedTicket || !reminderForm.title || !reminderForm.due_at) return;
+    
+    try {
+      const res = await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/reminders`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify(reminderForm)
+      });
+      
+      if (res.ok) {
+        await fetchReminders(selectedTicket.ticket_id);
+        setShowReminderModal(false);
+        setReminderForm({ title: '', description: '', due_at: '', reminder_type: 'follow_up', priority: 'medium' });
+      }
+    } catch (err) {
+      console.error('Failed to create reminder:', err);
+    }
+  };
+
+  // Complete a reminder
+  const completeReminder = async (reminderId) => {
+    if (!selectedTicket) return;
+    
+    try {
+      await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/reminders/${reminderId}`, {
+        method: 'PATCH',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'completed' })
+      });
+      await fetchReminders(selectedTicket.ticket_id);
+    } catch (err) {
+      console.error('Failed to complete reminder:', err);
+    }
+  };
+
+  // Delete a reminder
+  const deleteReminder = async (reminderId) => {
+    if (!selectedTicket) return;
+    
+    try {
+      await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/reminders/${reminderId}`, {
+        method: 'DELETE',
+        headers: authHeaders
+      });
+      await fetchReminders(selectedTicket.ticket_id);
+    } catch (err) {
+      console.error('Failed to delete reminder:', err);
+    }
+  };
+
   // Edit ticket - start editing
   const startEditingTicket = () => {
     if (!selectedTicket) return;
