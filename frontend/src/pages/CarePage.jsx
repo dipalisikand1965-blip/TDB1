@@ -16,6 +16,7 @@ import AdminQuickEdit from '../components/AdminQuickEdit';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedAutocomplete from '../components/BreedAutocomplete';
 import SEOHead from '../components/SEOHead';
+import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import {
   Scissors, PawPrint, GraduationCap, Stethoscope, AlertTriangle, Heart,
   ClipboardList, MapPin, Calendar, Clock, CheckCircle, MessageCircle,
@@ -23,6 +24,62 @@ import {
   ArrowRight, Users, Play, ChevronDown, Gift, Zap, Shield, Phone,
   Home, Building2, AlertCircle
 } from 'lucide-react';
+
+// Elevated Concierge® Care Experiences
+const CARE_EXPERIENCES = [
+  {
+    title: "Wellness Orchestrator®",
+    description: "From annual checkups to specialist consultations, we coordinate your pet's complete healthcare journey — finding the right vets, managing appointments, and ensuring nothing falls through the cracks.",
+    icon: "🏥",
+    gradient: "from-rose-500 to-pink-600",
+    badge: "Essential",
+    badgeColor: "bg-rose-600",
+    highlights: [
+      "Vet selection & appointment booking",
+      "Medical record management",
+      "Vaccination & deworming schedules",
+      "Specialist referral coordination"
+    ]
+  },
+  {
+    title: "Groom & Glam Curator®",
+    description: "Every coat tells a story. We match your pet with groomers who understand their breed, temperament, and style preferences — because grooming should be a spa day, not a stressful one.",
+    icon: "✨",
+    gradient: "from-pink-500 to-purple-600",
+    badge: "Popular",
+    badgeColor: "bg-amber-500",
+    highlights: [
+      "Groomer matching by breed expertise",
+      "Temperament-sensitive handling",
+      "At-home or salon sessions",
+      "Style consultation for special events"
+    ]
+  },
+  {
+    title: "Daily Companion Finder®",
+    description: "Need a reliable walker, sitter, or overnight carer? We vet, match, and coordinate trusted companions who treat your pet like family — not just another client.",
+    icon: "🐕",
+    gradient: "from-green-500 to-teal-600",
+    highlights: [
+      "Background-verified walkers & sitters",
+      "Personality & energy matching",
+      "Regular check-ins & GPS tracking",
+      "Emergency backup arrangements"
+    ]
+  },
+  {
+    title: "Emergency Response Partner®",
+    description: "When emergencies strike, you need more than a phone number. We guide you through crisis moments — locating 24/7 vets, arranging urgent transport, and staying with you until your pet is safe.",
+    icon: "🚨",
+    gradient: "from-red-500 to-orange-600",
+    highlights: [
+      "24/7 emergency vet locator",
+      "Urgent transport coordination",
+      "Real-time crisis support",
+      "Post-emergency follow-up care"
+    ]
+  }
+];
 
 // Care Types Configuration
 const CARE_TYPES = {
