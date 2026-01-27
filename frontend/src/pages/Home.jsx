@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../utils/api';
+import SEOHead from '../components/SEOHead';
 
 // Outcome Statements (not feature tiles)
 const OUTCOME_STATEMENTS = [
