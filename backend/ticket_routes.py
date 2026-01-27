@@ -3386,6 +3386,498 @@ async def handle_email_reply_webhook(email: InboundEmailWebhook):
     
     logger.info(f"Added email reply to ticket {ticket.get('ticket_id')} from {email.from_email}")
     
+
+
+# ==================== SMART AUTO-ASSIGNMENT ====================
+
+# Agent expertise mapping (can be configured via admin)
+AGENT_EXPERTISE = {
+    "aditya": ["celebrate", "shop", "dine", "travel"],
+    "dipali": ["care", "fit", "groom", "stay"],
+    "support": ["advisory", "paperwork", "emergency", "farewell"]
+}
+
+async def auto_assign_ticket(ticket_doc: dict) -> Optional[str]:
+    """Auto-assign ticket to best agent based on pillar expertise"""
+    db = get_db()
+    
+    category = ticket_doc.get("category", "").lower()
+    
+    # Find agent with expertise in this pillar
+    best_agent = None
+    for agent, pillars in AGENT_EXPERTISE.items():
+        if category in pillars:
+            # Check agent's current workload
+            open_tickets = await db.tickets.count_documents({
+                "assigned_to": agent,
+                "status": {"$nin": ["resolved", "closed"]}
+            })
+            
+            if best_agent is None or open_tickets < best_agent[1]:
+                best_agent = (agent, open_tickets)
+    
+    return best_agent[0] if best_agent else None
+
+
+# ==================== SLA BREACH MONITORING ====================
+
+@router.get("/sla/breached")
+async def get_breached_tickets():
+    """Get all tickets that have breached their SLA"""
+    db = get_db()
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Find tickets where SLA is breached or about to breach (within 1 hour)
+    one_hour_from_now = (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
+    
+    breached = await db.tickets.find({
+        "status": {"$nin": ["resolved", "closed"]},
+        "sla_due_at": {"$lte": now}
+    }, {"_id": 0}).to_list(100)
+    
+    approaching = await db.tickets.find({
+        "status": {"$nin": ["resolved", "closed"]},
+        "sla_due_at": {"$gt": now, "$lte": one_hour_from_now}
+    }, {"_id": 0}).to_list(100)
+    
+    return {
+        "breached": breached,
+        "approaching_breach": approaching,
+        "breached_count": len(breached),
+        "approaching_count": len(approaching)
+    }
+
+@router.post("/sla/escalate-breached")
+async def escalate_breached_tickets():
+    """Auto-escalate all breached SLA tickets"""
+    db = get_db()
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.tickets.update_many(
+        {
+            "status": {"$nin": ["resolved", "closed", "escalated"]},
+            "sla_due_at": {"$lte": now},
+            "sla_breached": {"$ne": True}
+        },
+        {
+            "$set": {
+                "status": "escalated",
+                "sla_breached": True,
+                "updated_at": now
+            },
+            "$push": {
+                "messages": {
+                    "id": str(uuid.uuid4()),
+                    "type": "system",
+                    "content": "⚠️ Ticket auto-escalated due to SLA breach",
+                    "sender": "system",
+                    "timestamp": now,
+                    "is_internal": True
+                }
+            }
+        }
+    )
+    
+    return {"escalated": result.modified_count}
+
+
+# ==================== TICKET MERGING ====================
+
+class MergeTicketsRequest(BaseModel):
+    primary_ticket_id: str
+    secondary_ticket_ids: List[str]
+
+@router.post("/merge")
+async def merge_tickets(request: MergeTicketsRequest):
+    """Merge multiple tickets into one primary ticket"""
+    db = get_db()
+    
+    # Get primary ticket
+    primary = await db.tickets.find_one({"ticket_id": request.primary_ticket_id})
+    if not primary:
+        raise HTTPException(status_code=404, detail="Primary ticket not found")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    merged_messages = []
+    merged_attachments = []
+    
+    for secondary_id in request.secondary_ticket_ids:
+        secondary = await db.tickets.find_one({"ticket_id": secondary_id})
+        if secondary:
+            # Copy messages with source reference
+            for msg in secondary.get("messages", []):
+                msg["merged_from"] = secondary_id
+                merged_messages.append(msg)
+            
+            # Copy attachments
+            merged_attachments.extend(secondary.get("attachments", []))
+            
+            # Mark secondary ticket as merged
+            await db.tickets.update_one(
+                {"ticket_id": secondary_id},
+                {
+                    "$set": {
+                        "status": "closed",
+                        "merged_into": request.primary_ticket_id,
+                        "closed_at": now,
+                        "updated_at": now
+                    }
+                }
+            )
+    
+    # Update primary ticket with merged content
+    await db.tickets.update_one(
+        {"ticket_id": request.primary_ticket_id},
+        {
+            "$push": {
+                "messages": {
+                    "$each": merged_messages
+                },
+                "attachments": {
+                    "$each": merged_attachments
+                }
+            },
+            "$set": {
+                "updated_at": now,
+                "merged_tickets": request.secondary_ticket_ids
+            }
+        }
+    )
+    
+    return {
+        "success": True,
+        "primary_ticket": request.primary_ticket_id,
+        "merged_count": len(request.secondary_ticket_ids)
+    }
+
+
+# ==================== TICKET TAGS ====================
+
+@router.post("/{ticket_id}/tags")
+async def add_ticket_tags(ticket_id: str, tags: List[str] = Body(...)):
+    """Add tags to a ticket"""
+    db = get_db()
+    
+    result = await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$addToSet": {"tags": {"$each": tags}},
+            "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+        }
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    return {"success": True, "added_tags": tags}
+
+@router.delete("/{ticket_id}/tags/{tag}")
+async def remove_ticket_tag(ticket_id: str, tag: str):
+    """Remove a tag from a ticket"""
+    db = get_db()
+    
+    result = await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$pull": {"tags": tag},
+            "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+        }
+    )
+    
+    return {"success": True, "removed_tag": tag}
+
+@router.get("/tags/all")
+async def get_all_tags():
+    """Get all unique tags used across tickets"""
+    db = get_db()
+    
+    tags = await db.tickets.distinct("tags")
+    return {"tags": [t for t in tags if t]}
+
+
+# ==================== FOLLOW-UP REMINDERS ====================
+
+class ReminderCreate(BaseModel):
+    due_at: str
+    note: str
+    assigned_to: Optional[str] = None
+
+@router.post("/{ticket_id}/reminders")
+async def add_reminder(ticket_id: str, reminder: ReminderCreate):
+    """Add a follow-up reminder to a ticket"""
+    db = get_db()
+    
+    reminder_doc = {
+        "id": str(uuid.uuid4()),
+        "due_at": reminder.due_at,
+        "note": reminder.note,
+        "assigned_to": reminder.assigned_to,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "completed": False
+    }
+    
+    result = await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"reminders": reminder_doc},
+            "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+        }
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    return {"success": True, "reminder": reminder_doc}
+
+@router.patch("/{ticket_id}/reminders/{reminder_id}")
+async def complete_reminder(ticket_id: str, reminder_id: str):
+    """Mark a reminder as completed"""
+    db = get_db()
+    
+    result = await db.tickets.update_one(
+        {"ticket_id": ticket_id, "reminders.id": reminder_id},
+        {
+            "$set": {
+                "reminders.$.completed": True,
+                "reminders.$.completed_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    return {"success": True}
+
+@router.get("/reminders/due")
+async def get_due_reminders():
+    """Get all reminders that are due"""
+    db = get_db()
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Find tickets with due reminders
+    tickets = await db.tickets.find({
+        "reminders": {
+            "$elemMatch": {
+                "due_at": {"$lte": now},
+                "completed": False
+            }
+        }
+    }, {"_id": 0, "ticket_id": 1, "subject": 1, "reminders": 1}).to_list(100)
+    
+    due_reminders = []
+    for ticket in tickets:
+        for reminder in ticket.get("reminders", []):
+            if not reminder.get("completed") and reminder.get("due_at", "") <= now:
+                due_reminders.append({
+                    "ticket_id": ticket["ticket_id"],
+                    "subject": ticket.get("subject", ""),
+                    **reminder
+                })
+    
+    return {"reminders": due_reminders, "count": len(due_reminders)}
+
+
+# ==================== AGENT PERFORMANCE DASHBOARD ====================
+
+@router.get("/analytics/agent-performance")
+async def get_agent_performance(days: int = 30):
+    """Get agent performance metrics"""
+    db = get_db()
+    
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    
+    # Get all agents
+    agents = await db.tickets.distinct("assigned_to")
+    agents = [a for a in agents if a]
+    
+    performance = {}
+    for agent in agents:
+        # Tickets assigned
+        assigned = await db.tickets.count_documents({
+            "assigned_to": agent,
+            "created_at": {"$gte": cutoff}
+        })
+        
+        # Tickets resolved
+        resolved = await db.tickets.count_documents({
+            "assigned_to": agent,
+            "status": "resolved",
+            "resolved_at": {"$gte": cutoff}
+        })
+        
+        # Average resolution time (for resolved tickets)
+        pipeline = [
+            {
+                "$match": {
+                    "assigned_to": agent,
+                    "status": "resolved",
+                    "resolved_at": {"$gte": cutoff},
+                    "first_response_at": {"$ne": None}
+                }
+            },
+            {
+                "$project": {
+                    "response_time": {
+                        "$subtract": [
+                            {"$dateFromString": {"dateString": "$first_response_at"}},
+                            {"$dateFromString": {"dateString": "$created_at"}}
+                        ]
+                    }
+                }
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "avg_response_time_ms": {"$avg": "$response_time"}
+                }
+            }
+        ]
+        
+        response_time_result = await db.tickets.aggregate(pipeline).to_list(1)
+        avg_response_mins = 0
+        if response_time_result:
+            avg_response_mins = round(response_time_result[0].get("avg_response_time_ms", 0) / 60000, 1)
+        
+        # CSAT score for agent
+        csat_pipeline = [
+            {"$match": {"assigned_to": agent}},
+            {"$match": {"csat_rating": {"$exists": True}}},
+            {"$group": {"_id": None, "avg_csat": {"$avg": "$csat_rating"}, "count": {"$sum": 1}}}
+        ]
+        csat_result = await db.tickets.aggregate(csat_pipeline).to_list(1)
+        avg_csat = round(csat_result[0].get("avg_csat", 0), 2) if csat_result else 0
+        csat_count = csat_result[0].get("count", 0) if csat_result else 0
+        
+        performance[agent] = {
+            "tickets_assigned": assigned,
+            "tickets_resolved": resolved,
+            "resolution_rate": round(resolved / assigned * 100, 1) if assigned > 0 else 0,
+            "avg_response_time_mins": avg_response_mins,
+            "avg_csat": avg_csat,
+            "csat_responses": csat_count
+        }
+    
+    # Overall stats
+    total_assigned = sum(p["tickets_assigned"] for p in performance.values())
+    total_resolved = sum(p["tickets_resolved"] for p in performance.values())
+    
+    return {
+        "period_days": days,
+        "agents": performance,
+        "summary": {
+            "total_assigned": total_assigned,
+            "total_resolved": total_resolved,
+            "overall_resolution_rate": round(total_resolved / total_assigned * 100, 1) if total_assigned > 0 else 0
+        }
+    }
+
+
+# ==================== VOICE ORDER PROCESSING ====================
+
+class VoiceOrderRequest(BaseModel):
+    pet_id: Optional[str] = None
+    pet_name: Optional[str] = None
+    order_type: str  # "product", "service", "booking"
+    items: List[dict]  # [{"name": "...", "quantity": 1, "pillar": "..."}]
+    delivery_address: Optional[str] = None
+    special_instructions: Optional[str] = None
+    member_email: str
+    member_name: str
+    source: str = "voice_mira"
+
+@router.post("/voice-order")
+async def process_voice_order(order: VoiceOrderRequest):
+    """Process a voice order from Mira and create appropriate tickets/orders"""
+    db = get_db()
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Create a ticket for the voice order
+    ticket_id = await generate_ticket_id()
+    
+    # Build order description
+    items_desc = "\n".join([
+        f"• {item.get('name', 'Unknown')} x{item.get('quantity', 1)}"
+        for item in order.items
+    ])
+    
+    description = f"""🎤 Voice Order via Mira
+
+**Order Type:** {order.order_type.title()}
+**Pet:** {order.pet_name or 'Not specified'}
+
+**Items:**
+{items_desc}
+
+**Delivery:** {order.delivery_address or 'Not specified'}
+**Special Instructions:** {order.special_instructions or 'None'}
+"""
+    
+    ticket_doc = {
+        "ticket_id": ticket_id,
+        "member": {
+            "name": order.member_name,
+            "email": order.member_email
+        },
+        "category": order.items[0].get("pillar", "shop") if order.items else "shop",
+        "sub_category": "voice_order",
+        "urgency": "medium",
+        "description": description,
+        "source": "voice_mira",
+        "status": "new",
+        "priority": 2,
+        "tags": ["voice-order", "mira"],
+        "voice_order_data": {
+            "order_type": order.order_type,
+            "items": order.items,
+            "pet_id": order.pet_id,
+            "pet_name": order.pet_name,
+            "delivery_address": order.delivery_address,
+            "special_instructions": order.special_instructions
+        },
+        "messages": [{
+            "id": str(uuid.uuid4()),
+            "type": "voice_order",
+            "content": description,
+            "sender": "member",
+            "sender_name": order.member_name,
+            "channel": "voice_mira",
+            "timestamp": now,
+            "is_internal": False
+        }],
+        "sla_due_at": calculate_sla_due_at("medium"),
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.tickets.insert_one(ticket_doc)
+    del ticket_doc["_id"]
+    
+    # Also create a concierge order for tracking
+    concierge_order = {
+        "id": f"VO-{uuid.uuid4().hex[:8].upper()}",
+        "ticket_id": ticket_id,
+        "type": order.order_type,
+        "items": order.items,
+        "member_email": order.member_email,
+        "member_name": order.member_name,
+        "pet_name": order.pet_name,
+        "status": "pending",
+        "source": "voice_mira",
+        "created_at": now
+    }
+    
+    await db.concierge_orders.insert_one(concierge_order)
+    
+    return {
+        "success": True,
+        "ticket_id": ticket_id,
+        "order_id": concierge_order["id"],
+        "message": f"Voice order received and ticket {ticket_id} created"
+    }
+
     # Create admin notification for new customer reply
     try:
         notif_doc = {
