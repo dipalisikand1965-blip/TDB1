@@ -164,15 +164,26 @@
 8. **Pet Profile Recommendations UI**: Display personalized products
 
 ### P2 - Backlog
-9. Fix WebSocket real-time updates
+9. Improve WebSocket real-time updates stability
 10. Build Smart Checkout flow
 11. Multi-channel integrations (Resend/WhatsApp - requires API keys)
 12. New Member Onboarding flow
 13. **Replicate Fit Template**: Apply same design to Care, Celebrate, Enjoy pages
+14. **Service Desk Phase 2**: SLA timers, Agent collision detection, Bulk actions, Analytics dashboard
 
 ---
 
 ## API Endpoints Reference
+
+### Service Desk
+- `GET /api/tickets/` - List all tickets (aggregates from multiple sources)
+- `GET /api/tickets/{id}` - Get ticket detail
+- `POST /api/tickets/` - Create new ticket
+- `PATCH /api/tickets/{id}` - Update ticket (status, assignment, etc.)
+- `POST /api/tickets/{id}/reply` - Add reply (public or internal note)
+- `POST /api/tickets/{id}/attachments` - Upload file attachment
+- `GET /api/tickets/categories` - Get all 15 pillar categories
+- `POST /api/tickets/ai/draft-reply` - Generate AI reply suggestion
 
 ### Services
 - `GET /api/services?pillar={pillar}` - List services by pillar
