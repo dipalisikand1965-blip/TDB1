@@ -718,8 +718,194 @@ async def auto_seed_critical_data():
         else:
             logger.info(f"✓ Collections exist: {collection_count}")
         
+        # Seed Services for all pillars if none exist
+        service_count = await db.services.count_documents({})
+        if service_count == 0:
+            logger.info("Seeding Concierge® Services...")
+            await auto_seed_all_services()
+        else:
+            logger.info(f"✓ Services exist: {service_count}")
+        
     except Exception as e:
         logger.error(f"Auto-seed critical data error: {e}")
+
+
+async def auto_seed_all_services():
+    """Auto-seed Concierge® services for all pillars"""
+    # Fit Services
+    fit_services = [
+        {
+            "id": "svc-fit-assessment",
+            "name": "Fitness Assessment & Programme Design",
+            "description": "Comprehensive fitness evaluation with personalised exercise programme.",
+            "pillar": "fit",
+            "category": "assessment",
+            "price": 2499,
+            "duration": "90 min",
+            "features": ["Body Condition Score", "Mobility Assessment", "Custom Exercise Plan", "Nutrition Tips"],
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-fit-training",
+            "name": "Personal Training Programme - 8 Weeks",
+            "description": "One-on-one training sessions with a certified canine fitness trainer.",
+            "pillar": "fit",
+            "category": "training",
+            "price": 7999,
+            "duration": "8 weeks",
+            "features": ["16 Sessions", "Progress Tracking", "Home Exercises", "Trainer Support"],
+            "image": "https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-fit-weight",
+            "name": "Weight Management Programme",
+            "description": "Structured weight loss/gain programme with nutritionist support.",
+            "pillar": "fit",
+            "category": "weight",
+            "price": 5999,
+            "duration": "12 weeks",
+            "features": ["Diet Plan", "Weekly Weigh-ins", "Exercise Routine", "Progress Reports"],
+            "image": "https://images.unsplash.com/photo-1546815693-7533bae19894?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-fit-hydro",
+            "name": "Hydrotherapy Sessions",
+            "description": "Low-impact aquatic therapy for rehabilitation and fitness.",
+            "pillar": "fit",
+            "category": "therapy",
+            "price": 1499,
+            "duration": "45 min",
+            "features": ["Heated Pool", "Professional Therapist", "Joint-Friendly", "All Ages Welcome"],
+            "image": "https://images.unsplash.com/photo-1560743641-3914f2c45636?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-fit-senior",
+            "name": "Senior Mobility Programme",
+            "description": "Gentle exercises designed for older dogs to maintain mobility.",
+            "pillar": "fit",
+            "category": "senior",
+            "price": 4999,
+            "duration": "Monthly",
+            "features": ["Low Impact", "Pain Management", "Flexibility Focus", "Home Visits Available"],
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-fit-puppy",
+            "name": "Puppy Development Programme",
+            "description": "Age-appropriate exercises and socialisation for growing pups.",
+            "pillar": "fit",
+            "category": "puppy",
+            "price": 3999,
+            "duration": "8 weeks",
+            "features": ["Growth-Safe Exercises", "Socialisation", "Basic Commands", "Play Groups"],
+            "image": "https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-fit-agility",
+            "name": "Agility Foundation Course",
+            "description": "Introduction to agility training for dogs of all skill levels.",
+            "pillar": "fit",
+            "category": "training",
+            "price": 4499,
+            "duration": "6 weeks",
+            "features": ["Equipment Training", "Confidence Building", "Fun Obstacles", "Competition Prep"],
+            "image": "https://images.unsplash.com/photo-1546815693-7533bae19894?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-fit-yoga",
+            "name": "Canine Yoga (Doga) Session",
+            "description": "Relaxing yoga session for you and your dog to bond and de-stress.",
+            "pillar": "fit",
+            "category": "wellness",
+            "price": 799,
+            "duration": "60 min",
+            "features": ["Breathing Exercises", "Gentle Stretches", "Bonding Time", "Stress Relief"],
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "is_active": True
+        }
+    ]
+    
+    # Care Services
+    care_services = [
+        {
+            "id": "svc-care-grooming",
+            "name": "Premium Grooming Session",
+            "description": "Full grooming service including bath, haircut, nail trim, and ear cleaning.",
+            "pillar": "care",
+            "category": "grooming",
+            "price": 1499,
+            "duration": "2-3 hours",
+            "features": ["Bath & Dry", "Breed-Specific Cut", "Nail Trim", "Ear Cleaning"],
+            "image": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-care-vet",
+            "name": "Vet Consultation at Home",
+            "description": "Licensed veterinarian visits your home for check-ups and consultations.",
+            "pillar": "care",
+            "category": "vet",
+            "price": 1999,
+            "duration": "45-60 min",
+            "features": ["Home Visit", "Basic Check-up", "Prescription if Needed", "Follow-up Call"],
+            "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-care-sitting",
+            "name": "Pet Sitting (Daily)",
+            "description": "Professional pet sitter cares for your pet at your home.",
+            "pillar": "care",
+            "category": "sitting",
+            "price": 799,
+            "duration": "8 hours",
+            "features": ["Feeding", "Walks", "Playtime", "Photo Updates"],
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "is_active": True
+        }
+    ]
+    
+    # Celebrate Services  
+    celebrate_services = [
+        {
+            "id": "svc-celebrate-party",
+            "name": "Birthday Party Planning",
+            "description": "Complete party planning service for your pet's special day.",
+            "pillar": "celebrate",
+            "category": "party",
+            "price": 4999,
+            "duration": "Full Day",
+            "features": ["Venue Coordination", "Custom Cake", "Decorations", "Invitations"],
+            "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-celebrate-photoshoot",
+            "name": "Professional Pet Photoshoot",
+            "description": "Studio or outdoor photoshoot with professional pet photographer.",
+            "pillar": "celebrate",
+            "category": "photography",
+            "price": 3499,
+            "duration": "2 hours",
+            "features": ["Professional Photographer", "20 Edited Photos", "Props Included", "Location Choice"],
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "is_active": True
+        }
+    ]
+    
+    all_services = fit_services + care_services + celebrate_services
+    
+    for service in all_services:
+        await db.services.update_one({"id": service["id"]}, {"$set": service}, upsert=True)
+    
+    logger.info(f"✓ AUTO-SEEDED {len(all_services)} Concierge® Services")
 
 
 @asynccontextmanager
