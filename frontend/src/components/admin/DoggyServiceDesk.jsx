@@ -6,6 +6,8 @@ import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
 import { API_URL, getApiUrl } from '../../utils/api';
 import { useServiceDeskSocket, TicketNotificationToast } from '../../hooks/useServiceDeskSocket';
+import RichTextEditor from './RichTextEditor';
+import KanbanBoard from './KanbanBoard';
 import {
   Search, Plus, RefreshCw, X, Send, Clock, User, Phone, Mail,
   Calendar, AlertCircle, CheckCircle, Loader2, MessageSquare,
@@ -17,7 +19,8 @@ import {
   ShoppingBag, Utensils, Hotel, Plane, Stethoscope, PartyPopper,
   Dumbbell, GraduationCap, Shield, MapPin, Package, CreditCard,
   MessageCircle, History, Brain, Target, AlertTriangle, Cake,
-  Dog, Cat, Scissors, Car, Home, Siren, Mic, MicOff, StopCircle, 
+  Dog, Cat, Scissors, Car, Home, Siren, Mic, MicOff, StopCircle,
+  LayoutList, Columns3, Keyboard, Timer 
   Play, Pause, Volume2, File, Upload, Trash, Eye, Download, Wifi, WifiOff
 } from 'lucide-react';
 
