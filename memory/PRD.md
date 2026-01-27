@@ -159,10 +159,31 @@
 - `/app/frontend/src/components/admin/KanbanBoard.jsx` - Kanban view
 - `/app/backend/ticket_routes.py` - SLA calculation, reminder CRUD endpoints
 
+### Phase 10: Admin Product Editor & Mira Fix (Jan 27, 2025)
+
+**Admin Product Editor UI - COMPLETED:**
+- ✅ **New Fields in Add/Edit Modal**:
+  - Bases (comma-separated): "Oats, Ragi"
+  - Fresh Delivery Cities: "Bangalore, Mumbai, Delhi NCR"
+  - Smart Tags section with dropdowns:
+    - Life Stage: All Ages, Puppy, Adult, Senior
+    - Occasion: Birthday, Gotcha Day, Special Treat, Festival, Everyday
+    - Dietary: Regular, Grain-Free, Vegan, Low-Fat, Hypoallergenic
+- ✅ **Backend Model Updated**: `CelebrateProductCreate` now accepts all new fields
+- ✅ **Dual Collection Support**: Update endpoint checks both `celebrate_products` and main `products` collection
+- ✅ **Shopify Options Extraction**: Auto-populates flavors/bases from Shopify options array when editing
+
+**Mira Memories Fix - COMPLETED:**
+- ✅ **Auth Issue Resolved**: MiraMemoriesSection now shows "Sign in to see Mira's Memories" prompt for unauthenticated users instead of infinite loading
+- ✅ **Proper Auth Handling**: 401 responses show login prompt, setLoading(false) called correctly
+- ✅ **Grouped Memories Display**: Events & Milestones, Health & Medical, Shopping & Preferences, Life Context
+
+**Testing Status:** Backend 100% (10/10), Frontend 100% (Verified via testing agent iteration 94)
+
 ---
 
 ## Pending Issues
-1. **Mira Memories Auth Issue** (P1): Pet profile "Mira Memories" tab stuck on loading - frontend auth token not being passed correctly
+1. ✅ ~~**Mira Memories Auth Issue** (P1)~~ - FIXED: Shows login prompt for unauthenticated users
 2. **WebSocket Connection** (P2): Shows "Connecting..." - prevents real-time updates (core functionality unaffected)
 3. **Product Tags**: Most products lack best-seller/new-arrivals tags (filters return 0 results)
 4. **Aggregated Ticket Detail** (P3): Some tickets from reservations/stay bookings return 404 on detail endpoint
@@ -180,9 +201,10 @@
 5. ✅ ~~SLA Timers~~ (DONE - Visual countdown with color coding)
 6. ✅ ~~Reminder/Tasks~~ (DONE - Full CRUD with modal and list)
 7. ✅ ~~Auto-Acknowledge Emails~~ (DONE - Requires Resend API key)
-8. **Admin Product Editor**: Add UI to manage `fresh_delivery_cities` and tag fields
+8. ✅ ~~Admin Product Editor~~ (DONE - New fields for fresh_delivery_cities, life_stage, occasion, dietary)
+9. ✅ ~~Fix Mira Memories Auth~~ (DONE - Login prompt for unauthenticated users)
 
-### P1 - Next Sprint
+### P1 - Next Sprint (Concierge for All 14 Pillars)
 9. **Fix Mira Memories Auth**: Debug token flow in UnifiedPetPage.jsx
 10. **Activate Soul Whisper Feature**: Verify question delivery and answer storage
 11. **Product Data Polish**: Rewrite cake titles/descriptions for quality
