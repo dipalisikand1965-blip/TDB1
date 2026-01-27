@@ -1652,6 +1652,75 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     }
     setRefreshing(false);
   };
+  
+  // Export tickets to CSV
+  const handleExportCSV = () => {
+    // Use filtered tickets for export
+    const ticketsToExport = filteredTickets;
+    if (ticketsToExport.length === 0) {
+      return; // Nothing to export
+    }
+    
+    // CSV headers
+    const headers = [
+      'Ticket ID',
+      'Status',
+      'Category',
+      'Urgency',
+      'Member Name',
+      'Member Email',
+      'Member Phone',
+      'Subject',
+      'Source',
+      'Channel',
+      'Assigned Agent',
+      'Tags',
+      'Created At',
+      'Updated At',
+      'SLA Due At',
+      'Messages Count'
+    ];
+    
+    // Build CSV rows
+    const rows = ticketsToExport.map(ticket => {
+      const subject = ticket.subject || ticket.description?.slice(0, 60) || 'No Subject';
+      const cleanSubject = subject.replace(/"/g, '""').replace(/\n/g, ' ');
+      const tags = (ticket.tags || []).join(', ');
+      
+      return [
+        ticket.ticket_id || ticket.id,
+        ticket.status,
+        ticket.category,
+        ticket.urgency || ticket.priority,
+        ticket.member?.name || '',
+        ticket.member?.email || '',
+        ticket.member?.phone || '',
+        `"${cleanSubject}"`,
+        ticket.source || 'web',
+        ticket.channel || 'web',
+        ticket.assigned_agent?.name || ticket.assigned_to || '',
+        tags,
+        ticket.created_at || '',
+        ticket.updated_at || '',
+        ticket.sla_due_at || '',
+        (ticket.messages || []).length
+      ].join(',');
+    });
+    
+    // Combine headers and rows
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `tickets_export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   // Auto-scroll
   useEffect(() => {
