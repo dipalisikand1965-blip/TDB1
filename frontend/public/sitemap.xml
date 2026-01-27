@@ -2,24 +2,143 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   
-  <!-- Homepage -->
+  <!-- ==================== HOMEPAGE ==================== -->
   <url>
     <loc>https://thedoggycompany.in/</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png</image:loc>
-      <image:title>The Doggy Bakery - Premium Dog Cakes and Treats</image:title>
+      <image:loc>https://thedoggycompany.in/logo-new.png</image:loc>
+      <image:title>The Doggy Company - Pet Life Operating System</image:title>
     </image:image>
   </url>
   
-  <!-- Product Categories -->
+  <!-- ==================== 14 PILLARS ==================== -->
+  
+  <!-- CELEBRATE - Dog Cakes & Parties -->
+  <url>
+    <loc>https://thedoggycompany.in/celebrate</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://thedoggybakery.com/cdn/shop/files/TDB_cakes_6_6c84dc0e-24b7-49f0-a5f9-0027610924db.png</image:loc>
+      <image:title>Dog Birthday Cakes - Celebrate Your Pet</image:title>
+    </image:image>
+  </url>
+  
+  <!-- DINE - Pet-Friendly Dining -->
+  <url>
+    <loc>https://thedoggycompany.in/dine</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- STAY - Pet Boarding & Hotels -->
+  <url>
+    <loc>https://thedoggycompany.in/stay</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- TRAVEL - Pet Travel Services -->
+  <url>
+    <loc>https://thedoggycompany.in/travel</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  
+  <!-- CARE - Veterinary & Healthcare -->
+  <url>
+    <loc>https://thedoggycompany.in/care</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- ENJOY - Pet Activities & Parks -->
+  <url>
+    <loc>https://thedoggycompany.in/enjoy</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- FIT - Pet Fitness -->
+  <url>
+    <loc>https://thedoggycompany.in/fit</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- LEARN - Dog Training -->
+  <url>
+    <loc>https://thedoggycompany.in/learn</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  
+  <!-- PAPERWORK - Pet Documentation -->
+  <url>
+    <loc>https://thedoggycompany.in/paperwork</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- ADVISORY - Pet Consultation -->
+  <url>
+    <loc>https://thedoggycompany.in/advisory</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  
+  <!-- EMERGENCY - 24/7 Pet Emergency -->
+  <url>
+    <loc>https://thedoggycompany.in/emergency</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  
+  <!-- FAREWELL - Pet Memorial -->
+  <url>
+    <loc>https://thedoggycompany.in/farewell</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- ADOPT - Pet Adoption -->
+  <url>
+    <loc>https://thedoggycompany.in/adopt</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  
+  <!-- SHOP - Pet Products -->
+  <url>
+    <loc>https://thedoggycompany.in/shop</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  
+  <!-- ==================== PRODUCT CATEGORIES ==================== -->
+  
   <url>
     <loc>https://thedoggycompany.in/cakes</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <priority>0.95</priority>
     <image:image>
       <image:loc>https://thedoggybakery.com/cdn/shop/files/TDB_cakes_6_6c84dc0e-24b7-49f0-a5f9-0027610924db.png</image:loc>
       <image:title>Dog Birthday Cakes</image:title>
@@ -28,124 +147,145 @@
   
   <url>
     <loc>https://thedoggycompany.in/treats</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  
-  <url>
-    <loc>https://thedoggycompany.in/pan-india</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
     <loc>https://thedoggycompany.in/fresh-meals</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/pan-india</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
   </url>
   
   <url>
     <loc>https://thedoggycompany.in/custom-cake</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://thedoggycompany.in/bowto-cakes</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
-  <!-- Informational Pages -->
+  <!-- ==================== MIRA AI CONCIERGE ==================== -->
+  
+  <url>
+    <loc>https://thedoggycompany.in/mira</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/concierge</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- ==================== MEMBERSHIP ==================== -->
+  
+  <url>
+    <loc>https://thedoggycompany.in/membership</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  
+  <!-- ==================== INFORMATIONAL PAGES ==================== -->
+  
   <url>
     <loc>https://thedoggycompany.in/about</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>https://thedoggycompany.in/contact</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>https://thedoggycompany.in/faqs</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <url>
-    <loc>https://thedoggycompany.in/membership</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.65</priority>
   </url>
   
   <url>
     <loc>https://thedoggycompany.in/insights</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://thedoggycompany.in/streaties</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://thedoggycompany.in/franchise</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
-  <!-- Policy Pages -->
+  <!-- ==================== POLICY PAGES ==================== -->
+  
   <url>
     <loc>https://thedoggycompany.in/refund-policy</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   
   <url>
     <loc>https://thedoggycompany.in/privacy-policy</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   
   <url>
     <loc>https://thedoggycompany.in/terms</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   
   <url>
     <loc>https://thedoggycompany.in/shipping</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
-  <!-- Mira AI Concierge -->
+  <!-- ==================== AUTHENTICATION ==================== -->
+  
   <url>
-    <loc>https://thedoggycompany.in/concierge</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://thedoggycompany.in/login</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://thedoggycompany.in/register</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
 </urlset>
