@@ -223,6 +223,13 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newCategoryEmoji, setNewCategoryEmoji] = useState('📁');
   
+  // Reminders/Tasks
+  const [showReminderModal, setShowReminderModal] = useState(false);
+  const [reminderForm, setReminderForm] = useState({
+    title: '', description: '', due_at: '', reminder_type: 'follow_up', priority: 'medium'
+  });
+  const [ticketReminders, setTicketReminders] = useState([]);
+  
   // Sidebar data for Pet Parents, Orders, Analytics
   const [petParents, setPetParents] = useState([]);
   const [petProfiles, setPetProfiles] = useState([]);
