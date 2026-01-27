@@ -2631,38 +2631,53 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
           </div>
         </div>
 
-        {/* Ticket List - Premium Styling */}
-        <div className="w-96 flex-shrink-0 border rounded-xl overflow-hidden flex flex-col bg-white shadow-lg">
-          {/* Header with Quick Filters */}
-          <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-4 py-3 border-b">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-semibold text-slate-700">Tickets ({displayTickets.length})</span>
-              <div className="flex items-center gap-1">
-                {/* View Mode Toggle */}
-                <div className="flex items-center bg-white rounded-lg border shadow-sm p-0.5 mr-2">
-                  <button
-                    onClick={() => setViewMode('list')}
-                    className={`p-1.5 rounded transition-all ${viewMode === 'list' ? 'bg-purple-100 text-purple-700' : 'text-gray-400 hover:text-gray-600'}`}
-                    title="List View"
-                  >
-                    <LayoutList className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setViewMode('kanban')}
-                    className={`p-1.5 rounded transition-all ${viewMode === 'kanban' ? 'bg-purple-100 text-purple-700' : 'text-gray-400 hover:text-gray-600'}`}
-                    title="Kanban Board"
-                  >
-                    <Columns3 className="w-4 h-4" />
-                  </button>
+        {/* Kanban View */}
+        {viewMode === 'kanban' && (
+          <div className="flex-1 border rounded-xl overflow-hidden bg-white shadow-lg p-4">
+            <KanbanBoard 
+              tickets={displayTickets} 
+              onSelectTicket={fetchTicketDetails}
+              onStatusChange={handleStatusChange}
+              loading={loading}
+            />
+          </div>
+        )}
+
+        {/* List View - Ticket List + Detail Panel */}
+        {viewMode === 'list' && (
+          <>
+            {/* Ticket List - Premium Styling */}
+            <div className="w-96 flex-shrink-0 border rounded-xl overflow-hidden flex flex-col bg-white shadow-lg">
+              {/* Header with Quick Filters */}
+              <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-4 py-3 border-b">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-semibold text-slate-700">Tickets ({displayTickets.length})</span>
+                  <div className="flex items-center gap-1">
+                    {/* View Mode Toggle */}
+                    <div className="flex items-center bg-white rounded-lg border shadow-sm p-0.5 mr-2">
+                      <button
+                        onClick={() => setViewMode('list')}
+                        className={`p-1.5 rounded transition-all ${viewMode === 'list' ? 'bg-purple-100 text-purple-700' : 'text-gray-400 hover:text-gray-600'}`}
+                        title="List View"
+                      >
+                        <LayoutList className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setViewMode('kanban')}
+                        className={`p-1.5 rounded transition-all ${viewMode === 'kanban' ? 'bg-purple-100 text-purple-700' : 'text-gray-400 hover:text-gray-600'}`}
+                        title="Kanban Board"
+                      >
+                        <Columns3 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={exportTicketsCSV} title="Export to CSV" className="hover:bg-white/50">
+                      <Download className="w-4 h-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => { fetchTickets(); fetchStats(); }} className="hover:bg-white/50">
+                      <RefreshCw className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-                <Button variant="ghost" size="sm" onClick={exportTicketsCSV} title="Export to CSV" className="hover:bg-white/50">
-                  <Download className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => { fetchTickets(); fetchStats(); }} className="hover:bg-white/50">
-                  <RefreshCw className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
             
             {/* Quick Filter Tabs - Premium Pills */}
             <div className="flex gap-2 overflow-x-auto pb-1">
