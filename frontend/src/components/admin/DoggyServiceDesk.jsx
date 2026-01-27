@@ -703,7 +703,11 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     setConversationSummary(null);
     setIsEditingTicket(false);
     setPetSoulPrompts(null);
+    setTicketReminders([]);
     await fetchContext(ticket);
+    
+    // Fetch reminders for this ticket
+    await fetchReminders(ticket.ticket_id);
     
     // Fetch full ticket details if it's from the tickets collection
     if (ticket.source !== 'reservation' && ticket.source !== 'stay_booking') {
