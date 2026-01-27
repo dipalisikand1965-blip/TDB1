@@ -3181,7 +3181,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         <Button
                           onClick={handleReply}
                           disabled={(!replyText || !replyText.replace(/<[^>]*>/g, '').trim()) && attachments.length === 0 || sending}
-                          className={`${isInternal ? 'bg-amber-500 hover:bg-amber-600' : 'bg-emerald-500 hover:bg-emerald-600'}`}
+                          className={`px-6 ${isInternal ? 'bg-amber-500 hover:bg-amber-600' : 'bg-emerald-500 hover:bg-emerald-600'}`}
                         >
                           {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
                           {isInternal ? 'Add Note' : 'Send Reply'}
@@ -3190,15 +3190,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                     </div>
                   )}
                 </div>
-              ) : (
-                /* No ticket selected */
-                <div className="w-[500px] flex-shrink-0 flex flex-col items-center justify-center bg-gray-50 text-gray-400">
-                  <MessageSquare className="w-16 h-16 mb-4 opacity-20" />
-                  <h3 className="text-lg font-medium text-gray-600 mb-2">Select a Ticket</h3>
-                  <p className="text-sm text-center max-w-xs">
-                    Click on any ticket to view the conversation, pet profile, and respond to the customer.
-                  </p>
-                </div>
+                </>
               )}
             </>
           )}
