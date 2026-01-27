@@ -692,6 +692,154 @@ const StayManager = ({ getAuthHeader }) => {
           )}
         </TabsContent>
 
+        {/* Boarding Tab */}
+        <TabsContent value="boarding" className="space-y-4">
+          {/* Boarding Stats */}
+          <div className="grid grid-cols-4 gap-4">
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-amber-100 rounded-lg">
+                  <Home className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{boardingFacilities.length}</p>
+                  <p className="text-sm text-gray-500">Total Facilities</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Star className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{boardingFacilities.filter(f => f.boarding_type === 'Premium').length}</p>
+                  <p className="text-sm text-gray-500">Premium</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Heart className="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{boardingFacilities.filter(f => f.boarding_type === 'Home-style').length}</p>
+                  <p className="text-sm text-gray-500">Home-style</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-pink-100 rounded-lg">
+                  <MapPin className="w-5 h-5 text-pink-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{boardingStats.cities?.length || 0}</p>
+                  <p className="text-sm text-gray-500">Cities</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => { setSelectedBoarding(null); setShowBoardingModal(true); }}
+              className="bg-amber-600 hover:bg-amber-700"
+            >
+              <Plus className="w-4 h-4 mr-2" /> Add Boarding Facility
+            </Button>
+            <select 
+              className="px-3 py-2 border rounded-lg text-sm"
+              value={boardingFilters.city}
+              onChange={(e) => setBoardingFilters({ ...boardingFilters, city: e.target.value })}
+            >
+              <option value="">All Cities</option>
+              {boardingStats.cities?.map(city => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
+            <select 
+              className="px-3 py-2 border rounded-lg text-sm"
+              value={boardingFilters.type}
+              onChange={(e) => setBoardingFilters({ ...boardingFilters, type: e.target.value })}
+            >
+              <option value="">All Types</option>
+              {boardingStats.types?.map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Boarding Facilities Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {boardingFacilities
+              .filter(f => !boardingFilters.city || f.city === boardingFilters.city)
+              .filter(f => !boardingFilters.type || f.boarding_type === boardingFilters.type)
+              .map(facility => (
+              <Card key={facility.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="aspect-video bg-gray-100 relative">
+                  {facility.image ? (
+                    <img src={facility.image} alt={facility.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      <Home className="w-12 h-12" />
+                    </div>
+                  )}
+                  <span className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium ${
+                    facility.boarding_type === 'Premium' ? 'bg-purple-500 text-white' :
+                    facility.boarding_type === 'Luxury' ? 'bg-amber-500 text-white' :
+                    facility.boarding_type === 'Home-style' ? 'bg-green-500 text-white' :
+                    'bg-gray-500 text-white'
+                  }`}>
+                    {facility.boarding_type}
+                  </span>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-900 truncate">{facility.name}</h3>
+                  <p className="text-sm text-gray-500 flex items-center gap-1">
+                    <MapPin className="w-3 h-3" /> {facility.city}, {facility.state}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-2 line-clamp-2">{facility.description}</p>
+                  <div className="flex items-center justify-between mt-3">
+                    <span className="text-amber-600 font-medium">{facility.price_range || '₹800-1,500/night'}</span>
+                    <span className="flex items-center gap-1 text-sm">
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      {facility.paw_score || 4.5}
+                    </span>
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => { setSelectedBoarding(facility); setShowBoardingModal(true); }}
+                    >
+                      <Edit className="w-3 h-3 mr-1" /> Edit
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="text-red-600 hover:bg-red-50"
+                      onClick={async () => {
+                        if (window.confirm(`Delete ${facility.name}?`)) {
+                          await fetch(`${API_URL}/api/admin/boarding/facilities/${facility.id}`, {
+                            method: 'DELETE',
+                            headers: getAuthHeader()
+                          });
+                          fetchData();
+                        }
+                      }}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
         {/* Products Tab */}
         <TabsContent value="products" className="space-y-4">
           {/* Products Stats */}
