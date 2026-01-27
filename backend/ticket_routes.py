@@ -1364,6 +1364,288 @@ async def get_ticket_viewers(ticket_id: str):
     return {"viewers": [v["agent"] for v in viewers]}
 
 
+# ==================== SMART AUTO-ASSIGNMENT SETTINGS ====================
+
+class AutoAssignmentSettings(BaseModel):
+    """Settings for smart auto-assignment"""
+    enabled: bool = False
+    expertise_map: Dict[str, List[str]] = {}  # category -> list of agent names
+    all_agents: List[str] = []  # fallback list of all agents
+
+
+@router.get("/settings/auto-assignment")
+async def get_auto_assignment_settings():
+    """Get auto-assignment configuration"""
+    db = get_db()
+    
+    settings = await db.service_desk_settings.find_one({"type": "auto_assignment"})
+    
+    if not settings:
+        # Return default settings with pillar names
+        return {
+            "enabled": False,
+            "expertise_map": {
+                "celebrate": [],
+                "dine": [],
+                "stay": [],
+                "travel": [],
+                "care": [],
+                "enjoy": [],
+                "fit": [],
+                "learn": [],
+                "paperwork": [],
+                "advisory": [],
+                "emergency": [],
+                "farewell": [],
+                "adopt": [],
+                "shop": []
+            },
+            "all_agents": []
+        }
+    
+    settings.pop("_id", None)
+    settings.pop("type", None)
+    return settings
+
+
+@router.post("/settings/auto-assignment")
+async def update_auto_assignment_settings(settings: AutoAssignmentSettings):
+    """Update auto-assignment configuration"""
+    db = get_db()
+    
+    settings_doc = settings.dict()
+    settings_doc["type"] = "auto_assignment"
+    settings_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.service_desk_settings.update_one(
+        {"type": "auto_assignment"},
+        {"$set": settings_doc},
+        upsert=True
+    )
+    
+    return {"success": True, "message": "Auto-assignment settings updated"}
+
+
+@router.post("/settings/auto-assignment/agent")
+async def add_agent_expertise(agent_name: str = Body(...), pillars: List[str] = Body(...)):
+    """Add or update an agent's pillar expertise"""
+    db = get_db()
+    
+    # Get current settings
+    settings = await db.service_desk_settings.find_one({"type": "auto_assignment"})
+    
+    if not settings:
+        settings = {
+            "type": "auto_assignment",
+            "enabled": True,
+            "expertise_map": {},
+            "all_agents": []
+        }
+    
+    expertise_map = settings.get("expertise_map", {})
+    all_agents = settings.get("all_agents", [])
+    
+    # Add agent to all_agents if not present
+    if agent_name not in all_agents:
+        all_agents.append(agent_name)
+    
+    # Add agent to each pillar's expertise list
+    for pillar in pillars:
+        if pillar not in expertise_map:
+            expertise_map[pillar] = []
+        if agent_name not in expertise_map[pillar]:
+            expertise_map[pillar].append(agent_name)
+    
+    # Update settings
+    await db.service_desk_settings.update_one(
+        {"type": "auto_assignment"},
+        {
+            "$set": {
+                "expertise_map": expertise_map,
+                "all_agents": all_agents,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        },
+        upsert=True
+    )
+    
+    return {
+        "success": True,
+        "agent": agent_name,
+        "pillars": pillars,
+        "message": f"Agent {agent_name} added with expertise in {', '.join(pillars)}"
+    }
+
+
+# ==================== SLA BREACH ALERTS ====================
+
+class SLAAlertSettings(BaseModel):
+    """Settings for SLA breach alerts"""
+    enabled: bool = True
+    warning_threshold_minutes: int = 60  # Alert when X minutes before breach
+    breach_escalation: bool = True  # Auto-escalate on breach
+    notification_channels: List[str] = ["email", "browser"]  # email, browser, whatsapp
+
+
+@router.get("/settings/sla-alerts")
+async def get_sla_alert_settings():
+    """Get SLA alert configuration"""
+    db = get_db()
+    
+    settings = await db.service_desk_settings.find_one({"type": "sla_alerts"})
+    
+    if not settings:
+        return {
+            "enabled": True,
+            "warning_threshold_minutes": 60,
+            "breach_escalation": True,
+            "notification_channels": ["email", "browser"]
+        }
+    
+    settings.pop("_id", None)
+    settings.pop("type", None)
+    return settings
+
+
+@router.post("/settings/sla-alerts")
+async def update_sla_alert_settings(settings: SLAAlertSettings):
+    """Update SLA alert configuration"""
+    db = get_db()
+    
+    settings_doc = settings.dict()
+    settings_doc["type"] = "sla_alerts"
+    settings_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.service_desk_settings.update_one(
+        {"type": "sla_alerts"},
+        {"$set": settings_doc},
+        upsert=True
+    )
+    
+    return {"success": True, "message": "SLA alert settings updated"}
+
+
+@router.get("/sla-at-risk")
+async def get_sla_at_risk_tickets():
+    """
+    Get tickets that are at risk of SLA breach.
+    Returns tickets within warning threshold of their SLA deadline.
+    """
+    db = get_db()
+    
+    # Get SLA settings
+    settings = await db.service_desk_settings.find_one({"type": "sla_alerts"})
+    warning_minutes = settings.get("warning_threshold_minutes", 60) if settings else 60
+    
+    now = datetime.now(timezone.utc)
+    warning_time = now + timedelta(minutes=warning_minutes)
+    
+    # Find open tickets with SLA due within warning threshold
+    cursor = db.tickets.find({
+        "status": {"$nin": ["resolved", "closed"]},
+        "sla_due_at": {
+            "$ne": None,
+            "$lte": warning_time.isoformat()
+        },
+        "sla_breached": {"$ne": True}
+    }).sort("sla_due_at", 1)
+    
+    at_risk_tickets = await cursor.to_list(length=50)
+    
+    result = []
+    for ticket in at_risk_tickets:
+        ticket.pop("_id", None)
+        
+        # Calculate time remaining
+        if ticket.get("sla_due_at"):
+            try:
+                due_at = datetime.fromisoformat(ticket["sla_due_at"].replace("Z", "+00:00"))
+                remaining = due_at - now
+                ticket["minutes_remaining"] = int(remaining.total_seconds() / 60)
+                ticket["is_breached"] = remaining.total_seconds() <= 0
+            except:
+                ticket["minutes_remaining"] = None
+                ticket["is_breached"] = False
+        
+        result.append(ticket)
+    
+    return {
+        "at_risk_count": len(result),
+        "tickets": result
+    }
+
+
+@router.post("/check-sla-breaches")
+async def check_and_handle_sla_breaches():
+    """
+    Check for SLA breaches and handle them according to settings.
+    This can be called by a scheduler or manually.
+    """
+    db = get_db()
+    
+    now = datetime.now(timezone.utc)
+    
+    # Find breached tickets
+    cursor = db.tickets.find({
+        "status": {"$nin": ["resolved", "closed"]},
+        "sla_due_at": {
+            "$ne": None,
+            "$lt": now.isoformat()
+        },
+        "sla_breached": {"$ne": True}
+    })
+    
+    breached_tickets = await cursor.to_list(length=100)
+    
+    # Get SLA settings
+    settings = await db.service_desk_settings.find_one({"type": "sla_alerts"})
+    should_escalate = settings.get("breach_escalation", True) if settings else True
+    
+    breached_count = 0
+    escalated_count = 0
+    
+    for ticket in breached_tickets:
+        ticket_id = ticket.get("ticket_id")
+        
+        # Mark as breached
+        update_doc = {
+            "$set": {
+                "sla_breached": True,
+                "sla_breached_at": now.isoformat(),
+                "updated_at": now.isoformat()
+            },
+            "$push": {
+                "messages": {
+                    "id": str(uuid.uuid4()),
+                    "type": "system",
+                    "content": "⚠️ SLA BREACH: This ticket has exceeded its SLA deadline",
+                    "sender": "system",
+                    "sender_name": "SLA Monitor",
+                    "timestamp": now.isoformat(),
+                    "is_internal": True
+                }
+            }
+        }
+        
+        # Auto-escalate if enabled
+        if should_escalate and ticket.get("urgency") != "critical":
+            update_doc["$set"]["urgency"] = "critical"
+            update_doc["$set"]["status"] = "escalated"
+            escalated_count += 1
+        
+        await db.tickets.update_one({"ticket_id": ticket_id}, update_doc)
+        breached_count += 1
+        
+        logger.warning(f"SLA breach detected: {ticket_id}")
+    
+    return {
+        "checked_at": now.isoformat(),
+        "breached_count": breached_count,
+        "escalated_count": escalated_count,
+        "message": f"Found {breached_count} SLA breaches, escalated {escalated_count}"
+    }
+
+
 # ==================== CUSTOMER SATISFACTION (CSAT) ====================
 
 class CSATRequest(BaseModel):
