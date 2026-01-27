@@ -2763,6 +2763,124 @@ async def force_seed_admin_credentials():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@admin_router.post("/force-seed-all-products")
+async def force_seed_all_products():
+    """
+    Emergency endpoint to seed all pillar products.
+    Call this on production to populate shop pages.
+    No auth required for emergency seeding.
+    """
+    from datetime import datetime, timezone
+    import uuid
+    
+    try:
+        results = {"seeded": {}, "total": 0}
+        
+        # ========== STAY PRODUCTS ==========
+        stay_products = [
+            {"id": "stay-hotel-1", "name": "Pet-Friendly Hotel Stay", "description": "Luxurious pet-friendly hotel with dedicated pet amenities", "price": 5000, "category": "hotel", "pillar": "stay", "tags": ["Stay", "Pet-Friendly", "Hotel", "Luxury"], "in_stock": True},
+            {"id": "stay-resort-1", "name": "Resort Getaway with Pets", "description": "Premium resort experience for you and your furry friend", "price": 8000, "category": "resort", "pillar": "stay", "tags": ["Stay", "Resort", "Premium", "Vacation"], "in_stock": True},
+            {"id": "stay-villa-1", "name": "Private Villa Rental", "description": "Entire private villa with yard for pets to run free", "price": 12000, "category": "villa", "pillar": "stay", "tags": ["Stay", "Villa", "Private", "Spacious"], "in_stock": True},
+            {"id": "stay-farmstay-1", "name": "Countryside Farmstay", "description": "Rustic farmstay experience with open spaces for pets", "price": 3500, "category": "farmstay", "pillar": "stay", "tags": ["Stay", "Farm", "Nature", "Rustic"], "in_stock": True},
+            {"id": "stay-boarding-1", "name": "Premium Pet Boarding", "description": "24/7 care boarding facility with webcam access", "price": 1500, "category": "boarding", "pillar": "stay", "tags": ["Stay", "Boarding", "Care", "Premium"], "in_stock": True},
+            {"id": "stay-boarding-2", "name": "Standard Pet Boarding", "description": "Comfortable boarding with daily walks and playtime", "price": 800, "category": "boarding", "pillar": "stay", "tags": ["Stay", "Boarding", "Standard"], "in_stock": True},
+            {"id": "stay-homestay-1", "name": "Home-style Pet Boarding", "description": "Your pet stays in a loving home environment", "price": 1000, "category": "homestay", "pillar": "stay", "tags": ["Stay", "Homestay", "Family"], "in_stock": True},
+            {"id": "stay-daycare-1", "name": "Pet Daycare - Full Day", "description": "Full day daycare with playtime and socialization", "price": 600, "category": "daycare", "pillar": "stay", "tags": ["Stay", "Daycare", "Play"], "in_stock": True},
+        ]
+        
+        for p in stay_products:
+            p["created_at"] = datetime.now(timezone.utc).isoformat()
+            p["image"] = "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800"
+            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+        results["seeded"]["stay"] = len(stay_products)
+        
+        # ========== TRAVEL PRODUCTS ==========
+        travel_products = [
+            {"id": "travel-cab-1", "name": "Pet-Friendly Cab Service", "description": "AC cab rides for you and your pet", "price": 1500, "category": "cab", "pillar": "travel", "tags": ["Travel", "Cab", "Pet Transport"], "in_stock": True},
+            {"id": "travel-train-1", "name": "Train Travel Assistance", "description": "Complete train travel documentation and support", "price": 3000, "category": "train", "pillar": "travel", "tags": ["Travel", "Train", "Intercity"], "in_stock": True},
+            {"id": "travel-flight-1", "name": "Domestic Flight Coordination", "description": "Full support for flying with your pet", "price": 15000, "category": "flight", "pillar": "travel", "tags": ["Travel", "Flight", "Domestic"], "in_stock": True},
+            {"id": "travel-relocation-1", "name": "Pet Relocation Service", "description": "Premium door-to-door pet relocation", "price": 50000, "category": "relocation", "pillar": "travel", "tags": ["Travel", "Relocation", "International"], "in_stock": True},
+            {"id": "travel-taxi-1", "name": "Pet Taxi - City Rides", "description": "On-demand pet taxi for local trips", "price": 500, "category": "taxi", "pillar": "travel", "tags": ["Travel", "Taxi", "City"], "in_stock": True},
+        ]
+        
+        for p in travel_products:
+            p["created_at"] = datetime.now(timezone.utc).isoformat()
+            p["image"] = "https://images.unsplash.com/photo-1544568100-847a948585b9?w=800"
+            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+        results["seeded"]["travel"] = len(travel_products)
+        
+        # ========== CARE PRODUCTS ==========
+        care_products = [
+            {"id": "care-grooming-1", "name": "Full Grooming Package", "description": "Complete grooming: bath, haircut, nail trim, ear cleaning", "price": 1500, "category": "grooming", "pillar": "care", "tags": ["Care", "Grooming", "Full Service"], "in_stock": True},
+            {"id": "care-bath-1", "name": "Bath & Brush", "description": "Refreshing bath with shampoo and brushing", "price": 600, "category": "grooming", "pillar": "care", "tags": ["Care", "Bath", "Basic"], "in_stock": True},
+            {"id": "care-walk-1", "name": "Daily Dog Walking", "description": "30-minute daily walks with GPS tracking", "price": 500, "category": "walks", "pillar": "care", "tags": ["Care", "Walks", "Daily"], "in_stock": True},
+            {"id": "care-sitting-1", "name": "Pet Sitting (8 hours)", "description": "Professional pet sitting at your home", "price": 1200, "category": "sitting", "pillar": "care", "tags": ["Care", "Sitting", "Home Visit"], "in_stock": True},
+            {"id": "care-training-1", "name": "Basic Obedience Training", "description": "5-session package for basic commands", "price": 5000, "category": "training", "pillar": "care", "tags": ["Care", "Training", "Obedience"], "in_stock": True},
+            {"id": "care-vet-1", "name": "Vet Consultation Booking", "description": "Book appointments with trusted vets", "price": 300, "category": "vet", "pillar": "care", "tags": ["Care", "Vet", "Health"], "in_stock": True},
+        ]
+        
+        for p in care_products:
+            p["created_at"] = datetime.now(timezone.utc).isoformat()
+            p["image"] = "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800"
+            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+        results["seeded"]["care"] = len(care_products)
+        
+        # ========== FIT PRODUCTS ==========
+        fit_products = [
+            {"id": "fit-assessment-1", "name": "Fitness Assessment", "description": "Comprehensive fitness evaluation with personalized plan", "price": 1500, "category": "assessment", "pillar": "fit", "tags": ["Fit", "Assessment", "Health"], "in_stock": True},
+            {"id": "fit-weight-1", "name": "Weight Management Program", "description": "8-week weight management with diet plan", "price": 5000, "category": "weight", "pillar": "fit", "tags": ["Fit", "Weight", "Program"], "in_stock": True},
+            {"id": "fit-swim-1", "name": "Hydrotherapy Session", "description": "Low-impact swimming therapy", "price": 800, "category": "therapy", "pillar": "fit", "tags": ["Fit", "Swimming", "Therapy"], "in_stock": True},
+            {"id": "fit-agility-1", "name": "Agility Training Class", "description": "Fun obstacle course training", "price": 1000, "category": "agility", "pillar": "fit", "tags": ["Fit", "Agility", "Training"], "in_stock": True},
+        ]
+        
+        for p in fit_products:
+            p["created_at"] = datetime.now(timezone.utc).isoformat()
+            p["image"] = "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800"
+            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+        results["seeded"]["fit"] = len(fit_products)
+        
+        # ========== ENJOY PRODUCTS ==========
+        enjoy_products = [
+            {"id": "enjoy-park-1", "name": "Dog Park Day Pass", "description": "Full day access to premium dog park", "price": 500, "category": "park", "pillar": "enjoy", "tags": ["Enjoy", "Park", "Play"], "in_stock": True},
+            {"id": "enjoy-cafe-1", "name": "Pet Cafe Voucher", "description": "Treat for pet-friendly cafe visit", "price": 800, "category": "cafe", "pillar": "enjoy", "tags": ["Enjoy", "Cafe", "Outing"], "in_stock": True},
+            {"id": "enjoy-beach-1", "name": "Beach Day Experience", "description": "Guided beach outing for pets", "price": 1500, "category": "beach", "pillar": "enjoy", "tags": ["Enjoy", "Beach", "Adventure"], "in_stock": True},
+        ]
+        
+        for p in enjoy_products:
+            p["created_at"] = datetime.now(timezone.utc).isoformat()
+            p["image"] = "https://images.unsplash.com/photo-1601758124096-1fd661873b95?w=800"
+            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+        results["seeded"]["enjoy"] = len(enjoy_products)
+        
+        # ========== LEARN PRODUCTS ==========
+        learn_products = [
+            {"id": "learn-puppy-1", "name": "Puppy Training Course", "description": "8-week puppy foundation training", "price": 8000, "category": "puppy", "pillar": "learn", "tags": ["Learn", "Puppy", "Training"], "in_stock": True},
+            {"id": "learn-behavior-1", "name": "Behavior Modification", "description": "Address specific behavioral issues", "price": 6000, "category": "behavior", "pillar": "learn", "tags": ["Learn", "Behavior", "Training"], "in_stock": True},
+            {"id": "learn-tricks-1", "name": "Fun Tricks Workshop", "description": "Learn cool tricks and commands", "price": 2000, "category": "tricks", "pillar": "learn", "tags": ["Learn", "Tricks", "Fun"], "in_stock": True},
+        ]
+        
+        for p in learn_products:
+            p["created_at"] = datetime.now(timezone.utc).isoformat()
+            p["image"] = "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800"
+            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+        results["seeded"]["learn"] = len(learn_products)
+        
+        # Calculate total
+        results["total"] = sum(results["seeded"].values())
+        
+        logger.info(f"Force-seeded {results['total']} products across all pillars")
+        
+        return {
+            "success": True,
+            "message": f"Seeded {results['total']} products across all pillars",
+            "details": results["seeded"]
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to force seed products: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @admin_router.post("/change-password")
 async def change_password(
     current_password: str = Body(...),
