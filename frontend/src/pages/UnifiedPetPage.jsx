@@ -795,6 +795,9 @@ const UnifiedPetPage = () => {
               <TabsTrigger value="personality" className="gap-1.5 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 px-4">
                 <Sparkles className="w-4 h-4" /> Detailed View
               </TabsTrigger>
+              <TabsTrigger value="memories" className="gap-1.5 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 px-4">
+                <Brain className="w-4 h-4" /> Mira Memories
+              </TabsTrigger>
               <TabsTrigger value="health" className="gap-1.5 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 px-4">
                 <Heart className="w-4 h-4" /> Health Vault
               </TabsTrigger>
