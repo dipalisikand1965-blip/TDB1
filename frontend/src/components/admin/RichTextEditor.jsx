@@ -392,41 +392,6 @@ const RichTextEditor = ({
         </div>
       </div>
 
-      {/* Bubble Menu for selected text */}
-      {editor && (
-        <BubbleMenu 
-          editor={editor} 
-          tippyOptions={{ duration: 100 }}
-          className="flex items-center gap-0.5 p-1 bg-gray-900 rounded-lg shadow-xl"
-        >
-          <button
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`p-1.5 rounded ${editor.isActive('bold') ? 'bg-gray-700' : 'hover:bg-gray-800'} text-white`}
-          >
-            <Bold className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`p-1.5 rounded ${editor.isActive('italic') ? 'bg-gray-700' : 'hover:bg-gray-800'} text-white`}
-          >
-            <Italic className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleUnderline().run()}
-            className={`p-1.5 rounded ${editor.isActive('underline') ? 'bg-gray-700' : 'hover:bg-gray-800'} text-white`}
-          >
-            <UnderlineIcon className="w-3.5 h-3.5" />
-          </button>
-          <div className="w-px h-4 bg-gray-600 mx-1" />
-          <button
-            onClick={setLink}
-            className={`p-1.5 rounded ${editor.isActive('link') ? 'bg-gray-700' : 'hover:bg-gray-800'} text-white`}
-          >
-            <LinkIcon className="w-3.5 h-3.5" />
-          </button>
-        </BubbleMenu>
-      )}
-
       {/* Editor Content */}
       <EditorContent 
         editor={editor} 
