@@ -2132,6 +2132,35 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 {/* Notifications Tab */}
                 {settingsTab === 'notifications' && (
                   <div className="space-y-6">
+                    {/* Browser Notification Permission */}
+                    <div className={`p-4 rounded-lg border-2 ${notificationsEnabled ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50'}`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${notificationsEnabled ? 'bg-emerald-100' : 'bg-amber-100'}`}>
+                            <Bell className={`w-5 h-5 ${notificationsEnabled ? 'text-emerald-600' : 'text-amber-600'}`} />
+                          </div>
+                          <div>
+                            <span className="font-medium">Browser Notifications</span>
+                            <p className="text-sm text-gray-500">
+                              {notificationsEnabled 
+                                ? '✓ Enabled - You will receive desktop notifications'
+                                : 'Enable to receive desktop alerts for new tickets'}
+                            </p>
+                          </div>
+                        </div>
+                        {!notificationsEnabled ? (
+                          <Button
+                            onClick={requestNotificationPermission}
+                            className="bg-emerald-500 hover:bg-emerald-600"
+                          >
+                            Enable Notifications
+                          </Button>
+                        ) : (
+                          <Badge className="bg-emerald-100 text-emerald-700">Enabled</Badge>
+                        )}
+                      </div>
+                    </div>
+                    
                     <div>
                       <h3 className="font-semibold text-gray-800 mb-3">Notification Preferences</h3>
                       <div className="space-y-3">
