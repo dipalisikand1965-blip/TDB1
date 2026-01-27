@@ -512,39 +512,106 @@ class MemoryExtractor:
         member_id: str,
         pet_id: Optional[str] = None,
         pet_name: Optional[str] = None,
-        session_id: Optional[str] = None
+        session_id: Optional[str] = None,
+        pillar: Optional[str] = None
     ) -> List[Dict]:
         """
         Extract memorable information from a conversation turn.
+        Enhanced to capture more from conversations across all pillars.
         Returns list of memories to potentially store.
         """
         memories = []
         
-        # Patterns for memory extraction
+        # Comprehensive patterns for memory extraction
         patterns = {
             "event": [
-                r"(?:planning|going|traveling|trip)\s+(?:to|for)\s+(.+?)(?:\.|,|$)",
-                r"(?:birthday|anniversary|adoption day|gotcha day)\s+(?:is|on)\s+(.+?)(?:\.|,|$)",
-                r"(?:next week|next month|this weekend)\s+(?:we're|I'm|going)\s+(.+?)(?:\.|,|$)",
+                # Travel & trips
+                r"(?:planning|going|traveling|trip|vacation|holiday|pawcation)\s+(?:to|for)\s+(.+?)(?:\.|,|!|$)",
+                r"(?:visiting|headed to|flying to|driving to)\s+(.+?)(?:\.|,|!|$)",
+                # Dates & milestones
+                r"(?:birthday|anniversary|adoption day|gotcha day|born)\s+(?:is|on|was)\s+(.+?)(?:\.|,|$)",
+                r"(?:next week|next month|this weekend|tomorrow|today)\s+(?:we're|I'm|we are|going|have)\s+(.+?)(?:\.|,|$)",
+                # Appointments & bookings
+                r"(?:booked|scheduled|appointment|reservation)\s+(?:for|at|on)\s+(.+?)(?:\.|,|$)",
+                r"(?:celebrating|party|celebration)\s+(.+?)(?:\.|,|!|$)",
             ],
             "health": [
-                r"(?:allergic to|has allergy|sensitive to)\s+(.+?)(?:\.|,|$)",
-                r"(?:taking|on)\s+(?:medication|medicine)\s+(?:for)?\s*(.+?)(?:\.|,|$)",
-                r"(?:vet|doctor)\s+(?:said|mentioned|diagnosed)\s+(.+?)(?:\.|,|$)",
+                # Allergies & sensitivities
+                r"(?:allergic to|has allergy|has allergies|sensitive to|can't eat|cannot eat)\s+(.+?)(?:\.|,|$)",
+                r"(?:intolerant to|intolerance to|reacts to)\s+(.+?)(?:\.|,|$)",
+                # Medications & conditions
+                r"(?:taking|on|prescribed|using)\s+(?:medication|medicine|meds|tablets|supplements?)\s+(?:for)?\s*(.+?)(?:\.|,|$)",
+                r"(?:vet|doctor|specialist)\s+(?:said|mentioned|diagnosed|found|told us)\s+(.+?)(?:\.|,|$)",
+                r"(?:has|have|diagnosed with|suffering from|dealing with)\s+(.+?)(?:condition|disease|issue|problem)(?:\.|,|$)",
+                # Symptoms & behaviours
+                r"(?:gets|get|become|becomes)\s+(?:anxious|nervous|scared|stressed|sick)\s+(?:when|during|around|near)\s+(.+?)(?:\.|,|$)",
+                r"(?:afraid of|scared of|fear of|phobia)\s+(.+?)(?:\.|,|$)",
+                r"(?:doesn't like|hates|dislikes|avoids)\s+(.+?)(?:\.|,|$)",
+                # Weight & diet
+                r"(?:needs to|trying to|should)\s+(?:lose|gain)\s+weight",
+                r"(?:on a|following a)\s+(.+?)\s*(?:diet|regime)(?:\.|,|$)",
             ],
             "shopping": [
-                r"(?:looking for|want to buy|interested in)\s+(.+?)(?:\.|,|$)",
-                r"(?:prefers?|loves?|likes?)\s+(.+?)(?:treats?|food|products?)(?:\.|,|$)",
+                # Purchase intent
+                r"(?:looking for|want to buy|interested in|need|searching for)\s+(.+?)(?:\.|,|$)",
+                r"(?:where can I|can you recommend|suggest|help me find)\s+(.+?)(?:\.|,|\?|$)",
+                # Preferences
+                r"(?:prefers?|loves?|likes?|enjoys?|favourite|favorite)\s+(.+?)(?:\.|,|!|$)",
+                r"(?:only eats?|only uses?|must have|always buys?)\s+(.+?)(?:\.|,|$)",
+                # Brand preferences
+                r"(?:uses?|feeds?|gives?)\s+(\w+)\s+(?:brand|food|treats|products?)(?:\.|,|$)",
+                r"(?:switched to|started using|trying)\s+(.+?)(?:\.|,|$)",
             ],
             "general": [
-                r"(?:moved|moving)\s+to\s+(.+?)(?:\.|,|$)",
-                r"(?:work from home|working remotely)",
-                r"(?:new baby|expecting|pregnant)",
+                # Living situation
+                r"(?:moved|moving|relocating|relocated)\s+to\s+(.+?)(?:\.|,|$)",
+                r"(?:live|living|stay|staying)\s+in\s+(.+?)(?:\.|,|$)",
+                r"(?:work from home|working remotely|home office|wfh)",
+                # Family changes
+                r"(?:new baby|expecting|pregnant|having a baby|new child|newborn)",
+                r"(?:got married|wedding|just married)",
+                r"(?:new pet|another dog|second dog|adopted another)",
+                # Lifestyle
+                r"(?:travel a lot|frequently travel|often away|busy schedule)",
+                r"(?:retired|working full-time|part-time|from home)",
+                # Contact preferences
+                r"(?:prefer|contact me via|reach me on|best way is)\s+(.+?)(?:\.|,|$)",
             ]
         }
         
-        text_to_analyze = user_message  # Focus on what user says, not AI
+        # Pillar-specific patterns for enriched memory capture
+        pillar_patterns = {
+            "fit": [
+                (r"(?:exercise|workout|training)\s+(.+?)(?:\.|,|$)", "health"),
+                (r"(?:fitness level|activity level|energy level)\s+is\s+(.+?)(?:\.|,|$)", "health"),
+                (r"(?:weight is|weighs)\s+(.+?)(?:\.|,|$)", "health"),
+            ],
+            "care": [
+                (r"(?:groomer|grooming|spa|salon)\s+(.+?)(?:\.|,|$)", "shopping"),
+                (r"(?:vet|veterinarian|clinic)\s+is\s+(.+?)(?:\.|,|$)", "health"),
+                (r"(?:vaccination|vaccine|shot)\s+(?:due|needed|scheduled)(?:\.|,|$)", "health"),
+            ],
+            "dine": [
+                (r"(?:favourite food|favorite food|loves eating)\s+(.+?)(?:\.|,|$)", "shopping"),
+                (r"(?:grain-free|organic|raw diet|home-cooked|kibble)", "shopping"),
+            ],
+            "stay": [
+                (r"(?:stayed at|booked|staying at)\s+(.+?)(?:\.|,|$)", "event"),
+                (r"(?:hotel|resort|boarding|kennel)\s+preference\s+(.+?)(?:\.|,|$)", "shopping"),
+            ],
+            "travel": [
+                (r"(?:travels?|flies?|drives?)\s+(?:well|badly|nervously|calmly)", "health"),
+                (r"(?:crate trained|carrier trained|comfortable in)", "health"),
+            ],
+            "celebrate": [
+                (r"(?:birthday is|born on|adoption day)\s+(.+?)(?:\.|,|$)", "event"),
+                (r"(?:party|celebration|event)\s+(?:on|at|for)\s+(.+?)(?:\.|,|$)", "event"),
+            ]
+        }
         
+        text_to_analyze = user_message.lower()
+        
+        # Process general patterns
         for memory_type, type_patterns in patterns.items():
             for pattern in type_patterns:
                 matches = re.findall(pattern, text_to_analyze, re.IGNORECASE)
@@ -554,36 +621,70 @@ class MemoryExtractor:
                     else:
                         content = match
                     
-                    if content and len(content) > 3:
+                    if content and len(content) > 3 and len(content) < 200:
+                        # Prefix with pet name if available
+                        full_content = f"{pet_name}: {content.strip()}" if pet_name else content.strip()
                         memories.append({
                             "memory_type": memory_type,
-                            "content": content.strip(),
+                            "content": full_content,
                             "context": user_message[:200],
                             "relevance_tags": MemoryExtractor.extract_relevance_tags(content, memory_type),
                             "source": "conversation",
-                            "confidence": "medium"
+                            "confidence": "medium",
+                            "pillar": pillar
                         })
         
-        # Also check for explicit statements that should be remembered
+        # Process pillar-specific patterns
+        if pillar and pillar in pillar_patterns:
+            for pattern, mtype in pillar_patterns[pillar]:
+                matches = re.findall(pattern, text_to_analyze, re.IGNORECASE)
+                for match in matches:
+                    content = match if isinstance(match, str) else (match[0] if match else "")
+                    if content and len(content) > 2 and len(content) < 200:
+                        full_content = f"{pet_name}: {content.strip()}" if pet_name else content.strip()
+                        memories.append({
+                            "memory_type": mtype,
+                            "content": full_content,
+                            "context": user_message[:200],
+                            "relevance_tags": [f"pillar:{pillar}"],
+                            "source": "conversation",
+                            "confidence": "medium",
+                            "pillar": pillar
+                        })
+        
+        # Explicit user statements (high confidence)
         explicit_patterns = [
-            (r"(?:remember|note|important)[:.]?\s*(.+?)(?:\.|$)", "general", "high"),
-            (r"(?:always|never)\s+(?:give|feed|use)\s+(.+?)(?:\.|$)", "health", "high"),
+            (r"(?:remember|note|important|please note)[:.]?\s*(.+?)(?:\.|!|$)", "general", "high"),
+            (r"(?:always|never)\s+(?:give|feed|use|do)\s+(.+?)(?:\.|$)", "health", "high"),
+            (r"(?:must|should)\s+(?:know|remember)\s+(.+?)(?:\.|$)", "general", "high"),
+            (r"(?:just so you know|fyi|by the way|btw)\s*[,:]?\s*(.+?)(?:\.|!|$)", "general", "medium"),
         ]
         
         for pattern, mtype, confidence in explicit_patterns:
             matches = re.findall(pattern, user_message, re.IGNORECASE)
             for match in matches:
-                if match and len(match) > 3:
+                if match and len(match) > 3 and len(match) < 200:
+                    full_content = f"{pet_name}: {match.strip()}" if pet_name else match.strip()
                     memories.append({
                         "memory_type": mtype,
-                        "content": match.strip(),
+                        "content": full_content,
                         "context": user_message[:200],
                         "relevance_tags": ["user_stated"],
                         "source": "user-stated",
-                        "confidence": confidence
+                        "confidence": confidence,
+                        "pillar": pillar
                     })
         
-        return memories
+        # Deduplicate by content similarity
+        seen_content = set()
+        unique_memories = []
+        for mem in memories:
+            content_key = mem["content"].lower()[:50]
+            if content_key not in seen_content:
+                seen_content.add(content_key)
+                unique_memories.append(mem)
+        
+        return unique_memories
 
 
 def format_memories_for_prompt(memories: List[Dict]) -> str:
