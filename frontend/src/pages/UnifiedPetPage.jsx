@@ -403,7 +403,14 @@ const UnifiedPetPage = () => {
     
     // Special achievements
     if (pet?.photo_url) unlocked.push('photo_uploaded');
-    if (answers.food_allergies && answers.food_allergies !== 'No allergies') unlocked.push('allergy_aware');
+    // Handle food_allergies as array or string
+    const allergies = answers.food_allergies;
+    if (allergies) {
+      const hasAllergies = Array.isArray(allergies) 
+        ? allergies.some(a => a && a !== 'No allergies' && a !== 'None')
+        : allergies !== 'No allergies' && allergies !== 'None';
+      if (hasAllergies) unlocked.push('allergy_aware');
+    }
     
     return unlocked;
   };
