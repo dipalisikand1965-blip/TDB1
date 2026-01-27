@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { Phone, MessageCircle, Mic, X, Headphones, PhoneCallback } from 'lucide-react';
+import { Phone, MessageCircle, Mic, X, Headphones, PhoneIncoming } from 'lucide-react';
 import CallbackRequestModal from './CallbackRequestModal';
 
 const FloatingContactButton = () => {
@@ -36,7 +36,7 @@ const FloatingContactButton = () => {
     {
       label: 'Request Callback',
       sublabel: "We'll call you",
-      icon: PhoneCallback,
+      icon: PhoneIncoming,
       color: 'bg-blue-500 hover:bg-blue-600',
       onClick: handleCallbackClick,
     },
