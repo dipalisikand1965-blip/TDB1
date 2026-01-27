@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://pet-dashboard-5.preview.emergentagent.com
+**Preview URL:** https://petpillar-dash.preview.emergentagent.com
 
 ---
 
