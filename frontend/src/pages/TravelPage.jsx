@@ -278,6 +278,9 @@ const TravelPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      {/* SEO Meta Tags */}
+      <SEOHead page="travel" path="/travel" />
+      
       
       {/* === HERO SECTION === */}
       <div className="relative overflow-hidden bg-gradient-to-br from-violet-900 via-purple-800 to-indigo-900 text-white">
