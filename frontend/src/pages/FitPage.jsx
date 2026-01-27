@@ -583,6 +583,9 @@ const FitPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-teal-50 to-white">
+      {/* SEO Meta Tags */}
+      <SEOHead page="fit" path="/fit" />
+
         <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
       </div>
     );

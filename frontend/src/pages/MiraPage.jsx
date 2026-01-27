@@ -343,6 +343,9 @@ const MiraPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50" data-testid="mira-page">
+      {/* SEO Meta Tags */}
+      <SEOHead page="mira" path="/mira" />
+
       <Helmet>
         <title>Ask Mira | The Doggy Company</title>
       </Helmet>

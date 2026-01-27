@@ -299,6 +299,9 @@ const EnjoyPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      {/* SEO Meta Tags */}
+      <SEOHead page="enjoy" path="/enjoy" />
+
       
       {/* Hero Section - Warm Sunset Theme */}
       <div className="relative overflow-hidden bg-gradient-to-br from-orange-600 via-rose-600 to-amber-700 text-white">

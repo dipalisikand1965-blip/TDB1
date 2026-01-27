@@ -412,6 +412,9 @@ const AdoptPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50">
+      {/* SEO Meta Tags */}
+      <SEOHead page="adopt" path="/adopt" />
+
       {/* Hero Section */}
       <section className="relative py-16 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 to-pink-600/90" />

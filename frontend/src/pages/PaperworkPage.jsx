@@ -293,6 +293,9 @@ const PaperworkPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900" data-testid="paperwork-page">
+      {/* SEO Meta Tags */}
+      <SEOHead page="paperwork" path="/paperwork" />
+
       {/* Hero Section */}
       <section className="relative overflow-hidden text-white">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1200')] bg-cover bg-center opacity-10"></div>

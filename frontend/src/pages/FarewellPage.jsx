@@ -297,6 +297,9 @@ const FarewellPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-rose-50">
+      {/* SEO Meta Tags */}
+      <SEOHead page="farewell" path="/farewell" />
+
       {/* Hero Section - Soft and Compassionate */}
       <section className="relative py-20 px-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">

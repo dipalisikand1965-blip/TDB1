@@ -318,6 +318,9 @@ const LearnPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
+      {/* SEO Meta Tags */}
+      <SEOHead page="learn" path="/learn" />
+
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );

@@ -235,6 +235,9 @@ const EmergencyPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-red-50 via-white to-orange-50" data-testid="emergency-page">
+      {/* SEO Meta Tags */}
+      <SEOHead page="emergency" path="/emergency" />
+
       {/* Hero Section - Red/Urgent Theme */}
       <section className="relative overflow-hidden bg-gradient-to-r from-red-600 via-red-700 to-rose-800 text-white">
         <div className="absolute inset-0 opacity-20">

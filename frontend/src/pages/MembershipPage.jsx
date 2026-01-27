@@ -239,6 +239,9 @@ const MembershipPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* SEO Meta Tags */}
+      <SEOHead page="membership" path="/membership" />
+
       {/* Hero Section - Pet Pass Introduction */}
       <div className="relative overflow-hidden bg-gradient-to-br from-teal-700 via-teal-800 to-slate-900 text-white">
         {/* Background pattern */}

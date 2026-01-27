@@ -260,6 +260,9 @@ const AdvisoryPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-violet-50 via-white to-purple-50" data-testid="advisory-page">
+      {/* SEO Meta Tags */}
+      <SEOHead page="advisory" path="/advisory" />
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-700 text-white">
         <div className="absolute inset-0 opacity-20">
