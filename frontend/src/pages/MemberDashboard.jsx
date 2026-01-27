@@ -920,7 +920,7 @@ const MemberDashboard = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
                     <Sparkles className="w-5 h-5 mx-auto text-yellow-400 mb-1" />
-                    <p className="text-white text-lg font-bold">{Math.round(primaryPet.overall_score || 0)}%</p>
+                    <p className="text-white text-lg font-bold">{Math.min(100, Math.round(primaryPet.overall_score || 0))}%</p>
                     <p className="text-white/60 text-xs">Pet Soul</p>
                   </div>
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
