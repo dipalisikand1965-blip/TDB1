@@ -71,6 +71,62 @@ const HERO_IMAGES = [
   'https://images.unsplash.com/photo-1759559790290-a3c6fce1d55f?w=1200&q=80'
 ];
 
+// Elevated Concierge® Travel Experiences - NOT bookable services
+const TRAVEL_EXPERIENCES = [
+  {
+    title: "Luxe Air Concierge®",
+    description: "Full-service flight coordination for pets traveling by air. We handle airline policies, crate sizing, health paperwork, and real-time flight tracking — you just focus on the journey.",
+    icon: "✈️",
+    gradient: "from-violet-500 to-purple-600",
+    badge: "Most Popular",
+    badgeColor: "bg-amber-500",
+    highlights: [
+      "Airline policy navigation & booking assistance",
+      "IATA-compliant crate sizing & procurement",
+      "Health certificate coordination",
+      "Real-time flight tracking & updates"
+    ]
+  },
+  {
+    title: "Road Trip Architect®",
+    description: "Planning a scenic drive with your pet? We map out pet-friendly stops, dining spots, and overnight stays — ensuring your four-legged co-pilot enjoys every mile.",
+    icon: "🚗",
+    gradient: "from-blue-500 to-cyan-500",
+    highlights: [
+      "Custom route planning with pet stops",
+      "Pet-friendly restaurant & café bookings",
+      "Emergency vet location mapping",
+      "Weather & traffic advisory alerts"
+    ]
+  },
+  {
+    title: "Relocation Navigator®",
+    description: "Moving cities or countries? Our white-glove pet relocation service manages the entire journey — from documentation to customs to doorstep delivery.",
+    icon: "📦",
+    gradient: "from-amber-500 to-orange-500",
+    badge: "White Glove",
+    badgeColor: "bg-purple-600",
+    highlights: [
+      "End-to-end relocation coordination",
+      "International & domestic paperwork",
+      "Customs clearance assistance",
+      "Pet arrival & settling support"
+    ]
+  },
+  {
+    title: "Vet Visit Valet®",
+    description: "Taking your pet to the vet shouldn't be stressful. We arrange comfortable transport, wait with your pet if needed, and ensure they arrive calm and cared for.",
+    icon: "🏥",
+    gradient: "from-rose-500 to-pink-500",
+    highlights: [
+      "Comfortable, climate-controlled transport",
+      "Vetted drivers trained in pet handling",
+      "Appointment coordination",
+      "Post-visit updates & care notes"
+    ]
+  }
+];
+
 // Main Travel Page Component
 const TravelPage = () => {
   const { user, token } = useAuth();
