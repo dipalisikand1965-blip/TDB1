@@ -332,38 +332,6 @@ const RichTextEditor = ({
 
         <ToolbarDivider />
 
-        {/* Color Picker */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="p-1.5 rounded hover:bg-gray-100 text-gray-600 flex items-center gap-1" title="Text Color">
-              <Palette className="w-4 h-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-32">
-            {COLORS.map((color) => (
-              <DropdownMenuItem
-                key={color.label}
-                onClick={() => {
-                  if (color.value) {
-                    editor.chain().focus().setColor(color.value).run();
-                  } else {
-                    editor.chain().focus().unsetColor().run();
-                  }
-                }}
-                className="flex items-center gap-2"
-              >
-                <div 
-                  className="w-4 h-4 rounded-full border"
-                  style={{ backgroundColor: color.value || '#000' }}
-                />
-                {color.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <ToolbarDivider />
-
         {/* Undo/Redo */}
         <div className="flex items-center">
           <ToolbarButton
