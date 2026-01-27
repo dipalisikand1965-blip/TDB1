@@ -114,8 +114,7 @@ import {
   Crown,
   Database,
   TrendingUp,
-  GraduationCap,
-  Sparkles
+  GraduationCap
 } from 'lucide-react';
 
 const Admin = () => {
