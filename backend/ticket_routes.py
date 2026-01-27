@@ -347,32 +347,61 @@ async def get_categories():
     """Get all ticket categories (pillars) including custom ones"""
     db = get_db()
     
-    # Get custom categories from database
-    cursor = db.ticket_categories.find({})
-    custom_cats = await cursor.to_list(length=100)
+    # Default pillars with is_default flag
+    default_categories = []
+    for cat in TICKET_CATEGORIES:
+        default_categories.append({**cat, "is_default": True})
     
-    # Combine default and custom
-    all_categories = list(TICKET_CATEGORIES)
-    for cat in custom_cats:
+    # Get custom categories from service_desk_settings (unified storage)
+    settings = await db.service_desk_settings.find_one({"type": "categories"})
+    custom_cats = settings.get("categories", []) if settings else []
+    
+    # Also check legacy ticket_categories collection
+    cursor = db.ticket_categories.find({})
+    legacy_cats = await cursor.to_list(length=100)
+    for cat in legacy_cats:
         cat["id"] = cat.get("id") or str(cat.pop("_id"))
         if "_id" in cat:
             del cat["_id"]
         cat["isCustom"] = True
-        all_categories.append(cat)
+        cat["is_default"] = False
+        custom_cats.append(cat)
     
-    return {"categories": all_categories}
+    return {"categories": default_categories + custom_cats}
+
+@router.post("/categories")
+async def add_custom_category_new(data: Dict[str, Any]):
+    """Add a custom ticket category/pillar"""
+    db = get_db()
+    
+    category_id = data.get("id", "").lower().replace(" ", "_")
+    name = data.get("name", "")
+    emoji = data.get("emoji", "📁")
+    
+    if not category_id or not name:
+        raise HTTPException(status_code=400, detail="id and name are required")
+    
+    await db.service_desk_settings.update_one(
+        {"type": "categories"},
+        {"$addToSet": {"categories": {"id": category_id, "name": name, "emoji": emoji, "is_default": False}}},
+        upsert=True
+    )
+    
+    return {"success": True, "category_id": category_id}
 
 @router.post("/categories/custom")
 async def add_custom_category(category: Dict[str, Any]):
-    """Add a custom category"""
+    """Add a custom category (legacy endpoint)"""
     db = get_db()
     
     category_doc = {
         "id": category.get("id"),
         "name": category.get("name"),
         "icon": category.get("icon", "📁"),
+        "emoji": category.get("emoji", category.get("icon", "📁")),
         "description": category.get("description", ""),
         "isCustom": True,
+        "is_default": False,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
@@ -380,17 +409,31 @@ async def add_custom_category(category: Dict[str, Any]):
     
     return {"success": True, "category": category_doc}
 
-@router.delete("/categories/custom/{category_id}")
-async def delete_custom_category(category_id: str):
+@router.delete("/categories/{category_id}")
+async def delete_category(category_id: str):
     """Delete a custom category"""
     db = get_db()
     
-    result = await db.ticket_categories.delete_one({"id": category_id})
+    # Don't allow deleting default categories
+    default_ids = [c["id"] for c in TICKET_CATEGORIES]
+    if category_id in default_ids:
+        raise HTTPException(status_code=400, detail="Cannot delete default category")
     
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Category not found")
+    # Try to delete from service_desk_settings
+    await db.service_desk_settings.update_one(
+        {"type": "categories"},
+        {"$pull": {"categories": {"id": category_id}}}
+    )
+    
+    # Also try legacy collection
+    await db.ticket_categories.delete_one({"id": category_id})
     
     return {"success": True}
+
+@router.delete("/categories/custom/{category_id}")
+async def delete_custom_category_legacy(category_id: str):
+    """Delete a custom category (legacy endpoint)"""
+    return await delete_category(category_id)
 
 @router.post("/categories/sub")
 async def add_sub_category(sub_category: Dict[str, Any]):
@@ -423,8 +466,57 @@ async def get_sub_categories(category_id: str):
 
 @router.get("/statuses")
 async def get_statuses():
-    """Get all ticket statuses"""
-    return {"statuses": TICKET_STATUSES}
+    """Get all ticket statuses including custom ones"""
+    db = get_db()
+    
+    # Default statuses with is_default flag
+    default_statuses = []
+    for status in TICKET_STATUSES:
+        default_statuses.append({**status, "label": status.get("name", status.get("label")), "is_default": True})
+    
+    # Get custom statuses from service_desk_settings
+    settings = await db.service_desk_settings.find_one({"type": "statuses"})
+    custom_statuses = settings.get("statuses", []) if settings else []
+    
+    return {"statuses": default_statuses + custom_statuses}
+
+@router.post("/statuses")
+async def add_custom_status(data: Dict[str, Any]):
+    """Add a custom ticket status"""
+    db = get_db()
+    
+    status_id = data.get("id", "").lower().replace(" ", "_")
+    label = data.get("label", data.get("name", ""))
+    color = data.get("color", "gray")
+    
+    if not status_id or not label:
+        raise HTTPException(status_code=400, detail="id and label are required")
+    
+    # Add to custom statuses in service_desk_settings
+    await db.service_desk_settings.update_one(
+        {"type": "statuses"},
+        {"$addToSet": {"statuses": {"id": status_id, "label": label, "name": label, "color": color, "is_default": False}}},
+        upsert=True
+    )
+    
+    return {"success": True, "status_id": status_id}
+
+@router.delete("/statuses/{status_id}")
+async def delete_custom_status(status_id: str):
+    """Delete a custom ticket status"""
+    db = get_db()
+    
+    # Don't allow deleting default statuses
+    default_ids = [s["id"] for s in TICKET_STATUSES]
+    if status_id in default_ids:
+        raise HTTPException(status_code=400, detail="Cannot delete default status")
+    
+    await db.service_desk_settings.update_one(
+        {"type": "statuses"},
+        {"$pull": {"statuses": {"id": status_id}}}
+    )
+    
+    return {"success": True}
 
 @router.get("/urgency-levels")
 async def get_urgency_levels():
