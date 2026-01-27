@@ -19,7 +19,11 @@ export const useServiceDeskSocket = (agentId, onNewTicket, onTicketUpdate, onNew
     // Create socket connection
     const apiUrl = getApiUrl();
     // Remove /api suffix if present and use http/https (Socket.IO handles transport)
-    const baseUrl = apiUrl.replace('/api', '').replace(/\/$/, '');
+    // If apiUrl is empty (relative path mode), use window.location.origin
+    let baseUrl = apiUrl.replace('/api', '').replace(/\/$/, '');
+    if (!baseUrl && typeof window !== 'undefined') {
+      baseUrl = window.location.origin;
+    }
     
     console.log('🔌 Connecting to Socket.IO at:', baseUrl);
     
