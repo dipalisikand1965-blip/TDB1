@@ -135,7 +135,11 @@ const OrdersTab = ({
                 <div>
                   <p className="text-xs text-gray-500 uppercase">Delivery</p>
                   <p className="font-medium">{order.delivery?.city || order.city || ''}</p>
-                  <p className="text-sm text-gray-600">{(order.delivery?.address || order.shipping_address || order.address || '').slice(0, 50)}{(order.delivery?.address || order.shipping_address || order.address) ? '...' : ''}</p>
+                  <p className="text-sm text-gray-600">{(() => {
+                    const addr = order.delivery?.address || order.shipping_address || order.address || '';
+                    const addrStr = typeof addr === 'string' ? addr : (addr?.line1 || addr?.street || JSON.stringify(addr) || '');
+                    return addrStr.slice(0, 50) + (addrStr.length > 50 ? '...' : '');
+                  })()}</p>
                 </div>
               </div>
 
