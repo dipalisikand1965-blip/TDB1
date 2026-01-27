@@ -16,8 +16,8 @@ import MiraContextPanel from '../components/MiraContextPanel';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
-import {
 import SEOHead from '../components/SEOHead';
+import {
   GraduationCap, BookOpen, Brain, Star, Award, Trophy,
   CheckCircle, ChevronRight, Sparkles, Loader2, Send,
   ArrowRight, Play, ChevronDown, Target, Users, Calendar,

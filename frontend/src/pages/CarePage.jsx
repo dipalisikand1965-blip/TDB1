@@ -15,8 +15,8 @@ import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedAutocomplete from '../components/BreedAutocomplete';
-import {
 import SEOHead from '../components/SEOHead';
+import {
   Scissors, PawPrint, GraduationCap, Stethoscope, AlertTriangle, Heart,
   ClipboardList, MapPin, Calendar, Clock, CheckCircle, MessageCircle,
   ChevronRight, Sparkles, Package, Star, Loader2, Info, Send,

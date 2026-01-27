@@ -23,8 +23,8 @@ import MiraContextPanel from '../components/MiraContextPanel';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
-import {
 import SEOHead from '../components/SEOHead';
+import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
   ArrowRight, Play, ChevronDown, Target, Zap, Timer, PawPrint,

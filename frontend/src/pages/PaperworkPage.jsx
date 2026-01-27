@@ -16,8 +16,8 @@ import { toast } from '../hooks/use-toast';
 import MiraContextPanel from '../components/MiraContextPanel';
 import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
-import {
 import SEOHead from '../components/SEOHead';
+import {
   Shield, Heart, Plane, FileText, Sparkles, Scale, Upload, Download,
   Folder, FolderOpen, File, Eye, Trash2, Bell, Calendar, Clock,
   CheckCircle, AlertCircle, Plus, ChevronRight, Lock, Search,
