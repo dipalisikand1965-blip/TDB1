@@ -279,8 +279,11 @@ class TestDiningConciergeTicketCreation:
         assert response.status_code in [200, 201]
         
         data = response.json()
-        assert "ticket_id" in data or "id" in data
-        ticket_id = data.get("ticket_id") or data.get("id")
+        assert data.get("success") == True
+        assert "ticket" in data
+        ticket = data["ticket"]
+        ticket_id = ticket.get("ticket_id")
+        assert ticket_id is not None
         print(f"✅ Created dining ticket: {ticket_id}")
         
         # Verify ticket was created
