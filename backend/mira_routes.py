@@ -1,6 +1,6 @@
 """
-Mira AI - The Doggy Company's Universal Concierge System
-=========================================================
+Mira AI - The Doggy Company's Universal Concierge® System
+==========================================================
 This is the soul of the Pet Life Operating System.
 Every interaction creates a ticket. No conversation goes untracked.
 
