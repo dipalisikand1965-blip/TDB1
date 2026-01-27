@@ -290,6 +290,7 @@ function MainLayout() {
       <Footer />
       <CartSidebar />
       <MiraAI />
+      <FloatingContactButton />
       <Toaster />
     </div>
   );
