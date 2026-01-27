@@ -2204,6 +2204,81 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                     </div>
                   </div>
                   
+                  {/* ==================== SLA TIMER & REMINDERS BAR ==================== */}
+                  <div className="px-4 py-2 border-b bg-gray-50 flex items-center justify-between">
+                    {/* SLA Timer */}
+                    {(() => {
+                      const sla = formatSlaTime(selectedTicket.sla_status);
+                      if (!sla) return <div className="text-xs text-gray-400">No SLA set</div>;
+                      return (
+                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
+                          sla.status === 'breached' ? 'bg-red-100 text-red-700' :
+                          sla.status === 'critical' ? 'bg-orange-100 text-orange-700' :
+                          sla.status === 'warning' ? 'bg-amber-100 text-amber-700' :
+                          'bg-emerald-100 text-emerald-700'
+                        }`}>
+                          <Timer className={`w-3.5 h-3.5 ${sla.isBreached ? 'animate-pulse' : ''}`} />
+                          <span>{sla.isBreached ? '⚠️ SLA ' : 'SLA: '}{sla.text}</span>
+                        </div>
+                      );
+                    })()}
+                    
+                    {/* Reminders Button */}
+                    <div className="flex items-center gap-2">
+                      {ticketReminders.filter(r => r.status !== 'completed').length > 0 && (
+                        <Badge className="bg-amber-100 text-amber-700 text-xs">
+                          {ticketReminders.filter(r => r.status !== 'completed').length} pending
+                        </Badge>
+                      )}
+                      <button
+                        onClick={() => setShowReminderModal(true)}
+                        className="flex items-center gap-1 px-3 py-1.5 text-xs bg-white border rounded-full hover:bg-gray-50"
+                      >
+                        <Bell className="w-3.5 h-3.5" />
+                        Add Reminder
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* ==================== REMINDERS LIST (if any) ==================== */}
+                  {ticketReminders.length > 0 && (
+                    <div className="px-4 py-2 border-b bg-amber-50/50 max-h-32 overflow-y-auto">
+                      <div className="text-xs font-medium text-amber-800 mb-2 flex items-center gap-1">
+                        <Bell className="w-3 h-3" /> Reminders & Tasks
+                      </div>
+                      <div className="space-y-1.5">
+                        {ticketReminders.map(reminder => (
+                          <div 
+                            key={reminder.id} 
+                            className={`flex items-center justify-between text-xs p-2 rounded ${
+                              reminder.status === 'completed' ? 'bg-gray-100 text-gray-500 line-through' :
+                              reminder.is_overdue ? 'bg-red-100 text-red-700' : 'bg-white'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <input
+                                type="checkbox"
+                                checked={reminder.status === 'completed'}
+                                onChange={() => reminder.status !== 'completed' && completeReminder(reminder.id)}
+                                className="w-3.5 h-3.5"
+                              />
+                              <span className="truncate">{reminder.title}</span>
+                              {reminder.is_overdue && reminder.status !== 'completed' && (
+                                <span className="text-red-600">⚠️ Overdue</span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 text-gray-500">
+                              <span>{new Date(reminder.due_at).toLocaleDateString()}</span>
+                              <button onClick={() => deleteReminder(reminder.id)} className="hover:text-red-500">
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
                   {/* ==================== TICKET EDIT MODAL ==================== */}
                   {isEditingTicket && (
                     <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-50">
