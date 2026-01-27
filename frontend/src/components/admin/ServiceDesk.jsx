@@ -211,6 +211,9 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [activeSettingsTab, setActiveSettingsTab] = useState('email');
   
+  // View Mode - List or Kanban
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'kanban'
+  
   // Reply
   const [replyText, setReplyText] = useState('');
   const [isInternalNote, setIsInternalNote] = useState(false);
