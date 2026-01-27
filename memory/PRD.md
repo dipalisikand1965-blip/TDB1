@@ -55,6 +55,32 @@
 - Stay page boarding navigation working
 - Product options/variants synced (257 products with variants)
 
+### Phase 12B: Advanced Service Desk Features (Jan 27, 2025)
+
+**New Features Added:**
+- **Ticket Tags**: Add/remove tags to tickets, autocomplete from existing tags
+- **Ticket Merging**: Merge multiple tickets into one primary ticket
+- **Agent Performance Dashboard**: Resolution rates, response times, CSAT scores by agent
+- **SLA Breach Monitoring**: Real-time breach alerts in sidebar + auto-escalation endpoint
+- **Voice Order Processing**: Accept voice orders from Mira → create tickets
+- **Follow-up Reminders**: Add due reminders to tickets, view overdue list
+- **Smart Auto-Assignment**: Route tickets to agents based on pillar expertise
+
+**New Backend APIs:**
+- `GET/POST/DELETE /api/tickets/{id}/tags` - Tag management
+- `POST /api/tickets/merge` - Merge multiple tickets
+- `GET /api/tickets/analytics/agent-performance` - Agent stats
+- `GET /api/tickets/sla/breached` - Get breached/approaching tickets
+- `POST /api/tickets/sla/escalate-breached` - Auto-escalate breached
+- `POST /api/tickets/voice-order` - Process voice orders
+- `POST /api/tickets/{id}/reminders` - Add follow-up reminders
+- `GET /api/tickets/reminders/due` - Get overdue reminders
+
+**Data Stats:**
+- 43+ ticket tags in use
+- 2 agents configured (aditya, concierge1)
+- 2 SLA breached tickets detected
+
 ### Phase 2: Product & Service Architecture (Completed Jan 2025)
 - **Shop Page Hierarchy**: Dynamic hierarchical category menu driven by `/api/categories/hierarchy`
 - **Data Migration**: Restructured product categories with `parent_category` field
