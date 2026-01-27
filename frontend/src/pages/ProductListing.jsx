@@ -494,6 +494,22 @@ const ProductListing = ({ category = 'all' }) => {
             <span className="font-medium">Filters:</span>
           </div>
           
+          {/* Delivery City Filter - Only for cake categories */}
+          {isCakeCategory && (
+            <Select value={deliveryCity} onValueChange={setDeliveryCity} data-testid="delivery-city-filter">
+              <SelectTrigger className="w-[180px] border-purple-200 bg-purple-50">
+                <SelectValue placeholder="Select City" />
+              </SelectTrigger>
+              <SelectContent>
+                {FRESH_DELIVERY_CITIES.map(city => (
+                  <SelectItem key={city.value} value={city.value}>
+                    {city.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          
           <Select value={priceRange} onValueChange={setPriceRange}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="All Prices" />
