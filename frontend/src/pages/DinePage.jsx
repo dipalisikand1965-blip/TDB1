@@ -181,6 +181,9 @@ const DinePage = () => {
         </div>
       </div>
 
+      {/* Dining Concierge Picker - Rover-style service request widget */}
+      <DiningConciergePicker />
+
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Fresh Meals Section */}
         <section className="mb-16">
