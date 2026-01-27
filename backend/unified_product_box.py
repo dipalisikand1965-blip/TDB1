@@ -774,13 +774,120 @@ async def migrate_existing_products(force: bool = False):
             await db.unified_products.insert_one(unified)
             migrated += 1
     
+    # ========== ALSO SYNC STAY PROPERTIES TO PRODUCTS ==========
+    stay_synced = 0
+    try:
+        # Default pricing for stay properties
+        DEFAULT_STAY_PRICES = {"budget": 2500, "mid": 5000, "premium": 12000, "luxury": 25000}
+        
+        # Sync stay_properties
+        properties = await db.stay_properties.find({}).to_list(length=500)
+        for prop in properties:
+            prop_type = (prop.get('property_type', '') or '').lower()
+            if 'luxury' in prop_type or 'palace' in prop.get('name', '').lower():
+                price = DEFAULT_STAY_PRICES['luxury']
+            elif 'premium' in prop_type or 'resort' in prop_type:
+                price = DEFAULT_STAY_PRICES['premium']
+            elif 'budget' in prop_type or 'hostel' in prop_type:
+                price = DEFAULT_STAY_PRICES['budget']
+            else:
+                price = DEFAULT_STAY_PRICES['mid']
+            
+            product_id = f"stay-{str(prop.get('_id'))}"
+            product = {
+                "id": product_id,
+                "name": prop.get('name', 'Pet-Friendly Stay'),
+                "title": prop.get('name', 'Pet-Friendly Stay'),
+                "description": prop.get('description', f"Pet-friendly accommodation in {prop.get('city', 'India')}"),
+                "price": prop.get('price_per_night') or price,
+                "category": "stay",
+                "pillar": "stay",
+                "image": prop.get('images', [None])[0] if prop.get('images') else prop.get('image') or "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+                "tags": ["Stay", "Pet-Friendly", prop.get('city', ''), prop.get('property_type', '')],
+                "city": prop.get('city'),
+                "property_type": prop.get('property_type'),
+                "in_stock": True,
+                "source": "stay_properties",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.products.update_one({"id": product_id}, {"$set": product}, upsert=True)
+            stay_synced += 1
+        
+        # Sync boarding facilities
+        boarding = await db.stay_boarding_facilities.find({}).to_list(length=100)
+        for facility in boarding:
+            product_id = f"boarding-{str(facility.get('_id', facility.get('name', '').replace(' ', '-').lower()))}"
+            product = {
+                "id": product_id,
+                "name": facility.get('name'),
+                "title": facility.get('name'),
+                "description": facility.get('description'),
+                "price": facility.get('price_per_night', 1000),
+                "category": "boarding",
+                "pillar": "stay",
+                "tags": ["Boarding", "Pet Care", facility.get('city', '')],
+                "city": facility.get('city'),
+                "in_stock": True,
+                "source": "stay_boarding_facilities",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.products.update_one({"id": product_id}, {"$set": product}, upsert=True)
+            stay_synced += 1
+            
+        # ========== SEED DEFAULT PILLAR PRODUCTS IF NONE EXIST ==========
+        pillar_counts = {}
+        for pillar in ['travel', 'care', 'fit', 'enjoy', 'learn']:
+            count = await db.products.count_documents({"pillar": pillar})
+            pillar_counts[pillar] = count
+            
+            if count == 0:
+                # Seed default products for this pillar
+                defaults = get_default_pillar_products(pillar)
+                for p in defaults:
+                    p["created_at"] = datetime.now(timezone.utc).isoformat()
+                    await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+                pillar_counts[pillar] = len(defaults)
+                
+    except Exception as e:
+        logger.error(f"Stay sync error (non-blocking): {e}")
+    
     return {
         "message": "Migration complete",
         "migrated": migrated,
         "updated": updated,
         "skipped": skipped,
-        "total_in_products": len(existing)
+        "total_in_products": len(existing),
+        "stay_synced": stay_synced
     }
+
+
+def get_default_pillar_products(pillar: str) -> list:
+    """Get default products for a pillar"""
+    defaults = {
+        "travel": [
+            {"id": "travel-cab-1", "name": "Pet-Friendly Cab Service", "description": "AC cab rides for you and your pet", "price": 1500, "category": "cab", "pillar": "travel", "tags": ["Travel", "Cab"], "in_stock": True, "image": "https://images.unsplash.com/photo-1544568100-847a948585b9?w=800"},
+            {"id": "travel-train-1", "name": "Train Travel Assistance", "description": "Complete train travel support", "price": 3000, "category": "train", "pillar": "travel", "tags": ["Travel", "Train"], "in_stock": True, "image": "https://images.unsplash.com/photo-1544568100-847a948585b9?w=800"},
+            {"id": "travel-flight-1", "name": "Domestic Flight Coordination", "description": "Full support for flying with your pet", "price": 15000, "category": "flight", "pillar": "travel", "tags": ["Travel", "Flight"], "in_stock": True, "image": "https://images.unsplash.com/photo-1544568100-847a948585b9?w=800"},
+        ],
+        "care": [
+            {"id": "care-grooming-1", "name": "Full Grooming Package", "description": "Complete grooming service", "price": 1500, "category": "grooming", "pillar": "care", "tags": ["Care", "Grooming"], "in_stock": True, "image": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800"},
+            {"id": "care-walk-1", "name": "Daily Dog Walking", "description": "30-minute daily walks", "price": 500, "category": "walks", "pillar": "care", "tags": ["Care", "Walks"], "in_stock": True, "image": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800"},
+            {"id": "care-sitting-1", "name": "Pet Sitting (8 hours)", "description": "Professional pet sitting", "price": 1200, "category": "sitting", "pillar": "care", "tags": ["Care", "Sitting"], "in_stock": True, "image": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800"},
+        ],
+        "fit": [
+            {"id": "fit-assessment-1", "name": "Fitness Assessment", "description": "Comprehensive fitness evaluation", "price": 1500, "category": "assessment", "pillar": "fit", "tags": ["Fit", "Assessment"], "in_stock": True, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800"},
+            {"id": "fit-weight-1", "name": "Weight Management Program", "description": "8-week weight management", "price": 5000, "category": "weight", "pillar": "fit", "tags": ["Fit", "Weight"], "in_stock": True, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800"},
+        ],
+        "enjoy": [
+            {"id": "enjoy-park-1", "name": "Dog Park Day Pass", "description": "Full day access to dog park", "price": 500, "category": "park", "pillar": "enjoy", "tags": ["Enjoy", "Park"], "in_stock": True, "image": "https://images.unsplash.com/photo-1601758124096-1fd661873b95?w=800"},
+            {"id": "enjoy-cafe-1", "name": "Pet Cafe Voucher", "description": "Pet-friendly cafe visit", "price": 800, "category": "cafe", "pillar": "enjoy", "tags": ["Enjoy", "Cafe"], "in_stock": True, "image": "https://images.unsplash.com/photo-1601758124096-1fd661873b95?w=800"},
+        ],
+        "learn": [
+            {"id": "learn-puppy-1", "name": "Puppy Training Course", "description": "8-week puppy foundation training", "price": 8000, "category": "puppy", "pillar": "learn", "tags": ["Learn", "Puppy"], "in_stock": True, "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800"},
+            {"id": "learn-behavior-1", "name": "Behavior Modification", "description": "Address behavioral issues", "price": 6000, "category": "behavior", "pillar": "learn", "tags": ["Learn", "Behavior"], "in_stock": True, "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800"},
+        ],
+    }
+    return defaults.get(pillar, [])
 
 
 @product_box_router.get("/config/pillars")
