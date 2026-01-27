@@ -307,6 +307,8 @@ const CarePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      {/* SEO Meta Tags */}
+      <SEOHead page="care" path="/care" />
       
       {/* === HERO SECTION === */}
       <div className="relative overflow-hidden bg-gradient-to-br from-rose-900 via-pink-800 to-red-900 text-white">
