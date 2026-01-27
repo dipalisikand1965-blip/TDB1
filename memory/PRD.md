@@ -64,32 +64,54 @@
 7. Agility Foundation Course - ₹4,499
 8. Canine Yoga (Doga) Session - ₹799
 
+### Phase 8: Celebrate Pillar & Admin Fixes (Jan 27, 2025)
+
+**Admin Panel Bug Fixes:**
+- ✅ **Orders Tab Crash Fix**: Fixed `orderStats.pending` undefined error by adding default props
+- ✅ **Address Field Fix**: Fixed `.slice()` error when address is object instead of string
+- ✅ **Order ID Fallback**: Ensured updateOrderStatus uses `order.orderId || order.order_id || order.id`
+
+**Celebrate Pillar Enhancements:**
+- ✅ **Custom Cake Submenu**: Added "Custom Cake" to Celebrate dropdown menu in Navbar
+- ✅ **Cake Availability Filter**: Added city-based delivery filter on cake product pages
+  - Cities: Bangalore, Mumbai, Delhi NCR for fresh delivery
+  - Pan-India option for shippable cakes
+  - Backend API already supports `fresh_delivery_city` parameter
+
+**Cake Data Migration (Backend - Already Complete):**
+- `fresh_delivery_cities` field added to cake products
+- Extensive tagging schema for Life Stage, Occasion, Dietary, Ingredients, Texture, etc.
+- Script: `/app/backend/scripts/enhance_cake_products.py`
+
 ---
 
 ## Pending Issues
-1. **WebSocket Connection** (P2): Shows "Reconnecting..." - prevents real-time updates
-2. **Product Tags**: Most products lack best-seller/new-arrivals tags (filters return 0 results)
+1. **Mira Memories Auth Issue** (P1): Pet profile "Mira Memories" tab stuck on loading - frontend auth token not being passed correctly
+2. **WebSocket Connection** (P2): Shows "Reconnecting..." - prevents real-time updates
+3. **Product Tags**: Most products lack best-seller/new-arrivals tags (filters return 0 results)
 
 ---
 
 ## Upcoming Tasks (Priority Order)
 
 ### P0 - Immediate
-1. ✅ ~~Build Fit Pillar Page Template~~ (DONE)
-2. ✅ ~~Add Pillar Filter to Shop~~ (DONE)
-3. **Build Concierge® Dashboard UI** - Admin panel to manage service bookings
+1. ✅ ~~Admin Orders Tab Fix~~ (DONE)
+2. ✅ ~~Custom Cake Submenu~~ (DONE)
+3. ✅ ~~Cake Availability Filter UI~~ (DONE)
+4. **Admin Product Editor**: Add UI to manage `fresh_delivery_cities` and tag fields
 
 ### P1 - Next Sprint
-4. **Seed Services for All 14 Pillars** - Run full service seeder script
-5. **Pet Profile Recommendations** - Display personalized products on pet profiles
-6. **Site-wide British English Audit** - Standardize spellings + Concierge® trademark
-7. **Replicate Fit Template** - Apply same design to Care, Celebrate, Enjoy pages
+5. **Fix Mira Memories Auth**: Debug token flow in UnifiedPetPage.jsx
+6. **Activate Soul Whisper Feature**: Verify question delivery and answer storage
+7. **Product Data Polish**: Rewrite cake titles/descriptions for quality
+8. **Pet Profile Recommendations UI**: Display personalized products
 
 ### P2 - Backlog
-8. Fix WebSocket real-time updates
-9. Build Smart Checkout flow
-10. Multi-channel integrations (Resend/WhatsApp - requires API keys)
-11. New Member Onboarding flow
+9. Fix WebSocket real-time updates
+10. Build Smart Checkout flow
+11. Multi-channel integrations (Resend/WhatsApp - requires API keys)
+12. New Member Onboarding flow
+13. **Replicate Fit Template**: Apply same design to Care, Celebrate, Enjoy pages
 
 ---
 
