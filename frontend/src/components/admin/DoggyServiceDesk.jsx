@@ -2825,12 +2825,15 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         </div>
                       </div>
                       
-                      <Textarea
-                        placeholder={isInternal ? "Add internal note (not visible to customer)..." : `Reply to ${selectedTicket.member?.name || 'customer'}...`}
+                      <RichTextEditor
                         value={replyText}
-                        onChange={(e) => setReplyText(e.target.value)}
-                        className={`mb-2 text-sm ${isInternal ? 'bg-amber-50 border-amber-200' : ''}`}
-                        rows={3}
+                        onChange={setReplyText}
+                        placeholder={isInternal ? "Add internal note (not visible to customer)..." : `Reply to ${selectedTicket.member?.name || 'customer'}...`}
+                        minHeight="120px"
+                        showAI={true}
+                        onAIGenerate={() => generateAiReply(aiReplyStyle)}
+                        aiLoading={aiLoading}
+                        className={isInternal ? 'border-amber-300 bg-amber-50/50' : ''}
                       />
                       
                       <div className="flex items-center justify-between">
