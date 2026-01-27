@@ -5232,4 +5232,83 @@ const CategoryManager = ({ categories, setCategories, authHeaders }) => {
   );
 };
 
+// Keyboard Shortcuts Modal Component
+const KeyboardShortcutsModal = ({ open, onClose }) => (
+  <Dialog open={open} onOpenChange={onClose}>
+    <DialogContent className="max-w-lg">
+      <DialogHeader>
+        <DialogTitle className="flex items-center gap-2">
+          <Keyboard className="w-5 h-5 text-purple-600" />
+          Keyboard Shortcuts
+        </DialogTitle>
+      </DialogHeader>
+      <div className="space-y-6 py-4">
+        <div>
+          <h4 className="text-sm font-semibold text-gray-700 mb-3">Navigation</h4>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="flex items-center gap-2">
+              <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">J</kbd>
+              <span className="text-gray-600">Next ticket</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">K</kbd>
+              <span className="text-gray-600">Previous ticket</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">/</kbd>
+              <span className="text-gray-600">Focus search</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">Esc</kbd>
+              <span className="text-gray-600">Close modals</span>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <h4 className="text-sm font-semibold text-gray-700 mb-3">Actions</h4>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="flex items-center gap-2">
+              <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">R</kbd>
+              <span className="text-gray-600">Reply to ticket</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">N</kbd>
+              <span className="text-gray-600">New ticket</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">E</kbd>
+              <span className="text-gray-600">Edit ticket</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">S</kbd>
+              <span className="text-gray-600">Focus search</span>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <h4 className="text-sm font-semibold text-gray-700 mb-3">View Mode</h4>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="flex items-center gap-2">
+              <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">Alt + 1</kbd>
+              <span className="text-gray-600">List view</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">Alt + 2</kbd>
+              <span className="text-gray-600">Kanban view</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="pt-4 border-t text-center">
+          <p className="text-xs text-gray-500">
+            Press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">?</kbd> anytime to show this help
+          </p>
+        </div>
+      </div>
+    </DialogContent>
+  </Dialog>
+);
+
 export default ServiceDesk;
