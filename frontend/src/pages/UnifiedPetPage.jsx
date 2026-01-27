@@ -1128,13 +1128,23 @@ const UnifiedPetPage = () => {
                 <div className="bg-white rounded-lg p-3 border border-red-100">
                   <p className="text-xs text-gray-500 mb-1">Allergies</p>
                   <p className="font-semibold text-gray-900 text-sm">
-                    {(safePet.doggy_soul_answers?.food_allergies || []).filter(a => a && a !== 'None').join(', ') || 'None recorded'}
+                    {(() => {
+                      const allergies = safePet.doggy_soul_answers?.food_allergies;
+                      if (!allergies) return 'None recorded';
+                      if (Array.isArray(allergies)) return allergies.filter(a => a && a !== 'None').join(', ') || 'None recorded';
+                      return allergies !== 'None' && allergies !== 'No allergies' ? allergies : 'None recorded';
+                    })()}
                   </p>
                 </div>
                 <div className="bg-white rounded-lg p-3 border border-red-100">
                   <p className="text-xs text-gray-500 mb-1">Medical Conditions</p>
                   <p className="font-semibold text-gray-900 text-sm">
-                    {(safePet.doggy_soul_answers?.medical_conditions || []).filter(m => m && m !== 'None').join(', ') || 'None recorded'}
+                    {(() => {
+                      const conditions = safePet.doggy_soul_answers?.medical_conditions;
+                      if (!conditions) return 'None recorded';
+                      if (Array.isArray(conditions)) return conditions.filter(m => m && m !== 'None').join(', ') || 'None recorded';
+                      return conditions !== 'None' ? conditions : 'None recorded';
+                    })()}
                   </p>
                 </div>
                 <div className="bg-white rounded-lg p-3 border border-red-100">
