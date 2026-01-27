@@ -3040,6 +3040,33 @@ async def change_password(
     return {"success": True, "message": "Password changed successfully"}
 
 
+@admin_router.post("/universal-seed")
+async def universal_seed_endpoint():
+    """
+    UNIVERSAL PILLAR PROTOCOL - Seeds ALL 14 pillars with:
+    - Products
+    - Services
+    - Unified Product Box
+    - Pricing Tiers
+    - Shipping Rules
+    
+    No auth required - designed to be called on deployment.
+    """
+    from scripts.universal_pillar_protocol import universal_seed
+    
+    try:
+        results = await universal_seed(db)
+        logger.info(f"Universal seed completed: {results}")
+        return {
+            "success": True,
+            "message": "Universal seed complete",
+            "results": results
+        }
+    except Exception as e:
+        logger.error(f"Universal seed failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== DATA MIGRATION ENDPOINTS ====================
 
 @admin_router.post("/data/link-pets-to-users")
