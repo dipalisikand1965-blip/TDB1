@@ -2816,13 +2816,41 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
 
         {/* Kanban View */}
         {viewMode === 'kanban' && (
-          <div className="flex-1 border rounded-xl overflow-hidden bg-white shadow-lg p-4">
-            <KanbanBoard 
-              tickets={displayTickets} 
-              onSelectTicket={fetchTicketDetails}
-              onStatusChange={handleStatusChange}
-              loading={loading}
-            />
+          <div className="flex-1 border rounded-xl overflow-hidden bg-white shadow-lg">
+            {/* Header with View Toggle */}
+            <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-4 py-3 border-b flex items-center justify-between">
+              <span className="text-sm font-semibold text-slate-700">Kanban Board ({displayTickets.length} tickets)</span>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center bg-white rounded-lg border shadow-sm p-0.5">
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-1.5 rounded transition-all ${viewMode === 'list' ? 'bg-purple-100 text-purple-700' : 'text-gray-400 hover:text-gray-600'}`}
+                    title="List View"
+                  >
+                    <LayoutList className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('kanban')}
+                    className={`p-1.5 rounded transition-all ${viewMode === 'kanban' ? 'bg-purple-100 text-purple-700' : 'text-gray-400 hover:text-gray-600'}`}
+                    title="Kanban Board"
+                  >
+                    <Columns3 className="w-4 h-4" />
+                  </button>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => { fetchTickets(); fetchStats(); }} className="hover:bg-white/50">
+                  <RefreshCw className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+            {/* Kanban Board */}
+            <div className="p-4">
+              <KanbanBoard 
+                tickets={displayTickets} 
+                onSelectTicket={fetchTicketDetails}
+                onStatusChange={handleStatusChange}
+                loading={loading}
+              />
+            </div>
           </div>
         )}
 
