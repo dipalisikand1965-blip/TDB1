@@ -528,6 +528,8 @@ const ProductListing = ({ category = 'all' }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* SEO Meta Tags */}
+      <SEOHead page={getSeoPage()} path={location.pathname} />
       
       {/* === HERO SECTION === */}
       <div className={`relative overflow-hidden bg-gradient-to-br ${heroContent.color} text-white`}>
