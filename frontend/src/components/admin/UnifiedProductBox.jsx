@@ -333,33 +333,41 @@ const UnifiedProductBox = () => {
 
   // Seed All - runs migration, pillar assignment, and rewards enablement
   const seedAll = async () => {
-    if (!confirm('This will:\n1. Migrate products from old collection\n2. Auto-assign pillars based on categories/tags\n3. Enable rewards for 30% of products\n\nContinue?')) return;
+    if (!confirm('This will:\n1. Migrate products from old collection\n2. Sync Stay properties to products\n3. Auto-assign pillars based on categories/tags\n4. Enable rewards for 30% of products\n\nContinue?')) return;
     
     setSeeding(true);
     try {
-      // Step 1: Migrate from old products collection
-      toast({ title: 'Step 1/3', description: 'Migrating products...' });
+      // Step 1: Migrate from old products collection + sync Stay
+      toast({ title: 'Step 1/4', description: 'Migrating products & syncing Stay...' });
       const migrateRes = await fetch(`${API_URL}/api/product-box/migrate-from-products`, { method: 'POST' });
       const migrateData = await migrateRes.json();
       
       // Step 2: Auto-seed pillars
-      toast({ title: 'Step 2/3', description: 'Assigning pillars...' });
+      toast({ title: 'Step 2/4', description: 'Assigning pillars...' });
       const pillarsRes = await fetch(`${API_URL}/api/product-box/auto-seed-pillars`, { method: 'POST' });
       const pillarsData = await pillarsRes.json();
       
       // Step 3: Enable rewards
-      toast({ title: 'Step 3/3', description: 'Enabling rewards...' });
+      toast({ title: 'Step 3/4', description: 'Enabling rewards...' });
       const rewardsRes = await fetch(`${API_URL}/api/product-box/auto-enable-rewards?percentage=30`, { method: 'POST' });
       const rewardsData = await rewardsRes.json();
       
+      // Step 4: Also seed Stay properties and bundles
+      toast({ title: 'Step 4/4', description: 'Seeding Stay bundles...' });
+      try {
+        await fetch(`${API_URL}/api/admin/stay/seed`, { method: 'POST', headers: { 'Authorization': 'Basic ' + btoa('aditya:lola4304') } });
+        await fetch(`${API_URL}/api/admin/stay/seed-bundles`, { method: 'POST', headers: { 'Authorization': 'Basic ' + btoa('aditya:lola4304') } });
+      } catch (e) { console.log('Stay seed skipped:', e); }
+      
       // Show results
       const totalMigrated = migrateData.migrated || 0;
+      const staySynced = migrateData.stay_synced || 0;
       const totalSeeded = pillarsData.updated_count || 0;
       const totalRewards = rewardsData.updated_count || 0;
       
       toast({ 
         title: 'Seed Complete!', 
-        description: `Migrated: ${totalMigrated}, Pillars assigned: ${totalSeeded}, Rewards enabled: ${totalRewards}` 
+        description: `Migrated: ${totalMigrated}, Stay: ${staySynced}, Pillars: ${totalSeeded}, Rewards: ${totalRewards}` 
       });
       
       // Refresh data
