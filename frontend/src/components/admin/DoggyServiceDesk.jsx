@@ -1669,165 +1669,457 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         </div>
       </div>
       
-      {/* ==================== SETTINGS MODAL ==================== */}
+      {/* ==================== SETTINGS MODAL (Enhanced with Templates & Automation) ==================== */}
       {showSettingsModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSettingsModal(false)}>
-          <Card className="w-[600px] max-h-[90vh] overflow-y-auto bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
+          <Card className="w-[800px] max-h-[90vh] overflow-hidden bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex h-full">
+              {/* Settings Sidebar */}
+              <div className="w-48 bg-gray-50 border-r p-4 flex flex-col">
+                <h2 className="text-lg font-bold text-gray-900 mb-4">Settings</h2>
+                <nav className="space-y-1 flex-1">
+                  <button
+                    onClick={() => setSettingsTab('status')}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm ${settingsTab === 'status' ? 'bg-emerald-100 text-emerald-700' : 'text-gray-600 hover:bg-gray-100'}`}
+                  >
+                    🏷️ Statuses & Categories
+                  </button>
+                  <button
+                    onClick={() => setSettingsTab('templates')}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm ${settingsTab === 'templates' ? 'bg-emerald-100 text-emerald-700' : 'text-gray-600 hover:bg-gray-100'}`}
+                  >
+                    📝 Templates
+                  </button>
+                  <button
+                    onClick={() => setSettingsTab('automation')}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm ${settingsTab === 'automation' ? 'bg-emerald-100 text-emerald-700' : 'text-gray-600 hover:bg-gray-100'}`}
+                  >
+                    🤖 Automation
+                  </button>
+                  <button
+                    onClick={() => setSettingsTab('notifications')}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm ${settingsTab === 'notifications' ? 'bg-emerald-100 text-emerald-700' : 'text-gray-600 hover:bg-gray-100'}`}
+                  >
+                    🔔 Notifications
+                  </button>
+                </nav>
+                <button onClick={() => setShowSettingsModal(false)} className="mt-auto px-3 py-2 text-sm text-gray-500 hover:text-gray-700">
+                  Close
+                </button>
+              </div>
+              
+              {/* Settings Content */}
+              <div className="flex-1 p-6 overflow-y-auto max-h-[90vh]">
+                <button onClick={() => setShowSettingsModal(false)} className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-lg">
+                  <X className="w-5 h-5" />
+                </button>
+                
+                {/* Statuses & Categories Tab */}
+                {settingsTab === 'status' && (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-semibold text-gray-800 mb-3">Custom Ticket Statuses</h3>
+                      <div className="flex gap-2 mb-3">
+                        <Input
+                          value={newStatusName}
+                          onChange={(e) => setNewStatusName(e.target.value)}
+                          placeholder="New status name..."
+                          className="flex-1"
+                        />
+                        <Button
+                          onClick={async () => {
+                            if (!newStatusName.trim()) return;
+                            try {
+                              await fetch(`${getApiUrl()}/api/tickets/statuses`, {
+                                method: 'POST',
+                                headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: newStatusName.toLowerCase().replace(/\s+/g, '_'), label: newStatusName, color: 'blue' })
+                              });
+                              setNewStatusName('');
+                              const res = await fetch(`${getApiUrl()}/api/tickets/statuses`, { headers: authHeaders });
+                              if (res.ok) {
+                                const data = await res.json();
+                                setCustomStatuses(data.statuses?.filter(s => !s.is_default) || []);
+                              }
+                            } catch (err) { console.error(err); }
+                          }}
+                          className="bg-emerald-500 hover:bg-emerald-600"
+                        >
+                          <Plus className="w-4 h-4 mr-1" /> Add
+                        </Button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {customStatuses.map(s => (
+                          <Badge key={s.id} className="bg-blue-100 text-blue-700 pr-1">
+                            {s.label || s.name}
+                            <button
+                              onClick={async () => {
+                                await fetch(`${getApiUrl()}/api/tickets/statuses/${s.id}`, { method: 'DELETE', headers: authHeaders });
+                                setCustomStatuses(prev => prev.filter(x => x.id !== s.id));
+                              }}
+                              className="ml-1 p-0.5 hover:bg-blue-200 rounded"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                        {customStatuses.length === 0 && <span className="text-sm text-gray-400">No custom statuses</span>}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h3 className="font-semibold text-gray-800 mb-3">Custom Categories/Pillars</h3>
+                      <div className="flex gap-2 mb-3">
+                        <Input
+                          value={newCategoryEmoji}
+                          onChange={(e) => setNewCategoryEmoji(e.target.value)}
+                          placeholder="📁"
+                          className="w-16 text-center"
+                        />
+                        <Input
+                          value={newCategoryName}
+                          onChange={(e) => setNewCategoryName(e.target.value)}
+                          placeholder="New category name..."
+                          className="flex-1"
+                        />
+                        <Button
+                          onClick={async () => {
+                            if (!newCategoryName.trim()) return;
+                            try {
+                              await fetch(`${getApiUrl()}/api/tickets/categories`, {
+                                method: 'POST',
+                                headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: newCategoryName.toLowerCase().replace(/\s+/g, '_'), name: newCategoryName, emoji: newCategoryEmoji || '📁' })
+                              });
+                              setNewCategoryName('');
+                              setNewCategoryEmoji('📁');
+                              const res = await fetch(`${getApiUrl()}/api/tickets/categories`, { headers: authHeaders });
+                              if (res.ok) {
+                                const data = await res.json();
+                                setCustomCategories(data.categories?.filter(c => !c.is_default) || []);
+                              }
+                            } catch (err) { console.error(err); }
+                          }}
+                          className="bg-emerald-500 hover:bg-emerald-600"
+                        >
+                          <Plus className="w-4 h-4 mr-1" /> Add
+                        </Button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {customCategories.map(c => (
+                          <Badge key={c.id} className="bg-purple-100 text-purple-700 pr-1">
+                            {c.emoji} {c.name}
+                            <button
+                              onClick={async () => {
+                                await fetch(`${getApiUrl()}/api/tickets/categories/${c.id}`, { method: 'DELETE', headers: authHeaders });
+                                setCustomCategories(prev => prev.filter(x => x.id !== c.id));
+                              }}
+                              className="ml-1 p-0.5 hover:bg-purple-200 rounded"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                        {customCategories.length === 0 && <span className="text-sm text-gray-400">No custom categories</span>}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Templates Tab */}
+                {settingsTab === 'templates' && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-semibold text-gray-800">Response Templates</h3>
+                      <Button
+                        onClick={() => {
+                          setTemplateForm({ name: '', type: 'email', subject: '', content: '', trigger: 'manual', trigger_status: '' });
+                          setEditingTemplateId(null);
+                          setShowTemplateModal(true);
+                        }}
+                        size="sm"
+                        className="bg-emerald-500 hover:bg-emerald-600"
+                      >
+                        <Plus className="w-4 h-4 mr-1" /> New Template
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {templates.length === 0 ? (
+                        <div className="text-center py-8 text-gray-400">
+                          <FileText className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                          <p>No templates yet. Create your first template!</p>
+                        </div>
+                      ) : (
+                        templates.map(t => (
+                          <div key={t.id} className="border rounded-lg p-4 hover:border-emerald-300 transition-colors">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="font-medium">{t.name}</span>
+                                  <Badge className={`text-xs ${t.type === 'email' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
+                                    {t.type === 'email' ? '📧 Email' : '📱 SMS'}
+                                  </Badge>
+                                  {t.trigger !== 'manual' && (
+                                    <Badge className="text-xs bg-amber-100 text-amber-700">
+                                      Auto: {t.trigger}
+                                    </Badge>
+                                  )}
+                                </div>
+                                {t.subject && <p className="text-sm text-gray-500 mb-1">Subject: {t.subject}</p>}
+                                <p className="text-sm text-gray-600 line-clamp-2">{t.content}</p>
+                              </div>
+                              <div className="flex items-center gap-1 ml-4">
+                                <button
+                                  onClick={() => useTemplate(t)}
+                                  className="p-1.5 hover:bg-emerald-100 rounded text-emerald-600"
+                                  title="Use Template"
+                                >
+                                  <Copy className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => startEditingTemplate(t)}
+                                  className="p-1.5 hover:bg-gray-100 rounded"
+                                  title="Edit"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteTemplate(t.id)}
+                                  className="p-1.5 hover:bg-red-100 rounded text-red-600"
+                                  title="Delete"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Automation Tab */}
+                {settingsTab === 'automation' && (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-semibold text-gray-800 mb-3">Auto-Acknowledge New Tickets</h3>
+                      <label className="flex items-center gap-3 p-3 border rounded-lg hover:border-emerald-300 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={autoMessageSettings.auto_acknowledge}
+                          onChange={(e) => setAutoMessageSettings(prev => ({ ...prev, auto_acknowledge: e.target.checked }))}
+                          className="w-4 h-4 rounded border-gray-300"
+                        />
+                        <div>
+                          <span className="font-medium">Auto-send acknowledgment</span>
+                          <p className="text-sm text-gray-500">Automatically send a response when a new ticket is created</p>
+                        </div>
+                      </label>
+                      {autoMessageSettings.auto_acknowledge && (
+                        <select
+                          value={autoMessageSettings.auto_acknowledge_template}
+                          onChange={(e) => setAutoMessageSettings(prev => ({ ...prev, auto_acknowledge_template: e.target.value }))}
+                          className="mt-2 w-full px-3 py-2 border rounded-lg"
+                        >
+                          <option value="">Select acknowledgment template...</option>
+                          {templates.map(t => (
+                            <option key={t.id} value={t.id}>{t.name}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <h3 className="font-semibold text-gray-800 mb-3">Status Change Triggers</h3>
+                      <p className="text-sm text-gray-500 mb-3">Automatically send messages when ticket status changes</p>
+                      <div className="space-y-2">
+                        {Object.entries(STATUS_CONFIG).map(([statusKey, statusVal]) => (
+                          <div key={statusKey} className="flex items-center gap-3 p-2 border rounded-lg">
+                            <span className="w-24 text-sm font-medium">{statusVal.label}</span>
+                            <ArrowRight className="w-4 h-4 text-gray-400" />
+                            <select
+                              value={autoMessageSettings.status_triggers?.[statusKey] || ''}
+                              onChange={(e) => setAutoMessageSettings(prev => ({
+                                ...prev,
+                                status_triggers: { ...prev.status_triggers, [statusKey]: e.target.value }
+                              }))}
+                              className="flex-1 px-2 py-1.5 border rounded text-sm"
+                            >
+                              <option value="">No auto-message</option>
+                              {templates.map(t => (
+                                <option key={t.id} value={t.id}>{t.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end pt-4 border-t">
+                      <Button 
+                        onClick={async () => {
+                          try {
+                            await fetch(`${getApiUrl()}/api/tickets/settings/automation`, {
+                              method: 'POST',
+                              headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                              body: JSON.stringify(autoMessageSettings)
+                            });
+                            // Show success
+                          } catch (err) { console.error(err); }
+                        }}
+                        className="bg-emerald-500 hover:bg-emerald-600"
+                      >
+                        Save Automation Settings
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Notifications Tab */}
+                {settingsTab === 'notifications' && (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-semibold text-gray-800 mb-3">Notification Preferences</h3>
+                      <div className="space-y-3">
+                        <label className="flex items-center justify-between p-3 border rounded-lg hover:border-emerald-300 cursor-pointer">
+                          <div className="flex items-center gap-3">
+                            <Bell className="w-5 h-5 text-gray-400" />
+                            <div>
+                              <span className="font-medium">New ticket alerts</span>
+                              <p className="text-sm text-gray-500">Get notified when new tickets arrive</p>
+                            </div>
+                          </div>
+                          <input type="checkbox" className="w-4 h-4 rounded" defaultChecked />
+                        </label>
+                        <label className="flex items-center justify-between p-3 border rounded-lg hover:border-emerald-300 cursor-pointer">
+                          <div className="flex items-center gap-3">
+                            <MessageSquare className="w-5 h-5 text-gray-400" />
+                            <div>
+                              <span className="font-medium">New message alerts</span>
+                              <p className="text-sm text-gray-500">Get notified when customers reply</p>
+                            </div>
+                          </div>
+                          <input type="checkbox" className="w-4 h-4 rounded" defaultChecked />
+                        </label>
+                        <label className="flex items-center justify-between p-3 border rounded-lg hover:border-emerald-300 cursor-pointer">
+                          <div className="flex items-center gap-3">
+                            <Volume2 className="w-5 h-5 text-gray-400" />
+                            <div>
+                              <span className="font-medium">Sound notifications</span>
+                              <p className="text-sm text-gray-500">Play sound for new notifications</p>
+                            </div>
+                          </div>
+                          <input type="checkbox" className="w-4 h-4 rounded" defaultChecked />
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">Real-time Connection</span>
+                        <div className={`flex items-center gap-2 text-sm ${connected ? 'text-emerald-600' : 'text-amber-600'}`}>
+                          {connected ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
+                          {connected ? 'Connected' : 'Reconnecting...'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+      
+      {/* Template Creation/Edit Modal */}
+      {showTemplateModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]" onClick={() => setShowTemplateModal(false)}>
+          <Card className="w-[500px] bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900">Service Desk Settings</h2>
-                <button onClick={() => setShowSettingsModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-lg">{editingTemplateId ? 'Edit Template' : 'Create Template'}</h3>
+                <button onClick={() => setShowTemplateModal(false)} className="p-2 hover:bg-gray-100 rounded">
                   <X className="w-5 h-5" />
                 </button>
               </div>
               
-              {/* Custom Statuses Section */}
-              <div className="mb-6">
-                <h3 className="font-semibold text-gray-800 mb-3">Custom Ticket Statuses</h3>
-                <div className="flex gap-2 mb-3">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Template Name *</label>
                   <Input
-                    value={newStatusName}
-                    onChange={(e) => setNewStatusName(e.target.value)}
-                    placeholder="New status name..."
-                    className="flex-1"
+                    value={templateForm.name}
+                    onChange={(e) => setTemplateForm(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="e.g., Welcome Response"
                   />
-                  <Button
-                    onClick={async () => {
-                      if (!newStatusName.trim()) return;
-                      try {
-                        await fetch(`${getApiUrl()}/api/tickets/statuses`, {
-                          method: 'POST',
-                          headers: { ...authHeaders, 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ id: newStatusName.toLowerCase().replace(/\s+/g, '_'), label: newStatusName, color: 'blue' })
-                        });
-                        setNewStatusName('');
-                        // Refresh custom statuses
-                        const res = await fetch(`${getApiUrl()}/api/tickets/statuses`, { headers: authHeaders });
-                        if (res.ok) {
-                          const data = await res.json();
-                          setCustomStatuses(data.statuses?.filter(s => !s.is_default) || []);
-                        }
-                      } catch (err) { console.error(err); }
-                    }}
-                    className="bg-emerald-500 hover:bg-emerald-600"
-                  >
-                    <Plus className="w-4 h-4 mr-1" /> Add
-                  </Button>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {customStatuses.map(s => (
-                    <Badge key={s.id} className="bg-blue-100 text-blue-700 pr-1">
-                      {s.label || s.name}
-                      <button
-                        onClick={async () => {
-                          await fetch(`${getApiUrl()}/api/tickets/statuses/${s.id}`, { method: 'DELETE', headers: authHeaders });
-                          setCustomStatuses(prev => prev.filter(x => x.id !== s.id));
-                        }}
-                        className="ml-1 p-0.5 hover:bg-blue-200 rounded"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                  {customStatuses.length === 0 && <span className="text-sm text-gray-400">No custom statuses</span>}
-                </div>
-              </div>
-              
-              {/* Custom Categories/Pillars Section */}
-              <div className="mb-6">
-                <h3 className="font-semibold text-gray-800 mb-3">Custom Categories/Pillars</h3>
-                <div className="flex gap-2 mb-3">
-                  <Input
-                    value={newCategoryEmoji}
-                    onChange={(e) => setNewCategoryEmoji(e.target.value)}
-                    placeholder="📁"
-                    className="w-16 text-center"
-                  />
-                  <Input
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    placeholder="New category name..."
-                    className="flex-1"
-                  />
-                  <Button
-                    onClick={async () => {
-                      if (!newCategoryName.trim()) return;
-                      try {
-                        await fetch(`${getApiUrl()}/api/tickets/categories`, {
-                          method: 'POST',
-                          headers: { ...authHeaders, 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ id: newCategoryName.toLowerCase().replace(/\s+/g, '_'), name: newCategoryName, emoji: newCategoryEmoji || '📁' })
-                        });
-                        setNewCategoryName('');
-                        setNewCategoryEmoji('📁');
-                        // Refresh custom categories
-                        const res = await fetch(`${getApiUrl()}/api/tickets/categories`, { headers: authHeaders });
-                        if (res.ok) {
-                          const data = await res.json();
-                          setCustomCategories(data.categories?.filter(c => !c.is_default) || []);
-                        }
-                      } catch (err) { console.error(err); }
-                    }}
-                    className="bg-emerald-500 hover:bg-emerald-600"
-                  >
-                    <Plus className="w-4 h-4 mr-1" /> Add
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {customCategories.map(c => (
-                    <Badge key={c.id} className="bg-purple-100 text-purple-700 pr-1">
-                      {c.emoji} {c.name}
-                      <button
-                        onClick={async () => {
-                          await fetch(`${getApiUrl()}/api/tickets/categories/${c.id}`, { method: 'DELETE', headers: authHeaders });
-                          setCustomCategories(prev => prev.filter(x => x.id !== c.id));
-                        }}
-                        className="ml-1 p-0.5 hover:bg-purple-200 rounded"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                  {customCategories.length === 0 && <span className="text-sm text-gray-400">No custom categories</span>}
-                </div>
-              </div>
-              
-              {/* Notification Settings */}
-              <div className="mb-6">
-                <h3 className="font-semibold text-gray-800 mb-3">Notifications</h3>
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" className="rounded" defaultChecked />
-                    <span>New ticket alerts</span>
-                  </label>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" className="rounded" defaultChecked />
-                    <span>New message alerts</span>
-                  </label>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" className="rounded" defaultChecked />
-                    <span>Sound notifications</span>
-                  </label>
-                </div>
-              </div>
-              
-              {/* WebSocket Status */}
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Real-time Connection</span>
-                  <div className={`flex items-center gap-2 text-sm ${connected ? 'text-emerald-600' : 'text-amber-600'}`}>
-                    {connected ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
-                    {connected ? 'Connected' : 'Reconnecting...'}
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Type</label>
+                    <select
+                      value={templateForm.type}
+                      onChange={(e) => setTemplateForm(prev => ({ ...prev, type: e.target.value }))}
+                      className="w-full px-3 py-2 border rounded-md"
+                    >
+                      <option value="email">📧 Email</option>
+                      <option value="sms">📱 SMS</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Trigger</label>
+                    <select
+                      value={templateForm.trigger}
+                      onChange={(e) => setTemplateForm(prev => ({ ...prev, trigger: e.target.value }))}
+                      className="w-full px-3 py-2 border rounded-md"
+                    >
+                      <option value="manual">Manual Only</option>
+                      <option value="new_ticket">On New Ticket</option>
+                      <option value="status_change">On Status Change</option>
+                    </select>
                   </div>
                 </div>
+                
+                {templateForm.type === 'email' && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Subject Line</label>
+                    <Input
+                      value={templateForm.subject}
+                      onChange={(e) => setTemplateForm(prev => ({ ...prev, subject: e.target.value }))}
+                      placeholder="e.g., We received your request - {{ticket_id}}"
+                    />
+                  </div>
+                )}
+                
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Content *</label>
+                  <Textarea
+                    value={templateForm.content}
+                    onChange={(e) => setTemplateForm(prev => ({ ...prev, content: e.target.value }))}
+                    placeholder="Hi {{customer_name}},&#10;&#10;Thank you for reaching out..."
+                    rows={6}
+                  />
+                  <p className="text-xs text-gray-400 mt-1">
+                    Variables: {"{{customer_name}}, {{ticket_id}}, {{pet_name}}, {{status}}"}
+                  </p>
+                </div>
               </div>
               
-              <div className="flex justify-end mt-6 pt-6 border-t">
-                <Button onClick={() => setShowSettingsModal(false)} className="bg-emerald-500 hover:bg-emerald-600">
-                  Done
+              <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
+                <Button variant="outline" onClick={() => setShowTemplateModal(false)}>Cancel</Button>
+                <Button
+                  onClick={handleSaveTemplate}
+                  disabled={!templateForm.name.trim() || !templateForm.content.trim()}
+                  className="bg-emerald-500 hover:bg-emerald-600"
+                >
+                  {editingTemplateId ? 'Update Template' : 'Create Template'}
                 </Button>
               </div>
             </div>
+          </Card>
+        </div>
+      )}
           </Card>
         </div>
       )}
