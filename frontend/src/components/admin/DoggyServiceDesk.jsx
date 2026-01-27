@@ -1854,7 +1854,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
               </div>
               
               {/* ==================== TICKET LIST ==================== */}
-              <div className="flex-1 flex flex-col min-w-0 bg-white border-r">
+              <div className={`flex-1 flex flex-col min-w-0 bg-white border-r ${viewMode === 'kanban' ? 'hidden' : ''}`}>
                 {/* List Header */}
                 <div className="px-4 py-2 border-b flex items-center justify-between flex-shrink-0 bg-gray-50">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -1868,6 +1868,24 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                   </div>
                   
                   <div className="flex items-center gap-2">
+                    {/* View Mode Toggle */}
+                    <div className="flex items-center bg-white rounded-lg border shadow-sm p-0.5 mr-1">
+                      <button
+                        onClick={() => setViewMode('list')}
+                        className={`p-1.5 rounded transition-all ${viewMode === 'list' ? 'bg-emerald-100 text-emerald-700' : 'text-gray-400 hover:text-gray-600'}`}
+                        title="List View (Alt+1)"
+                      >
+                        <LayoutList className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setViewMode('kanban')}
+                        className={`p-1.5 rounded transition-all ${viewMode === 'kanban' ? 'bg-emerald-100 text-emerald-700' : 'text-gray-400 hover:text-gray-600'}`}
+                        title="Kanban Board (Alt+2)"
+                      >
+                        <Columns3 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
