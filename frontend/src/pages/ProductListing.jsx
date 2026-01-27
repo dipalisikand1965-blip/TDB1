@@ -145,8 +145,18 @@ const CATEGORY_TO_PILLAR = {
 
 const ProductListing = ({ category = 'all' }) => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const searchQuery = searchParams.get('search');
   const { user, token } = useAuth();
+  
+  // Determine the SEO page type based on category and path
+  const getSeoPage = () => {
+    const path = location.pathname;
+    if (path.includes('/celebrate') || category === 'cakes') return 'celebrate';
+    if (path.includes('/cakes')) return 'cakes';
+    if (path.includes('/treats')) return 'treats';
+    return 'shop';
+  };
   
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
