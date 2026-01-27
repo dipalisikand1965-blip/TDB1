@@ -8,7 +8,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import { Button } from '../ui/button';
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
-  List, ListOrdered, Quote, Code, Link as LinkIcon, LinkOff,
+  List, ListOrdered, Quote, Code, Link as LinkIcon, Unlink,
   AlignLeft, AlignCenter, AlignRight,
   Heading1, Heading2, Heading3, Undo, Redo, Type,
   Sparkles, Copy, Check, Loader2
