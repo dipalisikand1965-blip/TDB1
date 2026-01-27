@@ -3049,17 +3049,30 @@ async def universal_seed_endpoint():
     - Unified Product Box
     - Pricing Tiers
     - Shipping Rules
+    - HARDCODED Product Options (Base, Flavour, Size for cakes)
     
     No auth required - designed to be called on deployment.
     """
     from scripts.universal_pillar_protocol import universal_seed
+    from scripts.hardcode_product_options import hardcode_product_options
     
     try:
+        # Step 1: Run universal pillar seed
         results = await universal_seed(db)
         logger.info(f"Universal seed completed: {results}")
+        
+        # Step 2: ALWAYS hardcode product options (prevents options from disappearing)
+        try:
+            hardcode_results = await hardcode_product_options(db)
+            results["hardcoded_options"] = hardcode_results
+            logger.info(f"Hardcode product options completed: {hardcode_results}")
+        except Exception as hc_error:
+            logger.error(f"Hardcode product options failed (non-blocking): {hc_error}")
+            results["hardcoded_options"] = {"error": str(hc_error)}
+        
         return {
             "success": True,
-            "message": "Universal seed complete",
+            "message": "Universal seed complete (including hardcoded product options)",
             "results": results
         }
     except Exception as e:
