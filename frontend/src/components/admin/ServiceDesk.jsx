@@ -2684,6 +2684,37 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
             </div>
           </div>
 
+          {/* View Mode Toggle - Always Visible */}
+          <div>
+            <Label className="text-xs text-gray-500 mb-1 block">View Mode</Label>
+            <div className="flex items-center bg-white rounded-lg border p-0.5">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded transition-all text-xs ${
+                  viewMode === 'list' 
+                    ? 'bg-purple-100 text-purple-700 shadow-sm' 
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+                title="List View"
+              >
+                <LayoutList className="w-3.5 h-3.5" />
+                List
+              </button>
+              <button
+                onClick={() => setViewMode('kanban')}
+                className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded transition-all text-xs ${
+                  viewMode === 'kanban' 
+                    ? 'bg-purple-100 text-purple-700 shadow-sm' 
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+                title="Kanban Board"
+              >
+                <Columns3 className="w-3.5 h-3.5" />
+                Kanban
+              </button>
+            </div>
+          </div>
+
           <div>
             <Label className="text-xs text-gray-500 mb-1 block">Status</Label>
             <Select value={filters.status || 'all'} onValueChange={(v) => setFilters({ ...filters, status: v === 'all' ? '' : v })}>
