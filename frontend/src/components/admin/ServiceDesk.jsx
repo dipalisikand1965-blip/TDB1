@@ -2603,6 +2603,33 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
             )}
           </div>
           <div className="flex gap-2 flex-wrap items-center">
+            {/* View Mode Toggle */}
+            <div className="flex items-center bg-white/10 rounded-lg border border-white/20 p-0.5 mr-2">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-all ${
+                  viewMode === 'list' 
+                    ? 'bg-white text-slate-900 shadow-sm' 
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+                title="List View (Alt+1)"
+              >
+                <LayoutList className="w-3.5 h-3.5" />
+                List
+              </button>
+              <button
+                onClick={() => setViewMode('kanban')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-all ${
+                  viewMode === 'kanban' 
+                    ? 'bg-white text-slate-900 shadow-sm' 
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+                title="Kanban Board (Alt+2)"
+              >
+                <Columns3 className="w-3.5 h-3.5" />
+                Kanban
+              </button>
+            </div>
             <Button 
               variant="outline" 
               size="sm" 
