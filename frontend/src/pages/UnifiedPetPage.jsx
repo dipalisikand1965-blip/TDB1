@@ -61,7 +61,7 @@ const MiraMemoriesSection = ({ petId, petName, token }) => {
       if (!petId || !token) return;
       
       try {
-        const response = await fetch(`${API_URL}/api/mira/memories/pet/${petId}`, {
+        const response = await fetch(`${API_URL}/api/mira/memory/pet/${petId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
