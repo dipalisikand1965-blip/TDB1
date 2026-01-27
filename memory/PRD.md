@@ -20,6 +20,44 @@
 - Member dashboard and pet profiles
 - AI-powered Mira® assistant
 
+### Phase 12E: Contact & Communication Features (Jan 27, 2025)
+
+**New Features:**
+
+1. **Floating Contact Button** (All Pages)
+   - Persistent FAB at bottom-right corner
+   - Call Now (+91 96631 85747)
+   - WhatsApp quick chat
+   - Request Callback (opens modal)
+   - Voice Order link
+   - Animated "Speak to us!" tooltip
+
+2. **Callback Request Feature**
+   - Modal with form: Name, Phone, Reason, Preferred Time, Notes
+   - Creates Service Desk ticket with `callback_request` source
+   - 8 reason options: General, Order, Booking, Complaint, Partnership, Celebration, Emergency, Other
+   - 4 time slots: ASAP, Morning, Afternoon, Evening
+   - Success confirmation with ticket ID
+
+3. **Mira Page "Speak to Us" Section**
+   - Call Us Now button
+   - WhatsApp Us button
+   - Voice Order button
+   - Emergency Help button
+
+4. **SEO Enhancements**
+   - SEOHead component with pillar-specific meta tags
+   - Updated sitemap.xml with all 14 pillars + pages
+   - Canonical URLs (non-www)
+   - Open Graph & Twitter Cards
+   - HelmetProvider integration
+
+5. **Universal Seed Enhancements**
+   - Auto-seeds 5 Service Desk templates
+   - Auto-seeds 2 sample pet parents
+   - Auto-seeds 4 sample pet profiles
+   - Hardcodes product options (Base, Flavour, Size)
+
 ### Phase 12D: Dining Concierge & Advanced Features (Jan 27, 2025)
 
 **New Features:**
