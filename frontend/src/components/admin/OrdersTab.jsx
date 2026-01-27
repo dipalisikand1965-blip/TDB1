@@ -205,16 +205,16 @@ const OrdersTab = ({
               )}
 
               <div className="flex gap-2 flex-wrap">
-                <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.orderId, 'confirmed')}>
+                <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.orderId || order.order_id || order.id, 'confirmed')}>
                   Confirm
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.orderId, 'preparing')}>
+                <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.orderId || order.order_id || order.id, 'preparing')}>
                   Preparing
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.orderId, 'delivered')}>
+                <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.orderId || order.order_id || order.id, 'delivered')}>
                   Delivered
                 </Button>
-                <Button size="sm" variant="outline" className="text-red-600" onClick={(e) => { e.stopPropagation(); updateOrderStatus(order.orderId, 'cancelled'); }}>
+                <Button size="sm" variant="outline" className="text-red-600" onClick={(e) => { e.stopPropagation(); updateOrderStatus(order.orderId || order.order_id || order.id, 'cancelled'); }}>
                   Cancel
                 </Button>
                 <Button size="sm" onClick={() => setSelectedOrderDetails(order)}>
