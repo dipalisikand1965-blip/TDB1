@@ -154,6 +154,8 @@ const ProductListing = ({ category = 'all' }) => {
   const [userPets, setUserPets] = useState([]);
   const [personalizedMessage, setPersonalizedMessage] = useState('');
   const [deliveryCity, setDeliveryCity] = useState('all'); // For cake availability filter
+  const [detectedCity, setDetectedCity] = useState(null);
+  const [detectingLocation, setDetectingLocation] = useState(false);
 
   // Check if this is a cake category that needs availability filter
   const isCakeCategory = ['cakes', 'breed-cakes', 'custom', 'birthday-cakes', 'pupcakes', 'dognuts', 'mini-cakes'].includes(category);
@@ -166,6 +168,65 @@ const ProductListing = ({ category = 'all' }) => {
     { value: 'delhi ncr', label: '🏙️ Delhi NCR (Fresh)' },
     { value: 'pan-india', label: '📦 Pan-India Only' },
   ];
+
+  // Location detection function
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      console.log('Geolocation not supported');
+      return;
+    }
+    
+    setDetectingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          // Use reverse geocoding to get city
+          const { latitude, longitude } = position.coords;
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+          );
+          const data = await response.json();
+          
+          // Extract city from address
+          const city = data.address?.city || data.address?.town || data.address?.state_district || '';
+          const cityLower = city.toLowerCase();
+          
+          // Match to our delivery cities
+          let matchedCity = null;
+          if (cityLower.includes('bangalore') || cityLower.includes('bengaluru')) {
+            matchedCity = 'bangalore';
+          } else if (cityLower.includes('mumbai')) {
+            matchedCity = 'mumbai';
+          } else if (cityLower.includes('delhi') || cityLower.includes('noida') || cityLower.includes('gurgaon') || cityLower.includes('gurugram')) {
+            matchedCity = 'delhi ncr';
+          }
+          
+          if (matchedCity) {
+            setDetectedCity(matchedCity);
+            setDeliveryCity(matchedCity);
+          } else {
+            setDetectedCity('other');
+          }
+        } catch (err) {
+          console.error('Failed to detect location:', err);
+        } finally {
+          setDetectingLocation(false);
+        }
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        setDetectingLocation(false);
+      },
+      { timeout: 10000 }
+    );
+  };
+
+  // Auto-detect location on mount for cake categories
+  useEffect(() => {
+    if (isCakeCategory && !detectedCity) {
+      detectLocation();
+    }
+  }, [isCakeCategory]);
 
   // Get the pillar for this category
   const pillar = CATEGORY_TO_PILLAR[category] || 'shop';
