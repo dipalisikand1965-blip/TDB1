@@ -2325,10 +2325,28 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             <Button onClick={handleRefresh} variant="outline" size="icon" className="shadow-sm" disabled={refreshing}>
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             </Button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg relative">
-              <Bell className="w-5 h-5 text-gray-500" />
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
-            </button>
+            {/* Notification Bell */}
+            <div className="relative">
+              <button 
+                onClick={() => {
+                  if (notificationPermission !== 'granted') {
+                    requestNotificationPermission();
+                  }
+                }}
+                className={`p-2 hover:bg-gray-100 rounded-lg relative ${notificationsEnabled ? 'text-emerald-600' : 'text-gray-500'}`}
+                title={notificationsEnabled ? 'Notifications enabled' : 'Click to enable notifications'}
+              >
+                <Bell className="w-5 h-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-white">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+                {!notificationsEnabled && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-amber-500 rounded-full border border-white" title="Notifications disabled" />
+                )}
+              </button>
+            </div>
             <button className="p-2 hover:bg-gray-100 rounded-lg">
               <HelpCircle className="w-5 h-5 text-gray-500" />
             </button>
