@@ -39,24 +39,30 @@
 - **Service Booking Modal**: Pet selection, contact details, activity level, fitness goals, preferred date
 - **Data Seeding**: 8 Fit Concierge® services + bundles seeded into database
 
-### Phase 6: Mira Memory System Enhancements (Jan 2025)
-- **Enhanced Memory Extraction**: Added 50+ new patterns across all memory types and pillars
-- **Pillar-Aware Extraction**: Memories now tagged with pillar context (fit, care, travel, etc.)
-- **Pet Memories API**: New `/api/mira/memory/pet/{pet_id}` endpoint
-- **Pet Profile Memories Tab**: New "Mira Memories" tab on `/pet/:petId` page showing grouped memories
-- **Memory Display**: Grouped by type (Events, Health, Shopping, General) with icons and colours
-- **Soul Whisper Integration**: Already exists in Member Dashboard settings (Daily/Weekly/2x Week options)
-- **New "Shop by Pillar" Filter**: 10 pillars (All, Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Shop)
-- **Active Filter Pills**: Visual feedback showing selected pillar
-- **API Fix**: unified_products now respects pillar filter
-- **Clear All Filters**: Reset both pillar and quick filters
+### Phase 7: Airbnb-Inspired Services UI & Mira Memories (Jan 2025)
 
----
+**Fit Page Redesign:**
+- **Airbnb-style Service Cards**: Gradient image headers, category badges, floating price tags
+- **Category Filter Bar**: Sticky filter with counts (All Services, Assessment, Training, etc.)
+- **Service Detail Modal**: Full-screen header image, price/duration bar, "What's included" checklist
+- **Dual CTAs**: "Enrol Now" (booking) + "Ask Concierge®" (redirects to Mira)
+- **Hover interactions**: View Details button appears on card hover
 
-## Current Database State
-- **Products**: 630+ (Shopify sync + pillar-specific)
-- **Services**: 8 (Fit Concierge® services)
-- **Fit Products**: 57 (filtered correctly)
+**Mira Memory System:**
+- **Enhanced Extraction**: 50+ new patterns, pillar-aware extraction
+- **Pet Memories API**: `/api/mira/memory/pet/{pet_id}` - returns grouped memories
+- **Pet Profile Tab**: New "Mira Memories" tab showing memories by type
+- **Test Data**: Added memories for Mojo (events, health, shopping, general)
+
+**Services in Database (Fit Pillar):**
+1. Fitness Assessment & Programme Design - ₹2,499
+2. Personal Training Programme - 8 Weeks - ₹7,999
+3. Weight Management Programme - ₹5,999
+4. Hydrotherapy Sessions - ₹1,499
+5. Senior Mobility Programme - ₹4,999/mo
+6. Puppy Development Programme - ₹3,999
+7. Agility Foundation Course - ₹4,499
+8. Canine Yoga (Doga) Session - ₹799
 
 ---
 
