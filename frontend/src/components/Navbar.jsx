@@ -17,6 +17,7 @@ const PILLARS = [
     icon: '🎂',
     path: '/celebrate',
     dropdown: [
+      { name: 'Celebrate By Concierge®', path: '/celebrate', highlight: true },
       { name: 'Birthday Cakes', path: '/cakes' },
       { name: 'Custom Cake', path: '/custom-cake' },
       { name: 'Breed Cakes', path: '/celebrate/breed-cakes' },
@@ -31,6 +32,7 @@ const PILLARS = [
     icon: '🍽️',
     path: '/dine',
     dropdown: [
+      { name: 'Dine By Concierge®', path: '/dine', highlight: true },
       { name: 'Pet Restaurants', path: '/dine' },
       { name: 'Fresh Meals', path: '/dine?type=meals' },
       { name: 'Meal Plans', path: '/meal-plan' },
