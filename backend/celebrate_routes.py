@@ -37,6 +37,7 @@ class CelebrateProductCreate(BaseModel):
     tags: List[str] = []
     sizes: List[Dict] = []  # [{name: "500g", price: 600}, {name: "1kg", price: 1100}]
     flavors: List[str] = []
+    bases: List[str] = []  # NEW: Oats, Ragi, etc.
     pet_sizes: List[str] = []  # small, medium, large
     in_stock: bool = True
     is_bestseller: bool = False
@@ -45,6 +46,10 @@ class CelebrateProductCreate(BaseModel):
     birthday_discount_percent: Optional[int] = None
     paw_reward_points: int = 0
     delivery_cities: List[str] = []  # empty = all cities
+    fresh_delivery_cities: List[str] = []  # NEW: Cities for fresh cake delivery
+    life_stage: Optional[str] = None  # NEW: puppy, adult, senior, all-ages
+    occasion: Optional[str] = None  # NEW: birthday, gotcha-day, festival, special-treat
+    dietary: Optional[str] = None  # NEW: grain-free, vegan, low-fat, hypoallergenic
     pan_india: bool = False
 
 class CelebrateBundleCreate(BaseModel):
