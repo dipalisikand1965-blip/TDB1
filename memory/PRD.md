@@ -209,7 +209,8 @@
 
 ## Test Credentials
 - **Admin**: aditya / lola4304
+- **Member Test**: dipali@clubconcierge.in / test123
 
 ---
 
-*Last Updated: January 2025*
+*Last Updated: January 27, 2025*
