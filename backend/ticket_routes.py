@@ -2687,6 +2687,147 @@ async def add_time_entry(ticket_id: str, entry: dict):
     return {"success": True, "time_entry": time_entry}
 
 
+# ==================== REMINDERS & TASKS ====================
+
+@router.get("/{ticket_id}/reminders")
+async def get_ticket_reminders(ticket_id: str):
+    """Get all reminders/tasks for a ticket"""
+    db = get_db()
+    
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    if not ticket:
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    reminders = ticket.get("reminders", [])
+    
+    # Sort by due date (soonest first)
+    reminders.sort(key=lambda x: x.get("due_at", ""))
+    
+    # Check for overdue reminders
+    now = datetime.now(timezone.utc).isoformat()
+    for reminder in reminders:
+        reminder["is_overdue"] = reminder.get("due_at", "") < now and reminder.get("status") != "completed"
+    
+    return {"reminders": reminders, "total": len(reminders)}
+
+
+@router.post("/{ticket_id}/reminders")
+async def create_ticket_reminder(ticket_id: str, reminder: TicketReminder):
+    """Create a new reminder/task for a ticket"""
+    db = get_db()
+    
+    # Find ticket in either collection
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    collection = db.tickets
+    if not ticket:
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+        collection = db.service_desk_tickets
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    reminder_doc = {
+        "id": str(uuid.uuid4()),
+        "title": reminder.title,
+        "description": reminder.description,
+        "due_at": reminder.due_at,
+        "reminder_type": reminder.reminder_type,
+        "priority": reminder.priority,
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "completed_at": None
+    }
+    
+    # Add to ticket's reminders array
+    await collection.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"reminders": reminder_doc},
+            "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+        }
+    )
+    
+    return {"success": True, "reminder": reminder_doc}
+
+
+@router.patch("/{ticket_id}/reminders/{reminder_id}")
+async def update_ticket_reminder(ticket_id: str, reminder_id: str, updates: dict):
+    """Update a reminder (mark complete, snooze, edit)"""
+    db = get_db()
+    
+    # Find ticket in either collection
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    collection = db.tickets
+    if not ticket:
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+        collection = db.service_desk_tickets
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    reminders = ticket.get("reminders", [])
+    updated = False
+    
+    for i, rem in enumerate(reminders):
+        if rem.get("id") == reminder_id:
+            # Apply updates
+            if updates.get("status") == "completed":
+                reminders[i]["status"] = "completed"
+                reminders[i]["completed_at"] = datetime.now(timezone.utc).isoformat()
+            if updates.get("due_at"):
+                reminders[i]["due_at"] = updates["due_at"]
+            if updates.get("title"):
+                reminders[i]["title"] = updates["title"]
+            if updates.get("description"):
+                reminders[i]["description"] = updates["description"]
+            updated = True
+            break
+    
+    if not updated:
+        raise HTTPException(status_code=404, detail="Reminder not found")
+    
+    await collection.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$set": {
+                "reminders": reminders,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    return {"success": True}
+
+
+@router.delete("/{ticket_id}/reminders/{reminder_id}")
+async def delete_ticket_reminder(ticket_id: str, reminder_id: str):
+    """Delete a reminder from a ticket"""
+    db = get_db()
+    
+    # Find ticket in either collection
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    collection = db.tickets
+    if not ticket:
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+        collection = db.service_desk_tickets
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    await collection.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$pull": {"reminders": {"id": reminder_id}},
+            "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+        }
+    )
+    
+    return {"success": True}
+
+
 # ==================== AI TICKET SUMMARY ====================
 
 @router.post("/ai/summary/{ticket_id}")
