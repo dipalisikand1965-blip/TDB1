@@ -1891,6 +1891,100 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           </div>
         )}
         
+        {/* ==================== REMINDER/TASK MODAL ==================== */}
+        {showReminderModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <Card className="w-[420px] p-6 bg-white shadow-xl">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-lg flex items-center gap-2">
+                  <Bell className="w-5 h-5 text-amber-500" />
+                  Add Reminder / Task
+                </h3>
+                <button onClick={() => setShowReminderModal(false)} className="p-1 hover:bg-gray-100 rounded">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Title *</label>
+                  <Input
+                    value={reminderForm.title}
+                    onChange={(e) => setReminderForm(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="e.g., Follow up with customer"
+                  />
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Description</label>
+                  <Textarea
+                    value={reminderForm.description}
+                    onChange={(e) => setReminderForm(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Optional details..."
+                    rows={2}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Due Date & Time *</label>
+                    <Input
+                      type="datetime-local"
+                      value={reminderForm.due_at}
+                      onChange={(e) => setReminderForm(prev => ({ ...prev, due_at: new Date(e.target.value).toISOString() }))}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Type</label>
+                    <select
+                      value={reminderForm.reminder_type}
+                      onChange={(e) => setReminderForm(prev => ({ ...prev, reminder_type: e.target.value }))}
+                      className="w-full h-10 px-3 rounded-md border"
+                    >
+                      <option value="follow_up">📞 Follow Up</option>
+                      <option value="call_back">🔔 Call Back</option>
+                      <option value="task">✅ Task</option>
+                      <option value="deadline">⏰ Deadline</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Priority</label>
+                  <div className="flex gap-2">
+                    {['low', 'medium', 'high'].map(p => (
+                      <button
+                        key={p}
+                        onClick={() => setReminderForm(prev => ({ ...prev, priority: p }))}
+                        className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${
+                          reminderForm.priority === p 
+                            ? p === 'high' ? 'bg-red-500 text-white' : p === 'medium' ? 'bg-amber-500 text-white' : 'bg-gray-500 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        {p.charAt(0).toUpperCase() + p.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
+                <Button variant="outline" onClick={() => setShowReminderModal(false)}>Cancel</Button>
+                <Button 
+                  onClick={createReminder}
+                  disabled={!reminderForm.title || !reminderForm.due_at}
+                  className="bg-amber-500 hover:bg-amber-600"
+                >
+                  <Bell className="w-4 h-4 mr-2" />
+                  Create Reminder
+                </Button>
+              </div>
+            </Card>
+          </div>
+        )}
+        
         {/* ==================== CONTENT AREA ==================== */}
         <div className="flex-1 flex min-h-0">
           
