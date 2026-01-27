@@ -91,9 +91,13 @@ const CelebrateManager = ({ getAuthHeader }) => {
   const [productForm, setProductForm] = useState({
     name: '', description: '', price: '', compare_price: '', image: '',
     category: 'cakes', subcategory: '', tags: '', sizes: '',
-    flavors: '', in_stock: true, is_bestseller: false, is_new: false,
+    flavors: '', bases: '', in_stock: true, is_bestseller: false, is_new: false,
     is_birthday_perk: false, birthday_discount_percent: '',
-    paw_reward_points: 0, pan_india: false
+    paw_reward_points: 0, pan_india: false,
+    fresh_delivery_cities: '', // NEW: Cities for fresh cake delivery
+    life_stage: '', // NEW: Puppy, Adult, Senior, All Ages
+    occasion: '', // NEW: Birthday, Anniversary, Gotcha Day, etc.
+    dietary: '', // NEW: Grain-free, Vegan, Low-fat, etc.
   });
   
   const [bundleForm, setBundleForm] = useState({
