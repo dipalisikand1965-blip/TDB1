@@ -205,10 +205,10 @@
 9. ✅ ~~Fix Mira Memories Auth~~ (DONE - Login prompt for unauthenticated users)
 
 ### P1 - Next Sprint (Concierge for All 14 Pillars)
-9. **Fix Mira Memories Auth**: Debug token flow in UnifiedPetPage.jsx
-10. **Activate Soul Whisper Feature**: Verify question delivery and answer storage
-11. **Product Data Polish**: Rewrite cake titles/descriptions for quality
-12. **Pet Profile Recommendations UI**: Display personalized products
+10. **Add Celebrate Concierge Services**: Like Fit, add Concierge® services for cakes, treats, hampers
+11. **Replicate Concierge Pattern to All Pillars**: Dine, Stay, Travel, Care, Enjoy, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt, Shop
+12. **Activate Soul Whisper Feature**: Verify question delivery and answer storage
+13. **Product Data Polish**: Rewrite cake titles/descriptions for quality
 
 ### P2 - Backlog
 13. Improve WebSocket real-time updates stability
