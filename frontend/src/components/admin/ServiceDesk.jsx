@@ -381,11 +381,19 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
           e.preventDefault();
           document.querySelector('input[placeholder*="Search"]')?.focus();
           break;
+        case '?':
+          // ? - Show keyboard shortcuts help
+          if (e.shiftKey) {
+            e.preventDefault();
+            setShowShortcutsModal(true);
+          }
+          break;
         case 'escape':
           // Escape - Close modals
           setShowReplyModal(false);
           setShowNewTicketModal(false);
           setShowEditModal(false);
+          setShowShortcutsModal(false);
           break;
         case '1':
           // 1 - Switch to list view
