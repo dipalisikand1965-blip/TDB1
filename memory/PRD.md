@@ -154,9 +154,10 @@
 **Testing Status:** Backend 100% (13/13), Frontend 100% (Verified via testing agent iteration 93)
 
 **Files Modified:**
-- `/app/frontend/src/components/admin/DoggyServiceDesk.jsx` - Main component
-- `/app/frontend/src/components/admin/RichTextEditor.jsx` - NEW: Tiptap editor
-- `/app/frontend/src/components/admin/KanbanBoard.jsx` - NEW: Kanban view
+- `/app/frontend/src/components/admin/DoggyServiceDesk.jsx` - Main component with SLA timers, reminders
+- `/app/frontend/src/components/admin/RichTextEditor.jsx` - Tiptap editor
+- `/app/frontend/src/components/admin/KanbanBoard.jsx` - Kanban view
+- `/app/backend/ticket_routes.py` - SLA calculation, reminder CRUD endpoints
 
 ---
 
@@ -165,6 +166,7 @@
 2. **WebSocket Connection** (P2): Shows "Connecting..." - prevents real-time updates (core functionality unaffected)
 3. **Product Tags**: Most products lack best-seller/new-arrivals tags (filters return 0 results)
 4. **Aggregated Ticket Detail** (P3): Some tickets from reservations/stay bookings return 404 on detail endpoint
+5. **Auto-Acknowledge Email** (P2): Requires Resend API key - currently MOCKED (logs only)
 
 ---
 
@@ -175,21 +177,24 @@
 2. ✅ ~~Custom Cake Submenu~~ (DONE)
 3. ✅ ~~Cake Availability Filter UI~~ (DONE)
 4. ✅ ~~Service Desk Overhaul~~ (DONE - Rich Text Editor, Kanban Board, All Pillars)
-5. **Admin Product Editor**: Add UI to manage `fresh_delivery_cities` and tag fields
+5. ✅ ~~SLA Timers~~ (DONE - Visual countdown with color coding)
+6. ✅ ~~Reminder/Tasks~~ (DONE - Full CRUD with modal and list)
+7. ✅ ~~Auto-Acknowledge Emails~~ (DONE - Requires Resend API key)
+8. **Admin Product Editor**: Add UI to manage `fresh_delivery_cities` and tag fields
 
 ### P1 - Next Sprint
-5. **Fix Mira Memories Auth**: Debug token flow in UnifiedPetPage.jsx
-6. **Activate Soul Whisper Feature**: Verify question delivery and answer storage
-7. **Product Data Polish**: Rewrite cake titles/descriptions for quality
-8. **Pet Profile Recommendations UI**: Display personalized products
+9. **Fix Mira Memories Auth**: Debug token flow in UnifiedPetPage.jsx
+10. **Activate Soul Whisper Feature**: Verify question delivery and answer storage
+11. **Product Data Polish**: Rewrite cake titles/descriptions for quality
+12. **Pet Profile Recommendations UI**: Display personalized products
 
 ### P2 - Backlog
-9. Improve WebSocket real-time updates stability
-10. Build Smart Checkout flow
-11. Multi-channel integrations (Resend/WhatsApp - requires API keys)
-12. New Member Onboarding flow
-13. **Replicate Fit Template**: Apply same design to Care, Celebrate, Enjoy pages
-14. **Service Desk Phase 2**: SLA timers, Agent collision detection, Bulk actions, Analytics dashboard
+13. Improve WebSocket real-time updates stability
+14. Build Smart Checkout flow
+15. Multi-channel integrations (Resend/WhatsApp - requires API keys)
+16. New Member Onboarding flow
+17. **Replicate Fit Template**: Apply same design to Care, Celebrate, Enjoy pages
+18. **Service Desk Phase 3**: Bulk actions, Analytics dashboard, Customer satisfaction ratings
 
 ---
 
