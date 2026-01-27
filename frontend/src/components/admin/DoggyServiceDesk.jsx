@@ -895,16 +895,33 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   };
 
   // Handle status change
-  const handleStatusChange = async (newStatus) => {
-    if (!selectedTicket) return;
+  const handleStatusChange = async (ticketIdOrStatus, newStatusParam) => {
+    // Support both calling conventions:
+    // 1. handleStatusChange(newStatus) - from dropdown in detail panel
+    // 2. handleStatusChange(ticketId, newStatus) - from Kanban board
+    let targetTicket, newStatus;
+    
+    if (newStatusParam !== undefined) {
+      // Called from Kanban: handleStatusChange(ticketId, newStatus)
+      targetTicket = tickets.find(t => t.ticket_id === ticketIdOrStatus);
+      newStatus = newStatusParam;
+    } else {
+      // Called from detail panel: handleStatusChange(newStatus)
+      if (!selectedTicket) return;
+      targetTicket = selectedTicket;
+      newStatus = ticketIdOrStatus;
+    }
+    
+    if (!targetTicket) return;
+    
     try {
       // Determine which API to call based on source
-      let endpoint = `${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}`;
+      let endpoint = `${getApiUrl()}/api/tickets/${targetTicket.ticket_id}`;
       
-      if (selectedTicket.source === 'reservation') {
-        endpoint = `${getApiUrl()}/api/admin/dine/reservations/${selectedTicket.ticket_id}`;
-      } else if (selectedTicket.source === 'stay_booking') {
-        endpoint = `${getApiUrl()}/api/stay/admin/bookings/${selectedTicket.ticket_id}`;
+      if (targetTicket.source === 'reservation') {
+        endpoint = `${getApiUrl()}/api/admin/dine/reservations/${targetTicket.ticket_id}`;
+      } else if (targetTicket.source === 'stay_booking') {
+        endpoint = `${getApiUrl()}/api/stay/admin/bookings/${targetTicket.ticket_id}`;
       }
       
       await fetch(endpoint, {
@@ -913,7 +930,10 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         body: JSON.stringify({ status: newStatus })
       });
       
-      setSelectedTicket(prev => ({ ...prev, status: newStatus }));
+      // Update local state if this is the selected ticket
+      if (selectedTicket?.ticket_id === targetTicket.ticket_id) {
+        setSelectedTicket(prev => ({ ...prev, status: newStatus }));
+      }
       await fetchAllTickets();
     } catch (err) {
       console.error('Error:', err);
