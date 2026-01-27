@@ -2182,6 +2182,25 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                                   <Clock className="w-3 h-3" />
                                   {formatTime(ticket.created_at)}
                                 </span>
+                                {/* SLA Timer in List */}
+                                {ticket.sla_status && (
+                                  <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full ${
+                                    ticket.sla_status.status === 'breached' ? 'bg-red-100 text-red-600' :
+                                    ticket.sla_status.status === 'critical' ? 'bg-orange-100 text-orange-600' :
+                                    ticket.sla_status.status === 'warning' ? 'bg-amber-100 text-amber-600' :
+                                    'bg-emerald-100 text-emerald-600'
+                                  }`}>
+                                    <Timer className="w-3 h-3" />
+                                    {formatSlaTime(ticket.sla_status)?.text}
+                                  </span>
+                                )}
+                                {/* Pending Reminders Badge */}
+                                {ticket.pending_reminders_count > 0 && (
+                                  <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-600">
+                                    <Bell className="w-3 h-3" />
+                                    {ticket.pending_reminders_count}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>
