@@ -15,6 +15,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraContextPanel from '../components/MiraContextPanel';
+import SEOHead from '../components/SEOHead';
 import {
   ShoppingBag, Search, Filter, Grid, List, Heart, Star, 
   ChevronRight, ChevronDown, Sparkles, Tag, Truck, Shield, Gift, ArrowRight,
