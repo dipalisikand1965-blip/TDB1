@@ -139,6 +139,9 @@ function AppRouter() {
       {/* Full-Screen Service Desk - NO navbar/footer */}
       <Route path="/admin/service-desk" element={<ServiceDeskPage />} />
       
+      {/* Full-Screen Concierge® Dashboard - NO navbar/footer */}
+      <Route path="/admin/concierge" element={<ConciergeRequestsDashboard />} />
+      
       {/* Full-Screen Ask Mira Page - NO navbar/footer for immersive experience */}
       <Route path="/ask-mira" element={<MiraPage />} />
       
