@@ -271,6 +271,23 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     status_triggers: {} // { status: templateId }
   });
   
+  // Notification Settings
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationPermission, setNotificationPermission] = useState('default');
+  
+  // Agent Collision Detection
+  const [activeAgents, setActiveAgents] = useState({}); // { ticketId: [agentNames] }
+  const [viewingTicketSince, setViewingTicketSince] = useState(null);
+  
+  // Customer Satisfaction (CSAT)
+  const [showCSATModal, setShowCSATModal] = useState(false);
+  const [csatData, setCsatData] = useState({ rating: 0, feedback: '' });
+  
+  // Inline Subject Editing
+  const [editingSubject, setEditingSubject] = useState(false);
+  const [editedSubject, setEditedSubject] = useState('');
+  
   // Reminders/Tasks
   const [showReminderModal, setShowReminderModal] = useState(false);
   const [reminderForm, setReminderForm] = useState({
