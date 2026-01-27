@@ -2609,8 +2609,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
               variant="outline" 
               size="sm" 
               className="shadow-sm gap-2"
-              disabled={filteredTickets.length === 0}
-              title={`Export ${filteredTickets.length} tickets to CSV`}
+              disabled={!tickets || tickets.length === 0}
+              title={`Export ${tickets?.length || 0} tickets to CSV`}
               data-testid="export-csv-btn"
             >
               <Download className="w-4 h-4" />
