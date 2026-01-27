@@ -2468,7 +2468,7 @@ const MemberDashboard = () => {
                   <div className="mt-4 bg-gray-50 rounded-lg p-3">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs font-medium text-gray-600">Soul Score</span>
-                      <span className="text-xs font-bold text-purple-600">{Math.round(pet.overall_score || 0)}%</span>
+                      <span className="text-xs font-bold text-purple-600">{Math.min(100, Math.round(pet.overall_score || 0))}%</span>
                     </div>
                     <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                       <div 
