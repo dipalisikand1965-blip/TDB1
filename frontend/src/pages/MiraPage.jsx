@@ -18,8 +18,8 @@ import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { API_URL } from '../utils/api';
 import { toast } from 'sonner';
-import {
 import SEOHead from '../components/SEOHead';
+import {
   Send, Loader2, PawPrint, Sparkles, MessageCircle, 
   Phone, Mail, ChevronDown, Heart, Shield, Star,
   Car, Home, Scissors, UtensilsCrossed, PartyPopper,
