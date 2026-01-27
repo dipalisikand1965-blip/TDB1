@@ -166,20 +166,39 @@ const Admin = () => {
   const seedAllPillars = async () => {
     setSeedingAll(true);
     try {
-      const response = await fetch(`${API_URL}/api/admin/seed-all`, {
-        method: 'POST',
-        headers: getAuthHeaders()
+      // UNIVERSAL SEED - Seeds ALL 14 pillars with products, services, pricing, shipping
+      toast({ title: '🚀 Universal Seed Started', description: 'Seeding all 14 pillars...' });
+      
+      const response = await fetch(`${API_URL}/api/admin/universal-seed`, {
+        method: 'POST'
       });
+      
       if (response.ok) {
         const data = await response.json();
+        const results = data.results || {};
         toast({
-          title: '✅ Pillars Seeded!',
-          description: `${data.totals.products} products, ${data.totals.bundles} bundles added (existing data preserved)`
+          title: '✅ Universal Seed Complete!',
+          description: `Products: ${results.products?.created || 0} new, ${results.products?.updated || 0} updated | Services: ${results.services?.created || 0} new | Unified: ${results.unified?.migrated || 0}`,
+          duration: 8000
         });
       } else {
-        toast({ title: 'Error', description: 'Failed to seed data', variant: 'destructive' });
+        // Fallback to old endpoint
+        const fallbackResponse = await fetch(`${API_URL}/api/admin/seed-all`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (fallbackResponse.ok) {
+          const data = await fallbackResponse.json();
+          toast({
+            title: '✅ Pillars Seeded!',
+            description: `${data.totals?.products || 0} products, ${data.totals?.bundles || 0} bundles added`
+          });
+        } else {
+          toast({ title: 'Error', description: 'Failed to seed data', variant: 'destructive' });
+        }
       }
     } catch (error) {
+      console.error('Seed error:', error);
       toast({ title: 'Error', description: 'Failed to seed data', variant: 'destructive' });
     } finally {
       setSeedingAll(false);
