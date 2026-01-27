@@ -157,6 +157,9 @@ const TICKET_TYPES = {
 // ==================== MAIN COMPONENT ====================
 const DoggyServiceDesk = ({ authHeaders }) => {
   
+  // Current admin user (extracted from auth or default)
+  const adminUser = 'Admin'; // TODO: Extract from authHeaders/context
+  
   // SLA Timer Helper - calculates and formats remaining time
   const formatSlaTime = (slaStatus) => {
     if (!slaStatus) return null;
