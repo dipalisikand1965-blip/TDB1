@@ -239,6 +239,9 @@ const StayPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
+      {/* SEO Meta Tags */}
+      <SEOHead page="stay" path="/stay" />
+      
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-green-600 to-emerald-500 text-white py-16 px-4">
         <div className="max-w-6xl mx-auto text-center">
