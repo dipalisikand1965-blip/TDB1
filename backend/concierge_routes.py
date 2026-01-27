@@ -309,6 +309,85 @@ async def create_experience_request(request: ConciergeExperienceRequest):
     }
 
 
+# ============== CONCIERGE® EXPERIENCE REQUEST MANAGEMENT ==============
+
+@router.get("/requests")
+async def get_concierge_requests(
+    pillar: Optional[str] = None,
+    status: Optional[str] = None,
+    limit: int = Query(50, le=200)
+):
+    """Get all Concierge® experience requests for the admin dashboard."""
+    db = get_db()
+    
+    query = {}
+    if pillar:
+        query["pillar"] = pillar
+    if status:
+        query["status"] = status
+    
+    requests = await db.concierge_requests.find(query).sort("created_at", -1).limit(limit).to_list(length=limit)
+    
+    for r in requests:
+        r["id"] = r.get("id", str(r.get("_id", "")))
+        r.pop("_id", None)
+    
+    return {"requests": requests, "total": len(requests)}
+
+
+@router.get("/stats")
+async def get_concierge_stats():
+    """Get Concierge® request statistics for the dashboard."""
+    db = get_db()
+    
+    total = await db.concierge_requests.count_documents({})
+    new_requests = await db.concierge_requests.count_documents({"status": "new"})
+    
+    by_pillar = {}
+    for pillar in ["travel", "stay", "care", "enjoy", "learn"]:
+        by_pillar[pillar] = await db.concierge_requests.count_documents({"pillar": pillar})
+    
+    return {
+        "total": total,
+        "new_requests": new_requests,
+        "by_pillar": by_pillar
+    }
+
+
+@router.put("/requests/{request_id}")
+async def update_concierge_request_status(
+    request_id: str,
+    status: str = Query(..., description="New status: new, contacted, in_progress, completed, archived"),
+    note: Optional[str] = Query(None, description="Optional note for the timeline")
+):
+    """Update a Concierge® request status."""
+    db = get_db()
+    
+    request = await db.concierge_requests.find_one({"id": request_id})
+    if not request:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    now = datetime.now(timezone.utc)
+    
+    timeline = request.get("timeline", [])
+    timeline.append({
+        "status": status,
+        "timestamp": now.isoformat(),
+        "note": note or f"Status changed to {status}"
+    })
+    
+    await db.concierge_requests.update_one(
+        {"id": request_id},
+        {"$set": {
+            "status": status,
+            "timeline": timeline,
+            "updated_at": now
+        }}
+    )
+    
+    return {"message": "Request updated", "status": status}
+
+
 # ============== QUEUE ENDPOINT ==============
 
 @router.get("/queue")
