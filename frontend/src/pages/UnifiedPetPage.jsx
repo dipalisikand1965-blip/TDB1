@@ -58,7 +58,17 @@ const MiraMemoriesSection = ({ petId, petName, token }) => {
 
   useEffect(() => {
     const fetchMemories = async () => {
-      if (!petId || !token) return;
+      // If no token, show login prompt instead of loading forever
+      if (!token) {
+        setLoading(false);
+        setError('login_required');
+        return;
+      }
+      
+      if (!petId) {
+        setLoading(false);
+        return;
+      }
       
       try {
         const response = await fetch(`${API_URL}/api/mira/memory/pet/${petId}`, {
@@ -68,6 +78,8 @@ const MiraMemoriesSection = ({ petId, petName, token }) => {
         if (response.ok) {
           const data = await response.json();
           setMemories(data);
+        } else if (response.status === 401) {
+          setError('login_required');
         } else {
           setError('Could not load memories');
         }
@@ -87,6 +99,22 @@ const MiraMemoriesSection = ({ petId, petName, token }) => {
         <div className="flex items-center justify-center">
           <Loader2 className="w-6 h-6 animate-spin text-purple-600 mr-2" />
           <span className="text-gray-500">Loading Mira's memories...</span>
+        </div>
+      </Card>
+    );
+  }
+
+  // Show login prompt if not authenticated
+  if (error === 'login_required') {
+    return (
+      <Card className="p-8">
+        <div className="text-center">
+          <Brain className="w-12 h-12 mx-auto mb-3 text-purple-300" />
+          <h3 className="font-medium text-gray-900 mb-2">Sign in to see Mira's Memories</h3>
+          <p className="text-gray-500 text-sm mb-4">Log in to view what Mira has learned about {petName || 'your pet'}</p>
+          <a href="/login" className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+            Sign In
+          </a>
         </div>
       </Card>
     );
