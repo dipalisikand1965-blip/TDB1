@@ -16,29 +16,41 @@ const SearchBar = ({ onClose, isOverlay = false }) => {
   const navigate = useNavigate();
   const debounceTimer = useRef(null);
 
-  // Debounced search
+  // Debounced search - uses universal search
   const performSearch = useCallback(async (searchQuery) => {
     if (searchQuery.length < 2) {
-      setResults({ products: [], collections: [] });
+      setResults({ products: [], collections: [], services: [], stays: [], boarding: [] });
       setIsOpen(false);
       return;
     }
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/search/typeahead?q=${encodeURIComponent(searchQuery)}&limit=8`);
+      // Use universal search endpoint for comprehensive results
+      const response = await fetch(`${API_URL}/api/search/universal?q=${encodeURIComponent(searchQuery)}&limit=8`);
       if (response.ok) {
         const data = await response.json();
-        console.log('Search results:', data);
-        // Handle both formats: { products: [], collections: [] } or { hits: [] }
-        if (data.products || data.collections) {
-          setResults(data);
-        } else if (data.hits) {
-          setResults({ products: data.hits, collections: [] });
-        }
+        console.log('Universal search results:', data);
+        setResults({
+          products: data.products || [],
+          collections: [],
+          services: data.services || [],
+          stays: data.stays || [],
+          boarding: data.boarding || []
+        });
         setIsOpen(true);
       } else {
-        console.error('Search response not ok:', response.status);
+        // Fallback to typeahead
+        const fallbackResponse = await fetch(`${API_URL}/api/search/typeahead?q=${encodeURIComponent(searchQuery)}&limit=8`);
+        if (fallbackResponse.ok) {
+          const fallbackData = await fallbackResponse.json();
+          if (fallbackData.products || fallbackData.collections) {
+            setResults(fallbackData);
+          } else if (fallbackData.hits) {
+            setResults({ products: fallbackData.hits, collections: [] });
+          }
+          setIsOpen(true);
+        }
       }
     } catch (error) {
       console.error('Search error:', error);
