@@ -659,12 +659,11 @@ const TravelPage = () => {
                         value={formData.pet_name || ''}
                         onChange={(e) => setFormData({...formData, pet_name: e.target.value})}
                       />
-                      <input
-                        type="text"
-                        placeholder="Breed (optional)"
-                        className="w-full p-3 border rounded-lg text-sm"
+                      <BreedAutocomplete
+                        placeholder="Start typing breed..."
                         value={formData.pet_breed || ''}
                         onChange={(e) => setFormData({...formData, pet_breed: e.target.value})}
+                        className="text-sm"
                       />
                     </div>
                   </Card>
