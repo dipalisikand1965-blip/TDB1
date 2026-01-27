@@ -143,6 +143,75 @@ async def add_my_memory(
         source=memory.source,
         confidence=memory.confidence
     )
+
+
+@router.get("/pet/{pet_id}")
+async def get_pet_memories(
+    pet_id: str,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get all memories for a specific pet - for display on pet profile page.
+    Returns memories grouped by type with formatted display.
+    """
+    from mira_routes import get_user_from_token
+    
+    user = await get_user_from_token(authorization)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    member_id = user.get("email") or user.get("id")
+    db = get_db()
+    
+    # Get pet info
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "name": 1, "breed": 1})
+    
+    # Get memories for this pet
+    query = {
+        "member_id": member_id,
+        "is_active": {"$ne": False},
+        "$or": [
+            {"pet_id": pet_id},
+            {"pet_name": pet.get("name") if pet else None}
+        ]
+    }
+    
+    memories = await db.mira_memories.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    
+    # Group by type
+    grouped = {mtype: [] for mtype in MEMORY_TYPES.keys()}
+    for memory in memories:
+        mtype = memory.get("memory_type", "general")
+        if mtype in grouped:
+            # Format for display
+            grouped[mtype].append({
+                "id": memory.get("memory_id"),
+                "content": memory.get("content"),
+                "source": memory.get("source"),
+                "confidence": memory.get("confidence"),
+                "created_at": memory.get("created_at"),
+                "is_critical": memory.get("is_critical", False),
+                "relevance_tags": memory.get("relevance_tags", [])
+            })
+    
+    # Build response with type info
+    result = {}
+    for mtype, items in grouped.items():
+        if items:  # Only include types with memories
+            result[mtype] = {
+                "name": MEMORY_TYPES[mtype]["name"],
+                "icon": MEMORY_TYPES[mtype]["icon"],
+                "memories": items,
+                "count": len(items)
+            }
+    
+    return {
+        "pet_id": pet_id,
+        "pet_name": pet.get("name") if pet else None,
+        "total_memories": len(memories),
+        "by_type": result,
+        "memory_types": MEMORY_TYPES
+    }
     
     return {
         "success": True,
