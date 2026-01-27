@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '../ui/dropdown-menu';
 import { API_URL, getApiUrl } from '../../utils/api';
+import RichTextEditor from './RichTextEditor';
 import {
   Search, Plus, RefreshCw, Filter, X, Send, Clock, User, Phone, Mail,
   MapPin, Calendar, AlertCircle, CheckCircle, Loader2, MessageSquare,
