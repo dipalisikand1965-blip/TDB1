@@ -1371,6 +1371,121 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     }
   };
 
+  // ==================== TICKET TAGS ====================
+  
+  const fetchAllTags = async () => {
+    try {
+      const res = await fetch(`${getApiUrl()}/api/tickets/tags/all`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setAllTags(data.tags || []);
+      }
+    } catch (err) {
+      console.debug('Tags fetch error:', err);
+    }
+  };
+  
+  const addTagToTicket = async (tag) => {
+    if (!selectedTicket || !tag.trim()) return;
+    
+    try {
+      await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/tags`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify([tag.trim()])
+      });
+      
+      setSelectedTicket(prev => ({
+        ...prev,
+        tags: [...(prev.tags || []), tag.trim()]
+      }));
+      setNewTag('');
+      fetchAllTags();
+    } catch (err) {
+      console.error('Add tag error:', err);
+    }
+  };
+  
+  const removeTagFromTicket = async (tag) => {
+    if (!selectedTicket) return;
+    
+    try {
+      await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/tags/${encodeURIComponent(tag)}`, {
+        method: 'DELETE',
+        headers: authHeaders
+      });
+      
+      setSelectedTicket(prev => ({
+        ...prev,
+        tags: (prev.tags || []).filter(t => t !== tag)
+      }));
+    } catch (err) {
+      console.error('Remove tag error:', err);
+    }
+  };
+
+  // ==================== TICKET MERGING ====================
+  
+  const mergeTickets = async () => {
+    if (!selectedTicket || selectedTicketIds.length === 0) return;
+    
+    try {
+      await fetch(`${getApiUrl()}/api/tickets/merge`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          primary_ticket_id: selectedTicket.ticket_id,
+          secondary_ticket_ids: selectedTicketIds.filter(id => id !== selectedTicket.ticket_id)
+        })
+      });
+      
+      setShowMergeModal(false);
+      setSelectedTicketIds([]);
+      await fetchAllTickets();
+    } catch (err) {
+      console.error('Merge error:', err);
+    }
+  };
+
+  // ==================== AGENT PERFORMANCE ====================
+  
+  const fetchAgentPerformance = async () => {
+    try {
+      const res = await fetch(`${getApiUrl()}/api/tickets/analytics/agent-performance?days=30`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setAgentPerformance(data);
+      }
+    } catch (err) {
+      console.error('Performance fetch error:', err);
+    }
+  };
+
+  // ==================== SLA BREACH MONITORING ====================
+  
+  const fetchBreachedTickets = async () => {
+    try {
+      const res = await fetch(`${getApiUrl()}/api/tickets/sla/breached`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setBreachedTickets(data.breached || []);
+        setApproachingBreachTickets(data.approaching_breach || []);
+      }
+    } catch (err) {
+      console.debug('SLA breach check error:', err);
+    }
+  };
+  
+  // Fetch SLA breaches on mount and periodically
+  useEffect(() => {
+    fetchBreachedTickets();
+    fetchAllTags();
+    
+    const interval = setInterval(fetchBreachedTickets, 60000); // Check every minute
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // ==================== ATTACHMENT HANDLING ====================
   
   // Handle file/image selection
