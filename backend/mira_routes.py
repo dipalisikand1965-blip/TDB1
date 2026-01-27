@@ -280,7 +280,7 @@ EMERGENCY_KEYWORDS = [
 # Ticket types
 TICKET_TYPES = {
     "advisory": "Advisory (Exploring)",
-    "concierge": "Concierge Request",
+    "concierge": "Concierge® Request",
     "emergency": "Emergency"
 }
 
