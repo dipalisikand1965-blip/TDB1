@@ -2941,4 +2941,261 @@ const StayEventModal = ({ event, properties, onClose, onSave }) => {
   );
 };
 
+
+// ==================== Boarding Facility Modal ====================
+const BoardingModal = ({ facility, onClose, onSave, getAuthHeader }) => {
+  const isNew = !facility?.id;
+  const [formData, setFormData] = useState({
+    name: facility?.name || '',
+    city: facility?.city || '',
+    state: facility?.state || '',
+    boarding_type: facility?.boarding_type || 'Premium',
+    description: facility?.description || '',
+    address: facility?.address || '',
+    phone: facility?.phone || '',
+    email: facility?.email || '',
+    website: facility?.website || '',
+    image: facility?.image || '',
+    paw_score: facility?.paw_score || 4.0,
+    price_range: facility?.price_range || '₹800-1,500/night',
+    price_per_night: facility?.price_per_night || 1000,
+    amenities: facility?.amenities || [],
+  });
+  const [saving, setSaving] = useState(false);
+  const [newAmenity, setNewAmenity] = useState('');
+  
+  const handleSave = async () => {
+    if (!formData.name || !formData.city) {
+      alert('Name and City are required');
+      return;
+    }
+    
+    setSaving(true);
+    try {
+      const url = isNew 
+        ? `${API_URL}/api/admin/boarding/facilities`
+        : `${API_URL}/api/admin/boarding/facilities/${facility.id}`;
+      
+      const response = await fetch(url, {
+        method: isNew ? 'POST' : 'PUT',
+        headers: {
+          ...getAuthHeader(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      if (response.ok) {
+        onSave();
+        onClose();
+      } else {
+        const error = await response.json();
+        alert(error.detail || 'Failed to save');
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('Failed to save facility');
+    } finally {
+      setSaving(false);
+    }
+  };
+  
+  const addAmenity = () => {
+    if (newAmenity.trim()) {
+      setFormData({ ...formData, amenities: [...formData.amenities, newAmenity.trim()] });
+      setNewAmenity('');
+    }
+  };
+  
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Home className="w-5 h-5 text-amber-600" />
+            {isNew ? 'Add Boarding Facility' : 'Edit Boarding Facility'}
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          {/* Basic Info */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Facility Name *</Label>
+              <Input
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="e.g., Pawsome Pet Resort"
+              />
+            </div>
+            <div>
+              <Label>Boarding Type</Label>
+              <select
+                value={formData.boarding_type}
+                onChange={(e) => setFormData({ ...formData, boarding_type: e.target.value })}
+                className="w-full p-2 border rounded-lg mt-1"
+              >
+                <option value="Home-style">Home-style</option>
+                <option value="Premium">Premium</option>
+                <option value="Private">Private</option>
+                <option value="Luxury">Luxury</option>
+              </select>
+            </div>
+          </div>
+          
+          {/* Location */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>City *</Label>
+              <Input
+                value={formData.city}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                placeholder="e.g., Mumbai"
+              />
+            </div>
+            <div>
+              <Label>State</Label>
+              <Input
+                value={formData.state}
+                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                placeholder="e.g., Maharashtra"
+              />
+            </div>
+          </div>
+          
+          {/* Address */}
+          <div>
+            <Label>Full Address</Label>
+            <Textarea
+              value={formData.address}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              placeholder="Full address"
+              rows={2}
+            />
+          </div>
+          
+          {/* Description */}
+          <div>
+            <Label>Description</Label>
+            <Textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Describe the facility, its features, and what makes it special..."
+              rows={3}
+            />
+          </div>
+          
+          {/* Contact */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <Label>Phone</Label>
+              <Input
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="+91 9876543210"
+              />
+            </div>
+            <div>
+              <Label>Email</Label>
+              <Input
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="contact@facility.com"
+              />
+            </div>
+            <div>
+              <Label>Website</Label>
+              <Input
+                value={formData.website}
+                onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                placeholder="https://..."
+              />
+            </div>
+          </div>
+          
+          {/* Pricing & Rating */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <Label>Price Range</Label>
+              <Input
+                value={formData.price_range}
+                onChange={(e) => setFormData({ ...formData, price_range: e.target.value })}
+                placeholder="₹800-1,500/night"
+              />
+            </div>
+            <div>
+              <Label>Price Per Night (₹)</Label>
+              <Input
+                type="number"
+                value={formData.price_per_night}
+                onChange={(e) => setFormData({ ...formData, price_per_night: parseInt(e.target.value) || 0 })}
+              />
+            </div>
+            <div>
+              <Label>Paw Score (0-5)</Label>
+              <Input
+                type="number"
+                step="0.1"
+                min="0"
+                max="5"
+                value={formData.paw_score}
+                onChange={(e) => setFormData({ ...formData, paw_score: parseFloat(e.target.value) || 0 })}
+              />
+            </div>
+          </div>
+          
+          {/* Image */}
+          <div>
+            <Label>Image URL</Label>
+            <Input
+              value={formData.image}
+              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+              placeholder="https://..."
+            />
+            {formData.image && (
+              <img src={formData.image} alt="Preview" className="mt-2 h-32 rounded-lg object-cover" />
+            )}
+          </div>
+          
+          {/* Amenities */}
+          <div>
+            <Label>Amenities</Label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.amenities.map((amenity, idx) => (
+                <span key={idx} className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-sm flex items-center gap-1">
+                  {amenity}
+                  <button onClick={() => setFormData({ ...formData, amenities: formData.amenities.filter((_, i) => i !== idx) })}>
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={newAmenity}
+                onChange={(e) => setNewAmenity(e.target.value)}
+                placeholder="Add amenity (e.g., AC Rooms, Pool)"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addAmenity())}
+              />
+              <Button variant="outline" onClick={addAmenity}>Add</Button>
+            </div>
+          </div>
+        </div>
+        
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button 
+            className="bg-amber-600 hover:bg-amber-700"
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+            {isNew ? 'Add Facility' : 'Save Changes'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export default StayManager;
