@@ -6360,6 +6360,79 @@ async def get_search_stats():
     return await search_service.get_stats()
 
 
+@api_router.get("/search/universal")
+async def universal_search(
+    q: str = Query(..., min_length=1, description="Search query"),
+    limit: int = Query(10, ge=1, le=50),
+):
+    """
+    Universal search across ALL data types:
+    - Products (cakes, treats, merchandise)
+    - Services (concierge, grooming, training)
+    - Stays (hotels, resorts, villas)
+    - Boarding (pet boarding facilities)
+    - Members (for admin)
+    """
+    query_lower = q.lower()
+    results = {
+        "query": q,
+        "products": [],
+        "services": [],
+        "stays": [],
+        "boarding": [],
+        "total": 0
+    }
+    
+    # Search Products
+    products = await db.products.find({
+        "$or": [
+            {"name": {"$regex": q, "$options": "i"}},
+            {"title": {"$regex": q, "$options": "i"}},
+            {"description": {"$regex": q, "$options": "i"}},
+            {"tags": {"$regex": q, "$options": "i"}},
+            {"category": {"$regex": q, "$options": "i"}},
+            {"pillar": {"$regex": q, "$options": "i"}},
+        ]
+    }, {"_id": 0}).limit(limit).to_list(length=limit)
+    results["products"] = products
+    
+    # Search Services
+    services = await db.services.find({
+        "$or": [
+            {"name": {"$regex": q, "$options": "i"}},
+            {"description": {"$regex": q, "$options": "i"}},
+            {"pillar": {"$regex": q, "$options": "i"}},
+        ]
+    }, {"_id": 0}).limit(limit).to_list(length=limit)
+    results["services"] = services
+    
+    # Search Stay Properties
+    stays = await db.stay_properties.find({
+        "$or": [
+            {"name": {"$regex": q, "$options": "i"}},
+            {"description": {"$regex": q, "$options": "i"}},
+            {"city": {"$regex": q, "$options": "i"}},
+            {"property_type": {"$regex": q, "$options": "i"}},
+        ]
+    }, {"_id": 0}).limit(limit).to_list(length=limit)
+    results["stays"] = stays
+    
+    # Search Boarding Facilities
+    boarding = await db.stay_boarding_facilities.find({
+        "$or": [
+            {"name": {"$regex": q, "$options": "i"}},
+            {"description": {"$regex": q, "$options": "i"}},
+            {"city": {"$regex": q, "$options": "i"}},
+            {"boarding_type": {"$regex": q, "$options": "i"}},
+        ]
+    }, {"_id": 0}).limit(limit).to_list(length=limit)
+    results["boarding"] = boarding
+    
+    results["total"] = len(products) + len(services) + len(stays) + len(boarding)
+    
+    return results
+
+
 @api_router.post("/search/reindex")
 async def reindex_search(credentials: HTTPBasicCredentials = Depends(security)):
     """Reindex all products in the search engine (admin only)"""
