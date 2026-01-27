@@ -311,6 +311,65 @@ async def create_experience_request(request: ConciergeExperienceRequest):
 
 # ============== CONCIERGE® EXPERIENCE REQUEST MANAGEMENT ==============
 
+class ConciergeGeneralRequest(BaseModel):
+    """Model for general Concierge® requests from modal forms."""
+    pillar: str
+    experience_id: Optional[str] = None
+    experience_name: Optional[str] = None
+    name: str
+    email: str
+    phone: Optional[str] = None
+    message: Optional[str] = None
+    preferred_contact: Optional[str] = "whatsapp"
+    user_id: Optional[str] = None
+    source: Optional[str] = "website"
+
+
+@router.post("/request")
+async def create_general_concierge_request(request: ConciergeGeneralRequest):
+    """Create a general Concierge® request from the modal form."""
+    db = get_db()
+    import uuid
+    
+    request_id = f"conc-{uuid.uuid4().hex[:8]}"
+    now = datetime.now(timezone.utc)
+    
+    request_doc = {
+        "id": request_id,
+        "type": "general_inquiry",
+        "pillar": request.pillar,
+        "experience_id": request.experience_id,
+        "experience_name": request.experience_name,
+        "name": request.name,
+        "email": request.email,
+        "phone": request.phone,
+        "message": request.message,
+        "preferred_contact": request.preferred_contact,
+        "user_id": request.user_id,
+        "source": request.source,
+        "status": "new",
+        "created_at": now,
+        "updated_at": now,
+        "timeline": [
+            {
+                "status": "new",
+                "timestamp": now.isoformat(),
+                "note": f"Request submitted via {request.source}"
+            }
+        ]
+    }
+    
+    await db.concierge_requests.insert_one(request_doc)
+    
+    logger.info(f"Concierge® general request created: {request_id}")
+    
+    return {
+        "success": True,
+        "request_id": request_id,
+        "message": "Request received. We'll be in touch soon!"
+    }
+
+
 @router.get("/requests")
 async def get_concierge_requests(
     pillar: Optional[str] = None,
