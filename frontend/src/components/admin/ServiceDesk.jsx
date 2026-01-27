@@ -319,6 +319,94 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   // Quick Filters
   const [quickFilter, setQuickFilter] = useState('all'); // all, my_tickets, unassigned, overdue, today
 
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Don't trigger shortcuts when typing in inputs
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+        return;
+      }
+      
+      // Shortcuts
+      switch (e.key.toLowerCase()) {
+        case 'r':
+          // R - Reply to selected ticket
+          if (selectedTicket) {
+            e.preventDefault();
+            setShowReplyModal(true);
+          }
+          break;
+        case 'n':
+          // N - New ticket
+          e.preventDefault();
+          setShowNewTicketModal(true);
+          break;
+        case 'j':
+          // J - Next ticket
+          if (displayTickets.length > 0) {
+            e.preventDefault();
+            const currentIndex = displayTickets.findIndex(t => t.id === selectedTicket?.id);
+            const nextIndex = currentIndex < displayTickets.length - 1 ? currentIndex + 1 : 0;
+            fetchTicketDetails(displayTickets[nextIndex].ticket_id);
+          }
+          break;
+        case 'k':
+          // K - Previous ticket
+          if (displayTickets.length > 0) {
+            e.preventDefault();
+            const currentIndex = displayTickets.findIndex(t => t.id === selectedTicket?.id);
+            const prevIndex = currentIndex > 0 ? currentIndex - 1 : displayTickets.length - 1;
+            fetchTicketDetails(displayTickets[prevIndex].ticket_id);
+          }
+          break;
+        case 'e':
+          // E - Edit ticket
+          if (selectedTicket) {
+            e.preventDefault();
+            openEditModal();
+          }
+          break;
+        case 's':
+          // S - Search focus
+          if (!e.metaKey && !e.ctrlKey) {
+            e.preventDefault();
+            document.querySelector('input[placeholder*="Search"]')?.focus();
+          }
+          break;
+        case '/':
+          // / - Search focus
+          e.preventDefault();
+          document.querySelector('input[placeholder*="Search"]')?.focus();
+          break;
+        case 'escape':
+          // Escape - Close modals
+          setShowReplyModal(false);
+          setShowNewTicketModal(false);
+          setShowEditModal(false);
+          break;
+        case '1':
+          // 1 - Switch to list view
+          if (e.altKey) {
+            e.preventDefault();
+            setViewMode('list');
+          }
+          break;
+        case '2':
+          // 2 - Switch to kanban view
+          if (e.altKey) {
+            e.preventDefault();
+            setViewMode('kanban');
+          }
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedTicket, displayTickets, viewMode]);
+
   // Fetch Roles and Team Users
   const fetchRolesAndUsers = async () => {
     setLoadingRolesUsers(true);
