@@ -65,6 +65,13 @@ const CATEGORY_HERO_CONTENT = {
     subtitle: 'Traditional Indian sweets made pet-friendly - perfect for festivals!',
     color: 'from-orange-600 via-amber-500 to-yellow-500'
   },
+  'desi-treats': {
+    badge: 'Indian Flavors',
+    title: 'Desi Doggy',
+    highlight: 'Treats 🪔',
+    subtitle: 'Traditional Indian sweets made pet-friendly - perfect for festivals!',
+    color: 'from-orange-600 via-amber-500 to-yellow-500'
+  },
   'frozen-treats': {
     badge: 'Beat the Heat',
     title: 'Frozen',
