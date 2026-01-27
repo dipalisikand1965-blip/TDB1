@@ -210,6 +210,13 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     by_pillar: {}, by_channel: {}, by_priority: {}
   });
   
+  // Agents for assignment
+  const [agents, setAgents] = useState([
+    { id: 'aditya', name: 'Aditya' },
+    { id: 'dipali', name: 'Dipali' },
+    { id: 'support', name: 'Support Team' }
+  ]);
+  
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('');
   const [searchType, setSearchType] = useState('all'); // all, pet, pet_parent, subject, pillar
