@@ -1181,6 +1181,78 @@ const CelebrateManager = ({ getAuthHeader }) => {
                 />
               </div>
             </div>
+            
+            {/* Cake-specific fields */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Bases (comma-separated)</Label>
+                <Input
+                  value={productForm.bases}
+                  onChange={(e) => setProductForm({...productForm, bases: e.target.value})}
+                  placeholder="Oats, Ragi"
+                />
+              </div>
+              <div>
+                <Label>🚚 Fresh Delivery Cities</Label>
+                <Input
+                  value={productForm.fresh_delivery_cities}
+                  onChange={(e) => setProductForm({...productForm, fresh_delivery_cities: e.target.value})}
+                  placeholder="Bangalore, Mumbai, Delhi NCR"
+                />
+              </div>
+            </div>
+            
+            {/* Product Tags Section */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <h4 className="font-medium text-gray-700 mb-3">🏷️ Smart Tags (for filters & recommendations)</h4>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label>Life Stage</Label>
+                  <Select value={productForm.life_stage} onValueChange={(val) => setProductForm({...productForm, life_stage: val})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all-ages">All Ages</SelectItem>
+                      <SelectItem value="puppy">Puppy (0-1 yr)</SelectItem>
+                      <SelectItem value="adult">Adult (1-7 yrs)</SelectItem>
+                      <SelectItem value="senior">Senior (7+ yrs)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Occasion</Label>
+                  <Select value={productForm.occasion} onValueChange={(val) => setProductForm({...productForm, occasion: val})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="birthday">🎂 Birthday</SelectItem>
+                      <SelectItem value="gotcha-day">🐾 Gotcha Day</SelectItem>
+                      <SelectItem value="special-treat">🌟 Special Treat</SelectItem>
+                      <SelectItem value="festival">🪔 Festival</SelectItem>
+                      <SelectItem value="everyday">🏠 Everyday</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Dietary</Label>
+                  <Select value={productForm.dietary} onValueChange={(val) => setProductForm({...productForm, dietary: val})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="regular">Regular</SelectItem>
+                      <SelectItem value="grain-free">Grain-Free</SelectItem>
+                      <SelectItem value="vegan">Vegan</SelectItem>
+                      <SelectItem value="low-fat">Low-Fat</SelectItem>
+                      <SelectItem value="hypoallergenic">Hypoallergenic</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+            
             <div>
               <Label>Tags (comma-separated)</Label>
               <Input
