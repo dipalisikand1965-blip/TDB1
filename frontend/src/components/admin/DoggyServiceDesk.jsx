@@ -2604,6 +2604,18 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             <Button onClick={handleRefresh} variant="outline" size="icon" className="shadow-sm" disabled={refreshing}>
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             </Button>
+            <Button 
+              onClick={handleExportCSV} 
+              variant="outline" 
+              size="sm" 
+              className="shadow-sm gap-2"
+              disabled={filteredTickets.length === 0}
+              title={`Export ${filteredTickets.length} tickets to CSV`}
+              data-testid="export-csv-btn"
+            >
+              <Download className="w-4 h-4" />
+              Export
+            </Button>
             {/* Notification Bell */}
             <div className="relative">
               <button 
