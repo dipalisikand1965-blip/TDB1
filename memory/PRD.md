@@ -7,7 +7,7 @@
 - **Frontend**: React + Tailwind CSS + Shadcn/UI
 - **Backend**: FastAPI + Python
 - **Database**: MongoDB
-- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat
+- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat, service_desk_settings
 
 ---
 
@@ -19,6 +19,24 @@
 - Shopify product sync (604+ products)
 - Member dashboard and pet profiles
 - AI-powered Mira® assistant
+
+### Phase 12C: Service Desk Bug Fixes & Enhancements (Jan 27, 2025)
+
+**Bug Fixes:**
+- **Templates Loading Fix**: Added `useEffect` to fetch templates when Settings modal opens
+- **Status/Category API Consolidation**: Removed duplicate route definitions, unified custom status/category management using `service_desk_settings` collection
+- **ESLint Errors Fixed**: Corrected variable references for `filteredTickets` → `tickets`
+
+**New Features:**
+- **CSV Export Button**: Added "Export" button to Service Desk header - downloads all visible tickets as CSV with columns: Ticket ID, Status, Category, Urgency, Member details, Tags, Dates, Messages count
+- **Custom Status Management**: POST/DELETE /api/tickets/statuses now work correctly
+- **Custom Category Management**: POST/DELETE /api/tickets/categories now work correctly
+
+**Verified Working:**
+- Templates are auto-seeded (5 default templates) and display correctly in Settings → Templates tab
+- Statuses & Categories tab shows add/delete functionality
+- Sidebar data (Pet Parents, Pet Profiles, Orders, Analytics) fetches correctly with auth
+- Product card navigation works correctly (modal opens on click)
 
 ### Phase 12: Service Desk Overhaul (Jan 27, 2025)
 
