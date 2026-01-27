@@ -2266,6 +2266,53 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                   </div>
                 </div>
                 
+                {/* Bulk Actions Bar */}
+                {selectedTicketIds.length > 0 && (
+                  <div className="px-4 py-2 bg-emerald-50 border-b flex items-center justify-between sticky top-0 z-10">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedTicketIds.length === tickets.length}
+                        onChange={selectAllTickets}
+                        className="w-4 h-4 rounded border-gray-300"
+                      />
+                      <span className="text-sm font-medium text-emerald-700">
+                        {selectedTicketIds.length} selected
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <select
+                        onChange={(e) => { handleBulkStatusChange(e.target.value); e.target.value = ''; }}
+                        className="text-xs rounded px-2 py-1.5 border bg-white"
+                        defaultValue=""
+                      >
+                        <option value="" disabled>Change Status</option>
+                        {Object.entries(STATUS_CONFIG).map(([k, v]) => (
+                          <option key={k} value={k}>{v.label}</option>
+                        ))}
+                      </select>
+                      <select
+                        onChange={(e) => { handleBulkAssign(e.target.value); e.target.value = ''; }}
+                        className="text-xs rounded px-2 py-1.5 border bg-white"
+                        defaultValue=""
+                      >
+                        <option value="" disabled>Assign To</option>
+                        {agents.map(a => (
+                          <option key={a.id || a.name} value={a.id || a.name}>{a.name}</option>
+                        ))}
+                      </select>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedTicketIds([])}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                
                 {/* Ticket Items */}
                 <div className="flex-1 overflow-y-auto">
                   {loading ? (
@@ -2284,24 +2331,36 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                       const pillar = PILLARS[ticket.category];
                       const channel = CHANNELS[ticket.channel] || CHANNELS.web;
                       const ChannelIcon = channel.icon;
+                      const isSelected = selectedTicketIds.includes(ticket.ticket_id);
                       
                       return (
                         <div
                           key={`${ticket.ticket_id}-${ticket.source || 'ticket'}-${idx}`}
-                          onClick={() => handleSelectTicket(ticket)}
                           className={`px-4 py-3 border-b cursor-pointer transition-all hover:bg-gray-50 ${
                             selectedTicket?.ticket_id === ticket.ticket_id ? 'bg-emerald-50 border-l-4 border-l-emerald-500' : ''
-                          }`}
+                          } ${isSelected ? 'bg-blue-50' : ''}`}
                         >
                           <div className="flex items-start gap-3">
+                            {/* Checkbox for bulk selection */}
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={(e) => { e.stopPropagation(); toggleTicketSelection(ticket.ticket_id); }}
+                              onClick={(e) => e.stopPropagation()}
+                              className="w-4 h-4 rounded border-gray-300 mt-0.5"
+                            />
+                            
                             {/* Priority + Pillar */}
-                            <div className="flex flex-col items-center gap-1">
+                            <div 
+                              className="flex flex-col items-center gap-1"
+                              onClick={() => handleSelectTicket(ticket)}
+                            >
                               <div className={`w-2.5 h-2.5 rounded-full ${priority.dot}`} title={priority.label} />
                               {pillar && <span className="text-sm" title={pillar.name}>{pillar.emoji}</span>}
                             </div>
                             
                             {/* Content */}
-                            <div className="flex-1 min-w-0">
+                            <div className="flex-1 min-w-0" onClick={() => handleSelectTicket(ticket)}>
                               <div className="flex items-center gap-2 mb-1 flex-wrap">
                                 <span className="text-xs text-gray-400 font-mono">{ticket.ticket_id?.slice(0, 20)}</span>
                                 <Badge className={`text-[10px] px-1.5 py-0 ${status.bgLight} ${status.textColor} border-0`}>
