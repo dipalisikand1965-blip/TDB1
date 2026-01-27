@@ -6,8 +6,8 @@ import { RefreshCw, Download } from 'lucide-react';
 import { toast } from '../../hooks/use-toast';
 
 const OrdersTab = ({ 
-  orders, 
-  orderStats, 
+  orders = [], 
+  orderStats = {}, 
   orderFilter, 
   setOrderFilter, 
   fetchOrders, 
