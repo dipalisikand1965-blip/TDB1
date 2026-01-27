@@ -377,7 +377,7 @@ const MiraContextPanel = ({
           </div>
           <div>
             <p className="font-semibold text-sm">Mira</p>
-            <p className="text-xs opacity-80">Your Concierge</p>
+            <p className="text-xs opacity-80">Your Concierge®</p>
           </div>
         </div>
         <div className="flex items-center gap-1">
