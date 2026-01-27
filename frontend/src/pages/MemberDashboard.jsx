@@ -544,7 +544,7 @@ const MemberDashboard = () => {
         const loadedPets = petsRes.data.pets || [];
         if (loadedPets.length > 0) {
           const primaryPet = loadedPets[0];
-          const score = primaryPet.overall_score || 0;
+          const score = Math.min(100, primaryPet.overall_score || 0);
           
           // Check localStorage for previously celebrated milestones
           const celebratedKey = `celebrated_milestones_${primaryPet.id}`;
