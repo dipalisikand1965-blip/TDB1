@@ -1158,6 +1158,116 @@ async def save_automation_settings(settings: dict):
     return {"success": True}
 
 
+# ==================== AGENT COLLISION DETECTION ====================
+
+@router.post("/{ticket_id}/viewing")
+async def report_ticket_viewing(ticket_id: str, data: dict = Body(...)):
+    """Report that an agent is viewing a ticket"""
+    db = get_db()
+    
+    agent = data.get('agent', 'Unknown')
+    now = datetime.now(timezone.utc)
+    
+    # Update or insert the viewing record
+    await db.ticket_viewers.update_one(
+        {"ticket_id": ticket_id, "agent": agent},
+        {"$set": {"last_seen": now.isoformat()}},
+        upsert=True
+    )
+    
+    return {"success": True}
+
+@router.get("/{ticket_id}/viewers")
+async def get_ticket_viewers(ticket_id: str):
+    """Get list of agents currently viewing a ticket"""
+    db = get_db()
+    
+    # Get viewers who were active in the last 60 seconds
+    cutoff = (datetime.now(timezone.utc) - timedelta(seconds=60)).isoformat()
+    
+    viewers = await db.ticket_viewers.find(
+        {"ticket_id": ticket_id, "last_seen": {"$gte": cutoff}},
+        {"_id": 0, "agent": 1}
+    ).to_list(10)
+    
+    return {"viewers": [v["agent"] for v in viewers]}
+
+
+# ==================== CUSTOMER SATISFACTION (CSAT) ====================
+
+class CSATRequest(BaseModel):
+    rating: int  # 1-5
+    feedback: Optional[str] = None
+
+@router.post("/{ticket_id}/csat")
+async def submit_csat(ticket_id: str, data: CSATRequest):
+    """Submit customer satisfaction rating for a ticket"""
+    db = get_db()
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    csat_record = {
+        "ticket_id": ticket_id,
+        "rating": data.rating,
+        "feedback": data.feedback,
+        "created_at": now
+    }
+    
+    # Store CSAT record
+    await db.ticket_csat.insert_one(csat_record)
+    
+    # Update ticket with CSAT score
+    await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {"$set": {"csat_rating": data.rating, "csat_feedback": data.feedback, "csat_at": now}}
+    )
+    
+    return {"success": True, "rating": data.rating}
+
+@router.get("/analytics/csat")
+async def get_csat_analytics():
+    """Get CSAT analytics summary"""
+    db = get_db()
+    
+    # Get all CSAT records
+    pipeline = [
+        {"$group": {
+            "_id": None,
+            "total_responses": {"$sum": 1},
+            "avg_rating": {"$avg": "$rating"},
+            "ratings": {"$push": "$rating"}
+        }}
+    ]
+    
+    result = await db.ticket_csat.aggregate(pipeline).to_list(1)
+    
+    if not result:
+        return {
+            "total_responses": 0,
+            "avg_rating": 0,
+            "nps_score": 0,
+            "distribution": {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0}
+        }
+    
+    data = result[0]
+    ratings = data.get("ratings", [])
+    
+    # Calculate distribution
+    distribution = {str(i): ratings.count(i) for i in range(1, 6)}
+    
+    # Calculate NPS-style score (promoters - detractors)
+    promoters = sum(1 for r in ratings if r >= 4)
+    detractors = sum(1 for r in ratings if r <= 2)
+    nps_score = ((promoters - detractors) / len(ratings) * 100) if ratings else 0
+    
+    return {
+        "total_responses": data.get("total_responses", 0),
+        "avg_rating": round(data.get("avg_rating", 0), 2),
+        "nps_score": round(nps_score, 1),
+        "distribution": distribution
+    }
+
+
 # ============== ANALYTICS ENDPOINT (must be before /{ticket_id}) ==============
 
 @router.get("/analytics")
