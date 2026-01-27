@@ -12,6 +12,7 @@ import MiraContextPanel from '../components/MiraContextPanel';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
+import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import {
   Search, Filter, MapPin, Star, Heart, Dog, Calendar, Phone, Globe, 
   ChevronRight, Sparkles, Shield, TreePine, Sun, Waves, Mountain,
@@ -19,6 +20,60 @@ import {
   PawPrint, AlertTriangle, MessageCircle, ChevronDown, ShoppingBag,
   Package, Percent, PartyPopper, Camera, Footprints, Gift
 } from 'lucide-react';
+
+// Elevated Concierge® Stay Experiences
+const STAY_EXPERIENCES = [
+  {
+    title: "Pawcation Curator®",
+    description: "Dreaming of a pet-inclusive vacation? We curate destinations, handpick hotels with genuine pet love (not just tolerance), and arrange experiences that both you and your pet will cherish.",
+    icon: "🏖️",
+    gradient: "from-emerald-500 to-teal-600",
+    badge: "Signature",
+    badgeColor: "bg-amber-500",
+    highlights: [
+      "Curated pet-friendly destinations",
+      "Hotel vetting for true pet hospitality",
+      "In-room pet amenities arranged",
+      "Pet-friendly activities & restaurants"
+    ]
+  },
+  {
+    title: "Home Away Coordinator®",
+    description: "Need trusted boarding while you're away? We match your pet's personality with the perfect stay — whether that's a homely foster, luxury pet resort, or countryside retreat.",
+    icon: "🏡",
+    gradient: "from-blue-500 to-indigo-600",
+    highlights: [
+      "Personalized boarding matchmaking",
+      "Facility tours & vet verification",
+      "Daily updates & photo reports",
+      "Emergency response protocols"
+    ]
+  },
+  {
+    title: "Staycation Architect®",
+    description: "Planning a local getaway or work trip? We find pet-welcoming stays in your city, arrange daycare if needed, and ensure your pet feels at home wherever you go.",
+    icon: "🌆",
+    gradient: "from-rose-500 to-pink-600",
+    highlights: [
+      "Local pet-friendly hotel curation",
+      "Daycare & walker arrangements",
+      "Extended stay planning",
+      "Pet spa & grooming bookings"
+    ]
+  },
+  {
+    title: "Multi-Pet Travel Suite®",
+    description: "Traveling with multiple pets? We coordinate stays that welcome your entire fur family, ensure proper room setups, and manage logistics for multi-pet households.",
+    icon: "🐕‍🦺",
+    gradient: "from-amber-500 to-orange-600",
+    highlights: [
+      "Multi-pet room arrangements",
+      "Group feeding & walking schedules",
+      "Pet-count friendly venue sourcing",
+      "Emergency vet proximity planning"
+    ]
+  }
+];
 
 const StayPage = () => {
   const { addToCart } = useCart();
