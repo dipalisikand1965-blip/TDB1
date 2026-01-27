@@ -18,6 +18,7 @@ import { useAuth } from '../context/AuthContext';
 import MiraContextPanel from '../components/MiraContextPanel';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
+import DiningConciergePicker from '../components/DiningConciergePicker';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
