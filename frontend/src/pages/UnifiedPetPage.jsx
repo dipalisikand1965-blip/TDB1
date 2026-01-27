@@ -841,12 +841,14 @@ const UnifiedPetPage = () => {
                     placeholder="Pet name"
                   />
                   <div className="flex flex-wrap gap-2">
-                    <Input
-                      value={editForm.breed}
-                      onChange={(e) => setEditForm({ ...editForm, breed: e.target.value })}
-                      placeholder="Breed"
-                      className="w-40 bg-white"
-                    />
+                    <div className="w-48">
+                      <BreedAutocomplete
+                        value={editForm.breed}
+                        onChange={(e) => setEditForm({ ...editForm, breed: e.target.value })}
+                        placeholder="Start typing breed..."
+                        className="bg-white"
+                      />
+                    </div>
                     <select
                       value={editForm.species}
                       onChange={(e) => setEditForm({ ...editForm, species: e.target.value })}
