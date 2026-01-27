@@ -44,6 +44,7 @@ const PILLARS = [
     icon: '🏨',
     path: '/stay',
     dropdown: [
+      { name: 'Stay By Concierge®', path: '/stay', highlight: true },
       { name: 'Pet Hotels', path: '/stay' },
       { name: 'Boarding', path: '/stay?type=boarding' },
       { name: 'Stay Essentials', path: '/stay#essentials' },
@@ -55,6 +56,7 @@ const PILLARS = [
     icon: '✈️',
     path: '/travel',
     dropdown: [
+      { name: 'Travel By Concierge®', path: '/travel', highlight: true },
       { name: 'Pet Taxi', path: '/travel?type=taxi' },
       { name: 'Pet Airlines', path: '/travel?type=airline' },
       { name: 'Travel Planning', path: '/travel' },
