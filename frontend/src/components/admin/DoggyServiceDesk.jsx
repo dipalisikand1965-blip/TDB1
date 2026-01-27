@@ -1319,18 +1319,24 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   // Report viewing when ticket is selected
   useEffect(() => {
     if (selectedTicket) {
-      reportTicketView(selectedTicket.ticket_id);
-      checkActiveViewers(selectedTicket.ticket_id);
-      setViewingTicketSince(new Date());
+      // Use timeout to avoid synchronous setState in effect body
+      const ticketId = selectedTicket.ticket_id;
+      
+      reportTicketView(ticketId);
+      setTimeout(() => {
+        checkActiveViewers(ticketId);
+        setViewingTicketSince(new Date());
+      }, 0);
       
       // Refresh viewers every 30 seconds
       const interval = setInterval(() => {
-        reportTicketView(selectedTicket.ticket_id);
-        checkActiveViewers(selectedTicket.ticket_id);
+        reportTicketView(ticketId);
+        checkActiveViewers(ticketId);
       }, 30000);
       
       return () => clearInterval(interval);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTicket?.ticket_id]);
   
   // ==================== CUSTOMER SATISFACTION (CSAT) ====================
