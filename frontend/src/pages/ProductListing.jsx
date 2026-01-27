@@ -254,6 +254,16 @@ const ProductListing = ({ category = 'all' }) => {
               url += `&category=${category}`;
             }
           }
+          
+          // Add fresh delivery city filter for cake categories
+          if (isCakeCategory && deliveryCity && deliveryCity !== 'all') {
+            if (deliveryCity === 'pan-india') {
+              url += `&availability=pan-india`;
+            } else {
+              url += `&fresh_delivery_city=${encodeURIComponent(deliveryCity)}`;
+            }
+          }
+          
           const response = await fetch(url);
           if (response.ok) {
             const data = await response.json();
@@ -272,7 +282,7 @@ const ProductListing = ({ category = 'all' }) => {
       setLoading(false);
     };
     fetchProducts();
-  }, [category, searchQuery]);
+  }, [category, searchQuery, deliveryCity, isCakeCategory]);
 
   // Use a key-based approach to reset visible count
   const filterKey = `${category}-${searchQuery}-${priceRange}-${sortBy}`;
