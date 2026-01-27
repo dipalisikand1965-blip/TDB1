@@ -4196,42 +4196,6 @@ async def process_voice_order(order: VoiceOrderRequest):
         "message": f"Voice order received and ticket {ticket_id} created"
     }
 
-    # Create admin notification for new customer reply
-    try:
-        notif_doc = {
-            "id": f"notif-{uuid.uuid4().hex[:8]}",
-            "type": "ticket_reply",
-            "title": f"📧 Customer Reply - {ticket.get('ticket_id', '')}",
-            "message": f"{email.from_name or email.from_email} replied to ticket via email",
-            "category": ticket.get("category", "inquiry"),
-            "related_id": ticket.get("ticket_id"),
-            "link_to": f"/admin/service-desk?ticket={ticket.get('ticket_id')}",
-            "read": False,
-            "priority": "high",
-            "created_at": now
-        }
-        await db.admin_notifications.insert_one(notif_doc)
-    except Exception as e:
-        logger.error(f"Failed to create notification: {e}")
-    
-    # Emit real-time notification
-    try:
-        from realtime_notifications import notification_manager
-        await notification_manager.emit_new_message(
-            ticket.get("ticket_id"),
-            message,
-            "email"
-        )
-    except Exception as e:
-        logger.error(f"Failed to emit real-time notification: {e}")
-    
-    return {
-        "success": True,
-        "ticket_id": ticket.get("ticket_id"),
-        "message_added": True,
-        "action": "reply_appended" if ticket.get("messages") else "new_ticket_created"
-    }
-
 
 # ============== RESEND INBOUND EMAIL WEBHOOK ==============
 
