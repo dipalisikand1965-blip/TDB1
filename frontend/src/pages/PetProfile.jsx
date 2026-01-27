@@ -431,9 +431,9 @@ const PetProfile = ({ isEmbed = false }) => {
 
         <div>
           <Label htmlFor="breed">Breed</Label>
-          <Input
+          <BreedAutocomplete
             id="breed"
-            placeholder="e.g., Golden Retriever, Indie, Mixed"
+            placeholder="Start typing breed name..."
             value={formData.breed}
             onChange={(e) => updateFormData('breed', e.target.value)}
             className="mt-1"
