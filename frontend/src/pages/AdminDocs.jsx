@@ -134,6 +134,122 @@ const AdminDocs = () => {
 
   // Documentation content for each section
   const docs = {
+    'universal-seed': {
+      title: '🔥 Universal Seed',
+      subtitle: 'ONE BUTTON to seed ALL data across the entire system',
+      badge: '⭐ Critical for Deployment',
+      files: {
+        frontend: '/app/frontend/src/pages/Admin.jsx (🔥 Universal Seed button)',
+        backend: '/app/backend/server.py (/api/admin/universal-seed), /app/backend/scripts/universal_pillar_protocol.py'
+      },
+      sections: [
+        {
+          title: 'What It Does',
+          content: `**ONE CLICK** seeds everything:
+• **Products**: All 14 pillars with 3+ products each
+• **Services**: All 14 pillars with 2+ concierge services each
+• **Unified Products**: Migrates to Product Box collection
+• **Pricing Tiers**: Basic, Member, Premium, VIP
+• **Shipping Rules**: Standard, Express, Same Day, Service, Digital
+• **Stay Properties**: Syncs stay_properties to products`
+        },
+        {
+          title: 'How to Use',
+          content: `**Method 1: Admin Dashboard (Recommended)**
+1. Go to Admin → Dashboard
+2. Find the **"🔥 Universal Seed"** button in Master Controls
+3. Click it - wait for confirmation toast
+
+**Method 2: API Endpoint**
+\`\`\`bash
+curl -X POST https://YOUR_DOMAIN/api/admin/universal-seed
+\`\`\``
+        },
+        {
+          title: 'When to Use',
+          content: `• **After every deployment** to ensure data exists
+• When products are missing from pillar pages
+• When Product Box shows empty stats
+• When services aren't showing in Concierge Pickers
+• After database reset/refresh`
+        }
+      ]
+    },
+    'pillar-protocol': {
+      title: '📋 Pillar Protocol',
+      subtitle: 'Standard protocol ensuring all 14 pillars have consistent data',
+      badge: 'Documentation',
+      files: {
+        memory: '/app/memory/PILLAR_PROTOCOL.md',
+        backend: '/app/backend/scripts/universal_pillar_protocol.py'
+      },
+      sections: [
+        {
+          title: 'The 14 Pillars',
+          content: `| # | Pillar | Description |
+|---|--------|-------------|
+| 1 | **Celebrate** | Cakes, treats, party planning |
+| 2 | **Stay** | Hotels, boarding, daycare |
+| 3 | **Travel** | Pet transport, relocation |
+| 4 | **Feed** | Fresh meals, nutrition |
+| 5 | **Care** | Grooming, walking, sitting |
+| 6 | **Fit** | Fitness, weight management |
+| 7 | **Learn** | Training, behavior |
+| 8 | **Enjoy** | Parks, cafes, adventures |
+| 9 | **Groom** | Professional grooming |
+| 10 | **Adopt** | Adoption services |
+| 11 | **Farewell** | End of life services |
+| 12 | **Dine** | Pet-friendly restaurants |
+| 13 | **Insure** | Pet insurance |
+| 14 | **Shop** | General pet products |`
+        },
+        {
+          title: 'Checklist',
+          content: `Every deployment must ensure:
+✅ All 14 pillars have products in \`products\` collection
+✅ All 14 pillars have services in \`services\` collection
+✅ Products migrated to \`unified_products\`
+✅ Pricing tiers in \`pricing_tiers\`
+✅ Shipping rules in \`shipping_rules\`
+✅ Stay properties synced to products`
+        }
+      ]
+    },
+    'boarding-manager': {
+      title: '🏠 Boarding Manager',
+      subtitle: 'Manage pet boarding facilities (Home-style, Premium, Private, Luxury)',
+      badge: '🆕 New Feature',
+      files: {
+        frontend: '/app/frontend/src/components/StayManager.jsx (Boarding tab)',
+        backend: '/app/backend/server.py (CRUD endpoints)'
+      },
+      sections: [
+        {
+          title: 'Features',
+          content: `• **CRUD Operations**: Create, Read, Update, Delete facilities
+• **Filters**: By city, boarding type
+• **Stats**: Total facilities, by type, by city
+• **Rich Editing**: Name, city, description, amenities, pricing, images`
+        },
+        {
+          title: 'How to Access',
+          content: `1. Admin → Stay Manager
+2. Click **"Boarding"** tab
+3. Use "+ Add Boarding Facility" to create new
+4. Click "Edit" on any card to modify`
+        },
+        {
+          title: 'API Endpoints',
+          content: `| Endpoint | Method | Description |
+|----------|--------|-------------|
+| /api/admin/boarding/facilities | GET | List all facilities |
+| /api/admin/boarding/facilities | POST | Create facility |
+| /api/admin/boarding/facilities/{id} | PUT | Update facility |
+| /api/admin/boarding/facilities/{id} | DELETE | Delete facility |
+| /api/admin/boarding/stats | GET | Get statistics |`
+        }
+      ]
+    },
     'command-center': {
       title: 'Command Center',
       subtitle: 'The "All-Seeing Eye" - Central Hub for Concierge Operations',
