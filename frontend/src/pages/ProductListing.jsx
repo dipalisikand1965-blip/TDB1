@@ -571,6 +571,12 @@ const ProductListing = ({ category = 'all' }) => {
         </div>
       </div>
       
+      {/* === CELEBRATE CONCIERGE PICKER === */}
+      {/* Show on all Celebrate pillar pages (cakes, treats, hampers, etc.) */}
+      {pillar === 'celebrate' && !searchQuery && (
+        <CelebrateConcierePicker category={category} />
+      )}
+      
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search Results Title (only for search) */}
