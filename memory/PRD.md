@@ -7,7 +7,7 @@
 - **Frontend**: React + Tailwind CSS + Shadcn/UI
 - **Backend**: FastAPI + Python
 - **Database**: MongoDB
-- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat, service_desk_settings
+- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat, service_desk_settings, whatsapp_logs
 
 ---
 
@@ -19,6 +19,41 @@
 - Shopify product sync (604+ products)
 - Member dashboard and pet profiles
 - AI-powered Mira® assistant
+
+### Phase 12D: Dining Concierge & Advanced Features (Jan 27, 2025)
+
+**New Features:**
+
+1. **Dining Concierge Picker** (`/dine` page)
+   - 6 service types: Chef's Table, Private Home Dining, Pet Party Catering, Restaurant Reservations, Meal Subscriptions, Group Dining Events
+   - Form fields: City, Guest count, Date, Time, Special requests
+   - Pet selection for logged-in users
+   - Creates Service Desk ticket with category "dine"
+   - Success confirmation with ticket ID
+
+2. **Smart Auto-Assignment**
+   - `GET/POST /api/tickets/settings/auto-assignment`
+   - Pillar-based expertise mapping (agents assigned to specific pillars)
+   - Workload balancing (assigns to agent with fewest open tickets)
+   - Automatic assignment on ticket creation when enabled
+   - System message logged when auto-assigned
+
+3. **SLA Breach Alerts**
+   - `GET/POST /api/tickets/settings/sla-alerts`
+   - Warning threshold configuration (default: 60 minutes before breach)
+   - `GET /api/tickets/sla-at-risk` - Returns tickets approaching SLA deadline
+   - `POST /api/tickets/check-sla-breaches` - Marks breached tickets, auto-escalates
+   - Breach escalation: Auto-sets urgency to "critical" and status to "escalated"
+
+4. **WhatsApp Integration Plumbing** (MOCKED - awaiting API keys)
+   - `GET /api/whatsapp/status` - Returns configuration status and setup instructions
+   - `POST /api/whatsapp/send` - Send single message (blocked until configured)
+   - `POST /api/whatsapp/send-bulk` - Bulk messaging with job tracking
+   - `POST /api/whatsapp/webhook` - Incoming message handler, creates tickets
+   - `GET /api/whatsapp/templates` - Message templates with variables
+   - Supports: Meta WhatsApp Business API, Twilio, Baileys (self-hosted)
+
+**Testing:** All features verified in iteration_96 - 100% pass rate
 
 ### Phase 12C: Service Desk Bug Fixes & Enhancements (Jan 27, 2025)
 
