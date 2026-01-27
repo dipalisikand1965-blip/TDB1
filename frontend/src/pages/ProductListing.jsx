@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { SlidersHorizontal, Loader2, ChevronDown, Sparkles, PawPrint, Cake, Gift, Star, Heart } from 'lucide-react';
+import { SlidersHorizontal, Loader2, ChevronDown, Sparkles, PawPrint, Cake, Gift, Star, Heart, MapPin } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { API_URL, getApiUrl } from '../utils/api';
 import MiraContextPanel from '../components/MiraContextPanel';
