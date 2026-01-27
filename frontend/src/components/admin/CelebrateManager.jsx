@@ -194,7 +194,9 @@ const CelebrateManager = ({ getAuthHeader }) => {
     setProductForm({
       name: '', description: '', price: '', compare_price: '', image: '',
       category: 'cakes', subcategory: '', tags: '', sizes: '',
-      flavors: '', in_stock: true, is_bestseller: false, is_new: false,
+      flavors: '', bases: '', fresh_delivery_cities: '',
+      life_stage: '', occasion: '', dietary: '',
+      in_stock: true, is_bestseller: false, is_new: false,
       is_birthday_perk: false, birthday_discount_percent: '',
       paw_reward_points: 0, pan_india: false
     });
