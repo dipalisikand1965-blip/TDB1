@@ -272,7 +272,7 @@ class TestDiningConciergeTicketCreation:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/tickets/",
             json=payload,
             headers={"Content-Type": "application/json"}
         )
