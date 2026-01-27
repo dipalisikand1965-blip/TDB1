@@ -76,6 +76,9 @@ const AdminDocs = () => {
       icon: Sparkles,
       color: 'bg-pink-500',
       items: [
+        { id: 'universal-seed', title: '🔥 Universal Seed ⭐', icon: Database },
+        { id: 'pillar-protocol', title: '📋 Pillar Protocol', icon: FileText },
+        { id: 'boarding-manager', title: '🏠 Boarding Manager 🆕', icon: Building },
         { id: 'seed-all', title: 'Seed All', icon: Database },
         { id: 'seed-production', title: 'Seed Production 🆕', icon: Database },
         { id: 'celebrate', title: '🎂 Celebrate', icon: Gift },
