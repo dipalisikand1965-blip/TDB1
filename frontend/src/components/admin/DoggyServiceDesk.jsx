@@ -1059,6 +1059,137 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     }
   };
 
+  // ==================== BULK ACTIONS ====================
+  
+  // Toggle ticket selection
+  const toggleTicketSelection = (ticketId) => {
+    setSelectedTicketIds(prev => 
+      prev.includes(ticketId) 
+        ? prev.filter(id => id !== ticketId)
+        : [...prev, ticketId]
+    );
+  };
+  
+  // Select all visible tickets
+  const selectAllTickets = () => {
+    if (selectedTicketIds.length === tickets.length) {
+      setSelectedTicketIds([]);
+    } else {
+      setSelectedTicketIds(tickets.map(t => t.ticket_id));
+    }
+  };
+  
+  // Bulk status change
+  const handleBulkStatusChange = async (newStatus) => {
+    if (selectedTicketIds.length === 0) return;
+    
+    try {
+      await fetch(`${getApiUrl()}/api/tickets/bulk/status`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticket_ids: selectedTicketIds, status: newStatus })
+      });
+      
+      setSelectedTicketIds([]);
+      await fetchAllTickets();
+    } catch (err) {
+      console.error('Bulk status error:', err);
+    }
+  };
+  
+  // Bulk assignment
+  const handleBulkAssign = async (agentId) => {
+    if (selectedTicketIds.length === 0) return;
+    
+    try {
+      await fetch(`${getApiUrl()}/api/tickets/bulk/assign`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticket_ids: selectedTicketIds, agent_id: agentId })
+      });
+      
+      setSelectedTicketIds([]);
+      await fetchAllTickets();
+    } catch (err) {
+      console.error('Bulk assign error:', err);
+    }
+  };
+
+  // ==================== TEMPLATE MANAGEMENT ====================
+  
+  // Fetch templates
+  const fetchTemplates = async () => {
+    try {
+      const res = await fetch(`${getApiUrl()}/api/tickets/templates`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setTemplates(data.templates || []);
+      }
+    } catch (err) {
+      console.debug('Templates fetch error:', err);
+    }
+  };
+  
+  // Save template
+  const handleSaveTemplate = async () => {
+    if (!templateForm.name.trim() || !templateForm.content.trim()) return;
+    
+    try {
+      const method = editingTemplateId ? 'PUT' : 'POST';
+      const url = editingTemplateId 
+        ? `${getApiUrl()}/api/tickets/templates/${editingTemplateId}`
+        : `${getApiUrl()}/api/tickets/templates`;
+      
+      await fetch(url, {
+        method,
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify(templateForm)
+      });
+      
+      setShowTemplateModal(false);
+      setTemplateForm({ name: '', type: 'email', subject: '', content: '', trigger: 'manual', trigger_status: '' });
+      setEditingTemplateId(null);
+      await fetchTemplates();
+    } catch (err) {
+      console.error('Template save error:', err);
+    }
+  };
+  
+  // Delete template
+  const handleDeleteTemplate = async (templateId) => {
+    if (!confirm('Delete this template?')) return;
+    
+    try {
+      await fetch(`${getApiUrl()}/api/tickets/templates/${templateId}`, {
+        method: 'DELETE',
+        headers: authHeaders
+      });
+      await fetchTemplates();
+    } catch (err) {
+      console.error('Template delete error:', err);
+    }
+  };
+  
+  // Edit template
+  const startEditingTemplate = (template) => {
+    setTemplateForm({
+      name: template.name,
+      type: template.type || 'email',
+      subject: template.subject || '',
+      content: template.content,
+      trigger: template.trigger || 'manual',
+      trigger_status: template.trigger_status || ''
+    });
+    setEditingTemplateId(template.id);
+    setShowTemplateModal(true);
+  };
+  
+  // Use template in reply
+  const useTemplate = (template) => {
+    setReplyText(template.content);
+    setShowSettingsModal(false);
+  };
+
   // ==================== ATTACHMENT HANDLING ====================
   
   // Handle file/image selection
