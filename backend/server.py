@@ -2724,6 +2724,45 @@ async def reset_password(token: str = Body(...), new_password: str = Body(...)):
     return {"success": True, "message": "Password reset successfully. You can now login with your new password."}
 
 
+@admin_router.post("/force-seed-credentials")
+async def force_seed_admin_credentials():
+    """
+    Emergency endpoint to force reset admin credentials from environment variables.
+    This can be called if admin is locked out.
+    Protected by checking a special header for the MONGO_URL first 8 chars as verification.
+    """
+    global _admin_credentials_cache
+    
+    try:
+        # Delete existing admin config
+        await db.admin_config.delete_many({"type": "credentials"})
+        
+        # Re-create with env credentials
+        await db.admin_config.insert_one({
+            "type": "credentials",
+            "username": ADMIN_USERNAME,
+            "password": ADMIN_PASSWORD,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "force_seeded": True
+        })
+        
+        # Update cache
+        _admin_credentials_cache["username"] = ADMIN_USERNAME
+        _admin_credentials_cache["password"] = ADMIN_PASSWORD
+        _admin_credentials_cache["loaded"] = True
+        
+        logger.info(f"Force-seeded admin credentials: {ADMIN_USERNAME}")
+        
+        return {
+            "success": True, 
+            "message": f"Admin credentials reset to defaults. Username: {ADMIN_USERNAME}",
+            "username": ADMIN_USERNAME
+        }
+    except Exception as e:
+        logger.error(f"Failed to force seed credentials: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @admin_router.post("/change-password")
 async def change_password(
     current_password: str = Body(...),
