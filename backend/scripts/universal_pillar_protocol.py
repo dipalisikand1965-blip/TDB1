@@ -454,6 +454,204 @@ async def universal_seed(db):
     
     results['boarding_seeded'] = boarding_seeded
     
+    # ========================================
+    # SEED SERVICE DESK TEMPLATES
+    # ========================================
+    logger.info("Seeding Service Desk templates...")
+    
+    default_templates = [
+        {
+            'id': 'tpl-welcome',
+            'name': 'Welcome Acknowledgment',
+            'type': 'email',
+            'subject': 'We received your request - {{ticket_id}}',
+            'body': '''Hi {{customer_name}},
+
+Thank you for reaching out to The Doggy Company! 🐕
+
+We've received your request and created ticket #{{ticket_id}}. Our Concierge team will review it and get back to you within 24 hours.
+
+In the meantime, you can track your request in your account dashboard.
+
+Warm regards,
+The Doggy Company Team
+''',
+            'auto_trigger': 'new_ticket',
+            'created_at': now
+        },
+        {
+            'id': 'tpl-resolution',
+            'name': 'Resolution Confirmation',
+            'type': 'email',
+            'subject': 'Your request has been resolved - {{ticket_id}}',
+            'body': '''Hi {{customer_name}},
+
+Great news! Your request #{{ticket_id}} has been resolved. 🎉
+
+If you have any questions or need further assistance, simply reply to this email or reopen the ticket.
+
+We'd love to hear about your experience! Please take a moment to rate our service.
+
+Thank you for being a part of The Doggy Company family!
+
+Best,
+The Doggy Company Team
+''',
+            'auto_trigger': 'status_change:resolved',
+            'created_at': now
+        },
+        {
+            'id': 'tpl-escalation',
+            'name': 'Escalation Notice',
+            'type': 'email',
+            'subject': 'Priority Update - {{ticket_id}}',
+            'body': '''Hi {{customer_name}},
+
+We wanted to let you know that your request #{{ticket_id}} has been escalated to our senior team for priority handling.
+
+A specialist will be in touch with you shortly. We appreciate your patience.
+
+Best regards,
+The Doggy Company Team
+''',
+            'auto_trigger': 'status_change:escalated',
+            'created_at': now
+        },
+        {
+            'id': 'tpl-onhold',
+            'name': 'On Hold - Awaiting Info',
+            'type': 'email',
+            'subject': 'We need more information - {{ticket_id}}',
+            'body': '''Hi {{customer_name}},
+
+We're working on your request #{{ticket_id}} and need a bit more information to proceed.
+
+Could you please provide:
+{{awaiting_info}}
+
+Simply reply to this email with the details. Once we receive your response, we'll continue processing your request.
+
+Thank you!
+The Doggy Company Team
+''',
+            'auto_trigger': 'status_change:waiting_on_member',
+            'created_at': now
+        },
+        {
+            'id': 'tpl-sms-ack',
+            'name': 'SMS Quick Acknowledgment',
+            'type': 'sms',
+            'subject': '',
+            'body': 'Hi {{customer_name}}! The Doggy Company here 🐕 We received your request #{{ticket_id}}. Our team will respond within 24hrs. Track it at thedoggycompany.in/my-account',
+            'auto_trigger': 'new_ticket',
+            'created_at': now
+        }
+    ]
+    
+    templates_seeded = 0
+    for template in default_templates:
+        result = await db.ticket_templates.update_one(
+            {'id': template['id']},
+            {'$set': template},
+            upsert=True
+        )
+        if result.upserted_id or result.modified_count:
+            templates_seeded += 1
+    
+    results['templates_seeded'] = templates_seeded
+    
+    # ========================================
+    # SEED SAMPLE PET PARENTS & PET PROFILES
+    # ========================================
+    logger.info("Seeding sample pet parents and pet profiles...")
+    
+    sample_pet_parents = [
+        {
+            'id': 'parent-demo-001',
+            'email': 'demo.parent@example.com',
+            'name': 'Demo Pet Parent',
+            'phone': '+919876543210',
+            'city': 'Mumbai',
+            'membership_tier': 'gold',
+            'created_at': now
+        },
+        {
+            'id': 'parent-demo-002',
+            'email': 'sample.user@example.com',
+            'name': 'Sample User',
+            'phone': '+919876543211',
+            'city': 'Bangalore',
+            'membership_tier': 'silver',
+            'created_at': now
+        }
+    ]
+    
+    sample_pets = [
+        {
+            'id': 'pet-demo-001',
+            'name': 'Bruno',
+            'breed': 'Golden Retriever',
+            'species': 'dog',
+            'age_years': 3,
+            'weight_kg': 28,
+            'owner_id': 'parent-demo-001',
+            'birthday': '2022-03-15',
+            'created_at': now
+        },
+        {
+            'id': 'pet-demo-002',
+            'name': 'Luna',
+            'breed': 'Labrador',
+            'species': 'dog',
+            'age_years': 2,
+            'weight_kg': 25,
+            'owner_id': 'parent-demo-001',
+            'birthday': '2023-06-20',
+            'created_at': now
+        },
+        {
+            'id': 'pet-demo-003',
+            'name': 'Max',
+            'breed': 'German Shepherd',
+            'species': 'dog',
+            'age_years': 4,
+            'weight_kg': 35,
+            'owner_id': 'parent-demo-002',
+            'birthday': '2021-01-10',
+            'created_at': now
+        },
+        {
+            'id': 'pet-demo-004',
+            'name': 'Bella',
+            'breed': 'Beagle',
+            'species': 'dog',
+            'age_years': 1,
+            'weight_kg': 10,
+            'owner_id': 'parent-demo-002',
+            'birthday': '2024-02-28',
+            'created_at': now
+        }
+    ]
+    
+    # Note: We don't overwrite existing real user data
+    # Only seed if these demo records don't exist
+    parents_seeded = 0
+    for parent in sample_pet_parents:
+        existing = await db.users.find_one({'id': parent['id']})
+        if not existing:
+            await db.users.insert_one(parent)
+            parents_seeded += 1
+    
+    pets_seeded = 0
+    for pet in sample_pets:
+        existing = await db.pets.find_one({'id': pet['id']})
+        if not existing:
+            await db.pets.insert_one(pet)
+            pets_seeded += 1
+    
+    results['sample_parents_seeded'] = parents_seeded
+    results['sample_pets_seeded'] = pets_seeded
+    
     logger.info(f"Universal seed complete: {results}")
     return results
 
