@@ -13,7 +13,7 @@ import {
   Building2, MapPin, Phone, Globe, Mail, Star, Dog, CheckCircle,
   AlertTriangle, FileText, DollarSign, Calendar, Clock, RefreshCw,
   ChevronDown, X, Filter, Download, Upload, PawPrint, Shield,
-  TreePine, Heart, Sparkles, Users, MessageCircle, TrendingUp, Gift, Tag, Package
+  TreePine, Heart, Sparkles, Users, MessageCircle, TrendingUp, Gift, Tag, Package, Home
 } from 'lucide-react';
 
 const StayManager = ({ getAuthHeader }) => {
