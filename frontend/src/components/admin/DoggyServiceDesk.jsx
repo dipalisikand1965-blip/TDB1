@@ -242,11 +242,27 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     pet_name: ''
   });
   
-  // Settings Modal
+  // Settings Modal & Templates
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [settingsTab, setSettingsTab] = useState('status'); // status, templates, automation
   const [newStatusName, setNewStatusName] = useState('');
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newCategoryEmoji, setNewCategoryEmoji] = useState('📁');
+  
+  // Template Management
+  const [templates, setTemplates] = useState([]);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [templateForm, setTemplateForm] = useState({
+    name: '', type: 'email', subject: '', content: '', trigger: 'manual', trigger_status: ''
+  });
+  const [editingTemplateId, setEditingTemplateId] = useState(null);
+  
+  // Auto-messaging settings
+  const [autoMessageSettings, setAutoMessageSettings] = useState({
+    auto_acknowledge: true,
+    auto_acknowledge_template: '',
+    status_triggers: {} // { status: templateId }
+  });
   
   // Reminders/Tasks
   const [showReminderModal, setShowReminderModal] = useState(false);
