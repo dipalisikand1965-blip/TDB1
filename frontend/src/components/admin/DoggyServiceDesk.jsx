@@ -298,6 +298,22 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   });
   const [ticketReminders, setTicketReminders] = useState([]);
   
+  // Tags
+  const [newTag, setNewTag] = useState('');
+  const [allTags, setAllTags] = useState([]);
+  
+  // Ticket Merging
+  const [showMergeModal, setShowMergeModal] = useState(false);
+  const [mergeTargetTicket, setMergeTargetTicket] = useState(null);
+  
+  // Agent Performance
+  const [showPerformanceModal, setShowPerformanceModal] = useState(false);
+  const [agentPerformance, setAgentPerformance] = useState(null);
+  
+  // SLA Breach Alerts
+  const [breachedTickets, setBreachedTickets] = useState([]);
+  const [approachingBreachTickets, setApproachingBreachTickets] = useState([]);
+  
   // Sidebar data for Pet Parents, Orders, Analytics
   const [petParents, setPetParents] = useState([]);
   const [petProfiles, setPetProfiles] = useState([]);
