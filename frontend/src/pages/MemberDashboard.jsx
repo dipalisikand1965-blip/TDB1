@@ -1241,7 +1241,8 @@ const MemberDashboard = () => {
               // Use the overall_score from the API for consistency
               // This score is calculated on the backend and should be the single source of truth
               const primaryPet = pets[0];
-              const avgScore = Math.round(primaryPet?.overall_score || 0);
+              // Ensure score is capped at 100 to prevent display bugs
+              const avgScore = Math.min(100, Math.round(primaryPet?.overall_score || 0));
               
               if (avgScore >= 80) return null;
               
