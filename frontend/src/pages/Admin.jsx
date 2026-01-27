@@ -1647,22 +1647,22 @@ const Admin = () => {
           {/* Divider */}
           <div className="w-px h-6 bg-gray-300 mx-2" />
           
-          {/* PILLAR TOOLS */}
-          <span className="text-xs text-gray-500 px-2 py-1 font-semibold uppercase">Pillar Tools</span>
+          {/* UNIVERSAL SEED - ONE BUTTON TO SEED EVERYTHING */}
+          <span className="text-xs text-gray-500 px-2 py-1 font-semibold uppercase">Master Controls</span>
           
-          {/* Seed All Button */}
+          {/* Universal Seed Button - THE ONE BUTTON */}
           <Button
             variant="outline"
             size="sm"
-            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 hover:from-green-600 hover:to-emerald-700 text-xs"
+            className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white border-0 hover:opacity-90 text-xs font-bold shadow-lg animate-pulse"
             onClick={seedAllPillars}
             disabled={seedingAll}
-            data-testid="seed-all-btn"
+            data-testid="universal-seed-btn"
           >
             {seedingAll ? (
-              <><RefreshCw className="w-3 h-3 mr-1 animate-spin" /> Seeding...</>
+              <><RefreshCw className="w-3 h-3 mr-1 animate-spin" /> Seeding All 14 Pillars...</>
             ) : (
-              <><Download className="w-3 h-3 mr-1" /> Seed All</>
+              <><Sparkles className="w-3 h-3 mr-1" /> 🔥 Universal Seed</>
             )}
           </Button>
           
