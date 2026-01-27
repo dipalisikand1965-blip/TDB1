@@ -761,6 +761,34 @@ const ProductListing = ({ category = 'all' }) => {
                 </div>
               ))}
             </div>
+            
+            {/* Shopping for someone else? */}
+            <div className="mt-4 pt-4 border-t border-amber-200 flex items-center justify-between">
+              <p className="text-sm text-amber-700">
+                <Gift className="w-4 h-4 inline mr-1" />
+                Shopping for another dog? 
+              </p>
+              <div className="flex items-center gap-3">
+                <a 
+                  href="/shop?pillar=celebrate" 
+                  className="text-sm font-medium text-amber-600 hover:text-amber-800 underline"
+                >
+                  Browse Full Collection →
+                </a>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedPet(null);
+                    setPetRecommendations([]);
+                    setFilterByAllergies(false);
+                  }}
+                  className="text-xs border-amber-300 hover:bg-amber-100"
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            </div>
           </div>
         )}
 
