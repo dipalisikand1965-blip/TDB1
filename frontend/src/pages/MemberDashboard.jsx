@@ -854,7 +854,7 @@ const MemberDashboard = () => {
                   {/* Soul Score Badge */}
                   <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full p-1">
                     <div className="bg-white rounded-full w-16 h-16 flex flex-col items-center justify-center">
-                      <span className="text-xl font-bold text-teal-700">{Math.round(primaryPet.overall_score || 0)}%</span>
+                      <span className="text-xl font-bold text-teal-700">{Math.min(100, Math.round(primaryPet.overall_score || 0))}%</span>
                       <span className="text-[10px] text-gray-500 font-medium">Soul</span>
                     </div>
                   </div>
