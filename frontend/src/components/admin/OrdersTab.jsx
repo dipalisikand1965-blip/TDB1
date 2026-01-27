@@ -99,7 +99,7 @@ const OrdersTab = ({
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-bold text-lg">{order.orderId}</h3>
+                    <h3 className="font-bold text-lg">{order.orderId || order.order_id || order.id || `ORD-${idx+1}`}</h3>
                     <Badge variant={
                       order.status === 'delivered' ? 'success' :
                       order.status === 'pending' ? 'warning' :
@@ -114,28 +114,28 @@ const OrdersTab = ({
                     )}
                   </div>
                   <p className="text-sm text-gray-500">
-                    {new Date(order.created_at).toLocaleString()}
+                    {order.created_at ? new Date(order.created_at).toLocaleString() : 'N/A'}
                   </p>
                 </div>
-                <p className="text-xl font-bold text-purple-600">₹{order.total}</p>
+                <p className="text-xl font-bold text-purple-600">₹{order.total || order.total_amount || 0}</p>
               </div>
 
               <div className="grid md:grid-cols-3 gap-4 mb-4">
                 <div>
                   <p className="text-xs text-gray-500 uppercase">Customer</p>
-                  <p className="font-medium">{order.customer?.parentName}</p>
-                  <p className="text-sm text-gray-600">{order.customer?.phone}</p>
-                  <p className="text-sm text-gray-600">{order.customer?.whatsappNumber}</p>
+                  <p className="font-medium">{order.customer?.parentName || order.customer_name || order.user_name || 'N/A'}</p>
+                  <p className="text-sm text-gray-600">{order.customer?.phone || order.customer_phone || order.user_phone || ''}</p>
+                  <p className="text-sm text-gray-600">{order.customer?.whatsappNumber || order.customer_email || order.user_email || ''}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 uppercase">Pet</p>
                   <p className="font-medium">{order.pet?.name || 'N/A'}</p>
-                  <p className="text-sm text-gray-600">{order.pet?.breed} • {order.pet?.age}</p>
+                  <p className="text-sm text-gray-600">{order.pet?.breed ? `${order.pet.breed} • ${order.pet.age}` : ''}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 uppercase">Delivery</p>
-                  <p className="font-medium">{order.delivery?.city}</p>
-                  <p className="text-sm text-gray-600">{order.delivery?.address?.slice(0, 50)}...</p>
+                  <p className="font-medium">{order.delivery?.city || order.city || ''}</p>
+                  <p className="text-sm text-gray-600">{(order.delivery?.address || order.shipping_address || order.address || '').slice(0, 50)}{(order.delivery?.address || order.shipping_address || order.address) ? '...' : ''}</p>
                 </div>
               </div>
 
