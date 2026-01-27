@@ -1871,7 +1871,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                               </div>
                               <div className="flex items-center gap-1 ml-4">
                                 <button
-                                  onClick={() => useTemplate(t)}
+                                  onClick={() => applyTemplate(t)}
                                   className="p-1.5 hover:bg-emerald-100 rounded text-emerald-600"
                                   title="Use Template"
                                 >
