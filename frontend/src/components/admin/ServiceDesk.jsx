@@ -22,7 +22,8 @@ import {
   Brain, Lightbulb, Copy, ThumbsUp, ThumbsDown, Maximize2, Minimize2,
   Bookmark, BookmarkPlus, Layout, PanelLeft, Activity, TrendingUp,
   GitMerge, Flag, Share2, BellRing, MailX, FileWarning, ArrowRight, PawPrint,
-  AlertTriangle, FileText, Merge, Mic, MicOff, Image, File, Upload, StopCircle, Play
+  AlertTriangle, FileText, Merge, Mic, MicOff, Image, File, Upload, StopCircle, Play,
+  LayoutList, LayoutGrid, Columns3, Timer, UserCheck, Keyboard
 } from 'lucide-react';
 
 // Category icons mapping
