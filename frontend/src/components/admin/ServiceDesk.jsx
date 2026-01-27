@@ -4097,6 +4097,8 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
             </div>
           )}
         </div>
+          </>
+        )}
       </div>
 
       {/* Modals */}
