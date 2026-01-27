@@ -16,6 +16,9 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 
 
+import BreedAutocomplete from '../components/BreedAutocomplete';
+
+
 // Persona icons mapping
 const PERSONA_ICONS = {
   royal: Crown,
