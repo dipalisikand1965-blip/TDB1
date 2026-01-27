@@ -93,6 +93,7 @@ import AdoptPage from "./pages/AdoptPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import MealPlanPage from "./pages/MealPlanPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ConciergeRequestsDashboard from "./components/admin/ConciergeRequestsDashboard";
 
 function App() {
   return (
