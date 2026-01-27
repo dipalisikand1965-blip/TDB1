@@ -1,232 +1,175 @@
-# The Doggy Company - Comprehensive To-Do List
-## Ordered by Priority
+# 📋 THE DOGGY COMPANY - COMPREHENSIVE TODO LIST
+## Pet Life Operating System
 
-*Last Updated: January 21, 2026*
-
----
-
-## 🚨 IMMEDIATE (Post-Deployment)
-
-### 1. Database Initialization
-- [ ] **After deployment completes**, visit: `https://thedoggycompany.in/api/init-database`
-- [ ] Verify admin login works: `aditya` / `lola4304`
-- [ ] Verify test user works: `dipali@clubconcierge.in` / `lola4304`
-- [ ] Confirm products are loading (575 products expected)
-
-### 2. Smoke Test Checklist
-- [ ] Homepage loads with products
-- [ ] Can browse pillars (Travel, Stay, Care, etc.)
-- [ ] Mira chat opens and responds
-- [ ] Admin panel accessible at `/admin`
-- [ ] Service Desk loads tickets
+**Last Updated**: January 27, 2025
+**Status**: In Active Development
 
 ---
 
-## 🔴 P0 - CRITICAL BUGS
+## ✅ COMPLETED THIS SESSION
 
-### Bug 1: Voice Order "Connection Failed"
-- **Status**: NOT STARTED
-- **Location**: `frontend/src/pages/VoiceOrder.jsx`
-- **Issue**: Fetch call failing, shows "Connection failed" error
-- **Debug Steps**:
-  1. Check the fetch URL in VoiceOrder.jsx
-  2. Verify backend voice endpoint exists
-  3. Add better error handling to show specific error
-- **Impact**: Key feature unusable
+### Universal System
+- [x] **🔥 Universal Seed Button** - One-click seeds all 14 pillars
+- [x] **Universal Search** - Searches products, services, stays, boarding
+- [x] **Pillar Protocol Document** - `/app/memory/PILLAR_PROTOCOL.md`
+- [x] **Admin Docs Updated** - Universal Seed, Pillar Protocol, Boarding Manager
 
-### Bug 2: Checkout "Please fill required fields" Error
-- **Status**: NOT STARTED
-- **Location**: `frontend/src/pages/Checkout.jsx`
-- **Issue**: Generic error, doesn't specify which fields
-- **Fix**: Update toast.error to list specific missing fields
-- **Impact**: Users can't complete purchases
+### Celebrate Pillar
+- [x] **Celebrate Concierge Picker** - Rover-style widget on all Celebrate pages
+- [x] **8 Celebrate Concierge Services** - Party Planning, Photoshoot, etc.
+- [x] **Breed Cakes** - 155 breed-specific cakes populated
 
-### Bug 3: Shopify Sync Creating "Untitled" Products
-- **Status**: NOT STARTED (Recurring 9+ times)
-- **Location**: `backend/server.py` → `transform_shopify_product` function
-- **Issue**: Products syncing without titles
-- **Debug Steps**:
-  1. Add defensive logging to capture raw Shopify payload
-  2. Check if title field is missing or malformed
-  3. Add validation before insert
-- **Impact**: Pollutes product catalog
+### Stay Pillar  
+- [x] **Boarding Manager** - Full CRUD in Admin (Stay → Boarding tab)
+- [x] **24 Boarding Facilities** seeded
+- [x] **Stay Properties Sync** - Auto-syncs to products collection
+
+### Search & Personalization
+- [x] **Universal Search Endpoint** - `/api/search/universal`
+- [x] **SearchBar Component** - Shows products, services, stays, boarding
+- [x] **"Shopping for another dog?"** - Toggle personalization off
+
+### Bug Fixes
+- [x] **Breed Autocomplete** - Fixed across PetProfile, UnifiedPetPage, TravelPage, CarePage
+- [x] **Stay Page** - Now shows 32 properties + 24 boarding facilities
 
 ---
 
-## 🟡 P1 - HIGH PRIORITY FEATURES
+## 🔴 HIGH PRIORITY TODO
 
-### Feature 1: WhatsApp Business API Integration
-- **Goal**: Connect WhatsApp to Service Desk unified inbox
-- **Requirements**:
-  - Virtual WhatsApp number
-  - Messages appear in Service Desk
-  - Agents can respond from Service Desk
-  - Mira can hand off to WhatsApp
-- **Integration**: Use `integration_playbook_expert_v2` for setup
-- **Files to modify**:
-  - `backend/ticket_routes.py` - Add WhatsApp channel
-  - `frontend/src/components/admin/ServiceDesk.jsx` - Add WhatsApp UI
+### P0 - Critical (Production Blockers)
+- [ ] **Production Login** - Verify credentials work after deployment
+- [ ] **Production Data Seed** - Run Universal Seed on production after deploy
+- [ ] **WebSocket Stability** - Service Desk real-time connection keeps dropping
 
-### Feature 2: Re-enable Authentication Gating
-- **Location**: `frontend/src/components/ProtectedRoute.jsx`
-- **Issue**: Auth logic is commented out
-- **Task**: Re-enable and test all protected routes
-- **Before Go-Live**: MUST DO
-
-### Feature 3: Deepen Mira Intelligence
-- **Ideas to discuss with user**:
-  - Sentiment analysis from chat
-  - Predictive reordering suggestions
-  - Cross-family pet recommendations
-  - Seasonal/weather-based suggestions
-  - Life-stage specific advice (puppy → adult → senior)
+### P1 - High Priority
+- [ ] **Order Flow Integration** - Ensure all orders flow to:
+  - [ ] Order Manager
+  - [ ] Service Desk
+  - [ ] Member History
+  - [ ] Pet History
+  - [ ] Unified Inbox
+  - [ ] Notifications
+  - [ ] Command Center
+  
+- [ ] **Auto-Acknowledge Emails** - Needs Resend API key to function
+- [ ] **Aggregated Tickets 404** - Some auto-created tickets return 404 on detail view
 
 ---
 
-## 🟢 P2 - MEDIUM PRIORITY
+## 🟡 MEDIUM PRIORITY TODO
 
-### Refactoring Tasks
+### Service Desk - Phase 2
+- [ ] **Agent Collision Detection** - Prevent two agents working same ticket
+- [ ] **Customer Satisfaction Ratings** - Post-resolution surveys
+- [ ] **Bulk Actions** - Select multiple tickets for mass operations
+- [ ] **Ticket Merge** - Merge duplicate tickets from same member
 
-#### Server.py Breakdown
-Current `server.py` is 9000+ lines. Extract into modules:
-- [ ] `backend/routes/orders.py` - Order management
-- [ ] `backend/routes/products.py` - Product CRUD
-- [ ] `backend/routes/users.py` - User management
-- [ ] `backend/routes/carts.py` - Cart operations
-- [ ] `backend/services/email_service.py` - Email templates
-- [ ] `backend/services/notification_service.py` - Push/SMS
+### Product System
+- [ ] **Product Box Stats Refresh** - Numbers not updating in real-time
+- [ ] **Pricing Hub Integration** - Ensure all pricing rules apply
+- [ ] **Shipping Rules Verification** - Test all shipping options work
 
-#### ServiceDesk.jsx Breakdown
-Current file is very large. Extract:
-- [ ] `TicketCard.jsx` - Individual ticket display
-- [ ] `TicketFilters.jsx` - Filter controls
-- [ ] `AIDraftPanel.jsx` - AI draft modal
-- [ ] `TicketTimeline.jsx` - Message history
-
-### Feature Improvements
-
-#### Mira Enhancements (Completed items ✅)
-- [x] Research Mode - Web search for factual queries
-- [x] Context-aware quick prompts per pillar
-- [x] Voice input (Web Speech API)
-- [x] Chat history & session management
-- [x] Cross-pillar context awareness
-- [x] New conversation button
-
-#### Mira Future Enhancements
-- [ ] WhatsApp handoff from Mira
-- [ ] Proactive outreach via WhatsApp/Email
-- [ ] Voice output (Text-to-Speech)
-- [ ] Multi-language support
+### Pillar Pages
+- [ ] **Feed Pillar** - Build out meal planning page
+- [ ] **Groom Pillar** - Build grooming booking page
+- [ ] **Learn Pillar** - Build training courses page
+- [ ] **Enjoy Pillar** - Build parks/cafes directory
+- [ ] **Insure Pillar** - Build insurance comparison page
 
 ---
 
-## 🔵 P3 - FUTURE / BACKLOG
+## 🟢 LOW PRIORITY TODO
 
-### Pet Soul Enhancements
-- [ ] Pet Soul Weekly Question feature
-- [ ] Pet Soul completion score
-- [ ] Pet Soul sharing (public profiles)
-- [ ] Pet family tree / relationships
+### New Features
+- [ ] **Smart Checkout** - Intelligent checkout flow
+- [ ] **New Member Onboarding Flow** - Guided onboarding wizard
+- [ ] **Meilisearch Deployment** - Premium search experience
+- [ ] **Partner/Franchise Pages** - Build out partner applications
 
-### Member Management
-- [ ] Member dashboard with usage stats
-- [ ] Membership tier upgrade flow
-- [ ] Referral program
-- [ ] Loyalty points system
+### Code Quality
+- [ ] **Remove Old Service Desk Components** - ServiceDesk.jsx, ZohoServiceDesk.jsx
+- [ ] **API Route Cleanup** - Consolidate duplicate routes
+- [ ] **Component Deduplication** - Remove unused components
+- [ ] **Test Coverage** - Add unit tests for critical flows
 
-### Admin Enhancements
-- [ ] Centralized Product Management System
-- [ ] Standardize Admin Managers for all 12 pillars
-- [ ] Recommendation effectiveness dashboard
-- [ ] A/B testing framework
-
-### Analytics & Reporting
-- [ ] Learning from Outcomes visualization
-- [ ] Conversion funnel tracking
-- [ ] Customer lifetime value tracking
-- [ ] Pillar usage heatmaps
+### Performance
+- [ ] **Image Optimization** - Lazy loading, compression
+- [ ] **API Caching** - Redis cache for frequent queries
+- [ ] **Bundle Size** - Code splitting, tree shaking
 
 ---
 
-## 📋 INTEGRATION CHECKLIST
+## 🔵 FUTURE/BACKLOG
 
-### Currently Integrated ✅
-| Integration | Status | Notes |
-|-------------|--------|-------|
-| MongoDB | ✅ Active | Via MONGO_URL |
-| Resend Email | ✅ Active | Transactional emails |
-| Razorpay | ✅ Test Keys | Payment gateway |
-| Shopify Sync | ⚠️ Buggy | Untitled products issue |
-| OpenAI GPT-5.1 | ✅ Active | Via Emergent LLM Key |
+### Major Features
+- [ ] **Multi-tenant Support** - For franchise model
+- [ ] **Mobile App** - React Native version
+- [ ] **Voice Orders** - Voice-based ordering via Mira
+- [ ] **Video Consultations** - Vet video calls
+- [ ] **AI Personalization Engine** - ML-based recommendations
 
-### Pending Integrations
-| Integration | Priority | Use Case |
-|-------------|----------|----------|
-| WhatsApp Business | P1 | Unified inbox |
-| Google Calendar | P2 | Booking sync |
-| Twilio SMS | P3 | SMS notifications |
+### Integrations
+- [ ] **WhatsApp Business API** - Direct messaging
+- [ ] **Google Calendar Sync** - Appointment scheduling
+- [ ] **Payment Gateway Expansion** - PayPal, Apple Pay
+- [ ] **Shipping Partners API** - Real-time tracking
 
 ---
 
-## 🔑 CREDENTIALS
+## 📊 METRICS TO TRACK
 
-### Admin Access
-- **Username**: `aditya`
-- **Password**: `lola4304`
-- **URL**: `https://thedoggycompany.in/admin`
-
-### Test User
-- **Email**: `dipali@clubconcierge.in`
-- **Password**: `lola4304`
-- **Pets**: Mojo (Indie), Mystique (Shihtzu)
-
-### API Keys (in backend/.env)
-- EMERGENT_LLM_KEY: ✅ Configured
-- RESEND_API_KEY: ✅ Configured
-- RAZORPAY_KEY_ID: ⚠️ Test keys only
+| Metric | Target | Current |
+|--------|--------|---------|
+| Products per Pillar | 3+ | ✅ All 14 pillars |
+| Services per Pillar | 2+ | ✅ All 14 pillars |
+| Boarding Facilities | 20+ | ✅ 24 |
+| Stay Properties | 30+ | ✅ 32 |
+| Breed Cakes | 100+ | ✅ 155 |
+| Search Response Time | <500ms | TBD |
+| Page Load Time | <3s | TBD |
 
 ---
 
-## 📁 KEY FILES REFERENCE
+## 🚀 DEPLOYMENT CHECKLIST
 
-### Backend
-```
-/app/backend/
-├── server.py              # Main server (needs refactoring)
-├── mira_routes.py         # Mira AI endpoints
-├── mira_intelligence.py   # Recommendation engine
-├── ticket_routes.py       # Service desk
-├── admin_routes.py        # Admin APIs
-└── .env                   # Environment config
-```
+Before every deployment:
+1. [ ] Run lint checks
+2. [ ] Run build
+3. [ ] Verify all environment variables
 
-### Frontend
-```
-/app/frontend/src/
-├── components/
-│   ├── MiraAI.jsx           # Floating chat widget
-│   ├── MiraContextPanel.jsx # Pillar sidebar
-│   └── admin/
-│       └── ServiceDesk.jsx  # Service desk UI
-├── pages/
-│   ├── MiraPage.jsx         # Full Ask Mira page
-│   └── [PillarName]Page.jsx # 12 pillar pages
-└── hooks/
-    └── useMiraSignal.js     # Passive learning hook
-```
+After every deployment:
+1. [ ] Click **🔥 Universal Seed** in Admin
+2. [ ] Verify `/shop?pillar=stay` shows products
+3. [ ] Verify admin login works
+4. [ ] Test search functionality
+5. [ ] Test order creation flow
 
 ---
 
-## ✅ RECENTLY COMPLETED (Jan 21, 2026)
+## 📞 QUICK REFERENCE
 
-1. **Mira Research Mode** - Detects factual queries, provides sourced info
-2. **Context-Aware Quick Prompts** - Pillar-specific suggestions
-3. **Voice Input** - Web Speech API integration
-4. **Chat History & Sessions** - New conversation, history endpoints
-5. **Cross-Pillar Context** - Acknowledges pillar transitions
-6. **All 12/12 backend tests passing**
+### Key Files
+- Universal Seed: `/app/backend/server.py` → `/api/admin/universal-seed`
+- Pillar Protocol: `/app/memory/PILLAR_PROTOCOL.md`
+- Admin Docs: `/app/frontend/src/pages/AdminDocs.jsx`
+- Boarding Manager: `/app/frontend/src/components/StayManager.jsx`
+- Celebrate Picker: `/app/frontend/src/components/CelebrateConcierePicker.jsx`
+
+### Key Endpoints
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /api/admin/universal-seed` | Seed all data |
+| `GET /api/search/universal?q=` | Universal search |
+| `GET /api/admin/boarding/facilities` | List boarding |
+| `POST /api/admin/boarding/facilities` | Create boarding |
+| `GET /api/products?pillar=` | Products by pillar |
+| `GET /api/services?pillar=` | Services by pillar |
+
+### Credentials
+- **Admin**: aditya / lola4304
+- **Member**: dipali@clubconcierge.in / test123
 
 ---
 
-*This document should be updated after each major feature completion or bug fix.*
+*This TODO list is maintained in `/app/memory/TODO.md`*
