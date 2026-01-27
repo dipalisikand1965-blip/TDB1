@@ -183,7 +183,7 @@ const SearchBar = ({ onClose, isOverlay = false }) => {
           data-testid="search-dropdown"
         >
           {/* Collections Section */}
-          {results.collections.length > 0 && (
+          {results.collections?.length > 0 && (
             <div className="p-3 border-b border-gray-100">
               <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-2">
                 Collections
@@ -205,12 +205,12 @@ const SearchBar = ({ onClose, isOverlay = false }) => {
           )}
 
           {/* Products Section */}
-          {results.products.length > 0 && (
-            <div className="p-2">
+          {results.products?.length > 0 && (
+            <div className="p-2 border-b border-gray-100">
               <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-2">
-                Products
+                🛍️ Products
               </div>
-              {results.products.map((product) => (
+              {results.products.slice(0, 4).map((product) => (
                 <button
                   key={product.id}
                   onClick={() => handleProductClick(product)}
@@ -221,20 +221,20 @@ const SearchBar = ({ onClose, isOverlay = false }) => {
                     <img 
                       src={product.image} 
                       alt={product.name}
-                      className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
+                      className="w-10 h-10 object-cover rounded-lg flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Search className="w-5 h-5 text-gray-400" />
+                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Search className="w-4 h-4 text-gray-400" />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-gray-900 truncate">
-                      {product.name}
+                    <div className="font-medium text-gray-900 truncate text-sm">
+                      {product.name || product.title}
                     </div>
-                    <div className="text-sm text-gray-500 flex items-center gap-2">
-                      <span className="capitalize">{product.category?.replace(/-/g, ' ')}</span>
-                      <span className="text-purple-600 font-semibold">₹{product.price}</span>
+                    <div className="text-xs text-gray-500">
+                      <span className="capitalize">{product.pillar || product.category}</span>
+                      {product.price && <span className="ml-2 text-purple-600 font-semibold">₹{product.price}</span>}
                     </div>
                   </div>
                   <ArrowRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
@@ -243,8 +243,86 @@ const SearchBar = ({ onClose, isOverlay = false }) => {
             </div>
           )}
 
+          {/* Services Section */}
+          {results.services?.length > 0 && (
+            <div className="p-2 border-b border-gray-100">
+              <div className="text-xs font-semibold text-purple-600 uppercase tracking-wide mb-2 px-2">
+                🎯 Services
+              </div>
+              {results.services.slice(0, 3).map((service, idx) => (
+                <button
+                  key={service.id || idx}
+                  onClick={() => navigate(`/services?service=${service.id}`)}
+                  className="w-full flex items-center gap-3 p-2 hover:bg-purple-50 rounded-lg transition-colors text-left"
+                >
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-lg">🎯</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-gray-900 truncate text-sm">{service.name}</div>
+                    <div className="text-xs text-gray-500">
+                      <span className="capitalize">{service.pillar}</span>
+                      {service.price && <span className="ml-2 text-purple-600 font-semibold">₹{service.price}</span>}
+                    </div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Stays Section */}
+          {results.stays?.length > 0 && (
+            <div className="p-2 border-b border-gray-100">
+              <div className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-2 px-2">
+                🏨 Pet-Friendly Stays
+              </div>
+              {results.stays.slice(0, 3).map((stay, idx) => (
+                <button
+                  key={stay.id || idx}
+                  onClick={() => navigate(`/stay?property=${stay.id}`)}
+                  className="w-full flex items-center gap-3 p-2 hover:bg-green-50 rounded-lg transition-colors text-left"
+                >
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-lg">🏨</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-gray-900 truncate text-sm">{stay.name}</div>
+                    <div className="text-xs text-gray-500">{stay.city} • {stay.property_type}</div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Boarding Section */}
+          {results.boarding?.length > 0 && (
+            <div className="p-2 border-b border-gray-100">
+              <div className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-2 px-2">
+                🏠 Pet Boarding
+              </div>
+              {results.boarding.slice(0, 3).map((facility, idx) => (
+                <button
+                  key={facility.id || idx}
+                  onClick={() => navigate(`/stay?type=boarding&facility=${facility.id}`)}
+                  className="w-full flex items-center gap-3 p-2 hover:bg-amber-50 rounded-lg transition-colors text-left"
+                >
+                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-lg">🏠</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-gray-900 truncate text-sm">{facility.name}</div>
+                    <div className="text-xs text-gray-500">{facility.city} • {facility.boarding_type}</div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* View All Results */}
-          <div className="p-3 bg-gray-50 border-t border-gray-100">
+          <div className="p-3 bg-gray-50">
             <button
               onClick={handleSubmit}
               className="w-full flex items-center justify-center gap-2 py-2 text-purple-600 font-medium hover:text-purple-700 transition-colors"
