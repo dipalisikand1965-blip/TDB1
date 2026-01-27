@@ -207,6 +207,108 @@ class AddNoteRequest(BaseModel):
     agent_name: str
 
 
+class ConciergeExperienceRequest(BaseModel):
+    """Model for elevated concierge experience requests from pillar cards."""
+    pillar: str  # travel, stay, care, enjoy, learn
+    experience_type: str
+    experience_title: str
+    message: str
+    user_name: Optional[str] = None
+    user_email: Optional[str] = None
+    user_phone: Optional[str] = None
+    pet_name: Optional[str] = None
+    source: Optional[str] = "concierge_experience_card"
+
+
+# ============== CONCIERGE EXPERIENCE REQUEST ENDPOINT ==============
+
+@router.post("/experience-request")
+async def create_experience_request(request: ConciergeExperienceRequest):
+    """
+    Create a concierge experience request from pillar cards.
+    This creates a conversation starter, not a booking.
+    """
+    db = get_db()
+    import uuid
+    
+    request_id = f"conc-{uuid.uuid4().hex[:8]}"
+    ticket_id = f"EXP-{uuid.uuid4().hex[:8]}"
+    now = datetime.now(timezone.utc)
+    
+    # Create concierge request record
+    request_doc = {
+        "id": request_id,
+        "ticket_id": ticket_id,
+        "type": "experience_request",
+        "pillar": request.pillar,
+        "experience_type": request.experience_type,
+        "experience_title": request.experience_title,
+        "message": request.message,
+        "user_name": request.user_name,
+        "user_email": request.user_email,
+        "user_phone": request.user_phone,
+        "pet_name": request.pet_name,
+        "source": request.source,
+        "status": "new",
+        "priority": "normal",
+        "created_at": now,
+        "updated_at": now,
+        "timeline": [
+            {
+                "status": "new",
+                "timestamp": now.isoformat(),
+                "note": f"Request submitted via Concierge Experience Card - {request.pillar.capitalize()} Pillar"
+            }
+        ]
+    }
+    
+    await db.concierge_requests.insert_one(request_doc)
+    
+    # Also create a service desk ticket for tracking
+    ticket_doc = {
+        "ticket_id": ticket_id,
+        "type": "concierge_inquiry",
+        "pillar": request.pillar,
+        "subject": f"Concierge Request: {request.experience_title}",
+        "description": request.message,
+        "original_request": f"[{request.pillar.upper()}] {request.experience_title}: {request.message[:200]}...",
+        "customer_name": request.user_name,
+        "customer_email": request.user_email,
+        "customer_phone": request.user_phone,
+        "member": {
+            "name": request.user_name,
+            "email": request.user_email,
+            "phone": request.user_phone
+        },
+        "pet_name": request.pet_name,
+        "status": "open",
+        "priority": "normal",
+        "source": "concierge_card",
+        "concierge_request_id": request_id,
+        "created_at": now,
+        "updated_at": now,
+        "audit_trail": [
+            {
+                "action": "created",
+                "timestamp": now.isoformat(),
+                "performed_by": "system",
+                "details": f"Created from {request.pillar} concierge experience card"
+            }
+        ]
+    }
+    
+    await db.tickets.insert_one(ticket_doc)
+    
+    logger.info(f"Concierge experience request created: {request_id} -> Ticket: {ticket_id}")
+    
+    return {
+        "success": True,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "message": "Your request has been received. Our concierge will reach out within 24 hours."
+    }
+
+
 # ============== QUEUE ENDPOINT ==============
 
 @router.get("/queue")
