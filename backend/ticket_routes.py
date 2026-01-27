@@ -248,7 +248,7 @@ async def generate_ticket_id():
     return f"TKT-{today}-{str(count + 1).zfill(3)}"
 
 def serialize_ticket(ticket: dict) -> dict:
-    """Convert MongoDB ticket to JSON-serializable format"""
+    """Convert MongoDB ticket to JSON-serializable format with SLA status"""
     if not ticket:
         return None
     # Handle _id conversion
@@ -284,6 +284,60 @@ def serialize_ticket(ticket: dict) -> dict:
             ticket["member"]["email"] = ticket.get("customer_email")
         if not member.get("phone") and ticket.get("customer_phone"):
             ticket["member"]["phone"] = ticket.get("customer_phone")
+    
+    # Calculate SLA status if sla_due_at exists
+    if ticket.get("sla_due_at"):
+        try:
+            now = datetime.now(timezone.utc)
+            sla_due = datetime.fromisoformat(ticket["sla_due_at"].replace("Z", "+00:00"))
+            time_remaining = sla_due - now
+            
+            ticket["sla_status"] = {
+                "due_at": ticket["sla_due_at"],
+                "is_breached": time_remaining.total_seconds() < 0,
+                "seconds_remaining": int(time_remaining.total_seconds()),
+                "hours_remaining": round(time_remaining.total_seconds() / 3600, 1),
+                "status": "breached" if time_remaining.total_seconds() < 0 else (
+                    "critical" if time_remaining.total_seconds() < 3600 else (
+                        "warning" if time_remaining.total_seconds() < 7200 else "ok"
+                    )
+                )
+            }
+        except Exception:
+            ticket["sla_status"] = None
+    else:
+        # Calculate SLA for tickets without sla_due_at (legacy tickets)
+        urgency = ticket.get("urgency", "medium")
+        sla_hours_map = {"low": 48, "medium": 24, "high": 8, "critical": 2, "urgent": 4}
+        sla_hours = sla_hours_map.get(urgency, 24)
+        
+        if ticket.get("created_at"):
+            try:
+                created = datetime.fromisoformat(ticket["created_at"].replace("Z", "+00:00"))
+                sla_due = created + timedelta(hours=sla_hours)
+                now = datetime.now(timezone.utc)
+                time_remaining = sla_due - now
+                
+                ticket["sla_due_at"] = sla_due.isoformat()
+                ticket["sla_status"] = {
+                    "due_at": sla_due.isoformat(),
+                    "is_breached": time_remaining.total_seconds() < 0,
+                    "seconds_remaining": int(time_remaining.total_seconds()),
+                    "hours_remaining": round(time_remaining.total_seconds() / 3600, 1),
+                    "status": "breached" if time_remaining.total_seconds() < 0 else (
+                        "critical" if time_remaining.total_seconds() < 3600 else (
+                            "warning" if time_remaining.total_seconds() < 7200 else "ok"
+                        )
+                    )
+                }
+            except Exception:
+                ticket["sla_status"] = None
+    
+    # Count pending reminders
+    reminders = ticket.get("reminders", [])
+    pending_reminders = [r for r in reminders if r.get("status") != "completed"]
+    ticket["pending_reminders_count"] = len(pending_reminders)
+    
     return ticket
 
 # ============== TICKET ROUTES ==============
