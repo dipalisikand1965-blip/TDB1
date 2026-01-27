@@ -1656,8 +1656,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   // Export tickets to CSV
   const handleExportCSV = () => {
     // Use filtered tickets for export
-    const ticketsToExport = filteredTickets;
-    if (ticketsToExport.length === 0) {
+    const ticketsToExport = tickets;
+    if (!ticketsToExport || ticketsToExport.length === 0) {
       return; // Nothing to export
     }
     
