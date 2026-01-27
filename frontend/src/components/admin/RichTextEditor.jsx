@@ -137,8 +137,6 @@ const RichTextEditor = ({
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
-      TextStyle,
-      Color,
     ],
     content: value,
     editable: !disabled,
