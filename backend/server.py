@@ -10281,6 +10281,89 @@ async def seed_stay_bundle_data(
         "socials": socials_result
     }
 
+
+@app.post("/api/admin/stay/sync-to-products")
+async def sync_stay_to_products_endpoint():
+    """
+    Sync stay_properties to main products collection.
+    No auth required for emergency seeding on production.
+    """
+    try:
+        # Default pricing
+        DEFAULT_PRICES = {
+            "budget": 2500, "mid": 5000, "premium": 12000, "luxury": 25000
+        }
+        
+        # Sync stay_properties to products
+        properties = await db.stay_properties.find({}).to_list(length=500)
+        synced = 0
+        
+        for prop in properties:
+            prop_type = (prop.get('property_type', '') or '').lower()
+            if 'luxury' in prop_type or 'palace' in prop.get('name', '').lower():
+                price = DEFAULT_PRICES['luxury']
+            elif 'premium' in prop_type or 'resort' in prop_type:
+                price = DEFAULT_PRICES['premium']
+            elif 'budget' in prop_type or 'hostel' in prop_type:
+                price = DEFAULT_PRICES['budget']
+            else:
+                price = DEFAULT_PRICES['mid']
+            
+            product_id = f"stay-{str(prop.get('_id'))}"
+            product = {
+                "id": product_id,
+                "name": prop.get('name', 'Pet-Friendly Stay'),
+                "title": prop.get('name', 'Pet-Friendly Stay'),
+                "description": prop.get('description', f"Pet-friendly accommodation in {prop.get('city', 'India')}"),
+                "price": prop.get('price_per_night') or price,
+                "category": "stay",
+                "pillar": "stay",
+                "image": prop.get('images', [None])[0] if prop.get('images') else prop.get('image') or "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+                "tags": ["Stay", "Pet-Friendly", prop.get('city', ''), prop.get('property_type', '')],
+                "city": prop.get('city'),
+                "property_type": prop.get('property_type'),
+                "amenities": prop.get('amenities', []),
+                "in_stock": True,
+                "source": "stay_properties",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            await db.products.update_one({"id": product_id}, {"$set": product}, upsert=True)
+            synced += 1
+        
+        # Also sync boarding facilities
+        boarding = await db.stay_boarding_facilities.find({}).to_list(length=100)
+        for facility in boarding:
+            product_id = f"boarding-{str(facility.get('_id', facility.get('name', '').replace(' ', '-').lower()))}"
+            product = {
+                "id": product_id,
+                "name": facility.get('name'),
+                "title": facility.get('name'),
+                "description": facility.get('description'),
+                "price": facility.get('price_per_night', 1000),
+                "category": "boarding",
+                "pillar": "stay",
+                "tags": ["Boarding", "Pet Care", facility.get('city', '')],
+                "city": facility.get('city'),
+                "in_stock": True,
+                "source": "stay_boarding_facilities",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.products.update_one({"id": product_id}, {"$set": product}, upsert=True)
+            synced += 1
+        
+        logger.info(f"Synced {synced} stay properties to products collection")
+        return {
+            "success": True,
+            "synced": synced,
+            "properties": len(properties),
+            "boarding": len(boarding)
+        }
+    except Exception as e:
+        logger.error(f"Failed to sync stay to products: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== ADMIN PASSWORD MANAGEMENT ====================
 
 @app.post("/api/admin/change-password")
