@@ -2263,35 +2263,43 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 </div>
               )}
               
-              {/* ==================== TICKET DETAIL PANEL ==================== */}
-              {selectedTicket ? (
-                <div className="w-[500px] flex-shrink-0 flex flex-col bg-white">
+              {/* ==================== TICKET DETAIL DRAWER (3/4 Screen Slide-out) ==================== */}
+              {selectedTicket && (
+                <>
+                  {/* Backdrop overlay */}
+                  <div 
+                    className="fixed inset-0 bg-black/30 z-40 transition-opacity duration-300"
+                    onClick={() => setSelectedTicket(null)}
+                  />
+                  
+                  {/* Slide-out Drawer */}
+                  <div className="fixed right-0 top-0 h-full w-3/4 max-w-[1200px] min-w-[600px] bg-white shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-out animate-slide-in-right">
                   {/* Detail Header */}
-                  <div className="px-4 py-3 border-b flex items-center justify-between flex-shrink-0 bg-gradient-to-r from-emerald-50 to-teal-50">
+                  <div className="px-6 py-4 border-b flex items-center justify-between flex-shrink-0 bg-gradient-to-r from-emerald-50 to-teal-50">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-3 mb-2">
                         {PILLARS[selectedTicket.category] && (
-                          <span className="text-lg">{PILLARS[selectedTicket.category].emoji}</span>
+                          <span className="text-2xl">{PILLARS[selectedTicket.category].emoji}</span>
                         )}
-                        <span className="font-mono text-xs text-gray-500">{selectedTicket.ticket_id}</span>
+                        <span className="font-mono text-sm text-gray-500 bg-white px-2 py-1 rounded">{selectedTicket.ticket_id}</span>
                         <button 
                           onClick={startEditingTicket}
-                          className="p-1 hover:bg-white/50 rounded"
+                          className="p-1.5 hover:bg-white/50 rounded"
                           title="Edit Ticket"
                         >
-                          <Edit className="w-3 h-3 text-gray-400 hover:text-emerald-600" />
+                          <Edit className="w-4 h-4 text-gray-400 hover:text-emerald-600" />
                         </button>
                       </div>
-                      <h3 className="font-semibold text-gray-900 text-sm truncate">
-                        {selectedTicket.subject || selectedTicket.description?.slice(0, 40)}
+                      <h3 className="font-semibold text-gray-900 text-lg">
+                        {selectedTicket.subject || selectedTicket.description?.slice(0, 60)}
                       </h3>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-2">
                       {/* Pillar Selector */}
                       <select
                         value={selectedTicket.category || ''}
                         onChange={(e) => handleStatusChange(selectedTicket.status)} // Will update via edit
-                        className="text-xs rounded px-2 py-1 bg-white border mr-1"
+                        className="text-sm rounded px-3 py-2 bg-white border"
                         title="Change Pillar"
                       >
                         {Object.entries(PILLARS).map(([k, v]) => (
@@ -2302,7 +2310,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                       <select
                         value={selectedTicket.status}
                         onChange={(e) => handleStatusChange(e.target.value)}
-                        className={`text-xs rounded-full px-3 py-1 font-medium ${STATUS_CONFIG[selectedTicket.status]?.bgLight} ${STATUS_CONFIG[selectedTicket.status]?.textColor} border-0`}
+                        className={`text-sm rounded-full px-4 py-2 font-medium ${STATUS_CONFIG[selectedTicket.status]?.bgLight} ${STATUS_CONFIG[selectedTicket.status]?.textColor} border-0`}
                       >
                         {Object.entries(STATUS_CONFIG).map(([k, v]) => (
                           <option key={k} value={k}>{v.label}</option>
@@ -2311,8 +2319,12 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                           <option key={s.id} value={s.id}>{s.label}</option>
                         ))}
                       </select>
-                      <button onClick={() => setSelectedTicket(null)} className="p-1.5 hover:bg-gray-100 rounded ml-2">
-                        <X className="w-4 h-4 text-gray-400" />
+                      <button 
+                        onClick={() => setSelectedTicket(null)} 
+                        className="p-2 hover:bg-gray-100 rounded-full ml-2"
+                        title="Close (Esc)"
+                      >
+                        <X className="w-5 h-5 text-gray-400" />
                       </button>
                     </div>
                   </div>
