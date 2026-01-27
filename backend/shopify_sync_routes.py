@@ -401,6 +401,16 @@ async def cron_sync_products(secret: str):
             existing = await db.products.find_one({"shopify_id": sp["id"]})
             
             transformed = transform_shopify_product(sp)
+            
+            # IMPORTANT: Preserve hardcoded options - don't overwrite!
+            if existing and existing.get("hardcoded_options") == True:
+                # Remove options/variants from update to preserve hardcoded data
+                transformed.pop("options", None)
+                transformed.pop("variants", None)
+                transformed.pop("has_variants", None)
+                transformed.pop("sizes", None)
+                transformed.pop("flavors", None)
+            
             await db.products.update_one(
                 {"shopify_id": sp["id"]},
                 {"$set": transformed},
