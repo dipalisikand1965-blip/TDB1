@@ -64,6 +64,7 @@ const PILLARS = [
     icon: '💊',
     path: '/care',
     dropdown: [
+      { name: 'Care By Concierge®', path: '/care', highlight: true },
       { name: 'Grooming', path: '/care?type=grooming' },
       { name: 'Vet Care', path: '/care?type=vet' },
       { name: 'Pet Sitting', path: '/care?type=sitting' },
