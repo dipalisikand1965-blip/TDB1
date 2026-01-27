@@ -2200,7 +2200,8 @@ CRITICAL CONCIERGE DOCTRINE:
                     member_id=member_id,
                     pet_id=selected_pet.get("id") if selected_pet else None,
                     pet_name=selected_pet.get("name") if selected_pet else None,
-                    session_id=session_id
+                    session_id=session_id,
+                    pillar=pillar  # Pass pillar for pillar-specific extraction
                 )
                 
                 for memory in extracted_memories:
@@ -2211,14 +2212,14 @@ CRITICAL CONCIERGE DOCTRINE:
                         pet_id=selected_pet.get("id") if selected_pet else None,
                         pet_name=selected_pet.get("name") if selected_pet else None,
                         context=memory.get("context"),
-                        relevance_tags=memory.get("relevance_tags", []),
+                        relevance_tags=memory.get("relevance_tags", []) + ([f"pillar:{pillar}"] if pillar else []),
                         source=memory.get("source", "conversation"),
                         confidence=memory.get("confidence", "medium"),
                         session_id=session_id
                     )
                 
                 if extracted_memories:
-                    logger.info(f"Stored {len(extracted_memories)} new relationship memories for {member_id}")
+                    logger.info(f"Stored {len(extracted_memories)} new relationship memories for {member_id} from {pillar or 'general'}")
             except ImportError:
                 pass  # Memory module not available
             except Exception as e:
