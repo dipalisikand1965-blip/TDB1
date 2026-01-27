@@ -1218,16 +1218,30 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
     link.click();
   };
 
-  const handleStatusChange = async (newStatus) => {
-    if (!selectedTicket) return;
+  const handleStatusChange = async (ticketIdOrStatus, newStatusParam) => {
+    // Support both calling conventions:
+    // 1. handleStatusChange(newStatus) - from dropdown in detail panel
+    // 2. handleStatusChange(ticketId, newStatus) - from Kanban board
+    let ticketId, newStatus;
+    
+    if (newStatusParam !== undefined) {
+      // Called from Kanban: handleStatusChange(ticketId, newStatus)
+      ticketId = ticketIdOrStatus;
+      newStatus = newStatusParam;
+    } else {
+      // Called from detail panel: handleStatusChange(newStatus)
+      if (!selectedTicket) return;
+      ticketId = selectedTicket.ticket_id;
+      newStatus = ticketIdOrStatus;
+    }
     
     // If resolving, require a note
-    if (newStatus === 'resolved' && !selectedTicket.resolution_note) {
+    if (newStatus === 'resolved') {
       const note = prompt('Please enter a resolution note:');
       if (!note) return;
       
       try {
-        await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}`, {
+        await fetch(`${getApiUrl()}/api/tickets/${ticketId}`, {
           method: 'PATCH',
           headers: { ...authHeaders, 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: newStatus, resolution_note: note })
@@ -1238,7 +1252,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
       }
     } else {
       try {
-        await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}`, {
+        await fetch(`${getApiUrl()}/api/tickets/${ticketId}`, {
           method: 'PATCH',
           headers: { ...authHeaders, 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: newStatus })
@@ -1249,7 +1263,10 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
       }
     }
     
-    fetchTicketDetails(selectedTicket.ticket_id);
+    // Refresh data
+    if (selectedTicket?.ticket_id === ticketId) {
+      fetchTicketDetails(ticketId);
+    }
     fetchStats();
     fetchTickets();
   };
