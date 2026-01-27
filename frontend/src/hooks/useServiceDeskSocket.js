@@ -25,18 +25,24 @@ export const useServiceDeskSocket = (agentId, onNewTicket, onTicketUpdate, onNew
       baseUrl = window.location.origin;
     }
     
+    // Skip WebSocket in development if backend doesn't support it
+    const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+    
     console.log('🔌 Connecting to Socket.IO at:', baseUrl);
     
     if (!socketInstance) {
       socketInstance = io(baseUrl, {
-        transports: ['websocket', 'polling'],
+        transports: isLocalhost ? ['polling', 'websocket'] : ['websocket', 'polling'],
         autoConnect: true,
         reconnection: true,
-        reconnectionAttempts: 3,
-        reconnectionDelay: 2000,
-        timeout: 10000,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 3000,
+        reconnectionDelayMax: 10000,
+        timeout: 15000,
         path: '/socket.io/',
-        forceNew: false
+        forceNew: false,
+        // Handle cross-origin for production
+        withCredentials: false
       });
     }
     
