@@ -395,10 +395,18 @@ async def import_products_csv(file: UploadFile = File(...)):
 
 @router.put("/admin/products/{product_id}")
 async def admin_update_product(product_id: str, product: CelebrateProductCreate):
-    """Admin: Update a celebrate product"""
+    """Admin: Update a celebrate product (checks both celebrate_products and main products collection)"""
     db = get_db()
     
+    # Try celebrate_products first
     existing = await db.celebrate_products.find_one({"id": product_id})
+    collection = db.celebrate_products
+    
+    # If not found, try main products collection (Shopify synced products)
+    if not existing:
+        existing = await db.products.find_one({"$or": [{"id": product_id}, {"shopify_id": product_id}]})
+        collection = db.products
+    
     if not existing:
         raise HTTPException(status_code=404, detail="Product not found")
     
@@ -407,7 +415,13 @@ async def admin_update_product(product_id: str, product: CelebrateProductCreate)
         "updated_at": datetime.now(timezone.utc)
     }
     
-    await db.celebrate_products.update_one({"id": product_id}, {"$set": update_data})
+    if collection == db.products:
+        # For Shopify products, use the _id or shopify_id
+        query = {"$or": [{"id": product_id}, {"shopify_id": product_id}]}
+    else:
+        query = {"id": product_id}
+    
+    await collection.update_one(query, {"$set": update_data})
     
     return {"message": "Product updated"}
 
