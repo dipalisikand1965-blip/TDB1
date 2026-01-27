@@ -199,7 +199,8 @@ async def universal_seed(db):
         'services': {'created': 0, 'updated': 0},
         'unified': {'migrated': 0},
         'pricing': {'seeded': 0},
-        'shipping': {'seeded': 0}
+        'shipping': {'seeded': 0},
+        'boarding': {'seeded': 0}
     }
     
     now = datetime.now(timezone.utc).isoformat()
