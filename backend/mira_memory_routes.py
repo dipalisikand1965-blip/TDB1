@@ -212,12 +212,6 @@ async def get_pet_memories(
         "by_type": result,
         "memory_types": MEMORY_TYPES
     }
-    
-    return {
-        "success": True,
-        "memory_id": memory_id,
-        "message": "Memory stored successfully"
-    }
 
 
 @router.put("/me/{memory_id}")
