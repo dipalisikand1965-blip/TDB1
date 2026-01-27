@@ -37,27 +37,6 @@ const ToolbarDivider = () => (
   <div className="w-px h-6 bg-gray-200 mx-1" />
 );
 
-// Font sizes
-const FONT_SIZES = [
-  { label: 'Small', value: '0.875rem' },
-  { label: 'Normal', value: '1rem' },
-  { label: 'Large', value: '1.125rem' },
-  { label: 'Extra Large', value: '1.25rem' },
-];
-
-// Colors
-const COLORS = [
-  { label: 'Default', value: null },
-  { label: 'Red', value: '#EF4444' },
-  { label: 'Orange', value: '#F97316' },
-  { label: 'Amber', value: '#F59E0B' },
-  { label: 'Green', value: '#22C55E' },
-  { label: 'Blue', value: '#3B82F6' },
-  { label: 'Purple', value: '#8B5CF6' },
-  { label: 'Pink', value: '#EC4899' },
-  { label: 'Gray', value: '#6B7280' },
-];
-
 // Canned responses / templates
 const CANNED_RESPONSES = [
   { 
