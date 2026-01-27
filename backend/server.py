@@ -4459,6 +4459,8 @@ async def get_public_products(
     parent_category: Optional[str] = None,
     collection: Optional[str] = None,
     pan_india: Optional[bool] = None,
+    fresh_city: Optional[str] = None,
+    availability: Optional[str] = None,  # 'fresh' or 'pan-india'
     search: Optional[str] = None,
     pillar: Optional[str] = None,
     limit: int = 100
@@ -4477,6 +4479,20 @@ async def get_public_products(
     # Handle category filtering (subcategory level)
     if category and category not in ["all", "pan-india"]:
         query["category"] = category
+    
+    # Handle fresh delivery city filter (for cakes)
+    if fresh_city:
+        city_lower = fresh_city.lower()
+        query["$or"] = [
+            {"fresh_delivery_cities": {"$regex": city_lower, "$options": "i"}},
+            {"is_pan_india_shippable": True}  # Pan-India cakes available everywhere
+        ]
+    
+    # Handle availability filter
+    if availability == 'fresh':
+        query["is_fresh_only"] = True
+    elif availability == 'pan-india':
+        query["is_pan_india_shippable"] = True
     
     # Handle collection-based filtering (e.g., valentine)
     if collection:
