@@ -13,12 +13,33 @@
 
 ## What's Been Implemented
 
-### Phase 1: Foundation (Completed)
-- Multi-pillar architecture with dedicated pages
-- Ultimate Service Desk with ticket management
-- Shopify product sync (604+ products)
-- Member dashboard and pet profiles
-- AI-powered Mira® assistant
+### Phase 12F: P1 Bug Fixes & UX Improvements (Jan 27, 2025)
+
+**Bug Fixes:**
+
+1. **Floating Button Hiding Mira** (P0 - FIXED)
+   - Added path-based visibility check to `FloatingContactButton.jsx`
+   - Button now hidden on: `/mira`, `/ask-mira`, `/voice-order`, `/agent`, `/admin/service-desk`
+   - Uses `useLocation` hook to detect current path
+
+2. **Mira Memories Not Storing** (P1 - FIXED)
+   - Fixed `/api/mira/session/{session_id}` endpoint to return messages array at root level
+   - Frontend `MiraConversationHistory` now receives properly formatted message objects
+   - Each message includes: sender (member/mira), content, timestamp
+
+3. **Product Box Image URL Not Saving** (P1 - FIXED)
+   - Added `image_url: Optional[str] = None` field to `UnifiedProduct` model in `unified_product_box.py`
+   - PUT endpoint now properly accepts and saves image_url field
+
+**UX Improvements:**
+
+4. **Member Dashboard "All Services" Tab** (NEW)
+   - Replaced individual pillar tabs (Celebrations, Dining, Stay, Travel) with unified "All Services" tab
+   - Shows all 14 pillars in a grid with icons, names, and descriptions
+   - Quick Actions section: Book Vet Visit, Find Boarding, Order Cake, Emergency Help
+   - Cleaner navigation with scrollable tabs
+
+**Testing:** All features verified in iteration_97 - 100% pass rate (13/13 backend tests)
 
 ### Phase 12E: Contact & Communication Features (Jan 27, 2025)
 
