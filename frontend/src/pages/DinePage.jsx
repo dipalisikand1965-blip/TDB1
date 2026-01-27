@@ -19,6 +19,7 @@ import MiraContextPanel from '../components/MiraContextPanel';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import DiningConciergePicker from '../components/DiningConciergePicker';
+import SEOHead from '../components/SEOHead';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
