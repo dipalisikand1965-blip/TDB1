@@ -153,6 +153,19 @@ const ProductListing = ({ category = 'all' }) => {
   const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
   const [userPets, setUserPets] = useState([]);
   const [personalizedMessage, setPersonalizedMessage] = useState('');
+  const [deliveryCity, setDeliveryCity] = useState('all'); // For cake availability filter
+
+  // Check if this is a cake category that needs availability filter
+  const isCakeCategory = ['cakes', 'breed-cakes', 'custom', 'birthday-cakes', 'pupcakes', 'dognuts', 'mini-cakes'].includes(category);
+
+  // Available cities for fresh delivery
+  const FRESH_DELIVERY_CITIES = [
+    { value: 'all', label: 'All Availability' },
+    { value: 'bangalore', label: '🏙️ Bangalore (Fresh)' },
+    { value: 'mumbai', label: '🏙️ Mumbai (Fresh)' },
+    { value: 'delhi ncr', label: '🏙️ Delhi NCR (Fresh)' },
+    { value: 'pan-india', label: '📦 Pan-India Only' },
+  ];
 
   // Get the pillar for this category
   const pillar = CATEGORY_TO_PILLAR[category] || 'shop';
