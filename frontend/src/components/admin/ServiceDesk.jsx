@@ -318,6 +318,9 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   
   // Quick Filters
   const [quickFilter, setQuickFilter] = useState('all'); // all, my_tickets, unassigned, overdue, today
+  
+  // Keyboard Shortcuts Help
+  const [showShortcutsModal, setShowShortcutsModal] = useState(false);
 
   // Keyboard Shortcuts
   useEffect(() => {
