@@ -1185,7 +1185,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   };
   
   // Use template in reply
-  const useTemplate = (template) => {
+  const applyTemplate = (template) => {
     setReplyText(template.content);
     setShowSettingsModal(false);
   };
