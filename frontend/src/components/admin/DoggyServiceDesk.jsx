@@ -3238,6 +3238,63 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         <Bell className="w-3.5 h-3.5" />
                         Add Reminder
                       </button>
+                      {/* Merge Button */}
+                      {selectedTicketIds.length > 0 && selectedTicketIds.includes(selectedTicket?.ticket_id) && (
+                        <button
+                          onClick={() => setShowMergeModal(true)}
+                          className="flex items-center gap-1 px-3 py-1.5 text-xs bg-purple-100 text-purple-700 border border-purple-200 rounded-full hover:bg-purple-200"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          Merge {selectedTicketIds.length} Tickets
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* ==================== TAGS BAR ==================== */}
+                  <div className="px-4 py-2 border-b bg-white flex items-center gap-2 flex-wrap">
+                    <span className="text-xs text-gray-500 font-medium">Tags:</span>
+                    {(selectedTicket.tags || []).map(tag => (
+                      <Badge 
+                        key={tag} 
+                        className="bg-gray-100 text-gray-700 text-xs pr-1 hover:bg-gray-200"
+                      >
+                        {tag}
+                        <button 
+                          onClick={() => removeTagFromTicket(tag)}
+                          className="ml-1 hover:text-red-500"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                    <div className="flex items-center gap-1">
+                      <Input
+                        value={newTag}
+                        onChange={(e) => setNewTag(e.target.value)}
+                        placeholder="Add tag..."
+                        className="h-6 w-24 text-xs"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && newTag.trim()) {
+                            addTagToTicket(newTag);
+                          }
+                        }}
+                        list="tag-suggestions"
+                      />
+                      <datalist id="tag-suggestions">
+                        {allTags.filter(t => !selectedTicket.tags?.includes(t)).map(t => (
+                          <option key={t} value={t} />
+                        ))}
+                      </datalist>
+                      <button
+                        onClick={() => addTagToTicket(newTag)}
+                        disabled={!newTag.trim()}
+                        className="p-1 hover:bg-gray-100 rounded disabled:opacity-50"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
                     </div>
                   </div>
                   
