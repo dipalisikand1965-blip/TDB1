@@ -225,7 +225,25 @@ const ProductCard = ({ product, pillar = 'celebrate' }) => {
   };
 
   const minPrice = getMinPrice();
-  const optionsCount = (product.sizes?.length || 1) * (product.flavors?.length || 1);
+  
+  // Calculate options count from actual product options (Shopify-style) or legacy sizes/flavors
+  const getOptionsCount = () => {
+    // If product has Shopify-style options with multiple values, count those
+    const shopifyOptions = product.options || [];
+    const realOptions = shopifyOptions.filter(opt => 
+      opt.name !== 'Title' && (opt.values?.length > 1 || false)
+    );
+    
+    if (realOptions.length > 0) {
+      // Multiply all option value counts together
+      return realOptions.reduce((acc, opt) => acc * (opt.values?.length || 1), 1);
+    }
+    
+    // Fallback to legacy sizes/flavors calculation
+    return (product.sizes?.length || 1) * (product.flavors?.length || 1);
+  };
+  
+  const optionsCount = getOptionsCount();
 
   return (
     <>
