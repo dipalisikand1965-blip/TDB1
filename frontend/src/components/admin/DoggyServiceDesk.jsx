@@ -1950,11 +1950,40 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 {!sidebarCollapsed && <span className="text-sm">Analytics</span>}
               </div>
             </button>
+            
+            {/* Agent Performance */}
+            <button
+              onClick={() => { fetchAgentPerformance(); setShowPerformanceModal(true); }}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors text-slate-300 hover:bg-slate-700/50"
+            >
+              <div className="flex items-center gap-3">
+                <Users className="w-5 h-5" />
+                {!sidebarCollapsed && <span className="text-sm">Agent Performance</span>}
+              </div>
+            </button>
           </div>
         </nav>
         
         {/* Bottom */}
         <div className="p-2 border-t border-slate-700">
+          {/* SLA Breach Alert */}
+          {(breachedTickets.length > 0 || approachingBreachTickets.length > 0) && !sidebarCollapsed && (
+            <div className="mb-2 p-2 bg-red-900/30 rounded-lg">
+              {breachedTickets.length > 0 && (
+                <div className="flex items-center gap-2 text-red-400 text-xs mb-1">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span>{breachedTickets.length} SLA Breached</span>
+                </div>
+              )}
+              {approachingBreachTickets.length > 0 && (
+                <div className="flex items-center gap-2 text-amber-400 text-xs">
+                  <Clock className="w-4 h-4" />
+                  <span>{approachingBreachTickets.length} Approaching Breach</span>
+                </div>
+              )}
+            </div>
+          )}
+          
           <button 
             onClick={() => setShowSettingsModal(true)}
             className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-700/50 text-sm"
