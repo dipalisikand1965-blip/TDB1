@@ -57,13 +57,14 @@ const StayManager = ({ getAuthHeader }) => {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [propsRes, bookingsRes, statsRes, mismatchRes, productsRes, socialsRes] = await Promise.all([
+      const [propsRes, bookingsRes, statsRes, mismatchRes, productsRes, socialsRes, boardingRes] = await Promise.all([
         fetch(`${API_URL}/api/admin/stay/properties?${new URLSearchParams(filters)}`, { headers: getAuthHeader() }),
         fetch(`${API_URL}/api/admin/stay/bookings`, { headers: getAuthHeader() }),
         fetch(`${API_URL}/api/admin/stay/stats`, { headers: getAuthHeader() }),
         fetch(`${API_URL}/api/admin/stay/mismatch-reports`, { headers: getAuthHeader() }),
         fetch(`${API_URL}/api/stay/products/bundles`),
-        fetch(`${API_URL}/api/stay/social/events`)
+        fetch(`${API_URL}/api/stay/social/events`),
+        fetch(`${API_URL}/api/admin/boarding/facilities`, { headers: getAuthHeader() })
       ]);
 
       if (propsRes.ok) {
@@ -92,6 +93,11 @@ const StayManager = ({ getAuthHeader }) => {
         const data = await socialsRes.json();
         setStaySocials(data.events || []);
         setProductStats(prev => ({ ...prev, socials: data.total || 0 }));
+      }
+      if (boardingRes.ok) {
+        const data = await boardingRes.json();
+        setBoardingFacilities(data.facilities || []);
+        setBoardingStats({ total: data.total || 0, cities: data.cities || [], types: data.types || [] });
       }
     } catch (error) {
       console.error('Error fetching stay data:', error);
