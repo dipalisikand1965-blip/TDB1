@@ -152,6 +152,8 @@ const ProductListing = ({ category = 'all' }) => {
   const [priceRange, setPriceRange] = useState('all');
   const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
   const [userPets, setUserPets] = useState([]);
+  const [selectedPet, setSelectedPet] = useState(null);
+  const [petRecommendations, setPetRecommendations] = useState([]);
   const [personalizedMessage, setPersonalizedMessage] = useState('');
   const [deliveryCity, setDeliveryCity] = useState('all'); // For cake availability filter
   const [detectedCity, setDetectedCity] = useState(null);
