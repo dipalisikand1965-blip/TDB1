@@ -1418,6 +1418,11 @@ const UnifiedPetPage = () => {
             </Card>
           </TabsContent>
 
+          {/* Mira Memories Tab - What Mira Knows About This Pet */}
+          <TabsContent value="memories" className="mt-0 space-y-6">
+            <MiraMemoriesSection petId={petId} petName={pet?.name} token={token} />
+          </TabsContent>
+
           {/* Health Vault Tab - Combined Health + Vaccines */}
           <TabsContent value="health" className="mt-0 space-y-6">
             {loadingHealth ? (
