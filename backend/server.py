@@ -719,12 +719,15 @@ async def auto_seed_critical_data():
             logger.info(f"✓ Collections exist: {collection_count}")
         
         # Seed Services for all pillars if none exist
-        service_count = await db.services.count_documents({})
-        if service_count == 0:
-            logger.info("Seeding Concierge® Services...")
-            await auto_seed_all_services()
-        else:
-            logger.info(f"✓ Services exist: {service_count}")
+        try:
+            service_count = await db.services.count_documents({})
+            if service_count == 0:
+                logger.info("Seeding Concierge® Services...")
+                await auto_seed_all_services()
+            else:
+                logger.info(f"✓ Services exist: {service_count}")
+        except Exception as svc_error:
+            logger.error(f"Services seed error (non-blocking): {svc_error}")
         
     except Exception as e:
         logger.error(f"Auto-seed critical data error: {e}")
