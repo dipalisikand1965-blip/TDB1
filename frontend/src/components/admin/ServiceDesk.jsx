@@ -4240,6 +4240,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
       {/* Modals */}
       <NewTicketForm />
       <SettingsModal />
+      <KeyboardShortcutsModal open={showShortcutsModal} onClose={() => setShowShortcutsModal(false)} />
       
       {/* Category Manager Modal */}
       <Dialog open={showCategoryManager} onOpenChange={setShowCategoryManager}>
