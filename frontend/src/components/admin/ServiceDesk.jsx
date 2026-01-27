@@ -4563,23 +4563,28 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
                 </div>
               )}
               
-              {/* Reply Text */}
+              {/* Reply Text - Rich Text Editor */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Message</Label>
-                <Textarea
+                <Label className="text-sm font-medium flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  {isInternalNote ? 'Internal Note' : 'Reply Message'}
+                </Label>
+                <RichTextEditor
                   value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
+                  onChange={setReplyText}
                   placeholder={
                     isInternalNote 
                       ? "Add internal note (only visible to team)..." 
                       : sendChannel === 'email'
-                        ? "Type your email reply..."
+                        ? "Compose your email reply with formatting..."
                         : sendChannel === 'whatsapp'
                           ? "Type your WhatsApp message..."
-                          : "Type your reply..."
+                          : "Type your professional reply..."
                   }
-                  className="min-h-[120px] resize-none"
-                  rows={5}
+                  minHeight="180px"
+                  showAI={true}
+                  onAIGenerate={handleAIDraft}
+                  aiLoading={aiLoading}
                 />
               </div>
               
