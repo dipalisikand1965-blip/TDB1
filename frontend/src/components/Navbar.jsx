@@ -87,7 +87,8 @@ const PILLARS = [
     icon: '🏃',
     path: '/fit',
     dropdown: [
-      { name: 'Fitness Plans', path: '/fit' },
+      { name: 'Fit By Concierge®', path: '/fit', highlight: true },
+      { name: 'Fitness Plans', path: '/fit#plans' },
       { name: 'Weight Programs', path: '/fit?type=weight' },
       { name: 'Exercise', path: '/fit?type=exercise' },
     ]
