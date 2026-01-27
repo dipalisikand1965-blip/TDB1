@@ -42,6 +42,175 @@ const LIFE_PILLARS = [
   { id: 'community', name: 'Community', icon: '👥', path: '/pillar/community', color: 'from-yellow-400 to-amber-400' }
 ];
 
+// Memory Type Icons and Colors
+const MEMORY_TYPE_CONFIG = {
+  event: { icon: Calendar, color: 'from-blue-500 to-indigo-500', bg: 'bg-blue-50', text: 'text-blue-700', name: 'Events & Plans' },
+  health: { icon: Stethoscope, color: 'from-red-500 to-pink-500', bg: 'bg-red-50', text: 'text-red-700', name: 'Health & Wellness' },
+  shopping: { icon: Gift, color: 'from-purple-500 to-violet-500', bg: 'bg-purple-50', text: 'text-purple-700', name: 'Preferences & Shopping' },
+  general: { icon: Brain, color: 'from-emerald-500 to-teal-500', bg: 'bg-emerald-50', text: 'text-emerald-700', name: 'General' }
+};
+
+// Mira Memories Section Component
+const MiraMemoriesSection = ({ petId, petName, token }) => {
+  const [memories, setMemories] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchMemories = async () => {
+      if (!petId || !token) return;
+      
+      try {
+        const response = await fetch(`${API_URL}/api/mira/memories/pet/${petId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setMemories(data);
+        } else {
+          setError('Could not load memories');
+        }
+      } catch (err) {
+        setError('Failed to fetch memories');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMemories();
+  }, [petId, token]);
+
+  if (loading) {
+    return (
+      <Card className="p-8">
+        <div className="flex items-center justify-center">
+          <Loader2 className="w-6 h-6 animate-spin text-purple-600 mr-2" />
+          <span className="text-gray-500">Loading Mira's memories...</span>
+        </div>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="p-8">
+        <div className="text-center text-gray-500">
+          <Brain className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+          <p>{error}</p>
+        </div>
+      </Card>
+    );
+  }
+
+  const hasMemories = memories?.total_memories > 0;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <Card className="p-6 bg-gradient-to-br from-purple-50 to-violet-50 border-purple-100">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-lg">
+            <Brain className="w-7 h-7 text-white" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-gray-900">Mira's Memories of {petName || 'Your Pet'}</h2>
+            <p className="text-gray-600 text-sm">
+              Things Mira has learned from your conversations to provide personalised service
+            </p>
+          </div>
+          <div className="text-right">
+            <div className="text-3xl font-bold text-purple-600">{memories?.total_memories || 0}</div>
+            <div className="text-xs text-gray-500">Total Memories</div>
+          </div>
+        </div>
+      </Card>
+
+      {!hasMemories ? (
+        <Card className="p-12 text-center border-dashed border-2">
+          <Brain className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Memories Yet</h3>
+          <p className="text-gray-500 mb-4 max-w-md mx-auto">
+            As you chat with Mira about {petName || 'your pet'}, she'll remember important details 
+            like health notes, preferences, upcoming events, and more.
+          </p>
+          <Button 
+            onClick={() => window.location.href = '/mira'}
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            <MessageCircle className="w-4 h-4 mr-2" />
+            Chat with Mira
+          </Button>
+        </Card>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-6">
+          {Object.entries(memories.by_type || {}).map(([type, data]) => {
+            const config = MEMORY_TYPE_CONFIG[type] || MEMORY_TYPE_CONFIG.general;
+            const Icon = config.icon;
+            
+            return (
+              <Card key={type} className="overflow-hidden">
+                {/* Type Header */}
+                <div className={`h-16 bg-gradient-to-r ${config.color} px-4 flex items-center justify-between`}>
+                  <div className="flex items-center gap-3 text-white">
+                    <Icon className="w-6 h-6" />
+                    <span className="font-semibold">{data.name || config.name}</span>
+                  </div>
+                  <Badge className="bg-white/20 text-white">
+                    {data.count} memories
+                  </Badge>
+                </div>
+                
+                {/* Memories List */}
+                <div className="p-4 space-y-3 max-h-80 overflow-y-auto">
+                  {data.memories?.map((memory, idx) => (
+                    <div 
+                      key={memory.id || idx}
+                      className={`p-3 rounded-lg ${config.bg} border border-transparent hover:border-${type === 'health' ? 'red' : type === 'event' ? 'blue' : type === 'shopping' ? 'purple' : 'emerald'}-200 transition-all`}
+                    >
+                      <p className="text-gray-800 text-sm">{memory.content}</p>
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className={`text-xs ${config.text}`}>
+                            {memory.source || 'Conversation'}
+                          </Badge>
+                          {memory.is_critical && (
+                            <Badge className="bg-red-500 text-white text-xs">Critical</Badge>
+                          )}
+                        </div>
+                        {memory.created_at && (
+                          <span className="text-xs text-gray-400">
+                            {new Date(memory.created_at).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Info Note */}
+      <Card className="p-4 bg-gray-50 border-gray-200">
+        <div className="flex items-start gap-3">
+          <HelpCircle className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+          <div className="text-sm text-gray-600">
+            <p className="font-medium text-gray-700 mb-1">How memories work</p>
+            <p>
+              Mira automatically remembers important things you mention in conversations, 
+              like upcoming trips, health concerns, food preferences, and special dates. 
+              These memories help her provide more personalised recommendations and service.
+            </p>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
 // Quick questions for inline answering
 const QUICK_QUESTIONS = [
   { id: 'food_allergies', label: 'Does {name} have any food allergies?', icon: '🍖', options: ['No allergies', 'Chicken', 'Grain', 'Beef', 'Other'] },
