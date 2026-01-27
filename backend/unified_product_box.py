@@ -152,6 +152,7 @@ class UnifiedProduct(BaseModel):
     primary_pillar: Optional[str] = None
     
     # Media
+    image_url: Optional[str] = None  # Primary image URL
     images: List[str] = []
     thumbnail: Optional[str] = None
     
