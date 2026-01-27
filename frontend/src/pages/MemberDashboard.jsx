@@ -2473,7 +2473,7 @@ const MemberDashboard = () => {
                     <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all"
-                        style={{ width: `${pet.overall_score || 0}%` }}
+                        style={{ width: `${Math.min(100, pet.overall_score || 0)}%` }}
                       />
                     </div>
                   </div>
