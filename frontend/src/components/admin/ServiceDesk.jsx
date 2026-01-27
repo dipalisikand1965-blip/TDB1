@@ -2654,6 +2654,15 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
             >
               <Plus className="w-4 h-4 mr-1" /> New Ticket
             </Button>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setShowShortcutsModal(true)}
+              className="text-slate-500 hover:text-slate-700"
+              title="Keyboard Shortcuts (?)"
+            >
+              <Keyboard className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </div>
