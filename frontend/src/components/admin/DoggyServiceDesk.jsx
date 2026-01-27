@@ -193,6 +193,10 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   
+  // Bulk Selection
+  const [selectedTicketIds, setSelectedTicketIds] = useState([]);
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  
   // Pet & Member context
   const [petProfile, setPetProfile] = useState(null);
   const [memberProfile, setMemberProfile] = useState(null);
