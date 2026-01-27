@@ -231,6 +231,31 @@
 
 **Script**: `/app/backend/scripts/enrich_cake_products.py`
 
+### Phase 12: Bug Fixes & Data Verification (Jan 27, 2025)
+
+**Issues Resolved:**
+- ✅ **Product Options Count**: Fixed `optionsCount` calculation in ProductCard.jsx to use actual Shopify-style `options` array instead of legacy `sizes/flavors`
+- ✅ **WebSocket URL Resolution**: Fixed Socket.IO connection to use `window.location.origin` when API URL is relative/empty
+- ✅ **Production Data Verification**: All 14 pillars verified with products and services
+- ✅ **Pet Score / Pawmoter Score**: Verified working correctly in navbar (Mojo 100%), dashboard, and product detail modals
+- ✅ **Ticket API**: Verified working for all ticket types (ADV-, TKT-, PET- prefixes)
+
+**Data Counts Verified:**
+- celebrate: 245 products, 7 services
+- stay: 80 products, 2 services
+- travel: 75 products, 2 services
+- feed: 21 products, 2 services
+- care: 75 products, 2 services
+- fit: 83 products, 10 services
+- learn: 65 products, 2 services
+- enjoy: 58 products, 2 services
+- groom: 10 products, 2 services
+- adopt: 24 products, 2 services
+- farewell: 28 products, 2 services
+- dine: 56 products, 2 services
+- insure: 9 products, 2 services
+- shop: 229 products, 2 services
+
 ### P1 - Next Sprint (Concierge for All 14 Pillars)
 13. **Add Celebrate Concierge Services**: Like Fit, add Concierge® services for cakes, treats, hampers
 14. **Replicate Concierge Pattern to All Pillars**: Dine, Stay, Travel, Care, Enjoy, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt, Shop
