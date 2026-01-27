@@ -77,6 +77,21 @@
   - Cities: Bangalore, Mumbai, Delhi NCR for fresh delivery
   - Pan-India option for shippable cakes
   - Backend API already supports `fresh_delivery_city` parameter
+- ✅ **Location Detection**: Auto-detect user location and filter cakes by nearest delivery city
+  - Uses browser geolocation + reverse geocoding
+  - Shows "Detect Location" button on cakes page
+  - Green banner when location detected
+
+**Concierge® Branding:**
+- ✅ **Navbar "By Concierge®"**: Added highlighted menu items (Fit By Concierge®, Care By Concierge®, etc.)
+- ✅ **Mira Panel**: Updated to show "Your Concierge®" with ® symbol
+- ✅ **Service Cards**: All service cards show "Concierge®" badge
+
+**Auto-Seeding on Deployment:**
+- ✅ **Services Auto-Seed**: Added `auto_seed_all_services()` function to startup
+  - Seeds Fit, Care, and Celebrate services automatically
+  - Uses upsert to preserve existing data
+  - Logs service count during initialization
 
 **Cake Data Migration (Backend - Already Complete):**
 - `fresh_delivery_cities` field added to cake products
