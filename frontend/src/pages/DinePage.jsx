@@ -157,6 +157,9 @@ const DinePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
+      {/* SEO Meta Tags */}
+      <SEOHead page="dine" path="/dine" />
+      
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-orange-500 to-red-500 text-white py-16 px-4 overflow-hidden">
         <div className="absolute inset-0 opacity-20">
