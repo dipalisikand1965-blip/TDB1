@@ -421,30 +421,54 @@ async def get_boarding_facilities(
     limit: int = 50,
     skip: int = 0
 ):
-    """Get pet boarding facilities (public)"""
-    query = {"status": "active"}
+    """Get pet boarding facilities (public) - queries both collections for compatibility"""
+    query = {}
+    active_query = {"status": "active"}
     
     if city:
         query["city"] = {"$regex": city, "$options": "i"}
+        active_query["city"] = {"$regex": city, "$options": "i"}
     if boarding_type:
         query["boarding_type"] = boarding_type
+        active_query["boarding_type"] = boarding_type
     if min_rating:
         query["paw_score"] = {"$gte": min_rating}
+        active_query["paw_score"] = {"$gte": min_rating}
     
     projection = {"_id": 0}
     
-    facilities = await db.pet_boarding.find(query, projection).skip(skip).limit(limit).to_list(limit)
-    total = await db.pet_boarding.count_documents(query)
+    # Query both collections and combine results
+    facilities_1 = await db.stay_boarding_facilities.find(query, projection).skip(skip).limit(limit).to_list(limit)
+    facilities_2 = await db.pet_boarding.find(active_query, projection).skip(skip).limit(limit).to_list(limit)
     
-    # Get cities and types for filters
-    cities = await db.pet_boarding.distinct("city", {"status": "active"})
-    types = await db.pet_boarding.distinct("boarding_type", {"status": "active"})
+    # Combine and deduplicate by name+city
+    seen = set()
+    combined = []
+    for f in facilities_1 + facilities_2:
+        key = f"{f.get('name', '')}-{f.get('city', '')}"
+        if key not in seen:
+            seen.add(key)
+            combined.append(f)
+    
+    # Sort by paw_score descending
+    combined.sort(key=lambda x: x.get('paw_score', 0), reverse=True)
+    
+    total = len(combined)
+    
+    # Get cities and types for filters from both collections
+    cities_1 = await db.stay_boarding_facilities.distinct("city")
+    cities_2 = await db.pet_boarding.distinct("city", {"status": "active"})
+    cities = list(set(cities_1 + cities_2))
+    
+    types_1 = await db.stay_boarding_facilities.distinct("boarding_type")
+    types_2 = await db.pet_boarding.distinct("boarding_type", {"status": "active"})
+    types = list(set(types_1 + types_2)) or ["Home-style", "Premium", "Private", "Luxury"]
     
     return {
-        "facilities": facilities,
+        "facilities": combined[:limit],
         "total": total,
         "cities": sorted(cities),
-        "boarding_types": types or ["Home-style", "Premium", "Private", "Luxury"]
+        "boarding_types": types
     }
 
 
