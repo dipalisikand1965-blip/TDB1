@@ -1254,8 +1254,12 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   // Check notification permission on mount
   useEffect(() => {
     if ('Notification' in window) {
-      setNotificationPermission(Notification.permission);
-      setNotificationsEnabled(Notification.permission === 'granted');
+      const perm = Notification.permission;
+      // Use a timeout to avoid synchronous setState in effect
+      setTimeout(() => {
+        setNotificationPermission(perm);
+        setNotificationsEnabled(perm === 'granted');
+      }, 0);
     }
   }, []);
   
