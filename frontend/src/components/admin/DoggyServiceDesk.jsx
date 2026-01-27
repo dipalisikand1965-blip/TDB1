@@ -2940,10 +2940,44 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         >
                           <Edit className="w-4 h-4 text-gray-400 hover:text-emerald-600" />
                         </button>
+                        {/* Agent Collision Warning */}
+                        {activeAgents[selectedTicket.ticket_id]?.filter(a => a !== adminUser).length > 0 && (
+                          <div className="flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">
+                            <AlertTriangle className="w-3 h-3" />
+                            <span>Also viewing: {activeAgents[selectedTicket.ticket_id].filter(a => a !== adminUser).join(', ')}</span>
+                          </div>
+                        )}
                       </div>
-                      <h3 className="font-semibold text-gray-900 text-lg">
-                        {selectedTicket.subject || selectedTicket.description?.slice(0, 60)}
-                      </h3>
+                      {/* Inline Subject Editing */}
+                      {editingSubject ? (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            value={editedSubject}
+                            onChange={(e) => setEditedSubject(e.target.value)}
+                            className="flex-1 text-lg font-semibold"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') saveSubject();
+                              if (e.key === 'Escape') setEditingSubject(false);
+                            }}
+                            autoFocus
+                          />
+                          <Button size="sm" onClick={saveSubject} className="bg-emerald-500 hover:bg-emerald-600">
+                            <CheckCircle className="w-4 h-4" />
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={() => setEditingSubject(false)}>
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <h3 
+                          className="font-semibold text-gray-900 text-lg cursor-pointer hover:text-emerald-600 group"
+                          onClick={startEditingSubject}
+                          title="Click to edit subject"
+                        >
+                          {selectedTicket.subject || selectedTicket.description?.slice(0, 60)}
+                          <Edit className="w-3 h-3 inline ml-2 opacity-0 group-hover:opacity-50" />
+                        </h3>
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       {/* Pillar Selector */}
