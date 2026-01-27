@@ -3324,8 +3324,6 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                       </button>
                     </div>
                   </div>
-                    </div>
-                  </div>
                   
                   {/* ==================== REMINDERS LIST (if any) ==================== */}
                   {ticketReminders.length > 0 && (
