@@ -802,7 +802,7 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
       
       const res = await fetch(`${getApiUrl()}/api/tickets/?${params}`, { headers: authHeaders });
       const data = await res.json();
-      setTickets(data.tickets || []);
+      setTickets(data.items || data.tickets || []);
     } catch (err) {
       console.error('Error fetching tickets:', err);
     }
