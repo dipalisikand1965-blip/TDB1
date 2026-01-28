@@ -22,7 +22,7 @@ import {
   ArrowLeft, CreditCard, Truck, MapPin, Phone, CheckCircle,
   User, Mail, PawPrint, Gift, Sparkles, Crown, AlertCircle,
   Loader2, Shield, FileText, Download, Store, ChevronRight,
-  ChevronDown, ChevronUp, Package
+  ChevronDown, ChevronUp, Package, Plus
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 
