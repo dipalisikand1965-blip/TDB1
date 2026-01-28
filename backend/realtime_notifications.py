@@ -86,8 +86,8 @@ class NotificationManager:
     async def emit_agent_notification(agent_id: str, notification: dict):
         """Send notification to specific agent"""
         # Find agent's socket ID
-        for sid, aid in connected_agents.items():
-            if aid == agent_id:
+        for sid, agent_info in connected_agents.items():
+            if agent_info.get('agent_id') == agent_id:
                 try:
                     await sio.emit('notification', notification, room=sid)
                     logger.info(f"Sent notification to agent: {agent_id}")
