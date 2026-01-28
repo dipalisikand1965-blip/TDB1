@@ -108,6 +108,19 @@ const ShopManager = ({ getAuthHeader }) => {
     }
   };
 
+  const fetchWishlistData = async () => {
+    setLoadingWishlist(true);
+    try {
+      const authHeader = typeof getAuthHeader === 'function' ? getAuthHeader() : getAuthHeader;
+      const response = await axios.get(`${API_URL}/api/admin/wishlists/summary`, authHeader);
+      setWishlistData(response.data || { popular_wishlisted: [], total_wishlisted_products: 0 });
+    } catch (error) {
+      console.error('Error fetching wishlist data:', error);
+    } finally {
+      setLoadingWishlist(false);
+    }
+  };
+
   const syncToUnified = async () => {
     try {
       const authHeader = typeof getAuthHeader === 'function' ? getAuthHeader() : getAuthHeader;
