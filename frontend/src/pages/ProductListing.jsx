@@ -177,9 +177,22 @@ const ProductListing = ({ category = 'all' }) => {
   const [deliveryCity, setDeliveryCity] = useState('all'); // For cake availability filter
   const [detectedCity, setDetectedCity] = useState(null);
   const [detectingLocation, setDetectingLocation] = useState(false);
+  
+  // Additional filters for Celebrate products
+  const [selectedBreed, setSelectedBreed] = useState('all');
+  const [selectedShape, setSelectedShape] = useState('all');
+  const [availableBreeds, setAvailableBreeds] = useState([]);
+  const [availableShapes, setAvailableShapes] = useState([]);
+  const [searchInput, setSearchInput] = useState('');
 
   // Check if this is a cake category that needs availability filter
   const isCakeCategory = ['cakes', 'breed-cakes', 'custom', 'birthday-cakes', 'pupcakes', 'dognuts', 'mini-cakes'].includes(category);
+  
+  // Check if this is breed cakes - needs breed filter
+  const isBreedCakeCategory = category === 'breed-cakes';
+  
+  // Check if this needs shape filter (birthday cakes, cakes)
+  const needsShapeFilter = ['cakes', 'birthday-cakes', 'Birthdays'].includes(category);
 
   // Available cities for fresh delivery
   const FRESH_DELIVERY_CITIES = [
