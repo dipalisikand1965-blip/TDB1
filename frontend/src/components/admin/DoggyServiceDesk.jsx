@@ -4441,30 +4441,70 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 </div>
               ) : (
                 <div className="grid gap-4">
-                  {petParents.map(parent => (
-                    <Card key={parent.id} className="p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                          <User className="w-6 h-6 text-blue-600" />
+                  {petParents.map(parent => {
+                    // Get tickets for this parent
+                    const parentTickets = allTickets.filter(t => 
+                      t.contact?.email === parent.email || 
+                      t.customer_email === parent.email ||
+                      t.contact?.phone === parent.phone
+                    );
+                    const parentPets = petProfiles.filter(p => 
+                      p.owner_email === parent.email || 
+                      p.user_email === parent.email
+                    );
+                    
+                    return (
+                      <Card 
+                        key={parent.id} 
+                        className="p-4 hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-200"
+                        onClick={() => {
+                          setSelectedParentForHistory(parent);
+                          setShowParentHistoryModal(true);
+                        }}
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                            <User className="w-6 h-6 text-blue-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900">{parent.name || 'Unknown'}</h3>
+                            <p className="text-sm text-gray-500">{parent.email}</p>
+                            {parent.phone && (
+                              <p className="text-sm text-gray-500">{parent.phone}</p>
+                            )}
+                            {/* Pets owned */}
+                            {parentPets.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {parentPets.slice(0, 3).map(pet => (
+                                  <Badge key={pet.id} variant="secondary" className="text-xs">
+                                    🐾 {pet.name}
+                                  </Badge>
+                                ))}
+                                {parentPets.length > 3 && (
+                                  <Badge variant="secondary" className="text-xs">+{parentPets.length - 3} more</Badge>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            {parent.membership && (
+                              <Badge variant="outline" className="mb-2">{parent.membership}</Badge>
+                            )}
+                            {parentTickets.length > 0 && (
+                              <div className="flex items-center gap-1 text-xs text-purple-600 mt-1">
+                                <Inbox className="w-3 h-3" />
+                                <span>{parentTickets.length} ticket{parentTickets.length !== 1 ? 's' : ''}</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{parent.name || 'Unknown'}</h3>
-                          <p className="text-sm text-gray-500">{parent.email}</p>
-                          {parent.phone && (
-                            <p className="text-sm text-gray-500">{parent.phone}</p>
-                          )}
+                        <div className="mt-3 pt-3 border-t flex items-center justify-between text-xs text-gray-400">
+                          <span>Click to view ticket history</span>
+                          <ChevronRight className="w-4 h-4" />
                         </div>
-                        <div className="text-right">
-                          {parent.membership && (
-                            <Badge variant="outline" className="mb-2">{parent.membership}</Badge>
-                          )}
-                          {parent.pets_count > 0 && (
-                            <p className="text-xs text-gray-500">{parent.pets_count} pet(s)</p>
-                          )}
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
+                      </Card>
+                    );
+                  })}
                 </div>
               )}
             </div>
