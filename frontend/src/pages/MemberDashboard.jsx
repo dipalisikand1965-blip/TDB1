@@ -640,6 +640,29 @@ const MemberDashboard = () => {
         </button>
       )}
       
+      {/* 🎙️ Voice Assistant Button */}
+      <MiraVoiceButton 
+        onClick={() => setShowVoiceAssistant(true)}
+        petName={primaryPet?.name || 'your pet'}
+      />
+      
+      {/* 🎙️ Voice Assistant Modal */}
+      <MiraVoiceAssistant
+        isOpen={showVoiceAssistant}
+        onClose={() => setShowVoiceAssistant(false)}
+        petName={primaryPet?.name || 'your pet'}
+        petId={primaryPet?.id}
+        petData={{
+          overall_score: primaryPet?.overall_score || 0,
+          breed: primaryPet?.breed,
+          age: primaryPet?.age
+        }}
+        onNavigate={(path) => {
+          setShowVoiceAssistant(false);
+          navigate(path);
+        }}
+      />
+      
       {/* Beautiful Hero Section - Pet-First Design */}
       <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800">
         {/* Animated Background Elements */}
