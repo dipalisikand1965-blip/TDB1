@@ -4426,6 +4426,101 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             </div>
           )}
           
+          {/* Pet Parents View */}
+          {activeNav === 'pet_parents' && (
+            <div className="flex-1 p-6 overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h1 className="text-2xl font-bold text-gray-900">Pet Parents</h1>
+                <Badge variant="outline">{petParents.length} total</Badge>
+              </div>
+              
+              {petParents.length === 0 ? (
+                <div className="text-center py-12">
+                  <Users className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                  <p className="text-gray-500">No pet parents found</p>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {petParents.map(parent => (
+                    <Card key={parent.id} className="p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                          <User className="w-6 h-6 text-blue-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">{parent.name || 'Unknown'}</h3>
+                          <p className="text-sm text-gray-500">{parent.email}</p>
+                          {parent.phone && (
+                            <p className="text-sm text-gray-500">{parent.phone}</p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          {parent.membership && (
+                            <Badge variant="outline" className="mb-2">{parent.membership}</Badge>
+                          )}
+                          {parent.pets_count > 0 && (
+                            <p className="text-xs text-gray-500">{parent.pets_count} pet(s)</p>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* Pet Profiles View */}
+          {activeNav === 'pet_profiles' && (
+            <div className="flex-1 p-6 overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h1 className="text-2xl font-bold text-gray-900">Pet Profiles</h1>
+                <Badge variant="outline">{petProfiles.length} total</Badge>
+              </div>
+              
+              {petProfiles.length === 0 ? (
+                <div className="text-center py-12">
+                  <Dog className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                  <p className="text-gray-500">No pet profiles found</p>
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {petProfiles.map(pet => (
+                    <Card key={pet.id} className="p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-start gap-4">
+                        <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center overflow-hidden">
+                          {pet.photo_url ? (
+                            <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <Dog className="w-7 h-7 text-amber-600" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">{pet.name || 'Unknown'}</h3>
+                          <p className="text-sm text-gray-500">{pet.breed || 'Unknown breed'}</p>
+                          {pet.owner_name && (
+                            <p className="text-xs text-gray-400 mt-1">Owner: {pet.owner_name}</p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          {pet.overall_score !== undefined && (
+                            <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              pet.overall_score >= 80 ? 'bg-emerald-100 text-emerald-700' :
+                              pet.overall_score >= 50 ? 'bg-amber-100 text-amber-700' :
+                              'bg-gray-100 text-gray-600'
+                            }`}>
+                              {pet.overall_score}% Soul
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          
           {/* Analytics & Reports Section */}
           {activeNav === 'analytics' && (
             <div className="flex-1 p-6 overflow-y-auto">
