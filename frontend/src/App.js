@@ -36,6 +36,67 @@ function PetSoulJourneyRedirect() {
   return <Navigate to={`/pet/${petId}`} replace />;
 }
 
+// App Badge Manager - Updates PWA icon badge with unread notification count
+function AppBadgeManager() {
+  const { user, isAuthenticated } = useAuth();
+  const { setBadge, clearBadge } = useAppBadge();
+  
+  // Fetch unread notification count and update badge
+  const updateBadgeCount = useCallback(async () => {
+    if (!isAuthenticated || !user) {
+      clearBadge();
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      // Fetch unread notifications count for the member
+      const res = await fetch(`${API_URL}/api/notifications/unread-count`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        const count = data.unread_count || 0;
+        setBadge(count);
+      }
+    } catch (err) {
+      // Silently fail - badge is not critical
+      console.debug('Badge update failed:', err);
+    }
+  }, [isAuthenticated, user, setBadge, clearBadge]);
+  
+  // Update badge on mount and when auth changes
+  useEffect(() => {
+    updateBadgeCount();
+    
+    // Poll every 60 seconds
+    const interval = setInterval(updateBadgeCount, 60000);
+    
+    // Listen for push notification events from service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data?.type === 'NOTIFICATION_RECEIVED') {
+          updateBadgeCount();
+        }
+      });
+    }
+    
+    return () => clearInterval(interval);
+  }, [updateBadgeCount]);
+  
+  // Clear badge on logout
+  useEffect(() => {
+    if (!isAuthenticated) {
+      clearBadge();
+    }
+  }, [isAuthenticated, clearBadge]);
+  
+  return null; // This is a side-effect only component
+}
+
 // Components
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
