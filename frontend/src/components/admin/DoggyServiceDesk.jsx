@@ -1978,7 +1978,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                   </div>
                 </button>
                 
-                {/* Pet Parent */}
+                {/* Pet Parent Tickets */}
                 <button
                   onClick={() => { setActiveNav('tickets'); setSelectedPillar('pet_parent'); }}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors ${
@@ -1987,11 +1987,14 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 >
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4 text-blue-400" />
-                    <span>Pet Parent</span>
+                    <span>Account</span>
                   </div>
+                  {stats.by_pillar?.pet_parent > 0 && (
+                    <span className="text-xs bg-blue-500/30 px-1.5 rounded">{stats.by_pillar.pet_parent}</span>
+                  )}
                 </button>
                 
-                {/* Pet Profile */}
+                {/* Pet Profile Tickets */}
                 <button
                   onClick={() => { setActiveNav('tickets'); setSelectedPillar('pet_profile'); }}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors ${
@@ -2000,16 +2003,23 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 >
                   <div className="flex items-center gap-2">
                     <Dog className="w-4 h-4 text-amber-400" />
-                    <span>Pet Profile</span>
+                    <span>Pet Updates</span>
                   </div>
+                  {stats.by_pillar?.pet_profile > 0 && (
+                    <span className="text-xs bg-amber-500/30 px-1.5 rounded">{stats.by_pillar.pet_profile}</span>
+                  )}
                 </button>
               </div>
             </div>
           )}
           
           {/* ==================== DATA SECTIONS ==================== */}
-          <div className="mt-4 space-y-1 px-1">
-            {/* Pet Parents */}
+          <div className="mt-4 px-1">
+            {!sidebarCollapsed && (
+              <div className="text-[10px] uppercase text-slate-500 px-3 mb-2 tracking-wider">Data</div>
+            )}
+            <div className="space-y-1">
+            {/* Pet Parents List */}
             <button
               onClick={() => setActiveNav('pet_parents')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
@@ -2025,7 +2035,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
               )}
             </button>
             
-            {/* Pet Profiles */}
+            {/* Pet Profiles List */}
             <button
               onClick={() => setActiveNav('pet_profiles')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
@@ -2040,7 +2050,11 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 <span className="text-xs opacity-60">{petProfiles.length}</span>
               )}
             </button>
-            
+            </div>
+          </div>
+          
+          {/* ==================== ORDERS & ANALYTICS ==================== */}
+          <div className="mt-2 space-y-1 px-1">
             {/* Orders */}
             <button
               onClick={() => setActiveNav('orders')}
