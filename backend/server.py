@@ -10525,6 +10525,10 @@ app.include_router(whatsapp_router)  # WhatsApp Business API at /api/whatsapp/*
 app.include_router(push_router)  # Push notifications at /api/push/*
 set_push_db(db)  # Initialize push notifications with database
 
+# Concierge Experience Admin
+app.include_router(experience_admin_router)  # Concierge experiences at /api/admin/concierge-experiences/*
+set_experience_admin_db(db)
+
 # Auto Ticket Creation System
 set_auto_ticket_db(db)  # Initialize auto-ticket creation with database
 
