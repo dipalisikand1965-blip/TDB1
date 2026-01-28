@@ -13,6 +13,28 @@
 
 ## What's Been Implemented
 
+### Phase 24: Service Desk UI Fix & Soul Score Clarity (Jan 28, 2025)
+
+**Fixed duplicate sidebar items and added Soul Score explanation:**
+
+1. **Service Desk Sidebar Reorganization** (COMPLETED)
+   - Renamed duplicate items: "Pet Parent" → "Account", "Pet Profile" → "Pet Updates" (for ticket filters)
+   - Added clear "Data" section header for Pet Parents/Pet Profiles lists
+   - Added Pet Parents view with cards showing name, email, membership
+   - Added Pet Profiles view with pet cards showing photo, breed, soul score
+   - **Files Modified**: `/app/frontend/src/components/admin/DoggyServiceDesk.jsx`
+
+2. **Soul Score Visual Distinction** (COMPLETED)
+   - Added explanation text: "Questions marked with ★ count towards Soul Score"
+   - Clarified that basic profile fields (name, breed, birthday) don't count
+   - Only weighted "soul questions" affect the score
+   - **Files Modified**: `/app/frontend/src/pages/UnifiedPetPage.jsx`
+
+3. **Select Dropdown z-index Fix** (FROM PHASE 23)
+   - Dropdowns now appear above dialogs (z-[100])
+
+---
+
 ### Phase 23: Bug Fixes & Wishlist Feature (Jan 28, 2025)
 
 **Critical bug fixes and new features:**
