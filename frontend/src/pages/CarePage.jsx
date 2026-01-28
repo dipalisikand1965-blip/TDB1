@@ -483,6 +483,48 @@ const CarePage = () => {
         </div>
       </div>
 
+      {/* === QUICK BOOK SERVICES === */}
+      <div className="py-12 bg-gradient-to-b from-slate-50 to-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <Badge className="bg-rose-100 text-rose-700 mb-3">Quick Book</Badge>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Book Care Services Instantly</h2>
+            <p className="text-gray-600 mt-2">Select a service and book in under 2 minutes</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { type: 'grooming', icon: Scissors, name: 'Grooming', color: 'from-pink-500 to-rose-600', desc: 'Bath, trim & spa' },
+              { type: 'vet', icon: Stethoscope, name: 'Vet Visit', color: 'from-blue-500 to-indigo-600', desc: 'Checkups & vaccines' },
+              { type: 'training', icon: GraduationCap, name: 'Training', color: 'from-purple-500 to-violet-600', desc: 'Behavior & skills' },
+              { type: 'walking', icon: PawPrint, name: 'Walking', color: 'from-green-500 to-emerald-600', desc: 'Daily walks' }
+            ].map((service) => {
+              const Icon = service.icon;
+              return (
+                <button
+                  key={service.type}
+                  onClick={() => {
+                    setBookingServiceType(service.type);
+                    setShowBookingModal(true);
+                  }}
+                  className="group p-6 bg-white rounded-2xl border-2 border-gray-100 hover:border-rose-200 hover:shadow-xl transition-all duration-300 text-left"
+                  data-testid={`quick-book-${service.type}`}
+                >
+                  <div className={`w-14 h-14 mb-4 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="font-bold text-gray-900 mb-1">{service.name}</h3>
+                  <p className="text-sm text-gray-500">{service.desc}</p>
+                  <div className="mt-3 flex items-center text-rose-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                    Book Now <ChevronRight className="w-4 h-4 ml-1" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
       {/* === HOW IT WORKS === */}
       <div className="py-16 bg-gradient-to-b from-white to-slate-50">
         <div className="max-w-6xl mx-auto px-4">
