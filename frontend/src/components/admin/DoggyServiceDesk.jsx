@@ -200,6 +200,41 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [selectedTicketIds, setSelectedTicketIds] = useState([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
   
+  // Notification Sound
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const notificationSoundRef = React.useRef(null);
+  
+  // Play notification sound for new tickets
+  const playNotificationSound = useCallback(() => {
+    if (!soundEnabled) return;
+    try {
+      // Create audio context for notification sound
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      
+      // Two-tone notification sound
+      oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+      gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      
+      oscillator.frequency.setValueAtTime(1174.66, audioCtx.currentTime + 0.15); // D6
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+      
+      oscillator.start(audioCtx.currentTime);
+      oscillator.stop(audioCtx.currentTime + 0.4);
+      
+      // Badge update
+      if ('setAppBadge' in navigator) {
+        navigator.setAppBadge(stats.open + 1).catch(() => {});
+      }
+    } catch (err) {
+      console.log('Sound notification not available:', err);
+    }
+  }, [soundEnabled, stats.open]);
+  
   // Pet & Member context
   const [petProfile, setPetProfile] = useState(null);
   const [memberProfile, setMemberProfile] = useState(null);
