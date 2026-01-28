@@ -489,8 +489,16 @@ async def register_for_event(event_id: str, name: str, email: str, phone: Option
     db = get_db()
     
     # Support both 'id' and 'event_id' field names for compatibility
-    event = await db.adoption_events.find_one({"$or": [{"event_id": event_id}, {"id": event_id}]})
+    event = await db.adoption_events.find_one({
+        "$or": [
+            {"event_id": event_id}, 
+            {"id": event_id},
+            {"event_id": event_id.upper()},  # Handle case variations
+            {"id": event_id.lower()}
+        ]
+    })
     if not event:
+        logger.error(f"Event not found: {event_id}")
         raise HTTPException(status_code=404, detail="Event not found")
     
     # Check capacity
