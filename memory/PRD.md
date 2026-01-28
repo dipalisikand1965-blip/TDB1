@@ -7,11 +7,57 @@
 - **Frontend**: React + Tailwind CSS + Shadcn/UI
 - **Backend**: FastAPI + Python
 - **Database**: MongoDB
-- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat, service_desk_settings, whatsapp_logs, concierge_requests, push_subscriptions, push_notification_logs, soul_whisper_logs, concierge_experiences
+- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat, service_desk_settings, whatsapp_logs, concierge_requests, push_subscriptions, push_notification_logs, soul_whisper_logs, concierge_experiences, social_share_claims, nps_submissions
 
 ---
 
 ## What's Been Implemented
+
+### Phase 19: Membership Dashboard Enhancements (Jan 28, 2025)
+
+**New Features:**
+
+1. **Tiered Membership Cards** (COMPLETED)
+   - 3-tier system: Bronze (0-999pts), Silver (1000-4999pts), Gold (5000+pts)
+   - Each tier has unique gradient colors, icons, and benefits
+   - Clickable Pet Pass Number to copy
+   - Full card modal with TD logo, validity dates, T&C
+   - Progress bar showing points to next tier
+   - **Files Created**: `/app/frontend/src/components/MembershipCardTiers.jsx`
+
+2. **Pawmoter Score (NPS)** (COMPLETED)
+   - 0-10 rating scale with category badges (Promoter/Passive/Detractor)
+   - Optional feedback collection
+   - 10 points reward for completion
+   - 30-day cooldown between submissions
+   - Backend stats endpoint for admin dashboard
+   - **Files Created**: `/app/frontend/src/components/PawmoterScore.jsx`
+
+3. **Social Share Rewards** (COMPLETED)
+   - Instagram sharing with screenshot upload
+   - Admin approval workflow
+   - 20 points reward on approval
+   - Privacy protection (no pet profile shared in share text)
+   - Screenshot stored as base64 in DB
+   - **Files Created**: `/app/frontend/src/components/SocialShareReward.jsx`
+
+4. **Breed Tips Engine** (COMPLETED)
+   - Category-based tips: Nutrition, Exercise, Grooming, Health
+   - Breed-specific tips for: Labrador, Golden Retriever, Beagle, Pug, German Shepherd
+   - Default tips for unknown breeds
+   - Daily rotating tips
+   - **Files Created**: `/app/frontend/src/components/BreedTipsEngine.jsx`
+
+5. **Member Rewards Backend** (COMPLETED)
+   - `/api/rewards/social-share-claim` - Submit social share with screenshot
+   - `/api/rewards/social-share-claims` - Admin list claims
+   - `/api/rewards/social-share-claims/{id}/review` - Approve/reject claims
+   - `/api/rewards/nps/check` - Check recent submission
+   - `/api/rewards/nps/submit` - Submit NPS score
+   - `/api/rewards/nps/stats` - NPS statistics
+   - `/api/rewards/loyalty/transactions` - Get user's point history
+   - `/api/rewards/loyalty/expiring` - Get expiring points (12-month expiry)
+   - **Files Created**: `/app/backend/member_rewards_routes.py`
 
 ### Phase 18: App Badge, Pillar Popup, Compact Dining & Sync Features (Jan 28, 2025)
 
