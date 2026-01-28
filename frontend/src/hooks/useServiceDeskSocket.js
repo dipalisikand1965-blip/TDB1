@@ -270,10 +270,12 @@ export const useServiceDeskSocket = (agentId, onNewTicket, onTicketUpdate, onNew
   return {
     connected,
     connectionError,
+    connectionState,
     subscribeToTicket,
     unsubscribeFromTicket,
     startTyping,
-    stopTyping
+    stopTyping,
+    reconnect
   };
 };
 
