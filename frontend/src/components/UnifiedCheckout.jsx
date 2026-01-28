@@ -144,6 +144,30 @@ const UnifiedCheckout = () => {
       }));
     }
   }, [user]);
+  
+  // Fetch smart recommendations based on cart items
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      if (cartItems.length === 0) return;
+      setLoadingRecommendations(true);
+      try {
+        const categories = [...new Set(cartItems.map(item => item.category).filter(Boolean))];
+        const response = await fetch(`${API_URL}/api/products/recommendations?categories=${categories.join(',')}&limit=4`);
+        if (response.ok) {
+          const data = await response.json();
+          // Filter out items already in cart
+          const cartIds = cartItems.map(item => item.id);
+          const filtered = (data.products || []).filter(p => !cartIds.includes(p.id));
+          setRecommendations(filtered.slice(0, 4));
+        }
+      } catch (err) {
+        console.error('Error fetching recommendations:', err);
+      } finally {
+        setLoadingRecommendations(false);
+      }
+    };
+    fetchRecommendations();
+  }, [cartItems]);
 
   // Calculate shipping fee
   const shippingFee = useMemo(() => {
