@@ -585,14 +585,35 @@ const AdoptManager = ({ authHeaders }) => {
 
           <div className="space-y-3">
             {events.map(event => (
-              <Card key={event.event_id} className="p-4">
+              <Card key={event.event_id || event.id} className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-semibold">{event.title}</p>
-                    <p className="text-sm text-gray-600">{event.date} {event.time && `at ${event.time}`}</p>
+                    <p className="text-sm text-gray-600">{event.date} {event.start_time && `at ${event.start_time}`}</p>
                     <p className="text-xs text-gray-500">{event.location} • {event.attendees?.length || 0} registered</p>
                   </div>
-                  <Badge>{new Date(event.date) >= new Date() ? 'Upcoming' : 'Past'}</Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge>{new Date(event.date) >= new Date() ? 'Upcoming' : 'Past'}</Badge>
+                    <Button variant="outline" size="sm" onClick={() => {
+                      setEditingEvent(event);
+                      setEventForm({
+                        title: event.title || '',
+                        description: event.description || '',
+                        event_type: event.event_type || 'adoption_drive',
+                        date: event.date || '',
+                        start_time: event.start_time || '',
+                        end_time: event.end_time || '',
+                        location: event.location || '',
+                        organizer: event.organizer || '',
+                        max_attendees: event.max_attendees || '',
+                        registration_required: event.registration_required || false,
+                        image: event.image || ''
+                      });
+                      setShowEventModal(true);
+                    }}>
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}
