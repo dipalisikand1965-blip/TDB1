@@ -4397,19 +4397,94 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           {activeNav === 'dashboard' && (
             <div className="flex-1 p-6 overflow-y-auto">
               <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
+              
+              {/* Today's Ticket Ticker */}
+              <Card className="mb-6 bg-gradient-to-r from-slate-800 to-slate-900 text-white overflow-hidden">
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-emerald-400" />
+                      Today&apos;s Ticket Ticker
+                    </h3>
+                    <Badge className="bg-emerald-500 text-white">
+                      {allTickets.filter(t => {
+                        const today = new Date().toDateString();
+                        return new Date(t.created_at).toDateString() === today;
+                      }).length} today
+                    </Badge>
+                  </div>
+                  <div className="relative h-16 overflow-hidden">
+                    <div className="flex gap-4 animate-marquee">
+                      {allTickets
+                        .filter(t => {
+                          const today = new Date();
+                          const ticketDate = new Date(t.created_at);
+                          const daysDiff = (today - ticketDate) / (1000 * 60 * 60 * 24);
+                          return daysDiff <= 1;
+                        })
+                        .slice(0, 20)
+                        .map((ticket, idx) => (
+                          <div 
+                            key={ticket.ticket_id || idx}
+                            onClick={() => {
+                              setActiveNav('tickets');
+                              setSelectedTicket(ticket);
+                            }}
+                            className="flex-shrink-0 bg-white/10 backdrop-blur rounded-lg px-4 py-2 cursor-pointer hover:bg-white/20 transition-colors"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs opacity-70">#{ticket.ticket_id?.slice(-6) || 'N/A'}</span>
+                              <Badge className={`text-[10px] ${
+                                ticket.status === 'open' || ticket.status === 'new' ? 'bg-blue-500' :
+                                ticket.status === 'in_progress' ? 'bg-amber-500' :
+                                ticket.status === 'resolved' ? 'bg-emerald-500' :
+                                'bg-slate-500'
+                              }`}>
+                                {ticket.status}
+                              </Badge>
+                            </div>
+                            <p className="text-sm truncate max-w-[200px]">{ticket.subject || 'No subject'}</p>
+                          </div>
+                        ))}
+                      {allTickets.filter(t => {
+                        const today = new Date();
+                        const ticketDate = new Date(t.created_at);
+                        const daysDiff = (today - ticketDate) / (1000 * 60 * 60 * 24);
+                        return daysDiff <= 1;
+                      }).length === 0 && (
+                        <div className="flex-shrink-0 text-slate-400 px-4 py-2">
+                          No tickets today yet - all quiet! 🎉
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+              
+              {/* Clickable Stats Cards */}
               <div className="grid grid-cols-4 gap-4 mb-6">
                 {[
-                  { label: 'Open Tickets', value: stats.open, color: 'bg-blue-500' },
-                  { label: 'In Progress', value: stats.in_progress, color: 'bg-amber-500' },
-                  { label: 'Resolved', value: stats.resolved, color: 'bg-emerald-500' },
-                  { label: 'Unassigned', value: stats.unassigned, color: 'bg-red-500' }
+                  { label: 'Open Tickets', value: stats.open, color: 'bg-blue-500', hoverColor: 'hover:bg-blue-600', view: 'open' },
+                  { label: 'In Progress', value: stats.in_progress, color: 'bg-amber-500', hoverColor: 'hover:bg-amber-600', view: 'in_progress' },
+                  { label: 'Resolved', value: stats.resolved, color: 'bg-emerald-500', hoverColor: 'hover:bg-emerald-600', view: 'resolved' },
+                  { label: 'Unassigned', value: stats.unassigned, color: 'bg-red-500', hoverColor: 'hover:bg-red-600', view: 'unassigned' }
                 ].map((stat, idx) => (
-                  <Card key={idx} className="p-4">
-                    <div className={`w-10 h-10 rounded-lg ${stat.color} flex items-center justify-center mb-3`}>
+                  <Card 
+                    key={idx} 
+                    className="p-4 cursor-pointer hover:shadow-lg transition-all border-2 border-transparent hover:border-slate-200"
+                    onClick={() => {
+                      setActiveNav('tickets');
+                      setSelectedView(stat.view);
+                    }}
+                  >
+                    <div className={`w-10 h-10 rounded-lg ${stat.color} ${stat.hoverColor} flex items-center justify-center mb-3 transition-colors`}>
                       <Inbox className="w-5 h-5 text-white" />
                     </div>
                     <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
                     <div className="text-sm text-gray-500">{stat.label}</div>
+                    <div className="text-xs text-blue-600 mt-2 flex items-center gap-1">
+                      Click to view <ChevronRight className="w-3 h-3" />
+                    </div>
                   </Card>
                 ))}
               </div>
@@ -4419,7 +4494,14 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 <h3 className="font-semibold text-gray-900 mb-4">Tickets by Pillar</h3>
                 <div className="grid grid-cols-6 gap-3">
                   {Object.entries(PILLARS).map(([key, pillar]) => (
-                    <div key={key} className="text-center p-3 bg-gray-50 rounded-lg">
+                    <div 
+                      key={key} 
+                      className="text-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 hover:shadow transition-all"
+                      onClick={() => {
+                        setActiveNav('tickets');
+                        setSelectedPillar(key);
+                      }}
+                    >
                       <span className="text-2xl">{pillar.emoji}</span>
                       <div className="text-lg font-bold text-gray-900 mt-1">{stats.by_pillar[key] || 0}</div>
                       <div className="text-xs text-gray-500">{pillar.name}</div>
