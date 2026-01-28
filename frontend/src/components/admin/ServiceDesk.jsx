@@ -99,6 +99,11 @@ const SOURCE_CONFIG = {
   grooming: { label: 'Grooming', color: 'bg-violet-100 text-violet-700', icon: '✂️' },
   vet_consult: { label: 'Vet Consult', color: 'bg-red-100 text-red-700', icon: '🩺' },
   
+  // Concierge®
+  concierge_card: { label: 'Concierge®', color: 'bg-violet-100 text-violet-700', icon: '✨' },
+  concierge_request: { label: 'Concierge®', color: 'bg-violet-100 text-violet-700', icon: '✨' },
+  experience_request: { label: 'Experience', color: 'bg-purple-100 text-purple-700', icon: '🌟' },
+  
   // Internal & Partner
   internal: { label: 'Internal', color: 'bg-gray-100 text-gray-700', icon: '🏢' },
   partner: { label: 'Partner', color: 'bg-indigo-100 text-indigo-700', icon: '🤝' },
