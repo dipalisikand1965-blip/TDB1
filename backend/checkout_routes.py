@@ -536,3 +536,237 @@ async def validate_discount_code(code: str, subtotal: float):
         "description": discount.get("description", ""),
         "min_order_value": discount.get("min_order_value", 0)
     }
+
+
+
+# ==================== PDF INVOICE GENERATION ====================
+
+def generate_invoice_pdf(order: dict) -> io.BytesIO:
+    """Generate a professional PDF invoice for an order"""
+    buffer = io.BytesIO()
+    
+    # Create PDF document
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=20*mm,
+        leftMargin=20*mm,
+        topMargin=15*mm,
+        bottomMargin=15*mm
+    )
+    
+    # Styles
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(
+        name='InvoiceTitle',
+        fontSize=24,
+        leading=28,
+        alignment=TA_CENTER,
+        textColor=colors.HexColor('#7c3aed'),
+        fontName='Helvetica-Bold'
+    ))
+    styles.add(ParagraphStyle(
+        name='CompanyName',
+        fontSize=18,
+        leading=22,
+        alignment=TA_CENTER,
+        fontName='Helvetica-Bold'
+    ))
+    styles.add(ParagraphStyle(
+        name='SectionHeader',
+        fontSize=12,
+        leading=14,
+        fontName='Helvetica-Bold',
+        textColor=colors.HexColor('#374151')
+    ))
+    styles.add(ParagraphStyle(
+        name='SmallText',
+        fontSize=9,
+        leading=11,
+        textColor=colors.HexColor('#6b7280')
+    ))
+    
+    elements = []
+    
+    # Header
+    elements.append(Paragraph("🐕 THE DOGGY COMPANY", styles['CompanyName']))
+    elements.append(Spacer(1, 5*mm))
+    elements.append(Paragraph("TAX INVOICE", styles['InvoiceTitle']))
+    elements.append(Spacer(1, 10*mm))
+    
+    # Invoice details
+    invoice_number = f"INV-{order.get('order_id', 'N/A')}"
+    order_date = order.get('created_at', '')
+    if order_date:
+        try:
+            dt = datetime.fromisoformat(order_date.replace('Z', '+00:00'))
+            order_date = dt.strftime('%d %B %Y')
+        except:
+            pass
+    
+    invoice_info = [
+        ['Invoice Number:', invoice_number],
+        ['Invoice Date:', datetime.now().strftime('%d %B %Y')],
+        ['Order ID:', order.get('order_id', 'N/A')],
+        ['Order Date:', order_date or 'N/A']
+    ]
+    
+    invoice_table = Table(invoice_info, colWidths=[100, 200])
+    invoice_table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#6b7280')),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+    ]))
+    elements.append(invoice_table)
+    elements.append(Spacer(1, 10*mm))
+    
+    # Seller & Buyer Info
+    seller_info = [
+        ['FROM (Seller)', 'TO (Buyer)'],
+        [BUSINESS_DETAILS['legal_name'], order.get('customer', {}).get('name', 'N/A')],
+        [BUSINESS_DETAILS['address'], order.get('delivery', {}).get('address', 'N/A')],
+        [f"GSTIN: {BUSINESS_DETAILS['gstin']}", f"{order.get('delivery', {}).get('city', '')}, {order.get('delivery', {}).get('state', '')}"],
+        [f"Email: {BUSINESS_DETAILS['email']}", f"Pin: {order.get('delivery', {}).get('pincode', '')}"],
+        [f"Phone: {BUSINESS_DETAILS['phone']}", f"Phone: {order.get('customer', {}).get('phone', '')}"],
+    ]
+    
+    seller_table = Table(seller_info, colWidths=[260, 260])
+    seller_table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 11),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f3f4f6')),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor('#374151')),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#e5e7eb')),
+        ('LINEBELOW', (0, 0), (-1, 0), 1, colors.HexColor('#9333ea')),
+    ]))
+    elements.append(seller_table)
+    elements.append(Spacer(1, 10*mm))
+    
+    # Items table
+    items = order.get('items', [])
+    pricing = order.get('pricing', {})
+    gst_details = pricing.get('gst_details', {})
+    
+    # Table header
+    table_data = [['#', 'Description', 'HSN', 'Qty', 'Rate', 'Amount']]
+    
+    for idx, item in enumerate(items, 1):
+        item_total = item.get('price', 0) * item.get('quantity', 1)
+        table_data.append([
+            str(idx),
+            f"{item.get('name', 'Item')}\n{item.get('size', '')} {item.get('flavor', '')}".strip(),
+            item.get('hsn_code', '2309'),
+            str(item.get('quantity', 1)),
+            f"₹{item.get('price', 0):.2f}",
+            f"₹{item_total:.2f}"
+        ])
+    
+    items_table = Table(table_data, colWidths=[25, 220, 50, 40, 70, 80])
+    items_table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#7c3aed')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor('#374151')),
+        ('ALIGN', (0, 0), (0, -1), 'CENTER'),
+        ('ALIGN', (2, 0), (2, -1), 'CENTER'),
+        ('ALIGN', (3, 0), (3, -1), 'CENTER'),
+        ('ALIGN', (4, 0), (-1, -1), 'RIGHT'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#e5e7eb')),
+        ('LINEBELOW', (0, 0), (-1, -1), 0.5, colors.HexColor('#e5e7eb')),
+    ]))
+    elements.append(items_table)
+    elements.append(Spacer(1, 5*mm))
+    
+    # Totals section
+    subtotal = pricing.get('subtotal', 0)
+    discount = pricing.get('discount_amount', 0) + pricing.get('loyalty_discount', 0)
+    taxable = pricing.get('taxable_amount', subtotal - discount)
+    shipping = pricing.get('shipping_fee', 0)
+    grand_total = pricing.get('grand_total', taxable + shipping)
+    
+    totals_data = [
+        ['', 'Subtotal:', f"₹{subtotal:.2f}"],
+    ]
+    
+    if discount > 0:
+        totals_data.append(['', 'Discount:', f"-₹{discount:.2f}"])
+    
+    totals_data.append(['', 'Taxable Amount:', f"₹{taxable:.2f}"])
+    
+    # GST breakdown
+    if gst_details.get('is_same_state'):
+        totals_data.append(['', f"CGST @ {gst_details.get('cgst_rate', 9)}%:", f"₹{gst_details.get('cgst_amount', 0):.2f}"])
+        totals_data.append(['', f"SGST @ {gst_details.get('sgst_rate', 9)}%:", f"₹{gst_details.get('sgst_amount', 0):.2f}"])
+    else:
+        totals_data.append(['', f"IGST @ {gst_details.get('igst_rate', 18)}%:", f"₹{gst_details.get('igst_amount', 0):.2f}"])
+    
+    totals_data.append(['', 'Shipping:', 'FREE' if shipping == 0 else f"₹{shipping:.2f}"])
+    totals_data.append(['', 'Grand Total:', f"₹{grand_total:.2f}"])
+    
+    totals_table = Table(totals_data, colWidths=[280, 120, 100])
+    totals_table.setStyle(TableStyle([
+        ('FONTSIZE', (0, 0), (-1, -2), 9),
+        ('FONTNAME', (1, -1), (-1, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, -1), (-1, -1), 12),
+        ('TEXTCOLOR', (1, -1), (-1, -1), colors.HexColor('#7c3aed')),
+        ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+        ('TOPPADDING', (0, -1), (-1, -1), 8),
+        ('LINEABOVE', (1, -1), (-1, -1), 1, colors.HexColor('#7c3aed')),
+    ]))
+    elements.append(totals_table)
+    elements.append(Spacer(1, 15*mm))
+    
+    # Footer
+    elements.append(Paragraph("Terms & Conditions:", styles['SectionHeader']))
+    elements.append(Spacer(1, 2*mm))
+    terms = [
+        "1. All products are freshly made and non-refundable once dispatched.",
+        "2. For any issues, please contact us within 24 hours of delivery.",
+        "3. GST is charged as per applicable rates.",
+        "4. This is a computer-generated invoice and does not require a signature."
+    ]
+    for term in terms:
+        elements.append(Paragraph(term, styles['SmallText']))
+        elements.append(Spacer(1, 1*mm))
+    
+    elements.append(Spacer(1, 10*mm))
+    elements.append(Paragraph("Thank you for shopping with The Doggy Company! 🐾", 
+                              ParagraphStyle('ThankYou', fontSize=11, alignment=TA_CENTER, textColor=colors.HexColor('#7c3aed'))))
+    
+    # Build PDF
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer
+
+
+@checkout_router.get("/order/{order_id}/invoice/pdf")
+async def download_invoice_pdf(order_id: str):
+    """Download invoice as PDF"""
+    order = await db.orders.find_one({"order_id": order_id}, {"_id": 0})
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Generate PDF
+    pdf_buffer = generate_invoice_pdf(order)
+    
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=Invoice-{order_id}.pdf"
+        }
+    )
