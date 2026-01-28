@@ -2454,8 +2454,16 @@ async def get_member_tickets(email: str):
         ticket["sla"] = calculate_sla_status(ticket)
         all_tickets.append(ticket)
     
-    # Sort by created_at
-    all_tickets.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    # Sort by created_at - handle datetime vs string
+    def sort_by_created(x):
+        val = x.get("created_at", "")
+        if val is None:
+            return ""
+        if isinstance(val, datetime):
+            return val.isoformat()
+        return str(val)
+    
+    all_tickets.sort(key=sort_by_created, reverse=True)
     
     # Stats
     open_count = len([t for t in all_tickets if t.get("status") not in ["resolved", "closed"]])
