@@ -352,7 +352,8 @@ async def login_user(user: UserLogin):
         "user": {
             "id": db_user["id"],
             "email": db_user["email"],
-            "name": db_user.get("name"),
+            "name": db_user.get("name") or db_user.get("full_name") or db_user["email"].split('@')[0],
+            "phone": db_user.get("phone") or db_user.get("mobile"),
             "membership_tier": db_user.get("membership_tier", "free"),
             "membership_expires": db_user.get("membership_expires")
         },
