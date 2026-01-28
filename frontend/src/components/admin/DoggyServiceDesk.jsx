@@ -385,9 +385,11 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     });
     // Show notification
     setRealtimeNotification({ ...data, type: 'new_ticket' });
+    // Play notification sound for new tickets
+    playNotificationSound();
     // Auto-dismiss after 5 seconds
     setTimeout(() => setRealtimeNotification(null), 5000);
-  }, []);
+  }, [playNotificationSound]);
   
   const handleTicketUpdate = useCallback((data) => {
     setAllTickets(prev => prev.map(t => 
