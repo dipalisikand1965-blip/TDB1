@@ -137,6 +137,60 @@ const MiraVoiceAssistant = ({
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   
+  // Define functions first
+  const speak = useCallback((text) => {
+    if (!synthRef.current || isMuted) return;
+    
+    synthRef.current.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = MIRA_VOICE_CONFIG.rate;
+    utterance.pitch = MIRA_VOICE_CONFIG.pitch;
+    
+    const voices = synthRef.current.getVoices();
+    const femaleVoice = voices.find(v => 
+      v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Zira')
+    );
+    if (femaleVoice) utterance.voice = femaleVoice;
+    
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    
+    synthRef.current.speak(utterance);
+  }, [isMuted]);
+  
+  const addMiraMessage = useCallback((text) => {
+    setMessages(prev => [...prev, { role: 'mira', text, timestamp: new Date() }]);
+    if (!isMuted) speak(text);
+  }, [isMuted, speak]);
+  
+  const handleSend = useCallback((text = inputText) => {
+    if (!text.trim()) return;
+    
+    // Add user message
+    setMessages(prev => [...prev, { role: 'user', text, timestamp: new Date() }]);
+    setInputText('');
+    setIsProcessing(true);
+    
+    // Process command
+    setTimeout(() => {
+      const command = findCommand(text);
+      const response = command 
+        ? command.response(petName, { soulScore: petData?.overall_score || 0 })
+        : getFallbackResponse(petName);
+      
+      addMiraMessage(response);
+      setIsProcessing(false);
+      
+      // Navigate if command has action
+      if (command?.action === 'navigate' && command.path && onNavigate) {
+        setTimeout(() => {
+          onNavigate(command.path.replace('{petId}', petId || ''));
+          onClose();
+        }, 2000);
+      }
+    }, 800);
+  }, [inputText, petName, petData, addMiraMessage, onNavigate, onClose]);
+  
   // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -149,7 +203,7 @@ const MiraVoiceAssistant = ({
       setMessages([{ role: 'mira', text: welcome, timestamp: new Date() }]);
       if (!isMuted) speak(welcome);
     }
-  }, [isOpen, petName]);
+  }, [isOpen, petName, messages.length, isMuted, speak]);
   
   // Initialize speech recognition
   useEffect(() => {
@@ -182,60 +236,7 @@ const MiraVoiceAssistant = ({
     recognitionRef.current = recognition;
     
     return () => recognition.abort();
-  }, []);
-  
-  const speak = useCallback((text) => {
-    if (!synthRef.current || isMuted) return;
-    
-    synthRef.current.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = MIRA_VOICE_CONFIG.rate;
-    utterance.pitch = MIRA_VOICE_CONFIG.pitch;
-    
-    const voices = synthRef.current.getVoices();
-    const femaleVoice = voices.find(v => 
-      v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Zira')
-    );
-    if (femaleVoice) utterance.voice = femaleVoice;
-    
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    
-    synthRef.current.speak(utterance);
-  }, [isMuted]);
-  
-  const addMiraMessage = (text) => {
-    setMessages(prev => [...prev, { role: 'mira', text, timestamp: new Date() }]);
-    if (!isMuted) speak(text);
-  };
-  
-  const handleSend = (text = inputText) => {
-    if (!text.trim()) return;
-    
-    // Add user message
-    setMessages(prev => [...prev, { role: 'user', text, timestamp: new Date() }]);
-    setInputText('');
-    setIsProcessing(true);
-    
-    // Process command
-    setTimeout(() => {
-      const command = findCommand(text);
-      const response = command 
-        ? command.response(petName, { soulScore: petData?.overall_score || 0 })
-        : getFallbackResponse(petName);
-      
-      addMiraMessage(response);
-      setIsProcessing(false);
-      
-      // Navigate if command has action
-      if (command?.action === 'navigate' && command.path && onNavigate) {
-        setTimeout(() => {
-          onNavigate(command.path.replace('{petId}', petId || ''));
-          onClose();
-        }, 2000);
-      }
-    }, 800);
-  };
+  }, [handleSend, addMiraMessage]);
   
   const toggleListening = () => {
     if (!recognitionRef.current) {
