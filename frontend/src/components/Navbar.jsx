@@ -105,6 +105,7 @@ const PILLARS = [
     icon: '🎓',
     path: '/learn',
     dropdown: [
+      { name: 'Learn By Concierge®', path: '/learn', highlight: true },
       { name: 'Training Classes', path: '/learn' },
       { name: 'Puppy School', path: '/learn?type=puppy' },
       { name: 'Behaviour', path: '/learn?type=behaviour' },
