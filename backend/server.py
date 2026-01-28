@@ -7262,7 +7262,7 @@ async def delete_pet_profile(pet_id: str):
 
 @api_router.post("/pets/{pet_id}/soul-answer")
 async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dict = Depends(get_current_user)):
-    """Save a single Pet Soul answer and recalculate score"""
+    """Save a single Pet Soul answer and recalculate score using weighted scoring"""
     pet = await db.pets.find_one({"id": pet_id})
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
@@ -7277,10 +7277,10 @@ async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dic
     soul_answers = pet.get("doggy_soul_answers", {})
     soul_answers[question_id] = answer
     
-    # Recalculate score
-    filled = sum(1 for v in soul_answers.values() if v and v not in ['', [], None, 'Unknown'])
-    total_possible = 26  # Total expected questions
-    new_score = min(100, int((filled / total_possible) * 100))
+    # Recalculate score using weighted system (consistent with get_my_pets)
+    score_data = calculate_pet_soul_score(soul_answers)
+    new_score = score_data["total_score"]
+    score_tier = score_data["tier"]["key"] if score_data.get("tier") else "newcomer"
     
     # Update pet
     await db.pets.update_one(
@@ -7288,6 +7288,7 @@ async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dic
         {"$set": {
             "doggy_soul_answers": soul_answers,
             "overall_score": new_score,
+            "score_tier": score_tier,
             "updated_at": datetime.now(timezone.utc).isoformat()
         }}
     )
@@ -7297,8 +7298,9 @@ async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dic
         "question_id": question_id,
         "answer": answer,
         "new_score": new_score,
+        "score_tier": score_tier,
         "pet_name": pet.get("name"),
-        "answers_count": filled
+        "answers_count": score_data["answered_count"]
     }
 
 
