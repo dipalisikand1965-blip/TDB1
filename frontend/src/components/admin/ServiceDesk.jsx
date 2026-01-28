@@ -47,6 +47,7 @@ const DEFAULT_VIEWS = [
 
 // Pillar-specific views - THE 14 PILLARS + Special Views
 const PILLAR_VIEWS = [
+  { id: 'concierge', name: 'Concierge®', icon: '✨', filter: { type: 'concierge_request' } },
   { id: 'celebrate', name: 'Celebrate', icon: '🎂', filter: { category: 'celebrate' } },
   { id: 'dine', name: 'Dine', icon: '🍽️', filter: { category: 'dine' } },
   { id: 'stay', name: 'Stay', icon: '🏨', filter: { category: 'stay' } },
