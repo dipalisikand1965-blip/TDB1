@@ -572,6 +572,49 @@ const UnifiedProductBox = () => {
           }}>
             <RefreshCw className="w-4 h-4 mr-1" /> Clear
           </Button>
+          
+          {/* Sync Actions */}
+          <div className="border-l pl-3 ml-2 flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={async () => {
+                try {
+                  const res = await fetch(`${API_URL}/api/admin/stay/sync-to-products`, { method: 'POST' });
+                  if (res.ok) {
+                    const data = await res.json();
+                    toast({ title: '✅ Stay Synced', description: `${data.synced} properties synced to products` });
+                    fetchProducts();
+                  }
+                } catch (err) {
+                  toast({ title: 'Sync Failed', description: err.message, variant: 'destructive' });
+                }
+              }}
+            >
+              🏨 Sync Stay
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={async () => {
+                try {
+                  const res = await fetch(`${API_URL}/api/admin/force-seed-all-products`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                  });
+                  if (res.ok) {
+                    const data = await res.json();
+                    toast({ title: '✅ All Products Seeded', description: `${data.total} products across pillars` });
+                    fetchProducts();
+                  }
+                } catch (err) {
+                  toast({ title: 'Seed Failed', description: err.message, variant: 'destructive' });
+                }
+              }}
+            >
+              🌟 Seed All Pillars
+            </Button>
+          </div>
         </div>
       </Card>
 
