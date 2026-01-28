@@ -155,7 +155,7 @@ from stay_social_routes import (
 from communication_routes import setup_communication_routes
 
 # Real-time WebSocket Notifications
-from realtime_notifications import sio, notification_manager
+from realtime_notifications import sio, notification_manager, get_connection_stats
 
 # WhatsApp Integration
 from whatsapp_routes import router as whatsapp_router
