@@ -2707,8 +2707,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                   <line x1="17" y1="9" x2="23" y2="15"></line>
                 </svg>
               )}
-              </button>
-            </div>
+            </button>
             <button className="p-2 hover:bg-gray-100 rounded-lg">
               <HelpCircle className="w-5 h-5 text-gray-500" />
             </button>
