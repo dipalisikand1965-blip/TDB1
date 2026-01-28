@@ -190,6 +190,70 @@ const DinePage = () => {
       {/* Dining Concierge Picker - Rover-style service request widget */}
       <DiningConciergePicker />
 
+      {/* Elevated Concierge® Experiences */}
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <div className="text-center mb-10">
+          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 mb-4">
+            <Crown className="w-3 h-3 mr-1 inline" /> Elevated Concierge®
+          </Badge>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            Dining Experiences, Elevated
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Beyond reservations. Our Dine Concierge® curates unforgettable pet-friendly dining moments - 
+            from private chef experiences to restaurant partnerships.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ConciergeExperienceCard
+            pillar="dine"
+            title="Private Chef Experience®"
+            description="A personal chef prepares a gourmet meal for you and your pet in your home or a private venue."
+            icon="👨‍🍳"
+            gradient="from-orange-500 to-red-500"
+            badge="Signature"
+            badgeColor="bg-orange-500"
+            highlights={[
+              "Menu customized for pet dietary needs",
+              "Human & pet courses paired together",
+              "Available for celebrations & events",
+              "Hypoallergenic options available"
+            ]}
+          />
+          
+          <ConciergeExperienceCard
+            pillar="dine"
+            title="Restaurant VIP Access®"
+            description="Get priority reservations and special pet-friendly arrangements at exclusive restaurants."
+            icon="🍽️"
+            gradient="from-amber-500 to-orange-500"
+            highlights={[
+              "Reserved pet-friendly tables",
+              "Custom pet menu arrangements",
+              "Celebration setups available",
+              "Multi-city restaurant network"
+            ]}
+          />
+          
+          <ConciergeExperienceCard
+            pillar="dine"
+            title="Birthday Dining Package®"
+            description="Complete birthday celebration with cake, decorations, and pet-friendly venue coordination."
+            icon="🎂"
+            gradient="from-pink-500 to-rose-500"
+            badge="Popular"
+            badgeColor="bg-pink-500"
+            highlights={[
+              "Custom cake from our bakery",
+              "Pet-safe decorations",
+              "Photographer arrangement",
+              "Guest coordination"
+            ]}
+          />
+        </div>
+      </div>
+
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Fresh Meals Section */}
         <section className="mb-16">
