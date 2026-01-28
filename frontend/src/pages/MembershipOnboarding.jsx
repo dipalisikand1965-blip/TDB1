@@ -39,12 +39,15 @@ const MembershipOnboarding = () => {
   const planType = searchParams.get('plan') || 'annual';
   const petCount = parseInt(searchParams.get('pets') || '1', 10);
   
-  const [step, setStep] = useState(1); // 1: Parent Info, 2: Pet Info, 3: Review & Pay
+  const [step, setStep] = useState(1); // 1: Parent Info, 2: Pet Info, 3: Celebrations, 4: Review & Pay
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activePetTab, setActivePetTab] = useState(0);
   const [citySearch, setCitySearch] = useState('');
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+  
+  // Celebrations selection state
+  const [celebrationsData, setCelebrationsData] = useState([]);
   
   // Pet Parent form state
   const [parentData, setParentData] = useState({
