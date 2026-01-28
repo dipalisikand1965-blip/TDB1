@@ -355,6 +355,10 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [ordersData, setOrdersData] = useState([]);
   const [analyticsData, setAnalyticsData] = useState(null);
   
+  // Pet Parent History Modal
+  const [selectedParentForHistory, setSelectedParentForHistory] = useState(null);
+  const [showParentHistoryModal, setShowParentHistoryModal] = useState(false);
+  
   // Detail panel
   const [detailTab, setDetailTab] = useState('conversation');
   const [contextTab, setContextTab] = useState('pet');
