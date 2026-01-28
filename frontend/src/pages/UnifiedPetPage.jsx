@@ -1303,6 +1303,17 @@ const UnifiedPetPage = () => {
                             const isEditing = editingQuestion === questionId;
                             const quickOptions = QUICK_OPTIONS[questionId];
                             
+                            // Questions that contribute to Pet Soul Score (from backend pet_score_logic.py)
+                            const soulScoreQuestions = [
+                              'food_allergies', 'health_conditions', 'vet_comfort', 'life_stage', 'grooming_tolerance', 'loud_sounds',
+                              'general_nature', 'temperament', 'energy_level', 'behavior_with_dogs', 'social_with_dogs', 'behavior_with_humans', 'social_with_people', 'problematic_behaviors', 'behavior_issues',
+                              'alone_comfort', 'alone_time_comfort', 'car_rides', 'car_comfort', 'travel_readiness', 'favorite_spot', 'morning_routine', 'exercise_needs', 'feeding_times', 'walks_per_day',
+                              'favorite_treats', 'favorite_protein', 'food_motivation', 'treat_preference',
+                              'training_level', 'motivation_type',
+                              'most_attached_to', 'primary_bond', 'other_pets', 'kids_at_home', 'separation_anxiety'
+                            ];
+                            const contributesSoulScore = soulScoreQuestions.includes(questionId);
+                            
                             // Question labels
                             const questionLabels = {
                               name: "Pet's Name", breed: 'Breed', gender: 'Gender', general_nature: 'Temperament',
