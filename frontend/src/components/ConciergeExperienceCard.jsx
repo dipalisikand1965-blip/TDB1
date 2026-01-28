@@ -7,7 +7,7 @@
  * If something can be booked without asking questions, it is NOT Concierge®.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Textarea } from './ui/textarea';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { 
   Sparkles, MessageCircle, Send, Loader2, CheckCircle, 
   ChevronRight, User, Phone, Mail, PawPrint
@@ -54,13 +55,52 @@ const ConciergeExperienceCard = ({
   const [showModal, setShowModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [userPets, setUserPets] = useState([]);
+  const [selectedPetOption, setSelectedPetOption] = useState('all'); // 'all' or pet id
   const [formData, setFormData] = useState({
     message: '',
     name: user?.name || '',
     email: user?.email || '',
-    phone: user?.phone || '',
+    whatsapp: user?.phone || user?.whatsapp || '',
     pet_name: ''
   });
+
+  // Fetch user's pets when modal opens
+  useEffect(() => {
+    if (showModal && user && token) {
+      fetchUserPets();
+    }
+  }, [showModal, user, token]);
+
+  const fetchUserPets = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUserPets(data.pets || data || []);
+        // Auto-select first pet if available
+        if (data.pets?.length > 0 || data?.length > 0) {
+          const pets = data.pets || data;
+          setSelectedPetOption(pets[0]?._id || pets[0]?.id || 'all');
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching pets:', error);
+    }
+  };
+
+  // Get selected pet name based on selection
+  const getSelectedPetName = () => {
+    if (selectedPetOption === 'all') {
+      return userPets.length > 0 
+        ? userPets.map(p => p.name).join(', ')
+        : formData.pet_name;
+    }
+    const pet = userPets.find(p => (p._id || p.id) === selectedPetOption);
+    return pet?.name || formData.pet_name;
+  };
 
   const handleSubmit = async () => {
     if (!formData.message.trim()) {
