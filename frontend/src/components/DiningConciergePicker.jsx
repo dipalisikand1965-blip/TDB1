@@ -93,11 +93,12 @@ const GUEST_COUNTS = [
   { value: '10+', label: '10+ guests' },
 ];
 
-const DiningConciergePicker = ({ onClose }) => {
+const DiningConciergePicker = ({ onClose, compactMode = true }) => {
   const navigate = useNavigate();
   const { user, token } = useAuth();
   
   // State
+  const [showFormModal, setShowFormModal] = useState(false);
   const [selectedService, setSelectedService] = useState('restaurant_booking');
   const [city, setCity] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
@@ -110,6 +111,12 @@ const DiningConciergePicker = ({ onClose }) => {
   const [ticketCreated, setTicketCreated] = useState(false);
   const [createdTicketId, setCreatedTicketId] = useState(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  
+  // Handle opening form modal with selected service
+  const handleServiceClick = (serviceId) => {
+    setSelectedService(serviceId);
+    setShowFormModal(true);
+  };
   
   // Fetch user's pets
   useEffect(() => {
