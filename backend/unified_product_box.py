@@ -39,32 +39,57 @@ def set_product_box_db(database: AsyncIOMotorDatabase):
 
 # ==================== ENUMS & CONSTANTS ====================
 
-PRODUCT_TYPES = ["physical", "service", "experience", "reward"]
+# Item/Product Types
+PRODUCT_TYPES = ["physical", "service", "experience", "bundle", "reward", "property", "content"]
 
-PRODUCT_STATUS = ["draft", "active", "archived"]
+PRODUCT_STATUS = ["draft", "pending_approval", "active", "paused", "archived"]
 
-# All 14 pillars - THE CANONICAL LIST
+# All 15 pillars - THE CANONICAL LIST (including Shop)
 ALL_PILLARS = [
     "celebrate", "dine", "stay", "travel", "care",
     "enjoy", "fit", "learn", "paperwork", "advisory",
     "emergency", "farewell", "adopt", "shop"
 ]
 
+# Source types
+SOURCE_TYPES = ["manual", "shopify", "partner", "import"]
+
 LIFE_STAGES = ["puppy", "adult", "senior", "all"]
 
-SIZE_SUITABILITY = ["small", "medium", "large", "all"]
+SIZE_SUITABILITY = ["small", "medium", "large", "giant", "all"]
+
+SPECIES_OPTIONS = ["dog", "cat", "both", "other"]
 
 DIETARY_FLAGS = [
-    "grain_free", "single_protein", "vegetarian", "limited_ingredient",
-    "hypoallergenic", "high_protein", "low_fat", "raw_friendly"
+    "grain_free", "single_protein", "vegetarian", "vegan", "limited_ingredient",
+    "hypoallergenic", "high_protein", "low_fat", "raw_friendly", "human_grade",
+    "organic", "preservative_free"
 ]
 
-MEMBERSHIP_ELIGIBILITY = ["trial", "annual", "both", "reward_only", "all"]
+ALLERGENS = [
+    "wheat", "corn", "soy", "dairy", "chicken", "beef", "pork", "fish",
+    "eggs", "artificial_colors", "artificial_flavors"
+]
+
+MEMBERSHIP_ELIGIBILITY = ["trial", "annual", "vip", "all", "reward_only"]
 
 REWARD_TRIGGERS = [
-    "birthday", "booking", "order", "first_visit", "membership_milestone",
-    "referral", "manual_grant", "celebration", "gotcha_day"
+    "birthday", "gotcha_day", "booking", "order", "first_visit", 
+    "membership_milestone", "referral", "manual_grant", "celebration",
+    "review_submitted", "profile_complete"
 ]
+
+# Shipping classes
+SHIPPING_CLASSES = ["standard", "express", "same_day", "frozen", "fragile", "oversized"]
+
+# Risk levels for pet safety
+RISK_LEVELS = ["safe", "guidance_needed", "supervision_required", "concierge_review"]
+
+# Price models for services
+PRICE_MODELS = ["fixed", "variable", "quote_based", "subscription"]
+
+# GST rates in India
+GST_RATES = [0, 5, 12, 18, 28]
 
 
 # ==================== PYDANTIC MODELS ====================
