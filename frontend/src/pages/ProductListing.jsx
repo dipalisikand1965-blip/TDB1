@@ -499,6 +499,37 @@ const ProductListing = ({ category = 'all' }) => {
   } else if (priceRange === 'over1000') {
     filteredProducts = filteredProducts.filter(p => (p.price || p.minPrice || 0) > 1000);
   }
+  
+  // Filter by breed (for breed-cakes category)
+  if (selectedBreed !== 'all' && isBreedCakeCategory) {
+    const breedLower = selectedBreed.toLowerCase();
+    filteredProducts = filteredProducts.filter(p => {
+      const productName = (p.name || '').toLowerCase();
+      const productTags = Array.isArray(p.tags) ? p.tags.map(t => (t || '').toLowerCase()) : [];
+      return productName.includes(breedLower) || productTags.some(t => t.includes(breedLower));
+    });
+  }
+  
+  // Filter by shape (for birthday cakes)
+  if (selectedShape !== 'all' && needsShapeFilter) {
+    const shapeLower = selectedShape.toLowerCase();
+    filteredProducts = filteredProducts.filter(p => {
+      const productName = (p.name || '').toLowerCase();
+      const productTags = Array.isArray(p.tags) ? p.tags.map(t => (t || '').toLowerCase()) : [];
+      return productName.includes(shapeLower) || productTags.some(t => t.includes(shapeLower));
+    });
+  }
+  
+  // Filter by search input (local search within loaded products)
+  if (searchInput.trim()) {
+    const searchLower = searchInput.toLowerCase().trim();
+    filteredProducts = filteredProducts.filter(p => {
+      const productName = (p.name || '').toLowerCase();
+      const productTags = Array.isArray(p.tags) ? p.tags.map(t => (t || '').toLowerCase()).join(' ') : '';
+      const productDesc = (p.description || '').toLowerCase();
+      return productName.includes(searchLower) || productTags.includes(searchLower) || productDesc.includes(searchLower);
+    });
+  }
 
   // Sort products
   if (sortBy === 'price-low') {
