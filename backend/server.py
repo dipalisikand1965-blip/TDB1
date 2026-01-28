@@ -5571,6 +5571,146 @@ async def get_wishlist_summary(admin: dict = Depends(verify_admin)):
     }
 
 
+@api_router.get("/products/recommendations/personalized")
+async def get_personalized_recommendations(
+    user_id: str,
+    categories: str = None,
+    exclude_ids: str = None,
+    limit: int = 6
+):
+    """Mira-powered personalized product recommendations based on user's pet profile"""
+    
+    # Get user's pets to understand preferences
+    user_pets = await db.pets.find({"user_id": user_id}, {"_id": 0}).to_list(10)
+    
+    # Extract pet attributes for personalization
+    pet_sizes = set()
+    pet_life_stages = set()
+    pet_allergies = set()
+    pet_preferences = set()
+    
+    for pet in user_pets:
+        # Size
+        size = pet.get("size") or pet.get("doggy_soul", {}).get("size_category")
+        if size:
+            pet_sizes.add(size.lower())
+        
+        # Life stage from age
+        age = pet.get("age") or 0
+        if isinstance(age, str):
+            try:
+                age = int(age.replace("years", "").replace("year", "").strip())
+            except:
+                age = 5
+        if age < 1:
+            pet_life_stages.add("puppy")
+        elif age > 7:
+            pet_life_stages.add("senior")
+        else:
+            pet_life_stages.add("adult")
+        
+        # Allergies - CRITICAL for filtering
+        allergies = pet.get("doggy_soul", {}).get("food_allergies") or pet.get("allergies") or []
+        if isinstance(allergies, list):
+            for a in allergies:
+                if a and a.lower() != "none":
+                    pet_allergies.add(a.lower())
+        
+        # Food preferences
+        fav_treats = pet.get("doggy_soul", {}).get("favorite_treats") or []
+        if isinstance(fav_treats, list):
+            pet_preferences.update([t.lower() for t in fav_treats if t])
+    
+    # Build query for personalized products
+    query = {"in_stock": {"$ne": False}}
+    
+    # Prioritize products for the pet's size and life stage
+    or_conditions = [
+        {"tags": {"$in": ["best_seller", "popular", "recommended", "addon"]}},
+        {"pillar": "shop"},
+        {"pillar": "celebrate"}
+    ]
+    
+    if pet_sizes:
+        or_conditions.append({"tags": {"$in": list(pet_sizes)}})
+    if pet_life_stages:
+        or_conditions.append({"tags": {"$in": list(pet_life_stages)}})
+    
+    query["$or"] = or_conditions
+    
+    # Exclude products with allergens
+    if pet_allergies:
+        query["$nor"] = [{"tags": {"$in": list(pet_allergies)}}]
+    
+    # Exclude specific products
+    if exclude_ids:
+        exclude_list = [id.strip() for id in exclude_ids.split(',') if id.strip()]
+        if exclude_list:
+            query["id"] = {"$nin": exclude_list}
+    
+    products = await db.products.find(
+        query,
+        {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1, "images": 1, "category": 1, "tags": 1, "pillar": 1, "description": 1}
+    ).sort("created_at", -1).limit(limit * 4).to_list(limit * 4)
+    
+    # Score and rank products based on pet profile match
+    scored_products = []
+    for p in products:
+        pillar = p.get('pillar', '')
+        if pillar in ['stay', 'travel', 'care', 'advisory']:
+            continue
+        
+        score = 0
+        tags = [t.lower() for t in p.get('tags', [])]
+        
+        # Boost for size match
+        if pet_sizes and any(s in tags for s in pet_sizes):
+            score += 3
+        
+        # Boost for life stage match
+        if pet_life_stages and any(ls in tags for ls in pet_life_stages):
+            score += 2
+        
+        # Boost for preference match
+        if pet_preferences and any(pref in tags for pref in pet_preferences):
+            score += 2
+        
+        # Boost for popular items
+        if any(t in tags for t in ['best_seller', 'popular']):
+            score += 1
+        
+        p['image'] = p.get('image') or (p.get('images', [None])[0] if p.get('images') else None)
+        p['_score'] = score
+        p['personalized_reason'] = []
+        
+        if pet_sizes and any(s in tags for s in pet_sizes):
+            p['personalized_reason'].append(f"Perfect for {list(pet_sizes)[0]} dogs")
+        if pet_life_stages and any(ls in tags for ls in pet_life_stages):
+            p['personalized_reason'].append(f"Great for {list(pet_life_stages)[0]} pets")
+        
+        scored_products.append(p)
+    
+    # Sort by score (highest first)
+    scored_products.sort(key=lambda x: x.get('_score', 0), reverse=True)
+    
+    # Clean up internal fields
+    result = []
+    for p in scored_products[:limit]:
+        p.pop('_score', None)
+        result.append(p)
+    
+    return {
+        "products": result, 
+        "total": len(result),
+        "personalized": True,
+        "pet_profile": {
+            "sizes": list(pet_sizes),
+            "life_stages": list(pet_life_stages),
+            "excluded_allergens": list(pet_allergies)
+        }
+    }
+
+
 @api_router.get("/products/recommendations")
 async def get_product_recommendations(
     categories: str = None,  # comma-separated categories
