@@ -92,25 +92,85 @@ export const useServiceDeskSocket = (agentId, onNewTicket, onTicketUpdate, onNew
 
     // Connection handlers
     socket.on('connect', () => {
-      console.log('🔌 Service Desk WebSocket connected');
+      console.log('🔌 Service Desk WebSocket connected successfully');
+      reconnectAttempts = 0; // Reset on successful connection
       setConnected(true);
       setConnectionError(null);
+      setConnectionState('connected');
       
       // Register agent
       if (agentId) {
         socket.emit('register_agent', { agent_id: agentId });
       }
+      
+      // Start heartbeat monitoring
+      if (heartbeatIntervalRef.current) {
+        clearInterval(heartbeatIntervalRef.current);
+      }
+      heartbeatIntervalRef.current = setInterval(() => {
+        if (socket.connected) {
+          socket.emit('heartbeat', { timestamp: Date.now() });
+        }
+      }, 30000); // Heartbeat every 30 seconds
     });
 
     socket.on('disconnect', (reason) => {
       console.log('🔌 Service Desk WebSocket disconnected:', reason);
       setConnected(false);
+      setConnectionState('disconnected');
+      
+      // Clear heartbeat
+      if (heartbeatIntervalRef.current) {
+        clearInterval(heartbeatIntervalRef.current);
+      }
+      
+      // Handle different disconnect reasons
+      if (reason === 'io server disconnect') {
+        // Server initiated disconnect - try to reconnect
+        console.log('🔌 Server disconnected, attempting reconnect...');
+        socket.connect();
+      } else if (reason === 'transport close' || reason === 'ping timeout') {
+        // Network issue - will auto-reconnect with backoff
+        setConnectionState('reconnecting');
+        console.log('🔌 Connection lost, auto-reconnecting...');
+      }
     });
 
     socket.on('connect_error', (error) => {
-      console.error('🔌 WebSocket connection error:', error.message);
+      reconnectAttempts++;
+      console.error(`🔌 WebSocket connection error (attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}):`, error.message);
       setConnectionError(error.message);
       setConnected(false);
+      setConnectionState('reconnecting');
+      
+      // If max attempts reached, try a full reconnect after a longer delay
+      if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+        console.log('🔌 Max reconnect attempts reached, will retry in 60s...');
+        reconnectTimeoutRef.current = setTimeout(() => {
+          reconnectAttempts = 0;
+          socket.connect();
+        }, 60000);
+      }
+    });
+    
+    // Handle reconnection events
+    socket.on('reconnect', (attemptNumber) => {
+      console.log(`🔌 Reconnected after ${attemptNumber} attempts`);
+      setConnectionState('connected');
+    });
+    
+    socket.on('reconnect_attempt', (attemptNumber) => {
+      console.log(`🔌 Reconnection attempt ${attemptNumber}...`);
+      setConnectionState('reconnecting');
+    });
+    
+    socket.on('reconnect_error', (error) => {
+      console.error('🔌 Reconnection error:', error.message);
+    });
+    
+    socket.on('reconnect_failed', () => {
+      console.error('🔌 Reconnection failed after all attempts');
+      setConnectionState('disconnected');
     });
 
     // Ticket event handlers
