@@ -1099,6 +1099,14 @@
 
 ## API Endpoints Reference
 
+### Report Builder (NEW - Jan 28, 2025)
+- `GET /api/admin/reports/generate?report_type={type}&period={period}&pillar={pillar}` - Generate report
+  - Report types: daily_summary, pillar_performance, order_report, ticket_report, revenue_report, member_analytics, pet_analytics, product_performance
+  - Periods: today, yesterday, this_week, last_week, this_month, last_month, last_30_days, last_90_days, this_year, custom
+- `GET /api/admin/reports/export/csv` - Export report as CSV
+- `GET /api/admin/reports/export/excel` - Export report as Excel (xlsx)
+- `POST /api/admin/reports/schedule` - Save email schedule configuration
+
 ### Service Desk
 - `GET /api/tickets/` - List all tickets (aggregates from multiple sources)
 - `GET /api/tickets/{id}` - Get ticket detail
@@ -1119,9 +1127,10 @@
 - `GET /api/products?category={cat}` - Filter by category
 - `GET /api/products/recommendations/for-pet/{pet_id}` - Personalized recommendations
 
-### Checkout & Payments (NEW - Jan 28, 2025)
+### Checkout & Payments (Updated - Jan 28, 2025)
 - `GET /api/checkout/config` - Get Razorpay key, GST rate, shipping settings
 - `POST /api/checkout/calculate-total` - Calculate order total with GST breakdown (CGST+SGST or IGST)
+  - GST is now calculated on (subtotal - discount + shipping)
 - `POST /api/checkout/create-order` - Create order with Razorpay payment
 - `POST /api/checkout/verify-payment` - Verify Razorpay payment signature
 - `GET /api/checkout/order/{id}/invoice` - Get invoice data (JSON)
