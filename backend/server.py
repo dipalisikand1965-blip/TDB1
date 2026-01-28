@@ -9483,6 +9483,7 @@ set_renewal_db(db)
 set_rewards_db(db)
 set_member_rewards_db(db)  # Social Sharing, NPS
 set_paw_points_db(db)  # Paw Points Redemption System
+set_checkout_db(db)  # Product Checkout (Razorpay, GST, Invoice)
 set_pet_soul_db(db)
 set_pet_score_db(db)  # Pet Score Logic
 set_product_box_db(db)  # Unified Product Box
