@@ -332,10 +332,13 @@ async def create_general_concierge_request(request: ConciergeGeneralRequest):
     import uuid
     
     request_id = f"conc-{uuid.uuid4().hex[:8]}"
+    ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
     now = datetime.now(timezone.utc)
     
+    # 1. Create concierge request record
     request_doc = {
         "id": request_id,
+        "ticket_id": ticket_id,
         "type": "general_inquiry",
         "pillar": request.pillar,
         "experience_id": request.experience_id,
@@ -361,11 +364,70 @@ async def create_general_concierge_request(request: ConciergeGeneralRequest):
     
     await db.concierge_requests.insert_one(request_doc)
     
-    logger.info(f"Concierge® general request created: {request_id}")
+    # 2. Create ticket for Service Desk tracking (UNIVERSAL RULE)
+    ticket_doc = {
+        "ticket_id": ticket_id,
+        "id": ticket_id,
+        "type": "concierge_request",
+        "pillar": request.pillar,
+        "subject": f"Concierge® Request: {request.experience_name or request.pillar.capitalize()}",
+        "description": request.message or f"Concierge® inquiry for {request.pillar} pillar",
+        "original_request": request.message,
+        "customer_name": request.name,
+        "customer_email": request.email,
+        "customer_phone": request.phone,
+        "member": {
+            "name": request.name,
+            "email": request.email,
+            "phone": request.phone
+        },
+        "status": "open",
+        "priority": "normal",
+        "source": "concierge_card",
+        "concierge_request_id": request_id,
+        "created_at": now,
+        "updated_at": now,
+        "audit_trail": [
+            {
+                "action": "created",
+                "timestamp": now.isoformat(),
+                "performed_by": "system",
+                "details": f"Created from {request.pillar} Concierge® card"
+            }
+        ]
+    }
+    
+    await db.tickets.insert_one(ticket_doc)
+    
+    # 3. Create admin notification (UNIVERSAL RULE)
+    notification_doc = {
+        "id": f"notif-{uuid.uuid4().hex[:8]}",
+        "type": "concierge_request",
+        "pillar": request.pillar,
+        "title": f"New Concierge® Request: {request.pillar.capitalize()}",
+        "message": f"{request.name} submitted a Concierge® request for {request.experience_name or request.pillar}",
+        "priority": "normal",
+        "status": "unread",
+        "ticket_id": ticket_id,
+        "concierge_request_id": request_id,
+        "customer": {
+            "name": request.name,
+            "email": request.email,
+            "phone": request.phone
+        },
+        "created_at": now,
+        "read_at": None,
+        "action_url": f"/admin/concierge?request={request_id}"
+    }
+    
+    await db.admin_notifications.insert_one(notification_doc)
+    
+    logger.info(f"Concierge® request created: {request_id} -> Ticket: {ticket_id} -> Notification sent")
     
     return {
         "success": True,
         "request_id": request_id,
+        "ticket_id": ticket_id,
         "message": "Request received. We'll be in touch soon!"
     }
 
