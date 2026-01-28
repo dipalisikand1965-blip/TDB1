@@ -520,17 +520,23 @@ import PetScoreCard from '../components/PetScoreCard';
 • Quick Actions Floating Button`
         },
         {
-          title: '8 Soul Pillars',
-          content: `| Pillar | Icon | Questions |
-|--------|------|-----------|
-| Identity & Temperament | 🎭 | 8 questions |
-| Family & Pack | 👨‍👩‍👧‍👦 | 6 questions |
-| Rhythm & Routine | ⏰ | 7 questions |
-| Home & Comforts | 🏠 | 6 questions |
-| Travel & Mobility | ✈️ | 6 questions |
-| Taste & Nutrition | 🍖 | 7 questions |
-| Training & Behaviour | 🎓 | 6 questions |
-| Health & Long-Term | 💊 | 8 questions |
+          title: '14 Service Pillars',
+          content: `| Pillar | Icon | Description |
+|--------|------|-------------|
+| Celebrate | 🎂 | Birthdays, anniversaries & milestones |
+| Dine | 🍖 | Pet-friendly restaurants & dining |
+| Stay | 🏨 | Boarding, daycare & pet hotels |
+| Travel | ✈️ | Pet travel & adventures |
+| Care | 💊 | Grooming, vets & wellness |
+| Enjoy | 🎾 | Activities, parks & playtime |
+| Fit | 🏃 | Exercise & fitness tracking |
+| Learn | 🎓 | Training & behaviour classes |
+| Paperwork | 📋 | Documents, records & vault |
+| Advisory | 💡 | Expert guidance & consultations |
+| Emergency | 🚨 | 24/7 emergency support |
+| Farewell | 🌈 | End-of-life care & memorials |
+| Adopt | 🐾 | Adoption & fostering |
+| Shop | 🛒 | Products, treats & merchandise |
 
 **Features:**
 • Click to expand/collapse
