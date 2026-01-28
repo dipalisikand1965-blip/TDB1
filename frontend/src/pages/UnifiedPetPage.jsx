@@ -1113,7 +1113,7 @@ const UnifiedPetPage = () => {
             </Card>
           </TabsContent>
 
-          {/* Pet Soul Tab - COMPREHENSIVE VIEW with ALL 8 Pillars */}
+          {/* Pet Soul Tab - COMPREHENSIVE VIEW with ALL 14 Pillars */}
           <TabsContent value="personality" className="mt-0 space-y-6">
             {/* EMERGENCY INFO CARD - Critical info at a glance */}
             <Card className="p-4 bg-gradient-to-r from-red-50 to-orange-50 border-red-200">

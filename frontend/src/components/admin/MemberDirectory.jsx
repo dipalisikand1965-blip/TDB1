@@ -786,7 +786,7 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
               </div>
             </TabsContent>
 
-            {/* Pets & Soul Tab - Enhanced with 8 Pillar Tabs */}
+            {/* Pets & Soul Tab - Enhanced with 14 Pillar Tabs */}
             <TabsContent value="pets" className="space-y-6 mt-0">
               {pets.length === 0 ? (
                 <Card className="p-8 text-center">
@@ -1352,7 +1352,7 @@ const PetSoulTabs = ({ pets }) => {
             </div>
           </div>
 
-          {/* 8 Pillars Grid */}
+          {/* 14 Pillars Grid */}
           <div className="px-6 pb-6">
             <p className="text-sm text-purple-300 mb-3">Soul Pillars</p>
             <div className="grid grid-cols-4 gap-3">
