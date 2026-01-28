@@ -111,6 +111,7 @@ const AdoptManager = ({ authHeaders }) => {
   const [showShelterModal, setShowShelterModal] = useState(false);
   const [showAppDetailModal, setShowAppDetailModal] = useState(false);
   const [editingPet, setEditingPet] = useState(null);
+  const [editingEvent, setEditingEvent] = useState(null);
   const [selectedApplication, setSelectedApplication] = useState(null);
   
   // Form state
