@@ -216,6 +216,17 @@ const FarewellPage = () => {
     }
   }, [token]);
 
+  // Auto-populate user info in form
+  useEffect(() => {
+    if (user) {
+      setServiceForm(prev => ({
+        ...prev,
+        email: user.email || prev.email,
+        phone: user.phone || prev.phone
+      }));
+    }
+  }, [user]);
+
   const fetchPets = async () => {
     try {
       const res = await fetch(`${API_URL}/api/pets/my-pets`, {
