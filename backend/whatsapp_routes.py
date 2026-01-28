@@ -128,7 +128,7 @@ async def receive_whatsapp_webhook(request: Request):
 
 
 async def process_incoming_message(message: dict, contacts: list):
-    """Process incoming WhatsApp message and create/update ticket"""
+    """Process incoming WhatsApp message with Mira AI response"""
     from motor.motor_asyncio import AsyncIOMotorClient
     from realtime_notifications import notification_manager
     
