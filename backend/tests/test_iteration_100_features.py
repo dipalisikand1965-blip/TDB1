@@ -191,14 +191,16 @@ class TestMemberLogin:
         assert response.status_code == 200, f"Login failed with status {response.status_code}"
         
         data = response.json()
-        assert "token" in data, "Login response should contain 'token'"
+        # Token can be 'token' or 'access_token'
+        token = data.get("token") or data.get("access_token")
+        assert token is not None, "Login response should contain 'token' or 'access_token'"
         assert "user" in data, "Login response should contain 'user'"
         
         user = data["user"]
         assert user.get("email") == MEMBER_EMAIL, "User email should match"
         print(f"Member login successful: {user.get('name')}")
         
-        return data["token"]
+        return token
     
     def test_member_pets_endpoint(self):
         """Test /api/pets/my-pets returns member's pets"""
@@ -209,7 +211,8 @@ class TestMemberLogin:
         )
         
         assert login_response.status_code == 200
-        token = login_response.json()["token"]
+        login_data = login_response.json()
+        token = login_data.get("token") or login_data.get("access_token")
         
         # Get pets
         response = requests.get(
