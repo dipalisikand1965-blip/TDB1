@@ -573,7 +573,7 @@ const UnifiedCheckout = () => {
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label htmlFor="petName" className="text-xs">Pet's Name</Label>
+                      <Label htmlFor="petName" className="text-xs">Pet&apos;s Name</Label>
                       <Input
                         id="petName"
                         placeholder="e.g., Bruno"
