@@ -605,6 +605,34 @@ const MemberDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-20">
+      {/* First Visit Tour - Shows for new members */}
+      <FirstVisitTour 
+        isOpen={showTour}
+        onClose={endTour}
+        onComplete={() => {
+          toast({
+            title: "Welcome to the family! 🎉",
+            description: "Your pet's journey begins now!"
+          });
+        }}
+        userName={user?.name?.split(' ')[0]}
+        petName={primaryPet?.name}
+      />
+      
+      {/* Tour Replay Button - Hidden in corner for returning users */}
+      {!showTour && (
+        <button
+          onClick={startTour}
+          className="fixed bottom-24 left-4 z-40 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 transition-all hover:scale-110 group"
+          title="Replay Tour"
+        >
+          <HelpCircle className="w-5 h-5 text-purple-600" />
+          <span className="absolute left-full ml-2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            Take the tour again
+          </span>
+        </button>
+      )}
+      
       {/* Beautiful Hero Section - Pet-First Design */}
       <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800">
         {/* Animated Background Elements */}
