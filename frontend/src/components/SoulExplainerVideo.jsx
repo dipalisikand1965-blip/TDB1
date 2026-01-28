@@ -40,20 +40,26 @@ const SLIDES = [
   },
   {
     id: 'pillars',
-    title: '8 Soul Pillars',
-    subtitle: 'A complete picture of your pet',
-    content: 'We explore 8 dimensions of your pet\'s life:',
+    title: '14 Soul Pillars',
+    subtitle: 'A complete picture of your pet\'s life',
+    content: 'We explore 14 dimensions of your pet\'s life:',
     icon: '🧩',
     bgGradient: 'from-emerald-600 via-teal-600 to-emerald-700',
     pillars: [
-      { name: 'Identity', icon: '🐕', desc: 'Name, breed, basics' },
-      { name: 'Family', icon: '👨‍👩‍👧', desc: 'Pack dynamics' },
-      { name: 'Rhythm', icon: '⏰', desc: 'Daily routines' },
-      { name: 'Home', icon: '🏠', desc: 'Comfort preferences' },
-      { name: 'Travel', icon: '✈️', desc: 'Adventure style' },
-      { name: 'Taste', icon: '🍖', desc: 'Food & treats' },
-      { name: 'Training', icon: '🎓', desc: 'Behaviour & skills' },
-      { name: 'Health', icon: '💊', desc: 'Wellness & care' }
+      { name: 'Celebrate', icon: '🎂', desc: 'Birthdays & milestones' },
+      { name: 'Dine', icon: '🍖', desc: 'Pet-friendly dining' },
+      { name: 'Stay', icon: '🏨', desc: 'Boarding & daycare' },
+      { name: 'Travel', icon: '✈️', desc: 'Adventures together' },
+      { name: 'Care', icon: '💊', desc: 'Grooming & wellness' },
+      { name: 'Enjoy', icon: '🎾', desc: 'Play & activities' },
+      { name: 'Fit', icon: '🏃', desc: 'Exercise & fitness' },
+      { name: 'Learn', icon: '🎓', desc: 'Training & behaviour' },
+      { name: 'Paperwork', icon: '📋', desc: 'Documents & records' },
+      { name: 'Advisory', icon: '💡', desc: 'Expert guidance' },
+      { name: 'Emergency', icon: '🚨', desc: '24/7 support' },
+      { name: 'Farewell', icon: '🌈', desc: 'End-of-life care' },
+      { name: 'Adopt', icon: '🐾', desc: 'Find a friend' },
+      { name: 'Shop', icon: '🛒', desc: 'Products & treats' }
     ]
   },
   {
