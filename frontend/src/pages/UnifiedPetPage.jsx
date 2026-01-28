@@ -1424,7 +1424,10 @@ const UnifiedPetPage = () => {
                                         <HelpCircle className="w-5 h-5 text-gray-300 flex-shrink-0" />
                                       )}
                                       <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-700">{questionLabels[questionId] || questionId}</p>
+                                        <p className="text-sm font-medium text-gray-700">
+                                          {contributesSoulScore && <span className="text-purple-500 mr-1" title="Contributes to Pet Soul Score">★</span>}
+                                          {questionLabels[questionId] || questionId}
+                                        </p>
                                         {hasAnswer && <p className="text-sm text-gray-500 truncate">{displayValue}</p>}
                                       </div>
                                     </div>
