@@ -96,6 +96,34 @@
 
 ---
 
+### Phase 29: Bug Fixes - Adopt, Farewell, Events (Jan 28, 2025)
+
+**Fixed Issues:**
+
+1. **Farewell Tickets Not Appearing in Service Desk** (FIXED)
+   - Updated farewell request to insert into `service_desk_tickets` collection
+   - Added all required ticket fields (ticket_id, pillar, urgency, contact, member)
+   - Tickets now properly visible in Service Desk
+   - **Files Modified**: `/app/backend/server.py`
+
+2. **Adoption Application Error** (FIXED)
+   - Added support for both `pet_id` and `id` field lookups
+   - Added logging for debugging
+   - **Files Modified**: `/app/backend/adopt_routes.py`
+
+3. **Event Registration Error** (FIXED)
+   - Enhanced event lookup to support both `event_id` and `id` fields
+   - Added case-insensitive matching
+   - **Files Modified**: `/app/backend/adopt_routes.py`
+
+4. **Admin Events Editor** (FIXED)
+   - Added Edit button to event cards in AdoptManager
+   - Added `editingEvent` state for form pre-population
+   - Shows time in correct field (`start_time` instead of `time`)
+   - **Files Modified**: `/app/frontend/src/components/admin/AdoptManager.jsx`
+
+---
+
 ### Phase 26: Service Desk Ticket History Modal (Jan 28, 2025)
 
 **Fixed crashed Service Desk and completed Pet Parent ticket history feature:**
