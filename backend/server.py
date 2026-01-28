@@ -7646,6 +7646,55 @@ async def patch_pet_soul_answers(pet_id: str, answers: dict):
     }
 
 
+
+@api_router.post("/admin/pets/recalculate-all-scores")
+async def recalculate_all_pet_scores():
+    """
+    Admin endpoint to recalculate all pet scores using the weighted scoring system.
+    This fixes any stale/incorrect scores stored in the database.
+    """
+    cursor = db.pets.find({}, {"id": 1, "name": 1, "doggy_soul_answers": 1, "overall_score": 1})
+    pets = await cursor.to_list(10000)
+    
+    updated_count = 0
+    fixed_count = 0
+    
+    for pet in pets:
+        pet_id = pet.get("id")
+        old_score = pet.get("overall_score", 0)
+        answers = pet.get("doggy_soul_answers", {})
+        
+        if answers:
+            score_data = calculate_pet_soul_score(answers)
+            new_score = score_data["total_score"]
+            score_tier = score_data["tier"]["key"] if score_data.get("tier") else "newcomer"
+        else:
+            new_score = 0
+            score_tier = "newcomer"
+        
+        # Only update if score changed
+        if old_score != new_score:
+            await db.pets.update_one(
+                {"id": pet_id},
+                {"$set": {
+                    "overall_score": new_score,
+                    "score_tier": score_tier,
+                    "score_fixed_at": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+            fixed_count += 1
+            logger.info(f"Fixed score for {pet.get('name')}: {old_score} -> {new_score}")
+        
+        updated_count += 1
+    
+    return {
+        "message": f"Processed {updated_count} pets, fixed {fixed_count} scores",
+        "total_pets": updated_count,
+        "scores_fixed": fixed_count
+    }
+
+
+
 @api_router.post("/pets/{pet_id}/photo")
 async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
     """Upload or update a pet's photo - stores as base64 in database for persistence"""
