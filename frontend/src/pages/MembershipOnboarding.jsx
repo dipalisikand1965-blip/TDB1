@@ -252,6 +252,30 @@ const MembershipOnboarding = () => {
         throw new Error(data.detail || 'Failed to create membership');
       }
 
+      // Upload pet photos if any were selected
+      if (data.pet_ids && data.pet_ids.length > 0) {
+        for (let i = 0; i < petsData.length; i++) {
+          const pet = petsData[i];
+          const petId = data.pet_ids[i];
+          
+          if (pet.photo_file && petId) {
+            try {
+              const photoFormData = new FormData();
+              photoFormData.append('photo', pet.photo_file);
+              
+              await fetch(`${getApiUrl()}/api/pets/${petId}/photo`, {
+                method: 'POST',
+                body: photoFormData
+              });
+              console.log(`Uploaded photo for pet ${pet.name}`);
+            } catch (photoErr) {
+              console.error(`Failed to upload photo for pet ${pet.name}:`, photoErr);
+              // Don't fail the whole process for photo upload errors
+            }
+          }
+        }
+      }
+
       // Redirect to payment with order details
       if (data.payment_url) {
         window.location.href = data.payment_url;
