@@ -6145,7 +6145,34 @@ async def get_all_pillar_products(limit: int = 100, pillar: str = None):
         if not bundle.get("price"):
             bundle["price"] = bundle.get("bundle_price")
     
-    all_items = products + bundles + celebrate_bundles
+    # Get stay properties
+    stay_properties = await db.stay_properties.find(
+        {},
+        {"_id": 0, "id": 1, "name": 1, "display_tags": 1, "images": 1, "image": 1, "price_per_night": 1, "city": 1, "property_type": 1}
+    ).to_list(100)
+    
+    for prop in stay_properties:
+        prop["title"] = prop.get("name")
+        prop["pillar"] = "stay"
+        prop["category"] = prop.get("property_type", "property")
+        prop["price"] = prop.get("price_per_night")
+        if prop.get("images") and len(prop["images"]) > 0:
+            prop["image"] = prop["images"][0]
+    
+    # Get stay bundles
+    stay_bundles = await db.stay_bundles.find(
+        {},
+        {"_id": 0, "id": 1, "name": 1, "display_tags": 1, "images": 1, "image": 1, "price": 1, "base_price": 1}
+    ).to_list(50)
+    
+    for bundle in stay_bundles:
+        bundle["title"] = bundle.get("name")
+        bundle["pillar"] = "stay"
+        bundle["category"] = "bundle"
+        if not bundle.get("price"):
+            bundle["price"] = bundle.get("base_price")
+    
+    all_items = products + bundles + celebrate_bundles + stay_properties + stay_bundles
     
     return {"products": all_items, "total": len(all_items)}
 
