@@ -46,6 +46,8 @@ import { MiraTip, getMiraGuidanceContext, ScoreBoostEncouragement } from '../com
 import MyCelebrations from '../components/MyCelebrations';
 // First Visit Tour
 import FirstVisitTour, { useTour } from '../components/FirstVisitTour';
+// Daily Tips
+import MiraDailyTip, { MiraDailyTipInline } from '../components/MiraDailyTip';
 
 
 // Extracted components: ACHIEVEMENTS, TIER_COLORS, triggerCelebration, QuickScoreBoost, GamificationBanner
