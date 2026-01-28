@@ -255,9 +255,9 @@ class TestVAPIDKey:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
-        vapid_key = data.get("vapid_public_key")
+        vapid_key = data.get("public_key") or data.get("vapid_public_key")
         
-        assert vapid_key is not None, "VAPID public key not returned"
+        assert vapid_key is not None, f"VAPID public key not returned. Response: {data}"
         
         # VAPID keys should be URL-safe base64 encoded
         # They typically start with 'B' and are ~87 characters
