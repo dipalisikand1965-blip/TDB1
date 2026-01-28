@@ -2004,6 +2004,235 @@ const UnifiedProductBox = () => {
                   </TabsContent>
                 </Tabs>
               </TabsContent>
+              
+              {/* Inventory Tab */}
+              <TabsContent value="inventory" className="space-y-4 mt-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3 p-4 border rounded-lg">
+                    <Switch 
+                      checked={selectedProduct.inventory?.track_inventory || false}
+                      onCheckedChange={(c) => setSelectedProduct({
+                        ...selectedProduct,
+                        inventory: {...(selectedProduct.inventory || {}), track_inventory: c}
+                      })}
+                    />
+                    <div>
+                      <Label>Track Inventory</Label>
+                      <p className="text-xs text-gray-500">Monitor stock levels</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-4 border rounded-lg">
+                    <Switch 
+                      checked={selectedProduct.inventory?.in_stock ?? selectedProduct.in_stock ?? true}
+                      onCheckedChange={(c) => setSelectedProduct({
+                        ...selectedProduct,
+                        in_stock: c,
+                        inventory: {...(selectedProduct.inventory || {}), in_stock: c}
+                      })}
+                    />
+                    <div>
+                      <Label>In Stock</Label>
+                      <p className="text-xs text-gray-500">Product available for sale</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label>Stock Quantity</Label>
+                    <Input 
+                      type="number"
+                      value={selectedProduct.inventory?.stock_quantity ?? selectedProduct.stock_quantity ?? ''}
+                      onChange={(e) => setSelectedProduct({
+                        ...selectedProduct,
+                        stock_quantity: parseInt(e.target.value) || null,
+                        inventory: {...(selectedProduct.inventory || {}), stock_quantity: parseInt(e.target.value) || null}
+                      })}
+                      placeholder="Current stock"
+                    />
+                  </div>
+                  <div>
+                    <Label>Low Stock Threshold</Label>
+                    <Input 
+                      type="number"
+                      value={selectedProduct.inventory?.low_stock_threshold || 5}
+                      onChange={(e) => setSelectedProduct({
+                        ...selectedProduct,
+                        inventory: {...(selectedProduct.inventory || {}), low_stock_threshold: parseInt(e.target.value)}
+                      })}
+                      placeholder="Alert when below"
+                    />
+                  </div>
+                  <div className="flex items-center gap-3 p-4 border rounded-lg">
+                    <Switch 
+                      checked={selectedProduct.inventory?.allow_backorder || false}
+                      onCheckedChange={(c) => setSelectedProduct({
+                        ...selectedProduct,
+                        inventory: {...(selectedProduct.inventory || {}), allow_backorder: c}
+                      })}
+                    />
+                    <div>
+                      <Label>Allow Backorder</Label>
+                      <p className="text-xs text-gray-500">Accept when OOS</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Perishables */}
+                <div className="border rounded-lg p-4">
+                  <Label className="text-sm font-medium mb-3 block">Perishable Items</Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-xs">Shelf Life (days)</Label>
+                      <Input 
+                        type="number"
+                        value={selectedProduct.inventory?.shelf_life_days || ''}
+                        onChange={(e) => setSelectedProduct({
+                          ...selectedProduct,
+                          inventory: {...(selectedProduct.inventory || {}), shelf_life_days: parseInt(e.target.value) || null}
+                        })}
+                        placeholder="Days before expiry"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Warehouse Location</Label>
+                      <Input 
+                        value={selectedProduct.inventory?.warehouse_location || ''}
+                        onChange={(e) => setSelectedProduct({
+                          ...selectedProduct,
+                          inventory: {...(selectedProduct.inventory || {}), warehouse_location: e.target.value}
+                        })}
+                        placeholder="Storage location"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+              
+              {/* Visibility Tab */}
+              <TabsContent value="visibility" className="space-y-4 mt-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Status *</Label>
+                    <select 
+                      value={selectedProduct.visibility?.status || 'draft'}
+                      onChange={(e) => setSelectedProduct({
+                        ...selectedProduct,
+                        visibility: {...(selectedProduct.visibility || {}), status: e.target.value}
+                      })}
+                      className="w-full h-10 px-3 rounded-md border border-gray-200"
+                    >
+                      <option value="draft">📝 Draft</option>
+                      <option value="pending_approval">⏳ Pending Approval</option>
+                      <option value="active">✅ Active</option>
+                      <option value="paused">⏸️ Paused</option>
+                      <option value="archived">📦 Archived</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-3 p-4 border rounded-lg">
+                    <Switch 
+                      checked={selectedProduct.visibility?.featured || false}
+                      onCheckedChange={(c) => setSelectedProduct({
+                        ...selectedProduct,
+                        visibility: {...(selectedProduct.visibility || {}), featured: c}
+                      })}
+                    />
+                    <div>
+                      <Label>Featured</Label>
+                      <p className="text-xs text-gray-500">Show prominently</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-4 gap-4">
+                  <div className="flex items-center gap-2 p-3 border rounded-lg">
+                    <Switch 
+                      checked={selectedProduct.visibility?.visible_on_site ?? true}
+                      onCheckedChange={(c) => setSelectedProduct({
+                        ...selectedProduct,
+                        visibility: {...(selectedProduct.visibility || {}), visible_on_site: c}
+                      })}
+                    />
+                    <Label className="text-sm">On Website</Label>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 border rounded-lg">
+                    <Switch 
+                      checked={selectedProduct.visibility?.member_only || false}
+                      onCheckedChange={(c) => setSelectedProduct({
+                        ...selectedProduct,
+                        visibility: {...(selectedProduct.visibility || {}), member_only: c}
+                      })}
+                    />
+                    <Label className="text-sm">Members Only</Label>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 border rounded-lg">
+                    <Switch 
+                      checked={selectedProduct.visibility?.concierge_only || false}
+                      onCheckedChange={(c) => setSelectedProduct({
+                        ...selectedProduct,
+                        visibility: {...(selectedProduct.visibility || {}), concierge_only: c}
+                      })}
+                    />
+                    <Label className="text-sm">Concierge Only</Label>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 border rounded-lg">
+                    <Switch 
+                      checked={selectedProduct.visibility?.searchable ?? true}
+                      onCheckedChange={(c) => setSelectedProduct({
+                        ...selectedProduct,
+                        visibility: {...(selectedProduct.visibility || {}), searchable: c}
+                      })}
+                    />
+                    <Label className="text-sm">Searchable</Label>
+                  </div>
+                </div>
+                
+                {/* City Visibility */}
+                <div className="border rounded-lg p-4">
+                  <Label className="text-sm font-medium mb-3 block">City/Region Visibility</Label>
+                  <p className="text-xs text-gray-500 mb-3">Leave empty for all cities</p>
+                  <Input 
+                    value={(selectedProduct.visibility?.city_visibility || []).join(', ')}
+                    onChange={(e) => setSelectedProduct({
+                      ...selectedProduct,
+                      visibility: {
+                        ...(selectedProduct.visibility || {}), 
+                        city_visibility: e.target.value.split(',').map(c => c.trim()).filter(Boolean)
+                      }
+                    })}
+                    placeholder="mumbai, delhi, bangalore..."
+                  />
+                </div>
+                
+                {/* Publish Scheduling */}
+                <div className="border rounded-lg p-4">
+                  <Label className="text-sm font-medium mb-3 block">Publish Scheduling</Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-xs">Publish Date</Label>
+                      <Input 
+                        type="datetime-local"
+                        value={selectedProduct.visibility?.publish_date || ''}
+                        onChange={(e) => setSelectedProduct({
+                          ...selectedProduct,
+                          visibility: {...(selectedProduct.visibility || {}), publish_date: e.target.value || null}
+                        })}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Unpublish Date</Label>
+                      <Input 
+                        type="datetime-local"
+                        value={selectedProduct.visibility?.unpublish_date || ''}
+                        onChange={(e) => setSelectedProduct({
+                          ...selectedProduct,
+                          visibility: {...(selectedProduct.visibility || {}), unpublish_date: e.target.value || null}
+                        })}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
             </Tabs>
           )}
           
