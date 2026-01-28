@@ -1462,6 +1462,20 @@ async def api_db_health_check():
         logger.error(f"Database health check failed: {e}")
         return {"status": "unhealthy", "database": "disconnected", "error": str(e)}
 
+@app.get("/api/health/websocket")
+async def websocket_health_check():
+    """WebSocket connection status check"""
+    try:
+        stats = get_connection_stats()
+        return {
+            "status": "healthy",
+            "websocket": "active",
+            **stats
+        }
+    except Exception as e:
+        logger.error(f"WebSocket health check failed: {e}")
+        return {"status": "unhealthy", "websocket": "error", "error": str(e)}
+
 @app.get("/")
 def root():
     """Root endpoint"""
