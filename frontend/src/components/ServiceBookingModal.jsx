@@ -330,7 +330,7 @@ const ServiceBookingModal = ({
               </div>
             </div>
             <p className="text-sm text-gray-500 mt-4">
-              📱 You'll receive a confirmation message on WhatsApp shortly.
+              📱 You&apos;ll receive a confirmation message on WhatsApp shortly.
             </p>
             <Button onClick={handleClose} className="mt-6">Done</Button>
           </div>
