@@ -243,12 +243,12 @@ function MainLayout() {
         <Route path="/celebrate/birthday-cakes" element={<ProductListing category="Birthdays" />} />
         <Route path="/celebrate/breed-cakes" element={<ProductListing category="breed-cakes" />} />
         <Route path="/celebrate/pupcakes" element={<ProductListing category="dognuts" />} />
-        <Route path="/celebrate/treats" element={<ProductListing category="Treats" />} />
+        <Route path="/celebrate/treats" element={<ProductListing category="treats" />} />
         <Route path="/celebrate/valentine" element={<ProductListing category="valentine" />} />
         <Route path="/celebrate/desi" element={<ProductListing category="desi-treats" />} />
         <Route path="/celebrate/hampers" element={<ProductListing category="hampers" />} />
         <Route path="/celebrate/cat" element={<ProductListing category="cat" />} />
-        <Route path="/celebrate/accessories" element={<ProductListing category="Accessories" />} />
+        <Route path="/celebrate/accessories" element={<ProductListing category="accessories" />} />
         <Route path="/celebrate/:category" element={<ProductListing />} />
         
         {/* Other Product Routes - Open for browsing */}
