@@ -196,12 +196,15 @@ const MiraVoiceAssistant = ({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
   
-  // Welcome message
+  // Welcome message - only run once when component opens
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       const welcome = `Hey there! 🐾 I'm Mira! How can I help you and ${petName} today? You can type or tap the mic to speak!`;
-      setMessages([{ role: 'mira', text: welcome, timestamp: new Date() }]);
-      if (!isMuted) speak(welcome);
+      // Use setTimeout to avoid synchronous setState in effect
+      setTimeout(() => {
+        setMessages([{ role: 'mira', text: welcome, timestamp: new Date() }]);
+        if (!isMuted) speak(welcome);
+      }, 0);
     }
   }, [isOpen, petName, messages.length, isMuted, speak]);
   
