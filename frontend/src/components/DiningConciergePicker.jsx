@@ -495,50 +495,6 @@ Submitted via Dining Concierge on the Dine pillar page.`;
     </div>
   );
   
-  // Compact Mode - Grid of clickable cards
-  const CompactView = () => (
-    <div className="py-8 px-4" data-testid="dining-concierge-picker-compact">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-6">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Utensils className="w-5 h-5 text-amber-600" />
-            <span className="text-sm font-medium text-amber-700">Need Dining Help?</span>
-          </div>
-          <p className="text-xs text-gray-500">Click a service to start a conversation with our Concierge®</p>
-        </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          {DINING_SERVICES.map((service) => {
-            const Icon = service.icon;
-            return (
-              <button
-                key={service.id}
-                onClick={() => handleServiceClick(service.id)}
-                className="group p-4 rounded-xl border-2 border-gray-200 hover:border-amber-400 hover:shadow-lg bg-white transition-all text-center"
-                data-testid={`dining-service-compact-${service.id}`}
-              >
-                <div className={`w-12 h-12 mx-auto mb-2 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center text-2xl shadow-md group-hover:scale-110 transition-transform`}>
-                  {service.emoji}
-                </div>
-                <h4 className="font-semibold text-xs text-gray-900 mb-1">{service.name}</h4>
-                <p className="text-[10px] text-gray-500 line-clamp-2">{service.description}</p>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      
-      {/* Form Modal */}
-      {showFormModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowFormModal(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            {fullFormContent}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-  
   // Full form content (used in modal or inline)
   const fullFormContent = (
     <div className="p-6" data-testid="dining-form-content">
@@ -684,9 +640,47 @@ Submitted via Dining Concierge on the Dine pillar page.`;
     </div>
   );
   
-  // Return compact or full view based on mode
+  // Return compact mode view by default
   if (compactMode) {
-    return <CompactView />;
+    return (
+      <div className="py-8 px-4" data-testid="dining-concierge-picker-compact">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Utensils className="w-5 h-5 text-amber-600" />
+              <span className="text-sm font-medium text-amber-700">Need Dining Help?</span>
+            </div>
+            <p className="text-xs text-gray-500">Click a service to start a conversation with our Concierge®</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {DINING_SERVICES.map((service) => (
+              <button
+                key={service.id}
+                onClick={() => handleServiceClick(service.id)}
+                className="group p-4 rounded-xl border-2 border-gray-200 hover:border-amber-400 hover:shadow-lg bg-white transition-all text-center"
+                data-testid={`dining-service-compact-${service.id}`}
+              >
+                <div className={`w-12 h-12 mx-auto mb-2 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center text-2xl shadow-md group-hover:scale-110 transition-transform`}>
+                  {service.emoji}
+                </div>
+                <h4 className="font-semibold text-xs text-gray-900 mb-1">{service.name}</h4>
+                <p className="text-[10px] text-gray-500 line-clamp-2">{service.description}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+        
+        {/* Form Modal */}
+        {showFormModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowFormModal(false)}>
+            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              {fullFormContent}
+            </div>
+          </div>
+        )}
+      </div>
+    );
   }
   
   return FullView;
