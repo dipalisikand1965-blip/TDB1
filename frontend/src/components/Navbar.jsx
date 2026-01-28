@@ -582,18 +582,25 @@ const Navbar = () => {
             {/* Right Side Actions */}
             <div className="flex items-center gap-2">
               
-              {/* Account */}
+              {/* Account - Cleaner single-line design */}
               <Link 
                 to={user ? "/dashboard" : "/login"}
-                className="hidden sm:flex flex-col items-start text-xs hover:bg-white/10 rounded p-1.5"
+                className="hidden sm:flex items-center gap-2 text-sm hover:bg-white/10 rounded-lg px-3 py-2 transition-colors"
                 data-testid="navbar-account"
               >
-                <span className="text-gray-400 text-[10px]">
-                  {user ? `Hello, ${user.name?.split(' ')[0] || 'Member'}` : 'Sign in'}
-                </span>
-                <span className="font-semibold flex items-center gap-1">
-                  Account <ChevronDown className="w-3 h-3" />
-                </span>
+                {user ? (
+                  <>
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                      {user.name?.charAt(0) || '🐾'}
+                    </div>
+                    <span className="font-medium">{user.name?.split(' ')[0] || 'Dashboard'}</span>
+                  </>
+                ) : (
+                  <>
+                    <User className="w-5 h-5" />
+                    <span className="font-medium">Sign In</span>
+                  </>
+                )}
               </Link>
 
               {/* Pet Soul Score */}
