@@ -370,6 +370,56 @@ async def get_user_info(current_user: dict = Depends(get_current_user)):
     return {"user": user_data, "mira_access": access}
 
 
+class ProfileUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    whatsapp: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    pincode: Optional[str] = None
+
+
+@auth_router.patch("/profile")
+async def update_user_profile(
+    update_data: ProfileUpdateRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update current user's profile - allows updating name, phone, address, etc."""
+    update_fields = {}
+    
+    if update_data.name:
+        update_fields["name"] = update_data.name
+    if update_data.phone:
+        update_fields["phone"] = update_data.phone
+    if update_data.whatsapp:
+        update_fields["whatsapp"] = update_data.whatsapp
+    if update_data.address:
+        update_fields["address"] = update_data.address
+    if update_data.city:
+        update_fields["city"] = update_data.city
+    if update_data.pincode:
+        update_fields["pincode"] = update_data.pincode
+    
+    if not update_fields:
+        return {"message": "No fields to update"}
+    
+    update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    # Update user record
+    result = await db.users.update_one(
+        {"email": current_user["email"]},
+        {"$set": update_fields}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Fetch updated user
+    updated_user = await db.users.find_one({"email": current_user["email"]}, {"_id": 0, "password_hash": 0})
+    
+    logger.info(f"Profile updated for {current_user['email']}: {list(update_fields.keys())}")
+    return {"user": updated_user, "message": "Profile updated successfully"}
+
 
 # ==================== PASSWORD RESET FOR MEMBERS ====================
 
