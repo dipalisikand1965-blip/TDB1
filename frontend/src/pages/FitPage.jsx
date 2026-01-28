@@ -24,6 +24,7 @@ import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import SEOHead from '../components/SEOHead';
+import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -32,6 +33,62 @@ import {
   Clock, ArrowUpRight, Plus, Check, X, Phone, Package, Shield,
   MessageCircle, Info, ChevronUp, Bookmark, Share2, ExternalLink
 } from 'lucide-react';
+
+// Elevated Concierge® Fit Experiences
+const FIT_EXPERIENCES = [
+  {
+    title: "Wellness Architect®",
+    description: "Beyond basic fitness plans — we design comprehensive wellness journeys that consider your pet's breed, age, health conditions, and lifestyle. From nutrition to exercise to recovery.",
+    icon: "🏋️",
+    gradient: "from-teal-500 to-emerald-600",
+    badge: "Holistic",
+    badgeColor: "bg-teal-600",
+    highlights: [
+      "Comprehensive health assessment",
+      "Custom nutrition & exercise plan",
+      "Progress tracking & adjustments",
+      "Veterinary coordination"
+    ]
+  },
+  {
+    title: "Weight Journey Partner®",
+    description: "Weight management is a journey, not a quick fix. We create sustainable plans that work with your pet's metabolism, preferences, and your family's routine — celebrating every milestone together.",
+    icon: "⚖️",
+    gradient: "from-green-500 to-teal-600",
+    badge: "Most Requested",
+    badgeColor: "bg-green-600",
+    highlights: [
+      "Body condition scoring",
+      "Calorie-controlled meal planning",
+      "Exercise intensity calibration",
+      "Monthly progress check-ins"
+    ]
+  },
+  {
+    title: "Active Lifestyle Curator®",
+    description: "For pets who need more than walks. We curate swimming sessions, agility play, hiking adventures, and social activities that keep your pet mentally and physically engaged.",
+    icon: "🏃",
+    gradient: "from-emerald-500 to-cyan-600",
+    highlights: [
+      "Activity matching by energy level",
+      "Swimming & hydrotherapy sessions",
+      "Adventure planning & coordination",
+      "Playgroup matchmaking"
+    ]
+  },
+  {
+    title: "Senior Wellness Companion®",
+    description: "Aging gracefully requires special attention. We design gentle fitness routines, mobility support, and comfort measures that help your senior pet live their best years with dignity.",
+    icon: "🦴",
+    gradient: "from-amber-500 to-orange-600",
+    highlights: [
+      "Gentle mobility exercises",
+      "Joint health supplements",
+      "Comfort & pain management",
+      "Quality of life monitoring"
+    ]
+  }
+];
 
 // Service Categories with metadata
 const SERVICE_CATEGORIES = {
