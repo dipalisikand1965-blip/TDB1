@@ -1214,7 +1214,7 @@ const UnifiedPetPage = () => {
             <Card className="p-6">
               <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-purple-600" />
-                Soul Questionnaire - 8 Pillars
+                Soul Questionnaire - 14 Pillars
                 <Badge variant="outline" className="ml-auto">
                   Click any pillar to expand
                 </Badge>
