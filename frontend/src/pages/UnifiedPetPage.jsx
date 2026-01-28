@@ -1332,6 +1332,22 @@ const UnifiedPetPage = () => {
                               insurance: 'Pet Insurance', special_needs: 'Special Needs'
                             };
                             
+                            // Questions that count towards Pet Soul Score (from backend pet_score_logic.py)
+                            const soulScoreQuestions = [
+                              'food_allergies', 'health_conditions', 'medical_conditions', 'vet_comfort', 
+                              'life_stage', 'grooming_tolerance', 'noise_sensitivity', 'loud_sounds',
+                              'temperament', 'general_nature', 'energy_level', 'social_with_dogs', 
+                              'behavior_with_dogs', 'social_with_people', 'behavior_with_humans', 
+                              'behavior_issues', 'problematic_behaviors', 'alone_time_comfort', 
+                              'alone_comfort', 'separation_anxiety', 'car_comfort', 'car_rides',
+                              'travel_readiness', 'travel_style', 'favorite_spot', 'sleeping_spot',
+                              'morning_routine', 'exercise_needs', 'feeding_times', 'favorite_protein',
+                              'food_motivation', 'treat_preference', 'favorite_treats', 'training_level',
+                              'motivation_type', 'primary_bond', 'most_attached_to', 'other_pets', 
+                              'kids_at_home', 'favorite_toy_type'
+                            ];
+                            const affectsSoulScore = soulScoreQuestions.includes(questionId);
+                            
                             return (
                               <div 
                                 key={questionId}
