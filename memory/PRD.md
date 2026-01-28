@@ -13,6 +13,48 @@
 
 ## What's Been Implemented
 
+### Phase 18: App Badge, Pillar Popup, Compact Dining & Sync Features (Jan 28, 2025)
+
+**New Features:**
+
+1. **App Icon Notification Badge** (COMPLETED)
+   - PWA badge shows unread notification count on app icon
+   - Backend endpoint `/api/notifications/unread-count` returns breakdown of push_notifications, ticket_updates, pending_requests
+   - `AppBadgeManager` component in App.js polls every 60s and listens to service worker messages
+   - Uses `useAppBadge` hook for badge management
+   - **Files Changed**: `/app/frontend/src/App.js`, `/app/backend/server.py`
+
+2. **Dashboard Pillar Popup** (COMPLETED)
+   - Clicking any of the 16 pillar icons opens a modal popup
+   - Shows pillar-specific stats (Orders, Reservations, Visits, etc.)
+   - Shows recent activity with dates
+   - "Explore {Pillar}" button navigates to pillar page
+   - **Files Changed**: `/app/frontend/src/pages/MemberDashboard.jsx`
+
+3. **Compact Dining Concierge Picker** (COMPLETED)
+   - Refactored `DiningConciergePicker` to show 6 compact service cards in grid
+   - Services: Chef's Table, Private Home Dining, Pet Party Catering, Restaurant Reservations, Meal Subscriptions, Group Dining Events
+   - Clicking a card opens form modal with City/Date/Time/Guests/Special Requests fields
+   - `compactMode=true` by default
+   - **Files Changed**: `/app/frontend/src/components/DiningConciergePicker.jsx`
+
+4. **Unified Product Box - Concierge & Bundle Types** (COMPLETED)
+   - Added "Concierge®" and "Bundle" to PRODUCT_TYPES constant
+   - Both now appear in product type filter dropdown
+   - Can filter products by these new types
+   - **Files Changed**: `/app/frontend/src/components/admin/UnifiedProductBox.jsx`
+
+5. **Product Sync Buttons** (COMPLETED)
+   - "🏨 Sync Stay" button - calls `/api/admin/stay/sync-to-products`
+   - "🌟 Seed All Pillars" button - calls `/api/admin/force-seed-all-products`
+   - Both show toast notifications with results
+   - **Files Changed**: `/app/frontend/src/components/admin/UnifiedProductBox.jsx`
+
+6. **Stay/Boarding Sync** (VERIFIED WORKING)
+   - `/api/admin/stay/sync-to-products` endpoint syncs stay_properties and boarding_facilities to products collection
+   - Automatically assigns pricing based on property type
+   - Now has dedicated UI button in Product Box
+
 ### Phase 17: Quick Score Boost & Ticket Auto-Populate (Jan 28, 2025)
 
 **New Features:**
