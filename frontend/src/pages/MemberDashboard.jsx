@@ -447,6 +447,17 @@ const MemberDashboard = () => {
   const [showSoulExplainer, setShowSoulExplainer] = useState(false);
   const navigate = useNavigate();
   
+  // Push Notifications Hook
+  const { 
+    isPushSupported, 
+    permission: pushPermission, 
+    isSubscribed: isPushSubscribed,
+    loading: pushLoading,
+    subscribe: subscribeToPush,
+    unsubscribe: unsubscribeFromPush,
+    sendTestNotification
+  } = usePushNotifications(user?.id);
+  
   // Review form state
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -459,6 +470,7 @@ const MemberDashboard = () => {
     email: true,
     whatsapp: false,
     sms: false,
+    push_notifications: false,
     // Notification Types
     order_updates: true,
     promotional: true,
