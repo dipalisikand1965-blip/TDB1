@@ -273,11 +273,6 @@ const ConciergeExperienceCard = ({
             <Sparkles className="w-4 h-4 mr-2" />
             {ctaText}
           </Button>
-          
-          {/* Concierge Notice */}
-          <p className="text-center text-[10px] text-gray-400 mt-2">
-            Not a booking — starts a conversation
-          </p>
         </div>
       </Card>
 
