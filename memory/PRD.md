@@ -13,6 +13,36 @@
 
 ## What's Been Implemented
 
+### Phase 23: Bug Fixes & Wishlist Feature (Jan 28, 2025)
+
+**Critical bug fixes and new features:**
+
+1. **Pet Soul Score - Weighted Scoring Fix** (COMPLETED)
+   - Fixed inconsistent scoring: `soul-answer` and `soul-answers` endpoints now use weighted scoring
+   - Previously used simple count (filled/26), now uses `calculate_pet_soul_score()` from `pet_score_logic.py`
+   - Returns: `new_score`, `score_tier`, `answers_count`
+   - **Files Modified**: `/app/backend/server.py` (lines 7270-7320)
+
+2. **Select Dropdown z-index Fix** (COMPLETED)
+   - Fixed Select dropdowns appearing behind Dialogs
+   - Changed from z-50 to z-[100]
+   - **Files Modified**: `/app/frontend/src/components/ui/select.jsx`
+
+3. **Farewell Page Improvements** (COMPLETED)
+   - Added "Enter another pet's name" option
+   - Emotional indicator (💜) when user's pet is selected
+   - Compassionate message: "Our hearts are with you and {petName}"
+   - **Files Modified**: `/app/frontend/src/pages/FarewellPage.jsx`
+
+4. **Product Wishlist/Favorites API** (COMPLETED)
+   - `POST /api/member/wishlist/add` - Add product to wishlist
+   - `GET /api/member/wishlist` - Get user's wishlist
+   - `DELETE /api/member/wishlist/{product_id}` - Remove from wishlist
+   - `GET /api/admin/wishlists/summary` - Admin view of popular wishlisted products
+   - **Files Modified**: `/app/backend/server.py`
+
+---
+
 ### Phase 22: Unified Service Booking System (Jan 28, 2025)
 
 **Complete service booking system with instant ticket creation:**
