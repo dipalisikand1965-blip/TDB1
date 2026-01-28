@@ -5411,6 +5411,85 @@ async def book_service(
     }
 
 
+class UnifiedBookingRequest(BaseModel):
+    """Unified booking request for any service type"""
+    service_type: str  # grooming, vet, training, walking
+    sub_service: Optional[str] = None
+    service_name: str
+    sub_service_name: Optional[str] = None
+    pillar: str
+    location_type: str = "home"  # home or salon
+    pet: Optional[dict] = None
+    customer: dict
+    schedule: dict
+    additional_notes: Optional[str] = None
+
+
+@api_router.post("/services/unified-book")
+async def unified_service_booking(request: UnifiedBookingRequest):
+    """Unified service booking - creates ticket in service desk
+    
+    This endpoint supports booking any service type (grooming, vet, training, walking)
+    without requiring a pre-existing service document.
+    """
+    # Create booking/ticket IDs
+    booking_id = f"BK-{uuid.uuid4().hex[:8].upper()}"
+    ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
+    
+    # Build ticket for service desk
+    ticket = {
+        "id": ticket_id,
+        "ticket_id": ticket_id,
+        "booking_id": booking_id,
+        "type": "service_booking",
+        "category": request.pillar,
+        "subject": f"{request.service_name} Booking - {request.sub_service_name or request.service_type}",
+        "description": f"""Service Booking Request:
+- Service: {request.service_name} - {request.sub_service_name or 'N/A'}
+- Location: {request.location_type.title()}
+- Date: {request.schedule.get('preferred_date', 'TBD')}
+- Time: {request.schedule.get('preferred_time', 'TBD')}
+- Address: {request.schedule.get('address', 'N/A')}
+
+Pet Details:
+- Name: {request.pet.get('name') if request.pet else 'N/A'}
+- Breed: {request.pet.get('breed') if request.pet else 'N/A'}
+- Notes: {request.pet.get('notes') if request.pet else 'None'}
+
+Additional Notes: {request.additional_notes or 'None'}
+""",
+        "status": "open",
+        "priority": "normal",
+        "channel": "web",
+        "pillar": request.pillar,
+        "service_type": request.service_type,
+        "sub_service": request.sub_service,
+        "location_type": request.location_type,
+        "contact": {
+            "name": request.customer.get("name"),
+            "phone": request.customer.get("phone"),
+            "email": request.customer.get("email")
+        },
+        "pet_info": request.pet,
+        "schedule": request.schedule,
+        "additional_notes": request.additional_notes,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.tickets.insert_one(ticket)
+    
+    logger.info(f"Service booking created: {booking_id} - {request.service_name}")
+    
+    return {
+        "success": True,
+        "booking_id": booking_id,
+        "ticket_id": ticket_id,
+        "message": f"Your booking for {request.service_name} has been received. Our team will contact you shortly.",
+        "typical_response_time": "2-4 hours"
+    }
+
+
 @api_router.get("/products/recommendations/for-pet/{pet_id}")
 async def get_pet_recommendations(pet_id: str, limit: int = 20):
     """Get personalized product recommendations based on pet profile"""
