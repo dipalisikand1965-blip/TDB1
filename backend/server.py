@@ -9518,24 +9518,52 @@ async def create_farewell_service_request(request_data: dict, current_user: Opti
     
     await db.farewell_requests.insert_one(farewell_request)
     
-    # Auto-create a support ticket for the team
+    # Auto-create a support ticket for the service desk
     ticket_id = f"TKT-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
     package_data = request_data.get('package') or {}
     ticket = {
+        "ticket_id": ticket_id,
         "id": ticket_id,
+        "source": "farewell_pillar",
+        "channel": "web",
+        "pillar": "farewell",
         "category": "farewell",
         "subcategory": request_data.get("urgency", "planned"),
+        "urgency": "urgent" if request_data.get("urgency") == "emergency" else "high",
         "priority": "urgent" if request_data.get("urgency") == "emergency" else "high",
         "subject": f"Farewell Service Request - {request_data.get('pet_name', 'Pet')}",
         "description": f"Service: {package_data.get('name', 'Memorial Service')}\nUrgency: {request_data.get('urgency', 'planned')}\nSpecial Requests: {request_data.get('special_requests', 'None')}",
-        "customer_email": user_email,
-        "customer_name": user_name,
+        "customer": {
+            "email": user_email,
+            "name": user_name,
+            "phone": request_data.get("phone")
+        },
+        "contact": {
+            "email": user_email,
+            "name": user_name,
+            "phone": request_data.get("phone")
+        },
+        "member": {
+            "email": user_email,
+            "name": user_name
+        },
         "pet_id": request_data.get("pet_id"),
         "pet_name": request_data.get("pet_name"),
         "status": "open",
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "metadata": {
+            "package_name": package_data.get('name'),
+            "package_price": package_data.get('price'),
+            "urgency": request_data.get("urgency"),
+            "request_id": request_id
+        },
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
     }
-    await db.tickets.insert_one(ticket)
+    # Insert into service_desk_tickets for Service Desk visibility
+    await db.service_desk_tickets.insert_one(ticket)
+    
+    # Also insert into tickets for backwards compatibility
+    await db.tickets.insert_one({**ticket, "_id": None})
     
     logger.info(f"Farewell service request {request_id} created for pet {request_data.get('pet_name')}")
     
