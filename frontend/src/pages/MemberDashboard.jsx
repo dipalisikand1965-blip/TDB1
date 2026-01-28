@@ -805,8 +805,8 @@ const MemberDashboard = () => {
     );
   }
 
-  // Get primary pet info with universal avatar
-  const primaryPet = pets[0];
+  // Get primary pet info with universal avatar (safe access)
+  const primaryPet = Array.isArray(pets) && pets.length > 0 ? pets[0] : null;
   const petPhotoUrl = primaryPet ? getPetPhotoUrl(primaryPet) : null;
 
   return (
