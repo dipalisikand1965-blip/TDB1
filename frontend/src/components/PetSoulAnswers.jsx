@@ -198,8 +198,13 @@ const QuestionItem = ({ question, answer, color, onEdit }) => {
               <HelpCircle className="w-3 h-3 text-gray-400" />
             </div>
           )}
-          <span className={`text-sm ${hasAnswer ? 'text-gray-900' : 'text-gray-400'}`}>
+          <span className={`text-sm ${hasAnswer ? 'text-gray-900' : 'text-gray-400'} group relative`}>
             {question.label}
+            {question.tooltip && (
+              <span className="invisible group-hover:visible absolute left-0 top-full mt-1 z-50 w-64 p-2 text-xs text-white bg-gray-900 rounded-lg shadow-lg">
+                {question.tooltip}
+              </span>
+            )}
           </span>
         </div>
         
