@@ -136,18 +136,39 @@
    - Fetches data from Report Builder API
    - **Files Modified**: `/app/frontend/src/components/admin/DashboardTab.jsx`, `/app/frontend/src/pages/Admin.jsx`
 
-6. **Pet Photo Upload Fix** (COMPLETED)
+6. **Pet Photo Upload - Full Backend Integration** (COMPLETED)
    - Fixed non-functional photo upload on onboarding
-   - Added file input with preview capability
+   - Added file input with preview capability  
    - Added remove photo button (X icon)
-   - Larger, clearer upload area with "Add Photo" label
-   - **Files Modified**: `/app/frontend/src/pages/MembershipOnboarding.jsx`
+   - Photos now uploaded to backend after pet creation via `/api/pets/{pet_id}/photo`
+   - Photos stored as base64 in database for persistence across deployments
+   - **Files Modified**: `/app/frontend/src/pages/MembershipOnboarding.jsx`, `/app/backend/server.py`
 
 7. **Multiple Pets UX Improvement** (COMPLETED)
    - "Add Another Dog" section now always visible (not just for single pet)
    - Shows family pricing information
    - Better styled with dog icon and gradient background
    - **Files Modified**: `/app/frontend/src/pages/MembershipOnboarding.jsx`
+
+8. **Admin Panel Reorganization** (COMPLETED)
+   - Reorganized into logical groups: Command Center, Members & Pets, Commerce, 14 Pillars, Mira & AI, Analytics, Content, Config
+   - 14 Pillars shown as compact emoji icons
+   - Color-coded category labels
+   - Master Controls moved to Config section
+   - **Files Modified**: `/app/frontend/src/pages/Admin.jsx`
+
+9. **Service Desk Daily Ticket Ticker** (COMPLETED)
+   - Added scrolling marquee of today's tickets on dashboard
+   - Clickable status filter cards (Open, In Progress, Resolved, Unassigned)
+   - Clickable pillar breakdown grid
+   - Added marquee animation to Tailwind config
+   - **Files Modified**: `/app/frontend/src/components/admin/DoggyServiceDesk.jsx`, `/app/frontend/tailwind.config.js`
+
+10. **Customer Name Capture & Profile Update** (COMPLETED)
+    - Added `PATCH /api/auth/profile` endpoint to update user phone, address, etc.
+    - VoiceOrder form now shows warning when phone is missing
+    - Auto-population from user context working correctly
+    - **Files Modified**: `/app/backend/auth_routes.py`, `/app/frontend/src/pages/VoiceOrder.jsx`
 
 **Testing Results:**
 - Backend: 100% (13/13 tests passed)
