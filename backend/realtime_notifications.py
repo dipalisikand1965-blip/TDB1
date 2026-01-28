@@ -111,26 +111,63 @@ class NotificationManager:
 @sio.event
 async def connect(sid, environ):
     """Handle new WebSocket connection"""
-    logger.info(f"Agent connected: {sid}")
-    await sio.emit('connection:status', {'status': 'connected', 'sid': sid}, room=sid)
+    # Extract useful info from environ for debugging
+    transport = environ.get('asgi.scope', {}).get('query_string', b'').decode()
+    user_agent = dict(environ.get('asgi.scope', {}).get('headers', [])).get(b'user-agent', b'').decode()[:50]
+    
+    logger.info(f"🔌 Client connected: {sid} (transport hint in query: {transport[:50] if transport else 'none'})")
+    
+    # Store connection metadata
+    connected_agents[sid] = {
+        'agent_id': None,
+        'connected_at': datetime.now(timezone.utc).isoformat(),
+        'last_heartbeat': datetime.now(timezone.utc).isoformat(),
+        'user_agent': user_agent
+    }
+    
+    await sio.emit('connection:status', {
+        'status': 'connected', 
+        'sid': sid,
+        'server_time': datetime.now(timezone.utc).isoformat()
+    }, room=sid)
 
 
 @sio.event
 async def disconnect(sid):
     """Handle WebSocket disconnection"""
     if sid in connected_agents:
-        agent_id = connected_agents.pop(sid)
-        logger.info(f"Agent disconnected: {agent_id} ({sid})")
+        agent_info = connected_agents.pop(sid)
+        agent_id = agent_info.get('agent_id', 'unregistered')
+        logger.info(f"🔌 Client disconnected: {agent_id} ({sid})")
     else:
-        logger.info(f"Unknown client disconnected: {sid}")
+        logger.info(f"🔌 Unknown client disconnected: {sid}")
+
+
+@sio.event
+async def heartbeat(sid, data):
+    """Handle heartbeat from client to keep connection alive"""
+    if sid in connected_agents:
+        connected_agents[sid]['last_heartbeat'] = datetime.now(timezone.utc).isoformat()
+        # Respond with server time for latency measurement
+        await sio.emit('heartbeat:ack', {
+            'client_timestamp': data.get('timestamp'),
+            'server_timestamp': datetime.now(timezone.utc).timestamp() * 1000
+        }, room=sid)
 
 
 @sio.event
 async def register_agent(sid, data):
     """Register agent with their ID for targeted notifications"""
     agent_id = data.get('agent_id', sid)
-    connected_agents[sid] = agent_id
-    logger.info(f"Agent registered: {agent_id} ({sid})")
+    if sid in connected_agents:
+        connected_agents[sid]['agent_id'] = agent_id
+    else:
+        connected_agents[sid] = {
+            'agent_id': agent_id,
+            'connected_at': datetime.now(timezone.utc).isoformat(),
+            'last_heartbeat': datetime.now(timezone.utc).isoformat()
+        }
+    logger.info(f"✅ Agent registered: {agent_id} ({sid})")
     await sio.emit('registration:success', {'agent_id': agent_id}, room=sid)
 
 
