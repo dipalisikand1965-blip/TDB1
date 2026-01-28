@@ -1790,6 +1790,56 @@ const UnifiedPetPage = () => {
                   />
                 )}
                 
+                {/* Documents & Paperwork Section */}
+                <Card className="p-6">
+                  <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-slate-600" />
+                    Documents &amp; Paperwork
+                    <Badge variant="outline" className="ml-auto">Paperwork Vault</Badge>
+                  </h3>
+                  
+                  <div className="grid md:grid-cols-3 gap-4 mb-4">
+                    {[
+                      { id: 'vaccination', name: 'Vaccination Certificate', icon: '💉', desc: 'Latest vaccines record' },
+                      { id: 'registration', name: 'KCI Registration', icon: '📋', desc: 'Breed registration' },
+                      { id: 'microchip', name: 'Microchip Certificate', icon: '🔖', desc: 'ID implant record' },
+                      { id: 'insurance', name: 'Pet Insurance', icon: '🛡️', desc: 'Policy documents' },
+                      { id: 'travel', name: 'Travel Documents', icon: '✈️', desc: 'Health certificates' },
+                      { id: 'other', name: 'Other Documents', icon: '📁', desc: 'Medical reports, etc.' }
+                    ].map(doc => (
+                      <div 
+                        key={doc.id}
+                        className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200 hover:border-purple-300"
+                        onClick={() => {
+                          window.open(`/paperwork?pet=${pet.id}&doc=${doc.id}`, '_blank');
+                        }}
+                      >
+                        <div className="text-2xl mb-2">{doc.icon}</div>
+                        <p className="font-medium text-sm text-gray-900">{doc.name}</p>
+                        <p className="text-xs text-gray-500">{doc.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <Button 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => window.open(`/paperwork?pet=${pet.id}`, '_blank')}
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      View All Documents
+                    </Button>
+                    <Button 
+                      className="flex-1 bg-slate-600 hover:bg-slate-700"
+                      onClick={() => window.open(`/paperwork?pet=${pet.id}&action=upload`, '_blank')}
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload Document
+                    </Button>
+                  </div>
+                </Card>
+                
                 <div className="text-center">
                   <Link to={`/pet-vault/${pet.id}`}>
                     <Button className="bg-teal-600 hover:bg-teal-700">
