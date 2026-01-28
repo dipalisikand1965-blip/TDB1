@@ -1201,6 +1201,17 @@ const MemberDashboard = () => {
           onOpenExplainer={() => setShowSoulExplainer(true)}
         />
         
+        {/* ⚡ QUICK SCORE BOOST - Show when score is low */}
+        {Array.isArray(pets) && pets.length > 0 && pets[0]?.overall_score < 75 && (
+          <QuickScoreBoost 
+            pet={pets[0]} 
+            onAnswerQuestion={() => {
+              // Refresh pets data after answering a question
+              fetchPets();
+            }}
+          />
+        )}
+        
         {/* Soul Explainer Video Modal */}
         {showSoulExplainer && (
           <SoulExplainerVideo
