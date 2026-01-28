@@ -7,11 +7,51 @@
 - **Frontend**: React + Tailwind CSS + Shadcn/UI
 - **Backend**: FastAPI + Python
 - **Database**: MongoDB
-- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat, service_desk_settings, whatsapp_logs, concierge_requests
+- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat, service_desk_settings, whatsapp_logs, concierge_requests, push_subscriptions, push_notification_logs, soul_whisper_logs
 
 ---
 
 ## What's Been Implemented
+
+### Phase 14: PWA Push Notifications & WebSocket Stability (Jan 28, 2025)
+
+**New Features:**
+
+1. **PWA Push Notifications System**
+   - Full Web Push implementation using VAPID keys (pywebpush)
+   - Backend routes at `/api/push/*`:
+     - `GET /api/push/vapid-public-key` - Get public VAPID key for client subscription
+     - `POST /api/push/subscribe` - Subscribe to push notifications
+     - `POST /api/push/unsubscribe` - Unsubscribe from notifications
+     - `PUT /api/push/preferences/{user_id}` - Update notification preferences
+     - `POST /api/push/send` - Send push notification to user or all subscribers
+     - `POST /api/push/soul-whisper/send/{user_id}` - Send Soul Whisper notification
+     - `GET /api/push/stats` - Get push notification statistics
+   - Frontend hook: `usePushNotifications.js` for subscription management
+   - Enhanced service worker (`service-worker.js`) with rich notification handling
+   - UI in Member Dashboard Settings showing permission status and subscription controls
+
+2. **Soul Whisper™ Notification Engine**
+   - AI-generated personalized pet wellness tips based on Pet Soul data
+   - Message categories: general, health, activity, mood, nutrition
+   - Template-based messages with pet name personalization
+   - Delivery scheduling: daily, 2x week, weekly with preferred time
+   - Logs stored in `soul_whisper_logs` collection
+
+**Bug Fixes:**
+
+3. **WebSocket Stability Improvements** (IMPROVED)
+   - Refactored `useServiceDeskSocket.js` with production-ready configuration:
+     - Exponential backoff reconnection (up to 30s delay)
+     - Heartbeat monitoring every 30 seconds
+     - Graceful handling of server disconnects
+     - Detailed connection state tracking (disconnected, connecting, connected, reconnecting)
+     - Manual reconnect function exposed for UI
+   - Backend `realtime_notifications.py` improvements:
+     - Connection metadata tracking (agent_id, connected_at, last_heartbeat)
+     - Heartbeat event handler for connection health
+     - Production-ready Socket.IO config (ping_timeout=30, ping_interval=25)
+   - New health endpoint: `GET /api/health/websocket` for monitoring
 
 ### Phase 13C: Additional Fixes & Fit Page Concierge® (Jan 28, 2025)
 
