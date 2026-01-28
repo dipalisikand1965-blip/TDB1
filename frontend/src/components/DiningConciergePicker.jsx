@@ -190,7 +190,7 @@ Submitted via Dining Concierge on the Dine pillar page.`;
         } : null
       };
       
-      const response = await fetch(`${API_URL}/api/tickets`, {
+      const response = await fetch(`${API_URL}/api/tickets/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
