@@ -9475,6 +9475,7 @@ set_renewal_db(db)
 
 # Set Paw Rewards database
 set_rewards_db(db)
+set_member_rewards_db(db)  # Social Sharing, NPS
 set_paw_points_db(db)  # Paw Points Redemption System
 set_pet_soul_db(db)
 set_pet_score_db(db)  # Pet Score Logic
