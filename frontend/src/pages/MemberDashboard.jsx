@@ -1207,7 +1207,7 @@ const MemberDashboard = () => {
             pet={pets[0]} 
             onAnswerQuestion={() => {
               // Refresh pets data after answering a question
-              fetchPets();
+              window.location.reload();
             }}
           />
         )}
