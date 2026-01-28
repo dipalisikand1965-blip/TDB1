@@ -22,10 +22,10 @@ import SEOHead from '../components/SEOHead';
 
 // Product categories for Celebrate pillar
 const celebrateCategories = [
-  { id: 'birthday-cakes', name: 'Birthday Cakes', icon: Cake, path: '/celebrate/birthday-cakes', color: 'bg-pink-100 text-pink-600' },
+  { id: 'cakes', name: 'Birthday Cakes', icon: Cake, path: '/celebrate/cakes', color: 'bg-pink-100 text-pink-600' },
   { id: 'breed-cakes', name: 'Breed Cakes', icon: Heart, path: '/celebrate/breed-cakes', color: 'bg-purple-100 text-purple-600' },
   { id: 'pupcakes', name: 'Pupcakes & Dognuts', icon: Sparkles, path: '/celebrate/pupcakes', color: 'bg-amber-100 text-amber-600' },
-  { id: 'treats', name: 'Party Treats', icon: Gift, path: '/celebrate/treats', color: 'bg-green-100 text-green-600' },
+  { id: 'treats', name: 'Treats', icon: Gift, path: '/celebrate/treats', color: 'bg-green-100 text-green-600' },
   { id: 'hampers', name: 'Gift Hampers', icon: ShoppingBag, path: '/celebrate/hampers', color: 'bg-blue-100 text-blue-600' },
   { id: 'accessories', name: 'Party Accessories', icon: PartyPopper, path: '/celebrate/accessories', color: 'bg-rose-100 text-rose-600' },
 ];
