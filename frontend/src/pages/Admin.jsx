@@ -1797,6 +1797,7 @@ const Admin = () => {
             dashboard={dashboard}
             products={products}
             onSelectChat={setSelectedChat}
+            authHeaders={getAuthHeaders()}
           />
         )}
 
