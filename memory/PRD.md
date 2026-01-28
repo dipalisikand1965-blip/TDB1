@@ -7,11 +7,41 @@
 - **Frontend**: React + Tailwind CSS + Shadcn/UI
 - **Backend**: FastAPI + Python
 - **Database**: MongoDB
-- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat, service_desk_settings, whatsapp_logs, concierge_requests, push_subscriptions, push_notification_logs, soul_whisper_logs
+- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat, service_desk_settings, whatsapp_logs, concierge_requests, push_subscriptions, push_notification_logs, soul_whisper_logs, concierge_experiences
 
 ---
 
 ## What's Been Implemented
+
+### Phase 16: Pet Soul Score Fix & Concierge Admin (Jan 28, 2025)
+
+**Bug Fixes:**
+
+1. **Pet Soul Score Data Inconsistency** (FIXED - P0)
+   - **Issue**: Dashboard showed 100% Pet Soul Score, while Pet Profile page showed 18% for the same pet
+   - **Root Cause**: `/api/pets/my-pets` was returning stale `overall_score` from database, while `/api/pet-score/{id}/score_state` calculated correct weighted score
+   - **Fix**: Updated `server.py` to use `calculate_pet_soul_score()` from `pet_score_logic.py` for all pets
+   - **Files Changed**: `/app/backend/server.py` lines 104-108 (import), 7024-7040 (endpoint)
+   - **Verification**: Both endpoints now return consistent 18.4% score
+
+2. **Legacy Score Function Conflict** (FIXED)
+   - Renamed `calculate_pet_soul_score()` in server.py to `calculate_pet_soul_score_legacy()` to avoid shadowing the imported function
+   - This ensures the weighted scoring system is used everywhere
+
+**New Features:**
+
+3. **Concierge® Experiences Admin UI** (COMPLETED)
+   - Integrated `ConciergeExperiencesAdmin` component into Admin dashboard
+   - New tab: "✨ Concierge® XP" in Core Tools section
+   - Features: List experiences, Add/Edit/Delete, Seed Defaults, Toggle Active, Duplicate
+   - 18 experiences across 8 pillars pre-configured
+   - **Files Changed**: `/app/frontend/src/pages/Admin.jsx` (import + tab integration)
+
+**Verified Working:**
+
+4. **Mobile Navbar** (CONFIRMED WORKING)
+   - Hamburger menu opens correctly on mobile (390x844 viewport)
+   - Shows all 14 pillars, Sign In, Join Now, Ask Mira, Pet Life Pass
 
 ### Phase 15: Notification Badges, Dine & Celebrate Concierge® (Jan 28, 2025)
 
