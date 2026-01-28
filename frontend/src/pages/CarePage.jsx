@@ -1072,6 +1072,17 @@ const CarePage = () => {
         <MiraContextPanel pillar="care" position="bottom" />
       </div>
       
+      {/* Service Booking Modal */}
+      <ServiceBookingModal
+        isOpen={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        serviceType={bookingServiceType}
+        onBookingComplete={(data) => {
+          console.log('Booking complete:', data);
+          setShowBookingModal(false);
+        }}
+      />
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="care" position="bottom-left" />
     </div>
