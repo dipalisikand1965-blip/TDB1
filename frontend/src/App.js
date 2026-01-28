@@ -1,11 +1,13 @@
 import { BrowserRouter, Routes, Route, useLocation, Navigate, useParams } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { CartProvider } from "./context/CartContext";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Toaster } from "./components/ui/toaster";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import FloatingContactButton from "./components/FloatingContactButton";
+import { useAppBadge } from "./hooks/useAppBadge";
+import { API_URL } from "./utils/api";
 
 // ScrollToTop component - scrolls to top on route change
 function ScrollToTop() {
