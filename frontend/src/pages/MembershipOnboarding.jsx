@@ -180,12 +180,29 @@ const MembershipOnboarding = () => {
       setStep(2);
     } else if (step === 2 && validatePetForms()) {
       setStep(3);
+    } else if (step === 3) {
+      // Celebrations step - no validation required, just move forward
+      setStep(4);
     }
   };
 
   // Handle back
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
+  };
+  
+  // Toggle celebration for a pet
+  const toggleCelebration = (petIndex, celebrationId) => {
+    const newPets = [...petsData];
+    const celebrations = newPets[petIndex].celebrations || [];
+    
+    if (celebrations.includes(celebrationId)) {
+      newPets[petIndex].celebrations = celebrations.filter(c => c !== celebrationId);
+    } else {
+      newPets[petIndex].celebrations = [...celebrations, celebrationId];
+    }
+    
+    setPetsData(newPets);
   };
 
   // Update pet data
