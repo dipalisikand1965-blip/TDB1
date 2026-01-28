@@ -369,7 +369,44 @@ const ProductDetailPage = () => {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => setIsWishlisted(!isWishlisted)}
+                onClick={async () => {
+                  if (!token) {
+                    toast({
+                      title: "Login Required",
+                      description: "Please login to save to wishlist",
+                      variant: "destructive"
+                    });
+                    return;
+                  }
+                  try {
+                    if (isWishlisted) {
+                      await fetch(`${API_URL}/api/member/wishlist/${product.id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                      });
+                      setIsWishlisted(false);
+                      toast({ title: "Removed from Wishlist", description: `${product.name || product.title}` });
+                    } else {
+                      await fetch(`${API_URL}/api/member/wishlist/add`, {
+                        method: 'POST',
+                        headers: { 
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${token}` 
+                        },
+                        body: JSON.stringify({
+                          product_id: product.id,
+                          product_name: product.name || product.title,
+                          product_image: images[0],
+                          product_price: price
+                        })
+                      });
+                      setIsWishlisted(true);
+                      toast({ title: "Added to Wishlist ❤️", description: `${product.name || product.title}` });
+                    }
+                  } catch (err) {
+                    console.error('Wishlist error:', err);
+                  }
+                }}
                 className="py-6"
               >
                 <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
