@@ -194,7 +194,7 @@ const Navbar = () => {
   const searchRef = useRef(null);
   const dropdownTimeoutRef = useRef(null);
   const { getCartCount, setIsCartOpen } = useCart();
-  const { user, token } = useAuth();
+  const { user, token, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -725,27 +725,39 @@ const Navbar = () => {
             
             {/* Mobile Account */}
             {user ? (
-              <Link
-                to="/dashboard"
-                onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg"
-              >
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <User className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">{user.name || 'Member'}</div>
-                  {primaryPet && (
-                    <div className="text-xs text-purple-600">{primaryPet.name} • {petSoulScore}% Soul</div>
-                  )}
-                </div>
-              </Link>
+              <div className="space-y-2">
+                <Link
+                  to="/dashboard"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg"
+                  data-testid="mobile-dashboard-link"
+                >
+                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-900">{user.name || 'Member'}</div>
+                    {primaryPet && (
+                      <div className="text-xs text-purple-600">{primaryPet.name} • {petSoulScore}% Soul</div>
+                    )}
+                  </div>
+                </Link>
+                <button
+                  onClick={() => { logout(); setIsMenuOpen(false); navigate('/'); }}
+                  className="w-full flex items-center justify-center gap-2 p-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                  data-testid="mobile-logout-btn"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </button>
+              </div>
             ) : (
               <div className="flex gap-2 mb-4">
                 <Link
                   to="/login"
                   onClick={() => setIsMenuOpen(false)}
                   className="flex-1 py-2.5 text-center bg-slate-900 text-white rounded-lg font-medium"
+                  data-testid="mobile-signin-btn"
                 >
                   Sign In
                 </Link>
@@ -753,6 +765,7 @@ const Navbar = () => {
                   to="/membership"
                   onClick={() => setIsMenuOpen(false)}
                   className="flex-1 py-2.5 text-center bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium"
+                  data-testid="mobile-join-btn"
                 >
                   Join Now
                 </Link>
