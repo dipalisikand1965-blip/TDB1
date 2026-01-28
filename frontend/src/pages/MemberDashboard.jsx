@@ -1239,10 +1239,10 @@ const MemberDashboard = () => {
             </div>
             
             {/* Pet Soul Completion CTA - Show if score is below 80% */}
-            {pets.length > 0 && (() => {
+            {Array.isArray(pets) && pets.length > 0 && (() => {
               // Use the overall_score from the API for consistency
               // This score is calculated on the backend and should be the single source of truth
-              const primaryPet = pets[0];
+              const primaryPet = pets[0] || {};
               // Ensure score is capped at 100 to prevent display bugs
               const avgScore = Math.min(100, Math.round(primaryPet?.overall_score || 0));
               
