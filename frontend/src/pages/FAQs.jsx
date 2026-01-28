@@ -116,7 +116,10 @@ const FAQs = () => {
               acc[category].questions.push({
                 q: faq.question,
                 a: faq.answer,
-                id: faq.id
+                id: faq.id,
+                link_to: faq.link_to,
+                link_text: faq.link_text,
+                is_featured: faq.is_featured
               });
               return acc;
             }, {});
