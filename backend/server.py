@@ -7319,10 +7319,10 @@ async def patch_pet_soul_answers(pet_id: str, answers: dict):
         if value is not None and value != '':
             soul_answers[key] = value
     
-    # Recalculate score
-    filled = sum(1 for v in soul_answers.values() if v and v not in ['', [], None, 'Unknown'])
-    total_possible = 26  # Total expected questions
-    new_score = min(100, int((filled / total_possible) * 100))
+    # Recalculate score using weighted system (consistent with get_my_pets)
+    score_data = calculate_pet_soul_score(soul_answers)
+    new_score = score_data["total_score"]
+    score_tier = score_data["tier"]["key"] if score_data.get("tier") else "newcomer"
     
     # Update pet
     await db.pets.update_one(
@@ -7330,6 +7330,7 @@ async def patch_pet_soul_answers(pet_id: str, answers: dict):
         {"$set": {
             "doggy_soul_answers": soul_answers,
             "overall_score": new_score,
+            "score_tier": score_tier,
             "updated_at": datetime.now(timezone.utc).isoformat()
         }}
     )
@@ -7337,7 +7338,8 @@ async def patch_pet_soul_answers(pet_id: str, answers: dict):
     return {
         "message": "Answers updated",
         "new_score": new_score,
-        "answers_count": filled
+        "score_tier": score_tier,
+        "answers_count": score_data["answered_count"]
     }
 
 
