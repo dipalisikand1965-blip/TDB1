@@ -166,6 +166,10 @@ const CarePage = () => {
   const [requestResult, setRequestResult] = useState(null);
   const [heroIndex, setHeroIndex] = useState(0);
   
+  // Service Booking Modal
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [bookingServiceType, setBookingServiceType] = useState('grooming');
+  
   // Form Data
   const [formData, setFormData] = useState({
     description: '',
