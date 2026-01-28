@@ -237,8 +237,8 @@ function MainLayout() {
         <Route path="/contact" element={<Contact />} />
         
         {/* ALL Life Pillars - Open for browsing (login required only at checkout) */}
-        {/* Celebrate Pillar - Products from The Doggy Bakery (supplier) */}
-        <Route path="/celebrate" element={<ProductListing category="cakes" />} />
+        {/* Celebrate Pillar - Dedicated page with Concierge® Experiences */}
+        <Route path="/celebrate" element={<CelebratePage />} />
         <Route path="/celebrate/cakes" element={<ProductListing category="cakes" />} />
         <Route path="/celebrate/birthday-cakes" element={<ProductListing category="Birthdays" />} />
         <Route path="/celebrate/breed-cakes" element={<ProductListing category="breed-cakes" />} />
