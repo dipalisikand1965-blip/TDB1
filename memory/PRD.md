@@ -13,6 +13,38 @@
 
 ## What's Been Implemented
 
+### Phase 22: Unified Service Booking System (Jan 28, 2025)
+
+**Complete service booking system with instant ticket creation:**
+
+1. **Unified Service Booking Modal** (COMPLETED)
+   - 4-step booking flow: Service → Pet Details → Schedule → Confirm
+   - Supports: Grooming, Vet Visits, Training, Dog Walking
+   - Pet auto-selection from user profile
+   - Home visit vs Salon/Clinic options
+   - Creates tickets in Service Desk automatically
+   - **Files Created**: `/app/frontend/src/components/ServiceBookingModal.jsx`
+
+2. **Unified Booking API** (COMPLETED)
+   - New endpoint: `POST /api/services/unified-book`
+   - Accepts any service type without pre-existing service document
+   - Creates ticket with type "service_booking"
+   - Returns booking_id and ticket_id
+   - **Files Modified**: `/app/backend/server.py`
+
+3. **Quick Book Section on Care Page** (COMPLETED)
+   - 4 prominent service buttons: Grooming, Vet Visit, Training, Walking
+   - One-click opens ServiceBookingModal
+   - **Files Modified**: `/app/frontend/src/pages/CarePage.jsx`
+
+4. **Service Desk Notification Sound** (COMPLETED)
+   - Audio alert when new tickets arrive
+   - Toggle button in header (next to notification bell)
+   - Two-tone notification sound using Web Audio API
+   - **Files Modified**: `/app/frontend/src/components/admin/DoggyServiceDesk.jsx`
+
+---
+
 ### Phase 21: Bug Fixes & Service Desk Analytics (Jan 28, 2025)
 
 **Multiple fixes and enhancements:**
