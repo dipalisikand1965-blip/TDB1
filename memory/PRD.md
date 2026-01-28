@@ -129,6 +129,26 @@
    - All sections styled with gradient backgrounds and icons
    - **Files Modified**: `/app/frontend/src/pages/MembershipOnboarding.jsx`
 
+5. **Admin Dashboard Widget** (COMPLETED)
+   - Added "Today's Snapshot" widget to admin dashboard
+   - Shows real-time metrics: Revenue, Orders, New Members, Open Tickets
+   - Gradient purple-pink styling with refresh button
+   - Fetches data from Report Builder API
+   - **Files Modified**: `/app/frontend/src/components/admin/DashboardTab.jsx`, `/app/frontend/src/pages/Admin.jsx`
+
+6. **Pet Photo Upload Fix** (COMPLETED)
+   - Fixed non-functional photo upload on onboarding
+   - Added file input with preview capability
+   - Added remove photo button (X icon)
+   - Larger, clearer upload area with "Add Photo" label
+   - **Files Modified**: `/app/frontend/src/pages/MembershipOnboarding.jsx`
+
+7. **Multiple Pets UX Improvement** (COMPLETED)
+   - "Add Another Dog" section now always visible (not just for single pet)
+   - Shows family pricing information
+   - Better styled with dog icon and gradient background
+   - **Files Modified**: `/app/frontend/src/pages/MembershipOnboarding.jsx`
+
 **Testing Results:**
 - Backend: 100% (13/13 tests passed)
 - Frontend: 100% (all features verified)
