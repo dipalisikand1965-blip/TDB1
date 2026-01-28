@@ -1488,7 +1488,47 @@ const UnifiedPetPage = () => {
                   onChange={async (e) => {
                     const files = e.target.files;
                     if (files && files.length > 0) {
-                      toast({ title: 'Coming Soon!', description: 'Photo gallery upload will be available soon.' });
+                      const token = localStorage.getItem('token');
+                      if (!token) {
+                        toast({ title: 'Please login', description: 'You need to be logged in to upload photos', variant: 'destructive' });
+                        return;
+                      }
+                      
+                      setUploadingPhoto(true);
+                      try {
+                        // Upload first file as main photo (for now - gallery support can be expanded later)
+                        const file = files[0];
+                        if (file.size > 5 * 1024 * 1024) {
+                          toast({ title: 'File too large', description: 'Please upload an image under 5MB', variant: 'destructive' });
+                          return;
+                        }
+                        
+                        const formData = new FormData();
+                        formData.append('photo', file);
+                        
+                        const response = await fetch(`${API_URL}/api/pets/${petId}/photo`, {
+                          method: 'POST',
+                          headers: { 'Authorization': `Bearer ${token}` },
+                          body: formData
+                        });
+                        
+                        if (response.ok) {
+                          const data = await response.json();
+                          setPet(prev => ({ ...prev, photo_url: data.photo_url }));
+                          toast({ title: 'Photo uploaded!', description: `${safePet.name}'s gallery has been updated` });
+                          // Refresh pet data
+                          fetchPetData();
+                        } else {
+                          const err = await response.json();
+                          toast({ title: 'Upload failed', description: err.detail || 'Could not upload photo', variant: 'destructive' });
+                        }
+                      } catch (err) {
+                        console.error('Gallery upload error:', err);
+                        toast({ title: 'Error', description: 'Failed to upload photo', variant: 'destructive' });
+                      } finally {
+                        setUploadingPhoto(false);
+                        e.target.value = ''; // Reset input
+                      }
                     }
                   }}
                 />
