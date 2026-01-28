@@ -622,11 +622,33 @@ const FarewellPage = () => {
                   <SelectContent>
                     {pets.map(pet => (
                       <SelectItem key={pet.id} value={pet.id}>
-                        {pet.name} ({pet.breed})
+                        🐾 {pet.name} ({pet.breed})
                       </SelectItem>
                     ))}
+                    <SelectItem value="other">
+                      ✨ Enter another pet&apos;s name...
+                    </SelectItem>
                   </SelectContent>
                 </Select>
+                {serviceForm.pet_id === 'other' && (
+                  <Input
+                    className="mt-2"
+                    value={serviceForm.pet_name}
+                    onChange={e => setServiceForm({...serviceForm, pet_name: e.target.value})}
+                    placeholder="Enter pet's name..."
+                  />
+                )}
+                {serviceForm.pet_id && serviceForm.pet_id !== 'other' && (
+                  <div className="mt-2 p-3 bg-purple-50 rounded-lg border border-purple-100 flex items-center gap-3">
+                    <span className="text-2xl">💜</span>
+                    <div>
+                      <p className="text-sm text-purple-800 font-medium">
+                        Our hearts are with you and {serviceForm.pet_name}
+                      </p>
+                      <p className="text-xs text-purple-600">We&apos;ll treat them with the utmost care</p>
+                    </div>
+                  </div>
+                )}
               ) : (
                 <div className="space-y-3">
                   <Input
