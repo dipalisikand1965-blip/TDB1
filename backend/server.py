@@ -11014,6 +11014,11 @@ app.include_router(checkout_router)  # Product checkout at /api/checkout/*
 # Auto Ticket Creation System
 set_auto_ticket_db(db)  # Initialize auto-ticket creation with database
 
+# Report Builder
+app.include_router(report_builder_router)  # Report Builder at /api/admin/reports/*
+set_report_builder_db(db)
+set_verify_admin(verify_admin)
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
