@@ -1,7 +1,7 @@
 // Service Worker for The Doggy Company PWA
-// Handles caching and offline functionality
+// Handles caching, offline functionality, and push notifications
 
-const CACHE_NAME = 'tdc-pwa-v1';
+const CACHE_NAME = 'tdc-pwa-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -70,28 +70,107 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Push notification handler
+// Push notification handler - Enhanced for Soul Whisper and more
 self.addEventListener('push', (event) => {
-  const options = {
-    body: event.data ? event.data.text() : 'New notification from The Doggy Company',
+  console.log('PWA: Push notification received');
+  
+  let notificationData = {
+    title: 'The Doggy Company',
+    body: 'New notification',
     icon: '/logo-new.png',
     badge: '/logo-new.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
-      primaryKey: 1
-    }
+      url: '/'
+    },
+    requireInteraction: false
   };
   
+  // Parse push data if available
+  if (event.data) {
+    try {
+      const pushData = event.data.json();
+      notificationData = {
+        ...notificationData,
+        title: pushData.title || notificationData.title,
+        body: pushData.body || notificationData.body,
+        icon: pushData.icon || notificationData.icon,
+        badge: pushData.badge || notificationData.badge,
+        tag: pushData.tag || undefined,
+        data: {
+          ...notificationData.data,
+          ...pushData.data,
+          url: pushData.data?.url || '/'
+        },
+        requireInteraction: pushData.requireInteraction || false,
+        silent: pushData.silent || false,
+        actions: pushData.actions || []
+      };
+    } catch (e) {
+      // If not JSON, use text
+      notificationData.body = event.data.text();
+    }
+  }
+  
+  // Show notification
   event.waitUntil(
-    self.registration.showNotification('The Doggy Company', options)
+    self.registration.showNotification(notificationData.title, notificationData)
   );
 });
 
-// Notification click handler
+// Notification click handler - Navigate to relevant page
 self.addEventListener('notificationclick', (event) => {
+  console.log('PWA: Notification clicked', event.notification.tag);
+  
   event.notification.close();
+  
+  // Get the URL to open
+  const urlToOpen = event.notification.data?.url || '/';
+  
+  // Handle action button clicks
+  if (event.action) {
+    console.log('PWA: Action clicked:', event.action);
+    // Handle specific actions here
+    if (event.action === 'view') {
+      // Already handled by urlToOpen
+    } else if (event.action === 'dismiss') {
+      return; // Just close the notification
+    }
+  }
+  
+  // Focus existing window or open new one
   event.waitUntil(
-    clients.openWindow('/')
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // Check if there's already a window open
+        for (const client of clientList) {
+          if (client.url.includes(self.location.origin) && 'focus' in client) {
+            client.navigate(urlToOpen);
+            return client.focus();
+          }
+        }
+        // Open new window if none found
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen);
+        }
+      })
   );
+});
+
+// Notification close handler (for analytics if needed)
+self.addEventListener('notificationclose', (event) => {
+  console.log('PWA: Notification dismissed', event.notification.tag);
+});
+
+// Background sync handler (for offline actions)
+self.addEventListener('sync', (event) => {
+  console.log('PWA: Background sync triggered', event.tag);
+  
+  if (event.tag === 'sync-pending-actions') {
+    event.waitUntil(
+      // Sync any pending offline actions
+      Promise.resolve()
+    );
+  }
 });
