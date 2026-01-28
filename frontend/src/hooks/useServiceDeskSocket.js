@@ -1,48 +1,89 @@
 /**
  * Real-time WebSocket Hook for Service Desk
  * Provides instant ticket notifications and live updates
+ * 
+ * Production-Ready with:
+ * - Exponential backoff reconnection
+ * - Graceful degradation to polling
+ * - Connection health monitoring
+ * - Automatic recovery
  */
 
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
-import { getApiUrl } from '../utils/api';
 
 // Socket instance singleton
 let socketInstance = null;
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 10;
+const BASE_RECONNECT_DELAY = 1000;
+
+// Get the correct Socket.IO URL for different environments
+const getSocketUrl = () => {
+  if (typeof window === 'undefined') return '';
+  
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  
+  // For localhost development
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    // Use the env variable or fallback to localhost:8001
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+    return backendUrl.replace('/api', '').replace(/\/$/, '');
+  }
+  
+  // For production/preview - use same origin (K8s ingress handles routing)
+  // The ingress should route /socket.io/ to the backend service
+  return `${protocol}//${window.location.host}`;
+};
+
+// Calculate exponential backoff delay
+const getReconnectDelay = (attempt) => {
+  const delay = Math.min(BASE_RECONNECT_DELAY * Math.pow(2, attempt), 30000);
+  // Add jitter to prevent thundering herd
+  return delay + Math.random() * 1000;
+};
 
 export const useServiceDeskSocket = (agentId, onNewTicket, onTicketUpdate, onNewMessage) => {
   const [connected, setConnected] = useState(false);
   const [connectionError, setConnectionError] = useState(null);
+  const [connectionState, setConnectionState] = useState('disconnected'); // disconnected, connecting, connected, reconnecting
   const socketRef = useRef(null);
+  const reconnectTimeoutRef = useRef(null);
+  const heartbeatIntervalRef = useRef(null);
 
   useEffect(() => {
-    // Create socket connection
-    const apiUrl = getApiUrl();
-    // Remove /api suffix if present and use http/https (Socket.IO handles transport)
-    // If apiUrl is empty (relative path mode), use window.location.origin
-    let baseUrl = apiUrl.replace('/api', '').replace(/\/$/, '');
-    if (!baseUrl && typeof window !== 'undefined') {
-      baseUrl = window.location.origin;
+    const socketUrl = getSocketUrl();
+    const isLocalhost = typeof window !== 'undefined' && 
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    
+    console.log('🔌 Socket.IO Configuration:', { socketUrl, isLocalhost });
+    
+    // Clear any existing reconnect timeout
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
     }
     
-    // Skip WebSocket in development if backend doesn't support it
-    const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
-    
-    console.log('🔌 Connecting to Socket.IO at:', baseUrl);
-    
     if (!socketInstance) {
-      socketInstance = io(baseUrl, {
-        transports: isLocalhost ? ['polling', 'websocket'] : ['websocket', 'polling'],
+      setConnectionState('connecting');
+      
+      socketInstance = io(socketUrl, {
+        // Start with polling for reliability, upgrade to websocket if available
+        transports: ['polling', 'websocket'],
+        upgrade: true,
         autoConnect: true,
         reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 3000,
-        reconnectionDelayMax: 10000,
-        timeout: 15000,
+        reconnectionAttempts: MAX_RECONNECT_ATTEMPTS,
+        reconnectionDelay: BASE_RECONNECT_DELAY,
+        reconnectionDelayMax: 30000,
+        randomizationFactor: 0.5,
+        timeout: 20000,
         path: '/socket.io/',
         forceNew: false,
-        // Handle cross-origin for production
-        withCredentials: false
+        withCredentials: false,
+        // Enable ping/pong for connection health
+        pingTimeout: 30000,
+        pingInterval: 25000
       });
     }
     
