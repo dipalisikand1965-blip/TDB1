@@ -474,7 +474,7 @@ const ProductListing = ({ category = 'all' }) => {
   }, [category, searchQuery, deliveryCity, isCakeCategory]);
 
   // Use a key-based approach to reset visible count
-  const filterKey = `${category}-${searchQuery}-${priceRange}-${sortBy}`;
+  const filterKey = `${category}-${searchQuery}-${priceRange}-${sortBy}-${selectedBreed}-${selectedShape}-${searchInput}`;
   const [lastFilterKey, setLastFilterKey] = useState(filterKey);
   
   // Reset visible count when filters change
