@@ -746,7 +746,7 @@ def generate_invoice_pdf(order: dict) -> io.BytesIO:
         try:
             dt = datetime.fromisoformat(order_date.replace('Z', '+00:00'))
             order_date = dt.strftime('%d %B %Y')
-        except:
+        except Exception:
             pass
     
     invoice_info = [
