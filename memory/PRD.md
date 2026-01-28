@@ -7,11 +7,53 @@
 - **Frontend**: React + Tailwind CSS + Shadcn/UI
 - **Backend**: FastAPI + Python
 - **Database**: MongoDB
-- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat, service_desk_settings, whatsapp_logs, concierge_requests, push_subscriptions, push_notification_logs, soul_whisper_logs, concierge_experiences, social_share_claims, nps_submissions
+- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat, service_desk_settings, whatsapp_logs, concierge_requests, push_subscriptions, push_notification_logs, soul_whisper_logs, concierge_experiences, social_share_claims, nps_submissions, unified_products
 
 ---
 
 ## What's Been Implemented
+
+### Phase 27: Six Tasks Batch Completion (Jan 28, 2025)
+
+**Completed 6 pending tasks in one batch:**
+
+1. **Visual Distinction for Soul Score** (COMPLETED)
+   - Added ★ indicator next to questions that affect Pet Soul Score
+   - 40+ soul score questions marked with purple star
+   - `affectsSoulScore` flag derived from `pet_score_logic.py` rules
+   - **Files Modified**: `/app/frontend/src/pages/UnifiedPetPage.jsx`
+
+2. **Admin Wishlist View** (COMPLETED)
+   - New "Wishlists" tab in ShopManager
+   - Shows products wishlisted by customers with user count
+   - "Send Reminder" button opens email with pre-filled recipients
+   - User email list with expandable view
+   - **Files Modified**: `/app/frontend/src/components/admin/ShopManager.jsx`
+
+3. **Product Box Migration** (COMPLETED)
+   - Ran migration: 16 new products, 806 updated
+   - Stay properties (53) synced to products collection
+   - Fixed migration bug with missing 'id' field
+   - **Files Modified**: `/app/backend/unified_product_box.py`
+
+4. **Voice Order Auto-populate** (COMPLETED)
+   - Login endpoint now returns phone field
+   - User name defaults to email prefix if not set
+   - **Files Modified**: `/app/backend/auth_routes.py`
+
+5. **WhatsApp Form Auto-population Audit** (COMPLETED)
+   - FarewellPage: Auto-fills email and phone from user context
+   - CarePage: Auto-fills contact_name, contact_email, contact_phone
+   - Checkout: Auto-fills parentName, email, phone, whatsappNumber
+   - **Files Modified**: `/app/frontend/src/pages/FarewellPage.jsx`, `/app/frontend/src/pages/CarePage.jsx`, `/app/frontend/src/pages/Checkout.jsx`
+
+6. **Product Tags Manager Sync** (COMPLETED)
+   - Stay properties (52) now included in all-pillars endpoint
+   - Stay bundles also included
+   - Total products in tags manager: 556
+   - **Files Modified**: `/app/backend/server.py`
+
+---
 
 ### Phase 26: Service Desk Ticket History Modal (Jan 28, 2025)
 
