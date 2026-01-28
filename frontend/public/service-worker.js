@@ -10,6 +10,9 @@ const urlsToCache = [
   '/favicon.ico'
 ];
 
+// Badge count tracking
+let badgeCount = 0;
+
 // Install event - cache core assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -70,6 +73,25 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+// Update app badge count
+async function updateBadge(count) {
+  badgeCount = count;
+  
+  if ('setAppBadge' in navigator) {
+    try {
+      if (count > 0) {
+        await navigator.setAppBadge(count);
+        console.log('PWA: Badge set to', count);
+      } else {
+        await navigator.clearAppBadge();
+        console.log('PWA: Badge cleared');
+      }
+    } catch (error) {
+      console.error('PWA: Badge update failed:', error);
+    }
+  }
+}
+
 // Push notification handler - Enhanced for Soul Whisper and more
 self.addEventListener('push', (event) => {
   console.log('PWA: Push notification received');
@@ -107,9 +129,18 @@ self.addEventListener('push', (event) => {
         silent: pushData.silent || false,
         actions: pushData.actions || []
       };
+      
+      // Update badge count if provided
+      if (pushData.badgeCount !== undefined) {
+        updateBadge(pushData.badgeCount);
+      } else {
+        // Increment badge count for new notification
+        updateBadge(badgeCount + 1);
+      }
     } catch (e) {
       // If not JSON, use text
       notificationData.body = event.data.text();
+      updateBadge(badgeCount + 1);
     }
   }
   
@@ -124,6 +155,11 @@ self.addEventListener('notificationclick', (event) => {
   console.log('PWA: Notification clicked', event.notification.tag);
   
   event.notification.close();
+  
+  // Decrement badge count when notification is clicked
+  if (badgeCount > 0) {
+    updateBadge(badgeCount - 1);
+  }
   
   // Get the URL to open
   const urlToOpen = event.notification.data?.url || '/';
@@ -161,6 +197,19 @@ self.addEventListener('notificationclick', (event) => {
 // Notification close handler (for analytics if needed)
 self.addEventListener('notificationclose', (event) => {
   console.log('PWA: Notification dismissed', event.notification.tag);
+  // Optionally decrement badge on dismiss too
+});
+
+// Message handler for badge updates from the app
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SET_BADGE') {
+    updateBadge(event.data.count);
+  } else if (event.data && event.data.type === 'CLEAR_BADGE') {
+    updateBadge(0);
+  } else if (event.data && event.data.type === 'GET_BADGE') {
+    // Send current badge count back
+    event.source.postMessage({ type: 'BADGE_COUNT', count: badgeCount });
+  }
 });
 
 // Background sync handler (for offline actions)
