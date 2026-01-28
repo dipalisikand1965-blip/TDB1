@@ -5,7 +5,8 @@ import {
   Dog, Cat, ChevronRight, Phone, Globe, Instagram,
   Utensils, Coffee, Pizza, Leaf, Heart, Check, X, AlertCircle,
   Sparkles, ShoppingBag, Truck, Users, Calendar, MessageCircle, Send,
-  Bell, Gift, Cake, User, Mail, Package, Percent, PartyPopper
+  Bell, Gift, Cake, User, Mail, Package, Percent, PartyPopper,
+  Crown, Wine, ChefHat
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -19,6 +20,7 @@ import MiraContextPanel from '../components/MiraContextPanel';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import DiningConciergePicker from '../components/DiningConciergePicker';
+import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import SEOHead from '../components/SEOHead';
 
 // Get user from AuthContext or localStorage
