@@ -70,6 +70,10 @@ BUSINESS_DETAILS = {
     "state_code": "29"
 }
 
+# Resend Email Configuration
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+
 # ==================== MODELS ====================
 
 class CartItem(BaseModel):
