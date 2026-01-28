@@ -217,7 +217,7 @@ const ServiceBookingModal = ({
         additional_notes: formData.additionalNotes
       };
       
-      const res = await fetch(`${API_URL}/api/services/book`, {
+      const res = await fetch(`${API_URL}/api/services/unified-book`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
