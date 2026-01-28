@@ -109,6 +109,7 @@ import ProductListing from "./pages/ProductListing";
 import CustomCakeDesigner from "./pages/CustomCakeDesigner";
 import MiraConcierge from "./pages/MiraConcierge";
 import Checkout from "./pages/Checkout";
+import UnifiedCheckout from "./components/UnifiedCheckout";
 // About and Membership use the doctrine-aligned *Page versions
 import AboutPage from "./pages/AboutPage";
 import MembershipPage from "./pages/MembershipPage";
