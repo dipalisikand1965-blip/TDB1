@@ -13,6 +13,33 @@
 
 ## What's Been Implemented
 
+### Phase 25: Paperwork Integration & Product Enhancements (Jan 28, 2025)
+
+**Documents integration and product improvements:**
+
+1. **Documents & Paperwork in Pet Profile** (COMPLETED)
+   - Added to Health Vault tab with 6 document types:
+     - Vaccination Certificate, KCI Registration, Microchip Certificate
+     - Pet Insurance, Travel Documents, Other Documents
+   - "View All Documents" and "Upload Document" buttons
+   - Links to /paperwork with pet ID pre-filled
+   - **Files Modified**: `/app/frontend/src/pages/UnifiedPetPage.jsx`
+
+2. **Emergency Page Pet Selection** (COMPLETED)
+   - Bundle cards now have pet dropdown ("For which pet?")
+   - Pet name and pet_id included when adding to cart
+   - **Files Modified**: `/app/frontend/src/pages/EmergencyPage.jsx`
+
+3. **Product Wishlist Integration** (COMPLETED)
+   - Heart button on ProductDetailPage calls wishlist API
+   - Checks user's wishlist on page load
+   - Add/Remove toggles with toast notifications
+   - **Files Modified**: `/app/frontend/src/pages/ProductDetailPage.jsx`
+
+4. **Bug Fix**: FileText icon import was missing in UnifiedPetPage.jsx (FIXED by testing agent)
+
+---
+
 ### Phase 24: Service Desk UI Fix & Soul Score Clarity (Jan 28, 2025)
 
 **Fixed duplicate sidebar items and added Soul Score explanation:**
@@ -29,9 +56,6 @@
    - Clarified that basic profile fields (name, breed, birthday) don't count
    - Only weighted "soul questions" affect the score
    - **Files Modified**: `/app/frontend/src/pages/UnifiedPetPage.jsx`
-
-3. **Select Dropdown z-index Fix** (FROM PHASE 23)
-   - Dropdowns now appear above dialogs (z-[100])
 
 ---
 
