@@ -135,7 +135,7 @@ const CelebratePage = () => {
             Celebrations, Perfected
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            More than cakes. Our Celebrate Concierge® orchestrates every detail of your pet's special day - 
+            More than cakes. Our Celebrate Concierge® orchestrates every detail of your pet&apos;s special day - 
             from intimate gatherings to grand pawties.
           </p>
         </div>
