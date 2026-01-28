@@ -12078,6 +12078,95 @@ async def export_report_csv(
     )
 
 
+@api_router.get("/admin/reports/export/excel")
+async def export_report_excel(
+    report_type: str = "daily_summary",
+    period: str = "today",
+    pillar: str = "all",
+    username: str = Depends(verify_admin)
+):
+    """Export report as Excel file (xlsx)"""
+    from fastapi.responses import StreamingResponse
+    
+    try:
+        import openpyxl
+        from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    except ImportError:
+        # Fallback to CSV if openpyxl not available
+        return await export_report_csv(report_type, period, pillar, username)
+    
+    # Generate the report data
+    report = await generate_report(report_type, period, pillar, None, None, username)
+    
+    if "error" in report:
+        raise HTTPException(status_code=400, detail=report["error"])
+    
+    # Create workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = report_type.replace("_", " ").title()
+    
+    # Style definitions
+    header_fill = PatternFill(start_color="7C3AED", end_color="7C3AED", fill_type="solid")
+    header_font = Font(color="FFFFFF", bold=True)
+    border = Border(
+        left=Side(style='thin'),
+        right=Side(style='thin'),
+        top=Side(style='thin'),
+        bottom=Side(style='thin')
+    )
+    
+    # Write summary section
+    if report.get("summary"):
+        ws.append(["Report Summary"])
+        ws['A1'].font = Font(bold=True, size=14)
+        for item in report["summary"]:
+            ws.append([item["label"], item["value"]])
+        ws.append([])  # Empty row
+    
+    # Write header
+    start_row = ws.max_row + 1
+    if report.get("columns"):
+        ws.append(report["columns"])
+        for col_idx, _ in enumerate(report["columns"], 1):
+            cell = ws.cell(row=start_row, column=col_idx)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = Alignment(horizontal='center')
+            cell.border = border
+    
+    # Write rows
+    for row in report.get("rows", []):
+        ws.append(row)
+        current_row = ws.max_row
+        for col_idx in range(1, len(row) + 1):
+            ws.cell(row=current_row, column=col_idx).border = border
+    
+    # Auto-adjust column widths
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = min(max_length + 2, 50)
+        ws.column_dimensions[column].width = adjusted_width
+    
+    # Save to BytesIO
+    excel_buffer = io.BytesIO()
+    wb.save(excel_buffer)
+    excel_buffer.seek(0)
+    
+    return StreamingResponse(
+        iter([excel_buffer.getvalue()]),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename={report_type}_{period}.xlsx"}
+    )
+
+
 @api_router.post("/admin/reports/schedule")
 async def save_report_schedule(
     schedule: dict,
