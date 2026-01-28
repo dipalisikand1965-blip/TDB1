@@ -5490,6 +5490,87 @@ Additional Notes: {request.additional_notes or 'None'}
     }
 
 
+# ==================== PRODUCT WISHLIST / LIKES ====================
+
+@api_router.post("/member/wishlist/add")
+async def add_to_wishlist(data: dict, current_user: dict = Depends(get_current_user)):
+    """Add a product to user's wishlist"""
+    product_id = data.get("product_id")
+    product_name = data.get("product_name", "")
+    product_image = data.get("product_image", "")
+    product_price = data.get("product_price", 0)
+    
+    if not product_id:
+        raise HTTPException(status_code=400, detail="product_id is required")
+    
+    # Add to wishlist collection
+    await db.wishlists.update_one(
+        {"user_email": current_user["email"], "product_id": product_id},
+        {"$set": {
+            "user_email": current_user["email"],
+            "product_id": product_id,
+            "product_name": product_name,
+            "product_image": product_image,
+            "product_price": product_price,
+            "added_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    
+    return {"message": "Added to wishlist", "product_id": product_id}
+
+
+@api_router.delete("/member/wishlist/{product_id}")
+async def remove_from_wishlist(product_id: str, current_user: dict = Depends(get_current_user)):
+    """Remove a product from user's wishlist"""
+    result = await db.wishlists.delete_one({
+        "user_email": current_user["email"],
+        "product_id": product_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not in wishlist")
+    
+    return {"message": "Removed from wishlist", "product_id": product_id}
+
+
+@api_router.get("/member/wishlist")
+async def get_wishlist(current_user: dict = Depends(get_current_user)):
+    """Get user's wishlist"""
+    items = await db.wishlists.find(
+        {"user_email": current_user["email"]}, 
+        {"_id": 0}
+    ).sort("added_at", -1).to_list(100)
+    
+    return {"wishlist": items, "count": len(items)}
+
+
+@api_router.get("/admin/wishlists/summary")
+async def get_wishlist_summary(admin: dict = Depends(verify_admin)):
+    """Admin endpoint: Get summary of all wishlisted products for reminders"""
+    # Group by product and count
+    pipeline = [
+        {"$group": {
+            "_id": "$product_id",
+            "product_name": {"$first": "$product_name"},
+            "product_image": {"$first": "$product_image"},
+            "product_price": {"$first": "$product_price"},
+            "users_count": {"$sum": 1},
+            "user_emails": {"$push": "$user_email"},
+            "latest_added": {"$max": "$added_at"}
+        }},
+        {"$sort": {"users_count": -1}},
+        {"$limit": 50}
+    ]
+    
+    results = await db.wishlists.aggregate(pipeline).to_list(50)
+    
+    return {
+        "popular_wishlisted": results,
+        "total_wishlisted_products": len(results)
+    }
+
+
 @api_router.get("/products/recommendations/for-pet/{pet_id}")
 async def get_pet_recommendations(pet_id: str, limit: int = 20):
     """Get personalized product recommendations based on pet profile"""
