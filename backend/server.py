@@ -1453,6 +1453,9 @@ from analytics_routes import router as analytics_router, set_database as set_ana
 # Import Auto Ticket Creation System
 from ticket_auto_creation import set_auto_ticket_db, create_event_ticket, on_order_placed
 
+# Import Report Builder
+from report_builder_routes import report_builder_router, set_report_builder_db, set_verify_admin
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
