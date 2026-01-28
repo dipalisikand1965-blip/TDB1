@@ -10515,6 +10515,10 @@ app.include_router(smart_router)  # AI-powered personalized recommendations
 # WhatsApp Integration
 app.include_router(whatsapp_router)  # WhatsApp Business API at /api/whatsapp/*
 
+# PWA Push Notifications
+app.include_router(push_router)  # Push notifications at /api/push/*
+set_push_db(db)  # Initialize push notifications with database
+
 # Auto Ticket Creation System
 set_auto_ticket_db(db)  # Initialize auto-ticket creation with database
 
