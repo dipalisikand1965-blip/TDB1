@@ -666,53 +666,102 @@ GET /api/pet-vault/{id}/medications  # Medication records
     'paw-points': {
       title: 'Paw Points Rewards',
       subtitle: 'Full Loyalty Redemption System',
-      badge: '🆕 New Feature',
+      badge: '🆕 Updated Jan 2025',
       files: {
-        frontend: '/app/frontend/src/components/PawPointsRewards.jsx',
+        frontend: '/app/frontend/src/components/PawPointsRewards.jsx, /app/frontend/src/pages/MemberDashboard.jsx',
         backend: '/app/backend/paw_points_routes.py'
       },
       sections: [
         {
-          title: 'Reward Catalog',
-          content: `Members can redeem points for:
+          title: '🏅 Achievement Badges (10 Total)',
+          content: `**Soul Journey Badges (5):**
+| Badge | Name | Criteria | Points | Tier |
+|-------|------|----------|--------|------|
+| 🌱 | Soul Starter | Answer 1+ question | 50 | Bronze |
+| 🔍 | Soul Seeker | 25% completion | 100 | Bronze |
+| 🧭 | Soul Explorer | 50% completion | 250 | Silver |
+| 🛡️ | Soul Guardian | 75% completion | 500 | Gold |
+| 👑 | Soul Master | 100% completion | 1,000 | Platinum |
 
-**Discounts:**
-• ₹50 Off (100 points) - Bronze
-• ₹100 Off (200 points) - Silver
-• ₹250 Off (500 points) - Gold
-• 10% Off (400 points) - Gold
+**Engagement Badges (5):**
+| Badge | Name | Criteria | Points | Tier |
+|-------|------|----------|--------|------|
+| 🛒 | First Paw-chase | First order | 100 | Bronze |
+| 📸 | Picture Paw-fect | Upload photo | 50 | Bronze |
+| 🎉 | Party Planner | Plan celebration | 150 | Silver |
+| 🐾 | Pack Leader | Add 2+ pets | 200 | Silver |
+| 💬 | Mira's Friend | Chat with Mira | 75 | Bronze |
 
-**Free Items:**
-• Free Treat Box (150 points) - Bronze
-• Free Grooming (500 points) - Gold
-• Free Birthday Cake (350 points) - Silver
-
-**Experiences:**
-• Priority Mira Support (200 points) - Silver
-• VIP Restaurant Booking (300 points) - Silver
-• Personal Concierge Session (750 points) - Platinum
-
-**Exclusive:**
-• Early Access Pass (400 points) - Gold
-• Double Points Week (600 points) - Gold`
+**Total Potential: 2,475 Paw Points**`
         },
         {
-          title: 'Tier System',
-          content: `| Tier | Lifetime Points | Perks |
-|------|----------------|-------|
-| Bronze | 0+ | Basic rewards |
-| Silver | 500+ | Silver rewards unlocked |
-| Gold | 1,500+ | Gold rewards unlocked |
-| Platinum | 5,000+ | All rewards + VIP perks |`
+          title: '💰 Earning Paw Points',
+          content: `| Activity | Points |
+|----------|--------|
+| Per ₹10 spent on orders | 1 point |
+| Achievement badge unlocked | 50-1,000 pts |
+| Referral bonus | 500 pts |
+| Birthday bonus | 100 pts |
+| Product review | 25 pts |
+
+**Point Value: 1 Paw Point = ₹0.50**`
+        },
+        {
+          title: '🎖️ Member Tiers',
+          content: `| Tier | Lifetime Points | Badge Color | Perks |
+|------|----------------|-------------|-------|
+| Bronze | 0+ | Amber | Basic rewards |
+| Silver | 500+ | Gray | Silver rewards + priority booking |
+| Gold | 1,500+ | Yellow | Gold rewards + early access |
+| Platinum | 5,000+ | Purple-Pink | All rewards + personal Concierge® |`
+        },
+        {
+          title: '🎁 Reward Catalog',
+          content: `**Discounts:**
+• ₹50 Off (100 pts) - Bronze tier
+• ₹100 Off (200 pts) - Silver tier
+• ₹250 Off (500 pts) - Gold tier
+• 10% Off max ₹500 (400 pts) - Gold tier
+
+**Free Items:**
+• Free Treat Box (150 pts) - Bronze - Value ₹299
+• Free Birthday Cake (350 pts) - Silver - Value ₹599
+• Free Basic Grooming (500 pts) - Gold - Value ₹799
+
+**Experiences:**
+• Priority Mira Support 30 days (200 pts) - Silver
+• VIP Restaurant Booking (300 pts) - Silver
+• Personal Concierge® Session (750 pts) - Platinum
+
+**Exclusive:**
+• Early Access Pass 60 days (400 pts) - Gold
+• Double Points Week (600 pts) - Gold`
+        },
+        {
+          title: '🎊 Celebration Triggers',
+          content: `Confetti animations trigger when:
+• New milestone reached (Soul Seeker/Explorer/Guardian/Master)
+• Badge unlocked
+• Reward redeemed
+• Points milestone hit (1000, 2500, 5000)
+
+**Badge Tier Colors:**
+• Bronze: Amber 600 → Amber 400
+• Silver: Gray 400 → Gray 300
+• Gold: Yellow 500 → Yellow 300
+• Platinum: Purple 600 → Pink 500`
         },
         {
           title: 'API Endpoints',
-          content: `GET  /api/paw-points/balance      # Current balance & tier
-GET  /api/paw-points/catalog      # Available rewards
-POST /api/paw-points/redeem       # Redeem a reward
-GET  /api/paw-points/history      # Transaction ledger
-GET  /api/paw-points/redemptions  # Active/used codes
-GET  /api/paw-points/ways-to-earn # Earning methods`
+          content: `\`\`\`
+GET  /api/paw-points/balance       # Current balance & tier
+GET  /api/paw-points/catalog       # Available rewards
+POST /api/paw-points/redeem        # Redeem a reward
+GET  /api/paw-points/history       # Transaction ledger
+GET  /api/paw-points/redemptions   # Active/used codes
+GET  /api/paw-points/ways-to-earn  # Earning methods
+POST /api/paw-points/sync-achievements  # Sync badge points
+\`\`\``
         }
       ]
     },
