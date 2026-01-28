@@ -296,10 +296,25 @@ async def generate_report(
     
     elif report_type == "pet_analytics":
         pets = await db.pets.find({}).to_list(50000)
-        new_in_period = [p for p in pets if p.get("created_at", "") >= start.isoformat()]
+        
+        # Handle both datetime and string created_at fields
+        def get_created_at_str(p):
+            created = p.get("created_at", "")
+            if isinstance(created, datetime):
+                return created.isoformat()
+            return str(created) if created else ""
+        
+        start_iso = start.isoformat()
+        new_in_period = [p for p in pets if get_created_at_str(p) >= start_iso]
         
         scored = [p for p in pets if p.get("overall_score")]
         avg_score = sum(p.get("overall_score", 0) for p in scored) / len(scored) if scored else 0
+        
+        def format_created_date(p):
+            created = p.get("created_at", "")
+            if isinstance(created, datetime):
+                return created.strftime("%Y-%m-%d")
+            return str(created)[:10] if created else "N/A"
         
         return {
             "report_type": "pet_analytics",
@@ -311,7 +326,7 @@ async def generate_report(
                 {"label": "Avg Soul Score", "value": f"{avg_score:.0f}%"}
             ],
             "columns": ["Pet Name", "Breed", "Age", "Soul Score", "Created"],
-            "rows": [[p.get("name", "N/A"), p.get("breed", "N/A"), str(p.get("age", "N/A")), f"{p.get('overall_score', 0):.0f}%", p.get("created_at", "")[:10]] for p in new_in_period[:50]]
+            "rows": [[p.get("name", "N/A"), p.get("breed", "N/A"), str(p.get("age", "N/A")), f"{p.get('overall_score', 0):.0f}%", format_created_date(p)] for p in new_in_period[:50]]
         }
     
     elif report_type == "product_performance":
