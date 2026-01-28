@@ -85,9 +85,22 @@ const MembershipOnboarding = () => {
       weight_unit: 'kg',
       is_neutered: null,
       photo_url: '',
-      photo_preview: null  // For local preview before upload
+      photo_preview: null,  // For local preview before upload
+      celebrations: [] // Array of selected celebration types for this pet
     }))
   );
+  
+  // Available celebration types
+  const CELEBRATION_TYPES = [
+    { id: 'birthday', name: 'Birthday', emoji: '🎂', description: 'Celebrate their special day with cakes & treats' },
+    { id: 'gotcha_day', name: 'Gotcha Day', emoji: '💝', description: 'The day they joined your family' },
+    { id: 'vaccination', name: 'Vaccination Day', emoji: '💉', description: 'Reminders for vaccines & health checkups' },
+    { id: 'grooming', name: 'Grooming Day', emoji: '✂️', description: 'Regular grooming schedule reminders' },
+    { id: 'training', name: 'Training Milestones', emoji: '🎓', description: 'Track and celebrate training achievements' },
+    { id: 'adoption', name: 'Adoption Anniversary', emoji: '🏠', description: 'Yearly anniversary of adoption' },
+    { id: 'festival', name: 'Festival Celebrations', emoji: '🎉', description: 'Diwali, Holi, Christmas & more' },
+    { id: 'first_year', name: 'First Year Milestones', emoji: '🌟', description: 'Track puppy\'s first year achievements' }
+  ];
   
   const [parentErrors, setParentErrors] = useState({});
   const [petErrors, setPetErrors] = useState([]);
