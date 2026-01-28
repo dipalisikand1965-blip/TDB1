@@ -1019,6 +1019,56 @@ const MembershipOnboarding = () => {
                     </div>
                   )}
 
+                  {/* PWA Install & Push Notifications Section */}
+                  <div className="mt-6 space-y-4">
+                    {/* Soul Whisper Info */}
+                    {parentData.notifications.soulWhispers && (
+                      <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-lg">💬</span>
+                          </div>
+                          <div>
+                            <p className="font-semibold text-green-800">Soul Whisper™ Enabled</p>
+                            <p className="text-sm text-green-600">
+                              We'll send you weekly WhatsApp messages with gentle questions to understand your pet better.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Push Notifications Reminder */}
+                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-lg">🔔</span>
+                        </div>
+                        <div>
+                          <p className="font-semibold text-blue-800">Enable Notifications</p>
+                          <p className="text-sm text-blue-600">
+                            After signup, enable push notifications to get order updates, pet care reminders, and exclusive offers.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* PWA Install Prompt */}
+                    <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-lg">📱</span>
+                        </div>
+                        <div>
+                          <p className="font-semibold text-purple-800">Add to Home Screen</p>
+                          <p className="text-sm text-purple-600">
+                            Install The Doggy Company app on your phone for instant access. Look for "Add to Home Screen" in your browser menu after signup.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="flex gap-3 mt-6">
                     <Button 
                       variant="outline"
