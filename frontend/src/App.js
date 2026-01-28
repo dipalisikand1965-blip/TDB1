@@ -258,7 +258,8 @@ function MainLayout() {
         {/* Special Pages */}
         <Route path="/custom-cake" element={<ProtectedRoute><CustomCakeDesigner /></ProtectedRoute>} />
         <Route path="/concierge" element={<MiraConcierge />} />
-        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+        <Route path="/checkout" element={<ProtectedRoute><UnifiedCheckout /></ProtectedRoute>} />
+        <Route path="/checkout-old" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         <Route path="/about" element={<AboutPage />} />
         {/* Membership route is defined outside MainLayout for clean entry */}
         <Route path="/autoship" element={<Autoship />} />
