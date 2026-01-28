@@ -276,7 +276,8 @@ Submitted via Dining Concierge on the Dine pillar page.`;
     );
   }
   
-  return (
+  // Full View (inline form - used when compactMode is false)
+  const FullView = (
     <div className="bg-gradient-to-r from-orange-50 via-amber-50 to-yellow-50 py-8 px-4" data-testid="dining-concierge-picker">
       <div className="max-w-5xl mx-auto">
         {/* Header Label */}
