@@ -567,8 +567,9 @@ async def verify_payment(request: VerifyPaymentRequest):
         # Get updated order
         order = await db.orders.find_one({"order_id": request.order_id}, {"_id": 0})
         
-        # TODO: Trigger email sending here
-        # await send_order_confirmation_email(order)
+        # Send order confirmation email
+        if order:
+            await send_order_confirmation_email(order)
         
         return {
             "success": True,
