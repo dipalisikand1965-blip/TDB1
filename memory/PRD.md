@@ -13,6 +13,51 @@
 
 ## What's Been Implemented
 
+### Phase 20: Checkout Process Overhaul (Jan 28, 2025)
+
+**Complete Razorpay integration for all product checkout with GST compliance:**
+
+1. **Unified Checkout Component** (COMPLETED)
+   - 3-step checkout flow: Review → Delivery → Payment
+   - Order summary sidebar with real-time GST breakdown
+   - Support for both Home Delivery and Store Pickup
+   - **Files Created**: `/app/frontend/src/components/UnifiedCheckout.jsx`
+
+2. **GST Calculation Engine** (COMPLETED)
+   - 18% GST applied to all orders
+   - CGST (9%) + SGST (9%) for same state (Karnataka)
+   - IGST (18%) for different states
+   - Configurable business details with GSTIN
+   - **Files Modified**: `/app/backend/checkout_routes.py`
+
+3. **PDF Invoice Generation** (COMPLETED)
+   - Professional invoice with company branding
+   - Complete GST breakdown (CGST/SGST/IGST)
+   - Item-wise HSN codes
+   - Terms & conditions footer
+   - **Endpoint**: `GET /api/checkout/order/{id}/invoice/pdf`
+
+4. **Order Confirmation Emails** (COMPLETED)
+   - Beautiful HTML email template
+   - Order details with GST breakdown
+   - Download invoice button
+   - Uses Resend API
+   - **Note**: Requires Resend API key in `.env`
+
+5. **Razorpay Integration** (MOCKED - Test Keys)
+   - Payment flow implemented
+   - Order creation and payment verification
+   - **Note**: Using placeholder test keys - configure real keys for production
+
+**Backend APIs:**
+- `GET /api/checkout/config` - Checkout configuration
+- `POST /api/checkout/calculate-total` - Calculate with GST
+- `POST /api/checkout/create-order` - Create Razorpay order
+- `POST /api/checkout/verify-payment` - Verify payment
+- `GET /api/checkout/order/{id}/invoice/pdf` - Download PDF invoice
+
+---
+
 ### Phase 19: Membership Dashboard Enhancements (Jan 28, 2025)
 
 **New Features:**
