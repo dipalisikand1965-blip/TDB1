@@ -114,6 +114,7 @@ const ConciergeExperienceCard = ({
 
     setSubmitting(true);
     try {
+      const petName = getSelectedPetName();
       const payload = {
         pillar,
         experience_type: title.toLowerCase().replace(/\s+/g, '_'),
@@ -121,8 +122,9 @@ const ConciergeExperienceCard = ({
         message: formData.message,
         user_name: formData.name || user?.name || 'Guest',
         user_email: formData.email || user?.email,
-        user_phone: formData.phone || user?.phone,
-        pet_name: formData.pet_name,
+        user_whatsapp: formData.whatsapp || user?.phone || user?.whatsapp,
+        pet_name: petName,
+        pet_selection: selectedPetOption, // 'all' or specific pet id
         source: 'concierge_experience_card'
       };
 
