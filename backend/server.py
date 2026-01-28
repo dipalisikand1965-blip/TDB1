@@ -103,7 +103,8 @@ from pet_soul_routes import (
 )
 from pet_score_logic import (
     pet_score_router,
-    set_pet_score_db
+    set_pet_score_db,
+    calculate_pet_soul_score
 )
 from unified_product_box import (
     product_box_router,
