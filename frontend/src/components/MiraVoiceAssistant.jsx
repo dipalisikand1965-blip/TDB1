@@ -351,7 +351,7 @@ const MiraVoiceAssistant = ({
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" data-testid="mira-voice-assistant">
       <Card className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 p-6 text-white relative">
@@ -519,6 +519,7 @@ export const MiraVoiceButton = ({ onClick, petName }) => {
       onClick={onClick}
       className={`fixed bottom-24 right-20 z-40 w-14 h-14 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 rounded-full shadow-lg flex items-center justify-center text-white hover:scale-110 transition-transform group ${isPulsing ? 'animate-bounce-gentle' : ''}`}
       title={`Talk to Mira about ${petName}`}
+      data-testid="mira-voice-button"
     >
       <Mic className="w-6 h-6" />
       

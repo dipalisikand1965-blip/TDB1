@@ -162,7 +162,7 @@ const MiraDailyTip = ({ petName = 'your pup', className = '' }) => {
   const category = getCategoryInfo(tip);
   
   return (
-    <Card className={`overflow-hidden ${className}`}>
+    <Card className={`overflow-hidden ${className}`} data-testid="mira-daily-tip">
       {/* Header */}
       <div className={`bg-gradient-to-r ${category.color} p-4 text-white`}>
         <div className="flex items-center justify-between">
@@ -226,7 +226,7 @@ export const MiraDailyTipInline = ({ petName = 'your pup' }) => {
   if (!tip) return null;
   
   return (
-    <div className="bg-gradient-to-r from-purple-50 via-pink-50 to-orange-50 rounded-xl p-4 border border-purple-200">
+    <div className="bg-gradient-to-r from-purple-50 via-pink-50 to-orange-50 rounded-xl p-4 border border-purple-200" data-testid="mira-daily-tip-inline">
       <div className="flex items-start gap-3">
         <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-xl flex items-center justify-center flex-shrink-0 animate-bounce-slow">
           <Lightbulb className="w-5 h-5 text-white" />
