@@ -390,6 +390,7 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
     loadQueue();
     loadAgents();
     loadPillarStats();
+    loadPetData();
     
     // Auto-refresh every 60 seconds to check for SLA breaches
     const autoRefreshInterval = setInterval(() => {
@@ -397,7 +398,7 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
     }, 60000);
     
     return () => clearInterval(autoRefreshInterval);
-  }, [loadQueue, loadAgents, loadPillarStats]);
+  }, [loadQueue, loadAgents, loadPillarStats, loadPetData]);
 
   // Load item detail
   const loadItemDetail = async (ticketId) => {
