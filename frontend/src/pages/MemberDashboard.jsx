@@ -263,6 +263,9 @@ const MemberDashboard = () => {
   
   // Pillar Popup State - Shows usage history for each pillar
   const [pillarPopup, setPillarPopup] = useState({ open: false, pillar: null });
+  
+  // First Visit Tour
+  const { showTour, startTour, endTour } = useTour();
 
   // Redirect to login if not authenticated (after auth check completes)
   useEffect(() => {
