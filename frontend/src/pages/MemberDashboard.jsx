@@ -1544,19 +1544,10 @@ const MemberDashboard = () => {
               </Card>
             </div>
 
+            {/* 🎫 MEMBERSHIP CARD & STATS GRID */}
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="p-6 bg-gradient-to-br from-purple-600 to-indigo-700 text-white border-none shadow-lg relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl"></div>
-                <div className="flex justify-between items-start mb-4 relative z-10">
-                  <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                    <Star className="w-6 h-6 text-yellow-300" />
-                  </div>
-                  <Badge className="bg-white/20 text-white border-none backdrop-blur-sm">Active</Badge>
-                </div>
-                <h3 className="text-lg font-medium opacity-90 relative z-10">Loyalty Points</h3>
-                <p className="text-4xl font-bold mt-1 relative z-10">{(user.loyalty_points || 0).toLocaleString()}</p>
-                <p className="text-sm opacity-75 mt-2 relative z-10">Worth ₹{((user.loyalty_points || 0) * 0.5).toFixed(0)}</p>
-              </Card>
+              {/* Tiered Membership Card - Replaces basic loyalty points */}
+              <MembershipCardTiers user={user} pet={pets[0]} />
 
               <Card className="p-6 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start mb-4">
@@ -1589,6 +1580,22 @@ const MemberDashboard = () => {
                 <p className="text-sm text-gray-500 mt-2">Active profiles</p>
               </Card>
             </div>
+            
+            {/* 🎯 ENGAGEMENT WIDGETS ROW */}
+            <div className="grid md:grid-cols-2 gap-4 mt-6">
+              {/* Pawmoter Score (NPS) */}
+              <PawmoterScore user={user} onScoreSubmitted={() => window.location.reload()} />
+              
+              {/* Social Share Reward */}
+              <SocialShareReward user={user} onRewardClaimed={() => window.location.reload()} />
+            </div>
+            
+            {/* 🐕 BREED TIPS ENGINE */}
+            {pets.length > 0 && pets[0]?.breed && (
+              <div className="mt-6">
+                <BreedTipsEngine pet={pets[0]} />
+              </div>
+            )}
             
             {/* Pet Soul Completion CTA - Show if score is below 80% */}
             {Array.isArray(pets) && pets.length > 0 && (() => {
