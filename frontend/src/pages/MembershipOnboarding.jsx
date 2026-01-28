@@ -1223,6 +1223,19 @@ const MembershipOnboarding = () => {
                       <div key={idx} className="p-3 bg-gray-50 rounded-lg">
                         <p className="font-medium">{pet.name}</p>
                         <p className="text-sm text-gray-500">{pet.breed} • {pet.gender || 'Gender not specified'}</p>
+                        {/* Show selected celebrations */}
+                        {(pet.celebrations || []).length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {(pet.celebrations || []).map(celebId => {
+                              const celeb = CELEBRATION_TYPES.find(c => c.id === celebId);
+                              return celeb ? (
+                                <span key={celebId} className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
+                                  {celeb.emoji} {celeb.name}
+                                </span>
+                              ) : null;
+                            })}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
