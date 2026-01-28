@@ -10594,6 +10594,9 @@ set_push_db(db)  # Initialize push notifications with database
 app.include_router(experience_admin_router)  # Concierge experiences at /api/admin/concierge-experiences/*
 set_experience_admin_db(db)
 
+# Product Checkout (Razorpay, GST, Invoice)
+app.include_router(checkout_router)  # Product checkout at /api/checkout/*
+
 # Auto Ticket Creation System
 set_auto_ticket_db(db)  # Initialize auto-ticket creation with database
 
