@@ -152,7 +152,8 @@ function AppRouter() {
       {/* Full-Screen Concierge® Dashboard - NO navbar/footer */}
       <Route path="/admin/concierge" element={<ConciergeRequestsDashboard />} />
       
-      {/* Full-Screen Ask Mira Page - NO navbar/footer for immersive experience */}
+      {/* Full-Screen Mira Pages - NO navbar/footer for immersive experience */}
+      <Route path="/mira" element={<MiraPage />} />
       <Route path="/ask-mira" element={<MiraPage />} />
       
       {/* Membership Landing Page - NO navbar/footer for clean entry */}
