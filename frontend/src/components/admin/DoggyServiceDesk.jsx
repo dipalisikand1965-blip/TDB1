@@ -2738,6 +2738,67 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                     />
                   </div>
                   
+                  {/* Quick Select - Pet Parent & Pet Profile */}
+                  <div className="grid grid-cols-2 gap-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
+                    <div>
+                      <label className="text-sm font-medium text-emerald-700 mb-2 block flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        Quick Select Pet Parent
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border rounded-md text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        onChange={(e) => {
+                          const parent = petParents.find(p => p.email === e.target.value);
+                          if (parent) {
+                            setNewTicketForm(prev => ({
+                              ...prev,
+                              member_name: parent.name || parent.full_name || '',
+                              member_email: parent.email || '',
+                              member_phone: parent.whatsapp_number || parent.phone || ''
+                            }));
+                          }
+                        }}
+                        defaultValue=""
+                      >
+                        <option value="">-- Select existing pet parent --</option>
+                        {petParents.map((parent, idx) => (
+                          <option key={idx} value={parent.email}>
+                            {parent.name || parent.full_name} ({parent.email})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-emerald-700 mb-2 block flex items-center gap-2">
+                        <PawPrint className="w-4 h-4" />
+                        Quick Select Pet Profile
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border rounded-md text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        onChange={(e) => {
+                          const pet = petProfiles.find(p => p.id === e.target.value);
+                          if (pet) {
+                            setNewTicketForm(prev => ({
+                              ...prev,
+                              pet_name: pet.name || '',
+                              // Also populate owner info if available and form is empty
+                              member_email: prev.member_email || pet.owner_email || '',
+                              member_name: prev.member_name || pet.owner_name || ''
+                            }));
+                          }
+                        }}
+                        defaultValue=""
+                      >
+                        <option value="">-- Select existing pet --</option>
+                        {petProfiles.map((pet, idx) => (
+                          <option key={idx} value={pet.id}>
+                            {pet.name} ({pet.breed || 'Unknown breed'}) - {pet.owner_email || 'No owner'}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  
                   {/* Contact Info */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
