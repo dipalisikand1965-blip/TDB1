@@ -48,6 +48,8 @@ import MyCelebrations from '../components/MyCelebrations';
 import FirstVisitTour, { useTour } from '../components/FirstVisitTour';
 // Daily Tips
 import MiraDailyTip, { MiraDailyTipInline } from '../components/MiraDailyTip';
+// Voice Assistant
+import MiraVoiceAssistant, { MiraVoiceButton } from '../components/MiraVoiceAssistant';
 
 
 // Extracted components: ACHIEVEMENTS, TIER_COLORS, triggerCelebration, QuickScoreBoost, GamificationBanner
