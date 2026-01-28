@@ -5578,18 +5578,16 @@ async def get_product_recommendations(
     limit: int = 6
 ):
     """Get product recommendations based on categories (for checkout add-ons)"""
-    query = {"in_stock": {"$ne": False}}
-    
-    # Filter by related categories
-    if categories:
-        cat_list = [c.strip() for c in categories.split(',') if c.strip()]
-        if cat_list:
-            # Find products in similar categories or tagged as "best_seller"
-            query["$or"] = [
-                {"category": {"$in": cat_list}},
-                {"tags": {"$in": ["best_seller", "popular", "recommended", "addon"]}},
-                {"pillar": {"$in": ["shop", "celebrate"]}}
-            ]
+    # First try to get products from shop/celebrate pillars with addon tags
+    query = {
+        "in_stock": {"$ne": False},
+        "$or": [
+            {"tags": {"$in": ["best_seller", "popular", "recommended", "addon"]}},
+            {"pillar": "shop"},
+            {"pillar": "celebrate"},
+            {"category": {"$in": ["treats", "cakes", "toys", "accessories", "birthday_cakes"]}}
+        ]
+    }
     
     # Exclude specific products
     if exclude_ids:
@@ -5599,14 +5597,22 @@ async def get_product_recommendations(
     
     products = await db.products.find(
         query,
-        {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1, "images": 1, "category": 1, "tags": 1}
-    ).sort("created_at", -1).limit(limit * 2).to_list(limit * 2)
+        {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1, "images": 1, "category": 1, "tags": 1, "pillar": 1}
+    ).sort("created_at", -1).limit(limit * 3).to_list(limit * 3)
     
-    # Prioritize popular/add-on products
+    # Filter out stay/travel properties and prioritize food/toys
+    checkout_friendly = []
+    for p in products:
+        pillar = p.get('pillar', '')
+        if pillar in ['stay', 'travel', 'care', 'advisory']:
+            continue  # Skip services
+        p['image'] = p.get('image') or (p.get('images', [None])[0] if p.get('images') else None)
+        checkout_friendly.append(p)
+    
+    # Prioritize by tags
     prioritized = []
     others = []
-    for p in products:
-        p['image'] = p.get('image') or (p.get('images', [None])[0] if p.get('images') else None)
+    for p in checkout_friendly:
         tags = p.get('tags', [])
         if any(t in tags for t in ['best_seller', 'popular', 'addon', 'recommended']):
             prioritized.append(p)
