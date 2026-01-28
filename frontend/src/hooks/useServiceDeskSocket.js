@@ -207,10 +207,22 @@ export const useServiceDeskSocket = (agentId, onNewTicket, onTicketUpdate, onNew
 
     // Cleanup on unmount
     return () => {
+      // Clear heartbeat interval
+      if (heartbeatIntervalRef.current) {
+        clearInterval(heartbeatIntervalRef.current);
+      }
+      // Clear reconnect timeout
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
       // Don't disconnect the singleton, just remove listeners
       socket.off('connect');
       socket.off('disconnect');
       socket.off('connect_error');
+      socket.off('reconnect');
+      socket.off('reconnect_attempt');
+      socket.off('reconnect_error');
+      socket.off('reconnect_failed');
       socket.off('ticket:new');
       socket.off('ticket:update');
       socket.off('ticket:message');
@@ -218,6 +230,15 @@ export const useServiceDeskSocket = (agentId, onNewTicket, onTicketUpdate, onNew
       socket.off('registration:success');
     };
   }, [agentId, onNewTicket, onTicketUpdate, onNewMessage]);
+  
+  // Manual reconnect function for UI
+  const reconnect = useCallback(() => {
+    if (socketRef.current) {
+      reconnectAttempts = 0;
+      setConnectionState('connecting');
+      socketRef.current.connect();
+    }
+  }, []);
 
   // Subscribe to a specific ticket for focused updates
   const subscribeToTicket = useCallback((ticketId) => {
