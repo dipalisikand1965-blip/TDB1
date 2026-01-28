@@ -368,7 +368,7 @@ const MembershipOnboarding = () => {
             
             {/* Progress Steps */}
             <div className="flex items-center gap-2">
-              {[1, 2, 3].map((s) => (
+              {[1, 2, 3, 4].map((s) => (
                 <div key={s} className="flex items-center">
                   <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
                     step >= s 
@@ -377,8 +377,8 @@ const MembershipOnboarding = () => {
                   }`}>
                     {step > s ? <Check className="w-5 h-5" /> : s}
                   </div>
-                  {s < 3 && (
-                    <div className={`w-10 h-1 rounded ${step > s ? 'bg-gradient-to-r from-orange-400 to-pink-400' : 'bg-gray-200'}`} />
+                  {s < 4 && (
+                    <div className={`w-8 h-1 rounded ${step > s ? 'bg-gradient-to-r from-orange-400 to-pink-400' : 'bg-gray-200'}`} />
                   )}
                 </div>
               ))}
