@@ -317,6 +317,9 @@ const ConciergeModal = ({
   formData,
   setFormData,
   user,
+  userPets = [],
+  selectedPetOption,
+  setSelectedPetOption,
   submitting,
   submitted,
   onSubmit
