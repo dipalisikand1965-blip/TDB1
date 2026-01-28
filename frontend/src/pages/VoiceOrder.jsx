@@ -315,7 +315,7 @@ export default function VoiceOrder() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Pet's Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Pet&apos;s Name</label>
                 {userPets.length > 0 ? (
                   <select
                     value={petName}
@@ -348,14 +348,22 @@ export default function VoiceOrder() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone {!customerPhone && user && <span className="text-amber-600 text-xs">(please add)</span>}
+                </label>
                 <Input
                   type="tel"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="9876543210"
                   data-testid="voice-phone"
+                  className={!customerPhone ? 'border-amber-300 focus:ring-amber-500' : ''}
                 />
+                {!customerPhone && user && (
+                  <p className="text-xs text-amber-600 mt-1">
+                    Add your phone to get order updates via WhatsApp
+                  </p>
+                )}
               </div>
             </div>
 
