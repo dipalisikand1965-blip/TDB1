@@ -248,13 +248,6 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [orderHistory, setOrderHistory] = useState([]);
   const [loadingContext, setLoadingContext] = useState(false);
   
-  // Stats
-  const [stats, setStats] = useState({
-    total: 0, open: 0, in_progress: 0, on_hold: 0, resolved: 0,
-    overdue: 0, my_tickets: 0, unassigned: 0,
-    by_pillar: {}, by_channel: {}, by_priority: {}
-  });
-  
   // Agents for assignment
   const [agents, setAgents] = useState([
     { id: 'aditya', name: 'Aditya' },
