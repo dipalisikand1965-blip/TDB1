@@ -51,7 +51,7 @@ async def get_or_create_vapid_keys() -> Dict[str, str]:
         return {"public_key": VAPID_PUBLIC_KEY, "private_key": VAPID_PRIVATE_KEY}
     
     # Try to get from database
-    if db:
+    if db is not None:
         keys_doc = await db.settings.find_one({"type": "vapid_keys"})
         if keys_doc:
             VAPID_PRIVATE_KEY = keys_doc.get("private_key", "")
@@ -76,7 +76,7 @@ async def get_or_create_vapid_keys() -> Dict[str, str]:
     ).hex()
     
     # Store in database for persistence
-    if db:
+    if db is not None:
         await db.settings.update_one(
             {"type": "vapid_keys"},
             {"$set": {
