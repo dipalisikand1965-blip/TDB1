@@ -380,7 +380,7 @@ async def export_report_csv(
     report_type: str = "daily_summary",
     period: str = "today",
     pillar: str = "all",
-    username: str = Depends(lambda: verify_admin)
+    username: str = Depends(get_admin_verifier)
 ):
     """Export report as CSV file"""
     
@@ -416,7 +416,7 @@ async def export_report_excel(
     report_type: str = "daily_summary",
     period: str = "today",
     pillar: str = "all",
-    username: str = Depends(lambda: verify_admin)
+    username: str = Depends(get_admin_verifier)
 ):
     """Export report as Excel file (xlsx)"""
     
@@ -501,7 +501,7 @@ async def export_report_excel(
 @report_builder_router.post("/schedule")
 async def save_report_schedule(
     schedule: dict,
-    username: str = Depends(lambda: verify_admin)
+    username: str = Depends(get_admin_verifier)
 ):
     """Save email report schedule configuration"""
     schedule["updated_at"] = datetime.now(timezone.utc).isoformat()
