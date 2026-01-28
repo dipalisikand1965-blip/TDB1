@@ -262,6 +262,33 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
     }
   }, []);
 
+  // Load pet parents and pet profiles for auto-populate in ticket forms
+  const loadPetData = useCallback(async () => {
+    const authHeaders = { 'Content-Type': 'application/json' };
+    const adminToken = localStorage.getItem('adminToken');
+    if (adminToken) {
+      authHeaders['Authorization'] = `Bearer ${adminToken}`;
+    }
+    
+    try {
+      // Fetch pet parents/members
+      const membersRes = await fetch(`${API_URL}/api/admin/members/directory`, { headers: authHeaders });
+      if (membersRes.ok) {
+        const data = await membersRes.json();
+        setPetParents(data.members || []);
+      }
+      
+      // Fetch pets
+      const petsRes = await fetch(`${API_URL}/api/admin/pets?limit=100`, { headers: authHeaders });
+      if (petsRes.ok) {
+        const data = await petsRes.json();
+        setPetProfiles(data.pets || []);
+      }
+    } catch (error) {
+      console.error('Failed to load pet data:', error);
+    }
+  }, []);
+
   // Load pillar stats
   const loadPillarStats = useCallback(async () => {
     try {
