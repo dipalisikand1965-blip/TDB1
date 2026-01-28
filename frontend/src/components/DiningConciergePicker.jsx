@@ -493,6 +493,202 @@ Submitted via Dining Concierge on the Dine pillar page.`;
       </div>
     </div>
   );
+  
+  // Compact Mode - Grid of clickable cards
+  const CompactView = () => (
+    <div className="py-8 px-4" data-testid="dining-concierge-picker-compact">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Utensils className="w-5 h-5 text-amber-600" />
+            <span className="text-sm font-medium text-amber-700">Need Dining Help?</span>
+          </div>
+          <p className="text-xs text-gray-500">Click a service to start a conversation with our Concierge®</p>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {DINING_SERVICES.map((service) => {
+            const Icon = service.icon;
+            return (
+              <button
+                key={service.id}
+                onClick={() => handleServiceClick(service.id)}
+                className="group p-4 rounded-xl border-2 border-gray-200 hover:border-amber-400 hover:shadow-lg bg-white transition-all text-center"
+                data-testid={`dining-service-compact-${service.id}`}
+              >
+                <div className={`w-12 h-12 mx-auto mb-2 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center text-2xl shadow-md group-hover:scale-110 transition-transform`}>
+                  {service.emoji}
+                </div>
+                <h4 className="font-semibold text-xs text-gray-900 mb-1">{service.name}</h4>
+                <p className="text-[10px] text-gray-500 line-clamp-2">{service.description}</p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      
+      {/* Form Modal */}
+      {showFormModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowFormModal(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            {fullFormContent}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+  
+  // Full form content (used in modal or inline)
+  const fullFormContent = (
+    <div className="p-6" data-testid="dining-form-content">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${DINING_SERVICES.find(s => s.id === selectedService)?.color || 'from-amber-500 to-orange-500'} flex items-center justify-center text-2xl shadow-md`}>
+            {DINING_SERVICES.find(s => s.id === selectedService)?.emoji}
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-900">{DINING_SERVICES.find(s => s.id === selectedService)?.name}</h3>
+            <p className="text-xs text-gray-500">{DINING_SERVICES.find(s => s.id === selectedService)?.description}</p>
+          </div>
+        </div>
+        {showFormModal && (
+          <button onClick={() => setShowFormModal(false)} className="text-gray-400 hover:text-gray-600">
+            <span className="text-2xl">&times;</span>
+          </button>
+        )}
+      </div>
+      
+      {/* Form Fields */}
+      <div className="space-y-4">
+        {/* City */}
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2 block">
+            <MapPin className="w-4 h-4 inline mr-1" /> City
+          </Label>
+          <Select value={city} onValueChange={setCity}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select city" />
+            </SelectTrigger>
+            <SelectContent>
+              {CITIES.map(c => (
+                <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Date & Time */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="text-sm font-medium text-gray-700 mb-2 block">
+              <CalendarIcon className="w-4 h-4 inline mr-1" /> Date
+            </Label>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full justify-start text-left">
+                  {selectedDate ? format(selectedDate, 'PPP') : 'Pick date'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => { setSelectedDate(date); setCalendarOpen(false); }}
+                  disabled={(date) => date < new Date()}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div>
+            <Label className="text-sm font-medium text-gray-700 mb-2 block">
+              <Clock className="w-4 h-4 inline mr-1" /> Time
+            </Label>
+            <Select value={selectedTime} onValueChange={setSelectedTime}>
+              <SelectTrigger>
+                <SelectValue placeholder="Time" />
+              </SelectTrigger>
+              <SelectContent>
+                {['11:00 AM', '12:00 PM', '1:00 PM', '7:00 PM', '8:00 PM', '9:00 PM'].map(t => (
+                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        
+        {/* Guests */}
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2 block">
+            <Users className="w-4 h-4 inline mr-1" /> Number of Guests
+          </Label>
+          <Select value={guestCount} onValueChange={setGuestCount}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent>
+              {GUEST_COUNTS.map(g => (
+                <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Pet Selection */}
+        {userPets.length > 0 && (
+          <div>
+            <Label className="text-sm font-medium text-gray-700 mb-2 block">
+              <PawPrint className="w-4 h-4 inline mr-1" /> Select Pet
+            </Label>
+            <Select value={selectedPet?.id || ''} onValueChange={(id) => setSelectedPet(userPets.find(p => p.id === id))}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select pet" />
+              </SelectTrigger>
+              <SelectContent>
+                {userPets.map(pet => (
+                  <SelectItem key={pet.id} value={pet.id}>{pet.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+        
+        {/* Special Requests */}
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2 block">
+            Special Requests
+          </Label>
+          <textarea
+            value={specialRequests}
+            onChange={(e) => setSpecialRequests(e.target.value)}
+            className="w-full px-3 py-2 border rounded-lg text-sm resize-none"
+            rows={3}
+            placeholder="Any dietary restrictions, allergies, preferences..."
+          />
+        </div>
+      </div>
+      
+      {/* Submit Button */}
+      <Button
+        onClick={handleSubmitRequest}
+        disabled={isSubmitting || !city}
+        className="w-full mt-6 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+      >
+        {isSubmitting ? (
+          <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+        ) : (
+          <><Sparkles className="w-4 h-4 mr-2" /> Submit Request</>
+        )}
+      </Button>
+    </div>
+  );
+  
+  // Return compact or full view based on mode
+  if (compactMode) {
+    return <CompactView />;
+  }
+  
+  return FullView;
 };
 
 export default DiningConciergePicker;
