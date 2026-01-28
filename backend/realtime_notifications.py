@@ -211,5 +211,28 @@ async def typing_stop(sid, data):
         }, room=f'ticket:{ticket_id}', skip_sid=sid)
 
 
+# Helper functions for connection status
+def get_connected_agents_count() -> int:
+    """Get count of connected agents"""
+    return len(connected_agents)
+
+
+def get_connection_stats() -> Dict[str, Any]:
+    """Get detailed connection statistics"""
+    return {
+        'total_connected': len(connected_agents),
+        'registered_agents': sum(1 for info in connected_agents.values() if info.get('agent_id')),
+        'connections': [
+            {
+                'sid': sid[:8] + '...',  # Truncate for privacy
+                'agent_id': info.get('agent_id', 'unregistered'),
+                'connected_at': info.get('connected_at'),
+                'last_heartbeat': info.get('last_heartbeat')
+            }
+            for sid, info in connected_agents.items()
+        ]
+    }
+
+
 # Create notification manager instance
 notification_manager = NotificationManager()
