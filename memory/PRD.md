@@ -13,6 +13,46 @@
 
 ## What's Been Implemented
 
+### Phase 15: Notification Badges, Dine & Celebrate Concierge® (Jan 28, 2025)
+
+**New Features:**
+
+1. **App Notification Badges**
+   - PWA badge count API (`navigator.setAppBadge`)
+   - Service worker badge management via message events
+   - Frontend hook: `useAppBadge.js` for badge count control
+   - Auto-increment on push notification receipt
+   - Auto-decrement on notification click
+
+2. **Dine Page Elevated Concierge® Experiences**
+   - Added 3 experience cards to DinePage:
+     - Private Chef Experience® (Signature badge)
+     - Restaurant VIP Access®
+     - Birthday Dining Package® (Popular badge)
+   - Premium section with gradient cards
+
+3. **Celebrate Page (NEW)**
+   - Full pillar page at `/celebrate` with:
+     - Hero section with floating decorations
+     - 6 quick category cards
+     - 6 Elevated Concierge® experience cards:
+       - Ultimate Birthday Bash® (Signature)
+       - Gotcha Day Special®
+       - Pawty Planning Pro® (Popular)
+       - Puppy Shower®
+       - Pet Wedding Ceremony®
+       - Milestone Moments®
+     - "How Concierge® Works" section
+     - Featured products section
+     - Bottom CTA section
+
+4. **Mobile UI/UX Audit - Member Experience**
+   - Verified mobile responsiveness (390x844 viewport)
+   - Member Dashboard: Clean layout, tabs scrollable, gamification visible
+   - Mira AI Chat: Full-screen, quick actions visible, input accessible
+   - Settings: Push notifications and Soul Whisper sections readable
+   - Travel/Stay/Dine/Celebrate: All pillar pages responsive
+
 ### Phase 14: PWA Push Notifications & WebSocket Stability (Jan 28, 2025)
 
 **New Features:**
