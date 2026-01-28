@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import {
@@ -8,18 +8,101 @@ import {
   MapPin,
   ChevronRight,
   PawPrint,
-  Package
+  Package,
+  DollarSign,
+  Ticket,
+  TrendingUp,
+  Users,
+  RefreshCw,
+  Loader2
 } from 'lucide-react';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const DashboardTab = ({ 
   dashboard, 
   products, 
-  onSelectChat 
+  onSelectChat,
+  authHeaders
 }) => {
+  const [todayMetrics, setTodayMetrics] = useState(null);
+  const [loadingMetrics, setLoadingMetrics] = useState(false);
+
+  // Fetch today's key metrics from Report Builder
+  const fetchTodayMetrics = async () => {
+    setLoadingMetrics(true);
+    try {
+      const response = await fetch(`${API_URL}/api/admin/reports/generate?report_type=daily_summary&period=today`, authHeaders);
+      if (response.ok) {
+        const data = await response.json();
+        setTodayMetrics(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch today metrics:', error);
+    } finally {
+      setLoadingMetrics(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTodayMetrics();
+  }, []);
+
   if (!dashboard) return null;
 
   return (
     <div className="space-y-8" data-testid="dashboard-tab">
+      {/* Today's Snapshot Widget */}
+      <Card className="p-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-bold flex items-center gap-2">
+            <TrendingUp className="w-5 h-5" />
+            Today&apos;s Snapshot
+          </h3>
+          <button 
+            onClick={fetchTodayMetrics}
+            className="p-2 hover:bg-white/20 rounded-full transition-colors"
+            disabled={loadingMetrics}
+          >
+            {loadingMetrics ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <RefreshCw className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+        
+        {todayMetrics?.summary ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {todayMetrics.summary.slice(0, 4).map((item, idx) => (
+              <div key={idx} className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+                <p className="text-sm text-white/80">{item.label}</p>
+                <p className="text-2xl font-bold mt-1">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+              <p className="text-sm text-white/80">Revenue</p>
+              <p className="text-2xl font-bold mt-1">₹0</p>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+              <p className="text-sm text-white/80">Orders</p>
+              <p className="text-2xl font-bold mt-1">0</p>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+              <p className="text-sm text-white/80">New Members</p>
+              <p className="text-2xl font-bold mt-1">0</p>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+              <p className="text-sm text-white/80">Open Tickets</p>
+              <p className="text-2xl font-bold mt-1">0</p>
+            </div>
+          </div>
+        )}
+      </Card>
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="p-6" data-testid="stat-total-chats">
