@@ -189,7 +189,7 @@ const MiraVoiceAssistant = ({
         }, 2000);
       }
     }, 800);
-  }, [inputText, petName, petData, addMiraMessage, onNavigate, onClose]);
+  }, [inputText, petName, petData, petId, addMiraMessage, onNavigate, onClose]);
   
   // Scroll to bottom when messages change
   useEffect(() => {
