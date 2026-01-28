@@ -238,7 +238,7 @@ const MiraVoiceAssistant = ({
     return () => recognition.abort();
   }, [handleSend, addMiraMessage]);
   
-  const toggleListening = () => {
+  const toggleListening = useCallback(() => {
     if (!recognitionRef.current) {
       addMiraMessage("Voice isn't available in this browser. But you can type your message!");
       return;
@@ -250,7 +250,7 @@ const MiraVoiceAssistant = ({
       setIsListening(true);
       recognitionRef.current.start();
     }
-  };
+  }, [isListening, addMiraMessage]);
   
   const quickCommands = [
     { icon: ShoppingCart, text: `Order ${petName}'s treats`, color: 'bg-orange-100 text-orange-700' },
