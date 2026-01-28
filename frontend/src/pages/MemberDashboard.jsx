@@ -3220,6 +3220,22 @@ const MemberDashboard = () => {
             </div>
           </TabsContent>
         </Tabs>
+        
+        {/* Pillar Popup Modal */}
+        {pillarPopup.open && pillarPopup.pillar && (
+          <PillarPopup 
+            pillar={pillarPopup.pillar}
+            onClose={() => setPillarPopup({ open: false, pillar: null })}
+            onExplore={(path) => navigate(path)}
+            data={{
+              celebrationOrders,
+              diningHistory,
+              stayHistory,
+              travelHistory,
+              orders
+            }}
+          />
+        )}
       </div>
     </div>
   );
