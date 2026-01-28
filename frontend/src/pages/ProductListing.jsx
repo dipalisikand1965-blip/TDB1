@@ -396,7 +396,41 @@ const ProductListing = ({ category = 'all' }) => {
             const data = await response.json();
             // Ensure we always have an array, even if API returns unexpected data
             const productsArray = Array.isArray(data.products) ? data.products : [];
-            setProducts(productsArray.filter(p => p !== null && p !== undefined));
+            const validProducts = productsArray.filter(p => p !== null && p !== undefined);
+            setProducts(validProducts);
+            
+            // Extract unique breeds and shapes from products for filters
+            const breeds = new Set();
+            const shapes = new Set();
+            
+            validProducts.forEach(product => {
+              // Extract breeds from tags, name, or category
+              const productTags = product.tags || [];
+              const productName = (product.name || '').toLowerCase();
+              
+              // Common dog breeds to look for
+              const breedPatterns = ['labrador', 'golden retriever', 'pug', 'beagle', 'husky', 'german shepherd', 
+                'bulldog', 'poodle', 'rottweiler', 'dachshund', 'shih tzu', 'boxer', 'doberman', 
+                'great dane', 'chihuahua', 'corgi', 'dalmatian', 'pomeranian', 'indie', 'spitz'];
+              
+              breedPatterns.forEach(breed => {
+                if (productName.includes(breed) || productTags.some(t => (t || '').toLowerCase().includes(breed))) {
+                  breeds.add(breed.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
+                }
+              });
+              
+              // Extract shapes from tags or name
+              const shapePatterns = ['round', 'square', 'heart', 'bone', 'paw', 'star', 'number', 'letter', 'custom'];
+              
+              shapePatterns.forEach(shape => {
+                if (productName.includes(shape) || productTags.some(t => (t || '').toLowerCase().includes(shape))) {
+                  shapes.add(shape.charAt(0).toUpperCase() + shape.slice(1));
+                }
+              });
+            });
+            
+            setAvailableBreeds(['all', ...Array.from(breeds).sort()]);
+            setAvailableShapes(['all', ...Array.from(shapes).sort()]);
           } else {
             console.error('Failed to fetch products, status:', response.status);
             setProducts([]);
