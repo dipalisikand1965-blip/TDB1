@@ -96,6 +96,46 @@
 
 ---
 
+### Phase 30: Report Builder, Mobile Auth & Onboarding (Jan 28, 2025)
+
+**Completed Features:**
+
+1. **Intelligent Report Builder** (COMPLETED)
+   - Full-featured admin report builder with pillar-wise and consolidated sales reports
+   - Service ticket analytics with status breakdown
+   - CSV and Excel export functionality
+   - Email scheduling configuration
+   - 8 report types: daily_summary, pillar_performance, order_report, ticket_report, revenue_report, member_analytics, pet_analytics, product_performance
+   - **Files Created**: `/app/backend/report_builder_routes.py`
+   - **Files Modified**: `/app/backend/server.py`, `/app/frontend/src/components/admin/ReportBuilder.jsx`
+
+2. **GST Calculation Fix** (COMPLETED)
+   - GST now correctly calculated on (subtotal - discount + shipping)
+   - Before: GST was only on subtotal
+   - After: GST includes shipping fee in taxable amount
+   - Example: ₹1000 items + ₹150 shipping = ₹1150 taxable, ₹207 GST (18%), Total ₹1357
+   - **Files Verified**: `/app/backend/checkout_routes.py`
+
+3. **Mobile Sign In/Sign Out** (COMPLETED)
+   - Added Sign Out button to mobile navbar when logged in
+   - Sign In and Join Now buttons now properly visible when logged out
+   - Added data-testid attributes for testing
+   - **Files Modified**: `/app/frontend/src/components/Navbar.jsx`
+
+4. **Onboarding Enhancements** (COMPLETED)
+   - Added Soul Whisper info section in Step 3
+   - Added Push Notification info section
+   - Added PWA Install prompt section
+   - All sections styled with gradient backgrounds and icons
+   - **Files Modified**: `/app/frontend/src/pages/MembershipOnboarding.jsx`
+
+**Testing Results:**
+- Backend: 100% (13/13 tests passed)
+- Frontend: 100% (all features verified)
+- Test report: `/app/test_reports/iteration_108.json`
+
+---
+
 ### Phase 29: Bug Fixes - Adopt, Farewell, Events (Jan 28, 2025)
 
 **Fixed Issues:**
