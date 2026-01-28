@@ -302,7 +302,15 @@ const FAQs = () => {
                       
                       {isOpen && (
                         <div className="px-6 pb-4 text-gray-600 animate-in slide-in-from-top-2">
-                          <p className="leading-relaxed">{item.a}</p>
+                          <p className="leading-relaxed whitespace-pre-line">{item.a}</p>
+                          {item.link_to && (
+                            <a 
+                              href={item.link_to}
+                              className="inline-flex items-center gap-1 mt-3 text-purple-600 hover:text-purple-700 font-medium"
+                            >
+                              {item.link_text || 'Learn more'} →
+                            </a>
+                          )}
                         </div>
                       )}
                     </div>
