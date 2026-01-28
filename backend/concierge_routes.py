@@ -209,14 +209,16 @@ class AddNoteRequest(BaseModel):
 
 class ConciergeExperienceRequest(BaseModel):
     """Model for elevated concierge experience requests from pillar cards."""
-    pillar: str  # travel, stay, care, enjoy, learn
+    pillar: str  # travel, stay, care, enjoy, learn, dine, celebrate, etc.
     experience_type: str
     experience_title: str
     message: str
     user_name: Optional[str] = None
     user_email: Optional[str] = None
-    user_phone: Optional[str] = None
+    user_phone: Optional[str] = None  # Deprecated, use user_whatsapp
+    user_whatsapp: Optional[str] = None
     pet_name: Optional[str] = None
+    pet_selection: Optional[str] = None  # 'all' or specific pet id
     source: Optional[str] = "concierge_experience_card"
 
 
