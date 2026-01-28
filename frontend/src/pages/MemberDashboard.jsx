@@ -21,7 +21,6 @@ import { toast } from '../hooks/use-toast';
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import PetAvatar, { PetAvatarMini } from '../components/PetAvatar';
-import confetti from 'canvas-confetti';
 import PawPointsRewards from '../components/PawPointsRewards';
 import MiraConversationHistory from '../components/MiraConversationHistory';
 import SoulExplainerVideo, { SoulExplainerButton } from '../components/SoulExplainerVideo';
@@ -33,6 +32,14 @@ import MembershipCardTiers from '../components/MembershipCardTiers';
 import SocialShareReward from '../components/SocialShareReward';
 import BreedTipsEngine from '../components/BreedTipsEngine';
 import PawmoterScore from '../components/PawmoterScore';
+// Extracted dashboard components
+import { 
+  QuickScoreBoost, 
+  GamificationBanner, 
+  ACHIEVEMENTS, 
+  TIER_COLORS, 
+  triggerCelebration 
+} from '../components/dashboard';
 
 // ============================================
 // 🏆 ACHIEVEMENT SYSTEM - World Class Gamification
