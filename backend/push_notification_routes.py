@@ -142,7 +142,7 @@ async def get_vapid_public_key():
 @push_router.post("/subscribe")
 async def subscribe_to_push(request: SubscribeRequest):
     """Subscribe a user to push notifications"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     subscription_data = {
@@ -180,7 +180,7 @@ async def subscribe_to_push(request: SubscribeRequest):
 @push_router.post("/unsubscribe")
 async def unsubscribe_from_push(subscription: PushSubscription):
     """Unsubscribe from push notifications"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     result = await db.push_subscriptions.update_one(
@@ -198,7 +198,7 @@ async def unsubscribe_from_push(subscription: PushSubscription):
 @push_router.put("/preferences/{user_id}")
 async def update_push_preferences(user_id: str, preferences: Dict[str, Any]):
     """Update push notification preferences for a user"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     result = await db.push_subscriptions.update_many(
@@ -396,7 +396,7 @@ async def generate_soul_whisper(pet_data: Dict) -> SoulWhisperMessage:
 @push_router.post("/soul-whisper/send/{user_id}")
 async def send_soul_whisper(user_id: str, background_tasks: BackgroundTasks):
     """Send a Soul Whisper notification to a user"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     # Get user's pets
@@ -469,7 +469,7 @@ async def send_soul_whisper(user_id: str, background_tasks: BackgroundTasks):
 @push_router.get("/soul-whisper/preview/{user_id}")
 async def preview_soul_whisper(user_id: str):
     """Preview what a Soul Whisper would look like for a user"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     # Get user's primary pet
@@ -496,7 +496,7 @@ async def preview_soul_whisper(user_id: str):
 @push_router.get("/stats")
 async def get_push_stats():
     """Get push notification statistics"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     total_subscriptions = await db.push_subscriptions.count_documents({})
@@ -530,7 +530,7 @@ async def get_push_stats():
 @push_router.get("/subscriptions/{user_id}")
 async def get_user_subscriptions(user_id: str):
     """Get push subscriptions for a user"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     subscriptions = await db.push_subscriptions.find(
