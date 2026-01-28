@@ -41,6 +41,8 @@ const ShopManager = ({ getAuthHeader }) => {
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [wishlistData, setWishlistData] = useState({ popular_wishlisted: [], total_wishlisted_products: 0 });
+  const [loadingWishlist, setLoadingWishlist] = useState(false);
   const fileInputRef = useRef(null);
 
   // Product form state
