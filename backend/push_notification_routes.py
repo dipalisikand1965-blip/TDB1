@@ -260,7 +260,7 @@ async def send_push_notification(
         logger.error(f"Push notification failed: {e}")
         # If subscription is invalid, mark it as inactive
         if e.response and e.response.status_code in [404, 410]:
-            if db:
+            if db is not None:
                 await db.push_subscriptions.update_one(
                     {"endpoint": subscription_info.get("endpoint")},
                     {"$set": {"active": False, "error": "Subscription expired or invalid"}}
@@ -271,7 +271,7 @@ async def send_push_notification(
 @push_router.post("/send")
 async def send_notification(request: SendNotificationRequest, background_tasks: BackgroundTasks):
     """Send a push notification to a user or all subscribers"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     # Build query
