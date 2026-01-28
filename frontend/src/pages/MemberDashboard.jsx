@@ -879,6 +879,25 @@ const MemberDashboard = () => {
 
           {/* Overview Content */}
           <TabsContent value="overview" className="animate-in fade-in-50 duration-300">
+            {/* 🐕 MIRA'S PERSONALIZED GUIDANCE - Shows contextual tips */}
+            <MiraTip 
+              context={getMiraGuidanceContext(user, pets, orders)}
+              petName={pets[0]?.name}
+              petId={pets[0]?.id}
+              parentName={user?.name?.split(' ')[0]}
+              score={Math.min(100, pets[0]?.overall_score || 0)}
+            />
+            
+            {/* 🎉 MY CELEBRATIONS - Upcoming birthdays, gotcha days, etc */}
+            {Array.isArray(pets) && pets.length > 0 && (
+              <div className="mb-6">
+                <MyCelebrations 
+                  pets={pets} 
+                  onNavigate={(path) => navigate(path)}
+                />
+              </div>
+            )}
+            
             {/* MIRA'S PICKS - Smart Recommendations */}
             {user?.id && (
               <div className="mb-8">
