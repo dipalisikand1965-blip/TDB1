@@ -596,6 +596,160 @@ const GamificationBanner = ({ pets, orders, user, onNavigateToPet, onOpenExplain
   );
 };
 
+// ============================================
+// 🏛️ PILLAR POPUP COMPONENT
+// Shows usage history and stats for each pillar
+// ============================================
+const PillarPopup = ({ pillar, onClose, onExplore, data }) => {
+  if (!pillar) return null;
+  
+  // Get pillar-specific data
+  const getPillarStats = () => {
+    switch (pillar.id) {
+      case 'celebrate':
+        return {
+          items: data.celebrationOrders || [],
+          stats: [
+            { label: 'Total Orders', value: data.celebrationOrders?.length || 0 },
+            { label: 'Cakes Ordered', value: data.celebrationOrders?.filter(o => o.items?.some(i => i.name?.toLowerCase().includes('cake'))).length || 0 }
+          ],
+          emptyText: 'No celebration orders yet. Make your pet\'s special day unforgettable!'
+        };
+      case 'dine':
+        return {
+          items: [...(data.diningHistory?.reservations?.items || []), ...(data.diningHistory?.visits?.items || [])],
+          stats: [
+            { label: 'Reservations', value: data.diningHistory?.reservations?.items?.length || 0 },
+            { label: 'Visits', value: data.diningHistory?.visits?.items?.length || 0 },
+            { label: 'Meetups', value: data.diningHistory?.meetups?.items?.length || 0 }
+          ],
+          emptyText: 'No dining history yet. Discover pet-friendly restaurants!'
+        };
+      case 'stay':
+        return {
+          items: data.stayHistory?.bookings || [],
+          stats: [
+            { label: 'Total Stays', value: data.stayHistory?.bookings?.length || 0 },
+            { label: 'Upcoming', value: data.stayHistory?.upcoming?.length || 0 },
+            { label: 'Past Stays', value: data.stayHistory?.past?.length || 0 }
+          ],
+          emptyText: 'No stays booked yet. Find the perfect boarding for your pet!'
+        };
+      case 'travel':
+        return {
+          items: data.travelHistory?.requests || [],
+          stats: [
+            { label: 'Total Trips', value: data.travelHistory?.requests?.length || 0 },
+            { label: 'Upcoming', value: data.travelHistory?.upcoming?.length || 0 },
+            { label: 'Completed', value: data.travelHistory?.past?.length || 0 }
+          ],
+          emptyText: 'No travel requests yet. Plan your next pet-friendly adventure!'
+        };
+      default:
+        return {
+          items: [],
+          stats: [
+            { label: 'Activities', value: 0 },
+            { label: 'This Month', value: 0 }
+          ],
+          emptyText: `Start exploring ${pillar.name} services for your pet!`
+        };
+    }
+  };
+  
+  const pillarData = getPillarStats();
+  
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <Card className="w-full max-w-md bg-white shadow-2xl rounded-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className={`p-6 bg-gradient-to-br ${pillar.color} text-white`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center text-3xl backdrop-blur-sm">
+                {pillar.icon}
+              </div>
+              <div>
+                <h2 className="text-xl font-bold">{pillar.name}</h2>
+                <p className="text-white/80 text-sm">Your activity & history</p>
+              </div>
+            </div>
+            <button 
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+        
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-px bg-gray-100 border-b">
+          {pillarData.stats.map((stat, idx) => (
+            <div key={idx} className="bg-white p-4 text-center">
+              <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+              <p className="text-xs text-gray-500">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+        
+        {/* Recent Activity */}
+        <div className="p-4 max-h-60 overflow-y-auto">
+          <h3 className="text-sm font-semibold text-gray-600 mb-3">Recent Activity</h3>
+          {pillarData.items.length > 0 ? (
+            <div className="space-y-2">
+              {pillarData.items.slice(0, 5).map((item, idx) => (
+                <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-white text-lg`}>
+                    {pillar.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {item.items?.[0]?.name || item.restaurant_name || item.property_name || item.destination || 'Activity'}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {item.created_at ? new Date(item.created_at).toLocaleDateString() : 
+                       item.date || item.check_in || 'Recent'}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center text-3xl mb-3">
+                {pillar.icon}
+              </div>
+              <p className="text-sm text-gray-500">{pillarData.emptyText}</p>
+            </div>
+          )}
+        </div>
+        
+        {/* Actions */}
+        <div className="p-4 border-t bg-gray-50 flex gap-3">
+          <Button 
+            variant="outline" 
+            className="flex-1"
+            onClick={onClose}
+          >
+            Close
+          </Button>
+          <Button 
+            className={`flex-1 bg-gradient-to-r ${pillar.color} text-white border-0`}
+            onClick={() => {
+              onClose();
+              onExplore(pillar.path);
+            }}
+          >
+            Explore {pillar.name}
+            <ChevronRight className="w-4 h-4 ml-1" />
+          </Button>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
 const MemberDashboard = () => {
   const { user, logout, token, loading: authLoading, refreshUser } = useAuth();
   const [orders, setOrders] = useState([]);
