@@ -28,6 +28,11 @@ import SoulExplainerVideo, { SoulExplainerButton } from '../components/SoulExpla
 import MiraPicksCard from '../components/MiraPicksCard';
 import BreedHealthCard from '../components/BreedHealthCard';
 import usePushNotifications from '../hooks/usePushNotifications';
+// New membership & engagement components
+import MembershipCardTiers from '../components/MembershipCardTiers';
+import SocialShareReward from '../components/SocialShareReward';
+import BreedTipsEngine from '../components/BreedTipsEngine';
+import PawmoterScore from '../components/PawmoterScore';
 
 // ============================================
 // 🏆 ACHIEVEMENT SYSTEM - World Class Gamification
