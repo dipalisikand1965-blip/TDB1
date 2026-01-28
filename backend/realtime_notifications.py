@@ -1,6 +1,12 @@
 """
 Real-time WebSocket Notifications for Service Desk
 Provides instant ticket updates to all connected agents
+
+Production-Ready with:
+- Connection health monitoring via heartbeat
+- Graceful handling of disconnections
+- Support for long-polling fallback
+- Detailed connection logging
 """
 
 import socketio
@@ -12,16 +18,23 @@ import os
 
 logger = logging.getLogger(__name__)
 
-# Create Socket.IO server with CORS enabled
+# Create Socket.IO server with production-ready configuration
 sio = socketio.AsyncServer(
     async_mode='asgi',
     cors_allowed_origins='*',
     logger=False,
-    engineio_logger=False
+    engineio_logger=False,
+    # Production settings for stability
+    ping_timeout=30,      # Time to wait for pong before considering connection dead
+    ping_interval=25,     # How often to ping clients
+    max_http_buffer_size=1_000_000,  # 1MB max message size
+    # Allow polling transport for reliability behind proxies/load balancers
+    allow_upgrades=True,
+    http_compression=True
 )
 
-# Track connected agents
-connected_agents: Dict[str, str] = {}  # sid -> agent_id
+# Track connected agents with metadata
+connected_agents: Dict[str, Dict[str, Any]] = {}  # sid -> {agent_id, connected_at, last_heartbeat}
 
 
 class NotificationManager:
