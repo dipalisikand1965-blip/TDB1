@@ -13,6 +13,39 @@
 
 ## What's Been Implemented
 
+### Phase 26: Service Desk Interactivity & Pet Soul Score UI (Jan 28, 2025)
+
+**Service Desk UI enhancements and Pet Soul Score clarity:**
+
+1. **Pet Parent Card Interactivity** (COMPLETED)
+   - Clicking a Pet Parent card in Service Desk opens a history modal
+   - Modal shows linked pets with Soul Score badges (clickable to open pet profile)
+   - Shows complete ticket history with status badges, pillar tags, and dates
+   - "Filter All Tickets" button filters main ticket view by parent
+   - **Files Modified**: `/app/frontend/src/components/admin/DoggyServiceDesk.jsx`
+
+2. **Pet Profile Card Links** (COMPLETED)
+   - Pet Profile cards in Service Desk show link to Pet Parent
+   - Clicking Pet Parent link opens the parent's history modal
+   - Clicking pet card opens pet profile in new tab at /pet/{pet_id}
+   - **Files Modified**: `/app/frontend/src/components/admin/DoggyServiceDesk.jsx`
+
+3. **Pet Parent History Modal** (NEW)
+   - Added state variables: `selectedParentForHistory`, `showParentHistoryModal`
+   - Modal displays: parent name/email/phone, linked pets with Soul Score, ticket history
+   - Tickets are clickable to select and view in Service Desk
+   - **Files Modified**: `/app/frontend/src/components/admin/DoggyServiceDesk.jsx`
+
+4. **Pet Soul Score ★ Indicators** (COMPLETED)
+   - Questions that contribute to Pet Soul Score now show ★ indicator
+   - Helps users understand which questions affect their pet's score
+   - Based on weighted questions from `pet_score_logic.py`
+   - **Files Modified**: `/app/frontend/src/pages/UnifiedPetPage.jsx`
+
+5. **Bug Fix**: Syntax error at line 4601 (extra curly brace) fixed
+
+---
+
 ### Phase 25: Paperwork Integration & Product Enhancements (Jan 28, 2025)
 
 **Documents integration and product improvements:**
