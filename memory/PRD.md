@@ -13,6 +13,47 @@
 
 ## What's Been Implemented
 
+### Phase 31: Pet Soul Score Fix & Celebrations Onboarding (Jan 28, 2025)
+
+**Completed Features:**
+
+1. **Pet Soul Score 560% Bug Fix** (COMPLETED)
+   - Fixed frontend showing scores > 100% (e.g., 560%)
+   - Added `Math.min(100, ...)` to all score displays in MyPets.jsx (5 locations)
+   - Added `Math.min(100, ...)` to all score displays in MemberDashboard.jsx (5 locations)
+   - Created admin endpoint to fix legacy scores in database
+   - **Files Modified**: `/app/frontend/src/pages/MyPets.jsx`, `/app/frontend/src/pages/MemberDashboard.jsx`
+   - **Endpoint Added**: `POST /api/admin/pets/recalculate-all-scores` (Fixed 9 pets)
+
+2. **Celebrations Selection in Onboarding** (COMPLETED)
+   - Extended onboarding from 3 steps to 4 steps
+   - New Step 3: Celebrations Selection with 8 celebration types:
+     - 🎂 Birthday
+     - 💝 Gotcha Day
+     - 💉 Vaccination Day
+     - ✂️ Grooming Day
+     - 🎓 Training Milestones
+     - 🏠 Adoption Anniversary
+     - 🎉 Festival Celebrations
+     - 🌟 First Year Milestones
+   - "Select Essentials" and "Select All" quick buttons
+   - Selected celebrations shown in Step 4 Review
+   - Celebrations saved to pet document as `celebration_types: []`
+   - **Files Modified**: `/app/frontend/src/pages/MembershipOnboarding.jsx`, `/app/backend/server.py`
+
+3. **Scoring Logic Documentation** (COMPLETED)
+   - Created comprehensive documentation explaining Pet Soul Score weighted calculation
+   - Documents Paw Points rewards system
+   - Explains tier system (Newcomer → Soul Seeker → Soul Explorer → Soul Master)
+   - Lists all API endpoints for scores
+   - **File Created**: `/app/memory/SCORING_LOGIC.md`
+
+**Testing Results:**
+- Frontend: 100% (all 7 features verified)
+- Test report: `/app/test_reports/iteration_109.json`
+
+---
+
 ### Phase 27: Six Tasks Batch Completion (Jan 28, 2025)
 
 **Completed 6 pending tasks in one batch:**
