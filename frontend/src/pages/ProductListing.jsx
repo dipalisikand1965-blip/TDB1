@@ -716,6 +716,52 @@ const ProductListing = ({ category = 'all' }) => {
             <span className="font-medium">Filters:</span>
           </div>
           
+          {/* Search within category */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="w-[150px] pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+            <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          
+          {/* Breed Filter - Only for breed-cakes */}
+          {isBreedCakeCategory && availableBreeds.length > 1 && (
+            <Select value={selectedBreed} onValueChange={setSelectedBreed}>
+              <SelectTrigger className="w-[160px] border-purple-200 bg-purple-50">
+                <SelectValue placeholder="All Breeds" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableBreeds.map(breed => (
+                  <SelectItem key={breed} value={breed}>
+                    {breed === 'all' ? '🐕 All Breeds' : `🐕 ${breed}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          
+          {/* Shape Filter - Only for birthday cakes */}
+          {needsShapeFilter && availableShapes.length > 1 && (
+            <Select value={selectedShape} onValueChange={setSelectedShape}>
+              <SelectTrigger className="w-[150px] border-pink-200 bg-pink-50">
+                <SelectValue placeholder="All Shapes" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableShapes.map(shape => (
+                  <SelectItem key={shape} value={shape}>
+                    {shape === 'all' ? '🎂 All Shapes' : `🎂 ${shape}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          
           {/* Delivery City Filter - Only for cake categories */}
           {isCakeCategory && (
             <div className="flex items-center gap-2">
