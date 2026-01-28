@@ -58,21 +58,24 @@ async def get_or_create_vapid_keys() -> Dict[str, str]:
             VAPID_PUBLIC_KEY = keys_doc.get("public_key", "")
             return {"public_key": VAPID_PUBLIC_KEY, "private_key": VAPID_PRIVATE_KEY}
     
-    # Generate new keys
+    # Generate new keys using py_vapid
     logger.info("Generating new VAPID keys...")
+    from cryptography.hazmat.primitives import serialization
+    
     vapid = Vapid()
     vapid.generate_keys()
     
-    # Get keys in the format needed by pywebpush
+    # Get private key in PEM format for pywebpush
     VAPID_PRIVATE_KEY = vapid.private_key.private_bytes(
-        encoding=vapid.private_key.Encoding.PEM,
-        format=vapid.private_key.PrivateFormat.PKCS8,
-        encryption_algorithm=vapid.private_key.NoEncryption()
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption()
     ).decode('utf-8')
     
+    # Get public key in uncompressed point format (required for Web Push)
     VAPID_PUBLIC_KEY = vapid.public_key.public_bytes(
-        encoding=vapid.public_key.Encoding.X962,
-        format=vapid.public_key.PublicFormat.UncompressedPoint
+        encoding=serialization.Encoding.X962,
+        format=serialization.PublicFormat.UncompressedPoint
     ).hex()
     
     # Store in database for persistence
