@@ -44,12 +44,40 @@ const CATEGORY_HERO_CONTENT = {
     subtitle: 'Cakes shaped like your beloved breed - from Labradors to Pugs!',
     color: 'from-purple-600 via-violet-500 to-pink-500'
   },
+  Birthdays: {
+    badge: 'Celebrate with Love',
+    title: 'Birthday Cakes',
+    highlight: 'Made Fresh',
+    subtitle: '100% pet-safe, freshly baked cakes for your furry friend\'s special day',
+    color: 'from-pink-600 via-rose-500 to-orange-500'
+  },
   treats: {
     badge: 'Healthy & Delicious',
     title: 'Treats &',
     highlight: 'Snacks',
     subtitle: 'Training treats, healthy bites, and everyday rewards your pet will love',
     color: 'from-amber-600 via-orange-500 to-yellow-500'
+  },
+  Treats: {
+    badge: 'Healthy & Delicious',
+    title: 'Treats &',
+    highlight: 'Snacks',
+    subtitle: 'Training treats, healthy bites, and everyday rewards your pet will love',
+    color: 'from-amber-600 via-orange-500 to-yellow-500'
+  },
+  accessories: {
+    badge: 'Party Essentials',
+    title: 'Party',
+    highlight: 'Accessories',
+    subtitle: 'Bandanas, hats, toys and everything to make your pet\'s party special!',
+    color: 'from-rose-600 via-pink-500 to-purple-500'
+  },
+  Accessories: {
+    badge: 'Party Essentials',
+    title: 'Party',
+    highlight: 'Accessories',
+    subtitle: 'Bandanas, hats, toys and everything to make your pet\'s party special!',
+    color: 'from-rose-600 via-pink-500 to-purple-500'
   },
   hampers: {
     badge: 'Perfect Gifts',
