@@ -825,8 +825,16 @@ async def get_member_all_tickets(
                 t["source_collection"] = "mira_tickets"
                 all_tickets.append(t)
     
-    # Sort combined by created_at
-    all_tickets.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    # Sort combined by created_at - handle datetime vs string
+    def sort_by_created(x):
+        val = x.get("created_at", "")
+        if val is None:
+            return ""
+        if isinstance(val, datetime):
+            return val.isoformat()
+        return str(val)
+    
+    all_tickets.sort(key=sort_by_created, reverse=True)
     
     return {
         "tickets": all_tickets[:limit],
