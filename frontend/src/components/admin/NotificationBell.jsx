@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Bell, Check, Trash2, X, ExternalLink, ShoppingCart, Calendar, Users, Star, MessageCircle, User, AlertCircle, Ticket } from 'lucide-react';
+import { Bell, Check, Trash2, X, ExternalLink, ShoppingCart, Calendar, Users, Star, MessageCircle, User, AlertCircle, Ticket, Sparkles, Plane, Home, Heart, PartyPopper, GraduationCap, Dumbbell, FileText, Phone, Ambulance, PawPrint, Utensils, Package } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
@@ -14,7 +14,25 @@ const NOTIFICATION_ICONS = {
   member: User,
   ticket: Ticket,
   system: AlertCircle,
-  stock: AlertCircle
+  stock: AlertCircle,
+  // Pillar-specific icons
+  concierge_request: Sparkles,
+  travel: Plane,
+  stay: Home,
+  care: Heart,
+  enjoy: PartyPopper,
+  learn: GraduationCap,
+  fit: Dumbbell,
+  paperwork: FileText,
+  advisory: Phone,
+  emergency: Ambulance,
+  farewell: PawPrint,
+  adopt: PawPrint,
+  dine: Utensils,
+  celebrate: PartyPopper,
+  rsvp: Calendar,
+  inquiry: MessageCircle,
+  experience_request: Sparkles
 };
 
 const NOTIFICATION_COLORS = {
@@ -26,7 +44,25 @@ const NOTIFICATION_COLORS = {
   member: 'bg-purple-100 text-purple-700',
   ticket: 'bg-indigo-100 text-indigo-700',
   system: 'bg-red-100 text-red-700',
-  stock: 'bg-amber-100 text-amber-700'
+  stock: 'bg-amber-100 text-amber-700',
+  // Pillar-specific colors
+  concierge_request: 'bg-violet-100 text-violet-700',
+  travel: 'bg-violet-100 text-violet-700',
+  stay: 'bg-emerald-100 text-emerald-700',
+  care: 'bg-rose-100 text-rose-700',
+  enjoy: 'bg-amber-100 text-amber-700',
+  learn: 'bg-blue-100 text-blue-700',
+  fit: 'bg-teal-100 text-teal-700',
+  paperwork: 'bg-slate-100 text-slate-700',
+  advisory: 'bg-cyan-100 text-cyan-700',
+  emergency: 'bg-red-100 text-red-700',
+  farewell: 'bg-gray-100 text-gray-700',
+  adopt: 'bg-pink-100 text-pink-700',
+  dine: 'bg-orange-100 text-orange-700',
+  celebrate: 'bg-pink-100 text-pink-700',
+  rsvp: 'bg-purple-100 text-purple-700',
+  inquiry: 'bg-blue-100 text-blue-700',
+  experience_request: 'bg-violet-100 text-violet-700'
 };
 
 const PRIORITY_COLORS = {
