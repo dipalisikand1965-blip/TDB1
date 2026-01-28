@@ -196,6 +196,9 @@ const GamificationBanner = ({ pets, orders, user, onNavigateToPet, onOpenExplain
           <h4 className="font-semibold text-gray-800 flex items-center gap-2">
             <Trophy className="w-4 h-4 text-yellow-500" />
             Achievements
+            <span className="text-xs font-normal text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full cursor-help" title="Earn badges by completing your pet's Soul Journey. Each badge unlocks Paw Points!">
+              What&apos;s this?
+            </span>
           </h4>
           <span className="text-xs text-gray-500">
             {unlockedAchievements.length} of {Object.keys(ACHIEVEMENTS).length} unlocked
@@ -214,16 +217,29 @@ const GamificationBanner = ({ pets, orders, user, onNavigateToPet, onOpenExplain
                     ? `${tierColors.bg} ${tierColors.border} border shadow-lg` 
                     : 'bg-gray-200 opacity-50'
                 }`}
-                title={`${achievement.name}: ${achievement.description}${isUnlocked ? ' ✓' : ''}`}
               >
                 <span className={`text-xl ${isUnlocked ? '' : 'grayscale'}`}>{achievement.icon}</span>
                 {isUnlocked && (
                   <CheckCircle2 className="absolute -top-1 -right-1 w-4 h-4 text-green-500 bg-white rounded-full" />
                 )}
+                {/* Enhanced tooltip with full info */}
                 <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
-                  <div className="bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                    {achievement.name}
+                  <div className="bg-white border border-purple-200 rounded-xl shadow-xl p-3 w-48">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg">{achievement.icon}</span>
+                      <span className="font-bold text-gray-900 text-sm">{achievement.name}</span>
+                    </div>
+                    <p className="text-xs text-gray-600 mb-2">{achievement.description}</p>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className={`font-medium ${isUnlocked ? 'text-green-600' : 'text-gray-400'}`}>
+                        {isUnlocked ? '✓ Earned!' : 'Keep going!'}
+                      </span>
+                      <span className="text-purple-600 font-semibold">
+                        +{achievement.reward} pts
+                      </span>
+                    </div>
                   </div>
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white border-r border-b border-purple-200 transform rotate-45"></div>
                 </div>
               </div>
             );
