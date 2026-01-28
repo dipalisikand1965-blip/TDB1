@@ -411,6 +411,13 @@ const Navbar = () => {
               <div className="h-9 w-9 bg-white rounded-lg p-1 flex items-center justify-center">
                 <img src="/logo-new.png" alt="The Doggy Company" className="h-7 w-7 object-contain" />
               </div>
+              {/* Mobile: Show abbreviated name */}
+              <div className="block sm:hidden">
+                <div className="text-sm font-bold leading-none">
+                  <span className="text-teal-400">TDC</span>
+                </div>
+              </div>
+              {/* Desktop: Show full name */}
               <div className="hidden sm:block">
                 <div className="text-sm font-bold leading-none">
                   <span className="text-teal-400">the</span>
