@@ -1337,9 +1337,9 @@ DELETE /api/admin/faqs/{id}     # Delete FAQ
     'membership': {
       title: 'Pet Pass Membership',
       subtitle: 'Pet Pass System - Membership Belongs to the Pet, Not the Parent',
-      badge: '🆕 Updated Jan 2026',
+      badge: '🆕 Updated Jan 2025',
       files: {
-        frontend: '/app/frontend/src/pages/MembershipPage.jsx, /app/frontend/src/components/PetPassCard.jsx',
+        frontend: '/app/frontend/src/pages/MembershipPage.jsx, /app/frontend/src/components/PetPassCard.jsx, /app/frontend/src/pages/MemberDashboard.jsx',
         backend: '/app/backend/membership_routes.py, /app/backend/auth_routes.py, /app/backend/renewal_reminders.py'
       },
       sections: [
@@ -1352,13 +1352,34 @@ DELETE /api/admin/faqs/{id}     # Delete FAQ
 | Additional Pet | ₹2,499/year or ₹249/trial | Per pet | Multi-pet families |`
         },
         {
-          title: 'Member Tiers',
+          title: 'Member Experience Tiers',
           content: `| Tier | Emoji | How to Achieve |
 |------|-------|----------------|
 | Curious Pup | 🐕 | New members |
 | Loyal Companion | 🦮 | 2+ pillars used OR 3+ months |
 | Trusted Guardian | 🛡️ | 5+ pillars used OR 6+ months |
 | Pack Leader | 👑 | 8+ pillars used OR 12+ months |`
+        },
+        {
+          title: 'Paw Points Tiers (Loyalty)',
+          content: `| Tier | Lifetime Points | Gradient | Rewards Access |
+|------|----------------|----------|----------------|
+| Bronze | 0+ | Amber | Basic rewards |
+| Silver | 500+ | Gray | + Priority booking |
+| Gold | 1,500+ | Yellow | + Early access |
+| Platinum | 5,000+ | Purple-Pink | + Personal Concierge® |`
+        },
+        {
+          title: '🏅 Achievement Badges Summary',
+          content: `**10 Total Badges to Earn:**
+
+**Soul Journey (5):** 🌱 Soul Starter → 🔍 Soul Seeker → 🧭 Soul Explorer → 🛡️ Soul Guardian → 👑 Soul Master
+
+**Engagement (5):** 🛒 First Paw-chase • 📸 Picture Paw-fect • 🎉 Party Planner • 🐾 Pack Leader • 💬 Mira's Friend
+
+**Total Potential Points: 2,475**
+
+See "Paw Points Rewards" section for full details.`
         },
         {
           title: 'Pet Pass Number',
@@ -1400,6 +1421,8 @@ POST /api/auth/reset-password      # Submit new password
 GET  /api/admin/memberships        # List all memberships
 GET  /api/admin/memberships/expiring # Expiring memberships
 POST /api/admin/memberships/send-reminders # Trigger reminder emails
+GET  /api/paw-points/balance       # User points & tier
+POST /api/paw-points/sync-achievements # Sync badge points
 \`\`\``
         }
       ]
