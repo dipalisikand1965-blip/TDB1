@@ -1358,6 +1358,12 @@ from notification_engine import (
     NotificationRecipient
 )
 
+# Import PWA Push Notifications
+from push_notification_routes import (
+    push_router,
+    set_database as set_push_db
+)
+
 # Import Multi-Channel Intake engine
 from channel_intake import (
     channel_router,
