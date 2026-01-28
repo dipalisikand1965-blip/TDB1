@@ -550,6 +550,11 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         statsObj.by_channel[c] = allTicketsList.filter(t => t.channel === c).length;
       });
       
+      // Count by priority
+      ['critical', 'high', 'medium', 'low'].forEach(p => {
+        statsObj.by_priority[p] = allTicketsList.filter(t => t.priority === p).length;
+      });
+      
       setStats(statsObj);
       
     } catch (err) {
