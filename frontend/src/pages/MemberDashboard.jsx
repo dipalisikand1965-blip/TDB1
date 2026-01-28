@@ -923,6 +923,11 @@ const MemberDashboard = () => {
               score={Math.min(100, pets[0]?.overall_score || 0)}
             />
             
+            {/* 💡 MIRA'S DAILY TIP - Fun facts & pro tips that change daily */}
+            <div className="mb-6">
+              <MiraDailyTipInline petName={primaryPet?.name || 'your pup'} />
+            </div>
+            
             {/* 🎉 MY CELEBRATIONS - Upcoming birthdays, gotcha days, etc */}
             {Array.isArray(pets) && pets.length > 0 && (
               <div className="mb-6">
