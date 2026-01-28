@@ -28,16 +28,22 @@ import {
 } from 'lucide-react';
 import { getApiUrl } from '../utils/api';
 
-// 8 Soul Pillars - Visual representation
+// 14 Soul Pillars - Visual representation
 const SOUL_PILLARS = [
-  { key: 'identity_temperament', name: 'Identity & Temperament', icon: '🎭', colorClass: 'bg-purple-400' },
-  { key: 'family_pack', name: 'Family & Pack', icon: '👨‍👩‍👧‍👦', colorClass: 'bg-blue-400' },
-  { key: 'rhythm_routine', name: 'Rhythm & Routine', icon: '⏰', colorClass: 'bg-green-400' },
-  { key: 'home_comforts', name: 'Home Comforts', icon: '🏠', colorClass: 'bg-amber-400' },
-  { key: 'travel_style', name: 'Travel Style', icon: '✈️', colorClass: 'bg-sky-400' },
-  { key: 'taste_treat', name: 'Taste & Treat', icon: '🍖', colorClass: 'bg-orange-400' },
-  { key: 'training_behaviour', name: 'Training & Behaviour', icon: '🎓', colorClass: 'bg-indigo-400' },
-  { key: 'long_horizon', name: 'Long Horizon', icon: '🌅', colorClass: 'bg-rose-400' }
+  { key: 'celebrate', name: 'Celebrate', icon: '🎂', colorClass: 'bg-pink-400' },
+  { key: 'dine', name: 'Dine', icon: '🍖', colorClass: 'bg-orange-400' },
+  { key: 'stay', name: 'Stay', icon: '🏨', colorClass: 'bg-emerald-400' },
+  { key: 'travel', name: 'Travel', icon: '✈️', colorClass: 'bg-sky-400' },
+  { key: 'care', name: 'Care', icon: '💊', colorClass: 'bg-rose-400' },
+  { key: 'enjoy', name: 'Enjoy', icon: '🎾', colorClass: 'bg-yellow-400' },
+  { key: 'fit', name: 'Fit', icon: '🏃', colorClass: 'bg-green-400' },
+  { key: 'learn', name: 'Learn', icon: '🎓', colorClass: 'bg-indigo-400' },
+  { key: 'paperwork', name: 'Paperwork', icon: '📋', colorClass: 'bg-gray-400' },
+  { key: 'advisory', name: 'Advisory', icon: '💡', colorClass: 'bg-amber-400' },
+  { key: 'emergency', name: 'Emergency', icon: '🚨', colorClass: 'bg-red-400' },
+  { key: 'farewell', name: 'Farewell', icon: '🌈', colorClass: 'bg-purple-400' },
+  { key: 'adopt', name: 'Adopt', icon: '🐾', colorClass: 'bg-teal-400' },
+  { key: 'shop', name: 'Shop', icon: '🛒', colorClass: 'bg-blue-400' }
 ];
 
 // Generate pillar insight text based on soul data
