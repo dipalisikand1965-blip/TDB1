@@ -1210,15 +1210,19 @@ const UnifiedPetPage = () => {
               </Card>
             </div>
             
-            {/* 8 SOUL PILLARS - Expandable Sections */}
+            {/* 14 SOUL PILLARS - Expandable Sections */}
             <Card className="p-6">
-              <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-purple-600" />
-                Soul Questionnaire - 14 Pillars
+                Soul Questionnaire - 8 Categories
                 <Badge variant="outline" className="ml-auto">
-                  Click any pillar to expand
+                  Click any category to expand
                 </Badge>
               </h3>
+              <p className="text-sm text-gray-500 mb-6 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-purple-500" />
+                <span>Questions marked with <span className="text-purple-600 font-medium">★</span> count towards your Pet&apos;s Soul Score</span>
+              </p>
               
               <div className="space-y-3">
                 {[
