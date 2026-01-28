@@ -272,7 +272,8 @@ const MembershipOnboarding = () => {
             weight: pet.weight ? parseFloat(pet.weight) : null,
             weight_unit: pet.weight_unit,
             is_neutered: pet.is_neutered,
-            species: 'dog'
+            species: 'dog',
+            celebrations: pet.celebrations || [] // Include selected celebrations
           })),
           plan_type: planType,
           pet_count: petsData.length
