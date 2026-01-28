@@ -745,19 +745,53 @@ const MembershipOnboarding = () => {
                 {petsData.map((pet, idx) => (
                   <div key={idx} className={activePetTab === idx ? 'block' : 'hidden'}>
                     <div className="space-y-5">
-                      {/* Photo Upload Placeholder */}
+                      {/* Photo Upload */}
                       <div className="flex justify-center mb-4">
-                        <div className="relative">
-                          <div className="w-24 h-24 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
-                            {pet.photo_url ? (
-                              <img src={getPetPhotoUrl(pet)} alt="Pet" className="w-full h-full object-cover" />
-                            ) : (
-                              <Camera className="w-6 h-6 text-gray-400" />
-                            )}
-                          </div>
-                          <button className="absolute bottom-0 right-0 w-7 h-7 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-md">
-                            <Plus className="w-4 h-4" />
-                          </button>
+                        <div className="relative group">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handlePetPhotoSelect(idx, e)}
+                            className="hidden"
+                            id={`pet-photo-${idx}`}
+                            data-testid={`pet-${idx}-photo-input`}
+                          />
+                          <label
+                            htmlFor={`pet-photo-${idx}`}
+                            className="cursor-pointer block"
+                          >
+                            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-purple-50 to-pink-50 border-3 border-dashed border-purple-300 flex items-center justify-center overflow-hidden hover:border-purple-500 transition-colors group-hover:shadow-lg">
+                              {pet.photo_preview || pet.photo_url ? (
+                                <img 
+                                  src={pet.photo_preview || getPetPhotoUrl(pet)} 
+                                  alt="Pet" 
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="text-center">
+                                  <Camera className="w-8 h-8 text-purple-400 mx-auto" />
+                                  <span className="text-xs text-purple-500 mt-1 block">Add Photo</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="absolute bottom-0 right-0 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-purple-700 transition-colors">
+                              <Plus className="w-5 h-5" />
+                            </div>
+                          </label>
+                          {(pet.photo_preview || pet.photo_url) && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                updatePetData(idx, 'photo_preview', null);
+                                updatePetData(idx, 'photo_url', '');
+                                updatePetData(idx, 'photo_file', null);
+                              }}
+                              className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-red-600"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
                         </div>
                       </div>
 
