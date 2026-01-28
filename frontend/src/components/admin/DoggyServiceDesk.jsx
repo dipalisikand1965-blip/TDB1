@@ -4525,39 +4525,80 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 </div>
               ) : (
                 <div className="grid md:grid-cols-2 gap-4">
-                  {petProfiles.map(pet => (
-                    <Card key={pet.id} className="p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-start gap-4">
-                        <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center overflow-hidden">
-                          {pet.photo_url ? (
-                            <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <Dog className="w-7 h-7 text-amber-600" />
-                          )}
+                  {petProfiles.map(pet => {
+                    // Find the pet's parent
+                    const petParent = petParents.find(p => 
+                      p.email === pet.owner_email || 
+                      p.email === pet.user_email ||
+                      p.id === pet.user_id
+                    );
+                    // Get tickets for this pet
+                    const petTickets = allTickets.filter(t => 
+                      t.pet_id === pet.id || 
+                      t.pet_name === pet.name
+                    );
+                    
+                    return (
+                      <Card 
+                        key={pet.id} 
+                        className="p-4 hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-amber-200"
+                        onClick={() => {
+                          // Open pet profile in new tab
+                          window.open(`/pet/${pet.id}`, '_blank');
+                        }}
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center overflow-hidden">
+                            {pet.photo_url ? (
+                              <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <Dog className="w-7 h-7 text-amber-600" />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900">{pet.name || 'Unknown'}</h3>
+                            <p className="text-sm text-gray-500">{pet.breed || 'Unknown breed'}</p>
+                            {/* Link to Pet Parent */}
+                            {petParent && (
+                              <button 
+                                className="text-xs text-blue-600 hover:text-blue-800 mt-1 flex items-center gap-1"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedParentForHistory(petParent);
+                                  setShowParentHistoryModal(true);
+                                }}
+                              >
+                                <User className="w-3 h-3" />
+                                {petParent.name || petParent.email}
+                              </button>
+                            )}
+                            {!petParent && pet.owner_name && (
+                              <p className="text-xs text-gray-400 mt-1">Owner: {pet.owner_name}</p>
+                            )}
+                          </div>
+                          <div className="text-right space-y-1">
+                            {pet.overall_score !== undefined && (
+                              <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                pet.overall_score >= 80 ? 'bg-emerald-100 text-emerald-700' :
+                                pet.overall_score >= 50 ? 'bg-amber-100 text-amber-700' :
+                                'bg-gray-100 text-gray-600'
+                              }`}>
+                                {Math.round(pet.overall_score)}% Soul
+                              </div>
+                            )}
+                            {petTickets.length > 0 && (
+                              <div className="text-xs text-purple-600 flex items-center gap-1 justify-end">
+                                <Inbox className="w-3 h-3" />
+                                {petTickets.length}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{pet.name || 'Unknown'}</h3>
-                          <p className="text-sm text-gray-500">{pet.breed || 'Unknown breed'}</p>
-                          {pet.owner_name && (
-                            <p className="text-xs text-gray-400 mt-1">Owner: {pet.owner_name}</p>
-                          )}
-                        </div>
-                        <div className="text-right">
-                          {pet.overall_score !== undefined && (
-                            <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              pet.overall_score >= 80 ? 'bg-emerald-100 text-emerald-700' :
-                              pet.overall_score >= 50 ? 'bg-amber-100 text-amber-700' :
-                              'bg-gray-100 text-gray-600'
-                            }`}>
-                              {pet.overall_score}% Soul
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
+                      </Card>
+                    );
+                  })}
                 </div>
-              )}
+              )}}
             </div>
           )}
           
