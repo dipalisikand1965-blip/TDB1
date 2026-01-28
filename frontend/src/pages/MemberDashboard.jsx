@@ -1908,7 +1908,7 @@ const MemberDashboard = () => {
                 </Card>
                 <Card className="p-4 bg-gradient-to-br from-amber-500 to-orange-500 text-white">
                   <Gift className="w-5 h-5 mb-2" />
-                  <p className="text-2xl font-bold">{pets.filter(p => p.birth_date).length}</p>
+                  <p className="text-2xl font-bold">{(Array.isArray(pets) ? pets : []).filter(p => p.birth_date).length}</p>
                   <p className="text-sm opacity-90">Pet Birthdays Set</p>
                 </Card>
                 <Card className="p-4 bg-gradient-to-br from-purple-500 to-indigo-500 text-white">
