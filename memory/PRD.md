@@ -13,6 +13,34 @@
 
 ## What's Been Implemented
 
+### Phase 17: Quick Score Boost & Ticket Auto-Populate (Jan 28, 2025)
+
+**New Features:**
+
+1. **Quick Score Boost Widget** (COMPLETED)
+   - New component on Member Dashboard showing when Pet Soul Score < 75%
+   - Fetches top 3 high-impact questions via `/api/pet-score/{pet_id}/quick-questions`
+   - Shows current score and potential boost (e.g., 18% → 37%)
+   - Inline answering - click question, type answer, save instantly
+   - Questions display point values (e.g., +8pts, +6pts, +5pts)
+   - **Files Changed**: `/app/frontend/src/pages/MemberDashboard.jsx`
+
+2. **Ticket Form Auto-Populate - Pet Parents & Pet Profiles** (COMPLETED)
+   - Added to both ConciergeCommandCenter and DoggyServiceDesk
+   - "Quick Select Pet Parent" dropdown - loads from `/api/admin/members/directory`
+   - "Quick Select Pet Profile" dropdown - loads from `/api/admin/pets`
+   - Selecting pet parent auto-fills: name, email, phone
+   - Selecting pet auto-fills: pet name, owner email, owner name
+   - Green gradient styling for the quick-select section
+   - **Files Changed**: 
+     - `/app/frontend/src/components/admin/ConciergeCommandCenter.jsx`
+     - `/app/frontend/src/components/admin/DoggyServiceDesk.jsx`
+
+**Verified Working:**
+
+3. **Service Desk Page** (`/admin/service-desk`) - ACCESSIBLE
+4. **Pet Parent Directory Tab** (`member-directory`) - 25 members, search/filter working
+
 ### Phase 16: Pet Soul Score Fix & Concierge Admin (Jan 28, 2025)
 
 **Bug Fixes:**
