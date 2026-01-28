@@ -204,6 +204,13 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const notificationSoundRef = React.useRef(null);
   
+  // Stats - moved before playNotificationSound to avoid reference error
+  const [stats, setStats] = useState({
+    total: 0, open: 0, in_progress: 0, on_hold: 0, resolved: 0,
+    overdue: 0, my_tickets: 0, unassigned: 0,
+    by_pillar: {}, by_channel: {}, by_priority: {}
+  });
+  
   // Play notification sound for new tickets
   const playNotificationSound = useCallback(() => {
     if (!soundEnabled) return;
