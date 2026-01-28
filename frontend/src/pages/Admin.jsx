@@ -1628,6 +1628,7 @@ const Admin = () => {
             { id: 'agents', label: '👤 Agents', icon: Users },
             { id: 'loyalty', label: '⭐ Loyalty', icon: Star },
             { id: 'product-box', label: '📦 Product Box', icon: Package },
+            { id: 'concierge-experiences', label: '✨ Concierge® XP', icon: Sparkles },
             { id: 'reports', label: '📊 Reports', icon: BarChart3 },
             { id: 'analytics', label: '📈 Analytics', icon: TrendingUp },
             { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
