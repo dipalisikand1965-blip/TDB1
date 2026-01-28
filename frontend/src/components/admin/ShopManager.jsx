@@ -19,7 +19,7 @@ import {
   ShoppingBag, Package, DollarSign, Settings, RefreshCw, Upload, Download,
   Plus, Edit2, Trash2, Search, Eye, TrendingUp, Clock, MapPin, User, 
   CheckCircle, XCircle, Loader2, BarChart3, AlertTriangle, Truck,
-  FileText, Archive, ShoppingCart
+  FileText, Archive, ShoppingCart, Heart, Mail, Send
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../../hooks/use-toast';
