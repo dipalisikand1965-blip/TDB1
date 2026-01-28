@@ -61,6 +61,7 @@ async def get_or_create_vapid_keys() -> Dict[str, str]:
     # Generate new keys using py_vapid
     logger.info("Generating new VAPID keys...")
     from cryptography.hazmat.primitives import serialization
+    import base64
     
     vapid = Vapid()
     vapid.generate_keys()
@@ -72,11 +73,12 @@ async def get_or_create_vapid_keys() -> Dict[str, str]:
         encryption_algorithm=serialization.NoEncryption()
     ).decode('utf-8')
     
-    # Get public key in uncompressed point format (required for Web Push)
-    VAPID_PUBLIC_KEY = vapid.public_key.public_bytes(
+    # Get public key in uncompressed point format and convert to URL-safe base64
+    public_key_bytes = vapid.public_key.public_bytes(
         encoding=serialization.Encoding.X962,
         format=serialization.PublicFormat.UncompressedPoint
-    ).hex()
+    )
+    VAPID_PUBLIC_KEY = base64.urlsafe_b64encode(public_key_bytes).decode('utf-8').rstrip('=')
     
     # Store in database for persistence
     if db is not None:
