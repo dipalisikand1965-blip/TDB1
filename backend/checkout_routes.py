@@ -19,6 +19,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, EmailStr
 import razorpay
+import resend
 
 # PDF generation
 from reportlab.lib import colors
