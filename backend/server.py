@@ -1370,6 +1370,12 @@ from channel_intake import (
     set_database as set_channel_db
 )
 
+# Import Concierge Experience Admin
+from concierge_experience_admin import (
+    experience_admin_router,
+    set_database as set_experience_admin_db
+)
+
 # Import Pet Pass Renewal Reminders
 from renewal_reminders import (
     set_database as set_renewal_db,
