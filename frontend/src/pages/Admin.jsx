@@ -1911,6 +1911,11 @@ const Admin = () => {
           <UnifiedProductBox />
         )}
 
+        {/* Concierge Experiences Admin Tab */}
+        {activeTab === 'concierge-experiences' && (
+          <ConciergeExperiencesAdmin />
+        )}
+
         {/* Autoship Tab */}
         {activeTab === 'autoship' && (
           <AutoshipManager getAuthHeader={getAuthHeaders} />
