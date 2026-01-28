@@ -274,7 +274,15 @@ async def generate_report(
     elif report_type == "member_analytics":
         users = await db.users.find({}).to_list(50000)
         
-        new_in_period = [u for u in users if u.get("created_at", "") >= start.isoformat()]
+        # Handle both datetime and string created_at fields
+        def get_created_at_str(u):
+            created = u.get("created_at", "")
+            if isinstance(created, datetime):
+                return created.isoformat()
+            return str(created) if created else ""
+        
+        start_iso = start.isoformat()
+        new_in_period = [u for u in users if get_created_at_str(u) >= start_iso]
         
         tier_counts = {}
         for u in users:
