@@ -40,6 +40,10 @@ import {
   TIER_COLORS, 
   triggerCelebration 
 } from '../components/dashboard';
+// Mira Guidance System
+import { MiraTip, getMiraGuidanceContext, ScoreBoostEncouragement } from '../components/MiraGuidance';
+// Celebrations Widget
+import MyCelebrations from '../components/MyCelebrations';
 
 
 // Extracted components: ACHIEVEMENTS, TIER_COLORS, triggerCelebration, QuickScoreBoost, GamificationBanner
