@@ -14,7 +14,7 @@ import {
   RefreshCw, Calendar, Pause, Play, X, MessageSquare, Edit2, Trash2, Loader2,
   UtensilsCrossed, Users, Clock, Stethoscope, Sparkles, Home, Plane, Cake, Gift, Crown, Heart,
   ChevronRight, Trophy, Zap, Target, Flame, Award, Medal, CheckCircle2, ArrowRight, TrendingUp, Wallet,
-  BellRing, Smartphone
+  BellRing, Smartphone, HelpCircle
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../hooks/use-toast';
@@ -44,6 +44,8 @@ import {
 import { MiraTip, getMiraGuidanceContext, ScoreBoostEncouragement } from '../components/MiraGuidance';
 // Celebrations Widget
 import MyCelebrations from '../components/MyCelebrations';
+// First Visit Tour
+import FirstVisitTour, { useTour } from '../components/FirstVisitTour';
 
 
 // Extracted components: ACHIEVEMENTS, TIER_COLORS, triggerCelebration, QuickScoreBoost, GamificationBanner
