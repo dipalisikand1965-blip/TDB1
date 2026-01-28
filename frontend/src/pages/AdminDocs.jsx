@@ -434,10 +434,6 @@ GET /api/pet-score/tiers                   # Tier definitions
 GET /api/pet/{id}/score_state/quick-questions?limit=N  # Unanswered questions
 \`\`\``
         },
-
-GET /api/pet/{id}/score_state/quick-questions?limit=N  # Unanswered questions
-\`\`\``
-        },
         {
           title: 'Achievements & Gamification',
           content: `Users earn badges for completing Pet Soul milestones:
