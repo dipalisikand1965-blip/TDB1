@@ -44,7 +44,9 @@ const PRODUCT_TYPES = [
   { id: 'physical', name: 'Physical Product', icon: '📦' },
   { id: 'service', name: 'Service', icon: '🛠️' },
   { id: 'experience', name: 'Experience', icon: '✨' },
-  { id: 'reward', name: 'Reward Product', icon: '🎁' }
+  { id: 'reward', name: 'Reward Product', icon: '🎁' },
+  { id: 'concierge', name: 'Concierge®', icon: '🛎️' },
+  { id: 'bundle', name: 'Bundle', icon: '📦✨' }
 ];
 
 const LIFE_STAGES = ['puppy', 'adult', 'senior', 'all'];
