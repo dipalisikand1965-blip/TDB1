@@ -237,6 +237,7 @@ function MainLayout() {
   return (
     <div className="App overflow-x-hidden">
       <ScrollToTop />
+      <AppBadgeManager />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
