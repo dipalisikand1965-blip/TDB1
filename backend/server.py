@@ -1408,6 +1408,12 @@ from paw_points_routes import (
     set_db as set_paw_points_db
 )
 
+# Import Product Checkout Routes (Razorpay, GST, Invoice)
+from checkout_routes import (
+    checkout_router,
+    set_checkout_db
+)
+
 # Import Travel Pillar
 from travel_routes import router as travel_router
 
