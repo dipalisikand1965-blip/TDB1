@@ -7184,11 +7184,12 @@ async def membership_onboard(data: MembershipOnboardModel):
                 },
                 "doggy_soul_answers": initial_soul_answers,
                 "soul_enrichments": [],
+                "celebration_types": pet_data.celebrations or [],  # Store selected celebration types
                 "created_at": datetime.now(timezone.utc).isoformat()
             }
             await db.pets.insert_one(pet_doc)
             pet_ids.append(pet_id)
-            logger.info(f"Created pet profile: {pet_data.name} ({pet_id}) - Pet Pass: {pet_pass_number} with {len(initial_soul_answers)} pre-filled answers")
+            logger.info(f"Created pet profile: {pet_data.name} ({pet_id}) - Pet Pass: {pet_pass_number} with {len(initial_soul_answers)} pre-filled answers, celebrations: {pet_data.celebrations}")
         
         # Create user account (pending membership until payment)
         user_doc = {
