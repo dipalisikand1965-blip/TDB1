@@ -4341,6 +4341,197 @@ const DoggyServiceDesk = ({ authHeaders }) => {
               </Card>
             </div>
           )}
+          
+          {/* Analytics & Reports Section */}
+          {activeNav === 'analytics' && (
+            <div className="flex-1 p-6 overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h1 className="text-2xl font-bold text-gray-900">Analytics & Reports</h1>
+                <select className="border rounded-lg px-3 py-2 text-sm">
+                  <option value="7">Last 7 days</option>
+                  <option value="30">Last 30 days</option>
+                  <option value="90">Last 90 days</option>
+                </select>
+              </div>
+              
+              {/* Key Metrics */}
+              <div className="grid grid-cols-4 gap-4 mb-6">
+                <Card className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+                  <div className="flex items-center justify-between mb-2">
+                    <Inbox className="w-8 h-8 opacity-80" />
+                    <span className="text-xs bg-white/20 px-2 py-1 rounded">Total</span>
+                  </div>
+                  <div className="text-3xl font-bold">{stats.total}</div>
+                  <div className="text-sm opacity-80">Total Tickets</div>
+                </Card>
+                <Card className="p-4 bg-gradient-to-br from-amber-500 to-amber-600 text-white">
+                  <div className="flex items-center justify-between mb-2">
+                    <AlertCircle className="w-8 h-8 opacity-80" />
+                    <span className="text-xs bg-white/20 px-2 py-1 rounded">Open</span>
+                  </div>
+                  <div className="text-3xl font-bold">{stats.open}</div>
+                  <div className="text-sm opacity-80">Open Tickets</div>
+                </Card>
+                <Card className="p-4 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
+                  <div className="flex items-center justify-between mb-2">
+                    <CheckCircle className="w-8 h-8 opacity-80" />
+                    <span className="text-xs bg-white/20 px-2 py-1 rounded">Resolved</span>
+                  </div>
+                  <div className="text-3xl font-bold">{stats.resolved}</div>
+                  <div className="text-sm opacity-80">Resolved Tickets</div>
+                </Card>
+                <Card className="p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+                  <div className="flex items-center justify-between mb-2">
+                    <Clock className="w-8 h-8 opacity-80" />
+                    <span className="text-xs bg-white/20 px-2 py-1 rounded">Avg</span>
+                  </div>
+                  <div className="text-3xl font-bold">
+                    {analyticsData?.avg_resolution_hours ? `${analyticsData.avg_resolution_hours.toFixed(1)}h` : '-'}
+                  </div>
+                  <div className="text-sm opacity-80">Avg Resolution Time</div>
+                </Card>
+              </div>
+              
+              {/* Charts Row */}
+              <div className="grid grid-cols-2 gap-6 mb-6">
+                {/* Tickets by Pillar */}
+                <Card className="p-4">
+                  <h3 className="font-semibold text-gray-900 mb-4">Tickets by Pillar</h3>
+                  <div className="space-y-3">
+                    {Object.entries(PILLARS).slice(0, 7).map(([key, pillar]) => {
+                      const count = stats.by_pillar[key] || 0;
+                      const maxCount = Math.max(...Object.values(stats.by_pillar || {}), 1);
+                      const percentage = (count / maxCount) * 100;
+                      return (
+                        <div key={key} className="flex items-center gap-3">
+                          <span className="w-6 text-center">{pillar.emoji}</span>
+                          <span className="w-24 text-sm text-gray-600">{pillar.name}</span>
+                          <div className="flex-1 h-6 bg-gray-100 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full transition-all"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                          <span className="w-10 text-right font-medium text-gray-900">{count}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+                
+                {/* Tickets by Priority */}
+                <Card className="p-4">
+                  <h3 className="font-semibold text-gray-900 mb-4">Tickets by Priority</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-red-50 rounded-xl border border-red-100">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-3 h-3 rounded-full bg-red-500" />
+                        <span className="font-medium text-red-800">Critical</span>
+                      </div>
+                      <div className="text-3xl font-bold text-red-600">{stats.by_priority?.critical || analyticsData?.by_priority?.critical || 0}</div>
+                    </div>
+                    <div className="p-4 bg-amber-50 rounded-xl border border-amber-100">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-3 h-3 rounded-full bg-amber-500" />
+                        <span className="font-medium text-amber-800">High</span>
+                      </div>
+                      <div className="text-3xl font-bold text-amber-600">{stats.by_priority?.high || analyticsData?.by_priority?.high || 0}</div>
+                    </div>
+                    <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-3 h-3 rounded-full bg-blue-500" />
+                        <span className="font-medium text-blue-800">Medium</span>
+                      </div>
+                      <div className="text-3xl font-bold text-blue-600">{stats.by_priority?.medium || analyticsData?.by_priority?.medium || 0}</div>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-3 h-3 rounded-full bg-gray-400" />
+                        <span className="font-medium text-gray-700">Low</span>
+                      </div>
+                      <div className="text-3xl font-bold text-gray-600">{stats.by_priority?.low || analyticsData?.by_priority?.low || 0}</div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+              
+              {/* Channel & Resolution Stats */}
+              <div className="grid grid-cols-3 gap-6">
+                {/* Tickets by Channel */}
+                <Card className="p-4">
+                  <h3 className="font-semibold text-gray-900 mb-4">Tickets by Channel</h3>
+                  <div className="space-y-3">
+                    {Object.entries(stats.by_channel || {}).map(([channel, count]) => (
+                      <div key={channel} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          {channel === 'whatsapp' && <span className="text-green-500">💬</span>}
+                          {channel === 'mira_chat' && <span className="text-purple-500">🤖</span>}
+                          {channel === 'web' && <span className="text-blue-500">🌐</span>}
+                          {channel === 'email' && <span className="text-amber-500">📧</span>}
+                          {channel === 'phone' && <span className="text-red-500">📞</span>}
+                          {!['whatsapp', 'mira_chat', 'web', 'email', 'phone'].includes(channel) && <span>📋</span>}
+                          <span className="capitalize text-sm">{channel.replace('_', ' ')}</span>
+                        </div>
+                        <span className="font-bold">{count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+                
+                {/* Resolution Rate */}
+                <Card className="p-4">
+                  <h3 className="font-semibold text-gray-900 mb-4">Resolution Rate</h3>
+                  <div className="flex flex-col items-center justify-center py-4">
+                    <div className="relative w-32 h-32">
+                      <svg className="w-full h-full transform -rotate-90">
+                        <circle cx="64" cy="64" r="56" fill="none" stroke="#e5e7eb" strokeWidth="12" />
+                        <circle 
+                          cx="64" cy="64" r="56" fill="none" stroke="#10b981" strokeWidth="12"
+                          strokeDasharray={`${((analyticsData?.resolution_rate || 0) / 100) * 352} 352`}
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-3xl font-bold text-gray-900">
+                          {(analyticsData?.resolution_rate || 0).toFixed(0)}%
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-4">
+                      {analyticsData?.resolved_tickets || stats.resolved} of {analyticsData?.total_tickets || stats.total} tickets resolved
+                    </p>
+                  </div>
+                </Card>
+                
+                {/* SLA Compliance */}
+                <Card className="p-4">
+                  <h3 className="font-semibold text-gray-900 mb-4">SLA Compliance</h3>
+                  <div className="space-y-4">
+                    <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-emerald-700">On Time</span>
+                        <span className="font-bold text-emerald-600">
+                          {stats.total - (breachedTickets?.length || 0) - (approachingBreachTickets?.length || 0)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-amber-700">Approaching Breach</span>
+                        <span className="font-bold text-amber-600">{approachingBreachTickets?.length || 0}</span>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-red-50 rounded-lg border border-red-200">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-red-700">SLA Breached</span>
+                        <span className="font-bold text-red-600">{breachedTickets?.length || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       
