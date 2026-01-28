@@ -5571,6 +5571,52 @@ async def get_wishlist_summary(admin: dict = Depends(verify_admin)):
     }
 
 
+@api_router.get("/products/recommendations")
+async def get_product_recommendations(
+    categories: str = None,  # comma-separated categories
+    exclude_ids: str = None,  # comma-separated product IDs to exclude
+    limit: int = 6
+):
+    """Get product recommendations based on categories (for checkout add-ons)"""
+    query = {"in_stock": {"$ne": False}}
+    
+    # Filter by related categories
+    if categories:
+        cat_list = [c.strip() for c in categories.split(',') if c.strip()]
+        if cat_list:
+            # Find products in similar categories or tagged as "best_seller"
+            query["$or"] = [
+                {"category": {"$in": cat_list}},
+                {"tags": {"$in": ["best_seller", "popular", "recommended", "addon"]}},
+                {"pillar": {"$in": ["shop", "celebrate"]}}
+            ]
+    
+    # Exclude specific products
+    if exclude_ids:
+        exclude_list = [id.strip() for id in exclude_ids.split(',') if id.strip()]
+        if exclude_list:
+            query["id"] = {"$nin": exclude_list}
+    
+    products = await db.products.find(
+        query,
+        {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1, "images": 1, "category": 1, "tags": 1}
+    ).sort("created_at", -1).limit(limit * 2).to_list(limit * 2)
+    
+    # Prioritize popular/add-on products
+    prioritized = []
+    others = []
+    for p in products:
+        p['image'] = p.get('image') or (p.get('images', [None])[0] if p.get('images') else None)
+        tags = p.get('tags', [])
+        if any(t in tags for t in ['best_seller', 'popular', 'addon', 'recommended']):
+            prioritized.append(p)
+        else:
+            others.append(p)
+    
+    result = (prioritized + others)[:limit]
+    return {"products": result, "total": len(result)}
+
+
 @api_router.get("/products/recommendations/for-pet/{pet_id}")
 async def get_pet_recommendations(pet_id: str, limit: int = 20):
     """Get personalized product recommendations based on pet profile"""
