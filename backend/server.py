@@ -11172,6 +11172,209 @@ async def normalize_breed(data: dict):
     }
 
 
+# ============== BREED TIPS API ==============
+
+# Breed characteristics database for generating tips
+BREED_CHARACTERISTICS = {
+    # Size categories
+    "small": ["chihuahua", "pomeranian", "yorkshire terrier", "maltese", "shih tzu", "pug", "dachshund", "papillon", "havanese", "bichon frise", "lhasa apso", "jack russell terrier"],
+    "medium": ["beagle", "cocker spaniel", "indian pariah", "pembroke welsh corgi", "bulldog", "french bulldog", "boston terrier", "shetland sheepdog", "whippet", "basset hound", "indian spitz"],
+    "large": ["labrador retriever", "golden retriever", "german shepherd", "rottweiler", "doberman", "boxer", "husky", "dalmatian", "weimaraner", "australian shepherd", "border collie", "samoyed"],
+    "giant": ["great dane", "saint bernard", "mastiff", "bernese mountain dog", "akita", "bloodhound"],
+    
+    # Activity levels
+    "high_energy": ["labrador retriever", "golden retriever", "german shepherd", "border collie", "husky", "australian shepherd", "jack russell terrier", "dalmatian", "weimaraner", "beagle", "boxer"],
+    "moderate_energy": ["cocker spaniel", "rottweiler", "doberman", "indian pariah", "samoyed", "bernese mountain dog", "shetland sheepdog", "pembroke welsh corgi", "indian spitz"],
+    "low_energy": ["bulldog", "french bulldog", "pug", "basset hound", "shih tzu", "cavalier king charles spaniel", "mastiff", "great dane", "saint bernard", "bichon frise"],
+    
+    # Coat types
+    "double_coat": ["labrador retriever", "golden retriever", "german shepherd", "husky", "samoyed", "pomeranian", "shetland sheepdog", "border collie", "bernese mountain dog", "akita"],
+    "short_coat": ["beagle", "boxer", "doberman", "rottweiler", "dalmatian", "pug", "french bulldog", "boston terrier", "whippet", "greyhound", "weimaraner"],
+    "long_coat": ["shih tzu", "maltese", "yorkshire terrier", "cavalier king charles spaniel", "lhasa apso", "havanese", "papillon", "cocker spaniel"],
+    "curly_coat": ["poodle", "bichon frise"],
+    
+    # Health considerations
+    "brachycephalic": ["pug", "french bulldog", "bulldog", "shih tzu", "boston terrier", "cavalier king charles spaniel"],
+    "prone_to_hip_dysplasia": ["labrador retriever", "golden retriever", "german shepherd", "rottweiler", "saint bernard", "great dane", "bernese mountain dog"],
+    "prone_to_obesity": ["labrador retriever", "beagle", "pug", "dachshund", "cocker spaniel", "basset hound", "cavalier king charles spaniel"],
+    "prone_to_skin_issues": ["golden retriever", "labrador retriever", "bulldog", "french bulldog", "cocker spaniel", "german shepherd"],
+}
+
+def get_breed_tips(breed_name: str):
+    """Generate breed-specific tips based on characteristics"""
+    breed_lower = breed_name.lower().strip()
+    
+    # Determine characteristics
+    size = "medium"
+    for s, breeds in [("small", BREED_CHARACTERISTICS["small"]), ("medium", BREED_CHARACTERISTICS["medium"]), 
+                      ("large", BREED_CHARACTERISTICS["large"]), ("giant", BREED_CHARACTERISTICS["giant"])]:
+        if any(breed_lower in b.lower() for b in breeds):
+            size = s
+            break
+    
+    energy = "moderate"
+    for e, breeds in [("high", BREED_CHARACTERISTICS["high_energy"]), ("moderate", BREED_CHARACTERISTICS["moderate_energy"]), 
+                      ("low", BREED_CHARACTERISTICS["low_energy"])]:
+        if any(breed_lower in b.lower() for b in breeds):
+            energy = e
+            break
+    
+    coat = "short"
+    for c, breeds in [("double", BREED_CHARACTERISTICS["double_coat"]), ("short", BREED_CHARACTERISTICS["short_coat"]), 
+                      ("long", BREED_CHARACTERISTICS["long_coat"]), ("curly", BREED_CHARACTERISTICS["curly_coat"])]:
+        if any(breed_lower in b.lower() for b in breeds):
+            coat = c
+            break
+    
+    is_brachycephalic = any(breed_lower in b.lower() for b in BREED_CHARACTERISTICS["brachycephalic"])
+    is_prone_to_hip = any(breed_lower in b.lower() for b in BREED_CHARACTERISTICS["prone_to_hip_dysplasia"])
+    is_prone_to_obesity = any(breed_lower in b.lower() for b in BREED_CHARACTERISTICS["prone_to_obesity"])
+    is_prone_to_skin = any(breed_lower in b.lower() for b in BREED_CHARACTERISTICS["prone_to_skin_issues"])
+    
+    # Generate tips based on characteristics
+    tips = {
+        "nutrition": [],
+        "exercise": [],
+        "grooming": [],
+        "health": []
+    }
+    
+    # Nutrition tips based on size and tendencies
+    if size == "small":
+        tips["nutrition"].extend([
+            "Small dogs have faster metabolisms - feed smaller, more frequent meals",
+            "Choose kibble sized appropriately for small mouths",
+            "Watch calorie intake carefully - small dogs gain weight quickly"
+        ])
+    elif size == "large" or size == "giant":
+        tips["nutrition"].extend([
+            "Large breed formula food supports bone and joint health",
+            "Avoid overfeeding during growth phase to prevent joint issues",
+            "Elevated food bowls can help with digestion"
+        ])
+    
+    if is_prone_to_obesity:
+        tips["nutrition"].extend([
+            f"{breed_name}s are prone to obesity - measure food portions strictly",
+            "Limit treats to 10% of daily calorie intake",
+            "Avoid free-feeding; use scheduled meal times"
+        ])
+    else:
+        tips["nutrition"].append("Feed high-quality, age-appropriate food with balanced nutrition")
+    
+    # Exercise tips based on energy level
+    if energy == "high":
+        tips["exercise"].extend([
+            f"{breed_name}s need 1-2+ hours of exercise daily",
+            "Mental stimulation is as important as physical exercise",
+            "Puzzle toys and training sessions help burn mental energy",
+            "Activities like fetch, swimming, or agility are ideal"
+        ])
+    elif energy == "low":
+        tips["exercise"].extend([
+            "Short, gentle walks are better than intense exercise",
+            "15-20 minutes of activity 2-3 times daily is sufficient",
+            "Indoor play can satisfy exercise needs"
+        ])
+        if is_brachycephalic:
+            tips["exercise"].append("Avoid exercise in hot weather - brachycephalic breeds overheat easily")
+    else:
+        tips["exercise"].extend([
+            f"{breed_name}s need moderate daily exercise - 30-60 minutes",
+            "Mix walks with play sessions for variety",
+            "Mental enrichment activities complement physical exercise"
+        ])
+    
+    # Grooming tips based on coat type
+    if coat == "double":
+        tips["grooming"].extend([
+            "Brush 2-3 times weekly to manage undercoat",
+            "Daily brushing during shedding seasons (spring/fall)",
+            "Professional grooming every 2-3 months recommended",
+            "Never shave a double coat - it protects from heat and cold"
+        ])
+    elif coat == "long":
+        tips["grooming"].extend([
+            "Daily brushing prevents mats and tangles",
+            "Regular trimming keeps coat manageable",
+            "Use detangling spray for easier brushing",
+            "Professional grooming every 4-6 weeks recommended"
+        ])
+    elif coat == "curly":
+        tips["grooming"].extend([
+            "Regular professional grooming every 4-6 weeks is essential",
+            "Daily brushing prevents matting",
+            "Hypoallergenic but requires consistent maintenance"
+        ])
+    else:
+        tips["grooming"].extend([
+            "Weekly brushing keeps coat healthy and shiny",
+            "Bathe only when necessary to preserve natural oils",
+            "Regular nail trimming every 2-3 weeks"
+        ])
+    
+    # Health tips based on breed tendencies
+    if is_brachycephalic:
+        tips["health"].extend([
+            "Watch for breathing difficulties and snoring",
+            "Keep weight in check to ease breathing",
+            "Avoid collar pressure - use harnesses instead",
+            "Air-conditioned environments are important in summer"
+        ])
+    
+    if is_prone_to_hip:
+        tips["health"].extend([
+            "Hip and elbow dysplasia screening recommended",
+            "Joint supplements (glucosamine/chondroitin) can help",
+            "Maintain healthy weight to reduce joint stress",
+            "Avoid high-impact exercise on hard surfaces"
+        ])
+    
+    if is_prone_to_skin:
+        tips["health"].extend([
+            "Watch for hot spots and skin allergies",
+            "Regular ear cleaning prevents infections",
+            "Hypoallergenic diet may help with skin issues"
+        ])
+    
+    # Add general health tips
+    tips["health"].extend([
+        "Annual vet checkups are essential",
+        "Keep vaccinations and preventatives up to date",
+        "Dental care is important - brush teeth or use dental chews"
+    ])
+    
+    return {
+        "breed": breed_name,
+        "characteristics": {
+            "size": size,
+            "energy_level": energy,
+            "coat_type": coat,
+            "is_brachycephalic": is_brachycephalic,
+            "prone_to_hip_dysplasia": is_prone_to_hip,
+            "prone_to_obesity": is_prone_to_obesity,
+            "prone_to_skin_issues": is_prone_to_skin
+        },
+        "tips": tips
+    }
+
+@app.get("/api/breed/tips")
+async def get_breed_specific_tips(breed: str):
+    """Get breed-specific care tips based on breed characteristics"""
+    if not breed:
+        return {"error": "Breed name required"}
+    
+    # Normalize breed name first
+    corrected, _, _ = normalize_breed_name(breed)
+    return get_breed_tips(corrected)
+
+@app.get("/api/breed/all")
+async def get_all_breeds():
+    """Get list of all recognized breeds"""
+    from breed_utils import ALL_BREEDS
+    return {"breeds": sorted(ALL_BREEDS), "total": len(ALL_BREEDS)}
+
+
 # ============== MEMBER RECOGNITION API ==============
 
 from member_recognition import MemberRecognition, member_lookup_api
