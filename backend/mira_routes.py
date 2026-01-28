@@ -1709,6 +1709,96 @@ LONGER RESPONSES (3+ paragraphs):
 ALWAYS prefer shorter when possible. Respect the parent's time.
 
 ═══════════════════════════════════════════════════════════════════════════════
+TDC KNOWLEDGE BASE — PROGRAMS & FEATURES
+═══════════════════════════════════════════════════════════════════════════════
+
+When users ask about The Doggy Company's features, programs, or how things work, 
+use this verified information:
+
+📊 PET SOUL™ SCORE
+What it is: A comprehensive profile score (0-100%) measuring how well we know your pet.
+How it's calculated:
+  • 8 categories: Identity, Family, Routine, Home, Travel, Nutrition, Training, Health
+  • ~60 questions total across all categories
+  • Each answered question adds to the score based on importance
+  • Basic info (name, breed) = lower weight
+  • Safety-critical info (allergies, medical) = higher weight
+Why it matters:
+  • Higher scores = more personalized recommendations
+  • Helps us match perfect services (boarding, daycare, grooming)
+  • Ensures safety when your dog is in our care
+  • Unlocks member rewards at milestones (25%, 50%, 75%, 100%)
+How to improve: Answer more questions about your pet in the "Pet Soul" section of your pet's profile.
+
+🐾 PAW POINTS REWARDS
+What it is: Our loyalty points system for members.
+How to earn:
+  • Soul Score milestones: 50pts (25%), 100pts (50%), 250pts (75%), 500pts (100%)
+  • First order: 100 points
+  • Every ₹100 spent: 1 point
+  • Referrals: 500 points per successful referral
+  • Reviews: 25 points per review
+  • Birthdays: 100 bonus points
+How to redeem:
+  • 100 points = ₹10 discount
+  • Special rewards available in membership dashboard
+  • Points never expire for active members
+
+👑 MEMBERSHIP TIERS
+Free: Basic access, limited features
+Annual (₹2,999/year):
+  • 10% off all products
+  • Priority booking for services
+  • Free delivery on orders above ₹499
+  • Access to member-only events
+  • Paw Points earning at 2x rate
+VIP (₹9,999/year):
+  • 20% off all products
+  • Dedicated concierge support
+  • Free delivery on all orders
+  • Complimentary birthday celebration
+  • Early access to new products
+  • Paw Points earning at 5x rate
+
+🏛️ THE 14 PILLARS — What we offer:
+1. 🎂 CELEBRATE — Birthday cakes, pup-cakes, celebration treats
+2. 🍽️ DINE — Pet-friendly restaurant recommendations
+3. 🏨 STAY — Pet boarding, daycare, staycations
+4. ✈️ TRAVEL — Pet transport, pet taxis, relocation
+5. 💊 CARE — Vet appointments, grooming, wellness
+6. 🎾 ENJOY — Dog parks, activities, playdates
+7. 🏃 FIT — Exercise programs, swimming, agility
+8. 🎓 LEARN — Training, puppy classes, behavior
+9. 📄 PAPERWORK — Pet insurance, licenses, documentation
+10. 📋 ADVISORY — Nutrition, behavior consultations
+11. 🚨 EMERGENCY — 24/7 emergency vet network
+12. 🌈 FAREWELL — End-of-life care, cremation, memorials
+13. 🐾 ADOPT — Adoption assistance, foster programs
+14. 🛒 SHOP — Pet food, accessories, supplies
+
+💬 SOUL WHISPER™
+What it is: Weekly WhatsApp check-ins with gentle questions about your pet.
+Purpose: Build your Pet Soul profile gradually without overwhelming you.
+Frequency: 1-2 questions per week
+Topics: Based on what's missing in your profile
+Opt-out: Can be disabled in notification settings
+
+🔔 NOTIFICATIONS
+Types available:
+  • Order updates (shipping, delivery)
+  • Soul Whisper questions (WhatsApp)
+  • Pet reminders (vaccinations, birthdays)
+  • Member offers and rewards
+  • Service confirmations
+Channels: Push notifications, WhatsApp, Email, SMS
+
+📱 PWA (INSTALL APP)
+The Doggy Company can be installed on your phone like an app:
+  • iOS: Safari → Share → Add to Home Screen
+  • Android: Chrome → Menu → Install App
+Benefits: Faster access, offline viewing, push notifications
+
+═══════════════════════════════════════════════════════════════════════════════
 FINAL REMINDER
 ═══════════════════════════════════════════════════════════════════════════════
 
