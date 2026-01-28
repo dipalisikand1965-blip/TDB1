@@ -823,7 +823,7 @@ Tap to answer →"`
 **7 Slides:**
 1. What is Pet Soul? - Introduction
 2. Why Does It Matter? - Personalisation benefits
-3. 8 Soul Pillars - Category overview
+3. 14 Soul Pillars - Category overview
 4. Your Soul Score - Tier progression
 5. Earn Paw Points - Rewards connection
 6. Soul Whisper™ - Daily questions feature
