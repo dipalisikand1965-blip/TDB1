@@ -459,6 +459,29 @@ const EmergencyPage = () => {
                       {bundle.paw_reward_points > 0 && (
                         <p className="text-xs text-red-600 mb-3">🐾 Earn {bundle.paw_reward_points} Paw Points</p>
                       )}
+                      
+                      {/* Pet Selection for Bundle */}
+                      {userPets.length > 0 && (
+                        <div className="mb-3">
+                          <Label className="text-xs text-gray-600">For which pet?</Label>
+                          <select 
+                            className="w-full mt-1 px-2 py-1.5 text-sm border rounded-md bg-white"
+                            value={selectedPet?.id || ''}
+                            onChange={(e) => {
+                              const pet = userPets.find(p => p.id === e.target.value);
+                              if (pet) setSelectedPet(pet);
+                            }}
+                          >
+                            <option value="">Select pet</option>
+                            {userPets.map(pet => (
+                              <option key={pet.id} value={pet.id}>
+                                🐾 {pet.name} ({pet.breed})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                      
                       <Button 
                         className="w-full bg-red-500 hover:bg-red-600"
                         onClick={() => {
@@ -467,11 +490,13 @@ const EmergencyPage = () => {
                             name: bundle.name,
                             price: bundle.price,
                             image: bundle.image || 'https://via.placeholder.com/200?text=Emergency+Kit',
-                            quantity: 1
+                            quantity: 1,
+                            pet_name: selectedPet?.name,
+                            pet_id: selectedPet?.id
                           });
                           toast({
                             title: "Added to Cart! 🛒",
-                            description: `${bundle.name} added to your cart`
+                            description: `${bundle.name} added for ${selectedPet?.name || 'your pet'}`
                           });
                         }}
                         data-testid={`add-bundle-${bundle.id}`}
