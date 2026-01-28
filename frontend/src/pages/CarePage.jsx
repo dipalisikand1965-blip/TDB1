@@ -222,6 +222,18 @@ const CarePage = () => {
     fetchCareProducts();
   }, [user, token]);
 
+  // Auto-populate user info in form
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        contact_name: user.name || prev.contact_name,
+        contact_email: user.email || prev.contact_email,
+        contact_phone: user.phone || prev.contact_phone
+      }));
+    }
+  }, [user]);
+
   // Check URL for type parameter
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
