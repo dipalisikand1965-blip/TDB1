@@ -333,35 +333,38 @@ async def get_checkout_config():
 
 @checkout_router.post("/calculate-total")
 async def calculate_order_total(request: CreateOrderRequest):
-    """Calculate order total with GST breakdown"""
+    """Calculate order total with GST breakdown
+    GST is calculated on (subtotal - discount + shipping)
+    """
     
     # Base calculations
     subtotal = request.subtotal
     shipping = request.shipping_fee
     discount = request.discount_amount + request.loyalty_discount
     
-    # Calculate GST on subtotal (after discount, before shipping)
-    taxable_amount = max(0, subtotal - discount)
+    # Calculate taxable amount (subtotal - discount + shipping)
+    # GST applies to total including shipping
+    taxable_amount = max(0, subtotal - discount + shipping)
     gst_details = calculate_gst(taxable_amount, request.delivery.state or "Karnataka")
     
-    # Final total
-    total_before_tax = taxable_amount
+    # Final total = taxable_amount + GST
     total_tax = gst_details["total_tax"]
-    grand_total = total_before_tax + total_tax + shipping
+    grand_total = taxable_amount + total_tax
     
     return {
         "subtotal": subtotal,
         "discount": discount,
+        "shipping": shipping,
         "taxable_amount": taxable_amount,
         "gst_details": gst_details,
-        "shipping": shipping,
         "grand_total": round(grand_total, 2),
         "breakdown": {
             "items_total": subtotal,
             "discount_applied": discount,
-            "after_discount": taxable_amount,
-            "gst": total_tax,
+            "after_discount": subtotal - discount,
             "shipping_fee": shipping,
+            "taxable_total": taxable_amount,
+            "gst": total_tax,
             "you_pay": round(grand_total, 2)
         }
     }
