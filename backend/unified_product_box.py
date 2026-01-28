@@ -1082,14 +1082,12 @@ async def migrate_existing_products(force: bool = False):
         shopify_id = product.get("shopify_id")
         product_id = product.get("id")
         
-        # Check if already exists in unified_products
-        existing_unified = await db.unified_products.find_one({
-            "$or": [
-                {"shopify_id": shopify_id} if shopify_id else {"id": "__no_match__"},
-                {"name": product_name} if product_name else {"name": "__no_match__"},
-                {"original_product_id": product_id} if product_id else {"id": "__no_match__"}
-            ]
-        })
+        if not product_name:
+            skipped += 1
+            continue
+        
+        # Check if already exists in unified_products by name
+        existing_unified = await db.unified_products.find_one({"name": product_name})
         
         if existing_unified and not force:
             skipped += 1
@@ -1112,74 +1110,87 @@ async def migrate_existing_products(force: bool = False):
             "breed_tags": product.get("breed_tags", []),
             "health_tags": product.get("health_tags", []),
             "collections": product.get("collections", []),
-            "pillars": ["shop"],
-            "primary_pillar": "shop",
+            "pillars": [product.get("pillar", "shop")],
+            "primary_pillar": product.get("pillar", "shop"),
+            "image_url": product.get("image") or (product.get("images", [None])[0] if product.get("images") else None),
             "images": product.get("images", []),
             "thumbnail": product.get("image") or (product.get("images", [None])[0] if product.get("images") else None),
             
             # Pricing
             "pricing": {
-                "cost": product.get("cost", 0),
-                "price": product.get("price", 0),
+                "base_price": product.get("price", 0),
                 "compare_at_price": product.get("compare_at_price"),
-                "gst_percent": product.get("gst_percent", 5),
-                "shipping_weight": product.get("shipping_weight"),
-                "packaging_type": product.get("packaging_type")
+                "cost_price": product.get("cost", 0),
+                "gst_applicable": True,
+                "gst_rate": product.get("gst_percent", 18),
+                "hsn_code": product.get("hsn_code"),
+                "price_model": "fixed",
+                "currency": "INR"
+            },
+            
+            # Inventory
+            "inventory": {
+                "in_stock": product.get("in_stock", True),
+                "track_inventory": False,
+                "stock_quantity": product.get("stock_quantity"),
+                "low_stock_threshold": 5,
+                "allow_backorder": False
             },
             
             # Pet Safety
             "pet_safety": {
+                "species": "dog",
                 "life_stages": product.get("lifestage_tags", ["all"]),
                 "size_suitability": product.get("size_tags", ["all"]),
                 "dietary_flags": product.get("diet_tags", []),
+                "allergens": [],
                 "known_exclusions": [],
+                "risk_level": "safe",
                 "safety_notes": None,
                 "is_validated": False
             },
             
             # Paw Rewards
             "paw_rewards": {
-                "is_reward_eligible": False,
+                "points_per_rupee": 1,
+                "is_redeemable": False,
                 "is_reward_only": False,
                 "reward_value": 0,
-                "max_redemptions_per_pet": None,
-                "expiry_days": None,
                 "trigger_conditions": [],
-                "pillar_specific": None
+                "tier_eligibility": ["all"]
             },
             
             # Mira visibility
             "mira_visibility": {
                 "can_reference": True,
                 "can_suggest_proactively": bool(product.get("intelligent_tags")),
-                "mention_only_if_asked": False,
-                "suggestion_context": None,
-                "exclusion_reasons": []
+                "suggestion_contexts": [],
+                "knowledge_confidence": "high"
             },
             
             # Visibility
             "visibility": {
-                "status": "active" if product.get("available", True) else "archived",
-                "visible_on_website": True,
-                "visible_to_mira": True,
-                "visible_in_search": True
+                "status": "active" if product.get("available", True) or product.get("in_stock", True) else "archived",
+                "visible_on_site": True,
+                "member_only": False,
+                "featured": product.get("featured", False),
+                "searchable": True
             },
             
-            "created_at": product.get("created_at") or datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "audit": {
+                "created_at": product.get("created_at") or datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "version": 1
+            }
         }
         
-        if existing_unified and force:
-            # Update existing - use _id as fallback if id doesn't exist
-            query_id = existing_unified.get("id") or str(existing_unified.get("_id"))
-            if query_id:
-                await db.unified_products.update_one(
-                    {"$or": [{"id": query_id}, {"_id": existing_unified.get("_id")}]},
-                    {"$set": unified}
-                )
-                updated += 1
-            else:
-                skipped += 1
+        if existing_unified:
+            # Update existing
+            await db.unified_products.update_one(
+                {"name": product_name},
+                {"$set": unified}
+            )
+            updated += 1
         else:
             # Insert new
             await db.unified_products.insert_one(unified)
