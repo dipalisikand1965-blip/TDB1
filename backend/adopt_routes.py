@@ -248,9 +248,20 @@ async def submit_adoption_application(application: AdoptionApplication):
     """Submit adoption application for a pet"""
     db = get_db()
     
-    # Verify pet exists and is available
-    pet = await db.adoptable_pets.find_one({"pet_id": application.pet_id})
+    logger.info(f"Looking for pet_id: {application.pet_id}")
+    
+    # Verify pet exists and is available - support both pet_id and id fields
+    pet = await db.adoptable_pets.find_one({
+        "$or": [
+            {"pet_id": application.pet_id},
+            {"id": application.pet_id}
+        ]
+    })
+    
     if not pet:
+        # Log all pets for debugging
+        all_pets = await db.adoptable_pets.find({}, {"pet_id": 1, "id": 1, "name": 1}).to_list(20)
+        logger.error(f"Pet not found. Available pets: {all_pets}")
         raise HTTPException(status_code=404, detail="Pet not found")
     
     if pet.get("status") != "available":
