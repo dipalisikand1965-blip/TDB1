@@ -4940,6 +4940,164 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           </Card>
         </div>
       )}
+      
+      {/* ==================== PET PARENT HISTORY MODAL ==================== */}
+      {showParentHistoryModal && selectedParentForHistory && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowParentHistoryModal(false)}>
+          <Card className="w-[700px] max-h-[85vh] bg-white shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="p-6 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
+                    <User className="w-7 h-7 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-xl text-gray-900">{selectedParentForHistory.name || 'Unknown'}</h3>
+                    <p className="text-sm text-gray-500">{selectedParentForHistory.email}</p>
+                    {selectedParentForHistory.phone && (
+                      <p className="text-sm text-gray-500">{selectedParentForHistory.phone}</p>
+                    )}
+                  </div>
+                </div>
+                <button onClick={() => setShowParentHistoryModal(false)} className="p-2 hover:bg-gray-100 rounded-full">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-6 overflow-y-auto max-h-[calc(85vh-150px)]">
+              {/* Pet Parent's Pets */}
+              <div className="mb-6">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                  <Dog className="w-5 h-5 text-amber-500" />
+                  Pets ({petProfiles.filter(p => p.owner_email === selectedParentForHistory.email || p.user_email === selectedParentForHistory.email).length})
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {petProfiles
+                    .filter(p => p.owner_email === selectedParentForHistory.email || p.user_email === selectedParentForHistory.email)
+                    .map(pet => (
+                      <button
+                        key={pet.id}
+                        onClick={() => window.open(`/pet/${pet.id}`, '_blank')}
+                        className="flex items-center gap-2 px-3 py-2 bg-amber-50 hover:bg-amber-100 rounded-lg border border-amber-200 transition-colors"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-amber-200 overflow-hidden">
+                          {pet.photo_url ? (
+                            <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <Dog className="w-4 h-4 m-2 text-amber-600" />
+                          )}
+                        </div>
+                        <span className="font-medium text-amber-800">{pet.name}</span>
+                        {pet.overall_score !== undefined && (
+                          <Badge variant="outline" className="text-xs">{Math.round(pet.overall_score)}% Soul</Badge>
+                        )}
+                      </button>
+                    ))
+                  }
+                  {petProfiles.filter(p => p.owner_email === selectedParentForHistory.email || p.user_email === selectedParentForHistory.email).length === 0 && (
+                    <p className="text-sm text-gray-400 italic">No pets linked to this account</p>
+                  )}
+                </div>
+              </div>
+              
+              {/* Ticket History */}
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                  <Inbox className="w-5 h-5 text-purple-500" />
+                  Ticket History ({allTickets.filter(t => 
+                    t.contact?.email === selectedParentForHistory.email || 
+                    t.customer_email === selectedParentForHistory.email ||
+                    t.contact?.phone === selectedParentForHistory.phone ||
+                    t.member?.email === selectedParentForHistory.email
+                  ).length})
+                </h4>
+                <div className="space-y-3">
+                  {allTickets
+                    .filter(t => 
+                      t.contact?.email === selectedParentForHistory.email || 
+                      t.customer_email === selectedParentForHistory.email ||
+                      t.contact?.phone === selectedParentForHistory.phone ||
+                      t.member?.email === selectedParentForHistory.email
+                    )
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                    .map(ticket => {
+                      const statusConfig = STATUS_CONFIG[ticket.status] || STATUS_CONFIG.new;
+                      const pillar = PILLARS[ticket.category] || SPECIAL_SECTIONS[ticket.category];
+                      return (
+                        <button
+                          key={ticket.ticket_id}
+                          onClick={() => {
+                            setShowParentHistoryModal(false);
+                            handleSelectTicket(ticket);
+                            setActiveNav('tickets');
+                          }}
+                          className="w-full text-left p-4 bg-gray-50 hover:bg-gray-100 rounded-lg border hover:border-purple-300 transition-all"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-mono text-xs text-gray-400">{ticket.ticket_id}</span>
+                                <Badge className={`${statusConfig.bgLight} ${statusConfig.textColor} text-xs`}>
+                                  {statusConfig.label}
+                                </Badge>
+                                {pillar && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {pillar.emoji} {pillar.name}
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="font-medium text-gray-900 truncate">
+                                {ticket.subject || ticket.description?.slice(0, 60) || 'No Subject'}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {ticket.created_at ? new Date(ticket.created_at).toLocaleDateString('en-IN', { 
+                                  day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                                }) : 'Unknown date'}
+                              </p>
+                            </div>
+                            <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                          </div>
+                        </button>
+                      );
+                    })
+                  }
+                  {allTickets.filter(t => 
+                    t.contact?.email === selectedParentForHistory.email || 
+                    t.customer_email === selectedParentForHistory.email ||
+                    t.contact?.phone === selectedParentForHistory.phone ||
+                    t.member?.email === selectedParentForHistory.email
+                  ).length === 0 && (
+                    <div className="text-center py-8">
+                      <Inbox className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                      <p className="text-gray-500">No tickets found for this pet parent</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-4 border-t bg-gray-50 flex justify-between">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowParentHistoryModal(false);
+                  // Filter main ticket view by this parent
+                  setSearchQuery(selectedParentForHistory.email);
+                  setSearchType('pet_parent');
+                  setActiveNav('tickets');
+                }}
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                Filter All Tickets
+              </Button>
+              <Button variant="outline" onClick={() => setShowParentHistoryModal(false)}>
+                Close
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
