@@ -488,7 +488,7 @@ import PetScoreCard from '../components/PetScoreCard';
 **Key Sections:**
 • Emergency Info Card (allergies, medications, vet contact)
 • Soul Score Card with percentage & tier
-• ALL 8 Soul Pillars with inline editing
+• ALL 14 Soul Pillars with inline editing
 • Photo Gallery
 • Milestone Tracker & Timeline
 • Breed Info Card
