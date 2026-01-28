@@ -1029,6 +1029,151 @@ const MembershipOnboarding = () => {
                     className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                     data-testid="pet-next-btn"
                   >
+                    Select Celebrations
+                    <ChevronRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </div>
+              </Card>
+            </div>
+          )}
+
+          {/* Step 3: Celebrations Selection */}
+          {step === 3 && (
+            <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="text-center mb-8">
+                <div className="w-20 h-20 bg-gradient-to-br from-pink-400 to-orange-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-pink-200/50">
+                  <Gift className="w-10 h-10 text-white" />
+                </div>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                  What would you like to celebrate?
+                </h1>
+                <p className="text-gray-500">
+                  Select the occasions you want us to remember for each pet
+                </p>
+              </div>
+
+              <Card className="p-6 md:p-8 max-w-2xl mx-auto bg-white/80 backdrop-blur-sm shadow-xl border-0">
+                {petsData.map((pet, petIdx) => (
+                  <div key={petIdx} className={petIdx > 0 ? 'mt-8 pt-8 border-t border-gray-200' : ''}>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-pink-100 rounded-full flex items-center justify-center">
+                        {pet.photo_preview ? (
+                          <img src={pet.photo_preview} alt={pet.name} className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                          <PawPrint className="w-6 h-6 text-orange-500" />
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{pet.name || `Dog ${petIdx + 1}`}</h3>
+                        <p className="text-sm text-gray-500">Select celebrations to track</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {CELEBRATION_TYPES.map((celebration) => {
+                        const isSelected = (pet.celebrations || []).includes(celebration.id);
+                        return (
+                          <button
+                            key={celebration.id}
+                            type="button"
+                            onClick={() => toggleCelebration(petIdx, celebration.id)}
+                            className={`p-4 rounded-xl border-2 text-left transition-all ${
+                              isSelected
+                                ? 'border-orange-400 bg-gradient-to-br from-orange-50 to-pink-50 shadow-md'
+                                : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50/50'
+                            }`}
+                            data-testid={`celebration-${celebration.id}-pet-${petIdx}`}
+                          >
+                            <div className="text-2xl mb-2">{celebration.emoji}</div>
+                            <p className="font-medium text-sm text-gray-900">{celebration.name}</p>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{celebration.description}</p>
+                            {isSelected && (
+                              <div className="mt-2">
+                                <Check className="w-5 h-5 text-orange-500" />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Quick select all important ones */}
+                    <div className="mt-4 flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const importantOnes = ['birthday', 'gotcha_day', 'vaccination'];
+                          const newPets = [...petsData];
+                          newPets[petIdx].celebrations = importantOnes;
+                          setPetsData(newPets);
+                        }}
+                        className="text-orange-600 border-orange-300 hover:bg-orange-50"
+                      >
+                        Select Essentials
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const newPets = [...petsData];
+                          newPets[petIdx].celebrations = CELEBRATION_TYPES.map(c => c.id);
+                          setPetsData(newPets);
+                        }}
+                        className="text-pink-600 border-pink-300 hover:bg-pink-50"
+                      >
+                        Select All
+                      </Button>
+                      {(pet.celebrations || []).length > 0 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const newPets = [...petsData];
+                            newPets[petIdx].celebrations = [];
+                            setPetsData(newPets);
+                          }}
+                          className="text-gray-500"
+                        >
+                          Clear
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Info Card */}
+                <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-purple-800">Why select celebrations?</p>
+                      <p className="text-sm text-purple-600">
+                        We&apos;ll send you timely reminders, special offers, and curated gift suggestions for each occasion. Never miss an important moment!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <Button 
+                    variant="outline"
+                    onClick={handleBack}
+                    className="flex-1"
+                  >
+                    <ChevronLeft className="w-4 h-4 mr-2" />
+                    Back
+                  </Button>
+                  <Button 
+                    onClick={handleNext}
+                    className="flex-1 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
+                    data-testid="celebrations-next-btn"
+                  >
                     Review & Pay
                     <ChevronRight className="w-5 h-5 ml-2" />
                   </Button>
@@ -1037,8 +1182,8 @@ const MembershipOnboarding = () => {
             </div>
           )}
 
-          {/* Step 3: Review & Pay */}
-          {step === 3 && (
+          {/* Step 4: Review & Pay */}
+          {step === 4 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center mb-8">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
