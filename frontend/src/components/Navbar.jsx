@@ -18,12 +18,14 @@ const PILLARS = [
     path: '/celebrate',
     dropdown: [
       { name: 'Celebrate By Concierge®', path: '/celebrate', highlight: true },
-      { name: 'Birthday Cakes', path: '/cakes' },
+      { name: 'Birthday Cakes', path: '/celebrate/cakes' },
       { name: 'Custom Cake', path: '/custom-cake' },
       { name: 'Breed Cakes', path: '/celebrate/breed-cakes' },
       { name: 'Pupcakes & Dognuts', path: '/celebrate/pupcakes' },
+      { name: 'Treats', path: '/celebrate/treats' },
       { name: 'Desi Treats', path: '/celebrate/desi' },
-      { name: 'Gift Hampers', path: '/hampers' },
+      { name: 'Gift Hampers', path: '/celebrate/hampers' },
+      { name: 'Accessories', path: '/celebrate/accessories' },
     ]
   },
   {
