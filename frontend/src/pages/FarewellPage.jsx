@@ -603,8 +603,9 @@ const FarewellPage = () => {
             
             {/* Pet Selection - Works for both logged in and guest users */}
             <div>
-              <Label className="mb-2">Your Pet's Details</Label>
+              <Label className="mb-2">Your Pet&apos;s Details</Label>
               {pets.length > 0 ? (
+                <>
                 <Select 
                   value={serviceForm.pet_id}
                   onValueChange={v => {
@@ -612,7 +613,7 @@ const FarewellPage = () => {
                     setServiceForm({
                       ...serviceForm, 
                       pet_id: v,
-                      pet_name: pet?.name || ''
+                      pet_name: v === 'other' ? '' : (pet?.name || '')
                     });
                   }}
                 >
