@@ -89,6 +89,10 @@ const UnifiedCheckout = () => {
   // GST calculation
   const [gstDetails, setGstDetails] = useState(null);
   const [calculatingGst, setCalculatingGst] = useState(false);
+  
+  // Smart Recommendations
+  const [recommendations, setRecommendations] = useState([]);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(false);
 
   // Sections collapsed state
   const [expandedSections, setExpandedSections] = useState({
