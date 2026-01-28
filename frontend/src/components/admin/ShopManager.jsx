@@ -370,13 +370,19 @@ const ShopManager = ({ getAuthHeader }) => {
       )}
 
       {/* Sub-tabs */}
-      <Tabs value={activeSubTab} onValueChange={setActiveSubTab}>
+      <Tabs value={activeSubTab} onValueChange={(val) => {
+        setActiveSubTab(val);
+        if (val === 'wishlists') fetchWishlistData();
+      }}>
         <TabsList className="bg-white border">
           <TabsTrigger value="products" data-testid="shop-tab-products">
             <Package className="w-4 h-4 mr-2" /> Products
           </TabsTrigger>
           <TabsTrigger value="orders" data-testid="shop-tab-orders">
             <ShoppingBag className="w-4 h-4 mr-2" /> Orders
+          </TabsTrigger>
+          <TabsTrigger value="wishlists" data-testid="shop-tab-wishlists">
+            <Heart className="w-4 h-4 mr-2" /> Wishlists
           </TabsTrigger>
           <TabsTrigger value="inventory" data-testid="shop-tab-inventory">
             <Archive className="w-4 h-4 mr-2" /> Inventory
