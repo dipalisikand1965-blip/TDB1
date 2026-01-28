@@ -86,6 +86,7 @@ import LearnPage from "./pages/LearnPage";
 import AdvisoryPage from "./pages/AdvisoryPage";
 import PaperworkPage from "./pages/PaperworkPage";
 import EmergencyPage from "./pages/EmergencyPage";
+import CelebratePage from "./pages/CelebratePage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import MemberForgotPassword from "./pages/MemberForgotPassword";
