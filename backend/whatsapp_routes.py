@@ -498,3 +498,150 @@ async def list_message_templates():
             
     except httpx.HTTPError as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+# ============== MIRA AI FOR WHATSAPP ==============
+
+# Mira's personality and command patterns for WhatsApp
+MIRA_WHATSAPP_PATTERNS = {
+    "greeting": {
+        "patterns": ["hi", "hello", "hey", "good morning", "good evening", "namaste"],
+        "response": "Hey there! 🐾 I'm Mira, your pet concierge from The Doggy Company! How can I help you and your furry friend today?\n\nYou can ask me about:\n🛒 Products & treats\n📅 Bookings (grooming, vet, daycare)\n🎂 Birthday celebrations\n❓ Any pet questions!"
+    },
+    "order": {
+        "patterns": ["order", "buy", "treats", "food", "shop", "product"],
+        "response": "I'd love to help you order something special! 🛍️\n\n👉 Visit our shop: https://thedoggycompany.in/shop\n\nOr tell me what you're looking for - treats, food, toys? I'll find the perfect match for your pup! 🐕"
+    },
+    "grooming": {
+        "patterns": ["groom", "grooming", "bath", "haircut", "spa"],
+        "response": "Time for a spa day! ✂️🛁\n\nI can help you book grooming at our partner salons. Just tell me:\n1️⃣ Your pet's name\n2️⃣ Preferred date\n3️⃣ Your location\n\nOr book directly: https://thedoggycompany.in/care?type=grooming"
+    },
+    "vet": {
+        "patterns": ["vet", "doctor", "vaccine", "vaccination", "health", "sick", "medicine"],
+        "response": "Your pet's health is our priority! 💊\n\nFor vet appointments:\n👉 https://thedoggycompany.in/care?type=vet\n\n🚨 For emergencies, call our 24/7 helpline!\n\nWhat's going on with your furry friend? I'm here to help! 🐾"
+    },
+    "birthday": {
+        "patterns": ["birthday", "party", "cake", "celebration", "celebrate"],
+        "response": "Aww, someone has a birthday coming up! 🎂🎉\n\nWe have:\n🎂 Custom pet cakes\n🎈 Party supplies\n🎁 Birthday boxes\n\nCheck them out: https://thedoggycompany.in/celebrate\n\nWhen's the big day? I'll help you plan the pawfect party! 🐕"
+    },
+    "stay": {
+        "patterns": ["boarding", "stay", "daycare", "hotel", "travel", "vacation"],
+        "response": "Planning to travel or need pet care? 🏨\n\nWe offer:\n🏠 Boarding & daycare\n✈️ Pet-friendly travel help\n🐕 Dog walking\n\nExplore options: https://thedoggycompany.in/stay\n\nTell me more about what you need!"
+    },
+    "membership": {
+        "patterns": ["member", "membership", "pass", "join", "pet pass", "soul"],
+        "response": "Great question! 🌟\n\nThe Pet Pass gives you:\n✨ Access to all 14 life pillars\n💎 Paw Points rewards\n🎁 Exclusive offers\n📱 Personal concierge (that's me!)\n\nJoin here: https://thedoggycompany.in/pet-soul-onboard\n\nWant me to explain more?"
+    },
+    "help": {
+        "patterns": ["help", "support", "issue", "problem", "complaint"],
+        "response": "I'm here to help! 💜\n\nYou can:\n📞 Call us: +91 96631 85747\n💬 Chat right here\n📧 Email: hello@thedoggycompany.in\n\nWhat's on your mind? I'll do my best to solve it! 🐾"
+    },
+    "thanks": {
+        "patterns": ["thank", "thanks", "awesome", "great", "perfect"],
+        "response": "You're so welcome! 💕 Taking care of pets is what I love most!\n\nAnything else I can help with? I'm always here! 🐕‍🦺"
+    },
+    "bye": {
+        "patterns": ["bye", "goodbye", "see you", "later"],
+        "response": "Bye for now! 👋 Give your furry friend a belly rub from me! 🐾\n\nI'm available 24/7 - just message anytime! 💜"
+    }
+}
+
+MIRA_DEFAULT_RESPONSE = """Hi there! 🐾 I'm Mira from The Doggy Company!
+
+I can help you with:
+🛒 Order treats & products
+✂️ Book grooming
+💊 Vet appointments
+🎂 Birthday celebrations
+🏨 Boarding & daycare
+
+Just tell me what you need! Or visit: https://thedoggycompany.in
+
+What would you like help with today? 🐕"""
+
+
+async def get_mira_whatsapp_response(message_text: str, user_name: str = "friend") -> str:
+    """
+    Generate Mira's intelligent response for WhatsApp messages.
+    Uses pattern matching for common queries, can be upgraded to AI later.
+    """
+    message_lower = message_text.lower().strip()
+    
+    # Check each pattern category
+    for category, data in MIRA_WHATSAPP_PATTERNS.items():
+        for pattern in data["patterns"]:
+            if pattern in message_lower:
+                response = data["response"]
+                # Personalize with user name if available
+                if user_name and user_name != "WhatsApp User":
+                    response = response.replace("Hey there!", f"Hey {user_name}!")
+                return response
+    
+    # Default response
+    return MIRA_DEFAULT_RESPONSE
+
+
+@router.post("/mira-reply")
+async def send_mira_reply(to: str, message: str):
+    """
+    Send Mira's AI response via WhatsApp.
+    Called after processing an incoming message.
+    """
+    if not is_whatsapp_configured():
+        logger.warning("WhatsApp not configured - Mira reply skipped")
+        return {"success": False, "reason": "WhatsApp not configured"}
+    
+    config = get_whatsapp_config()
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            payload = {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": to,
+                "type": "text",
+                "text": {
+                    "preview_url": True,
+                    "body": message
+                }
+            }
+            
+            response = await client.post(
+                f"{WHATSAPP_API_URL}/{config['phone_number_id']}/messages",
+                headers={
+                    "Authorization": f"Bearer {config['access_token']}",
+                    "Content-Type": "application/json"
+                },
+                json=payload
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                logger.info(f"Mira WhatsApp reply sent to {to[:6]}...")
+                return {"success": True, "message_id": result.get("messages", [{}])[0].get("id")}
+            else:
+                logger.error(f"Mira WhatsApp reply failed: {response.text}")
+                return {"success": False, "error": response.text}
+                
+    except Exception as e:
+        logger.error(f"Mira WhatsApp reply error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+# Update process_incoming_message to send Mira's reply
+async def send_auto_mira_reply(from_number: str, incoming_message: str, sender_name: str):
+    """Automatically send Mira's AI response to incoming WhatsApp messages"""
+    try:
+        # Get Mira's response
+        mira_response = await get_mira_whatsapp_response(incoming_message, sender_name)
+        
+        # Send via WhatsApp if configured
+        if is_whatsapp_configured():
+            await send_mira_reply(from_number, mira_response)
+            logger.info(f"Mira auto-replied to {from_number[:6]}...")
+        else:
+            logger.info(f"Mira response ready (WhatsApp not configured): {mira_response[:50]}...")
+            
+    except Exception as e:
+        logger.error(f"Error sending Mira auto-reply: {e}")
