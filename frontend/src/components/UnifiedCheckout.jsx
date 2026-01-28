@@ -268,11 +268,20 @@ const UnifiedCheckout = () => {
         })
       });
 
-      const orderData = await orderRes.json();
-
+      // Handle non-OK response
       if (!orderRes.ok) {
-        throw new Error(orderData.detail || 'Failed to create order');
+        const errorText = await orderRes.text();
+        let errorMessage = 'Failed to create order';
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.detail || errorMessage;
+        } catch {
+          errorMessage = errorText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
+
+      const orderData = await orderRes.json();
 
       // If Razorpay not enabled, show WhatsApp flow
       if (orderData.fallback_to_whatsapp) {
