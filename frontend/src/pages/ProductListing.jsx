@@ -58,21 +58,7 @@ const CATEGORY_HERO_CONTENT = {
     subtitle: 'Training treats, healthy bites, and everyday rewards your pet will love',
     color: 'from-amber-600 via-orange-500 to-yellow-500'
   },
-  Treats: {
-    badge: 'Healthy & Delicious',
-    title: 'Treats &',
-    highlight: 'Snacks',
-    subtitle: 'Training treats, healthy bites, and everyday rewards your pet will love',
-    color: 'from-amber-600 via-orange-500 to-yellow-500'
-  },
   accessories: {
-    badge: 'Party Essentials',
-    title: 'Party',
-    highlight: 'Accessories',
-    subtitle: 'Bandanas, hats, toys and everything to make your pet\'s party special!',
-    color: 'from-rose-600 via-pink-500 to-purple-500'
-  },
-  Accessories: {
     badge: 'Party Essentials',
     title: 'Party',
     highlight: 'Accessories',
