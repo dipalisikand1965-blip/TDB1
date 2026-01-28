@@ -4940,6 +4940,161 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           </Card>
         </div>
       )}
+      
+      {/* ==================== PET PARENT TICKET HISTORY MODAL ==================== */}
+      {showParentHistoryModal && selectedParentForHistory && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowParentHistoryModal(false)}>
+          <Card className="w-[700px] max-h-[85vh] overflow-hidden bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="p-6 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
+                    <User className="w-7 h-7 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-xl text-gray-900">{selectedParentForHistory.name || 'Unknown'}</h3>
+                    <p className="text-sm text-gray-500">{selectedParentForHistory.email}</p>
+                    {selectedParentForHistory.phone && (
+                      <p className="text-sm text-gray-500">{selectedParentForHistory.phone}</p>
+                    )}
+                  </div>
+                </div>
+                <button onClick={() => setShowParentHistoryModal(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              {selectedParentForHistory.membership && (
+                <Badge variant="outline" className="mt-3">{selectedParentForHistory.membership}</Badge>
+              )}
+            </div>
+            
+            <div className="p-6 overflow-y-auto max-h-[calc(85vh-180px)]">
+              {/* Pet Parent's Pets */}
+              {(() => {
+                const parentPets = petProfiles.filter(p => 
+                  p.owner_email === selectedParentForHistory.email || 
+                  p.user_email === selectedParentForHistory.email
+                );
+                if (parentPets.length > 0) {
+                  return (
+                    <div className="mb-6">
+                      <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <PawPrint className="w-4 h-4" /> Pets ({parentPets.length})
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {parentPets.map(pet => (
+                          <div key={pet.id} className="flex items-center gap-2 px-3 py-2 bg-amber-50 rounded-lg border border-amber-200">
+                            {pet.photo_url ? (
+                              <img src={pet.photo_url} alt={pet.name} className="w-8 h-8 rounded-full object-cover" />
+                            ) : (
+                              <Dog className="w-5 h-5 text-amber-600" />
+                            )}
+                            <div>
+                              <span className="font-medium text-gray-900">{pet.name}</span>
+                              {pet.breed && <span className="text-xs text-gray-500 ml-1">({pet.breed})</span>}
+                            </div>
+                            {pet.overall_score !== undefined && (
+                              <Badge className={`text-xs ${
+                                pet.overall_score >= 80 ? 'bg-emerald-100 text-emerald-700' :
+                                pet.overall_score >= 50 ? 'bg-amber-100 text-amber-700' :
+                                'bg-gray-100 text-gray-600'
+                              }`}>
+                                {Math.round(pet.overall_score)}%
+                              </Badge>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+              
+              {/* Ticket History */}
+              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <Inbox className="w-4 h-4" /> Ticket History
+              </h4>
+              {(() => {
+                const parentTickets = allTickets.filter(t => 
+                  t.contact?.email === selectedParentForHistory.email || 
+                  t.customer_email === selectedParentForHistory.email ||
+                  t.contact?.phone === selectedParentForHistory.phone ||
+                  t.member?.email === selectedParentForHistory.email
+                ).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                
+                if (parentTickets.length === 0) {
+                  return (
+                    <div className="text-center py-8 bg-gray-50 rounded-lg">
+                      <Inbox className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                      <p className="text-gray-500">No tickets found for this pet parent</p>
+                    </div>
+                  );
+                }
+                
+                return (
+                  <div className="space-y-3">
+                    {parentTickets.map(ticket => {
+                      const statusConfig = STATUS_CONFIG[ticket.status] || STATUS_CONFIG.open;
+                      const priorityConfig = PRIORITY_CONFIG[ticket.urgency] || PRIORITY_CONFIG.normal;
+                      const pillarConfig = PILLARS[ticket.category] || SPECIAL_SECTIONS[ticket.category];
+                      
+                      return (
+                        <div 
+                          key={ticket.ticket_id}
+                          className="p-4 border rounded-lg hover:shadow-md transition-all cursor-pointer bg-white"
+                          onClick={() => {
+                            setSelectedTicket(ticket);
+                            setShowParentHistoryModal(false);
+                            setActiveNav('tickets');
+                          }}
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                {pillarConfig && (
+                                  <span className="text-lg">{pillarConfig.emoji}</span>
+                                )}
+                                <span className="font-medium text-gray-900 truncate">{ticket.subject || 'No subject'}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-xs text-gray-500">
+                                <span className="font-mono">{ticket.ticket_id}</span>
+                                <span>•</span>
+                                <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                                {ticket.pet_name && (
+                                  <>
+                                    <span>•</span>
+                                    <span className="flex items-center gap-1">
+                                      <PawPrint className="w-3 h-3" />
+                                      {ticket.pet_name}
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                              <Badge className={`text-xs ${statusConfig.bgLight} ${statusConfig.textColor}`}>
+                                {statusConfig.label}
+                              </Badge>
+                              <div className={`w-2 h-2 rounded-full ${priorityConfig.dot}`} title={priorityConfig.label} />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </div>
+            
+            <div className="p-4 border-t bg-gray-50 flex justify-end">
+              <Button variant="outline" onClick={() => setShowParentHistoryModal(false)}>
+                Close
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
