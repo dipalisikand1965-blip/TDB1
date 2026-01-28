@@ -744,7 +744,7 @@ const MiraAI = () => {
           )}
 
           {/* Input Area */}
-          <div className="p-4 border-t bg-white flex-shrink-0">
+          <div className="p-4 pb-safe border-t bg-white flex-shrink-0" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
             <form onSubmit={sendMessage} className="flex gap-2">
               <input
                 ref={inputRef}
@@ -758,6 +758,7 @@ const MiraAI = () => {
                 }`}
                 disabled={isLoading}
                 data-testid="mira-input"
+                enterKeyHint="send"
               />
               {/* Voice Input Button */}
               {speechSupported && (
