@@ -357,7 +357,7 @@ GET  /api/concierge/export-csv               # Export to CSV
     'pet-soul-score': {
       title: 'Pet Soul Score™',
       subtitle: 'Server-Side Pet Profile Completeness & Personalization Engine',
-      badge: '🆕 New System',
+      badge: '⭐ Core System',
       files: {
         frontend: '/app/frontend/src/pages/UnifiedPetPage.jsx, /app/frontend/src/components/PetScoreCard.jsx',
         backend: '/app/backend/pet_score_logic.py'
@@ -372,42 +372,68 @@ GET  /api/concierge/export-csv               # Export to CSV
 • Server-side calculation (NOT frontend)
 • Drives Mira® AI personalization
 • Unlocks features at different tiers
-• Separate from Paw Rewards (transactional loyalty)`
+• Separate from Paw Points (transactional loyalty)`
         },
         {
-          title: 'Score Categories & Weights',
-          content: `| Category | Weight | Purpose |
-|----------|--------|---------|
-| Safety & Allergies | 25pts | Critical for product recommendations |
-| Personality & Behavior | 25pts | Drives Mira conversation style |
-| Lifestyle & Routine | 20pts | Activity & schedule optimization |
-| Nutrition | 15pts | Food & treat recommendations |
-| Training | 10pts | Service level customization |
-| Preferences | 5pts | General preferences |
+          title: 'Score Categories & Weights (100 pts)',
+          content: `| Category | Points | Icon | Purpose |
+|----------|--------|------|---------|
+| **Safety & Health** | 35 pts | 🛡️ | Critical for safe recommendations |
+| **Personality** | 25 pts | 🎭 | Understanding character |
+| **Lifestyle** | 20 pts | 🏠 | Daily routines & preferences |
+| **Nutrition** | 10 pts | 🍖 | Food preferences & needs |
+| **Training** | 5 pts | 🎓 | Learning style |
+| **Relationships** | 5 pts | ❤️ | Family & social connections |
 
 **Total: 100 points**`
         },
         {
-          title: 'Tier System',
-          content: `| Tier | Score Range | Unlocks |
-|------|-------------|---------|
-| 🌱 Newcomer | 0-24% | Basic Mira interactions |
-| 🔍 Soul Seeker | 25-49% | Mira remembers preferences |
-| 🗺️ Soul Explorer | 50-74% | Smart safety alerts |
-| ✨ Soul Master | 75-100% | VIP concierge experience |
+          title: 'Top Questions by Weight',
+          content: `| Question | Weight | Category |
+|----------|--------|----------|
+| Food Allergies | 10 pts | Safety |
+| Temperament | 8 pts | Personality |
+| Health Conditions | 8 pts | Safety |
+| Energy Level | 6 pts | Personality |
+| Vet Comfort | 5 pts | Safety |
+| Life Stage | 5 pts | Safety |
+| Alone Time | 5 pts | Lifestyle |
+| Grooming Tolerance | 4 pts | Safety |
+| Social with Dogs | 4 pts | Personality |
+| Social with People | 4 pts | Personality |
+| Car Comfort | 4 pts | Lifestyle |
 
-• Tier displayed in UnifiedPetPage and MemberDashboard
-• Mira adjusts behavior based on tier`
+**Pro Tip:** Top 7 questions = 47 points (almost Soul Explorer!)`
+        },
+        {
+          title: 'Tier System',
+          content: `| Tier | Score | Emoji | Benefits Unlocked |
+|------|-------|-------|-------------------|
+| **Newcomer** | 0-24% | 🌱 | Basic Mira AI, Product browsing |
+| **Soul Seeker** | 25-49% | 🔍 | Personalized suggestions, Health reminders |
+| **Soul Explorer** | 50-74% | 🗺️ | Smart safety alerts, Priority Mira |
+| **Soul Master** | 75-100% | ✨ | VIP Concierge®, AI insights, Predictions |`
+        },
+        {
+          title: 'Quick Paths to Each Tier',
+          content: `**Soul Seeker (25+ pts):**
+• Food Allergies (10) + Temperament (8) + Health Conditions (8) = 26 pts ✓
+
+**Soul Explorer (50+ pts):**
+• Add: Energy (6) + Vet Comfort (5) + Life Stage (5) + Alone Time (5) + Grooming (4) = 51 pts ✓
+
+**Soul Master (75+ pts):**
+• Add: Social Dogs (4) + Social People (4) + Car Comfort (4) + Noise (3) + Behavior (3) + Travel (3) + Protein (3) + Food Motivation (3) = 78 pts ✓`
         },
         {
           title: 'API Endpoints',
           content: `\`\`\`
-GET /api/pet/{id}/score_state          # Complete score state
-# Returns: overall_score, tier, category_breakdown, recommendations
-
-GET /api/pet/{id}/score_state/categories  # Category details only
-
-GET /api/pet-score/tiers               # Tier definitions
+GET /api/pet/{id}/score_state              # Complete score state
+GET /api/pet/{id}/score_state/categories   # Category details
+GET /api/pet-score/tiers                   # Tier definitions
+GET /api/pet/{id}/score_state/quick-questions?limit=N  # Unanswered questions
+\`\`\``
+        },
 
 GET /api/pet/{id}/score_state/quick-questions?limit=N  # Unanswered questions
 \`\`\``
