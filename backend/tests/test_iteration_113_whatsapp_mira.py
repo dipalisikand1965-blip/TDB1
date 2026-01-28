@@ -200,7 +200,8 @@ class TestMiraWhatsAppPatterns:
         try:
             from whatsapp_routes import get_mira_whatsapp_response
             
-            membership_queries = ["pet pass", "membership", "join"]
+            # Use more specific membership queries
+            membership_queries = ["pet pass info", "membership details", "member benefits"]
             for query in membership_queries:
                 response = asyncio.get_event_loop().run_until_complete(
                     get_mira_whatsapp_response(query, "Test User")
