@@ -65,6 +65,26 @@ const ProductDetailPage = () => {
     fetchProduct();
   }, [productId, navigate, toast]);
   
+  // Check if product is in wishlist
+  useEffect(() => {
+    const checkWishlist = async () => {
+      if (!token || !productId) return;
+      try {
+        const res = await fetch(`${API_URL}/api/member/wishlist`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const inWishlist = data.wishlist?.some(item => item.product_id === productId);
+          setIsWishlisted(inWishlist);
+        }
+      } catch (err) {
+        console.log('Wishlist check error:', err);
+      }
+    };
+    checkWishlist();
+  }, [token, productId]);
+  
   const handleAddToCart = () => {
     if (!product) return;
     
