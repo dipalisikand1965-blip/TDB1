@@ -764,12 +764,16 @@ async def migrate_existing_products(force: bool = False):
         }
         
         if existing_unified and force:
-            # Update existing
-            await db.unified_products.update_one(
-                {"id": existing_unified["id"]},
-                {"$set": unified}
-            )
-            updated += 1
+            # Update existing - use _id as fallback if id doesn't exist
+            query_id = existing_unified.get("id") or str(existing_unified.get("_id"))
+            if query_id:
+                await db.unified_products.update_one(
+                    {"$or": [{"id": query_id}, {"_id": existing_unified.get("_id")}]},
+                    {"$set": unified}
+                )
+                updated += 1
+            else:
+                skipped += 1
         else:
             # Insert new
             await db.unified_products.insert_one(unified)
