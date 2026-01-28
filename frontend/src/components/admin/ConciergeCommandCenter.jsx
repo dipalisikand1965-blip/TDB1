@@ -158,6 +158,10 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
   // Agents list for manual assignment
   const [agents, setAgents] = useState([]);
   
+  // Pet Parents and Pet Profiles for auto-populate
+  const [petParents, setPetParents] = useState([]);
+  const [petProfiles, setPetProfiles] = useState([]);
+  
   // Event Stream
   const [showEventStream, setShowEventStream] = useState(false);
   const [eventStream, setEventStream] = useState([]);
