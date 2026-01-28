@@ -2,9 +2,9 @@
  * BreedTipsEngine Component
  * Smart breed-specific tips based on the pet's breed
  * Features:
- * - Daily rotating tips
+ * - Uses backend API with 50+ breeds database
  * - Category-based tips (nutrition, exercise, grooming, health)
- * - Breed-specific recommendations
+ * - Breed-specific recommendations based on size, energy, coat, health tendencies
  */
 
 import React, { useState, useEffect } from 'react';
@@ -13,187 +13,9 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { 
   Lightbulb, ChevronRight, RefreshCw, Heart, 
-  Apple, Dumbbell, Scissors, Stethoscope 
+  Apple, Dumbbell, Scissors, Stethoscope, Loader2
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
-
-// Breed tips database (can be expanded or moved to backend)
-const BREED_TIPS = {
-  'labrador': {
-    name: 'Labrador Retriever',
-    tips: {
-      nutrition: [
-        'Labs are prone to obesity - measure food portions carefully',
-        'Include omega-3 fatty acids for a healthy coat',
-        'Avoid feeding grapes, chocolate, and onions',
-        'Split meals into 2-3 portions to prevent bloat'
-      ],
-      exercise: [
-        'Labs need 1-2 hours of exercise daily',
-        'Swimming is excellent exercise for Labs',
-        'Mental stimulation through puzzle toys is important',
-        'Regular fetch games help burn energy'
-      ],
-      grooming: [
-        'Brush weekly to manage shedding',
-        'Clean ears regularly - Labs are prone to ear infections',
-        'Trim nails every 2-3 weeks',
-        'Bathe only when necessary to preserve natural oils'
-      ],
-      health: [
-        'Watch for hip dysplasia symptoms',
-        'Annual eye exams are recommended',
-        'Labs can be prone to elbow dysplasia',
-        'Maintain healthy weight to prevent joint issues'
-      ]
-    }
-  },
-  'golden retriever': {
-    name: 'Golden Retriever',
-    tips: {
-      nutrition: [
-        'Goldens do well on high-quality protein diets',
-        'Include glucosamine for joint health',
-        'Monitor calorie intake - they love to eat!',
-        'Fresh water should always be available'
-      ],
-      exercise: [
-        'Goldens need at least 60 minutes of exercise daily',
-        'They excel at fetch, swimming, and hiking',
-        'Puppy exercise should be limited to protect growing joints',
-        'Mental games are as important as physical exercise'
-      ],
-      grooming: [
-        'Daily brushing during shedding season',
-        'Regular professional grooming every 6-8 weeks',
-        'Check and clean ears weekly',
-        'Trim feathering on legs and tail as needed'
-      ],
-      health: [
-        'Regular cancer screenings are important',
-        'Watch for skin allergies and hot spots',
-        'Heart health monitoring recommended',
-        'Joint supplements can help prevent issues'
-      ]
-    }
-  },
-  'beagle': {
-    name: 'Beagle',
-    tips: {
-      nutrition: [
-        'Beagles are food-driven - control portions strictly',
-        'Avoid free-feeding to prevent obesity',
-        'High-protein diet supports their active lifestyle',
-        'Healthy treats work great for training'
-      ],
-      exercise: [
-        'Beagles need 1+ hour of exercise daily',
-        'Scent games and tracking activities are ideal',
-        'Always keep on leash - they follow their nose!',
-        'Secure fencing is essential for yard time'
-      ],
-      grooming: [
-        'Weekly brushing is usually sufficient',
-        'Check and clean floppy ears regularly',
-        'Nail trimming every 2-3 weeks',
-        'Dental care is important - brush teeth regularly'
-      ],
-      health: [
-        'Watch for epilepsy symptoms',
-        'Hypothyroidism is common in Beagles',
-        'Regular ear checks prevent infections',
-        'Maintain healthy weight to prevent back problems'
-      ]
-    }
-  },
-  'pug': {
-    name: 'Pug',
-    tips: {
-      nutrition: [
-        'Pugs gain weight easily - measure portions',
-        'Avoid foods that cause gas and bloating',
-        'Small, frequent meals work best',
-        'Keep treats to 10% of daily calories'
-      ],
-      exercise: [
-        'Short walks are better than intense exercise',
-        'Avoid exercise in hot weather - they overheat easily',
-        'Indoor play is great for Pugs',
-        '15-20 minutes of activity 2-3 times daily'
-      ],
-      grooming: [
-        'Clean facial wrinkles daily',
-        'Brush weekly to manage shedding',
-        'Regular nail trimming is essential',
-        'Clean ears weekly'
-      ],
-      health: [
-        'Watch for breathing difficulties',
-        'Eye care is crucial - clean discharge daily',
-        'Keep weight in check to ease breathing',
-        'Avoid overheating - watch for signs of distress'
-      ]
-    }
-  },
-  'german shepherd': {
-    name: 'German Shepherd',
-    tips: {
-      nutrition: [
-        'High-quality protein diet is essential',
-        'Joint supplements help prevent hip issues',
-        'Avoid overfeeding during growth phase',
-        'Probiotics can help with sensitive stomachs'
-      ],
-      exercise: [
-        'GSDs need 2+ hours of exercise daily',
-        'Mental stimulation is crucial - they\'re very intelligent',
-        'Training sessions count as exercise',
-        'Agility and obedience training are ideal'
-      ],
-      grooming: [
-        'Brush several times weekly',
-        'Daily brushing during shedding seasons',
-        'Regular nail trimming',
-        'Check ears for debris weekly'
-      ],
-      health: [
-        'Hip and elbow dysplasia screening recommended',
-        'Watch for degenerative myelopathy',
-        'Regular dental care is important',
-        'Bloat prevention - avoid exercise after eating'
-      ]
-    }
-  },
-  'default': {
-    name: 'Your Dog',
-    tips: {
-      nutrition: [
-        'Feed high-quality, age-appropriate food',
-        'Fresh water should always be available',
-        'Avoid table scraps and toxic foods',
-        'Measure portions to maintain healthy weight'
-      ],
-      exercise: [
-        'Daily exercise keeps your dog healthy and happy',
-        'Combine physical and mental stimulation',
-        'Adjust activity based on age and health',
-        'Play and training strengthen your bond'
-      ],
-      grooming: [
-        'Regular brushing keeps coat healthy',
-        'Check ears, eyes, and teeth weekly',
-        'Trim nails every 2-4 weeks',
-        'Bathe as needed based on activity'
-      ],
-      health: [
-        'Annual vet checkups are essential',
-        'Keep vaccinations up to date',
-        'Watch for changes in behavior or appetite',
-        'Maintain dental hygiene for overall health'
-      ]
-    }
-  }
-};
 
 const CATEGORY_CONFIG = {
   nutrition: { icon: Apple, color: 'text-green-500', bg: 'bg-green-100', label: 'Nutrition' },
@@ -205,24 +27,66 @@ const CATEGORY_CONFIG = {
 const BreedTipsEngine = ({ pet }) => {
   const [currentCategory, setCurrentCategory] = useState('nutrition');
   const [tipIndex, setTipIndex] = useState(0);
+  const [breedData, setBreedData] = useState(null);
+  const [loading, setLoading] = useState(true);
   
-  // Get breed-specific tips or default
-  const breed = (pet?.breed || '').toLowerCase();
-  const breedData = BREED_TIPS[breed] || BREED_TIPS['default'];
-  const tips = breedData.tips[currentCategory] || [];
-  const currentTip = tips[tipIndex] || 'No tips available';
+  // Fetch breed-specific tips from API
+  useEffect(() => {
+    const fetchBreedTips = async () => {
+      if (!pet?.breed) {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        const res = await fetch(`${API_URL}/api/breed/tips?breed=${encodeURIComponent(pet.breed)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setBreedData(data);
+        }
+      } catch (err) {
+        console.error('Error fetching breed tips:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchBreedTips();
+  }, [pet?.breed]);
+  
+  // Get tips for current category
+  const tips = breedData?.tips?.[currentCategory] || [];
+  const currentTip = tips[tipIndex] || 'No tips available for this category';
   
   // Rotate tip daily based on date
   useEffect(() => {
-    const today = new Date().getDate();
-    setTipIndex(today % tips.length);
+    if (tips.length > 0) {
+      const today = new Date().getDate();
+      setTipIndex(today % tips.length);
+    }
   }, [currentCategory, tips.length]);
   
   const nextTip = () => {
-    setTipIndex((prev) => (prev + 1) % tips.length);
+    setTipIndex((prev) => (prev + 1) % Math.max(1, tips.length));
   };
   
+  if (loading) {
+    return (
+      <Card className="p-5 bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200">
+        <div className="flex items-center justify-center gap-2 py-4">
+          <Loader2 className="w-5 h-5 animate-spin text-amber-500" />
+          <span className="text-amber-600">Loading breed tips...</span>
+        </div>
+      </Card>
+    );
+  }
+  
+  if (!pet?.breed || !breedData) {
+    return null;
+  }
+  
   const CategoryIcon = CATEGORY_CONFIG[currentCategory].icon;
+  const characteristics = breedData.characteristics || {};
   
   return (
     <Card className="p-5 bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200" data-testid="breed-tips-engine">
@@ -234,12 +98,17 @@ const BreedTipsEngine = ({ pet }) => {
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">Breed Tips</h3>
-            <p className="text-sm text-gray-500">For {breedData.name}</p>
+            <p className="text-sm text-gray-500">For {breedData.breed || pet.breed}</p>
           </div>
         </div>
-        <Badge className="bg-amber-100 text-amber-700 border-amber-300">
-          Daily Tip
-        </Badge>
+        <div className="flex gap-1 flex-wrap justify-end">
+          {characteristics.size && (
+            <Badge className="bg-blue-100 text-blue-700 text-xs">{characteristics.size}</Badge>
+          )}
+          {characteristics.energy_level && (
+            <Badge className="bg-orange-100 text-orange-700 text-xs">{characteristics.energy_level} energy</Badge>
+          )}
+        </div>
       </div>
       
       {/* Category Tabs */}
@@ -247,10 +116,11 @@ const BreedTipsEngine = ({ pet }) => {
         {Object.entries(CATEGORY_CONFIG).map(([key, config]) => {
           const Icon = config.icon;
           const isActive = currentCategory === key;
+          const tipCount = breedData?.tips?.[key]?.length || 0;
           return (
             <button
               key={key}
-              onClick={() => setCurrentCategory(key)}
+              onClick={() => { setCurrentCategory(key); setTipIndex(0); }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                 isActive 
                   ? `${config.bg} ${config.color}` 
@@ -259,13 +129,14 @@ const BreedTipsEngine = ({ pet }) => {
             >
               <Icon className="w-4 h-4" />
               {config.label}
+              {tipCount > 0 && <span className="text-xs opacity-60">({tipCount})</span>}
             </button>
           );
         })}
       </div>
       
       {/* Tip Card */}
-      <div className={`p-4 rounded-xl ${CATEGORY_CONFIG[currentCategory].bg} border border-${CATEGORY_CONFIG[currentCategory].color.replace('text-', '')}/20`}>
+      <div className={`p-4 rounded-xl ${CATEGORY_CONFIG[currentCategory].bg}`}>
         <div className="flex items-start gap-3">
           <div className={`w-8 h-8 rounded-lg bg-white flex items-center justify-center ${CATEGORY_CONFIG[currentCategory].color}`}>
             <CategoryIcon className="w-4 h-4" />
@@ -279,11 +150,36 @@ const BreedTipsEngine = ({ pet }) => {
         </div>
       </div>
       
+      {/* Health Alerts */}
+      {(characteristics.is_brachycephalic || characteristics.prone_to_hip_dysplasia || characteristics.prone_to_obesity) && (
+        <div className="mt-3 p-3 bg-red-50 rounded-lg border border-red-200">
+          <div className="flex items-center gap-2 text-red-700 text-sm">
+            <Heart className="w-4 h-4" />
+            <span className="font-medium">Health Considerations:</span>
+          </div>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {characteristics.is_brachycephalic && (
+              <Badge className="bg-red-100 text-red-700 text-xs">Brachycephalic (flat-faced)</Badge>
+            )}
+            {characteristics.prone_to_hip_dysplasia && (
+              <Badge className="bg-red-100 text-red-700 text-xs">Hip dysplasia prone</Badge>
+            )}
+            {characteristics.prone_to_obesity && (
+              <Badge className="bg-red-100 text-red-700 text-xs">Obesity prone</Badge>
+            )}
+            {characteristics.prone_to_skin_issues && (
+              <Badge className="bg-red-100 text-red-700 text-xs">Skin issues prone</Badge>
+            )}
+          </div>
+        </div>
+      )}
+      
       {/* Actions */}
       <div className="flex items-center justify-between mt-4">
         <button 
           onClick={nextTip}
           className="flex items-center gap-1 text-sm text-amber-600 hover:text-amber-700"
+          disabled={tips.length <= 1}
         >
           <RefreshCw className="w-4 h-4" /> Next Tip
         </button>
