@@ -1352,7 +1352,10 @@ const UnifiedPetPage = () => {
                                   // Inline Edit Mode
                                   <div className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                      <p className="text-sm font-semibold text-purple-700">{questionLabels[questionId] || questionId}</p>
+                                      <p className="text-sm font-semibold text-purple-700">
+                                        {contributesSoulScore && <span className="text-purple-500 mr-1" title="Contributes to Pet Soul Score">★</span>}
+                                        {questionLabels[questionId] || questionId}
+                                      </p>
                                       <Button 
                                         size="sm" 
                                         variant="ghost" 
