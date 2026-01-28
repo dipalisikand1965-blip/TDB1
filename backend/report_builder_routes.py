@@ -35,6 +35,13 @@ def set_verify_admin(verify_fn):
     verify_admin = verify_fn
 
 
+def get_admin_verifier():
+    """Wrapper to properly invoke verify_admin"""
+    if verify_admin:
+        return verify_admin
+    raise HTTPException(status_code=401, detail="Not authenticated")
+
+
 @report_builder_router.get("/generate")
 async def generate_report(
     report_type: str = "daily_summary",
@@ -42,7 +49,7 @@ async def generate_report(
     pillar: str = "all",
     start_date: str = None,
     end_date: str = None,
-    username: str = Depends(lambda: verify_admin)
+    username: str = Depends(get_admin_verifier)
 ):
     """Generate intelligent report based on type and parameters"""
     
