@@ -6902,9 +6902,10 @@ async def membership_onboard(data: MembershipOnboardModel):
 # ==================== MULTI-PET HOUSEHOLD FEATURES ====================
 # Routes moved to household_routes.py
 
-# Keep calculate_pet_soul_score here as it may be used by other parts of the app
-def calculate_pet_soul_score(pet: dict) -> int:
-    """Calculate Pet Soul completeness score"""
+# Legacy function kept for backward compatibility with other parts of the app
+# Note: For accurate scoring, use calculate_pet_soul_score from pet_score_logic.py
+def calculate_pet_soul_score_legacy(pet: dict) -> int:
+    """Calculate Pet Soul completeness score (legacy simple version)"""
     soul_answers = pet.get("doggy_soul_answers", {})
     if not soul_answers:
         return 0
