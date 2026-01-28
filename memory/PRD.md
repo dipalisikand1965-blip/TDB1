@@ -804,6 +804,15 @@
 - `GET /api/products?category={cat}` - Filter by category
 - `GET /api/products/recommendations/for-pet/{pet_id}` - Personalized recommendations
 
+### Checkout & Payments (NEW - Jan 28, 2025)
+- `GET /api/checkout/config` - Get Razorpay key, GST rate, shipping settings
+- `POST /api/checkout/calculate-total` - Calculate order total with GST breakdown (CGST+SGST or IGST)
+- `POST /api/checkout/create-order` - Create order with Razorpay payment
+- `POST /api/checkout/verify-payment` - Verify Razorpay payment signature
+- `GET /api/checkout/order/{id}/invoice` - Get invoice data (JSON)
+- `GET /api/checkout/order/{id}/invoice/pdf` - Download invoice as PDF
+- `GET /api/checkout/discount/validate` - Validate discount codes
+
 ---
 
 ## Design System (for Pillar Pages)
@@ -822,4 +831,4 @@
 
 ---
 
-*Last Updated: January 27, 2025*
+*Last Updated: January 28, 2025*
