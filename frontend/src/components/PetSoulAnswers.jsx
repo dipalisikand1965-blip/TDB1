@@ -109,12 +109,12 @@ const SOUL_QUESTIONS = {
     icon: GraduationCap,
     color: 'indigo',
     questions: [
-      { id: 'training_level', label: 'Training Level', question: "What is your pet's training level?" },
-      { id: 'commands_known', label: 'Commands Known', question: "What commands does your pet know?", isArray: true },
-      { id: 'leash_behavior', label: 'Leash Behavior', question: "How does your pet behave on a leash?" },
-      { id: 'recall', label: 'Recall', question: "Does your pet come when called?" },
-      { id: 'problematic_behaviors', label: 'Behavioral Issues', question: "Any behavioral issues to work on?", isArray: true },
-      { id: 'anxiety_triggers', label: 'Anxiety Triggers', question: "What triggers anxiety in your pet?", isArray: true },
+      { id: 'training_level', label: 'Training Level', question: "What is your pet's training level?", tooltip: "Basic (sit, stay) to Advanced (off-leash, tricks)" },
+      { id: 'commands_known', label: 'Commands Known', question: "What commands does your pet know?", isArray: true, tooltip: "List commands like sit, stay, come, heel, down, paw" },
+      { id: 'leash_behavior', label: 'Leash Behavior', question: "How does your pet behave on a leash?", tooltip: "Pulls, walks calmly, reactive to other dogs, etc." },
+      { id: 'recall', label: 'Recall', question: "Does your pet come when called?", tooltip: "Recall = coming back when you call their name. Important for safety!" },
+      { id: 'problematic_behaviors', label: 'Behavioral Issues', question: "Any behavioral issues to work on?", isArray: true, tooltip: "E.g., jumping on guests, excessive barking, counter surfing" },
+      { id: 'anxiety_triggers', label: 'Anxiety Triggers', question: "What triggers anxiety in your pet?", isArray: true, tooltip: "Thunderstorms, fireworks, strangers, vet visits, etc." },
     ]
   },
   long_horizon: {
