@@ -887,18 +887,21 @@ const UnifiedProductBox = () => {
           
           {selectedProduct && (
             <Tabs defaultValue="basic" className="mt-4">
-              <TabsList className="grid grid-cols-6 w-full">
+              <TabsList className="grid grid-cols-8 w-full text-xs">
                 <TabsTrigger value="basic">Basic</TabsTrigger>
                 <TabsTrigger value="pillars">Pillars</TabsTrigger>
+                <TabsTrigger value="pricing">Pricing</TabsTrigger>
+                <TabsTrigger value="inventory">Inventory</TabsTrigger>
                 <TabsTrigger value="safety">Pet Safety</TabsTrigger>
                 <TabsTrigger value="rewards">Rewards</TabsTrigger>
                 <TabsTrigger value="mira">Mira AI</TabsTrigger>
-                <TabsTrigger value="pricing">Pricing</TabsTrigger>
+                <TabsTrigger value="visibility">Visibility</TabsTrigger>
               </TabsList>
               
               {/* Basic Info Tab */}
               <TabsContent value="basic" className="space-y-4 mt-4">
-                <div className="grid grid-cols-2 gap-4">
+                {/* Row 1: Name + Type + Primary Pillar */}
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label>Product Name *</Label>
                     <Input 
@@ -919,15 +922,99 @@ const UnifiedProductBox = () => {
                       ))}
                     </select>
                   </div>
+                  <div>
+                    <Label>Primary Pillar *</Label>
+                    <select 
+                      value={selectedProduct.primary_pillar || 'shop'}
+                      onChange={(e) => setSelectedProduct({
+                        ...selectedProduct, 
+                        primary_pillar: e.target.value,
+                        pillars: selectedProduct.pillars?.includes(e.target.value) 
+                          ? selectedProduct.pillars 
+                          : [e.target.value, ...(selectedProduct.pillars || [])]
+                      })}
+                      className="w-full h-10 px-3 rounded-md border border-gray-200"
+                    >
+                      {ALL_PILLARS.map(p => (
+                        <option key={p.id} value={p.id}>{p.icon} {p.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                
+                {/* Row 2: SKU + Barcode + Brand */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label>SKU</Label>
+                    <Input 
+                      value={selectedProduct.sku || ''}
+                      onChange={(e) => setSelectedProduct({...selectedProduct, sku: e.target.value})}
+                      placeholder="Stock Keeping Unit"
+                    />
+                  </div>
+                  <div>
+                    <Label>Barcode</Label>
+                    <Input 
+                      value={selectedProduct.identity?.barcode || ''}
+                      onChange={(e) => setSelectedProduct({
+                        ...selectedProduct, 
+                        identity: {...(selectedProduct.identity || {}), barcode: e.target.value}
+                      })}
+                      placeholder="UPC/EAN"
+                    />
+                  </div>
+                  <div>
+                    <Label>Brand</Label>
+                    <Input 
+                      value={selectedProduct.brand || ''}
+                      onChange={(e) => setSelectedProduct({...selectedProduct, brand: e.target.value})}
+                      placeholder="Manufacturer/Brand"
+                    />
+                  </div>
+                </div>
+                
+                {/* Short Description */}
+                <div>
+                  <Label>Short Description (100-140 chars) *</Label>
+                  <Input 
+                    value={selectedProduct.short_description || ''}
+                    onChange={(e) => setSelectedProduct({...selectedProduct, short_description: e.target.value})}
+                    placeholder="Brief description for product cards"
+                    maxLength={140}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    {(selectedProduct.short_description || '').length}/140 characters
+                  </p>
+                </div>
+                
+                {/* Long Description */}
+                <div>
+                  <Label>Long Description</Label>
+                  <Textarea 
+                    value={selectedProduct.long_description || ''}
+                    onChange={(e) => setSelectedProduct({...selectedProduct, long_description: e.target.value})}
+                    placeholder="Full product description (supports markdown)"
+                    rows={4}
+                  />
+                </div>
+                
+                {/* Usage Context */}
+                <div>
+                  <Label>Usage Context</Label>
+                  <Input 
+                    value={selectedProduct.usage_context || ''}
+                    onChange={(e) => setSelectedProduct({...selectedProduct, usage_context: e.target.value})}
+                    placeholder="When to use / when to avoid"
+                  />
                 </div>
                 
                 {/* Image Section */}
                 <div className="border rounded-lg p-4 bg-gray-50">
                   <Label className="flex items-center gap-2 mb-3">
-                    <Image className="w-4 h-4" /> Product Image
+                    <Image className="w-4 h-4" /> Product Media
                   </Label>
                   <div className="grid grid-cols-3 gap-4">
-                    <div className="col-span-2">
+                    <div className="col-span-2 space-y-2">
                       <Input 
                         value={selectedProduct.image_url || selectedProduct.images?.[0] || ''}
                         onChange={(e) => setSelectedProduct({
@@ -935,11 +1022,20 @@ const UnifiedProductBox = () => {
                           image_url: e.target.value,
                           images: e.target.value ? [e.target.value, ...(selectedProduct.images?.slice(1) || [])] : selectedProduct.images
                         })}
-                        placeholder="Enter image URL or paste link"
+                        placeholder="Primary image URL"
                       />
-                      <p className="text-xs text-gray-500 mt-1">Paste a direct image URL (jpg, png, webp)</p>
+                      <Input 
+                        value={selectedProduct.image_alt || ''}
+                        onChange={(e) => setSelectedProduct({...selectedProduct, image_alt: e.target.value})}
+                        placeholder="Image alt text (for accessibility)"
+                      />
+                      <Input 
+                        value={selectedProduct.video_url || ''}
+                        onChange={(e) => setSelectedProduct({...selectedProduct, video_url: e.target.value})}
+                        placeholder="Video URL (optional)"
+                      />
                     </div>
-                    <div className="flex items-center justify-center border-2 border-dashed rounded-lg bg-white h-24">
+                    <div className="flex items-center justify-center border-2 border-dashed rounded-lg bg-white h-32">
                       {(selectedProduct.image_url || selectedProduct.images?.[0]) ? (
                         <img 
                           src={selectedProduct.image_url || selectedProduct.images?.[0]} 
