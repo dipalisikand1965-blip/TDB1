@@ -768,6 +768,102 @@ const ShopManager = ({ getAuthHeader }) => {
           </Card>
         </TabsContent>
 
+        {/* Wishlists Tab - Admin view for sending reminders */}
+        <TabsContent value="wishlists" className="space-y-4">
+          <Card className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-red-500" /> Customer Wishlists
+                </h3>
+                <p className="text-sm text-gray-500">Products customers have liked - send reminders to convert</p>
+              </div>
+              <Button variant="outline" onClick={fetchWishlistData} disabled={loadingWishlist}>
+                <RefreshCw className={`w-4 h-4 mr-2 ${loadingWishlist ? 'animate-spin' : ''}`} /> Refresh
+              </Button>
+            </div>
+            
+            {loadingWishlist ? (
+              <div className="text-center py-8">
+                <Loader2 className="w-8 h-8 animate-spin mx-auto text-purple-600" />
+                <p className="text-gray-500 mt-2">Loading wishlist data...</p>
+              </div>
+            ) : wishlistData.popular_wishlisted?.length === 0 ? (
+              <div className="text-center py-12 bg-gray-50 rounded-lg">
+                <Heart className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                <p className="text-gray-500">No wishlisted products yet</p>
+                <p className="text-sm text-gray-400">Products will appear here when customers start adding items to their wishlist</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {wishlistData.popular_wishlisted.map((item) => (
+                  <Card key={item._id} className="p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start gap-4">
+                      <div className="w-16 h-16 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                        {item.product_image ? (
+                          <img src={item.product_image} alt={item.product_name} className="w-full h-full object-cover" />
+                        ) : (
+                          <Package className="w-8 h-8 m-4 text-gray-400" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-gray-900 truncate">{item.product_name || 'Unknown Product'}</h4>
+                        <p className="text-sm text-purple-600 font-medium">₹{item.product_price?.toLocaleString() || 'N/A'}</p>
+                        <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <Heart className="w-4 h-4 text-red-400 fill-red-400" />
+                            <strong className="text-red-600">{item.users_count}</strong> people wishlisted
+                          </span>
+                          <span>Last: {item.latest_added ? new Date(item.latest_added).toLocaleDateString() : 'N/A'}</span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Button 
+                          size="sm" 
+                          className="bg-purple-600 hover:bg-purple-700"
+                          onClick={() => {
+                            // Open compose email with pre-filled recipients
+                            const emails = item.user_emails?.filter(e => e).join(',') || '';
+                            window.open(`mailto:${emails}?subject=Your wishlisted item at The Doggy Company&body=Hi there!%0A%0AWe noticed you've been eyeing ${item.product_name}. Here's a special reminder that this item is waiting for you!%0A%0AShop now: ${window.location.origin}/product/${item._id}%0A%0A- The Doggy Company Team`, '_blank');
+                            toast({ title: 'Opening email client', description: `Sending to ${item.users_count} customers` });
+                          }}
+                        >
+                          <Mail className="w-4 h-4 mr-1" /> Send Reminder
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => window.open(`/product/${item._id}`, '_blank')}
+                        >
+                          <Eye className="w-4 h-4 mr-1" /> View
+                        </Button>
+                      </div>
+                    </div>
+                    {/* Expanded user list */}
+                    {item.user_emails?.length > 0 && (
+                      <div className="mt-3 pt-3 border-t">
+                        <p className="text-xs text-gray-500 mb-2">Wishlisted by:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {item.user_emails.slice(0, 5).map((email, idx) => (
+                            <Badge key={idx} variant="secondary" className="text-xs">
+                              {email}
+                            </Badge>
+                          ))}
+                          {item.user_emails.length > 5 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{item.user_emails.length - 5} more
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            )}
+          </Card>
+        </TabsContent>
+
         {/* Settings Tab */}
         <TabsContent value="settings" className="space-y-4">
           <Card className="p-6">
