@@ -278,6 +278,9 @@ async def process_incoming_message(message: dict, contacts: list):
             
             logger.info(f"Created new ticket from WhatsApp: {new_ticket_id}")
         
+        # 🐕‍🦺 Send Mira's auto-reply
+        await send_auto_mira_reply(from_number, content, sender_name)
+        
         client.close()
         
     except Exception as e:
