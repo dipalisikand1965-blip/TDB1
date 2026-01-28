@@ -7097,6 +7097,7 @@ class PetOnboardModel(BaseModel):
     weight_unit: Optional[str] = "kg"
     is_neutered: Optional[bool] = None
     species: str = "dog"
+    celebrations: Optional[List[str]] = []  # List of celebration type IDs
 
 class ParentOnboardModel(BaseModel):
     name: str
