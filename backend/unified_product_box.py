@@ -1334,6 +1334,59 @@ async def get_reward_triggers():
     return {"triggers": REWARD_TRIGGERS}
 
 
+@product_box_router.get("/config/all")
+async def get_all_config():
+    """Get all configuration options for the product form"""
+    return {
+        "pillars": [
+            {"id": p, "name": p.capitalize(), "icon": {
+                "celebrate": "🎂", "dine": "🍽️", "stay": "🏨", "travel": "✈️",
+                "care": "💊", "enjoy": "🎾", "fit": "🏃", "learn": "🎓",
+                "paperwork": "📄", "advisory": "📋", "emergency": "🚨",
+                "farewell": "🌈", "adopt": "🐾", "shop": "🛒"
+            }.get(p, "📦")} for p in ALL_PILLARS
+        ],
+        "product_types": [
+            {"id": "physical", "name": "Physical Product", "icon": "📦"},
+            {"id": "service", "name": "Service", "icon": "🛠️"},
+            {"id": "experience", "name": "Experience", "icon": "✨"},
+            {"id": "bundle", "name": "Bundle", "icon": "🎁"},
+            {"id": "reward", "name": "Reward", "icon": "🏆"},
+            {"id": "property", "name": "Property", "icon": "🏨"},
+            {"id": "content", "name": "Content", "icon": "📚"}
+        ],
+        "source_types": SOURCE_TYPES,
+        "status_options": PRODUCT_STATUS,
+        "life_stages": LIFE_STAGES,
+        "size_options": SIZE_SUITABILITY,
+        "species_options": SPECIES_OPTIONS,
+        "dietary_flags": DIETARY_FLAGS,
+        "allergens": ALLERGENS,
+        "shipping_classes": SHIPPING_CLASSES,
+        "risk_levels": RISK_LEVELS,
+        "price_models": PRICE_MODELS,
+        "gst_rates": GST_RATES,
+        "membership_tiers": MEMBERSHIP_ELIGIBILITY,
+        "reward_triggers": REWARD_TRIGGERS,
+        "pillar_fields": {
+            "celebrate": ["lead_time_days", "customization_options", "message_rules", "occasion_types"],
+            "dine": ["restaurant_id", "seating_type", "pet_policy_summary", "reservation_required", "max_party_size"],
+            "stay": ["property_id", "pet_fee", "max_pets_per_room", "check_in_rules", "cctv_available", "pet_amenities"],
+            "travel": ["documentation_required", "carrier_rules", "crate_requirements", "travel_mode"],
+            "care": ["service_duration_mins", "at_home_available", "clinic_visit_required", "cancellation_window_hours"],
+            "enjoy": ["activity_type", "energy_requirement", "weather_dependent", "group_activity"],
+            "fit": ["fitness_goal", "session_type", "intensity_level", "suitability_notes"],
+            "learn": ["content_type", "duration_mins", "difficulty_level", "credits_attribution"],
+            "paperwork": ["documents_required", "turnaround_time", "template_links"],
+            "advisory": ["advisory_type", "consult_duration_mins", "quote_based", "intake_questions"],
+            "emergency": ["response_time_mins", "is_24x7", "escalation_contacts", "geo_coverage"],
+            "farewell": ["privacy_level", "sensitive_messaging", "service_scope"],
+            "adopt": ["eligibility_criteria", "verification_steps", "partner_org_id", "adoption_fee"],
+            "shop": ["merchandising_flags", "addon_products", "related_products", "collection_ids"]
+        }
+    }
+
+
 # ==================== AUTO-SEEDING & SMART MAPPING ====================
 
 # Category to pillar mapping
