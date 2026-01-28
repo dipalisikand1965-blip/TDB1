@@ -145,20 +145,27 @@ const UnifiedCheckout = () => {
     }
   }, [user]);
   
-  // Fetch smart recommendations based on cart items
+  // Fetch smart recommendations based on cart items AND user's pet profile (Mira-powered)
   useEffect(() => {
     const fetchRecommendations = async () => {
       if (cartItems.length === 0) return;
       setLoadingRecommendations(true);
       try {
         const categories = [...new Set(cartItems.map(item => item.category).filter(Boolean))];
-        const response = await fetch(`${API_URL}/api/products/recommendations?categories=${categories.join(',')}&limit=4`);
+        const cartIds = cartItems.map(item => item.id).join(',');
+        
+        // Use Mira-powered personalized endpoint if user is logged in
+        let endpoint = `${API_URL}/api/products/recommendations?categories=${categories.join(',')}&limit=6&exclude_ids=${cartIds}`;
+        
+        // If user is logged in, use personalized recommendations
+        if (user?.id) {
+          endpoint = `${API_URL}/api/products/recommendations/personalized?user_id=${user.id}&categories=${categories.join(',')}&limit=6&exclude_ids=${cartIds}`;
+        }
+        
+        const response = await fetch(endpoint);
         if (response.ok) {
           const data = await response.json();
-          // Filter out items already in cart
-          const cartIds = cartItems.map(item => item.id);
-          const filtered = (data.products || []).filter(p => !cartIds.includes(p.id));
-          setRecommendations(filtered.slice(0, 4));
+          setRecommendations((data.products || []).slice(0, 4));
         }
       } catch (err) {
         console.error('Error fetching recommendations:', err);
@@ -167,7 +174,7 @@ const UnifiedCheckout = () => {
       }
     };
     fetchRecommendations();
-  }, [cartItems]);
+  }, [cartItems, user]);
 
   // Calculate shipping fee
   const shippingFee = useMemo(() => {
