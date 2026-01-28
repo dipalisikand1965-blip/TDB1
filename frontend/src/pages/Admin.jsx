@@ -1605,149 +1605,239 @@ const Admin = () => {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tabs */}
-        <div className="flex gap-2 mb-8 border-b pb-4 flex-wrap items-center">
-          {/* CORE TOOLS */}
-          <span className="text-xs text-gray-500 px-2 py-1 font-semibold uppercase">Core Tools</span>
-          {[
-            { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-            { id: 'inbox', label: '📥 Unified Inbox', icon: Inbox },
-            { id: 'communications', label: '📧 Communications', icon: Mail },
-            { id: 'reminders', label: '🔔 Reminders', icon: Bell },
-            { id: 'mira-memory', label: '🧠 Mira Memory', icon: Brain },
-            { id: 'mis', label: '📊 Live MIS', icon: BarChart3 },
-            { id: 'orders', label: 'Orders', icon: Package },
-            { id: 'fulfilment', label: '📦 Fulfilment', icon: Truck },
-            { id: 'command-center', label: '🎯 Command Center', icon: Headphones },
-            { id: 'member-directory', label: '👥 Pet Parent Directory', icon: Users },
-            { id: 'membership', label: '👑 Membership', icon: Crown },
-            { id: 'members', label: 'Customers', icon: Users },
-            { id: 'pets', label: '🐾 Pet Profiles', icon: PawPrint },
-            { id: 'celebrations', label: '🎉 Celebrations', icon: Calendar },
-            { id: 'servicedesk', label: '🎫 Service Desk', icon: Ticket },
-            { id: 'agents', label: '👤 Agents', icon: Users },
-            { id: 'loyalty', label: '⭐ Loyalty', icon: Star },
-            { id: 'product-box', label: '📦 Product Box', icon: Package },
-            { id: 'concierge-experiences', label: '✨ Concierge® XP', icon: Sparkles },
-            { id: 'reports', label: '📊 Reports', icon: BarChart3 },
-            { id: 'analytics', label: '📈 Analytics', icon: TrendingUp },
-            { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
-            { id: 'reviews', label: 'Reviews', icon: MessageCircle },
-          ].map((tab) => (
-            <Button
-              key={tab.id}
-              variant={activeTab === tab.id ? 'default' : 'ghost'}
-              className={activeTab === tab.id ? 'bg-purple-600' : ''}
-              onClick={() => setActiveTab(tab.id)}
-              data-testid={`admin-tab-${tab.id}`}
-            >
-              <tab.icon className="w-4 h-4 mr-2" />
-              {tab.label}
-            </Button>
-          ))}
+        {/* Reorganized Tabs - Cleaner Layout */}
+        <div className="mb-8">
+          {/* Command Center - Most Used Daily */}
+          <div className="flex gap-2 flex-wrap items-center mb-4">
+            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-purple-100 rounded">🎯 Command Center</span>
+            {[
+              { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+              { id: 'servicedesk', label: 'Service Desk', icon: Ticket },
+              { id: 'command-center', label: 'Command Center', icon: Headphones },
+              { id: 'inbox', label: 'Unified Inbox', icon: Inbox },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? 'default' : 'ghost'}
+                className={activeTab === tab.id ? 'bg-purple-600' : ''}
+                onClick={() => setActiveTab(tab.id)}
+                size="sm"
+                data-testid={`admin-tab-${tab.id}`}
+              >
+                <tab.icon className="w-4 h-4 mr-1" />
+                {tab.label}
+              </Button>
+            ))}
+          </div>
           
-          {/* Divider */}
-          <div className="w-px h-6 bg-gray-300 mx-2" />
+          {/* Members & Pets */}
+          <div className="flex gap-2 flex-wrap items-center mb-4">
+            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-blue-100 rounded">👥 Members & Pets</span>
+            {[
+              { id: 'member-directory', label: 'Pet Parents', icon: Users },
+              { id: 'pets', label: 'Pet Profiles', icon: PawPrint },
+              { id: 'membership', label: 'Membership', icon: Crown },
+              { id: 'loyalty', label: 'Loyalty', icon: Star },
+              { id: 'celebrations', label: 'Celebrations', icon: Calendar },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? 'default' : 'ghost'}
+                className={activeTab === tab.id ? 'bg-blue-600' : ''}
+                onClick={() => setActiveTab(tab.id)}
+                size="sm"
+                data-testid={`admin-tab-${tab.id}`}
+              >
+                <tab.icon className="w-4 h-4 mr-1" />
+                {tab.label}
+              </Button>
+            ))}
+          </div>
           
-          {/* UNIVERSAL SEED - ONE BUTTON TO SEED EVERYTHING */}
-          <span className="text-xs text-gray-500 px-2 py-1 font-semibold uppercase">Master Controls</span>
+          {/* Commerce */}
+          <div className="flex gap-2 flex-wrap items-center mb-4">
+            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-green-100 rounded">📦 Commerce</span>
+            {[
+              { id: 'orders', label: 'Orders', icon: Package },
+              { id: 'fulfilment', label: 'Fulfilment', icon: Truck },
+              { id: 'product-box', label: 'Product Box', icon: Package },
+              { id: 'collections', label: 'Collections', icon: Layers },
+              { id: 'autoship', label: 'Autoship', icon: RefreshCw },
+              { id: 'abandoned', label: 'Abandoned', icon: ShoppingBag },
+              { id: 'discounts', label: 'Discounts', icon: Tag },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? 'default' : 'ghost'}
+                className={activeTab === tab.id ? 'bg-green-600 text-white' : ''}
+                onClick={() => setActiveTab(tab.id)}
+                size="sm"
+                data-testid={`admin-tab-${tab.id}`}
+              >
+                <tab.icon className="w-4 h-4 mr-1" />
+                {tab.label}
+              </Button>
+            ))}
+          </div>
           
-          {/* Universal Seed Button - THE ONE BUTTON */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white border-0 hover:opacity-90 text-xs font-bold shadow-lg animate-pulse"
-            onClick={seedAllPillars}
-            disabled={seedingAll}
-            data-testid="universal-seed-btn"
-          >
-            {seedingAll ? (
-              <><RefreshCw className="w-3 h-3 mr-1 animate-spin" /> Seeding All 14 Pillars...</>
-            ) : (
-              <><Sparkles className="w-3 h-3 mr-1" /> 🔥 Universal Seed</>
-            )}
-          </Button>
+          {/* The 14 Pillars - Compact Icon Bar */}
+          <div className="flex gap-2 flex-wrap items-center mb-4">
+            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-pink-100 rounded">🏛️ 14 Pillars</span>
+            {[
+              { id: 'products', emoji: '🎂', label: 'Celebrate' },
+              { id: 'dine', emoji: '🍽️', label: 'Dine' },
+              { id: 'stay', emoji: '🏨', label: 'Stay' },
+              { id: 'travel', emoji: '✈️', label: 'Travel' },
+              { id: 'care', emoji: '💊', label: 'Care' },
+              { id: 'enjoy', emoji: '🎾', label: 'Enjoy' },
+              { id: 'fit', emoji: '🏃', label: 'Fit' },
+              { id: 'learn', emoji: '🎓', label: 'Learn' },
+              { id: 'paperwork', emoji: '📄', label: 'Paperwork' },
+              { id: 'advisory', emoji: '📋', label: 'Advisory' },
+              { id: 'emergency', emoji: '🚨', label: 'Emergency' },
+              { id: 'farewell', emoji: '🌈', label: 'Farewell' },
+              { id: 'adopt', emoji: '🐾', label: 'Adopt' },
+              { id: 'shop', emoji: '🛒', label: 'Shop' },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? 'default' : 'outline'}
+                className={activeTab === tab.id ? 'bg-gradient-to-r from-purple-600 to-pink-600' : 'hover:bg-purple-50'}
+                onClick={() => setActiveTab(tab.id)}
+                size="sm"
+                title={tab.label}
+                data-testid={`admin-tab-${tab.id}`}
+              >
+                <span className="text-lg mr-1">{tab.emoji}</span>
+                <span className="hidden md:inline">{tab.label}</span>
+              </Button>
+            ))}
+          </div>
           
-          {/* Seed Production Data Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="bg-gradient-to-r from-purple-500 to-pink-600 text-white border-0 hover:from-purple-600 hover:to-pink-700 text-xs"
-            onClick={seedProductionData}
-            disabled={seedingProduction}
-            data-testid="seed-production-btn"
-          >
-            {seedingProduction ? (
-              <><RefreshCw className="w-3 h-3 mr-1 animate-spin" /> Seeding...</>
-            ) : (
-              <><Database className="w-3 h-3 mr-1" /> Seed Production</>
-            )}
-          </Button>
+          {/* Mira & AI */}
+          <div className="flex gap-2 flex-wrap items-center mb-4">
+            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-violet-100 rounded">🤖 Mira & AI</span>
+            {[
+              { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
+              { id: 'mira-memory', label: 'Memory', icon: Brain },
+              { id: 'communications', label: 'Communications', icon: Mail },
+              { id: 'reminders', label: 'Reminders', icon: Bell },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? 'default' : 'ghost'}
+                className={activeTab === tab.id ? 'bg-violet-600' : ''}
+                onClick={() => setActiveTab(tab.id)}
+                size="sm"
+                data-testid={`admin-tab-${tab.id}`}
+              >
+                <tab.icon className="w-4 h-4 mr-1" />
+                {tab.label}
+              </Button>
+            ))}
+          </div>
           
-          {[
-            { id: 'products', label: '🎂 Celebrate', icon: Package },
-            { id: 'collections', label: 'Collections', icon: Layers },
-            { id: 'requests', label: 'Custom Cakes', icon: Cake },
-            { id: 'dine', label: '🍽️ Dine', icon: Package },
-            { id: 'stay', label: '🏨 Stay', icon: Building },
-            { id: 'travel', label: '✈️ Travel', icon: Truck },
-            { id: 'care', label: '💊 Care', icon: Heart },
-            { id: 'enjoy', label: '🎾 Enjoy', icon: PartyPopper },
-            { id: 'fit', label: '🏃 Fit', icon: Dumbbell },
-            { id: 'learn', label: '🎓 Learn', icon: GraduationCap },
-            { id: 'paperwork', label: '📄 Paperwork', icon: FileText },
-            { id: 'advisory', label: '📋 Advisory', icon: Brain },
-            { id: 'emergency', label: '🚨 Emergency', icon: Bell },
-            { id: 'farewell', label: '🌈 Farewell', icon: Heart },
-            { id: 'adopt', label: '🐾 Adopt', icon: PawPrint },
-            { id: 'shop', label: '🛒 Shop', icon: ShoppingBag },
-            { id: 'nps', label: '🐾 Pawmoter Score', icon: Star },
-            { id: 'insights', label: '📝 Blog', icon: FileText },
-            { id: 'testimonials', label: 'Testimonials', icon: Star },
-            { id: 'faqs', label: 'FAQs', icon: HelpCircle },
-            { id: 'about', label: '✨ About Page', icon: Sparkles },
-            { id: 'pages', label: '📝 Page CMS', icon: FileText },
-          ].map((tab) => (
-            <Button
-              key={tab.id}
-              variant={activeTab === tab.id ? 'default' : 'ghost'}
-              className={activeTab === tab.id ? 'bg-purple-600' : ''}
-              onClick={() => setActiveTab(tab.id)}
-              data-testid={`admin-tab-${tab.id}`}
-            >
-              <tab.icon className="w-4 h-4 mr-2" />
-              {tab.label}
-            </Button>
-          ))}
+          {/* Analytics & Reports */}
+          <div className="flex gap-2 flex-wrap items-center mb-4">
+            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-amber-100 rounded">📈 Analytics</span>
+            {[
+              { id: 'mis', label: 'Live MIS', icon: BarChart3 },
+              { id: 'reports', label: 'Reports', icon: BarChart3 },
+              { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+              { id: 'reviews', label: 'Reviews', icon: MessageCircle },
+              { id: 'nps', label: 'Pawmoter', icon: Star },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? 'default' : 'ghost'}
+                className={activeTab === tab.id ? 'bg-amber-600' : ''}
+                onClick={() => setActiveTab(tab.id)}
+                size="sm"
+                data-testid={`admin-tab-${tab.id}`}
+              >
+                <tab.icon className="w-4 h-4 mr-1" />
+                {tab.label}
+              </Button>
+            ))}
+          </div>
           
-          {/* Divider */}
-          <div className="w-px h-6 bg-gray-300 mx-2" />
+          {/* Content */}
+          <div className="flex gap-2 flex-wrap items-center mb-4">
+            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-cyan-100 rounded">📝 Content</span>
+            {[
+              { id: 'insights', label: 'Blog', icon: FileText },
+              { id: 'testimonials', label: 'Testimonials', icon: Star },
+              { id: 'faqs', label: 'FAQs', icon: HelpCircle },
+              { id: 'about', label: 'About', icon: Sparkles },
+              { id: 'pages', label: 'CMS', icon: FileText },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? 'default' : 'ghost'}
+                className={activeTab === tab.id ? 'bg-cyan-600' : ''}
+                onClick={() => setActiveTab(tab.id)}
+                size="sm"
+                data-testid={`admin-tab-${tab.id}`}
+              >
+                <tab.icon className="w-4 h-4 mr-1" />
+                {tab.label}
+              </Button>
+            ))}
+          </div>
           
-          {/* OPERATIONS */}
-          <span className="text-xs text-gray-500 px-2 py-1 font-semibold uppercase">Operations</span>
-          {[
-            { id: 'product-tags', label: '🏷️ Product Tags', icon: Tag },
-            { id: 'breed-tags', label: '🐕 Breed Tags', icon: PawPrint },
-            { id: 'discounts', label: '🎟️ Discounts', icon: Tag },
-            { id: 'abandoned', label: '🛒 Abandoned', icon: ShoppingBag },
-            { id: 'autoship', label: '🔄 Autoship', icon: RefreshCw },
-            { id: 'streaties', label: '🧡 Streaties', icon: Heart },
-            { id: 'franchise', label: '🏪 Franchise', icon: Building },
-          ].map((tab) => (
-            <Button
-              key={tab.id}
-              variant={activeTab === tab.id ? 'default' : 'ghost'}
-              className={activeTab === tab.id ? 'bg-purple-600' : ''}
-              onClick={() => setActiveTab(tab.id)}
-              data-testid={`admin-tab-${tab.id}`}
-            >
-              <tab.icon className="w-4 h-4 mr-2" />
-              {tab.label}
-            </Button>
-          ))}
-          
-          {/* Divider */}
-          <div className="w-px h-6 bg-gray-300 mx-2" />
+          {/* Config - Admin Only */}
+          <div className="flex gap-2 flex-wrap items-center mb-4 pt-2 border-t">
+            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-slate-200 rounded">⚙️ Config</span>
+            {[
+              { id: 'agents', label: 'Agents', icon: Users },
+              { id: 'members', label: 'Customers', icon: Users },
+              { id: 'concierge-experiences', label: 'Concierge XP', icon: Sparkles },
+              { id: 'product-tags', label: 'Tags', icon: Tag },
+              { id: 'breed-tags', label: 'Breeds', icon: PawPrint },
+              { id: 'requests', label: 'Custom Cakes', icon: Cake },
+              { id: 'streaties', label: 'Streaties', icon: Heart },
+              { id: 'franchise', label: 'Franchise', icon: Building },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? 'default' : 'ghost'}
+                className={activeTab === tab.id ? 'bg-slate-700' : ''}
+                onClick={() => setActiveTab(tab.id)}
+                size="sm"
+                data-testid={`admin-tab-${tab.id}`}
+              >
+                <tab.icon className="w-4 h-4 mr-1" />
+                {tab.label}
+              </Button>
+            ))}
+            
+            {/* Master Controls */}
+            <div className="ml-4 flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 text-xs font-bold"
+                onClick={seedAllPillars}
+                disabled={seedingAll}
+                data-testid="universal-seed-btn"
+              >
+                {seedingAll ? <RefreshCw className="w-3 h-3 mr-1 animate-spin" /> : <Sparkles className="w-3 h-3 mr-1" />}
+                {seedingAll ? 'Seeding...' : 'Universal Seed'}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-slate-700 text-white border-0 text-xs"
+                onClick={seedProductionData}
+                disabled={seedingProduction}
+                data-testid="seed-production-btn"
+              >
+                {seedingProduction ? <RefreshCw className="w-3 h-3 mr-1 animate-spin" /> : <Database className="w-3 h-3 mr-1" />}
+                Seed Production
+              </Button>
+            </div>
+          </div>
+        </div>
           
           {/* CONFIGURATION */}
           <span className="text-xs text-gray-500 px-2 py-1 font-semibold uppercase">Config</span>
