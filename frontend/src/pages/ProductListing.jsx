@@ -572,19 +572,19 @@ const ProductListing = ({ category = 'all' }) => {
               {heroContent.subtitle}
             </p>
             
-            {/* Quick Stats */}
+            {/* Quick Stats - Pet-friendly messaging */}
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
-                <Cake className="w-5 h-5 text-yellow-300" />
-                <span className="text-sm">{filteredProducts.length} Products</span>
+                <PawPrint className="w-5 h-5 text-pink-300" />
+                <span className="text-sm">100% Pet-Friendly</span>
               </div>
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
-                <Gift className="w-5 h-5 text-pink-300" />
-                <span className="text-sm">Same Day Delivery</span>
+                <Heart className="w-5 h-5 text-red-300" />
+                <span className="text-sm">Loved by 45,000+ Pets</span>
               </div>
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
                 <Star className="w-5 h-5 text-yellow-300" />
-                <span className="text-sm">100% Pet Safe</span>
+                <span className="text-sm">Chemical-Free</span>
               </div>
             </div>
           </div>
