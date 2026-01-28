@@ -567,19 +567,32 @@ What would you like help with today? 🐕"""
 async def get_mira_whatsapp_response(message_text: str, user_name: str = "friend") -> str:
     """
     Generate Mira's intelligent response for WhatsApp messages.
-    Uses pattern matching for common queries, can be upgraded to AI later.
+    Uses word-boundary pattern matching for common queries.
     """
+    import re
     message_lower = message_text.lower().strip()
     
-    # Check each pattern category
-    for category, data in MIRA_WHATSAPP_PATTERNS.items():
+    # Check each pattern category (order matters - check more specific patterns first)
+    pattern_order = ["membership", "order", "grooming", "vet", "birthday", "stay", "help", "thanks", "bye", "greeting"]
+    
+    for category in pattern_order:
+        if category not in MIRA_WHATSAPP_PATTERNS:
+            continue
+        data = MIRA_WHATSAPP_PATTERNS[category]
         for pattern in data["patterns"]:
-            if pattern in message_lower:
-                response = data["response"]
-                # Personalize with user name if available
-                if user_name and user_name != "WhatsApp User":
-                    response = response.replace("Hey there!", f"Hey {user_name}!")
-                return response
+            # Use word boundary for short patterns like 'hi', 'bye' to avoid false matches
+            if len(pattern) <= 3:
+                if re.search(r'\b' + re.escape(pattern) + r'\b', message_lower):
+                    response = data["response"]
+                    if user_name and user_name != "WhatsApp User":
+                        response = response.replace("Hey there!", f"Hey {user_name}!")
+                    return response
+            else:
+                if pattern in message_lower:
+                    response = data["response"]
+                    if user_name and user_name != "WhatsApp User":
+                        response = response.replace("Hey there!", f"Hey {user_name}!")
+                    return response
     
     # Default response
     return MIRA_DEFAULT_RESPONSE
