@@ -2674,6 +2674,95 @@ const MemberDashboard = () => {
                   </div>
                 </Card>
 
+                {/* PWA Push Notifications */}
+                <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+                  <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
+                    <BellRing className="w-5 h-5 text-blue-600" /> Push Notifications
+                    <Badge className="bg-blue-100 text-blue-700 text-xs">PWA</Badge>
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Get instant notifications on your device - even when the app is closed. Never miss an update!
+                  </p>
+                  
+                  <div className="space-y-4">
+                    {!isPushSupported ? (
+                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                        <p className="text-sm text-amber-800">
+                          <Smartphone className="w-4 h-4 inline mr-1" />
+                          Push notifications require a modern browser. Try Chrome, Firefox, or Edge.
+                        </p>
+                      </div>
+                    ) : pushPermission === 'denied' ? (
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-sm text-red-800">
+                          🚫 Notifications are blocked. Please enable them in your browser settings.
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                          <div className="space-y-0.5">
+                            <label className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                              <Bell className="w-4 h-4 text-blue-500" />
+                              Enable Push Notifications
+                            </label>
+                            <p className="text-xs text-gray-500">Receive instant alerts on your device</p>
+                          </div>
+                          <Switch 
+                            checked={isPushSubscribed}
+                            disabled={pushLoading}
+                            onCheckedChange={async (checked) => {
+                              if (checked) {
+                                const success = await subscribeToPush({
+                                  soul_whisper: settings.soul_whisper,
+                                  order_updates: settings.order_updates,
+                                  concierge_updates: true
+                                });
+                                if (success) {
+                                  toast({ title: '🔔 Notifications enabled!', description: "You'll now receive instant updates" });
+                                }
+                              } else {
+                                const success = await unsubscribeFromPush();
+                                if (success) {
+                                  toast({ title: 'Notifications disabled', description: 'You can re-enable anytime' });
+                                }
+                              }
+                            }}
+                          />
+                        </div>
+                        
+                        {isPushSubscribed && (
+                          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-green-800 font-medium flex items-center gap-1">
+                                  <CheckCircle2 className="w-4 h-4" /> Notifications Active
+                                </p>
+                                <p className="text-xs text-green-600 mt-1">
+                                  You'll receive Soul Whispers™, order updates & concierge® replies
+                                </p>
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-green-700 border-green-300 hover:bg-green-100"
+                                onClick={async () => {
+                                  const sent = await sendTestNotification();
+                                  if (sent) {
+                                    toast({ title: '📬 Test sent!', description: 'Check your notifications' });
+                                  }
+                                }}
+                              >
+                                Test 🔔
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </Card>
+
                 {/* Soul Whisper™ Settings - Premium Feature */}
                 <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
                   <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
