@@ -94,128 +94,507 @@ GST_RATES = [0, 5, 12, 18, 28]
 
 # ==================== PYDANTIC MODELS ====================
 
-class PetSafetyInfo(BaseModel):
-    """Pet safety and suitability layer"""
-    life_stages: List[str] = ["all"]  # puppy, adult, senior, all
-    size_suitability: List[str] = ["all"]  # small, medium, large, all
-    dietary_flags: List[str] = []
-    known_exclusions: List[str] = []  # allergies, health restrictions
-    safety_notes: Optional[str] = None
-    is_validated: bool = False  # Admin must validate safety info
+# --- Section A: Identity & Source ---
+class IdentityInfo(BaseModel):
+    """Identity and source tracking"""
+    barcode: Optional[str] = None  # UPC/EAN
+    shopify_id: Optional[str] = None
+    shopify_handle: Optional[str] = None
+    external_source: Optional[str] = None  # manual, shopify, partner, import
+    source_url: Optional[str] = None
+    vendor_id: Optional[str] = None
+    partner_id: Optional[str] = None
+    original_product_id: Optional[str] = None  # For migrations
 
 
-class PawRewardConfig(BaseModel):
-    """Paw Rewards integration settings"""
-    is_reward_eligible: bool = False
-    is_reward_only: bool = False  # Cannot be purchased, reward only
-    reward_value: float = 0  # Points value for redemption
-    max_redemptions_per_pet: Optional[int] = None
-    expiry_days: Optional[int] = None
-    trigger_conditions: List[str] = []  # birthday, booking, etc.
-    pillar_specific: Optional[str] = None  # If tied to specific pillar
+# --- Section B: Basic Info ---
+class BasicInfo(BaseModel):
+    """Core product information"""
+    name: str
+    short_description: Optional[str] = None  # 100-140 chars for cards
+    long_description: Optional[str] = None  # Full HTML/markdown
+    usage_context: Optional[str] = None  # When to use / avoid
+    key_benefits: List[str] = []  # 3-5 bullet points
+    brand: Optional[str] = None
+    manufacturer: Optional[str] = None
+    country_of_origin: Optional[str] = None
 
 
-class MiraVisibility(BaseModel):
-    """Mira AI visibility rules"""
-    can_reference: bool = True
-    can_suggest_proactively: bool = False  # Non-pushy by default
-    mention_only_if_asked: bool = True
-    suggestion_context: Optional[str] = None  # When to suggest
-    exclusion_reasons: List[str] = []  # Why Mira shouldn't suggest
+# --- Section C: Categorization ---
+class CategorizationInfo(BaseModel):
+    """Discovery and categorization"""
+    category: Optional[str] = None
+    subcategory: Optional[str] = None
+    taxonomy_path: Optional[str] = None  # e.g., "Shop > Treats > Birthday"
+    tags: List[str] = []
+    intelligent_tags: List[str] = []  # AI-generated
+    breed_tags: List[str] = []
+    health_tags: List[str] = []
+    collections: List[str] = []
+    occasion_tags: List[str] = []  # birthday, christmas, etc.
+    seasonality: List[str] = []  # summer, winter, all-year
 
 
+# --- Section D: Media ---
+class MediaInfo(BaseModel):
+    """Media assets"""
+    primary_image: Optional[str] = None
+    primary_image_alt: Optional[str] = None  # Required for accessibility
+    images: List[str] = []
+    thumbnail: Optional[str] = None  # Auto-generated if not provided
+    video_url: Optional[str] = None
+    document_urls: List[str] = []  # PDFs, guides, menus
+
+
+# --- Section E: Pricing & Tax ---
 class PricingInfo(BaseModel):
     """Pricing and tax configuration"""
     base_price: float = 0
-    compare_at_price: Optional[float] = None
-    cost_price: Optional[float] = None
-    gst_applicable: bool = True
-    gst_rate: float = 18.0
-    variable_pricing: bool = False
-    zero_price_allowed: bool = False  # For rewards
-    currency: str = "INR"
+    compare_at_price: Optional[float] = None  # MRP / original
+    cost_price: Optional[float] = None  # For margin calculation
     
-    # Shipping
+    # Tax
+    gst_applicable: bool = True
+    gst_rate: float = 18.0  # 0, 5, 12, 18, 28
+    hsn_code: Optional[str] = None
+    price_includes_gst: bool = False
+    
+    # Service pricing
+    price_model: str = "fixed"  # fixed, variable, quote_based, subscription
+    min_price: Optional[float] = None
+    max_price: Optional[float] = None
+    
+    # Currency
+    currency: str = "INR"
+
+
+# --- Section F: Variants ---
+class VariantOption(BaseModel):
+    """Product option definition"""
+    name: str  # e.g., "Size", "Flavor"
+    position: int = 1
+    values: List[str] = []  # e.g., ["500g", "1kg"]
+
+
+class ProductVariant(BaseModel):
+    """Individual variant"""
+    id: Optional[str] = None
+    title: str  # e.g., "500g / Peanut Butter"
+    sku: Optional[str] = None
+    price: float = 0
+    compare_at_price: Optional[float] = None
+    option1: Optional[str] = None
+    option2: Optional[str] = None
+    option3: Optional[str] = None
+    available: bool = True
+    inventory_quantity: int = 0
+    weight: Optional[float] = None
+
+
+# --- Section G: Inventory ---
+class InventoryInfo(BaseModel):
+    """Inventory tracking"""
+    in_stock: bool = True
+    track_inventory: bool = False
+    stock_quantity: Optional[int] = None
+    low_stock_threshold: int = 5
+    allow_backorder: bool = False
+    warehouse_location: Optional[str] = None
+    reserved_quantity: int = 0  # For pending orders
+    
+    # Perishables
+    batch_tracking: bool = False
+    expiry_date: Optional[str] = None
+    shelf_life_days: Optional[int] = None
+
+
+# --- Section H: Shipping & Fulfillment ---
+class ShippingInfo(BaseModel):
+    """Shipping and fulfillment config"""
     requires_shipping: bool = True
-    shipping_weight: Optional[float] = None  # in kg
-    shipping_class: Optional[str] = None  # standard, express, etc.
-    free_shipping_eligible: bool = False
+    shipping_class: str = "standard"  # standard, express, frozen, fragile
+    cold_chain_required: bool = False
+    
+    # Dimensions
+    weight_grams: Optional[int] = None
+    length_cm: Optional[float] = None
+    width_cm: Optional[float] = None
+    height_cm: Optional[float] = None
+    
+    # Availability
+    is_pan_india: bool = False
+    delivery_zones: List[str] = []  # ["mumbai", "delhi", "bangalore"]
+    excluded_pincodes: List[str] = []
+    
+    # Timing
+    preparation_time: Optional[str] = None  # "2-3 days", "Same day"
+    dispatch_sla_hours: int = 48
+    delivery_sla_days: int = 5
+    
+    # Packaging
+    packaging_type: Optional[str] = None
+    handling_instructions: Optional[str] = None
+    
+    # Policies
+    cancellation_policy_id: Optional[str] = None
+    refund_policy_id: Optional[str] = None
+    
+    # For services
+    service_duration_mins: Optional[int] = None
+    at_home_available: bool = False
+    cancellation_window_hours: int = 24
 
 
+# --- Section I: Pet Safety & Suitability ---
+class PetSafetyInfo(BaseModel):
+    """Pet safety and suitability - HIGH PRIORITY"""
+    species: str = "dog"  # dog, cat, both, other
+    life_stages: List[str] = ["all"]
+    size_suitability: List[str] = ["all"]
+    breed_restrictions: List[str] = []  # Breeds to exclude
+    
+    # Dietary
+    dietary_flags: List[str] = []
+    allergens: List[str] = []
+    
+    # For food items
+    ingredients: List[str] = []
+    nutrition_info: Optional[Dict[str, Any]] = None
+    feeding_guidelines: Optional[str] = None
+    calorie_content: Optional[str] = None
+    
+    # Safety
+    known_exclusions: List[str] = []  # Health conditions to avoid
+    contraindications: List[str] = []
+    supervision_required: bool = False
+    risk_level: str = "safe"  # safe, guidance_needed, supervision_required, concierge_review
+    safety_notes: Optional[str] = None
+    
+    # Validation
+    is_validated: bool = False
+    validated_by: Optional[str] = None
+    validated_at: Optional[str] = None
+
+
+# --- Section J: Rewards & Loyalty ---
+class PawRewardConfig(BaseModel):
+    """Paw Rewards integration"""
+    # Earning
+    points_per_rupee: float = 1.0  # Points earned per ₹ spent
+    bonus_points: int = 0  # Extra points for this item
+    
+    # Redemption
+    is_redeemable: bool = False  # Can use points to buy?
+    points_required: Optional[int] = None
+    is_reward_only: bool = False  # Cannot purchase, reward only
+    reward_value: float = 0
+    
+    # Limits
+    max_redemptions_per_pet: Optional[int] = None
+    max_redemptions_per_year: Optional[int] = None
+    expiry_days: Optional[int] = None
+    
+    # Triggers
+    trigger_conditions: List[str] = []  # birthday, referral, etc.
+    tier_eligibility: List[str] = ["all"]  # trial, annual, vip
+    
+    # Stacking
+    stackable_with_coupons: bool = True
+    funding_source: str = "tdc"  # tdc, partner, shared
+
+
+# --- Section K: Mira AI Config ---
+class MiraVisibility(BaseModel):
+    """Mira AI visibility and behavior rules"""
+    can_reference: bool = True
+    can_suggest_proactively: bool = False
+    suggestion_contexts: List[str] = []  # ["birthday_planning", "health_concern"]
+    
+    # Confidence
+    knowledge_confidence: str = "high"  # high, medium, low
+    requires_verification: bool = False  # For medical/travel claims
+    
+    # Rules
+    safe_recommendation_rules: Optional[str] = None  # if→then logic
+    escalation_triggers: List[str] = []  # When to handoff to human
+    
+    # Cross-sell
+    upsell_items: List[str] = []  # Product IDs
+    cross_sell_items: List[str] = []
+    
+    exclusion_reasons: List[str] = []
+
+
+# --- Section L: Bundle Config ---
+class BundleItem(BaseModel):
+    """Item in a bundle"""
+    product_id: str
+    quantity: int = 1
+    discount_percent: float = 0
+    is_optional: bool = False
+    substitution_allowed: bool = False
+
+
+class BundleConfig(BaseModel):
+    """Bundle configuration"""
+    is_bundle: bool = False
+    bundle_items: List[BundleItem] = []
+    bundle_price: Optional[float] = None
+    original_price: Optional[float] = None
+    savings_display: Optional[str] = None  # "Save ₹500!"
+    min_items_required: int = 0
+
+
+# --- Section M: Pillar-Specific Config ---
+class CelebrateConfig(BaseModel):
+    """Celebrate pillar specifics"""
+    lead_time_days: int = 2
+    customization_options: List[str] = []
+    message_rules: Optional[str] = None
+    occasion_types: List[str] = []  # birthday, gotcha_day, etc.
+
+
+class DineConfig(BaseModel):
+    """Dine pillar specifics"""
+    restaurant_id: Optional[str] = None
+    seating_type: Optional[str] = None  # indoor, outdoor, private
+    pet_policy_summary: Optional[str] = None
+    reservation_required: bool = False
+    max_party_size: Optional[int] = None
+
+
+class StayConfig(BaseModel):
+    """Stay pillar specifics"""
+    property_id: Optional[str] = None
+    pet_fee: float = 0
+    max_pets_per_room: int = 2
+    check_in_rules: Optional[str] = None
+    cctv_available: bool = False
+    pet_amenities: List[str] = []
+    yard_access: bool = False
+
+
+class TravelConfig(BaseModel):
+    """Travel pillar specifics"""
+    documentation_required: List[str] = []
+    carrier_rules: Optional[str] = None
+    crate_requirements: Optional[str] = None
+    travel_mode: Optional[str] = None  # flight, train, car
+
+
+class CareConfig(BaseModel):
+    """Care pillar specifics"""
+    service_duration_mins: Optional[int] = None
+    at_home_available: bool = False
+    clinic_visit_required: bool = False
+    cancellation_window_hours: int = 24
+    followup_required: bool = False
+
+
+class EnjoyConfig(BaseModel):
+    """Enjoy pillar specifics"""
+    activity_type: Optional[str] = None
+    energy_requirement: str = "moderate"  # low, moderate, high
+    weather_dependent: bool = False
+    group_activity: bool = False
+    equipment_provided: bool = True
+
+
+class FitConfig(BaseModel):
+    """Fit pillar specifics"""
+    fitness_goal: Optional[str] = None  # weight_loss, muscle, mobility
+    session_type: Optional[str] = None  # assessment, training, rehab
+    intensity_level: str = "moderate"
+    suitability_notes: Optional[str] = None
+
+
+class LearnConfig(BaseModel):
+    """Learn pillar specifics"""
+    content_type: Optional[str] = None  # video, article, course
+    duration_mins: Optional[int] = None
+    difficulty_level: str = "beginner"
+    credits_attribution: Optional[str] = None
+    downloadable: bool = False
+
+
+class PaperworkConfig(BaseModel):
+    """Paperwork pillar specifics"""
+    documents_required: List[str] = []
+    turnaround_time: Optional[str] = None
+    template_links: List[str] = []
+    government_fee_included: bool = False
+
+
+class AdvisoryConfig(BaseModel):
+    """Advisory pillar specifics"""
+    advisory_type: Optional[str] = None  # legal, financial, behavioral
+    consult_duration_mins: Optional[int] = None
+    quote_based: bool = False
+    intake_questions: List[str] = []
+
+
+class EmergencyConfig(BaseModel):
+    """Emergency pillar specifics"""
+    response_time_mins: Optional[int] = None
+    is_24x7: bool = False
+    escalation_contacts: List[str] = []
+    geo_coverage: List[str] = []  # Cities/regions covered
+
+
+class FarewellConfig(BaseModel):
+    """Farewell pillar specifics"""
+    privacy_level: str = "private"  # private, family, memorial
+    sensitive_messaging: bool = True
+    service_scope: List[str] = []  # cremation, burial, memorial
+
+
+class AdoptConfig(BaseModel):
+    """Adopt pillar specifics"""
+    eligibility_criteria: List[str] = []
+    verification_steps: List[str] = []
+    partner_org_id: Optional[str] = None
+    adoption_fee: float = 0
+
+
+class ShopConfig(BaseModel):
+    """Shop pillar specifics"""
+    merchandising_flags: List[str] = []
+    addon_products: List[str] = []
+    related_products: List[str] = []
+    collection_ids: List[str] = []
+
+
+class PillarConfig(BaseModel):
+    """Container for all pillar-specific configs"""
+    celebrate: Optional[CelebrateConfig] = None
+    dine: Optional[DineConfig] = None
+    stay: Optional[StayConfig] = None
+    travel: Optional[TravelConfig] = None
+    care: Optional[CareConfig] = None
+    enjoy: Optional[EnjoyConfig] = None
+    fit: Optional[FitConfig] = None
+    learn: Optional[LearnConfig] = None
+    paperwork: Optional[PaperworkConfig] = None
+    advisory: Optional[AdvisoryConfig] = None
+    emergency: Optional[EmergencyConfig] = None
+    farewell: Optional[FarewellConfig] = None
+    adopt: Optional[AdoptConfig] = None
+    shop: Optional[ShopConfig] = None
+
+
+# --- Section N: Visibility & Publishing ---
 class VisibilitySettings(BaseModel):
-    """Visibility and status settings"""
-    status: str = "draft"  # draft, active, archived
+    """Visibility and publishing controls"""
+    status: str = "draft"  # draft, pending_approval, active, paused, archived
     visible_on_site: bool = True
-    visible_to_members: bool = True
-    admin_only: bool = False
-    membership_eligibility: str = "all"  # trial, annual, both, reward_only, all
+    member_only: bool = False
+    concierge_only: bool = False
+    internal_only: bool = False
+    
     featured: bool = False
     searchable: bool = True
+    
+    # Geographic
+    city_visibility: List[str] = []  # Empty = all cities
+    region_visibility: List[str] = []
+    
+    # Scheduling
+    publish_date: Optional[str] = None
+    unpublish_date: Optional[str] = None
+    
+    # Testing
+    ab_test_group: Optional[str] = None
 
+
+# --- Section O: Reviews (read-only aggregate) ---
+class ReviewsAggregate(BaseModel):
+    """Review statistics - populated by system"""
+    average_rating: float = 0
+    total_reviews: int = 0
+    rating_distribution: Dict[str, int] = {}  # {"5": 10, "4": 5, ...}
+    featured_review_id: Optional[str] = None
+    nps_score: Optional[float] = None
+
+
+# --- Section P: Audit ---
+class AuditInfo(BaseModel):
+    """Audit trail"""
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    created_by: Optional[str] = None
+    updated_at: Optional[str] = None
+    updated_by: Optional[str] = None
+    version: int = 1
+    change_log: List[Dict[str, Any]] = []
+
+
+# ==================== MAIN PRODUCT MODEL ====================
 
 class UnifiedProduct(BaseModel):
-    """The canonical product record"""
-    # Identity (immutable)
+    """
+    The Canonical Product Record
+    ============================
+    Single source of truth for all items across The Doggy Company.
+    Supports: Products, Services, Experiences, Bundles, Rewards, Properties, Content
+    """
+    # Identity
     id: Optional[str] = None
     sku: Optional[str] = None
+    product_type: str = "physical"  # physical, service, experience, bundle, reward, property, content
+    primary_pillar: Optional[str] = None
+    pillars: List[str] = []
     
-    # Basic Info
+    # Source tracking
+    identity: IdentityInfo = Field(default_factory=IdentityInfo)
+    
+    # Core info
     name: str
-    product_type: str  # physical, service, experience, reward
     short_description: Optional[str] = None
     long_description: Optional[str] = None
-    usage_context: Optional[str] = None  # When appropriate/not appropriate
+    usage_context: Optional[str] = None
+    key_benefits: List[str] = []
+    brand: Optional[str] = None
     
     # Categorization
     category: Optional[str] = None
     subcategory: Optional[str] = None
     tags: List[str] = []
+    intelligent_tags: List[str] = []
     collections: List[str] = []
     
-    # Pillar Mapping (Critical)
-    pillars: List[str] = []  # Which pillars this product appears in
-    primary_pillar: Optional[str] = None
-    
     # Media
-    image_url: Optional[str] = None  # Primary image URL
+    image_url: Optional[str] = None
+    image_alt: Optional[str] = None
     images: List[str] = []
     thumbnail: Optional[str] = None
+    video_url: Optional[str] = None
     
-    # Nested Configs
+    # Nested configurations
+    pricing: PricingInfo = Field(default_factory=PricingInfo)
+    inventory: InventoryInfo = Field(default_factory=InventoryInfo)
+    shipping: ShippingInfo = Field(default_factory=ShippingInfo)
     pet_safety: PetSafetyInfo = Field(default_factory=PetSafetyInfo)
     paw_rewards: PawRewardConfig = Field(default_factory=PawRewardConfig)
     mira_visibility: MiraVisibility = Field(default_factory=MiraVisibility)
-    pricing: PricingInfo = Field(default_factory=PricingInfo)
+    bundle: BundleConfig = Field(default_factory=BundleConfig)
     visibility: VisibilitySettings = Field(default_factory=VisibilitySettings)
+    reviews: ReviewsAggregate = Field(default_factory=ReviewsAggregate)
     
-    # Inventory
-    in_stock: bool = True
-    stock_quantity: Optional[int] = None
-    track_inventory: bool = False
-    allow_backorder: bool = False
-    
-    # Variants (for physical products)
+    # Variants
     has_variants: bool = False
-    variants: List[Dict[str, Any]] = []
+    options: List[VariantOption] = []
+    variants: List[ProductVariant] = []
     
-    # Bundle Info
-    is_bundle: bool = False
-    bundle_items: List[Dict[str, Any]] = []  # List of {product_id, quantity}
-    
-    # Fulfilment
-    fulfilment_notes: Optional[str] = None  # Internal only
-    preparation_time: Optional[str] = None
-    
-    # External References
-    shopify_id: Optional[str] = None
-    external_source: Optional[str] = None
+    # Pillar-specific config
+    pillar_config: PillarConfig = Field(default_factory=PillarConfig)
     
     # Audit
-    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    updated_at: Optional[str] = None
-    created_by: Optional[str] = None
-    updated_by: Optional[str] = None
-    version: int = 1
+    audit: AuditInfo = Field(default_factory=AuditInfo)
+    
+    # Legacy compatibility
+    in_stock: bool = True
+    stock_quantity: Optional[int] = None
+    shopify_id: Optional[str] = None
+    external_source: Optional[str] = None
 
 
 class ProductFilter(BaseModel):
@@ -227,6 +606,8 @@ class ProductFilter(BaseModel):
     mira_visible: Optional[bool] = None
     in_stock: Optional[bool] = None
     search: Optional[str] = None
+    category: Optional[str] = None
+    city: Optional[str] = None
 
 
 # ==================== API ROUTES ====================
