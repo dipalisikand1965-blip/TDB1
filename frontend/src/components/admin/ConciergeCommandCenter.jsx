@@ -1824,6 +1824,67 @@ const ConciergeCommandCenter = ({ agentId, agentName, isAdminMode = false }) => 
             {/* Member Info Section */}
             <div className="border-t pt-4">
               <h4 className="text-sm font-medium text-gray-600 mb-3">Member Information (Optional)</h4>
+              
+              {/* Quick Select - Pet Parent & Pet Profile */}
+              <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
+                <div>
+                  <Label className="text-emerald-700 flex items-center gap-1">
+                    <User className="w-3 h-3" />
+                    Quick Select Pet Parent
+                  </Label>
+                  <select
+                    className="w-full mt-1 px-3 py-2 border rounded-md text-sm bg-white focus:ring-2 focus:ring-emerald-500"
+                    onChange={(e) => {
+                      const parent = petParents.find(p => p.email === e.target.value);
+                      if (parent) {
+                        setNewTicket(prev => ({
+                          ...prev,
+                          member_name: parent.name || parent.full_name || '',
+                          member_email: parent.email || '',
+                          member_phone: parent.whatsapp_number || parent.phone || ''
+                        }));
+                      }
+                    }}
+                    defaultValue=""
+                  >
+                    <option value="">-- Select existing pet parent --</option>
+                    {petParents.map((parent, idx) => (
+                      <option key={idx} value={parent.email}>
+                        {parent.name || parent.full_name} ({parent.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label className="text-emerald-700 flex items-center gap-1">
+                    <PawPrint className="w-3 h-3" />
+                    Quick Select Pet Profile
+                  </Label>
+                  <select
+                    className="w-full mt-1 px-3 py-2 border rounded-md text-sm bg-white focus:ring-2 focus:ring-emerald-500"
+                    onChange={(e) => {
+                      const pet = petProfiles.find(p => p.id === e.target.value);
+                      if (pet) {
+                        setNewTicket(prev => ({
+                          ...prev,
+                          pet_name: pet.name || '',
+                          member_email: prev.member_email || pet.owner_email || '',
+                          member_name: prev.member_name || pet.owner_name || ''
+                        }));
+                      }
+                    }}
+                    defaultValue=""
+                  >
+                    <option value="">-- Select existing pet --</option>
+                    {petProfiles.map((pet, idx) => (
+                      <option key={idx} value={pet.id}>
+                        {pet.name} ({pet.breed || 'Unknown breed'}) - {pet.owner_email || 'No owner'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Member Name</Label>
