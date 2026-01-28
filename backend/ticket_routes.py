@@ -757,8 +757,16 @@ async def list_tickets(
     except Exception as e:
         logger.warning(f"Error fetching from service_desk_tickets collection: {e}")
     
-    # Sort combined results
-    all_tickets.sort(key=lambda x: x.get(sort_by, ""), reverse=(sort_order == "desc"))
+    # Sort combined results - handle datetime vs string comparison
+    def get_sort_key(x):
+        val = x.get(sort_by, "")
+        if val is None:
+            return ""
+        if isinstance(val, datetime):
+            return val.isoformat()
+        return str(val)
+    
+    all_tickets.sort(key=get_sort_key, reverse=(sort_order == "desc"))
     
     # Apply limit
     all_tickets = all_tickets[:limit]
