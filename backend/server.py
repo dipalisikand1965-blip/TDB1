@@ -8681,6 +8681,55 @@ async def delete_notification(
     return {"message": "Notification deleted"}
 
 
+# ==================== MEMBER NOTIFICATION BADGE ====================
+
+@api_router.get("/notifications/unread-count")
+async def get_member_unread_count(current_user: dict = Depends(get_current_user)):
+    """Get unread notification count for the logged-in member (for PWA badge)"""
+    try:
+        user_email = current_user.get("email", "")
+        user_id = current_user.get("id", "")
+        
+        # Count unread push notifications for this user
+        unread_push = await db.push_notification_logs.count_documents({
+            "$or": [
+                {"user_id": user_id},
+                {"user_email": user_email}
+            ],
+            "read": {"$ne": True}
+        })
+        
+        # Count unread ticket updates for this member
+        unread_tickets = await db.tickets.count_documents({
+            "member.email": user_email,
+            "status": {"$in": ["open", "in_progress", "pending_response"]},
+            "has_unread_update": True
+        })
+        
+        # Count pending concierge requests
+        pending_requests = await db.concierge_requests.count_documents({
+            "$or": [
+                {"email": user_email},
+                {"user_email": user_email}
+            ],
+            "status": {"$in": ["pending", "in_progress"]}
+        })
+        
+        total_unread = unread_push + unread_tickets + pending_requests
+        
+        return {
+            "unread_count": total_unread,
+            "breakdown": {
+                "push_notifications": unread_push,
+                "ticket_updates": unread_tickets,
+                "pending_requests": pending_requests
+            }
+        }
+    except Exception as e:
+        # Return 0 if there's any error - badge is not critical
+        return {"unread_count": 0, "error": str(e)}
+
+
 # ==================== SEED ALL PILLARS ====================
 
 @api_router.post("/admin/seed-all")
