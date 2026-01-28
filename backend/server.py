@@ -1396,6 +1396,12 @@ from paw_rewards import (
     set_database as set_rewards_db
 )
 
+# Import Member Rewards & Engagement (Social Sharing, NPS)
+from member_rewards_routes import (
+    member_rewards_router,
+    set_member_rewards_db
+)
+
 # Import Paw Points Redemption System
 from paw_points_routes import (
     paw_points_router,
