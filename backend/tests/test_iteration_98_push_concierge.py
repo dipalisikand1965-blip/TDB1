@@ -268,21 +268,21 @@ class TestMemberAuthentication:
     """Test member authentication for dashboard access"""
     
     def test_member_login(self):
-        """POST /api/auth/member/login - Should authenticate member"""
+        """POST /api/auth/login - Should authenticate member"""
         login_data = {
             "email": "dipali@clubconcierge.in",
             "password": "test123"
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/auth/member/login",
+            f"{BASE_URL}/api/auth/login",
             json=login_data,
             headers={"Content-Type": "application/json"}
         )
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
-        assert "token" in data or "session_token" in data or "user" in data, \
+        assert "access_token" in data or "token" in data or "user" in data, \
             f"Login should return token or user data: {data}"
         print(f"✅ Member login successful")
         return data
