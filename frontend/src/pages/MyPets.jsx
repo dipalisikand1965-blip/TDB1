@@ -783,7 +783,7 @@ const MyPets = () => {
                           </div>
                           <div className="bg-white/70 rounded-lg p-3">
                             <p className="text-xs text-gray-500 mb-1">✨ Soul Score</p>
-                            <p className="font-medium text-sm text-teal-600">{Math.round(pet.overall_score || 0)}%</p>
+                            <p className="font-medium text-sm text-teal-600">{Math.min(100, Math.round(pet.overall_score || 0))}%</p>
                           </div>
                         </div>
                       </div>
@@ -810,7 +810,7 @@ const MyPets = () => {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-3xl font-bold text-teal-600">{Math.round(pet.overall_score || 0)}%</div>
+                          <div className="text-3xl font-bold text-teal-600">{Math.min(100, Math.round(pet.overall_score || 0))}%</div>
                           <p className="text-xs text-gray-500">completion</p>
                         </div>
                       </div>
@@ -819,7 +819,7 @@ const MyPets = () => {
                       <div className="w-full bg-white/60 rounded-full h-3 mb-4">
                         <div 
                           className="bg-gradient-to-r from-teal-500 to-pink-500 h-3 rounded-full transition-all"
-                          style={{ width: `${Math.round(pet.overall_score || 0)}%` }}
+                          style={{ width: `${Math.min(100, Math.round(pet.overall_score || 0))}%` }}
                         />
                       </div>
                       
@@ -1173,9 +1173,9 @@ const MyPets = () => {
                         <div className="flex items-center gap-3">
                           <div className="flex items-center gap-2">
                             <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
-                              <div className="h-full bg-teal-500 rounded-full" style={{ width: `${pet.overall_score || 0}%` }} />
+                              <div className="h-full bg-teal-500 rounded-full" style={{ width: `${Math.min(100, pet.overall_score || 0)}%` }} />
                             </div>
-                            <span className="text-sm text-teal-600 font-medium">{Math.round(pet.overall_score || 0)}%</span>
+                            <span className="text-sm text-teal-600 font-medium">{Math.min(100, Math.round(pet.overall_score || 0))}%</span>
                           </div>
                           {soulExpanded ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
                         </div>
