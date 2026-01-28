@@ -81,12 +81,37 @@ const MembershipOnboarding = () => {
       weight: '',
       weight_unit: 'kg',
       is_neutered: null,
-      photo_url: ''
+      photo_url: '',
+      photo_preview: null  // For local preview before upload
     }))
   );
   
   const [parentErrors, setParentErrors] = useState({});
   const [petErrors, setPetErrors] = useState([]);
+  const [uploadingPhoto, setUploadingPhoto] = useState(null); // Track which pet is uploading
+
+  // Handle pet photo upload
+  const handlePetPhotoSelect = async (petIndex, event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image must be less than 5MB');
+      return;
+    }
+
+    // Create local preview
+    const previewUrl = URL.createObjectURL(file);
+    updatePetData(petIndex, 'photo_preview', previewUrl);
+
+    // Store the file for later upload (during form submission)
+    updatePetData(petIndex, 'photo_file', file);
+  };
 
   // Filter cities based on search
   const filteredCities = INDIAN_CITIES.filter(city => 
