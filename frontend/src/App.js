@@ -18,6 +18,16 @@ function ScrollToTop() {
   return null;
 }
 
+// ConditionalFloatingButton - Hide on Mira page to prevent overlap
+function ConditionalFloatingButton() {
+  const { pathname } = useLocation();
+  // Don't show on /mira or /admin pages
+  if (pathname === '/mira' || pathname.startsWith('/admin')) {
+    return null;
+  }
+  return <FloatingContactButton />;
+}
+
 // Redirect component for deprecated pet-soul-journey route
 function PetSoulJourneyRedirect() {
   const { petId } = useParams();
