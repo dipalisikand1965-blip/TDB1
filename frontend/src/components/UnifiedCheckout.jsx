@@ -629,6 +629,41 @@ const UnifiedCheckout = () => {
                     </div>
                   </div>
                 </div>
+                
+                {/* Smart Recommendations / Add-ons */}
+                {recommendations.length > 0 && (
+                  <div className="mt-6 pt-6 border-t">
+                    <h3 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      Frequently Bought Together
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {recommendations.map((rec) => (
+                        <div key={rec.id} className="flex items-center gap-3 p-3 border rounded-lg hover:border-purple-300 transition-colors">
+                          <div className="w-14 h-14 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                            {rec.image ? (
+                              <img src={rec.image} alt={rec.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <Package className="w-6 h-6 m-4 text-gray-400" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{rec.name}</p>
+                            <p className="text-sm text-purple-600 font-semibold">₹{rec.price}</p>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs"
+                            onClick={() => addToCart({ ...rec, quantity: 1 })}
+                          >
+                            <Plus className="w-3 h-3 mr-1" /> Add
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <Button onClick={nextStep} className="w-full mt-6 bg-purple-600 hover:bg-purple-700">
                   Continue to Delivery <ChevronRight className="w-4 h-4 ml-2" />
