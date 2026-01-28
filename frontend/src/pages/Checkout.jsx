@@ -171,6 +171,15 @@ const Checkout = () => {
     const fetchRegisteredPets = async () => {
       if (!token || !user) return;
       
+      // Auto-fill user info first
+      setFormData(prev => ({
+        ...prev,
+        parentName: prev.parentName || user.name || '',
+        email: prev.email || user.email || '',
+        phone: prev.phone || user.phone || '',
+        whatsappNumber: prev.whatsappNumber || user.phone || ''
+      }));
+      
       try {
         const response = await fetch(`${API_URL}/api/pets/my-pets`, {
           headers: { Authorization: `Bearer ${token}` }
