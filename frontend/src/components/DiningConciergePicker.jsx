@@ -174,7 +174,7 @@ Submitted via Dining Concierge on the Dine pillar page.`;
         member: {
           name: user?.name || 'Member',
           email: user?.email || '',
-          phone: user?.phone || '',
+          whatsapp: user?.phone || user?.whatsapp || '',
           city: city || ''
         },
         category: 'dine',
