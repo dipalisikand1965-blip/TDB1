@@ -1072,14 +1072,14 @@ const Pulse = ({
           </div>
         </div>
         
-        {/* Input Area */}
+        {/* Input Area - Pulse styling */}
         <div className="p-4 border-t bg-white flex-shrink-0">
           <div className="flex items-center gap-2">
             {/* Mute Button */}
             <button
               onClick={() => setIsMuted(!isMuted)}
               className={`p-2 rounded-full transition-colors ${isMuted ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
-              title={isMuted ? 'Unmute Mira' : 'Mute Mira'}
+              title={isMuted ? 'Unmute' : 'Mute'}
             >
               {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
             </button>
@@ -1092,42 +1092,42 @@ const Pulse = ({
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder={isListening ? "Listening..." : "Type a message..."}
-                className="w-full px-4 py-2.5 pr-10 rounded-full border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none text-sm"
+                placeholder={isListening ? "⚡ Listening..." : "Type or tap mic..."}
+                className="w-full px-4 py-2.5 pr-10 rounded-full border border-gray-200 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 outline-none text-sm"
                 disabled={isListening}
               />
               {isListening && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                  <div className="w-3 h-3 bg-cyan-500 rounded-full animate-pulse" />
                 </div>
               )}
             </div>
             
-            {/* Voice Button - PROMINENT */}
+            {/* Voice Button - PULSE ICON (Lightning) */}
             <button
               onClick={toggleListening}
               className={`p-3 rounded-full transition-all shadow-lg ${
                 isListening 
-                  ? 'bg-red-500 text-white animate-pulse scale-110' 
-                  : 'bg-gradient-to-br from-purple-500 to-pink-500 text-white hover:scale-110 hover:shadow-xl'
+                  ? 'bg-yellow-400 text-gray-900 animate-pulse scale-110' 
+                  : 'bg-gradient-to-br from-cyan-500 to-blue-500 text-white hover:scale-110 hover:shadow-xl'
               }`}
-              title={isListening ? 'Stop listening' : 'Speak to Mira'}
-              data-testid="mira-voice-mic-btn"
+              title={isListening ? 'Stop' : 'Speak'}
+              data-testid="pulse-voice-mic-btn"
             >
-              {isListening ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
+              {isListening ? <Activity className="w-6 h-6" /> : <Zap className="w-6 h-6" />}
             </button>
             
             {/* Send Button */}
             <button
               onClick={() => handleSend()}
               disabled={!inputText.trim() || isProcessing}
-              className="p-3 bg-purple-600 text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-purple-700 transition-colors"
+              className="p-3 bg-blue-600 text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
             >
               <Send className="w-5 h-5" />
             </button>
           </div>
           
-          {/* Speak to Mira hint - show when not listening */}
+          {/* Pulse hint */}
           {!isListening && !inputText && (
             <p className="text-center text-xs text-gray-400 mt-1">
               Tap 🎤 to speak or type below
