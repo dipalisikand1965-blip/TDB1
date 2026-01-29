@@ -468,7 +468,7 @@ const DinePage = () => {
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {bundles.map(bundle => (
                 <Card 
                   key={bundle.id} 
@@ -476,7 +476,7 @@ const DinePage = () => {
                   onClick={() => setSelectedBundle(bundle)}
                   data-testid={`dine-bundle-${bundle.id}`}
                 >
-                  <div className="relative h-40">
+                  <div className="relative h-32 md:h-40">
                     <img 
                       src={bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800'} 
                       alt={bundle.name}
