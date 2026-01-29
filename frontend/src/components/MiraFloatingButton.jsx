@@ -158,17 +158,21 @@ const MiraFloatingButton = () => {
         )}
       </div>
       
-      {/* Mira Voice Assistant Modal */}
+      {/* Mira Voice Assistant Modal - Unified Interface */}
       {isOpen && (
         <MiraVoiceAssistant
           isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
+          onClose={() => {
+            setIsOpen(false);
+            setStartWithVoice(false);
+          }}
           petName={petData?.name || 'your pup'}
           petId={petData?.id}
           petData={petData}
           onNavigate={handleNavigate}
           voicePreference={voicePreference}
           currentPillar={location.pathname.split('/')[1] || 'home'}
+          startWithVoice={startWithVoice}
         />
       )}
     </>
