@@ -758,8 +758,8 @@ async def create_travel_bundle(bundle: TravelBundleCreate):
         "id": bundle_id,
         "bundle_type": "travel",
         **bundle.dict(),
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_consistent_timestamp(),
+        "updated_at": get_consistent_timestamp()
     }
     
     await db.product_bundles.insert_one(bundle_doc)
