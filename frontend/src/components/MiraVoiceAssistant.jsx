@@ -143,21 +143,25 @@ const getFallbackResponse = (petName) => {
 };
 
 // Main Voice Assistant Component
+// CORE RULE: Text is default. Voice is earned. Silence is acceptable.
 const MiraVoiceAssistant = ({ 
   isOpen, 
   onClose, 
   petName = 'your pup', 
   petId,
   petData = {},
-  onNavigate 
+  onNavigate,
+  voicePreference = 'text', // 'text' or 'voice'
+  currentPillar = null // Section-aware behaviour
 }) => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(voicePreference === 'text'); // Text-first by default
   const [isProcessing, setIsProcessing] = useState(false);
-  const [useElevenLabs, setUseElevenLabs] = useState(true); // Try ElevenLabs first
+  const [useElevenLabs, setUseElevenLabs] = useState(true);
+  const [hasShownOpening, setHasShownOpening] = useState(false);
   
   const recognitionRef = useRef(null);
   const synthRef = useRef(typeof window !== 'undefined' ? window.speechSynthesis : null);
@@ -167,15 +171,36 @@ const MiraVoiceAssistant = ({
   
   const API_URL = process.env.REACT_APP_BACKEND_URL;
   
-  // ElevenLabs TTS function
+  // Show mandatory opening line when first opened (TEXT only, no voice)
+  useEffect(() => {
+    if (isOpen && !hasShownOpening && messages.length === 0) {
+      // MANDATORY OPENING LINE - NO VARIATION
+      setMessages([{
+        role: 'mira',
+        text: MIRA_OPENING,
+        timestamp: new Date()
+      }]);
+      setHasShownOpening(true);
+      // DO NOT auto-speak - text is default
+    }
+  }, [isOpen, hasShownOpening, messages.length]);
+  
+  // ElevenLabs TTS function - max 10-12 seconds
   const speakWithElevenLabs = useCallback(async (text) => {
     if (isMuted) return;
+    
+    // Enforce max length - if text too long, truncate
+    const words = text.split(' ');
+    const maxWords = 30; // Roughly 10-12 seconds at normal speech rate
+    const truncatedText = words.length > maxWords 
+      ? words.slice(0, maxWords).join(' ') + '...'
+      : text;
     
     try {
       const response = await fetch(`${API_URL}/api/tts/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
+        body: JSON.stringify({ text: truncatedText })
       });
       
       if (!response.ok) {
