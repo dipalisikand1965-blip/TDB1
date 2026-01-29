@@ -144,21 +144,22 @@ const CelebratePage = () => {
       </div>
 
       {/* Elevated Concierge® Experiences */}
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <div className="text-center mb-10">
-          <Badge className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-1 mb-4">
+      <div className="max-w-6xl mx-auto px-4 py-10 sm:py-16">
+        <div className="text-center mb-8 sm:mb-10">
+          <Badge className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 sm:px-4 py-1 mb-3 sm:mb-4 text-xs sm:text-sm">
             <Crown className="w-3 h-3 mr-1 inline" /> Elevated Concierge®
           </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
             Celebrations, Perfected
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base px-2">
             More than cakes. Our Celebrate Concierge® orchestrates every detail of your pet&apos;s special day - 
             from intimate gatherings to grand pawties.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Mobile: Single column with horizontal scroll hint, Desktop: Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <ConciergeExperienceCard
             pillar="celebrate"
             title="Ultimate Birthday Bash®"
