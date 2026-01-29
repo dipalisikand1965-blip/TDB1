@@ -3122,6 +3122,114 @@ const MemberDashboard = () => {
         )}
       </div>
       
+      {/* Paw Points Breakdown Modal */}
+      <Dialog open={showPawPointsBreakdown} onOpenChange={setShowPawPointsBreakdown}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Gift className="w-5 h-5 text-pink-500" />
+              Paw Points Breakdown
+            </DialogTitle>
+          </DialogHeader>
+          
+          {/* Current Balance */}
+          <div className="bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl p-4 text-white text-center mb-4">
+            <p className="text-sm opacity-80">Current Balance</p>
+            <p className="text-3xl font-bold">{user?.loyalty_points || 0}</p>
+            <p className="text-sm opacity-80">Paw Points</p>
+          </div>
+          
+          {/* Transaction History */}
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="font-semibold text-gray-700 flex items-center gap-2">
+              <History className="w-4 h-4" /> Transaction History
+            </h4>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={fetchPawPointsHistory}
+              disabled={pawPointsLoading}
+            >
+              <RefreshCw className={`w-4 h-4 ${pawPointsLoading ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+            {pawPointsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-pink-500" />
+              </div>
+            ) : pawPointsHistory.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Gift className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                <p>No transactions yet</p>
+                <p className="text-sm">Earn points by ordering, completing pet profiles, and more!</p>
+              </div>
+            ) : (
+              pawPointsHistory.map((tx, i) => (
+                <div 
+                  key={tx.id || i}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      tx.type === 'credit' || tx.amount > 0 
+                        ? 'bg-green-100 text-green-600' 
+                        : 'bg-red-100 text-red-600'
+                    }`}>
+                      {tx.type === 'credit' || tx.amount > 0 ? (
+                        <Plus className="w-4 h-4" />
+                      ) : (
+                        <Minus className="w-4 h-4" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 text-sm">{tx.description || tx.reason || 'Points Transaction'}</p>
+                      <p className="text-xs text-gray-500">
+                        {tx.created_at ? new Date(tx.created_at).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        }) : '—'}
+                      </p>
+                    </div>
+                  </div>
+                  <span className={`font-bold ${
+                    tx.type === 'credit' || tx.amount > 0 
+                      ? 'text-green-600' 
+                      : 'text-red-600'
+                  }`}>
+                    {tx.type === 'credit' || tx.amount > 0 ? '+' : ''}{tx.amount || tx.points || 0}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+          
+          {/* Actions */}
+          <div className="pt-4 border-t mt-4 flex gap-2">
+            <Button 
+              variant="outline" 
+              className="flex-1"
+              onClick={() => setShowPawPointsBreakdown(false)}
+            >
+              Close
+            </Button>
+            <Button 
+              className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500"
+              onClick={() => {
+                setShowPawPointsBreakdown(false);
+                setActiveTab('rewards');
+              }}
+            >
+              Redeem Points
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
       {/* Mobile Bottom Navigation - Pet Life OS */}
       <MobileNavBar 
         onPulseClick={() => setShowVoiceAssistant(true)}
