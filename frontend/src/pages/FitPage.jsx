@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { API_URL } from '../utils/api';
+import { createFitRequest, bookService, showUnifiedFlowSuccess, showUnifiedFlowError } from '../utils/unifiedApi';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
@@ -578,51 +579,58 @@ const FitPage = () => {
     
     setSubmitting(true);
     try {
-      const response = await fetch(`${API_URL}/api/services/book`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        },
-        body: JSON.stringify({
-          service_id: selectedService.id,
-          pet_id: selectedPet?.id,
-          preferred_date: bookingForm.preferred_date,
-          notes: `Goals: ${bookingForm.fitness_goals.join(', ')}. Activity level: ${bookingForm.current_activity_level}. ${bookingForm.notes}`,
-          contact_name: bookingForm.contact_name,
-          contact_phone: bookingForm.contact_phone,
-          contact_email: bookingForm.contact_email
-        })
+      // Use unified API client for consistent flow enforcement
+      const requestPayload = {
+        fit_type: selectedService?.category || 'assessment',
+        service_id: selectedService?.id,
+        pet_id: selectedPet?.id,
+        pet_name: selectedPet?.name,
+        pet_breed: selectedPet?.breed,
+        preferred_date: bookingForm.preferred_date,
+        fitness_goals: bookingForm.fitness_goals,
+        current_activity_level: bookingForm.current_activity_level,
+        notes: bookingForm.notes,
+        user_name: bookingForm.contact_name,
+        user_email: bookingForm.contact_email,
+        user_phone: bookingForm.contact_phone
+      };
+
+      const result = await createFitRequest(requestPayload, token);
+      
+      // HARD GUARD: Verify unified flow IDs
+      console.log('[UNIFIED FLOW] Fit request result:', result);
+      if (!result.ticket_id && !result.request_id) {
+        console.error('[UNIFIED FLOW] ❌ Fit request missing ticket_id');
+        throw new Error('Fit request missing unified flow IDs');
+      }
+      
+      // Show success with unified flow confirmation
+      showUnifiedFlowSuccess('fit_request', {
+        ticket_id: result.ticket_id,
+        notification_id: result.notification_id,
+        inbox_id: result.inbox_id
       });
       
-      if (response.ok) {
-        const result = await response.json();
-        toast({
-          title: "Booking Confirmed! 💪",
-          description: result.message || `Your booking #${result.booking_id} has been received.`
-        });
-        setShowBookingModal(false);
-        setShowDetailModal(false);
-        setSelectedService(null);
-        setSelectedPet(null);
-        setBookingForm(prev => ({
-          ...prev,
-          preferred_date: '',
-          notes: '',
-          fitness_goals: []
-        }));
-      } else {
-        const error = await response.json();
-        toast({
-          title: "Booking Failed",
-          description: error.detail || "Could not complete booking",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
       toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
+        title: "Booking Confirmed! 💪",
+        description: result.message || `Your fitness request #${result.ticket_id || result.request_id} has been received.`
+      });
+      setShowBookingModal(false);
+      setShowDetailModal(false);
+      setSelectedService(null);
+      setSelectedPet(null);
+      setBookingForm(prev => ({
+        ...prev,
+        preferred_date: '',
+        notes: '',
+        fitness_goals: []
+      }));
+    } catch (error) {
+      console.error('Error submitting fit request:', error);
+      showUnifiedFlowError('fit_request', error);
+      toast({
+        title: "Booking Failed",
+        description: error.message || "Could not complete booking. Please try again.",
         variant: "destructive"
       });
     } finally {
