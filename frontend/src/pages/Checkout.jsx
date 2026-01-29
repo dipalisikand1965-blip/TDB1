@@ -1121,16 +1121,16 @@ _GST applicable on final invoice_
           </Card>
         )}
 
-        {/* Bakery Only Alert */}
+        {/* Bakery Fresh Delivery Info */}
         {cartAnalysis.bakeryOnlyCart && (
-          <Card className="p-4 mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+          <Card className="p-4 mb-6 bg-gradient-to-r from-pink-50 to-purple-50 border-pink-200">
             <div className="flex items-start gap-3">
-              <Store className="w-6 h-6 text-amber-600 flex-shrink-0 mt-1" />
+              <Gift className="w-6 h-6 text-pink-600 flex-shrink-0 mt-1" />
               <div>
-                <p className="font-semibold text-amber-900">Store Pickup Required</p>
-                <p className="text-sm text-amber-700 mt-1">
-                  Fresh cakes and bakery items require <strong>store pickup</strong> to ensure freshness. 
-                  Please select your nearest store below.
+                <p className="font-semibold text-pink-900">Fresh Bakery Treats! 🎂</p>
+                <p className="text-sm text-pink-700 mt-1">
+                  Your fresh cakes and treats will be <strong>carefully packaged</strong> and delivered with love. 
+                  Delivery typically takes 2-4 days.
                 </p>
               </div>
             </div>
