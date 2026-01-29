@@ -94,12 +94,10 @@ A comprehensive behavioral and knowledge framework was implemented for the AI as
 
 | File | Changes |
 |------|---------|
-| `/app/backend/mira_routes.py` | +355 lines - Comprehensive Mira framework |
-| `/app/backend/tts_routes.py` | NEW - ElevenLabs TTS endpoint |
-| `/app/frontend/src/components/MiraFloatingButton.jsx` | +62 lines - Pet name, event system |
-| `/app/frontend/src/components/MiraVoiceAssistant.jsx` | +89 lines - Text-first, personalization |
-| `/app/frontend/src/components/FloatingContactButton.jsx` | +15 lines - Talk to Mira option |
-| `/app/frontend/src/components/UnifiedCheckout.jsx` | Removed store pickup |
+| `/app/frontend/src/components/FloatingContactButton.jsx` | Added WhatsApp to stack, reorganized options |
+| `/app/frontend/src/components/Footer.jsx` | Removed standalone WhatsApp floating button |
+| `/app/frontend/src/components/MiraVoiceAssistant.jsx` | Unified interface, backend API integration for memories |
+| `/app/frontend/src/components/MiraFloatingButton.jsx` | Minor updates for voice state handling |
 
 ---
 
