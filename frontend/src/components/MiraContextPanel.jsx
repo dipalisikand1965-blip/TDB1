@@ -387,6 +387,12 @@ const MiraContextPanel = ({
     setInputValue('');
     setIsSending(true);
     
+    // Stop listening if currently listening
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    }
+    
     try {
       const response = await fetch(`${getApiUrl()}/api/mira/chat`, {
         method: 'POST',
@@ -409,18 +415,25 @@ const MiraContextPanel = ({
       
       if (response.ok) {
         const data = await response.json();
+        const assistantContent = data.response;
         setChatMessages(prev => [...prev, {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: data.response
+          content: assistantContent
         }]);
+        
+        // Speak the response if voice is enabled
+        if (voiceEnabled) {
+          speakText(assistantContent);
+        }
       }
     } catch (error) {
       console.error('Mira chat error:', error);
+      const errorMsg = "I'm having a brief pause. Please try again.";
       setChatMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "I'm having a brief pause. Please try again."
+        content: errorMsg
       }]);
     } finally {
       setIsSending(false);
