@@ -278,7 +278,7 @@ async def auto_sync_products():
             
             await db.sync_logs.insert_one({
                 "type": "auto_sync",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": get_utc_timestamp(),
                 "total_synced": synced,
                 "status": "success"
             })
@@ -292,7 +292,7 @@ async def auto_sync_products():
             logger.error(f"Auto-sync failed: {e}")
             await db.sync_logs.insert_one({
                 "type": "auto_sync",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": get_utc_timestamp(),
                 "status": "failed",
                 "error": str(e)
             })
@@ -460,7 +460,7 @@ async def check_upcoming_celebrations():
                     "date": celebration["date"],
                     "days_until": celebration["days_until"],
                     "year": today.year,
-                    "sent_at": datetime.now(timezone.utc).isoformat(),
+                    "sent_at": get_utc_timestamp(),
                     "email_sent": email_reminders and owner_email and RESEND_API_KEY,
                     "whatsapp_generated": whatsapp_reminders and owner_phone
                 })
@@ -638,7 +638,7 @@ async def force_initialize_database():
                 "type": "credentials",
                 "username": ADMIN_USERNAME,
                 "password": ADMIN_PASSWORD,
-                "created_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp()
             })
             logger.info(f"✓ AUTO-CREATED admin: {ADMIN_USERNAME}")
         else:
@@ -656,7 +656,7 @@ async def force_initialize_database():
                 "name": "Dipali",
                 "phone": None,
                 "membership_tier": "free",
-                "created_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp()
             })
             logger.info(f"✓ AUTO-CREATED user: {default_email}")
         else:
@@ -717,9 +717,9 @@ async def auto_seed_critical_data():
         if collection_count == 0:
             logger.info("Seeding Collections...")
             sample_collections = [
-                {"id": "col-valentine", "name": "Valentine's Day Special", "slug": "valentines-day", "description": "Celebrate love with your furry friend!", "image": "https://images.unsplash.com/photo-1518882605630-8eb723e8e0b4?w=800", "status": "active", "is_featured": True, "products": [], "created_at": datetime.now(timezone.utc).isoformat()},
-                {"id": "col-birthday", "name": "Birthday Celebration", "slug": "birthday-celebration", "description": "Make every birthday special with treats and cakes!", "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800", "status": "active", "is_featured": True, "products": [], "created_at": datetime.now(timezone.utc).isoformat()},
-                {"id": "col-healthy", "name": "Healthy Bites", "slug": "healthy-bites", "description": "Nutritious treats for health-conscious pet parents", "image": "https://images.unsplash.com/photo-1601758124096-1fd661873b95?w=800", "status": "active", "is_featured": False, "products": [], "created_at": datetime.now(timezone.utc).isoformat()},
+                {"id": "col-valentine", "name": "Valentine's Day Special", "slug": "valentines-day", "description": "Celebrate love with your furry friend!", "image": "https://images.unsplash.com/photo-1518882605630-8eb723e8e0b4?w=800", "status": "active", "is_featured": True, "products": [], "created_at": get_utc_timestamp()},
+                {"id": "col-birthday", "name": "Birthday Celebration", "slug": "birthday-celebration", "description": "Make every birthday special with treats and cakes!", "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800", "status": "active", "is_featured": True, "products": [], "created_at": get_utc_timestamp()},
+                {"id": "col-healthy", "name": "Healthy Bites", "slug": "healthy-bites", "description": "Nutritious treats for health-conscious pet parents", "image": "https://images.unsplash.com/photo-1601758124096-1fd661873b95?w=800", "status": "active", "is_featured": False, "products": [], "created_at": get_utc_timestamp()},
             ]
             for col in sample_collections:
                 await db.enhanced_collections.update_one({"id": col["id"]}, {"$set": col}, upsert=True)
@@ -1566,7 +1566,7 @@ async def load_admin_credentials_from_db():
                 "type": "credentials",
                 "username": default_username,
                 "password": default_password,
-                "created_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp()
             })
             _admin_credentials_cache["username"] = default_username
             _admin_credentials_cache["password"] = default_password
@@ -1605,7 +1605,7 @@ async def ensure_default_user_exists():
                 "membership_expires": None,
                 "chat_count_today": 0,
                 "last_chat_date": None,
-                "created_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp()
             }
             await db.users.insert_one(user_doc)
             logger.info(f"AUTO-CREATED default user: {default_email}")
@@ -1669,8 +1669,8 @@ async def seed_initial_products():
         
         # Add timestamps
         for product in sample_products:
-            product["created_at"] = datetime.now(timezone.utc).isoformat()
-            product["synced_at"] = datetime.now(timezone.utc).isoformat()
+            product["created_at"] = get_utc_timestamp()
+            product["synced_at"] = get_utc_timestamp()
         
         await db.products.insert_many(sample_products)
         logger.info(f"Seeded {len(sample_products)} initial products")
@@ -1763,7 +1763,7 @@ async def reset_admin_credentials(data: AdminCredentialReset):
             "$set": {
                 "username": data.new_username,
                 "password": data.new_password,
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "updated_at": get_utc_timestamp()
             }
         },
         upsert=True
@@ -2523,7 +2523,7 @@ CRITICAL INSTRUCTIONS:
                 {
                     "$set": {
                         "messages": all_messages,
-                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "updated_at": get_utc_timestamp(),
                         "pet_name": extracted["pet_name"] or existing_chat.get("pet_name"),
                         "pet_breed": extracted["pet_breed"] or existing_chat.get("pet_breed"),
                         "pet_age": extracted["pet_age"] or existing_chat.get("pet_age"),
@@ -2544,8 +2544,8 @@ CRITICAL INSTRUCTIONS:
                 "city": extracted["city"],
                 "service_type": extracted["service_type"],
                 "status": "active",
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "created_at": get_utc_timestamp(),
+                "updated_at": get_utc_timestamp(),
                 "notification_sent": False
             }
             await db.mira_chats.insert_one(chat_doc)
@@ -2607,7 +2607,7 @@ async def request_custom_cake(
         "phone": phone,
         "notes": notes,
         "image_path": file_path,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": get_utc_timestamp(),
         "status": "pending"
     }
     
@@ -2631,7 +2631,7 @@ async def request_custom_cake(
             "title": f"🎨 New Custom Cake Design Request - {name}",
             "message": f"Reference image uploaded. Notes: {notes[:100] if notes else 'No notes provided'}",
             "read": False,
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_utc_timestamp(),
             "link": f"/admin?tab=servicedesk&ticket={ticket_id}"
         })
     except Exception as e:
@@ -2742,7 +2742,7 @@ async def forgot_password(email: str = Body(..., embed=True)):
         "token": reset_token,
         "expires_at": expires_at.isoformat(),
         "used": False,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     })
     
     # Send reset email
@@ -2831,7 +2831,7 @@ async def reset_password(token: str = Body(...), new_password: str = Body(...)):
         {"$set": {
             "username": _admin_credentials_cache.get("username") or ADMIN_USERNAME,
             "password": new_password,
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }},
         upsert=True
     )
@@ -2839,7 +2839,7 @@ async def reset_password(token: str = Body(...), new_password: str = Body(...)):
     # Mark token as used
     await db.admin_password_resets.update_one(
         {"token": token},
-        {"$set": {"used": True, "used_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"used": True, "used_at": get_utc_timestamp()}}
     )
     
     # Update cache
@@ -2886,7 +2886,7 @@ async def force_seed_admin_credentials():
             "type": "credentials",
             "username": ADMIN_USERNAME,
             "password": ADMIN_PASSWORD,
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_utc_timestamp(),
             "force_seeded": True
         })
         
@@ -2933,7 +2933,7 @@ async def force_seed_all_products():
         ]
         
         for p in stay_products:
-            p["created_at"] = datetime.now(timezone.utc).isoformat()
+            p["created_at"] = get_utc_timestamp()
             p["image"] = "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800"
             await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["stay"] = len(stay_products)
@@ -2948,7 +2948,7 @@ async def force_seed_all_products():
         ]
         
         for p in travel_products:
-            p["created_at"] = datetime.now(timezone.utc).isoformat()
+            p["created_at"] = get_utc_timestamp()
             p["image"] = "https://images.unsplash.com/photo-1544568100-847a948585b9?w=800"
             await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["travel"] = len(travel_products)
@@ -2964,7 +2964,7 @@ async def force_seed_all_products():
         ]
         
         for p in care_products:
-            p["created_at"] = datetime.now(timezone.utc).isoformat()
+            p["created_at"] = get_utc_timestamp()
             p["image"] = "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800"
             await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["care"] = len(care_products)
@@ -2978,7 +2978,7 @@ async def force_seed_all_products():
         ]
         
         for p in fit_products:
-            p["created_at"] = datetime.now(timezone.utc).isoformat()
+            p["created_at"] = get_utc_timestamp()
             p["image"] = "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800"
             await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["fit"] = len(fit_products)
@@ -2991,7 +2991,7 @@ async def force_seed_all_products():
         ]
         
         for p in enjoy_products:
-            p["created_at"] = datetime.now(timezone.utc).isoformat()
+            p["created_at"] = get_utc_timestamp()
             p["image"] = "https://images.unsplash.com/photo-1601758124096-1fd661873b95?w=800"
             await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["enjoy"] = len(enjoy_products)
@@ -3004,7 +3004,7 @@ async def force_seed_all_products():
         ]
         
         for p in learn_products:
-            p["created_at"] = datetime.now(timezone.utc).isoformat()
+            p["created_at"] = get_utc_timestamp()
             p["image"] = "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800"
             await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["learn"] = len(learn_products)
@@ -3048,7 +3048,7 @@ async def change_password(
         {"$set": {
             "username": _admin_credentials_cache.get("username") or ADMIN_USERNAME,
             "password": new_password,
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }},
         upsert=True
     )
@@ -3282,7 +3282,7 @@ async def create_test_user(
         hashed_password = pwd_context.hash(password)
         await db.users.update_one(
             {"email": email},
-            {"$set": {"password_hash": hashed_password, "updated_at": datetime.now(timezone.utc).isoformat()}}
+            {"$set": {"password_hash": hashed_password, "updated_at": get_utc_timestamp()}}
         )
         return {
             "success": True,
@@ -3302,8 +3302,8 @@ async def create_test_user(
         "role": "member",
         "membership_tier": "standard",
         "paw_points": 0,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.users.insert_one(new_user)
@@ -3316,7 +3316,7 @@ async def create_test_user(
         "name": name,
         "role": "member",
         "membership_tier": "standard",
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     await db.members.insert_one(member_doc)
     
@@ -3391,8 +3391,8 @@ async def seed_pet_friendly_stays(username: str = Depends(verify_admin)):
             "paw_rating": {"overall": 4.0, "comfort": 4.0, "safety": 4.0, "freedom": 4.0, "care": 4.0, "joy": 4.0},
             "status": "active",
             "featured": False,
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp(),
+            "updated_at": get_utc_timestamp()
         }
         
         if existing:
@@ -3457,8 +3457,8 @@ async def seed_pet_friendly_cafes(username: str = Depends(verify_admin)):
             "outdoor_seating": True,
             "water_bowls": True,
             "status": "active",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp(),
+            "updated_at": get_utc_timestamp()
         }
         
         if existing:
@@ -3548,8 +3548,8 @@ async def seed_pet_boarding(username: str = Depends(verify_admin)):
             "capacity": "5-15 pets",
             "pet_types_accepted": ["Dogs", "Cats"],
             "status": "active",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp(),
+            "updated_at": get_utc_timestamp()
         }
         
         if existing:
@@ -3616,7 +3616,7 @@ async def create_boarding_facility(
         "price_per_night": facility.get("price_per_night", 1000),
         "amenities": facility.get("amenities", []),
         "is_active": True,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.stay_boarding_facilities.insert_one(facility_doc)
@@ -3649,7 +3649,7 @@ async def update_boarding_facility(
         "price_per_night": facility.get("price_per_night"),
         "amenities": facility.get("amenities"),
         "is_active": facility.get("is_active", True),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_utc_timestamp()
     }
     
     # Remove None values
@@ -3806,7 +3806,7 @@ async def update_chat(session_id: str, updates: dict, username: str = Depends(ve
     """Update chat status or details"""
     allowed_fields = ["status", "pet_name", "pet_breed", "pet_age", "city", "service_type", "notes"]
     update_data = {k: v for k, v in updates.items() if k in allowed_fields}
-    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update_data["updated_at"] = get_utc_timestamp()
     
     result = await db.mira_chats.update_one(
         {"session_id": session_id},
@@ -3958,7 +3958,7 @@ async def sync_chatbase_conversations(username: str = Depends(verify_admin)):
                     "message_count": len(messages),
                     "created_at": conv.get("createdAt"),
                     "source": "chatbase",
-                    "synced_at": datetime.now(timezone.utc).isoformat()
+                    "synced_at": get_utc_timestamp()
                 }
                 
                 if existing:
@@ -4117,7 +4117,7 @@ async def admin_update_pet(pet_id: str, updates: dict, username: str = Depends(v
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
-    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    updates["updated_at"] = get_utc_timestamp()
     
     await db.pets.update_one({"id": pet_id}, {"$set": updates})
     
@@ -4226,7 +4226,7 @@ async def admin_trigger_celebration_check(username: str = Depends(verify_admin))
         return {
             "message": "Celebration check completed",
             "reminders_sent": reminders_sent,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": get_utc_timestamp()
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Check failed: {str(e)}")
@@ -4338,8 +4338,8 @@ async def get_product(product_id: str, username: str = Depends(verify_admin)):
 async def create_product(product: dict, username: str = Depends(verify_admin)):
     """Create a new product in unified_products collection"""
     product["id"] = str(uuid.uuid4())
-    product["created_at"] = datetime.now(timezone.utc).isoformat()
-    product["updated_at"] = datetime.now(timezone.utc).isoformat()
+    product["created_at"] = get_utc_timestamp()
+    product["updated_at"] = get_utc_timestamp()
     
     # Store in unified_products (primary collection)
     await db.unified_products.insert_one(product)
@@ -4349,7 +4349,7 @@ async def create_product(product: dict, username: str = Depends(verify_admin)):
 @admin_router.put("/products/{product_id}")
 async def update_product(product_id: str, updates: dict, username: str = Depends(verify_admin)):
     """Update an existing product - searches both collections"""
-    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    updates["updated_at"] = get_utc_timestamp()
     
     # Remove id from updates if present
     updates.pop("id", None)
@@ -4392,8 +4392,8 @@ async def bulk_import_products(products: List[dict], username: str = Depends(ver
     for product in products:
         if "id" not in product:
             product["id"] = str(uuid.uuid4())
-        product["created_at"] = datetime.now(timezone.utc).isoformat()
-        product["updated_at"] = datetime.now(timezone.utc).isoformat()
+        product["created_at"] = get_utc_timestamp()
+        product["updated_at"] = get_utc_timestamp()
     
     if products:
         await db.products.insert_many(products)
@@ -4426,7 +4426,7 @@ async def get_app_settings(username: str = Depends(verify_admin)):
             ],
             "free_shipping_threshold": 3000,
             "default_shipping_fee": 150,
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }
         await db.app_settings.insert_one(default_settings)
         return default_settings
@@ -4437,7 +4437,7 @@ async def get_app_settings(username: str = Depends(verify_admin)):
 async def update_app_settings(updates: UpdateAppSettings, username: str = Depends(verify_admin)):
     """Update global application settings"""
     update_data = {k: v for k, v in updates.model_dump().items() if v is not None}
-    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update_data["updated_at"] = get_utc_timestamp()
     
     result = await db.app_settings.update_one(
         {"id": "global_settings"},
@@ -4493,7 +4493,7 @@ async def update_product_fulfilment(
     
     update_data = {
         "fulfilment_type": fulfilment.fulfilment_type,
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_utc_timestamp()
     }
     
     if fulfilment.regions is not None:
@@ -4523,7 +4523,7 @@ async def bulk_update_product_fulfilment(
     
     update_data = {
         "fulfilment_type": fulfilment_type,
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_utc_timestamp()
     }
     
     if regions is not None:
@@ -4561,7 +4561,7 @@ async def migrate_products_with_fulfilment_defaults(username: str = Depends(veri
             "$set": {
                 "fulfilment_type": "store_pickup",
                 "regions": pickup_cities,
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "updated_at": get_utc_timestamp()
             }
         }
     )
@@ -4573,7 +4573,7 @@ async def migrate_products_with_fulfilment_defaults(username: str = Depends(veri
             "$set": {
                 "fulfilment_type": "shipping",
                 "regions": ["Pan India"],
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "updated_at": get_utc_timestamp()
             }
         }
     )
@@ -4652,7 +4652,7 @@ async def get_site_content(username: str = Depends(verify_admin)):
 async def update_site_content(content: dict, username: str = Depends(verify_admin)):
     """Update site content settings"""
     content["type"] = "main"
-    content["updated_at"] = datetime.now(timezone.utc).isoformat()
+    content["updated_at"] = get_utc_timestamp()
     
     await db.site_content.update_one(
         {"type": "main"},
@@ -4667,7 +4667,7 @@ async def update_videos(videos: List[dict], username: str = Depends(verify_admin
     """Update just the videos section"""
     await db.site_content.update_one(
         {"type": "main"},
-        {"$set": {"videos": videos, "updated_at": datetime.now(timezone.utc).isoformat()}},
+        {"$set": {"videos": videos, "updated_at": get_utc_timestamp()}},
         upsert=True
     )
     return {"message": "Videos updated successfully"}
@@ -4678,7 +4678,7 @@ async def update_hero_slides(heroSlides: List[dict], username: str = Depends(ver
     """Update hero slides"""
     await db.site_content.update_one(
         {"type": "main"},
-        {"$set": {"heroSlides": heroSlides, "updated_at": datetime.now(timezone.utc).isoformat()}},
+        {"$set": {"heroSlides": heroSlides, "updated_at": get_utc_timestamp()}},
         upsert=True
     )
     return {"message": "Hero slides updated successfully"}
@@ -4716,7 +4716,7 @@ async def get_page_for_admin(page_slug: str, username: str = Depends(verify_admi
 @admin_router.put("/pages/{page_slug}")
 async def update_page_content(page_slug: str, content: dict, username: str = Depends(verify_admin)):
     """Update page content"""
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     existing = await db.page_content.find_one({"slug": page_slug})
     
@@ -4745,7 +4745,7 @@ async def update_page_content(page_slug: str, content: dict, username: str = Dep
 @admin_router.post("/pages/seed")
 async def seed_page_content(username: str = Depends(verify_admin)):
     """Seed default content for all editable pages"""
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     default_pages = [
         {
@@ -4871,7 +4871,7 @@ async def seed_page_content(username: str = Depends(verify_admin)):
 @admin_router.post("/pages/seed-all")
 async def seed_all_page_content(username: str = Depends(verify_admin)):
     """Seed default content for ALL pages including pillars"""
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     # Pillar pages
     pillar_pages = [
@@ -5062,7 +5062,7 @@ async def export_all_pages(username: str = Depends(verify_admin)):
     pages = await db.page_content.find({}, {"_id": 0}).to_list(100)
     return {
         "pages": pages,
-        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "exported_at": get_utc_timestamp(),
         "exported_by": username
     }
 
@@ -5074,7 +5074,7 @@ async def import_pages(data: dict, username: str = Depends(verify_admin)):
     if not pages:
         raise HTTPException(status_code=400, detail="No pages to import")
     
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     imported = 0
     
     for page in pages:
@@ -5430,8 +5430,8 @@ async def book_service(
         "pet_info": pet_info,
         "preferred_date": preferred_date,
         "notes": notes,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.tickets.insert_one(ticket)
@@ -5474,7 +5474,7 @@ async def unified_service_booking(request: UnifiedBookingRequest):
     ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
     notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
     inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     description = f"""Service Booking Request:
 - Service: {request.service_name} - {request.sub_service_name or 'N/A'}
@@ -5618,7 +5618,7 @@ async def add_to_wishlist(data: dict, current_user: dict = Depends(get_current_u
             "product_name": product_name,
             "product_image": product_image,
             "product_price": product_price,
-            "added_at": datetime.now(timezone.utc).isoformat()
+            "added_at": get_utc_timestamp()
         }},
         upsert=True
     )
@@ -6309,7 +6309,7 @@ async def create_product_tag(tag_data: dict):
         "color": tag_data.get('color', 'gray'),
         "emoji": tag_data.get('emoji', '🏷️'),
         "is_custom": True,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.product_tags.insert_one(tag_doc)
@@ -6330,7 +6330,7 @@ async def update_product_tag(tag_id: str, tag_data: dict):
             "label": tag_data.get('label'),
             "color": tag_data.get('color'),
             "emoji": tag_data.get('emoji'),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }}
     )
     
@@ -6524,7 +6524,7 @@ async def update_product_display_tags(product_id: str, tags: List[str]):
     """Update display tags for a product"""
     result = await db.products.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
-        {"$set": {"display_tags": tags, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"display_tags": tags, "updated_at": get_utc_timestamp()}}
     )
     
     if result.matched_count == 0:
@@ -6588,7 +6588,7 @@ async def add_custom_breed(data: dict):
     # Upsert to DB
     await db.app_settings.update_one(
         {"key": "custom_breeds"},
-        {"$set": {"breeds": custom_breeds, "updated_at": datetime.now(timezone.utc).isoformat()}},
+        {"$set": {"breeds": custom_breeds, "updated_at": get_utc_timestamp()}},
         upsert=True
     )
     
@@ -6600,7 +6600,7 @@ async def update_product_breed_tags(product_id: str, breed_tags: List[str]):
     """Update breed tags for a product"""
     result = await db.products.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
-        {"$set": {"breed_tags": breed_tags, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"breed_tags": breed_tags, "updated_at": get_utc_timestamp()}}
     )
     
     if result.matched_count == 0:
@@ -6632,7 +6632,7 @@ async def bulk_update_breed_tags(data: dict):
             
         result = await db.products.update_one(
             {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
-            {**update, "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}}
+            {**update, "$set": {"updated_at": get_utc_timestamp()}}
         )
         if result.modified_count > 0:
             updated_count += 1
@@ -6658,7 +6658,7 @@ async def update_product_bundle_config(product_id: str, bundle_config: dict):
         {"$set": {
             "bundle_type": bundle_config.get("bundle_type"),
             "bundle_includes": bundle_config.get("bundle_includes", {}),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }}
     )
     
@@ -6691,7 +6691,7 @@ async def update_admin_product(product_id: str, updates: dict):
     ]
     
     sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
-    sanitized["updated_at"] = datetime.now(timezone.utc).isoformat()
+    sanitized["updated_at"] = get_utc_timestamp()
     
     result = await db.products.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
@@ -6730,7 +6730,7 @@ async def import_products_csv(
                 "status": product_data.get("status", "active"),
                 "available": product_data.get("available", True),
                 "tags": product_data.get("tags", []),
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "updated_at": get_utc_timestamp()
             }
             
             if product_data.get("original_price"):
@@ -6746,7 +6746,7 @@ async def import_products_csv(
             else:
                 # Create new product
                 product_doc["id"] = f"csv-{uuid.uuid4().hex[:12]}"
-                product_doc["created_at"] = datetime.now(timezone.utc).isoformat()
+                product_doc["created_at"] = get_utc_timestamp()
                 await db.products.insert_one(product_doc)
                 imported += 1
                 
@@ -6912,7 +6912,7 @@ async def full_product_update(
     ]
     
     sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
-    sanitized["updated_at"] = datetime.now(timezone.utc).isoformat()
+    sanitized["updated_at"] = get_utc_timestamp()
     
     result = await db.products.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
@@ -7116,7 +7116,7 @@ async def universal_search(
             notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
             inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
             ticket_id = f"TKT-SRCH-{uuid.uuid4().hex[:6].upper()}"
-            now_iso = datetime.now(timezone.utc).isoformat()
+            now_iso = get_utc_timestamp()
             
             # Detect intent from query
             intent_keywords = {
@@ -7486,7 +7486,7 @@ async def membership_onboard(data: MembershipOnboardModel):
                 "doggy_soul_answers": initial_soul_answers,
                 "soul_enrichments": [],
                 "celebration_types": pet_data.celebrations or [],  # Store selected celebration types
-                "created_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp()
             }
             await db.pets.insert_one(pet_doc)
             pet_ids.append(pet_id)
@@ -7513,13 +7513,13 @@ async def membership_onboard(data: MembershipOnboardModel):
             },
             "accepted_terms": data.parent.accepted_terms,
             "accepted_privacy": data.parent.accepted_privacy,
-            "terms_accepted_at": datetime.now(timezone.utc).isoformat() if data.parent.accepted_terms else None,
+            "terms_accepted_at": get_utc_timestamp() if data.parent.accepted_terms else None,
             "membership_tier": "pending",  # Will be upgraded after payment
             "membership_type": data.plan_type,
             "membership_expires": None,
             "chat_count_today": 0,
             "last_chat_date": None,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         }
         
         await db.users.insert_one(user_doc)
@@ -7552,7 +7552,7 @@ async def membership_onboard(data: MembershipOnboardModel):
                 "total": total
             },
             "status": "pending",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         }
         
         await db.membership_orders.insert_one(order_doc)
@@ -7668,7 +7668,7 @@ async def create_pet_profile(pet: PetProfileCreate, current_user: dict = Depends
     """Create a new pet profile linked to the authenticated user"""
     pet_id = f"pet-{uuid.uuid4().hex[:12]}"
     pet_pass_number = await generate_pet_pass_number_server()
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     pet_data = {
         "id": pet_id,
@@ -7750,7 +7750,7 @@ async def create_pet_profile_public(pet: PetProfileCreate):
     """Create a new pet profile without authentication (public form)"""
     pet_id = f"pet-{uuid.uuid4().hex[:12]}"
     pet_pass_number = await generate_pet_pass_number_server()
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     pet_data = {
         "id": pet_id,
@@ -7841,7 +7841,7 @@ async def update_pet_profile(pet_id: str, updates: PetProfileUpdate):
         raise HTTPException(status_code=404, detail="Pet not found")
     
     update_data = {k: v for k, v in updates.model_dump().items() if v is not None}
-    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update_data["updated_at"] = get_utc_timestamp()
     
     # Handle nested objects properly
     if "soul" in update_data and update_data["soul"]:
@@ -7901,7 +7901,7 @@ async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dic
             "doggy_soul_answers": soul_answers,
             "overall_score": new_score,
             "score_tier": score_tier,
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }}
     )
     
@@ -7946,7 +7946,7 @@ async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dic
                 "question_answered": question_id
             },
             "link": f"/admin?tab=members&pet={pet_id}",
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_utc_timestamp(),
             "read_at": None
         })
         logger.info(f"[UNIFIED FLOW] Pet Soul milestone notification: {notification_id} for {pet_name} ({new_score}%)")
@@ -8016,7 +8016,7 @@ async def save_pet_soul_answer_alias(pet_id: str, answer_data: dict, current_use
             "doggy_soul_answers": soul_answers,
             "overall_score": new_score,
             "score_tier": score_tier,
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }}
     )
     
@@ -8055,7 +8055,7 @@ async def update_pet_identity_alias(pet_id: str, identity_data: dict, current_us
         update_fields["gotcha_date"] = identity_data["gotcha_date"]
     
     if update_fields:
-        update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
+        update_fields["updated_at"] = get_utc_timestamp()
         await db.pets.update_one({"id": pet_id}, {"$set": update_fields})
     
     return {"message": "Identity updated", "updated_fields": list(update_fields.keys())}
@@ -8090,7 +8090,7 @@ async def patch_pet_soul_answers(pet_id: str, answers: dict):
             "doggy_soul_answers": soul_answers,
             "overall_score": new_score,
             "score_tier": score_tier,
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }}
     )
     
@@ -8135,7 +8135,7 @@ async def recalculate_all_pet_scores():
                 {"$set": {
                     "overall_score": new_score,
                     "score_tier": score_tier,
-                    "score_fixed_at": datetime.now(timezone.utc).isoformat()
+                    "score_fixed_at": get_utc_timestamp()
                 }}
             )
             fixed_count += 1
@@ -8190,7 +8190,7 @@ async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
             "photo_url": photo_url, 
             "photo_base64": photo_base64,
             "photo_content_type": content_type,
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }}
     )
     
@@ -8261,7 +8261,7 @@ async def add_pet_celebration(pet_id: str, celebration: PetCelebration):
         {
             "$set": {
                 "celebrations": celebrations,
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "updated_at": get_utc_timestamp()
             }
         }
     )
@@ -8283,7 +8283,7 @@ async def remove_pet_celebration(pet_id: str, occasion: str):
         {
             "$set": {
                 "celebrations": celebrations,
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "updated_at": get_utc_timestamp()
             }
         }
     )
@@ -8479,7 +8479,7 @@ async def add_pet_achievement(pet_id: str, achievement: dict):
         raise HTTPException(status_code=404, detail="Pet not found")
     
     achievements = pet.get("achievements", [])
-    achievement["earned_at"] = datetime.now(timezone.utc).isoformat()
+    achievement["earned_at"] = get_utc_timestamp()
     achievements.append(achievement)
     
     await db.pets.update_one(
@@ -8508,7 +8508,7 @@ async def add_celebrate_to_pet_soul(pet_id: str, data: dict):
         "variant": data.get("variant"),
         "delivery_date": data.get("delivery_date"),
         "occasion": data.get("occasion", "treat"),
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     # Update Pet Soul with celebrate history
@@ -8529,7 +8529,7 @@ async def add_celebrate_to_pet_soul(pet_id: str, data: dict):
         {"$set": {
             "soul.celebrate_history": celebrate_history,
             "soul.preferences.favorite_cake_categories": favorite_cake_categories,
-            "soul.last_celebrate_order": datetime.now(timezone.utc).isoformat()
+            "soul.last_celebrate_order": get_utc_timestamp()
         }}
     )
     
@@ -8556,7 +8556,7 @@ async def add_stay_to_pet_soul(pet_id: str, data: dict):
         "check_in_date": data.get("check_in_date"),
         "check_out_date": data.get("check_out_date"),
         "pet_fee": data.get("pet_fee"),
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     # Update Pet Soul with stay history
@@ -8587,7 +8587,7 @@ async def add_stay_to_pet_soul(pet_id: str, data: dict):
             "soul.stay_history": stay_history,
             "soul.preferences.favorite_travel_cities": favorite_cities,
             "soul.preferences.preferred_property_types": preferred_property_types,
-            "soul.last_stay_booking": datetime.now(timezone.utc).isoformat()
+            "soul.last_stay_booking": get_utc_timestamp()
         }}
     )
     
@@ -8789,8 +8789,8 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
                 "primary_pillar": "celebrate",
                 "pillars": ["celebrate", "shop"],
                 "source": "shopify",
-                "synced_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "synced_at": get_utc_timestamp(),
+                "updated_at": get_utc_timestamp()
             }
             
             if existing_unified:
@@ -8818,7 +8818,7 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
                 )
             else:
                 # Insert new
-                unified_doc["created_at"] = datetime.now(timezone.utc).isoformat()
+                unified_doc["created_at"] = get_utc_timestamp()
                 await db.unified_products.insert_one(unified_doc)
             
             synced += 1
@@ -8846,8 +8846,8 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
                     "description": f"Auto-generated collection for {cat}",
                     "product_ids": [],
                     "show_in_menu": True,
-                    "created_at": datetime.now(timezone.utc).isoformat(),
-                    "updated_at": datetime.now(timezone.utc).isoformat()
+                    "created_at": get_utc_timestamp(),
+                    "updated_at": get_utc_timestamp()
                 }
                 await db.collections.insert_one(collection)
             
@@ -8870,7 +8870,7 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
         # Save sync log with problematic products info
         sync_log = {
             "type": "shopify",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": get_utc_timestamp(),
             "total_fetched": len(shopify_products),
             "added": added,
             "updated": updated,
@@ -8900,7 +8900,7 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
         logger.error(f"Shopify sync failed: {e}")
         await db.sync_logs.insert_one({
             "type": "shopify",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": get_utc_timestamp(),
             "status": "failed",
             "error": str(e)
         })
@@ -9024,7 +9024,7 @@ async def import_products_csv(
                     "image": row.get('image', ''),
                     "sizes": sizes,
                     "flavors": flavors,
-                    "updated_at": datetime.now(timezone.utc).isoformat()
+                    "updated_at": get_utc_timestamp()
                 }
                 
                 if not product["name"]:
@@ -9042,7 +9042,7 @@ async def import_products_csv(
                     updated += 1
                 else:
                     product["id"] = str(uuid.uuid4())
-                    product["created_at"] = datetime.now(timezone.utc).isoformat()
+                    product["created_at"] = get_utc_timestamp()
                     await db.products.insert_one(product)
                     imported += 1
                     
@@ -9108,8 +9108,8 @@ async def submit_franchise_inquiry(inquiry: dict):
         "investment": inquiry.get("investment", ""),
         "message": inquiry.get("message", ""),
         "status": "new",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp(),
         "notes": ""
     }
     
@@ -9190,7 +9190,7 @@ async def update_collection(collection_id: str, update: CollectionUpdate, userna
         raise HTTPException(status_code=404, detail="Collection not found")
         
     update_data = {k: v for k, v in update.model_dump().items() if v is not None}
-    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update_data["updated_at"] = get_utc_timestamp()
     
     await db.collections.update_one({"id": collection_id}, {"$set": update_data})
     
@@ -9253,7 +9253,7 @@ async def update_collection(collection_id: str, update: CollectionUpdate, userna
         raise HTTPException(status_code=404, detail="Collection not found")
         
     update_data = {k: v for k, v in update.model_dump().items() if v is not None}
-    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update_data["updated_at"] = get_utc_timestamp()
     
     await db.collections.update_one({"id": collection_id}, {"$set": update_data})
     
@@ -9320,7 +9320,7 @@ async def get_franchise_inquiries(username: str = Depends(verify_admin)):
 async def update_franchise_inquiry(inquiry_id: str, update: dict, username: str = Depends(verify_admin)):
     """Update a franchise inquiry status or notes"""
     update_doc = {
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_utc_timestamp()
     }
     
     if "status" in update:
@@ -9380,7 +9380,7 @@ async def update_streaties_stats(stats: dict, username: str = Depends(verify_adm
     """Update Streaties program stats"""
     update_doc = {
         "type": "main",
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_utc_timestamp()
     }
     
     for key in ["strays_fed_monthly", "ngo_partners", "cities_covered", "total_donated", "donation_percentage"]:
@@ -9406,9 +9406,9 @@ async def add_streaties_donation(donation: dict, username: str = Depends(verify_
         "amount": donation.get("amount", 0),
         "animals_fed": donation.get("animals_fed", 0),
         "description": donation.get("description", ""),
-        "date": donation.get("date", datetime.now(timezone.utc).isoformat()),
+        "date": donation.get("date", get_utc_timestamp()),
         "proof_url": donation.get("proof_url", ""),
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.streaties_donations.insert_one(donation_doc)
@@ -9464,7 +9464,7 @@ async def create_admin_notification(
         "priority": priority,
         "metadata": metadata or {},
         "read": False,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.admin_notifications.insert_one(notification)
@@ -9536,7 +9536,7 @@ async def mark_notification_read(
     
     result = await db.admin_notifications.update_one(
         {"id": notification_id},
-        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"read": True, "read_at": get_utc_timestamp()}}
     )
     
     if result.matched_count == 0:
@@ -9559,7 +9559,7 @@ async def mark_all_notifications_read(
     
     result = await db.admin_notifications.update_many(
         query,
-        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"read": True, "read_at": get_utc_timestamp()}}
     )
     
     return {"message": f"Marked {result.modified_count} notifications as read"}
@@ -9750,7 +9750,7 @@ async def seed_sample_tickets():
             "customer_email": "test@example.com",
             "customer_phone": "9876543210",
             "source": "mira",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "ticket_id": f"TKT-SAMPLE-{uuid.uuid4().hex[:6].upper()}",
@@ -9764,7 +9764,7 @@ async def seed_sample_tickets():
             "customer_email": "dine@example.com",
             "customer_phone": "9876543211",
             "source": "mira",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "ticket_id": f"TKT-SAMPLE-{uuid.uuid4().hex[:6].upper()}",
@@ -9778,7 +9778,7 @@ async def seed_sample_tickets():
             "customer_email": "stay@example.com",
             "customer_phone": "9876543212",
             "source": "mira",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "ticket_id": f"TKT-SAMPLE-{uuid.uuid4().hex[:6].upper()}",
@@ -9792,7 +9792,7 @@ async def seed_sample_tickets():
             "customer_email": "travel@example.com",
             "customer_phone": "9876543213",
             "source": "mira",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "ticket_id": f"TKT-SAMPLE-{uuid.uuid4().hex[:6].upper()}",
@@ -9806,7 +9806,7 @@ async def seed_sample_tickets():
             "customer_email": "care@example.com",
             "customer_phone": "9876543214",
             "source": "mira",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         }
     ]
     
@@ -9976,7 +9976,7 @@ async def seed_production_data():
             "tags": ["valentine", "love", "hearts", "seasonal"],
             "start_date": "2025-02-01",
             "end_date": "2025-02-28",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": "birthday-celebration",
@@ -9989,7 +9989,7 @@ async def seed_production_data():
             "display_order": 2,
             "products": [],
             "tags": ["birthday", "celebration", "party", "cakes"],
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": "healthy-bites",
@@ -10002,7 +10002,7 @@ async def seed_production_data():
             "display_order": 3,
             "products": [],
             "tags": ["healthy", "grain-free", "low-calorie", "nutritious"],
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": "diwali-special",
@@ -10015,7 +10015,7 @@ async def seed_production_data():
             "display_order": 4,
             "products": [],
             "tags": ["diwali", "festive", "indian", "celebration"],
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         }
     ]
     
@@ -10048,7 +10048,7 @@ async def seed_production_data():
                 "membership_tier": "gold"
             },
             "pets_mentioned": ["Luna - Golden Retriever"],
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_utc_timestamp(),
             "is_sample": True
         },
         {
@@ -10070,7 +10070,7 @@ async def seed_production_data():
                 "membership_tier": "free"
             },
             "pets_mentioned": ["Beagle"],
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_utc_timestamp(),
             "is_sample": True
         },
         {
@@ -10092,7 +10092,7 @@ async def seed_production_data():
                 "membership_tier": "platinum"
             },
             "pets_mentioned": ["2 cats - siblings, 4 years old"],
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_utc_timestamp(),
             "is_sample": True
         },
         {
@@ -10114,7 +10114,7 @@ async def seed_production_data():
                 "membership_tier": "gold"
             },
             "pets_mentioned": ["German Shepherd - 5 years, 35kg"],
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_utc_timestamp(),
             "is_sample": True
         },
         {
@@ -10136,7 +10136,7 @@ async def seed_production_data():
                 "membership_tier": "free"
             },
             "pets_mentioned": ["3-month-old indie puppy"],
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_utc_timestamp(),
             "is_sample": True
         }
     ]
@@ -10306,7 +10306,7 @@ async def create_farewell_service_request(request_data: dict, current_user: Opti
         "email": request_data.get("email") or user_email,
         "special_requests": request_data.get("special_requests"),
         "status": "pending",
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.farewell_requests.insert_one(farewell_request)
@@ -10349,8 +10349,8 @@ async def create_farewell_service_request(request_data: dict, current_user: Opti
             "urgency": request_data.get("urgency"),
             "request_id": request_id
         },
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     # Insert into service_desk_tickets for Service Desk visibility
     await db.service_desk_tickets.insert_one(ticket)
@@ -10544,7 +10544,7 @@ async def create_team_member(member: dict, username: str = Depends(verify_admin)
         "emoji": member.get("emoji", "👤"),
         "order": member.get("order", 99),
         "is_active": True,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     await db.team_members.insert_one(member_data)
     return {"message": "Team member created", "member": {k: v for k, v in member_data.items() if k != "_id"}}
@@ -10584,7 +10584,7 @@ async def create_featured_dog(dog: dict, username: str = Depends(verify_admin)):
         "emoji": dog.get("emoji", "🐕"),
         "order": dog.get("order", 99),
         "is_active": True,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     await db.featured_dogs.insert_one(dog_data)
     return {"message": "Featured dog created", "dog": {k: v for k, v in dog_data.items() if k != "_id"}}
@@ -10762,7 +10762,7 @@ async def create_payment_order(request: CreateOrderRequest):
             "user_name": request.user_name,
             "user_phone": request.user_phone,
             "status": "created",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         }
         await db.payment_orders.insert_one(order_record)
         
@@ -10815,7 +10815,7 @@ async def verify_payment(request: VerifyPaymentRequest):
             {"$set": {
                 "status": "paid",
                 "razorpay_payment_id": request.razorpay_payment_id,
-                "paid_at": datetime.now(timezone.utc).isoformat()
+                "paid_at": get_utc_timestamp()
             }}
         )
         
@@ -10855,7 +10855,7 @@ async def verify_payment(request: VerifyPaymentRequest):
                     {"$set": {
                         "pet_pass_status": "active",
                         "pet_pass_plan": pet_pass_plan,
-                        "pet_pass_activated_at": datetime.now(timezone.utc).isoformat(),
+                        "pet_pass_activated_at": get_utc_timestamp(),
                         "pet_pass_expires": expires_at.isoformat()
                     }}
                 )
@@ -10871,7 +10871,7 @@ async def verify_payment(request: VerifyPaymentRequest):
                 "membership_plan": order.get("plan_id"),
                 "last_payment_id": request.razorpay_payment_id,
                 "loyalty_points": 100,
-                "created_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp()
             }
             await db.users.insert_one(new_user)
         
@@ -10885,7 +10885,7 @@ async def verify_payment(request: VerifyPaymentRequest):
             "currency": order.get("currency", "INR"),
             "tier": order.get("tier"),
             "status": "success",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         })
         
         return {
@@ -10935,7 +10935,7 @@ async def add_member(request: AddMemberRequest):
             "loyalty_points": request.paw_points,
             "admin_notes": request.notes,
             "registration_source": "offline_admin",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         }
         
         await db.users.insert_one(new_member)
@@ -11002,7 +11002,7 @@ async def import_members_csv(file: UploadFile = File(...)):
                     "loyalty_points": int(row.get('paw_points', '100') or '100'),
                     "admin_notes": row.get('notes', '').strip(),
                     "registration_source": "csv_import",
-                    "created_at": datetime.now(timezone.utc).isoformat()
+                    "created_at": get_utc_timestamp()
                 }
                 
                 await db.users.insert_one(new_member)
@@ -11216,7 +11216,7 @@ async def add_member_note(member_id: str, note_data: dict):
         note = {
             "text": note_data.get("note"),
             "author": "Admin",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         }
         
         await db.users.update_one(
@@ -11321,7 +11321,7 @@ async def initialize_database():
                 "type": "credentials",
                 "username": ADMIN_USERNAME,
                 "password": ADMIN_PASSWORD,
-                "created_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp()
             })
             results["admin"] = "created"
             logger.info("Admin credentials created via init endpoint")
@@ -11355,7 +11355,7 @@ async def initialize_database():
                 "membership_expires": None,
                 "chat_count_today": 0,
                 "last_chat_date": None,
-                "created_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp()
             }
             await db.users.insert_one(user_doc)
             results["user"] = "created"
@@ -11439,8 +11439,8 @@ async def initialize_database():
             
             # Add timestamps to all products
             for product in sample_products:
-                product["created_at"] = datetime.now(timezone.utc).isoformat()
-                product["synced_at"] = datetime.now(timezone.utc).isoformat()
+                product["created_at"] = get_utc_timestamp()
+                product["synced_at"] = get_utc_timestamp()
                 product["sizes"] = [{"name": "Regular", "price": product["price"]}]
                 product["tags"] = [product["category"]]
             
@@ -11655,9 +11655,9 @@ async def auto_seed_blog_posts():
                 "status": "published",
                 "is_featured": True,
                 "views": 0,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat(),
-                "published_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp(),
+                "updated_at": get_utc_timestamp(),
+                "published_at": get_utc_timestamp()
             },
             {
                 "id": f"post-{secrets.token_hex(4)}",
@@ -11671,9 +11671,9 @@ async def auto_seed_blog_posts():
                 "status": "published",
                 "is_featured": False,
                 "views": 0,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat(),
-                "published_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp(),
+                "updated_at": get_utc_timestamp(),
+                "published_at": get_utc_timestamp()
             },
             {
                 "id": f"post-{secrets.token_hex(4)}",
@@ -11687,9 +11687,9 @@ async def auto_seed_blog_posts():
                 "status": "published",
                 "is_featured": False,
                 "views": 0,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat(),
-                "published_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp(),
+                "updated_at": get_utc_timestamp(),
+                "published_at": get_utc_timestamp()
             },
             {
                 "id": f"post-{secrets.token_hex(4)}",
@@ -11703,9 +11703,9 @@ async def auto_seed_blog_posts():
                 "status": "published",
                 "is_featured": False,
                 "views": 0,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat(),
-                "published_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp(),
+                "updated_at": get_utc_timestamp(),
+                "published_at": get_utc_timestamp()
             },
             {
                 "id": f"post-{secrets.token_hex(4)}",
@@ -11719,9 +11719,9 @@ async def auto_seed_blog_posts():
                 "status": "published",
                 "is_featured": False,
                 "views": 0,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat(),
-                "published_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp(),
+                "updated_at": get_utc_timestamp(),
+                "published_at": get_utc_timestamp()
             },
             {
                 "id": f"post-{secrets.token_hex(4)}",
@@ -11735,9 +11735,9 @@ async def auto_seed_blog_posts():
                 "status": "published",
                 "is_featured": True,
                 "views": 0,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat(),
-                "published_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp(),
+                "updated_at": get_utc_timestamp(),
+                "published_at": get_utc_timestamp()
             }
         ]
         
@@ -11816,7 +11816,7 @@ async def sync_stay_to_products_endpoint():
                 "amenities": prop.get('amenities', []),
                 "in_stock": True,
                 "source": "stay_properties",
-                "created_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp()
             }
             
             await db.products.update_one({"id": product_id}, {"$set": product}, upsert=True)
@@ -11838,7 +11838,7 @@ async def sync_stay_to_products_endpoint():
                 "city": facility.get('city'),
                 "in_stock": True,
                 "source": "stay_boarding_facilities",
-                "created_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp()
             }
             await db.products.update_one({"id": product_id}, {"$set": product}, upsert=True)
             synced += 1
@@ -11884,7 +11884,7 @@ async def change_admin_password(
             "type": "credentials",
             "username": credentials.username,
             "password": request.new_password,
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }},
         upsert=True
     )
@@ -11947,7 +11947,7 @@ async def reset_agent_password(agent_id: str, password_data: AgentPasswordChange
     # Update password
     result = await db.agents.update_one(
         {"$or": [{"id": agent_id}, {"username": agent_id.lower()}]},
-        {"$set": {"password_hash": password_hash, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"password_hash": password_hash, "updated_at": get_utc_timestamp()}}
     )
     
     if result.matched_count == 0:
@@ -11986,7 +11986,7 @@ async def create_agent(agent: AgentCreate, admin_user: str = Depends(verify_admi
         "phone": agent.phone,
         "permissions": agent.permissions,
         "is_active": True,
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": get_utc_timestamp(),
         "last_login": None,
         "login_count": 0
     }
@@ -12019,7 +12019,7 @@ async def get_agent(agent_id: str, admin_user: str = Depends(verify_admin_auth))
 async def update_agent(agent_id: str, updates: AgentUpdate, admin_user: str = Depends(verify_admin_auth)):
     """Update agent details"""
     # Build update document
-    update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    update_doc = {"updated_at": get_utc_timestamp()}
     
     if updates.name is not None:
         update_doc["name"] = updates.name
@@ -12063,7 +12063,7 @@ async def change_agent_password(agent_id: str, data: AgentPasswordChange, admin_
         {"$or": [{"id": agent_id}, {"username": agent_id.lower()}]},
         {"$set": {
             "password_hash": pwd_context.hash(data.new_password),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }}
     )
     
@@ -12139,7 +12139,7 @@ async def agent_login(request: AgentLoginRequest):
     await db.agents.update_one(
         {"id": agent["id"]},
         {
-            "$set": {"last_login": datetime.now(timezone.utc).isoformat()},
+            "$set": {"last_login": get_utc_timestamp()},
             "$inc": {"login_count": 1}
         }
     )
@@ -12784,7 +12784,7 @@ async def save_report_schedule(
     username: str = Depends(verify_admin)
 ):
     """Save email report schedule configuration"""
-    schedule["updated_at"] = datetime.now(timezone.utc).isoformat()
+    schedule["updated_at"] = get_utc_timestamp()
     schedule["updated_by"] = username
     
     await db.report_schedules.update_one(
