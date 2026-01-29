@@ -597,8 +597,8 @@ async def create_travel_product(product: TravelProductCreate):
         "id": product_id,
         **product.dict(),
         "category": "travel",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_consistent_timestamp(),
+        "updated_at": get_consistent_timestamp()
     }
     
     await db.products.insert_one(product_doc)
