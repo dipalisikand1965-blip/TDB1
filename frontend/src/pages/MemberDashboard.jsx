@@ -3221,7 +3221,9 @@ const MemberDashboard = () => {
               className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500"
               onClick={() => {
                 setShowPawPointsBreakdown(false);
-                setActiveTab('rewards');
+                // Scroll to rewards section and click the tab
+                const rewardsTab = document.querySelector('[value="rewards"]');
+                if (rewardsTab) rewardsTab.click();
               }}
             >
               Redeem Points
