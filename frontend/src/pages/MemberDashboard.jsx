@@ -2485,6 +2485,35 @@ const MemberDashboard = () => {
 
           {/* Settings Tab */}
           <TabsContent value="settings">
+            {/* 🧠 MIRA CAN UNDERSTAND - Quick access to voice commands on mobile */}
+            <Card className="p-4 mb-6 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border border-purple-200 md:hidden">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-white rounded-lg shadow-sm">
+                  <Sparkles className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900">Mira Can Understand</h3>
+                  <p className="text-xs text-gray-500">Hands-free voice commands</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {['Order treats', 'Book grooming', 'Next vaccination?', 'Soul score', 'Recommendations'].map((cmd) => (
+                  <span 
+                    key={cmd}
+                    className="px-3 py-1.5 bg-white rounded-full text-xs font-medium text-purple-700 border border-purple-200"
+                  >
+                    🎤 "{cmd}"
+                  </span>
+                ))}
+              </div>
+              <button 
+                onClick={() => window.dispatchEvent(new CustomEvent('openMiraVoice'))}
+                className="w-full mt-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+              >
+                Try Mira Voice Now
+              </button>
+            </Card>
+
             <div className="grid md:grid-cols-2 gap-6">
               <Card className="p-6">
                 <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
