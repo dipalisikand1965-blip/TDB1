@@ -689,22 +689,22 @@ const Pulse = ({
   // Show personalized opening line with memory recall when first opened (TEXT only, no voice)
   useEffect(() => {
     if (isOpen && !hasShownOpening && messages.length === 0) {
-      // PULSE OPENING - Quick, action-oriented
-      let personalizedOpening = petName && petName !== 'your pup'
-        ? `⚡ Hey! I'm Pulse. Tell me what ${petName} needs - I'll route it to Mira instantly.`
-        : PULSE_OPENING;
+      // PULSE OPENING - Personalized with pet name
+      const displayName = petName && petName !== 'your pup' ? petName : 'your pet';
+      const personalizedOpening = `Speak or type. Pulse gets things moving for ${displayName}.`;
       
       // Add memory recall if we have relevant memories
+      let fullOpening = personalizedOpening;
       if (memories.length > 0) {
         const recentMemory = memories[0];
         if (recentMemory.content) {
-          personalizedOpening += `\n\n🧠 Mira remembers: "${recentMemory.content}"`;
+          fullOpening += `\n\n🧠 Mira remembers: "${recentMemory.content}"`;
         }
       }
       
       setMessages([{
         role: 'pulse',
-        text: personalizedOpening,
+        text: fullOpening,
         timestamp: new Date()
       }]);
       setHasShownOpening(true);
