@@ -8,6 +8,7 @@ import { Textarea } from '../components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { API_URL } from '../utils/api';
+import { createEnjoyRSVP, showUnifiedFlowSuccess, showUnifiedFlowError } from '../utils/unifiedApi';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
@@ -241,55 +242,44 @@ const EnjoyPage = () => {
         pet_size: '',
       };
 
-      const response = await fetch(`${API_URL}/api/enjoy/rsvp`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        },
-        body: JSON.stringify({
-          experience_id: selectedExperience.id,
-          ...petData,
-          ...rsvpForm,
-          user_name: user?.name || rsvpForm.guest_name || '',
-          user_email: user?.email || rsvpForm.guest_email || '',
-          user_phone: user?.phone || rsvpForm.guest_phone || ''
-        })
-      });
+      // Use unified API client for consistent flow across all devices
+      const requestPayload = {
+        experience_id: selectedExperience.id,
+        ...petData,
+        ...rsvpForm,
+        user_name: user?.name || rsvpForm.guest_name || '',
+        user_email: user?.email || rsvpForm.guest_email || '',
+        user_phone: user?.phone || rsvpForm.guest_phone || ''
+      };
 
-      if (response.ok) {
-        const result = await response.json();
-        
-        // HARD GUARD: Verify unified flow IDs before showing success
-        console.log('[UNIFIED FLOW] Enjoy RSVP result:', result);
-        if (!result.rsvp_id && !result.ticket_id) {
-          console.error('[UNIFIED FLOW] ❌ RSVP missing ticket_id');
-        }
-        if (!result.notification_id) {
-          console.warn('[UNIFIED FLOW] ⚠️ RSVP missing notification_id');
-        }
-        if (!result.inbox_id) {
-          console.warn('[UNIFIED FLOW] ⚠️ RSVP missing inbox_id');
-        }
-        
-        toast({
-          title: "RSVP Submitted! 🎉",
-          description: `${result.message} Ticket: ${result.rsvp_id || result.ticket_id}`
-        });
-        setShowRsvpModal(false);
-        fetchExperiences();
-      } else {
-        const error = await response.json();
-        toast({
-          title: "Error",
-          description: error.detail || "Failed to submit RSVP",
-          variant: "destructive"
-        });
+      const result = await createEnjoyRSVP(requestPayload, token);
+      
+      // HARD GUARD: Verify unified flow IDs before showing success
+      console.log('[UNIFIED FLOW] Enjoy RSVP result:', result);
+      if (!result.rsvp_id && !result.ticket_id) {
+        console.error('[UNIFIED FLOW] ❌ RSVP missing ticket_id');
+        throw new Error('RSVP missing unified flow IDs');
       }
+      
+      // Show success with unified flow confirmation
+      showUnifiedFlowSuccess('enjoy_rsvp', {
+        ticket_id: result.ticket_id || result.rsvp_id,
+        notification_id: result.notification_id,
+        inbox_id: result.inbox_id
+      });
+      
+      toast({
+        title: "RSVP Submitted! 🎉",
+        description: `${result.message || 'RSVP received!'} Ticket: ${result.ticket_id || result.rsvp_id}`
+      });
+      setShowRsvpModal(false);
+      fetchExperiences();
     } catch (error) {
+      console.error('Error submitting RSVP:', error);
+      showUnifiedFlowError('enjoy_rsvp', error);
       toast({
         title: "Error",
-        description: "Failed to submit RSVP",
+        description: error.message || "Failed to submit RSVP. Please try again.",
         variant: "destructive"
       });
     } finally {
