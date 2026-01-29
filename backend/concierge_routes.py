@@ -11,7 +11,7 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
-from timestamp_utils import get_utc_timestamp, timedelta
+from timestamp_utils import get_utc_timestamp
 from bson import ObjectId
 import logging
 import os
