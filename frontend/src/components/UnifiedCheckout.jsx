@@ -735,71 +735,59 @@ const UnifiedCheckout = () => {
                 <Card className="p-4 md:p-6">
                   <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <Truck className="w-5 h-5 text-purple-600" />
-                    Delivery Method
+                    Delivery
                   </h2>
 
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    <button
-                      type="button"
-                      onClick={() => setDelivery(prev => ({ ...prev, method: 'delivery' }))}
-                      className={`p-4 rounded-lg border-2 text-left transition-all ${
-                        delivery.method === 'delivery' ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-200'
-                      }`}
-                    >
-                      <Truck className={`w-6 h-6 mb-2 ${delivery.method === 'delivery' ? 'text-purple-600' : 'text-gray-400'}`} />
-                      <p className="font-medium">Home Delivery</p>
-                      <p className="text-xs text-gray-500">
-                        {subtotal >= (config?.free_shipping_threshold || 3000) ? 'FREE' : `₹${config?.default_shipping_fee || 150}`}
-                      </p>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDelivery(prev => ({ ...prev, method: 'pickup' }))}
-                      className={`p-4 rounded-lg border-2 text-left transition-all ${
-                        delivery.method === 'pickup' ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-200'
-                      }`}
-                    >
-                      <Store className={`w-6 h-6 mb-2 ${delivery.method === 'pickup' ? 'text-purple-600' : 'text-gray-400'}`} />
-                      <p className="font-medium">Store Pickup</p>
-                      <p className="text-xs text-gray-500">FREE - Save shipping</p>
-                    </button>
+                  {/* Delivery Info Banner */}
+                  <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                    <div className="flex items-center gap-2">
+                      <Truck className="w-5 h-5 text-green-600" />
+                      <div>
+                        <p className="font-medium text-green-800 text-sm">
+                          {subtotal >= (config?.free_shipping_threshold || 3000) 
+                            ? 'Free Delivery! 🎉' 
+                            : `Add ₹${(config?.free_shipping_threshold || 3000) - subtotal} for FREE delivery`}
+                        </p>
+                        <p className="text-xs text-green-600">We deliver across India with love 🇮🇳</p>
+                      </div>
+                    </div>
                   </div>
 
-                  {delivery.method === 'delivery' ? (
-                    <div className="space-y-3">
+                  {/* Delivery Address Form */}
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="address">Address *</Label>
+                      <Textarea
+                        id="address"
+                        value={delivery.address}
+                        onChange={(e) => setDelivery(prev => ({ ...prev, address: e.target.value }))}
+                        placeholder="House/Flat No., Building, Street"
+                        rows={2}
+                        data-testid="checkout-delivery-address"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <Label htmlFor="address">Address *</Label>
-                        <Textarea
-                          id="address"
-                          value={delivery.address}
-                          onChange={(e) => setDelivery(prev => ({ ...prev, address: e.target.value }))}
-                          placeholder="House/Flat No., Building, Street"
-                          rows={2}
-                          data-testid="checkout-delivery-address"
+                        <Label htmlFor="city">City *</Label>
+                        <Input
+                          id="city"
+                          value={delivery.city}
+                          onChange={(e) => setDelivery(prev => ({ ...prev, city: e.target.value }))}
+                          placeholder="City"
+                          data-testid="checkout-delivery-city"
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <Label htmlFor="city">City *</Label>
-                          <Input
-                            id="city"
-                            value={delivery.city}
-                            onChange={(e) => setDelivery(prev => ({ ...prev, city: e.target.value }))}
-                            placeholder="City"
-                            data-testid="checkout-delivery-city"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="pincode">Pincode *</Label>
-                          <Input
-                            id="pincode"
-                            value={delivery.pincode}
-                            onChange={(e) => setDelivery(prev => ({ ...prev, pincode: e.target.value }))}
-                            placeholder="6-digit pincode"
-                            data-testid="checkout-delivery-pincode"
-                          />
-                        </div>
+                      <div>
+                        <Label htmlFor="pincode">Pincode *</Label>
+                        <Input
+                          id="pincode"
+                          value={delivery.pincode}
+                          onChange={(e) => setDelivery(prev => ({ ...prev, pincode: e.target.value }))}
+                          placeholder="6-digit pincode"
+                          data-testid="checkout-delivery-pincode"
+                        />
                       </div>
+                    </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <Label htmlFor="state">State *</Label>
