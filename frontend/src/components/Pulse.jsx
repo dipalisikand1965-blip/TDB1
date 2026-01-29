@@ -950,7 +950,7 @@ const Pulse = ({
       console.error('Speech error:', e.error);
       setIsListening(false);
       if (e.error === 'no-speech') {
-        addMiraMessage("I didn't hear anything. Tap the mic and try again!");
+        addPulseMessage("⚡ Didn't catch that. Tap to try again!");
       }
     };
     
@@ -959,11 +959,11 @@ const Pulse = ({
     recognitionRef.current = recognition;
     
     return () => recognition.abort();
-  }, [handleSend, addMiraMessage]);
+  }, [handleSend, addPulseMessage]);
   
   const toggleListening = useCallback(() => {
     if (!recognitionRef.current) {
-      addMiraMessage("Voice isn't available in this browser. But you can type your message!");
+      addPulseMessage("Voice isn't available in this browser. Type your message instead!");
       return;
     }
     
@@ -973,7 +973,7 @@ const Pulse = ({
       setIsListening(true);
       recognitionRef.current.start();
     }
-  }, [isListening, addMiraMessage]);
+  }, [isListening, addPulseMessage]);
   
   const quickCommands = [
     { icon: ShoppingCart, text: `Order ${petName}'s treats`, color: 'bg-orange-100 text-orange-700' },
