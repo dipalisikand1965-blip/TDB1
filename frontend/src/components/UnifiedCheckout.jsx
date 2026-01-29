@@ -404,13 +404,9 @@ const UnifiedCheckout = () => {
         toast({ title: 'Missing Details', description: 'Please fill all required fields', variant: 'destructive' });
         return false;
       }
-      if (delivery.method === 'delivery') {
-        if (!delivery.address || !delivery.city || !delivery.pincode) {
-          toast({ title: 'Missing Address', description: 'Please complete delivery address', variant: 'destructive' });
-          return false;
-        }
-      } else if (!delivery.pickupLocation) {
-        toast({ title: 'Select Store', description: 'Please select a pickup location', variant: 'destructive' });
+      // Always require delivery address (store pickup removed)
+      if (!delivery.address || !delivery.city || !delivery.pincode) {
+        toast({ title: 'Missing Address', description: 'Please complete delivery address', variant: 'destructive' });
         return false;
       }
       return true;
