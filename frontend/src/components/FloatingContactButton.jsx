@@ -36,26 +36,11 @@ const FloatingContactButton = () => {
       href: 'tel:+919663185747',
     },
     {
-      label: 'WhatsApp',
-      sublabel: 'Quick chat',
-      icon: MessageCircle,
-      color: 'bg-green-600 hover:bg-green-700',
-      href: 'https://wa.me/919663185747?text=Hi%20I%20need%20help%20with...',
-      external: true,
-    },
-    {
       label: 'Request Callback',
       sublabel: "We'll call you",
       icon: PhoneIncoming,
       color: 'bg-blue-500 hover:bg-blue-600',
       onClick: handleCallbackClick,
-    },
-    {
-      label: 'Voice Order',
-      sublabel: 'Speak your order',
-      icon: Mic,
-      color: 'bg-purple-500 hover:bg-purple-600',
-      href: '/voice-order',
     },
   ];
 
