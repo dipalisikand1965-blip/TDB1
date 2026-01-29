@@ -14,8 +14,10 @@ import requests
 import os
 import uuid
 from datetime import datetime
+from requests.auth import HTTPBasicAuth
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+ADMIN_AUTH = HTTPBasicAuth('aditya', 'lola4304')
 
 class TestCareRequestUnifiedFlow:
     """Test that Care/Grooming requests create entries in all 3 collections"""
