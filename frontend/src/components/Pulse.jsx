@@ -1050,7 +1050,7 @@ const Pulse = ({
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] flex items-end sm:items-center justify-center p-0 sm:p-4">
       <Card className="w-full sm:max-w-md h-[85vh] sm:h-[600px] bg-white sm:rounded-3xl rounded-t-3xl shadow-2xl flex flex-col overflow-hidden" data-testid="pulse-voice-assistant">
         {/* PULSE Header - Electric Cyan/Blue gradient */}
         <div className="bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 p-4 text-white flex-shrink-0">
