@@ -1159,10 +1159,10 @@ export const PulseButton = ({ onClick, petName }) => {
       
       {/* Tooltip */}
       <span className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-        💬 Chat with Mira
+        ⚡ Quick Voice → Mira
       </span>
     </button>
   );
 };
 
-export default MiraVoiceAssistant;
+export default Pulse;
