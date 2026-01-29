@@ -218,11 +218,14 @@ const MiraAI = () => {
     synthRef.current.cancel();
     
     // Clean text for speech
-    const cleanText = text
-      .replace(/[🎉🐕✨🦴💜🎂🏥]/g, '')
+    let cleanText = text
+      .replace(/[🎉🐕✨🦴💜🎂🏥🐾]/g, '')
       .replace(/\*\*/g, '')
       .replace(/\n/g, ' ')
       .substring(0, 500);
+    
+    // Fix "Mira" pronunciation to "Meera" (phonetic spelling)
+    cleanText = cleanText.replace(/\bMira\b/gi, 'Meera');
     
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.rate = 1.0;
