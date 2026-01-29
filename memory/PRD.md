@@ -61,10 +61,11 @@ This flow must work across:
 
 ### 🟠 P1 - Important
 
-1. **Pet Profile Crash for "Mynx"** - User reported crash when viewing pet profile
-2. **Paw Points Display** - Incorrect display for specific user account
-3. **Mobile UI Transformation** - Member Dashboard mobile optimization
-4. **Service Booking Flow** - Mobile optimization
+1. **Stay Page Layout Redo** - Pet properties should be displayed on TOP of the page
+2. **Pet Profile Crash for "Mynx"** - User reported crash when viewing pet profile
+3. **Paw Points Display** - Incorrect display for specific user account
+4. **Mobile UI Transformation** - Member Dashboard mobile optimization
+5. **Service Booking Flow** - Mobile optimization
 
 ### 🟡 P2 - Backlog
 
