@@ -808,7 +808,7 @@ const MemberDashboard = () => {
               
               {/* Quick Action Buttons */}
               <div className="flex flex-wrap gap-3">
-                {primaryPet && (primaryPet.overall_score || 0) < 100 && (
+                {primaryPet && primaryPet.id && (primaryPet.overall_score || 0) < 100 && (
                   <Button 
                     onClick={() => navigate(`/pet/${primaryPet.id}?tab=personality`)}
                     className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
@@ -817,11 +817,11 @@ const MemberDashboard = () => {
                     Complete Pet Soul
                   </Button>
                 )}
-                {primaryPet ? (
+                {primaryPet && primaryPet.id ? (
                   <Button 
                     onClick={() => {
                       // Go directly to unified pet page for primary pet
-                      if (pets.length > 0) {
+                      if (pets.length > 0 && pets[0].id) {
                         navigate(`/pet/${pets[0].id}?tab=personality`);
                       } else {
                         navigate('/my-pets');
