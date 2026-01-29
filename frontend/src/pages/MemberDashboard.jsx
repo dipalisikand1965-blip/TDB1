@@ -1259,7 +1259,7 @@ const MemberDashboard = () => {
               
               <Card 
                 className="p-4 cursor-pointer hover:shadow-lg transition-all border-2 border-transparent hover:border-pink-200 bg-gradient-to-br from-pink-50 to-white"
-                onClick={() => window.location.href = '/celebrate'}
+                onClick={() => navigate('/celebrate')}
               >
                 <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center mb-3">
                   <Cake className="w-5 h-5 text-pink-600" />
@@ -1270,7 +1270,7 @@ const MemberDashboard = () => {
               
               <Card 
                 className="p-4 cursor-pointer hover:shadow-lg transition-all border-2 border-transparent hover:border-amber-200 bg-gradient-to-br from-amber-50 to-white"
-                onClick={() => window.location.href = '/products'}
+                onClick={() => navigate('/products')}
               >
                 <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mb-3">
                   <ShoppingBag className="w-5 h-5 text-amber-600" />
@@ -1714,7 +1714,7 @@ const MemberDashboard = () => {
                 </div>
                 <h3 className="text-lg font-medium text-gray-900">No orders yet</h3>
                 <p className="text-gray-500 mt-1 mb-4">Treat your furry friend to something special!</p>
-                <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => window.location.href='/cakes'}>
+                <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => navigate('/cakes')}>
                   Start Shopping
                 </Button>
               </div>
