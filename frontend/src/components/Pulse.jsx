@@ -688,6 +688,33 @@ const Pulse = ({
     fetchMemories();
   }, [isOpen, petId, API_URL]);
   
+  // Fetch product recommendations for a category
+  const fetchProductsForChat = useCallback(async (category) => {
+    try {
+      const response = await fetch(`${API_URL}/api/products?category=${category}&limit=3`);
+      if (response.ok) {
+        const data = await response.json();
+        return data.products || data || [];
+      }
+    } catch (err) {
+      console.log('Could not fetch products:', err);
+    }
+    return [];
+  }, [API_URL]);
+  
+  // Add product cards to chat
+  const addProductsToChat = useCallback(async (category, intro) => {
+    const products = await fetchProductsForChat(category);
+    if (products.length > 0) {
+      setMessages(prev => [...prev, {
+        role: 'pulse',
+        text: intro,
+        products: products.slice(0, 3),
+        timestamp: new Date()
+      }]);
+    }
+  }, [fetchProductsForChat]);
+  
   // Get time-aware greeting
   const getTimeAwareGreeting = useCallback((name) => {
     const hour = new Date().getHours();
