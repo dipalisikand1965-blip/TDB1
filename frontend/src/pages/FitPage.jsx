@@ -31,7 +31,8 @@ import {
   ArrowRight, Play, ChevronDown, Target, Zap, Timer, PawPrint,
   Users, Calendar, MapPin, Award, ShoppingBag, AlertCircle,
   Clock, ArrowUpRight, Plus, Check, X, Phone, Package, Shield,
-  MessageCircle, Info, ChevronUp, Bookmark, Share2, ExternalLink
+  MessageCircle, Info, ChevronUp, Bookmark, Share2, ExternalLink,
+  ShoppingCart
 } from 'lucide-react';
 
 // Elevated Concierge® Fit Experiences
