@@ -441,7 +441,7 @@ async def update_travel_request(request_id: str, update: TravelRequestUpdate):
     db = get_db()
     logger = get_logger()
     
-    update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    update_doc = {"updated_at": get_consistent_timestamp()}
     
     if update.status:
         update_doc["status"] = update.status
