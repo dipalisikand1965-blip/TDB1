@@ -48,8 +48,8 @@ import MyCelebrations from '../components/MyCelebrations';
 import FirstVisitTour, { useTour } from '../components/FirstVisitTour';
 // Daily Tips
 import MiraDailyTip, { MiraDailyTipInline } from '../components/MiraDailyTip';
-// Voice Assistant
-import MiraVoiceAssistant, { MiraVoiceButton } from '../components/MiraVoiceAssistant';
+// Pulse Voice Assistant (Voice → Mira accelerator)
+import Pulse, { PulseButton } from '../components/Pulse';
 // Push Notification Banner
 import PushNotificationBanner from '../components/PushNotificationBanner';
 
