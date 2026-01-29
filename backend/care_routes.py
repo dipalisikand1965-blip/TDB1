@@ -262,12 +262,12 @@ async def create_care_request(request: CareRequestCreate):
                     else:
                         missing_fields.append(field)
         
-        # Determine priority based on care type
-        priority = "normal"
+        # Determine priority based on care type (1=urgent, 2=high, 3=normal, 4=low)
+        priority = 3  # default: normal
         if request.care_type == "emergency":
-            priority = "urgent"
+            priority = 1  # urgent
         elif request.care_type in ["special_needs", "vet_coordination"]:
-            priority = "high"
+            priority = 2  # high
         
         # Build care context from profile
         care_context = {
