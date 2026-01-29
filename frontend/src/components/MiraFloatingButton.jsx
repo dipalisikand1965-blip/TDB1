@@ -179,7 +179,9 @@ const MiraFloatingButton = () => {
           onClose={() => {
             setIsOpen(false);
             setStartWithVoice(false);
+            window.dispatchEvent(new CustomEvent('pulseClosed'));
           }}
+          onOpen={() => window.dispatchEvent(new CustomEvent('pulseOpened'))}
           petName={petData?.name || 'your pup'}
           petId={petData?.id}
           petData={petData}
