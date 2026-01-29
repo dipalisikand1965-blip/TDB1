@@ -63,6 +63,15 @@ const MiraContextPanel = ({
   const [recommendations, setRecommendations] = useState([]);
   const [quickPrompts, setQuickPrompts] = useState([]);
   
+  // Voice input/output state (Pulse integration)
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef(null);
+  const synthRef = useRef(typeof window !== 'undefined' ? window.speechSynthesis : null);
+  const inputRef = useRef(null);
+  
   // Mira Signal tracking for passive learning
   const { trackPillarVisit, trackClick } = useMiraSignal();
   
