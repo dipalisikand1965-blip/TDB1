@@ -260,9 +260,9 @@ const MiraContextPanel = ({
     advisory: {
       icon: '📋',
       name: 'Advisory',
-      color: 'from-slate-500 to-gray-500',
-      bgColor: 'bg-slate-50',
-      borderColor: 'border-slate-200'
+      color: 'from-purple-500 to-violet-600',
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-purple-200'
     },
     paperwork: {
       icon: '📄',
