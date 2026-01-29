@@ -9791,6 +9791,84 @@ async def seed_production_data():
     }
 
 
+# ==================== CORE DATA SEEDING ====================
+
+@admin_router.post("/migration/seed-core-data")
+async def seed_core_data(credentials: HTTPBasicCredentials = Depends(security)):
+    """Seed core data: pillars, categories, and initial configurations"""
+    verify_admin(credentials)
+    
+    results = {
+        "pillars_created": 0,
+        "categories_created": 0,
+        "services_created": 0
+    }
+    
+    try:
+        # Define the 14 pillars
+        pillars = [
+            {"id": "celebrate", "name": "Celebrate", "icon": "🎉", "description": "Birthdays, Gotcha Days & Celebrations"},
+            {"id": "dine", "name": "Dine", "icon": "🍽️", "description": "Pet-Friendly Restaurants & Cafes"},
+            {"id": "stay", "name": "Stay", "icon": "🏨", "description": "Boarding, Daycare & Pet Hotels"},
+            {"id": "travel", "name": "Travel", "icon": "✈️", "description": "Pet-Friendly Travel Planning"},
+            {"id": "care", "name": "Care", "icon": "🏥", "description": "Health, Wellness & Veterinary"},
+            {"id": "enjoy", "name": "Enjoy", "icon": "🎾", "description": "Parks, Activities & Playdates"},
+            {"id": "fit", "name": "Fit", "icon": "🏋️", "description": "Training, Walking & Fitness"},
+            {"id": "learn", "name": "Learn", "icon": "📚", "description": "Puppy School & Training Courses"},
+            {"id": "paperwork", "name": "Paperwork", "icon": "📋", "description": "Documents, Licenses & Certificates"},
+            {"id": "advisory", "name": "Advisory", "icon": "💼", "description": "Expert Pet Consultation"},
+            {"id": "emergency", "name": "Emergency", "icon": "🚨", "description": "24/7 Emergency Services"},
+            {"id": "farewell", "name": "Farewell", "icon": "🌈", "description": "End-of-Life Care & Memorials"},
+            {"id": "adopt", "name": "Adopt", "icon": "🐕", "description": "Adoption & Rescue"},
+            {"id": "shop", "name": "Shop", "icon": "🛒", "description": "Pet Products & Supplies"}
+        ]
+        
+        # Upsert pillars
+        for pillar in pillars:
+            await db.pillars.update_one(
+                {"id": pillar["id"]},
+                {"$set": pillar},
+                upsert=True
+            )
+            results["pillars_created"] += 1
+        
+        # Define product categories
+        categories = [
+            {"id": "treats", "name": "Treats & Chews", "pillar": "shop"},
+            {"id": "food", "name": "Food & Nutrition", "pillar": "shop"},
+            {"id": "toys", "name": "Toys & Games", "pillar": "shop"},
+            {"id": "accessories", "name": "Collars & Leashes", "pillar": "shop"},
+            {"id": "bedding", "name": "Beds & Bedding", "pillar": "shop"},
+            {"id": "grooming", "name": "Grooming Supplies", "pillar": "shop"},
+            {"id": "health", "name": "Health & Wellness", "pillar": "shop"},
+            {"id": "feeding", "name": "Bowls & Feeders", "pillar": "shop"}
+        ]
+        
+        for cat in categories:
+            await db.categories.update_one(
+                {"id": cat["id"]},
+                {"$set": cat},
+                upsert=True
+            )
+            results["categories_created"] += 1
+        
+        # Seed Concierge services
+        await auto_seed_all_services()
+        services_count = await db.services.count_documents({})
+        results["services_created"] = services_count
+        
+        logger.info(f"Core data seeded: {results}")
+        
+        return {
+            "message": "Core data seeded successfully",
+            "results": results
+        }
+        
+    except Exception as e:
+        logger.error(f"Seed core data error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== PET PASS NUMBER MIGRATION ====================
 
 @admin_router.post("/migrate/pet-pass-numbers")
