@@ -330,10 +330,15 @@ async def process_intake(request: ChannelRequest) -> IntakeResponse:
                 "link": f"/admin?tab=servicedesk&ticket={ticket_id}"
             })
             
-            # Update intake with ticket ID
+            # Update intake with ticket ID and cross-references
             await db.channel_intakes.update_one(
                 {"request_id": request_id},
-                {"$set": {"ticket_id": ticket_id, "pillar": detected_pillar}}
+                {"$set": {
+                    "ticket_id": ticket_id,
+                    "notification_id": notification_id,
+                    "pillar": detected_pillar,
+                    "unified_flow_processed": True
+                }}
             )
             
             logger.info(f"Auto-created ticket {ticket_id} for {request.channel} intake {request_id}, pillar: {detected_pillar}")
