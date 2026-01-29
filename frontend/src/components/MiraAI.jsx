@@ -569,12 +569,29 @@ const MiraAI = () => {
       const data = await response.json();
       console.log('[Mira] Response received:', data.response?.substring(0, 100));
       
+      // Build response with ticket info if available
+      let displayContent = data.response || "I'm sorry, I couldn't process that. Please try again.";
+      
+      // If a service desk ticket was created, show confirmation
+      if (data.service_desk_ticket_id || data.concierge_action?.action_needed) {
+        const ticketId = data.service_desk_ticket_id || data.ticket_id;
+        displayContent += `\n\n---\n📋 **Request #${ticketId}** created. Our live concierge will get back to you shortly!`;
+        
+        // Show toast notification
+        toast.success(`Request #${ticketId} created!`, {
+          description: 'Our concierge team will contact you shortly.'
+        });
+      }
+      
       const assistantMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response || "I'm sorry, I couldn't process that. Please try again.",
+        content: displayContent,
         researchMode: data.research_mode,
-        products: data.products || null // Product cards if backend returns them
+        products: data.products || null, // Product cards if backend returns them
+        ticketId: data.ticket_id,
+        serviceTicketId: data.service_desk_ticket_id,
+        conciergeAction: data.concierge_action
       };
 
       setMessages(prev => [...prev, assistantMessage]);
