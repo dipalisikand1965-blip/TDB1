@@ -9,6 +9,44 @@
 - **Database**: MongoDB
 - **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat, service_desk_settings, whatsapp_logs, concierge_requests, push_subscriptions, push_notification_logs, soul_whisper_logs, concierge_experiences, social_share_claims, nps_submissions, unified_products
 
+### Phase 49: SEV-1 Unified Flow Fix - ALL Pillars (Jan 29, 2025)
+
+**CRITICAL FIX: Platform-wide notification failures**
+
+**Central Dispatcher Created (`/app/backend/central_dispatcher.py`):**
+- Single point of entry for ALL actions
+- Guarantees: Notification → Service Desk Ticket → Unified Inbox
+- Provides: dispatch_action(), dispatch_concierge_request(), dispatch_booking(), dispatch_order()
+- Includes integrity guards and auto-fix capabilities
+
+**Travel Routes Fixed (`/app/backend/travel_routes.py`):**
+- Added notification creation (lines 278-301)
+- Added service_desk_tickets insert (line 268)
+- Added channel_intakes insert (lines 305-342)
+- Book Cab now creates all 3 entries
+
+**Fit Routes Fixed (`/app/backend/fit_routes.py`):**
+- Complete rewrite with full unified flow
+- Notification (lines 82-113)
+- Ticket (lines 116-166)  
+- Inbox (lines 169-207)
+- Ask Concierge (Fit) now creates all 3 entries
+
+**Care Routes (Fixed in Phase 48):**
+- Grooming requests create notifications
+
+### Confirmed Unified Flow Working:
+- ✅ Book Cab → Notification + Ticket + Inbox
+- ✅ Ask Concierge (Travel) → Notification + Ticket + Inbox  
+- ✅ Ask Concierge (Fit) → Notification + Ticket + Inbox
+- ✅ Grooming (Care) → Notification + Ticket + Inbox
+- ✅ Celebrate → Mira present + same flow
+
+### Remaining Pillars to Verify:
+- Enjoy Pet Dining (need to check if unified flow working)
+- Stay reservations
+- Advisory requests
+
 ---
 
 ## What's Been Implemented
