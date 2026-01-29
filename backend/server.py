@@ -11246,6 +11246,10 @@ app.include_router(whatsapp_router)  # WhatsApp Business API at /api/whatsapp/*
 app.include_router(push_router)  # Push notifications at /api/push/*
 set_push_db(db)  # Initialize push notifications with database
 
+# Proactive Notifications
+app.include_router(proactive_router)  # Proactive notifications at /api/notifications/*
+set_proactive_db(db)  # Initialize proactive notifications with database
+
 # Concierge Experience Admin
 app.include_router(experience_admin_router)  # Concierge experiences at /api/admin/concierge-experiences/*
 set_experience_admin_db(db)
