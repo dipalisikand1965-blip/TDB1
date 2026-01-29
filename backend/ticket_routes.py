@@ -761,17 +761,23 @@ async def list_tickets(
     def get_sort_key(x):
         val = x.get(sort_by, "")
         if val is None:
-            return datetime.min if sort_order == "desc" else datetime.max
+            return datetime.min.replace(tzinfo=timezone.utc) if sort_order == "desc" else datetime.max.replace(tzinfo=timezone.utc)
         if isinstance(val, datetime):
+            # Ensure timezone-aware
+            if val.tzinfo is None:
+                val = val.replace(tzinfo=timezone.utc)
             return val
         if isinstance(val, str):
             try:
                 # Parse ISO format with or without timezone
                 from dateutil.parser import parse
-                return parse(val)
+                parsed = parse(val)
+                if parsed.tzinfo is None:
+                    parsed = parsed.replace(tzinfo=timezone.utc)
+                return parsed
             except:
-                return datetime.min if sort_order == "desc" else datetime.max
-        return datetime.min if sort_order == "desc" else datetime.max
+                return datetime.min.replace(tzinfo=timezone.utc) if sort_order == "desc" else datetime.max.replace(tzinfo=timezone.utc)
+        return datetime.min.replace(tzinfo=timezone.utc) if sort_order == "desc" else datetime.max.replace(tzinfo=timezone.utc)
     
     all_tickets.sort(key=get_sort_key, reverse=(sort_order == "desc"))
     
