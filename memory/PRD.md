@@ -22,6 +22,17 @@
 - Added auto-population of Special Requests field with pet names when pets are selected
 - Dynamic placeholder showing selected pet names in the special requests textarea
 
+### Phase 40: Pulse Quick Commands Restored (Jan 29, 2025)
+
+**Pulse Voice Assistant Updates (`/app/frontend/src/components/Pulse.jsx`):**
+- Restored quick command buttons at the bottom of Pulse modal
+- Commands are personalized with pet name (e.g., "Treats for Mynx", "Groom Mynx")
+- 6 quick actions: Treats, Grooming, Vet, Food, Birthday, Boarding
+- Click auto-fills input and sends command automatically
+- Commands navigate to appropriate pages with context
+- Enhanced response messages to be more engaging and personalized
+- Quick commands only show on initial state (hide after conversation starts)
+
 ### Phase 38: Mobile-First UI Masterpiece (Jan 29, 2025)
 
 **Design System Updates:**
