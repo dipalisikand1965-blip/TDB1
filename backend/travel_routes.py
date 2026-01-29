@@ -675,8 +675,8 @@ async def import_travel_products(products: List[Dict[str, Any]]):
                 "paw_reward_points": int(prod.get("paw_reward_points", 0)),
                 "is_birthday_perk": prod.get("is_birthday_perk", "false").lower() == "true" if isinstance(prod.get("is_birthday_perk"), str) else bool(prod.get("is_birthday_perk", False)),
                 "birthday_discount_percent": int(prod.get("birthday_discount_percent", 0)) if prod.get("birthday_discount_percent") else None,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_consistent_timestamp(),
+                "updated_at": get_consistent_timestamp()
             }
             
             # Upsert - update if exists, insert if not
