@@ -259,9 +259,22 @@ const EnjoyPage = () => {
 
       if (response.ok) {
         const result = await response.json();
+        
+        // HARD GUARD: Verify unified flow IDs before showing success
+        console.log('[UNIFIED FLOW] Enjoy RSVP result:', result);
+        if (!result.rsvp_id && !result.ticket_id) {
+          console.error('[UNIFIED FLOW] ❌ RSVP missing ticket_id');
+        }
+        if (!result.notification_id) {
+          console.warn('[UNIFIED FLOW] ⚠️ RSVP missing notification_id');
+        }
+        if (!result.inbox_id) {
+          console.warn('[UNIFIED FLOW] ⚠️ RSVP missing inbox_id');
+        }
+        
         toast({
           title: "RSVP Submitted! 🎉",
-          description: result.message
+          description: `${result.message} Ticket: ${result.rsvp_id || result.ticket_id}`
         });
         setShowRsvpModal(false);
         fetchExperiences();
