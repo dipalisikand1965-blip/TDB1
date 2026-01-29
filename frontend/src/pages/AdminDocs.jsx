@@ -145,6 +145,162 @@ const AdminDocs = () => {
 
   // Documentation content for each section
   const docs = {
+    'unified-flow-fix': {
+      title: '✅ SEV-1 Unified Flow Fix',
+      subtitle: 'Critical fix for the Notification → Ticket → Inbox flow',
+      badge: 'RESOLVED - Jan 29, 2026',
+      files: {
+        backend: '/app/backend/concierge_routes.py, /app/backend/celebrate_routes.py, /app/backend/learn_routes.py',
+        frontend: '/app/frontend/src/utils/unifiedApi.js'
+      },
+      sections: [
+        {
+          title: 'What Was Wrong',
+          content: `**ROOT CAUSE**: Multiple backend endpoints were showing "success" to users but NOT creating the full unified flow:
+
+❌ /api/concierge/experience-request - Only created basic ticket, NO notification, NO inbox
+❌ /api/celebrate/requests - Only created request, NO notification, NO inbox  
+❌ /api/learn/request - Only created ticket, NO notification, NO inbox
+
+This caused requests to appear successful but never show up in Admin Panel.`
+        },
+        {
+          title: 'What Was Fixed',
+          content: `All three endpoints now create the FULL unified flow:
+
+✅ /api/concierge/experience-request
+   → Creates: notification_id, ticket_id, inbox_id
+   → Appears in: Notifications, Service Desk, Unified Inbox
+
+✅ /api/celebrate/requests  
+   → Creates: notification_id, ticket_id, inbox_id
+   → Appears in: Notifications, Service Desk, Unified Inbox
+
+✅ /api/learn/request
+   → Creates: notification_id, ticket_id, inbox_id
+   → Appears in: Notifications, Service Desk, Unified Inbox`
+        },
+        {
+          title: 'How to Verify',
+          content: `1. Go to any pillar page (Fit, Care, Travel, etc.)
+2. Click "Ask Concierge" on any experience card
+3. Submit the form
+4. Check Admin Panel → Notifications → Your request should appear at TOP
+5. Check Service Desk → Your ticket should appear
+6. Check Unified Inbox → Your entry should appear`
+        }
+      ]
+    },
+    'mira-fixes': {
+      title: '✅ Mira AI Fixes',
+      subtitle: 'Fixed pillar panel links and soul score display',
+      badge: 'RESOLVED - Jan 29, 2026',
+      files: {
+        frontend: '/app/frontend/src/components/MiraContextPanel.jsx, /app/frontend/src/components/MiraAI.jsx',
+        backend: '/app/backend/mira_routes.py (load_pet_soul function)'
+      },
+      sections: [
+        {
+          title: 'Mira Pillar Panel Links',
+          content: `**Problem**: Clicking suggestion buttons (Health Certificate, Pet Passport, etc.) on pillar pages only opened the chat but didn't send the message.
+
+**Fix**: Added sendDirectMessage() function that directly calls Mira API instead of relying on React state updates + timeouts.
+
+**Affected Component**: MiraContextPanel.jsx`
+        },
+        {
+          title: 'Mira Quick Actions',
+          content: `**Problem**: Quick action buttons in the floating Mira widget weren't sending messages reliably.
+
+**Fix**: Refactored handleQuickAction() to directly call the Mira API with the message content.
+
+**Affected Component**: MiraAI.jsx`
+        },
+        {
+          title: 'Pet Soul Score Display',
+          content: `**Problem**: Soul Score showing 0% for pets even when they had actual scores (e.g., Mojo had 37.8%).
+
+**Root Cause**: load_pet_soul() function in mira_routes.py wasn't returning soul_score field.
+
+**Fix**: Added soul_score and overall_score fields to the load_pet_soul() return object.`
+        }
+      ]
+    },
+    'tomorrow-tasks': {
+      title: '📋 Tomorrow Tasks',
+      subtitle: 'Priority tasks for next session - January 30, 2026',
+      badge: 'P0 - BEFORE PRODUCTION',
+      sections: [
+        {
+          title: '🔴 P0 - Checkout GST/Shipping Order',
+          content: `**Current**: Subtotal → Discount → Taxable Amount → GST → Shipping → Total
+
+**Required**: Subtotal → Discount → Shipping → Taxable Amount → GST → Total
+
+**Why**: GST should be calculated ON shipping too (18% applies to shipping cost)
+
+**Files to Modify**:
+• Frontend: /app/frontend/src/components/UnifiedCheckout.jsx (display order)
+• Backend: /app/backend/checkout_routes.py (calculation logic - include shipping in taxable amount)`
+        },
+        {
+          title: '🔴 P0 - Mira Female Voice',
+          content: `**Requirement**: Mira AI should use a woman's voice for text-to-speech.
+
+**Files to Check**:
+• /app/frontend/src/components/MiraAI.jsx
+• /app/frontend/src/components/MiraContextPanel.jsx
+
+**Implementation**: Look for speechSynthesis voice selection and set to female voice.`
+        },
+        {
+          title: '🟠 P1 - After Production Deploy',
+          content: `• Pet Profile crash for "Mynx"
+• Paw Points display bug for specific user
+• Mobile UI transformation for Member Dashboard
+• Service Booking Flow mobile optimization`
+        }
+      ]
+    },
+    'pending-bugs': {
+      title: '🐛 Pending Bugs',
+      subtitle: 'Known issues to be addressed',
+      badge: 'P1/P2 Backlog',
+      sections: [
+        {
+          title: 'P1 - High Priority',
+          content: `1. **Pet Profile Crash for "Mynx"**
+   - User reported crash when viewing specific pet profile
+   - Needs investigation
+
+2. **Paw Points Display**
+   - Incorrect display for specific user account
+   - May be data issue or calculation bug`
+        },
+        {
+          title: 'P2 - Medium Priority',
+          content: `1. **Razorpay Payments**
+   - Reported as failing
+   - Needs debugging
+
+2. **PDF Invoice Generation**
+   - Not yet implemented
+   - Required for order completion
+
+3. **Partner Portal**
+   - B2B clients portal
+   - Future feature`
+        },
+        {
+          title: 'Test Credentials',
+          content: `**Member Login**: 
+dipali@clubconcierge.in / test123
+
+**Admin Panel**:
+aditya / lola4304`
+        }
+      ]
+    },
     'universal-seed': {
       title: '🔥 Universal Seed',
       subtitle: 'ONE BUTTON to seed ALL data across the entire system',
