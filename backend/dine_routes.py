@@ -482,7 +482,7 @@ async def create_reservation(reservation: ReservationRequest):
     
     logger.info(f"[UNIFIED FLOW] COMPLETE: Dine reservation {reservation_id} | Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id})")
     
-    # Send confirmation email to customer
+    # Send confirmation email to customer (existing email code, non-blocking)
     if RESEND_API_KEY and reservation.email:
         try:
             pet_info_html = ""
@@ -528,6 +528,7 @@ async def create_reservation(reservation: ReservationRequest):
                         {pet_info_html}
                         
                         <p style="color: #4b5563;">Our team will confirm your reservation within 2 hours. You'll receive another email once confirmed.</p>
+                        <p style="color: #6b7280; font-size: 12px;">Ticket ID: {ticket_id}</p>
                         
                         <p style="color: #9ca3af; font-size: 14px; margin-top: 30px;">
                             Questions? Reply to this email or chat with Your Concierge® on our website.
@@ -543,113 +544,13 @@ async def create_reservation(reservation: ReservationRequest):
         except Exception as e:
             logger.error(f"Failed to send reservation email: {e}")
     
-    # Send notification email to admin
-    if RESEND_API_KEY:
-        try:
-            notification_email = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.in")
-            pet_info = f"<p><strong>🐕 Pet:</strong> {reservation.pet_name}{f' ({reservation.pet_breed})' if reservation.pet_breed else ''}</p>" if reservation.pet_name else ""
-            pet_about = f"<p><strong>About Pet:</strong> {reservation.pet_about}</p>" if reservation.pet_about else ""
-            
-            resend.Emails.send({
-                "from": f"Dine Reservations <{SENDER_EMAIL}>",
-                "to": notification_email,
-                "subject": f"🆕 New Reservation - {restaurant.get('name')} ({reservation.date})",
-                "html": f"""
-                <div style="font-family: Arial, sans-serif;">
-                    <h2>New Dining Reservation</h2>
-                    <p><strong>Restaurant:</strong> {restaurant.get('name')} ({restaurant.get('area')}, {restaurant.get('city')})</p>
-                    <p><strong>Customer:</strong> {reservation.name}</p>
-                    <p><strong>Phone:</strong> {reservation.phone}</p>
-                    <p><strong>Email:</strong> {reservation.email}</p>
-                    <p><strong>Date/Time:</strong> {reservation.date} at {reservation.time}</p>
-                    <p><strong>Guests:</strong> {reservation.guests} | <strong>Pets:</strong> {reservation.pets}</p>
-                    {pet_info}
-                    {pet_about}
-                    <p><strong>Pet Meal Pre-order:</strong> {'Yes' if reservation.petMealPreorder else 'No'}</p>
-                    {f'<p><strong>Special Requests:</strong> {reservation.specialRequests}</p>' if reservation.specialRequests else ''}
-                    <p style="margin-top: 20px;"><a href="https://thedoggycompany.in/admin" style="background: #f97316; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View in Admin</a></p>
-                </div>
-                """
-            })
-        except Exception as e:
-            logger.error(f"Failed to send admin notification: {e}")
-    
-    # Auto-create Service Desk ticket for reservation
-    try:
-        ticket_id = await create_ticket_from_event(db, "reservation", {
-            "reservation_id": reservation_doc["id"],
-            "name": reservation.name,
-            "email": reservation.email,
-            "phone": reservation.phone,
-            "restaurant_name": restaurant.get("name"),
-            "restaurant_area": restaurant.get("area"),
-            "city": restaurant.get("city"),
-            "date": reservation.date,
-            "time": reservation.time,
-            "guests": reservation.guests,
-            "pets": reservation.pets,
-            "pet_name": reservation.pet_name,
-            "pet_breed": reservation.pet_breed,
-            "pet_about": reservation.pet_about,
-            "special_requests": reservation.specialRequests,
-            "occasion": reservation.occasion if hasattr(reservation, 'occasion') else None,
-            "is_birthday": "birthday" in (reservation.specialRequests or "").lower() if reservation.specialRequests else False
-        })
-        logger.info(f"Auto-created ticket {ticket_id} for reservation {reservation_doc['id']}")
-    except Exception as e:
-        logger.error(f"Failed to auto-create ticket for reservation: {e}")
-    
-    # Create Unified Inbox entry for Dine reservation
-    try:
-        inbox_entry = {
-            "request_id": f"DINE-{reservation_doc['id']}",
-            "channel": "web",
-            "pillar": "dine",
-            "type": "reservation_request",
-            "status": "pending",
-            "customer_name": reservation.name,
-            "customer_email": reservation.email,
-            "customer_phone": reservation.phone,
-            "pet_name": reservation.pet_name,
-            "message": f"Dine Reservation: {restaurant.get('name')} on {reservation.date} at {reservation.time}",
-            "metadata": {
-                "reservation_id": reservation_doc["id"],
-                "restaurant_id": reservation.restaurant_id,
-                "restaurant_name": restaurant.get("name"),
-                "restaurant_city": restaurant.get("city"),
-                "date": reservation.date,
-                "time": reservation.time,
-                "guests": reservation.guests,
-                "pets": reservation.pets,
-                "ticket_id": ticket_id if 'ticket_id' in dir() else None
-            },
-            "created_at": datetime.now(timezone.utc).isoformat()
-        }
-        await db.channel_intakes.insert_one(inbox_entry)
-        logger.info(f"Created Unified Inbox entry for dine reservation {reservation_doc['id']}")
-    except Exception as e:
-        logger.error(f"Failed to create Unified Inbox entry for dine reservation: {e}")
-    
-    # Create admin notification
-    await notify_admin(
-        notification_type="reservation",
-        title=f"🍽️ New Reservation at {restaurant.get('name', 'Restaurant')}",
-        message=f"{reservation.name} booked for {reservation.date} at {reservation.time} ({reservation.guests} guests, {reservation.pets} pets)",
-        category="dine",
-        related_id=reservation_doc["id"],
-        link_to="/admin?tab=dine&subtab=reservations",
-        priority="normal",
-        metadata={
-            "restaurant": restaurant.get("name"),
-            "customer": reservation.name,
-            "date": reservation.date,
-            "time": reservation.time
-        }
-    )
-    
     return {
+        "success": True,
         "message": "Reservation request submitted",
-        "reservation_id": reservation_doc["id"],
+        "reservation_id": reservation_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
         "status": "pending"
     }
 
