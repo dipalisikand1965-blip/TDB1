@@ -8,8 +8,9 @@ import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Zap, ChevronRight, X } from 'lucide-react';
+import { Zap, ChevronRight, X, Loader2 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
+import { toast } from '../../hooks/use-toast';
 
 const QuickScoreBoost = ({ pet, onAnswerQuestion }) => {
   const [questions, setQuestions] = useState([]);
