@@ -2801,6 +2801,42 @@ async def get_chat_history(
     
     return {"sessions": sessions}
 
+@router.get("/memories")
+async def get_mira_memories(
+    pet_id: Optional[str] = None,
+    limit: int = 5,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get relevant memories for a pet/member.
+    Used by Mira to show memory recall like "I remember..."
+    """
+    user = await get_user_from_token(authorization)
+    if not user:
+        return {"memories": []}
+    
+    db = get_db()
+    member_id = user.get("id")
+    
+    # Build query
+    query = {"member_id": member_id}
+    if pet_id:
+        query["$or"] = [
+            {"pet_id": pet_id},
+            {"pet_id": {"$exists": False}}  # Also include general member memories
+        ]
+    
+    # Fetch recent memories
+    memories = await db.mira_memories.find(
+        query,
+        {"_id": 0, "content": 1, "memory_type": 1, "created_at": 1, "pet_name": 1}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    return {
+        "memories": memories,
+        "count": len(memories)
+    }
+
 @router.get("/quick-prompts/{pillar}")
 async def get_quick_prompts(pillar: str):
     """
