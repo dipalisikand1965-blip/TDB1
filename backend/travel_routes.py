@@ -230,7 +230,8 @@ async def create_travel_request(request: TravelRequestCreate):
             "pillar": "travel",
             "category": request.travel_type,
             "status": "new",
-            "priority": "high" if travel_config["risk_level"] == "high" else "normal",
+            "priority": 2 if travel_config["risk_level"] == "high" else 3,
+            "urgency": "high" if travel_config["risk_level"] == "high" else "medium",
             "subject": f"Travel Request: {travel_config['name']} - {request.pet_name}",
             "description": f"{request.user_name or 'Customer'} needs {travel_config['name'].lower()} for {request.pet_name} ({request.pet_breed or 'dog'}) from {request.pickup_city} to {request.drop_city} on {request.travel_date}",
             "member": {
@@ -244,36 +245,85 @@ async def create_travel_request(request: TravelRequestCreate):
                 "pet_name": request.pet_name,
                 "pet_breed": request.pet_breed
             },
+            "pet": {
+                "name": request.pet_name,
+                "breed": request.pet_breed,
+                "id": request.pet_id
+            },
+            "notification_id": notification_id,
+            "inbox_id": inbox_id,
             "metadata": {
                 "travel_request_id": request_id,
                 "travel_type": request.travel_type,
                 "risk_level": travel_config["risk_level"],
                 "risk_factors": risk_factors
             },
+            "tags": ["travel", request.travel_type, "unified-flow"],
             "created_at": datetime.now(timezone.utc).isoformat(),
             "updated_at": datetime.now(timezone.utc).isoformat(),
             "timeline": [{
                 "action": "created",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "details": "Travel request submitted via Travel Pillar"
-            }]
+            }],
+            "unified_flow_processed": True
         }
+        # Insert into BOTH collections
+        await db.service_desk_tickets.insert_one(ticket_doc)
         await db.tickets.insert_one(ticket_doc)
         
-        # Create Unified Inbox entry
-        inbox_entry = {
-            "request_id": request_id,
-            "channel": "web",
-            "request_type": "travel",
+        # ==================== STEP 1: NOTIFICATION (MANDATORY) ====================
+        await db.admin_notifications.insert_one({
+            "id": notification_id,
+            "type": f"travel_{request.travel_type}",
             "pillar": "travel",
-            "status": "pending",
-            "customer_name": request.user_name,
-            "customer_email": request.user_email,
-            "customer_phone": request.user_phone,
-            "pet_info": {
+            "title": f"New Travel Request: {travel_config['name']} - {request.pet_name}",
+            "message": f"{request.user_name or 'Customer'} needs {travel_config['name'].lower()} from {request.pickup_city} to {request.drop_city}",
+            "read": False,
+            "status": "unread",
+            "urgency": "high" if travel_config["risk_level"] == "high" else "medium",
+            "ticket_id": request_id,
+            "inbox_id": inbox_id,
+            "customer": {
+                "name": request.user_name,
+                "email": request.user_email,
+                "phone": request.user_phone
+            },
+            "pet": {
                 "name": request.pet_name,
                 "breed": request.pet_breed
             },
+            "link": f"/admin?tab=servicedesk&ticket={request_id}",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "read_at": None
+        })
+        logger.info(f"[UNIFIED FLOW] Travel notification created: {notification_id}")
+        
+        # ==================== STEP 2: Unified Inbox (MANDATORY) ====================
+        inbox_entry = {
+            "id": inbox_id,
+            "request_id": request_id,
+            "ticket_id": request_id,
+            "notification_id": notification_id,
+            "channel": "web",
+            "request_type": "travel",
+            "pillar": "travel",
+            "category": request.travel_type,
+            "status": "new",
+            "urgency": "high" if travel_config["risk_level"] == "high" else "medium",
+            "customer_name": request.user_name,
+            "customer_email": request.user_email,
+            "customer_phone": request.user_phone,
+            "member": {
+                "name": request.user_name,
+                "email": request.user_email,
+                "phone": request.user_phone
+            },
+            "pet": {
+                "name": request.pet_name,
+                "breed": request.pet_breed
+            },
+            "preview": f"Travel Request: {travel_config['name']} from {request.pickup_city} to {request.drop_city}",
             "message": f"Travel Request: {travel_config['name']} from {request.pickup_city} to {request.drop_city}",
             "metadata": {
                 "travel_request_id": request_id,
@@ -281,9 +331,14 @@ async def create_travel_request(request: TravelRequestCreate):
                 "travel_date": request.travel_date,
                 "risk_level": travel_config["risk_level"]
             },
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "tags": ["travel", request.travel_type],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "unified_flow_processed": True
         }
         await db.channel_intakes.insert_one(inbox_entry)
+        logger.info(f"[UNIFIED FLOW] Travel inbox entry created: {inbox_id}")
+        logger.info(f"[UNIFIED FLOW] COMPLETE: Travel request {request_id} | Notification({notification_id}) → Ticket({request_id}) → Inbox({inbox_id})")
         
         # Update pet profile with travel preferences (progressive profiling)
         if request.pet_id:
