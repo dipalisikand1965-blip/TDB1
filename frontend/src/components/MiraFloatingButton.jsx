@@ -60,6 +60,20 @@ const MiraFloatingButton = () => {
     return () => clearTimeout(timer);
   }, []);
   
+  // Listen for openPulse events from Mira and other components
+  useEffect(() => {
+    const handleOpenPulse = (e) => {
+      setIsOpen(true);
+      if (e.detail?.startWithVoice) {
+        setStartWithVoice(true);
+      }
+      window.dispatchEvent(new CustomEvent('pulseOpened'));
+    };
+    
+    window.addEventListener('openPulse', handleOpenPulse);
+    return () => window.removeEventListener('openPulse', handleOpenPulse);
+  }, []);
+  
   // Load voice preference from localStorage
   useEffect(() => {
     const savedPref = localStorage.getItem('mira_voice_preference');
