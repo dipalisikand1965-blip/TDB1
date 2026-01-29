@@ -1,80 +1,102 @@
 /**
  * Achievement System - Gamification Constants and Utilities
  * Extracted from MemberDashboard.jsx for better maintainability
+ * 
+ * "Pawesome" Badge System with dynamic pet-centric names!
  */
 
 import confetti from 'canvas-confetti';
 
 // ============================================
-// 🏆 ACHIEVEMENT SYSTEM - World Class Gamification
+// 🏆 PAWESOME ACHIEVEMENT SYSTEM 
+// World Class Gamification for Pet Parents
 // ============================================
 export const ACHIEVEMENTS = {
-  // Soul Journey Milestones
+  // Soul Journey Milestones - Dynamic names based on pet personality
   soul_starter: { 
     id: 'soul_starter', 
-    name: 'Soul Starter', 
-    description: 'Begin your pet\'s soul journey', 
+    name: 'Curious Pup', 
+    title: 'Just getting started!',
+    description: 'Begin your pet\'s soul journey - your first step to understanding them better!', 
     icon: '🌱', 
     threshold: 1,
     type: 'questions',
     reward: 50,
-    tier: 'bronze'
+    tier: 'bronze',
+    rarity: 'common',
+    unlockMessage: "Woof! You've taken the first step! 🎉"
   },
   soul_seeker: { 
     id: 'soul_seeker', 
-    name: 'Soul Seeker', 
-    description: 'Answer 25% of soul questions', 
+    name: 'Detective Doggo', 
+    title: 'Sniffing out secrets!',
+    description: 'Answer 25% of soul questions - you\'re uncovering your pet\'s unique personality!', 
     icon: '🔍', 
     threshold: 25,
     type: 'percentage',
     reward: 100,
-    tier: 'bronze'
+    tier: 'bronze',
+    rarity: 'uncommon',
+    unlockMessage: "You're on the trail! Keep sniffing! 🐕"
   },
   soul_explorer: { 
     id: 'soul_explorer', 
-    name: 'Soul Explorer', 
-    description: 'Reach 50% soul completion', 
+    name: 'Adventure Buddy', 
+    title: 'Exploring new territories!',
+    description: 'Reach 50% soul completion - halfway to truly knowing your furry friend!', 
     icon: '🧭', 
     threshold: 50,
     type: 'percentage',
     reward: 250,
-    tier: 'silver'
+    tier: 'silver',
+    rarity: 'rare',
+    unlockMessage: "Pawsome explorer! The journey continues! 🌟"
   },
   soul_guardian: { 
     id: 'soul_guardian', 
-    name: 'Soul Guardian', 
-    description: 'Achieve 75% soul mastery', 
+    name: 'Loyal Guardian', 
+    title: 'Protector of paws!',
+    description: 'Achieve 75% soul mastery - you truly understand your pet\'s heart!', 
     icon: '🛡️', 
     threshold: 75,
     type: 'percentage',
     reward: 500,
-    tier: 'gold'
+    tier: 'gold',
+    rarity: 'epic',
+    unlockMessage: "Guardian achieved! Your bond is legendary! 🏆"
   },
   soul_master: { 
     id: 'soul_master', 
-    name: 'Soul Master', 
-    description: 'Complete 100% - Ultimate bond!', 
+    name: 'Soul Whisperer', 
+    title: 'Ultimate pet parent!',
+    description: 'Complete 100% - You and your pet share an unbreakable bond!', 
     icon: '👑', 
     threshold: 100,
     type: 'percentage',
     reward: 1000,
-    tier: 'platinum'
+    tier: 'platinum',
+    rarity: 'legendary',
+    unlockMessage: "LEGENDARY! You are the ultimate pet parent! 👑✨"
   },
-  // Engagement Badges
+  // Engagement Badges - Fun shopping achievements
   first_order: { 
     id: 'first_order', 
-    name: 'First Paw-chase', 
-    description: 'Place your first order', 
+    name: 'Treat Hunter', 
+    title: 'First paw-chase!',
+    description: 'Place your first order - your pup is getting spoiled!', 
     icon: '🛒', 
     threshold: 1,
     type: 'orders',
     reward: 100,
-    tier: 'bronze'
+    tier: 'bronze',
+    rarity: 'common',
+    unlockMessage: "Treats incoming! Your pup says thank you! 🦴"
   },
   loyal_customer: { 
     id: 'loyal_customer', 
-    name: 'Loyal Customer', 
-    description: 'Place 5 orders', 
+    name: 'Spoil Master', 
+    title: '5x treat deliveries!',
+    description: 'Place 5 orders - your pet is living their best life!', 
     icon: '❤️', 
     threshold: 5,
     type: 'orders',
