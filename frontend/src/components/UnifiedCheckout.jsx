@@ -176,14 +176,13 @@ const UnifiedCheckout = () => {
     fetchRecommendations();
   }, [cartItems, user]);
 
-  // Calculate shipping fee
+  // Calculate shipping fee (delivery only - store pickup removed)
   const shippingFee = useMemo(() => {
-    if (delivery.method === 'pickup') return 0;
     const subtotal = getCartTotal();
     const threshold = config?.free_shipping_threshold || 3000;
     const defaultFee = config?.default_shipping_fee || 150;
     return subtotal >= threshold ? 0 : defaultFee;
-  }, [delivery.method, getCartTotal, config]);
+  }, [getCartTotal, config]);
 
   // Calculate totals with GST
   useEffect(() => {
