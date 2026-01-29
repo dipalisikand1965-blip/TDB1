@@ -996,9 +996,56 @@ const Pulse = ({
     }
   }, [isListening, addPulseMessage]);
   
-  // Quick commands removed - user prefers unified inbox flow
-  // All interactions go to service desk via Mira API
-  
+  // Quick commands - personalized with pet name
+  const getQuickCommands = () => {
+    const name = petName && petName !== 'your pup' ? petName : null;
+    return [
+      { 
+        id: 'treats', 
+        label: name ? `🦴 Treats for ${name}` : '🦴 Order Treats',
+        command: name ? `Order treats for ${name}` : 'Order treats for my pet',
+        icon: '🦴'
+      },
+      { 
+        id: 'grooming', 
+        label: name ? `✂️ Groom ${name}` : '✂️ Book Grooming',
+        command: name ? `Book grooming for ${name}` : 'Book grooming for my pet',
+        icon: '✂️'
+      },
+      { 
+        id: 'vet', 
+        label: name ? `🏥 Vet for ${name}` : '🏥 Find Vet',
+        command: name ? `Find a vet for ${name}` : 'Find a vet for my pet',
+        icon: '🏥'
+      },
+      { 
+        id: 'food', 
+        label: name ? `🍖 Food for ${name}` : '🍖 Order Food',
+        command: name ? `Order food for ${name}` : 'Order food for my pet',
+        icon: '🍖'
+      },
+      { 
+        id: 'birthday', 
+        label: name ? `🎂 ${name}'s Birthday` : '🎂 Birthday Cake',
+        command: name ? `Plan ${name}'s birthday celebration` : 'Plan birthday celebration',
+        icon: '🎂'
+      },
+      { 
+        id: 'boarding', 
+        label: name ? `🏠 Board ${name}` : '🏠 Pet Boarding',
+        command: name ? `Find boarding for ${name}` : 'Find pet boarding',
+        icon: '🏠'
+      }
+    ];
+  };
+
+  const handleQuickCommand = (command) => {
+    setInputText(command);
+    // Auto-send after a brief moment so user sees what's being sent
+    setTimeout(() => {
+      handleSend(command);
+    }, 300);
+  };
   
   if (!isOpen) return null;
   
