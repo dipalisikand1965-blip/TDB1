@@ -13,7 +13,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Phone, MessageCircle, X, Headphones, PhoneIncoming, Zap } from 'lucide-react';
+import { Phone, MessageCircle, X, Headphones, PhoneIncoming, Sparkles } from 'lucide-react';
 import CallbackRequestModal from './CallbackRequestModal';
 
 const WHATSAPP_NUMBER = '919663185747';
