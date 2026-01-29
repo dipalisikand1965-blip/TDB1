@@ -639,8 +639,95 @@ const MiraAI = () => {
   };
 
   const handleQuickAction = (message) => {
-    setInputValue(message);
-    setTimeout(() => sendMessage(), 100);
+    // Directly send the message instead of relying on state update
+    if (!message.trim() || isLoading) return;
+
+    const userMessage = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: message.trim()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputValue('');
+    setIsLoading(true);
+
+    // Send the message directly
+    const sendQuickMessage = async () => {
+      try {
+        const history = messages
+          .filter(m => m.id !== 'welcome')
+          .map(m => ({ role: m.role, content: m.content }));
+        
+        const apiUrl = getApiUrl();
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
+        
+        const response = await fetch(`${apiUrl}/api/mira/chat`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+          },
+          body: JSON.stringify({
+            message: message.trim(),
+            session_id: sessionId,
+            source: 'web_widget',
+            current_page: location.pathname,
+            current_pillar: currentPillar,
+            previous_pillar: previousPillar,
+            selected_pet_id: userPets.length === 1 ? (userPets[0].id || userPets[0].name) : null,
+            history: history
+          }),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error('Failed to send message');
+        }
+
+        const data = await response.json();
+
+        if (data.ticket_id) setTicketId(data.ticket_id);
+        if (data.pillar) {
+          setPreviousPillar(currentPillar);
+          setCurrentPillar(data.pillar);
+        }
+
+        const assistantMessage = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: data.response,
+          products: data.products,
+          researchMode: data.research_mode,
+          conciergeAction: data.concierge_action
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+        
+        if (voiceEnabled && data.response) {
+          speakText(data.response);
+        }
+        
+        if (data.quick_prompts) {
+          setQuickPrompts(data.quick_prompts);
+        }
+      } catch (error) {
+        console.error('[Mira] Quick action error:', error);
+        const errorMessage = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: "I apologise — something went wrong. Please try again."
+        };
+        setMessages(prev => [...prev, errorMessage]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    sendQuickMessage();
   };
 
   // Don't render on hidden paths (admin, agent, login)
