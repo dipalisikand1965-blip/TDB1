@@ -13,12 +13,12 @@ from datetime import datetime, timezone
 from bson import ObjectId
 import uuid
 import os
+from timestamp_utils import get_utc_timestamp
 
 router = APIRouter(prefix="/api/travel", tags=["travel"])
 
-def get_consistent_timestamp() -> str:
-    """Get ISO timestamp with consistent format (always with +00:00 timezone)"""
-    return datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + '+00:00'
+# Alias for backward compatibility
+get_consistent_timestamp = get_utc_timestamp
 
 # Get MongoDB connection from server.py
 def get_db():
