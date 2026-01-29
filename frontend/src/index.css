@@ -8,14 +8,24 @@
 
 /* ============================================
    THE DOGGY COMPANY - DESIGN SYSTEM
-   Inspired by Chewy's clean, professional look
+   Organic & Earthy Theme - Premium Pet Concierge
    ============================================ */
 
 :root {
-  /* Brand Colors - Simplified palette */
-  --brand-primary: #0d9488;      /* Teal - Main brand */
-  --brand-secondary: #7c3aed;    /* Purple - Accent */
-  --brand-accent: #ec4899;       /* Pink - Highlights */
+  /* Brand Colors - Organic & Earthy Theme */
+  --brand-primary: #1A4D2E;      /* Deep Forest Green - Main brand */
+  --brand-secondary: #F5F1E8;    /* Warm Sand - Background */
+  --brand-accent: #FF9F1C;       /* Amber - Mira's glow, CTAs */
+  --brand-muted: #5C7A66;        /* Muted Green - Secondary text */
+  
+  /* Extended Palette */
+  --forest-deep: #1A4D2E;
+  --forest-light: #5C7A66;
+  --sand-warm: #F5F1E8;
+  --sand-light: #E6DCC8;
+  --sand-dark: #D4C5A8;
+  --amber-glow: #FF9F1C;
+  --amber-light: #FFBF5C;
   
   /* Neutrals */
   --gray-50: #f9fafb;
@@ -29,23 +39,25 @@
   --gray-800: #1f2937;
   --gray-900: #111827;
   
-  /* Spacing Scale */
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
+  /* Spacing Scale - Generous (2x standard) */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
   
-  /* Typography */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+  /* Typography - Syne for headings, Manrope for body */
+  --font-heading: 'Syne', sans-serif;
+  --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   
-  /* Shadows - Subtle, professional */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  /* Shadows - Soft, organic feel */
+  --shadow-sm: 0 2px 4px 0 rgb(26 77 46 / 0.05);
+  --shadow-md: 0 4px 12px -2px rgb(26 77 46 / 0.08);
+  --shadow-lg: 0 12px 24px -4px rgb(26 77 46 / 0.12);
+  --shadow-card: 0 2px 8px -2px rgb(26 77 46 / 0.06);
+  --shadow-glow: 0 0 20px rgba(255, 159, 28, 0.4);
   
   /* Transitions */
   --transition-fast: 150ms ease;
