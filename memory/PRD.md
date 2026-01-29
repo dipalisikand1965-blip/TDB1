@@ -125,6 +125,7 @@
 - **Chat features preserved**: Ask Mira, Plan My {Pillar}, quick prompts all working with voice
 
 ### Working Features ✅
+- **Pillar-specific Mira with Voice**: MiraContextPanel on Advisory (purple), Care (pink), Emergency (red) pages with Pulse voice capabilities
 - Product images loading from Shopify CDN
 - Pulse voice assistant opens and processes commands
 - Shop page displays products correctly
