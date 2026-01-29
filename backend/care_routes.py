@@ -8,6 +8,8 @@ Principles:
 - Every request is read through the pet's profile
 - Care is continuous, not transactional
 - The system remembers, learns, and anticipates
+
+UNIFIED FLOW ENFORCED: All requests create Notification → Ticket → Inbox
 """
 
 from fastapi import APIRouter, HTTPException, Depends
@@ -17,6 +19,7 @@ from datetime import datetime, timezone
 from bson import ObjectId
 import uuid
 import os
+from timestamp_utils import get_utc_timestamp
 
 router = APIRouter(prefix="/api/care", tags=["care"])
 
