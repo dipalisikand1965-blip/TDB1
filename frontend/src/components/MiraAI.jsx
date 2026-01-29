@@ -206,13 +206,67 @@ const MiraAI = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   
-  // Voice input state
+  // Voice input/output state
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [speechSupported, setSpeechSupported] = useState(false);
   const recognitionRef = useRef(null);
+  const synthRef = useRef(typeof window !== 'undefined' ? window.speechSynthesis : null);
   
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  
+  // Text-to-Speech function
+  const speakText = (text) => {
+    if (!voiceEnabled || !synthRef.current) return;
+    
+    // Cancel any ongoing speech
+    synthRef.current.cancel();
+    
+    // Clean text for speech
+    const cleanText = text
+      .replace(/[🎉🐕✨🦴💜🎂🏥]/g, '')
+      .replace(/\*\*/g, '')
+      .replace(/\n/g, ' ')
+      .substring(0, 500);
+    
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.1;
+    utterance.volume = 0.9;
+    
+    // Try to get a good voice
+    const voices = synthRef.current.getVoices();
+    const preferredVoice = voices.find(v => 
+      v.name.toLowerCase().includes('samantha') ||
+      v.name.toLowerCase().includes('google') ||
+      v.lang.startsWith('en')
+    );
+    if (preferredVoice) utterance.voice = preferredVoice;
+    
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    
+    synthRef.current.speak(utterance);
+  };
+  
+  // Get time-aware greeting
+  const getTimeGreeting = () => {
+    const hour = new Date().getHours();
+    const petName = userPets.length > 0 ? userPets[0].name : 'your pet';
+    
+    if (hour >= 5 && hour < 12) {
+      return `Good morning! ☀️ How can I help ${petName} today?`;
+    } else if (hour >= 12 && hour < 17) {
+      return `Good afternoon! 🌤️ What does ${petName} need?`;
+    } else if (hour >= 17 && hour < 21) {
+      return `Good evening! 🌙 How can I assist ${petName}?`;
+    } else {
+      return `Hello! 🌟 I'm here to help ${petName} anytime.`;
+    }
+  };
 
   // Check for speech recognition support
   useEffect(() => {
