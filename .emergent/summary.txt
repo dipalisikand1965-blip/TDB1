@@ -1,163 +1,128 @@
-<analysis>**original_problem_statement**: The user's primary goal is to build a Pet Life Operating System, an all-encompassing platform for pet-related services and products.
+<analysis>**original_problem_statement**: The user's primary goal is to build a Pet Life Operating System, an all-encompassing platform for pet-related services.
 
-In this session, the user's focus shifted heavily towards fixing critical bugs and refining the user experience to be more engaging and intuitive. Key requests included:
--   **Bug Fixes**:
-    -   An incorrect Pet Soul score displaying as 560%.
-    -   Wishlist items not saving.
-    -   Checkout cart not adding items.
-    -   New Pet Soul questions not saving due to an incorrect API endpoint.
-    -   The First Visit Tour UI being stuck and not allowing navigation.
--   **UX/Feature Enhancements**:
-    -   Adding a missing Celebrations selection step to the member onboarding flow.
-    -   Overhauling the confusing member dashboard UI, particularly the user account dropdown.
-    -   Implementing a First Visit Tour to guide new users.
-    -   Creating dynamic, personalized guidance from the app's AI, Mira.
-    -   Adding a My Celebrations widget and a Daily Tip from Mira to the dashboard.
-    -   Implementing voice commands for Mira.
-    -   Integrating Mira with WhatsApp for conversational interactions.
-    -   Making the checkout flow more personalized and fixing mobile UI issues.
+In this session, the user focused on resolving critical application crashes and bugs while providing a comprehensive and highly specific behavioral and knowledge framework for the app's AI assistant, Mira.
+
+**PRODUCT REQUIREMENTS**:
+-   **Critical Bug Fixes**:
+    -   The Pet Soul Journey page () is crashing.
+    -   Paw Points are displaying an incorrect value (1510) on the user's dashboard.
+    -   Voice Mira is not recognizing the user's pet name in its responses.
+-   **Mira AI Framework Implementation**:
+    -   Implement a strict knowledge and guidance framework for Mira, establishing it as a care-led intelligence layer, not a medical authority.
+    -   Mandate the use of The Spruce Pets as the primary knowledge source, with specific escalation paths to a human Care Concierge for any health-related queries.
+    -   Implement a detailed behavioral framework where text is default, voice is earned. Mira's voice should only be used in specific, high-value scenarios (e.g., emotional reassurance) and must be brief.
+-   **UI/UX Enhancements**:
+    -   Add a Talk to Mira option to the secondary floating contact button stack.
+    -   Decide on a better LLM for Mira (agent recommended staying with the current advanced model).
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack React/FastAPI/MongoDB platform. The agent successfully addressed a wide array of bugs and implemented significant UX improvements:
--   **Core Bug Fixes**: The 560% Pet Soul score was fixed by capping the value on the frontend and creating a backend script to recalculate and fix historical scores in the database. The stuck First Visit Tour was completely redesigned with a more robust and visually appealing UI.
--   **Onboarding and UX Overhaul**: A new Celebrations selection step was successfully added to the  flow, with backend support to save the data. The main dashboard and navbar were redesigned to be more intuitive, removing confusing elements.
--   **AI and Engagement Features**: The agent implemented several new features to make the app more dynamic:
-    -    and  were created to provide users with contextual tips.
-    -    widget was added to the dashboard.
-    -    was built to allow users to interact with the app via voice commands.
-    -   The Mira AI was successfully integrated into the existing , enabling intelligent responses to incoming user messages on WhatsApp.
--   **Documentation**: Created  to explain the scoring system and  to plan the next session's work.
--   **Deployment Check**: A health check was performed, confirming the application is ready for deployment, with reminders for production-specific configurations (e.g., Razorpay keys).
+The application is a full-stack React/FastAPI/MongoDB platform. The agent successfully implemented a vast and detailed framework for the Mira AI and fixed numerous bugs.
+-   **Mira AI Overhaul**: A comprehensive knowledge, guidance, and behavioral framework was implemented in the backend system prompt () and frontend components (, ). Mira now operates under strict rules for its persona, knowledge sources, voice usage (text-first), and escalation paths for safety.
+-   **Voice Mira Pet Name Fix**: The agent fixed the logic to ensure the pet's name is correctly passed from the  to the , allowing for personalized voice responses.
+-   **UI/UX Fixes**: A Talk to Mira button was added to the  component, triggering the voice assistant via a custom event. The checkout flow () was refactored to remove the Store Pickup option.
+-   **General Bug Fixes**: The  functionality on the  was fixed, backdating was disabled for  restaurant reservations, and a z-index issue with the Mira chat header was resolved.
+-   **ElevenLabs Integration**: The backend is ready for ElevenLabs TTS via a new  endpoint, and the frontend will use it with a graceful fallback to the browser's Web Speech API. It is currently blocked pending an API key from the user.
 
 **Last working item**:
--   **Last item agent was working**: The agent was in the process of fixing a list of critical bugs reported by the user. The last action was adding response checking to the wishlist functionality in  to debug why it wasn't saving, and beginning to investigate the multiple issues within .
+-   **Last item agent was working**: The agent was investigating two new critical issues reported by the user: a crash on the Pet Soul Journey page and an incorrect Paw Points balance of 1510 being displayed on the dashboard. The agent confirmed via an API call that the backend Paw Points balance is correct (670), isolating the issue to the frontend.
 -   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: both. The frontend testing agent is needed to test the complex checkout flow, wishlist saving, and soul question UI. Backend testing is required to verify the new API endpoint alias for soul questions and the database operations for the wishlist.
+-   **Which testing method agent to use?**: Frontend testing agent. Both the page crash and the incorrect data display are frontend issues that require UI interaction and state verification to debug effectively.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Checkout Cart Is Broken (P0)
--   Issue 2: Wishlist Not Saving Items (P1)
--   Issue 3: New Pet Soul Questions Not Saving (P1)
--   Issue 4: Razorpay Payments Failing (P2)
--   Issue 5: WebSocket Connection Instability (Recurring) (P2)
+-   Issue 1: Pet Soul Journey Page is Crashing (P0)
+-   Issue 2: Paw Points Displaying Incorrectly (P0)
+-   Issue 3: Razorpay Payments Failing (P2)
+-   Issue 4: WebSocket Connection Instability (Recurring) (P2)
 
 **Issues Detail**:
--   **Issue 1: Checkout Cart Is Broken (P0)**
-    -   **Attempted fixes**: The agent identified the relevant files () but has not yet implemented the fixes.
+-   **Issue 1: Pet Soul Journey Page is Crashing (P0)**
+    -   **Attempted fixes**: The agent identified the relevant file () but has not started debugging.
     -   **Next debug checklist**:
-        1.  In , locate and remove the Collect from Store option from the delivery method selection.
-        2.  Debug the  and  functions in  and  to resolve why items are not being added to the cart.
-        3.  Modify the time selection UI to conditionally show Select Preferred Time only for specific product categories (like cakes).
-        4.  Adjust the CSS for the Frequently bought with section in  to ensure it fits correctly on mobile screens.
-    -   **Why fix this issue and what will be achieved with the fix?**: The checkout process is fundamental to the platform's e-commerce function. Fixing these bugs is critical for enabling sales.
+        1.  In , investigate the rendering logic for the  tab.
+        2.  Analyze browser console logs upon navigation to the crashing URL to pinpoint the JavaScript error.
+        3.  Inspect the API calls made by the component and validate their response data for any anomalies.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a core personalization feature that is currently unusable for the user.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Frontend.
 
--   **Issue 2: Wishlist Not Saving Items (P1)**
-    -   **Attempted fixes**: Added enhanced response logging to the  function in  to diagnose the API call failure.
+-   **Issue 2: Paw Points Displaying Incorrectly (P0)**
+    -   **Attempted fixes**: Agent confirmed via API that the backend returns the correct balance (670), proving it's a frontend display bug.
     -   **Next debug checklist**:
-        1.  Test the Add to Wishlist button on a product page.
-        2.  Inspect the browser's network tab for the  request and its response.
-        3.  If the frontend call is correct, verify the backend logic in  handles the request and database update correctly.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a key user engagement feature that allows users to save items for future purchase.
+        1.  Locate the component displaying the incorrect 1510 points on the dashboard (likely  or within ).
+        2.  Trace the data flow for paw points from the API fetch to the component's state.
+        3.  Check for any erroneous client-side calculations or state mutations that might be adding to the correct value received from the backend.
+    -   **Why fix this issue and what will be achieved with the fix?**: An incorrect point balance undermines the reliability of the entire loyalty and gamification system.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Both.
+    -   **Should Test frontend/backend/both after fix?**: Frontend.
 
--   **Issue 3: New Pet Soul Questions Not Saving (P1)**
-    -   **Attempted fixes**: The agent discovered a mismatch between the frontend API call () and the backend route (). A new alias route was added to  to bridge this gap.
-    -   **Next debug checklist**:
-        1.  Restart the backend server to activate the new route.
-        2.  Use the application to answer a Pet Soul question.
-        3.  Verify that the data is correctly saved in the  field of the corresponding pet document in the database.
-    -   **Why fix this issue and what will be achieved with the fix?**: The entire personalization and scoring system depends on successfully saving these answers.
-    -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Both.
-
--   **Issue 4: Razorpay Payments Failing (P2)**
-    -   **Attempted fixes**: None. This is blocked pending user action.
-    -   **Next debug checklist**: Wait for the user to provide Razorpay API keys and update them in .
-    -   **Why fix this issue and what will be achieved with the fix?**: To enable monetary transactions on the platform.
+-   **Issue 3: Razorpay Payments Failing (P2)**
+    -   **Attempted fixes**: None. Blocked on user action.
+    -   **Next debug checklist**: Await Razorpay API keys from the user and update them in .
+    -   **Why fix this issue and what will be achieved with the fix?**: Enables e-commerce transactions on the platform.
     -   **Status**: BLOCKED
     -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Both.
     -   **Blocked on other issue**: User-provided credentials.
 
--   **Issue 5: WebSocket Connection Instability (Recurring) (P2)**
+-   **Issue 4: WebSocket Connection Instability (Recurring) (P2)**
     -   **Attempted fixes**: None in this session.
-    -   **Next debug checklist**: Monitor browser console and backend logs for  related errors to diagnose the instability.
-    -   **Why fix this issue and what will be achieved with the fix?**: To provide a stable real-time experience for features like admin notifications.
+    -   **Next debug checklist**: Monitor console and backend logs for  errors to diagnose instability during real-time events.
+    -   **Why fix this issue and what will be achieved with the fix?**: Ensures a stable, real-time experience for features like admin notifications.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Both.
 
 **In progress Task List**:
--   There are no multi-step tasks in progress; the current focus is on resolving the list of pending bugs.
+-   There are no multi-step tasks in progress; the current focus is on resolving the list of pending critical bugs.
 
 **Upcoming and Future Tasks**
 *   **Upcoming Tasks:**
-    *   **(P0) Mira-powered Checkout Recommendations**: Update the checkout add-on section to be presented as personalized recommendations from Mira.
-    *   **(P1) Admin Docs Section**: Create a new page in the admin panel to display helpful documents like .
-    *   **(P1) Service Desk Intelligent Search**: Upgrade the service desk search bar to support queries by ticket number, pet parent name, and phone number.
-    *   **(P2)  Refactoring**: Continue breaking down the monolithic component to improve maintainability.
+    *   **(P1) Implement Intelligent Shop Assistant with Popups**: A new feature requested by the user.
+    *   **(P1) Implement Service Tab Wizard**: Extend the wizard concept from the Travel page to other service tabs.
+    *   **(P2) PDF Invoice Generation**: Add the capability to generate PDF invoices for completed orders.
 *   **Future Tasks:**
     -   Full Implementation of Centralised Item Intelligence Form.
     -   WhatsApp Form Auto-population Audit.
+    -   Refactoring of .
     -   Cleanup of legacy components.
-    -   Consolidate Mira memories and chats.
-    -   Expand Gamification & Rewards features.
     -   Build a Partner Portal for B2B clients.
 
 **Completed work in this session**
--   **Pet Soul Score Fixed**: Corrected frontend display to cap scores at 100% and added a backend endpoint to fix legacy data.
--   **Onboarding Flow Enhanced**: Integrated a Celebrations Selection step into the new member onboarding process.
--   **First Visit Tour Implemented**: Created and then redesigned a guided tour for new users.
--   **Major UX Overhaul**: Redesigned the main navbar, added multiple Mira-powered guidance components (, ), and a  widget.
--   **Mira Voice Assistant**: Built and integrated a voice command interface for the Mira AI.
--   **Mira WhatsApp Integration**: Connected the Mira AI to the existing WhatsApp infrastructure for intelligent replies.
--   **Deployment Health Check**: Successfully ran a readiness check for deployment.
--   **Bug Triage & Documentation**: Created  to document and prioritize user-reported bugs.
+-   **Mira Knowledge & Behavior Framework**: Implemented a comprehensive system prompt in  defining Mira's persona, knowledge base, tone, and strict text-first, voice-earned interaction rules.
+-   **Voice Mira Pet Name Fix**: Correctly passed the pet's name to the  component for personalized responses.
+-   **UI/UX Enhancements**: Added a Talk to Mira button to the  and refactored the checkout flow in  to remove the store pickup option.
+-   **Checkout Flow Overhaul**: Completely removed the Store Pickup functionality from the checkout process, including UI elements and validation logic.
+-   **ElevenLabs Integration Prep**: Created a backend endpoint () and updated the frontend to use ElevenLabs with a Web Speech API fallback. Awaiting user API key.
+-   **Mobile UI Grid Consistency**: Updated several pillar pages (, , , etc.) to use a consistent two-column grid layout on mobile devices.
+-   **Admin Notification Animation**: Added a wiggle animation to the admin notification bell for new member sign-ups.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **API Endpoint Aliasing**: To fix a bug without requiring a breaking change on the frontend, a new alias route was created in  that accepts the incorrect URL from the client but forwards the request to the correct internal logic.
--   **AI Integration with Webhooks**: The agent enhanced an existing WhatsApp webhook () by adding a call to the Mira AI. This allows the system to provide intelligent, automated responses to user messages received via WhatsApp.
--   **Dynamic Component-driven UX**: The session focused heavily on creating a suite of new, independent React components (, , etc.) that were then integrated into the main  to build a more dynamic and interactive user experience.
--   **Multi-Step Form Enhancement**: The agent successfully modified a complex, multi-step onboarding form to insert a new step, manage its state, and pass the new data () to the backend upon final submission.
-
-**key DB schema**
--   **pets**: The schema was updated to include , which stores an array of user-selected events (e.g., birthday, gotcha day) from the onboarding flow.
+-   **Advanced LLM System Prompting**: A highly detailed, multi-section system prompt was engineered in  to rigidly control the AI's persona, knowledge sources, tone, and behavioral rules (e.g., text-first, voice-earned).
+-   **Event-Driven Component Communication**: A custom browser event () was used to allow the  to trigger the voice assistant modal managed by , decoupling the components.
+-   **Conditional State Management in React**: The Mira components now use , , and  to detect the current page pillar, manage voice preferences, and conditionally render UI or trigger voice responses based on the new behavioral framework.
 
 **All files of reference**
--   : **Critical file** that contains the user-approved list of bugs and features to work on next.
--   : The main file that needs to be edited to fix the broken checkout flow.
--   : The file containing the API call for saving soul answers that needs to be verified.
--   : Contains the wishlist logic that needs to be fixed.
--   : The backend file containing the logic for soul answers and the newly added API alias.
-
-**Areas that need refactoring**:
--   : This is a monolithic file with over 2000 lines of code. It is a source of multiple bugs and is difficult to maintain. It should be a high-priority candidate for being broken down into smaller, manageable components.
--   : While many new features were added via composition, the core file remains large and would benefit from further refactoring to improve readability and performance.
-
-**key api endpoints**
--   : **NEW** - An admin endpoint to iterate through all pets in the database and fix their  based on the correct logic.
--   : **NEW ALIAS** - An alias route created in the backend to match an incorrect endpoint being called by the frontend, ensuring soul answers are saved without a frontend breaking change.
--   : **MODIFIED** - Now processes incoming WhatsApp messages with the Mira AI to generate and send intelligent replies.
--   : **MODIFIED** - The endpoint now accepts and processes a  array as part of the new member onboarding payload.
+-   : **Critical file** for debugging the Pet Soul Journey page crash.
+-   : The primary location to investigate the incorrect Paw Points display bug.
+-   : A potential component involved in the Paw Points bug.
+-   : The source of truth for the new, comprehensive Mira AI framework.
+-   : The frontend implementation of Mira's new behavioral rules.
+-   : The last successful test report.
 
 **Critical Info for New Agent**
--   **Your immediate priority is to fix the critical bugs outlined in **. The user cannot proceed with key functionalities like checkout and wishlist. Start with the checkout flow, as it is the most critical for business operations.
--   **The Soul Questions Not Saving fix needs verification.** The agent added a backend alias route as a fix. You must restart the backend and test this flow end-to-end to confirm that answers are now being saved correctly.
--   **The user has a strong vision for a world-class UX.** They are highly engaged and appreciate creative, fun, and intuitive interfaces. When implementing fixes or new features, prioritize a high-quality user experience.
--   **The  file is a large and fragile component.** Approach edits with caution. Isolate the logic for each bug (e.g., removing Collect from store, fixing the mobile layout) and test changes incrementally.
+-   **Immediate Priority**: You must start by fixing the two critical user-reported bugs: the **crashing Pet Soul Journey page** () and the **incorrect Paw Points display** on the dashboard. These are application-breaking issues for the user.
+-   **Adhere to the Mira Framework**: A massive, highly specific framework for the Mira AI has just been implemented in . All future modifications to Mira's chat or voice functionality must strictly follow these rules, especially the text-first, voice-earned principle and the non-medical, concierge-first escalation path.
+-   **Paw Points Bug is Frontend**: The backend API for paw points returns the correct value (670). The display bug (1510) is purely a frontend issue.
+-   **Awaiting ElevenLabs Key**: The application is ready for a premium TTS voice via ElevenLabs. If the user provides an API key, add it to  with the key  and restart the backend. Until then, it will use the browser's default voice.
 
 **documents and test reports created in this job**
 -    (Updated)
@@ -167,46 +132,36 @@ The application is a full-stack React/FastAPI/MongoDB platform. The agent succes
 -   
 -   
 -   
--   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Reported several critical bugs (checkout, wishlist, soul questions not saving) and UI issues on mobile, requesting a summary for the next session. (IN PROGRESS)
-2.  **User**: Stated the First Visit Tour was stuck and requested a more exciting UI. (FIXED)
-3.  **User**: Agreed to Mira's daily tip idea and asked for never done before enhancement suggestions. (ADDRESSED)
-4.  **User**: Approved the Voice Commands for Mira idea and asked for clarification on how it would work. (ADDRESSED)
-5.  **User**: Reported the voice UI was stuck and proposed a WhatsApp version of the site. (FIXED & IMPLEMENTED)
-6.  **User**: Requested a deployment health check. (DONE)
-7.  **User**: Approved the First Visit Tour idea and emphasized the vision of making the site the ultimate destination for pet parents. (ADDRESSED)
-8.  **User**: Provided detailed UX feedback on the dashboard, reporting bugs and requesting more personalized, guided experiences. (ADDRESSED)
-9.  **User**: Gave feedback on a proposed navbar change, wanting it to be more pet parent loving. (ADDRESSED)
-10. **User**: Reported the Pet Soul score was incorrect (560%) and that the onboarding flow was missing a celebrations step. (FIXED)
+1.  **User**: Reports that the Pet Soul Journey page is crashing and Paw Points are showing an incorrect value, providing screenshots for both issues. (IN PROGRESS)
+2.  **User**: Confirms the agent's plan to fix the pet name recognition in Voice Mira and implement the recommended UI changes. (DONE)
+3.  **User**: Provides an image of the Mira UI and asks for advice on UI placement and whether to upgrade the GPT model from the current advanced one. (ADDRESSED)
+4.  **User**: Provides a very detailed document outlining Mira's core behavioral principles, focusing on a text-first, voice-earned interaction model. (DONE)
+5.  **User**: Agrees with the agent's previous summary and enhancement suggestion, and provides a second document with pillar-wide rules for Mira. (DONE)
+6.  **User**: Provides a document with a list of bugs and feature requests, including issues with restaurant reservations and adding items to the cart on the Fit page. (PARTIALLY DONE)
+7.  **User**: Provides another document with more feature requests and bug reports. (PARTIALLY DONE)
+8.  **User**: Approves the plan to use a free Indian female voice via the browser's API for now and prioritizes bug fixes. (ADDRESSED)
+9.  **User**: Uploads another document with more changes and requests. (PARTIALLY DONE)
+10. **User**: Approves the decision to use ElevenLabs for the voice and gives the agent the authority to proceed with the implementation. (DONE)
 
 **Project Health Check:**
 -   **Broken**:
-    -   **Checkout Flow**: Adding items to the cart is non-functional, and the UI has several issues.
-    -   **Wishlist Saving**: The feature is not working, preventing users from saving products.
-    -   **Soul Question Saving**: A fix was implemented (API alias) but remains unverified.
-    -   **Razorpay Payments**: The entire payment system is non-functional due to missing production keys.
+    -   **Pet Soul Journey Page**: Crashing when the personality tab is accessed.
+    -   **Paw Points Display**: Showing an incorrect value on the user dashboard.
+    -   **Razorpay Payments**: Non-functional due to missing production keys.
 -   **Mocked**: None.
 
 **3rd Party Integrations**
-*   **OpenAI GPT-4o**: Powers the Mira AI, including the new voice commands and WhatsApp integration. (Uses Emergent LLM Key)
-*   **Razorpay**: Integrated for payments but is **broken** due to placeholder API keys.
-*   **Twilio**: The underlying service for the WhatsApp integration, configured in .
-*   **Socket.IO**: Used for real-time notifications, but has known stability issues.
+*   **OpenAI GPT-5.1**: Powers the Mira AI. (Uses Emergent LLM Key). The agent recommended keeping this advanced model.
+*   **ElevenLabs**: Integrated on the backend, prepared on the frontend. **Awaiting user API key** to be fully functional.
+*   **Razorpay**: Integrated but **broken** due to missing production keys.
 *   **Resend**: Used for sending transactional emails.
-*   **openpyxl**: Used for generating Excel reports.
+*   **Twilio**: Used for the WhatsApp integration.
+*   **Socket.IO**: Used for real-time notifications, has known stability issues.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES, multiple test iterations were run after major feature additions, with reports available.
+-   **Testing agent used after significant changes**: YES, multiple test iterations were run, with reports available.
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: []
--   **Known regressions**: None were introduced, but several severe bugs were discovered and are now the top priority for the next session.
-
-**Credentials to test flow:**
-*   **Admin**:  / 
-*   **Member**:  / 
-
-**What agent forgot to execute**
--   The user requested an  section to house created documents and an intelligent search for the service desk. These tasks were documented in  but not implemented in this session.
--   A dedicated My Profile page for users to update their details (like phone number) is still missing, even though the backend endpoint for it exists from a previous session.</analysis>
+-   **Known regressions**: None were introduced, but two critical bugs (page crash, data display error) were discovered and are the top priority.</analysis>
