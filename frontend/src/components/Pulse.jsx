@@ -688,19 +688,58 @@ const Pulse = ({
     fetchMemories();
   }, [isOpen, petId, API_URL]);
   
+  // Get time-aware greeting
+  const getTimeAwareGreeting = useCallback((name) => {
+    const hour = new Date().getHours();
+    const displayName = name && name !== 'your pup' ? name : 'your pet';
+    
+    if (hour >= 5 && hour < 12) {
+      // Morning
+      const morningGreetings = [
+        `Good morning! ☀️ Ready for ${displayName}'s morning routine?`,
+        `Rise and shine! 🌅 How can I help ${displayName} today?`,
+        `Morning! Has ${displayName} had breakfast yet?`
+      ];
+      return morningGreetings[Math.floor(Math.random() * morningGreetings.length)];
+    } else if (hour >= 12 && hour < 17) {
+      // Afternoon
+      const afternoonGreetings = [
+        `Good afternoon! 🌤️ What does ${displayName} need?`,
+        `Hey there! Time for ${displayName}'s afternoon activities?`,
+        `Afternoon! Looking for something special for ${displayName}?`
+      ];
+      return afternoonGreetings[Math.floor(Math.random() * afternoonGreetings.length)];
+    } else if (hour >= 17 && hour < 21) {
+      // Evening
+      const eveningGreetings = [
+        `Good evening! 🌙 Winding down with ${displayName}?`,
+        `Evening! Has ${displayName} had dinner?`,
+        `Hi! Planning a cozy evening with ${displayName}?`
+      ];
+      return eveningGreetings[Math.floor(Math.random() * eveningGreetings.length)];
+    } else {
+      // Night
+      const nightGreetings = [
+        `Still up? 🌟 Need anything for ${displayName}?`,
+        `Late night with ${displayName}? I'm here to help!`,
+        `Can't sleep? Let's take care of ${displayName}'s needs.`
+      ];
+      return nightGreetings[Math.floor(Math.random() * nightGreetings.length)];
+    }
+  }, []);
+  
   // Show personalized opening line with memory recall when first opened (TEXT only, no voice)
   useEffect(() => {
     if (isOpen && !hasShownOpening && messages.length === 0) {
-      // PULSE OPENING - Personalized with pet name
-      const displayName = petName && petName !== 'your pup' ? petName : 'your pet';
-      const personalizedOpening = `Speak or type. Pulse gets things moving for ${displayName}.`;
+      // PULSE OPENING - Time-aware and personalized with pet name
+      const timeGreeting = getTimeAwareGreeting(petName);
       
       // Add memory recall if we have relevant memories
-      let fullOpening = personalizedOpening;
+      let fullOpening = timeGreeting;
       if (memories.length > 0) {
         const recentMemory = memories[0];
         if (recentMemory.content) {
-          fullOpening += `\n\n🧠 Mira remembers: "${recentMemory.content}"`;
+          fullOpening += `\n\n🧠 I remember: "${recentMemory.content}"`;
         }
       }
       
