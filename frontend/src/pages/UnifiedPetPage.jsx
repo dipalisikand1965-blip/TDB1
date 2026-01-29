@@ -429,13 +429,14 @@ const UnifiedPetPage = () => {
     // Trigger celebration for each new achievement (with delay between)
     if (newlyUnlocked.length > 0 && previousAchievements.length > 0) {
       newlyUnlocked.forEach((achievementId, index) => {
-        const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
+        // ACHIEVEMENTS is an object keyed by achievement ID, not an array
+        const achievement = ACHIEVEMENTS[achievementId];
         if (achievement) {
           setTimeout(() => {
             celebrateAchievement(achievement.type);
             toast({
               title: `🎉 Achievement Unlocked!`,
-              description: `${achievement.icon} ${achievement.title} - ${achievement.description}`,
+              description: `${achievement.icon} ${achievement.name} - ${achievement.description}`,
               duration: 5000
             });
           }, index * 1500); // Stagger celebrations
