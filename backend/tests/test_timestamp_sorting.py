@@ -74,52 +74,52 @@ class TestTimestampSorting:
             assert first_ts >= second_ts, f"Timestamps not sorted correctly: {first_ts} should be >= {second_ts}"
             print(f"✅ Timestamps sorted correctly: {first_ts[:25]}... >= {second_ts[:25]}...")
     
-    def test_service_desk_tickets_sorted_newest_first(self):
-        """Create a new request and verify ticket appears at TOP of service desk list"""
+    def test_unified_inbox_sorted_newest_first(self):
+        """Create a new request and verify it appears at TOP of unified inbox list"""
         # Create a unique travel request
         unique_id = uuid.uuid4().hex[:8]
-        pet_name = f"TEST_TicketSort_{unique_id}"
+        pet_name = f"TEST_InboxSort_{unique_id}"
         
         response = requests.post(f"{BASE_URL}/api/travel/request", json={
             "travel_type": "cab",
             "pet_name": pet_name,
-            "pet_breed": "Ticket Sort Dog",
+            "pet_breed": "Inbox Sort Dog",
             "pickup_location": "Test Location A",
             "dropoff_location": "Test Location B",
             "travel_date": "2026-02-20",
-            "user_email": f"test_ticket_{unique_id}@example.com",
-            "user_name": "Test Ticket User",
+            "user_email": f"test_inbox_{unique_id}@example.com",
+            "user_name": "Test Inbox User",
             "user_phone": "9876543298"
         })
         
         assert response.status_code == 200, f"Failed to create request: {response.text}"
         data = response.json()
-        ticket_id = data.get("ticket_id") or data.get("request_id")
+        inbox_id = data.get("inbox_id")
         
         # Small delay
         time.sleep(0.5)
         
-        # Get service desk tickets
-        tickets_response = requests.get(f"{BASE_URL}/api/admin/tickets", auth=ADMIN_AUTH)
-        assert tickets_response.status_code == 200, f"Failed to get tickets: {tickets_response.text}"
+        # Get unified inbox (channel intakes)
+        inbox_response = requests.get(f"{BASE_URL}/api/channels/intakes", auth=ADMIN_AUTH)
+        assert inbox_response.status_code == 200, f"Failed to get inbox: {inbox_response.text}"
         
-        tickets = tickets_response.json().get("tickets", [])
+        intakes = inbox_response.json().get("intakes", [])
         
-        # Verify our ticket is in the list
+        # Verify our inbox entry is in the list
         found = False
         position = -1
-        for idx, ticket in enumerate(tickets):
-            if ticket.get("ticket_id") == ticket_id:
+        for idx, intake in enumerate(intakes):
+            if intake.get("id") == inbox_id:
                 found = True
                 position = idx
                 break
         
-        assert found, f"Ticket {ticket_id} not found in list"
+        assert found, f"Inbox entry {inbox_id} not found in list"
         
         # Verify it's at the TOP
-        assert position < 5, f"Ticket at position {position}, expected at TOP (< 5)"
+        assert position < 5, f"Inbox entry at position {position}, expected at TOP (< 5)"
         
-        print(f"✅ Ticket {ticket_id} found at position {position} (TOP of list)")
+        print(f"✅ Inbox entry {inbox_id} found at position {position} (TOP of list)")
     
     def test_timestamp_format_consistency(self):
         """Verify all timestamps use consistent format: YYYY-MM-DDTHH:MM:SS.fff+00:00"""
