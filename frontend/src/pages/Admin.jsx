@@ -45,7 +45,7 @@ import AgentManagement from '../components/admin/AgentManagement';
 import CommunicationsManager from '../components/admin/CommunicationsManager';
 import MiraMemoryManager from '../components/admin/MiraMemoryManager';
 import AutomatedRemindersManager from '../components/admin/AutomatedRemindersManager';
-import ConciergeCommandCenter from '../components/admin/ConciergeCommandCenter';
+// ConciergeCommandCenter DEPRECATED - features merged into ServiceDesk
 import AdvancedAnalyticsDashboard from '../components/admin/AdvancedAnalyticsDashboard';
 import UnifiedProductBox from '../components/admin/UnifiedProductBox';
 import ConciergeExperiencesAdmin from '../components/admin/ConciergeExperiencesAdmin';
