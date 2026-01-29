@@ -655,8 +655,8 @@ const MemberDashboard = () => {
         petName={primaryPet?.name || 'your pet'}
       />
       
-      {/* 🎙️ Voice Assistant Modal */}
-      <MiraVoiceAssistant
+      {/* ⚡ Pulse Voice Assistant Modal */}
+      <Pulse
         isOpen={showVoiceAssistant}
         onClose={() => setShowVoiceAssistant(false)}
         petName={primaryPet?.name || 'your pet'}
