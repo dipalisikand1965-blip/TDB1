@@ -645,7 +645,7 @@ async def create_booking_request(booking: BookingRequest):
             "message": f"Stay Booking: {property.get('name')} ({booking.check_in_date} - {booking.check_out_date})",
             "metadata": {
                 "booking_id": booking_doc["id"],
-                "property_id": property_id,
+                "property_id": booking.property_id,
                 "property_name": property.get("name"),
                 "property_city": property.get("city"),
                 "check_in_date": booking.check_in_date,
