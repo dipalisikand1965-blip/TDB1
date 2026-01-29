@@ -322,13 +322,17 @@ class TestHealthEndpoints:
         assert "travel_types" in data, "Missing travel_types in response"
         print(f"✅ Travel types: {list(data['travel_types'].keys())}")
     
-    def test_fit_types_endpoint(self):
-        """Fit types endpoint should work"""
-        response = requests.get(f"{BASE_URL}/api/fit/types")
-        assert response.status_code == 200, f"Fit types failed: {response.text}"
+    def test_fit_request_endpoint(self):
+        """Fit request endpoint should work"""
+        response = requests.post(f"{BASE_URL}/api/fit/request", json={
+            "fit_type": "assessment",
+            "pet_name": "HealthCheckPet",
+            "user_name": "HealthCheck"
+        })
+        assert response.status_code == 200, f"Fit request failed: {response.text}"
         data = response.json()
-        assert "fit_types" in data, "Missing fit_types in response"
-        print(f"✅ Fit types: {list(data['fit_types'].keys())}")
+        assert "request_id" in data, "Missing request_id in response"
+        print(f"✅ Fit request endpoint working: {data.get('request_id')}")
 
 
 if __name__ == "__main__":
