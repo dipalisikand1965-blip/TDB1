@@ -1613,7 +1613,6 @@ const Admin = () => {
             {[
               { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
               { id: 'servicedesk', label: 'Service Desk', icon: Ticket },
-              { id: 'command-center', label: 'Command Center', icon: Headphones },
               { id: 'inbox', label: 'Unified Inbox', icon: Inbox },
             ].map((tab) => (
               <Button
