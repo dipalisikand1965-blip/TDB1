@@ -2932,16 +2932,30 @@ What would you like to explore? 🐾"""
             "pets": [{"id": p.get("id"), "name": p.get("name")} for p in pets] if pets else [],
             "selected_pet": selected_pet.get("name") if selected_pet else None,
             "research_mode": research_context is not None,
-            "quick_prompts": get_pillar_quick_prompts(pillar)
+            "quick_prompts": get_pillar_quick_prompts(pillar),
+            "end_state": "RESPONDED"  # Valid end state per Mira doctrine
         }
         
     except Exception as e:
         logger.error(f"Mira chat error: {e}", exc_info=True)
+        
+        # ==================== FAIL LOUDLY, NEVER SILENTLY ====================
+        # Even on error, Mira MUST respond with something actionable
+        error_response = f"""I apologize - I encountered a brief hiccup. Let me help you another way.
+
+You can:
+1. Try asking your question again
+2. Tell me more about what you're looking for
+3. Or I can connect you with our live concierge team right away
+
+What would you prefer? 🐾"""
+        
         return {
-            "response": "I apologize for the brief pause. Could you please repeat that?",
+            "response": error_response,
             "session_id": session_id,
             "ticket_id": ticket_id,
-            "error": str(e)
+            "error": str(e),
+            "end_state": "FAILED_VISIBLE_ERROR"  # Valid end state per Mira doctrine
         }
 
 @router.get("/session/{session_id}")
