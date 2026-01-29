@@ -2386,7 +2386,41 @@ async def mira_chat(
             # Auto-select if only one pet
             selected_pet = await load_pet_soul(pets[0].get("id") or pets[0].get("name"))
     
-    # 2. Detect pillar and urgency
+    # 2. CHECK FOR STATUS QUERIES FIRST
+    status_keywords = ["status", "update", "what's happening", "where is", "track", "my request", "my booking", "my order", "check on"]
+    is_status_query = any(kw in user_message.lower() for kw in status_keywords)
+    
+    if is_status_query and user:
+        # Fetch user's recent tickets for context
+        recent_tickets = await db.service_desk_tickets.find(
+            {"member.email": user.get("email")},
+            {"_id": 0}
+        ).sort("created_at", -1).limit(5).to_list(5)
+        
+        mira_tickets = await db.mira_tickets.find(
+            {"member.email": user.get("email"), "ticket_type": {"$ne": "advisory"}},
+            {"_id": 0}
+        ).sort("created_at", -1).limit(5).to_list(5)
+        
+        if recent_tickets or mira_tickets:
+            status_context = "\n\n🎫 USER'S ACTIVE REQUESTS:\n"
+            all_tickets = recent_tickets + mira_tickets
+            for t in all_tickets[:3]:
+                ticket_id = t.get("ticket_id")
+                status = t.get("status", "pending")
+                pillar_name = PILLARS.get(t.get("pillar"), {}).get("name", t.get("pillar", "General"))
+                desc = t.get("original_request", t.get("description", ""))[:80]
+                status_display = get_status_display(status)
+                status_context += f"- **#{ticket_id}** ({pillar_name}): {status_display['icon']} {status_display['label']}\n  \"{desc}...\"\n"
+            
+            # Store context for LLM
+            request.history = request.history or []
+            request.history.append({
+                "role": "system",
+                "content": f"The user is asking about their request status. Here are their recent requests:{status_context}\nRespond naturally about the status. If they ask about a specific one, give details."
+            })
+    
+    # 3. Detect pillar and urgency
     pillar = detect_pillar(user_message, request.current_pillar)
     urgency = detect_urgency(user_message, pillar)
     intent = detect_intent(user_message)
