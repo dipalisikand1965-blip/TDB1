@@ -237,9 +237,9 @@ class TestFitUnifiedFlow:
     
     def test_fit_request_creates_channel_intake(self):
         """POST /api/fit/request should create channel_intakes entry"""
-        request_id = getattr(self.__class__, 'fit_request_id', None)
-        if not request_id:
-            pytest.skip("No fit request ID from previous test")
+        ticket_id = getattr(self.__class__, 'fit_ticket_id', None)
+        if not ticket_id:
+            pytest.skip("No fit ticket ID from previous test")
         
         # Check channel_intakes
         response = requests.get(f"{BASE_URL}/api/channels/intakes")
@@ -247,9 +247,9 @@ class TestFitUnifiedFlow:
         
         data = response.json()
         intakes = data.get("intakes", [])
-        matching = [i for i in intakes if i.get("ticket_id") == request_id or i.get("request_id") == request_id]
+        matching = [i for i in intakes if i.get("ticket_id") == ticket_id]
         
-        assert len(matching) > 0, f"No channel intake found for fit request {request_id}"
+        assert len(matching) > 0, f"No channel intake found for fit ticket {ticket_id}"
         
         intake = matching[0]
         # Verify intake has required fields
