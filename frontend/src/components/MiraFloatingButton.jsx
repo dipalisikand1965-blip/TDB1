@@ -1,28 +1,26 @@
 /**
- * MiraFloatingButton - Global floating button for Mira guidance layer
+ * MiraFloatingButton - Global floating button for Mira AI & Pulse voice
  * 
- * CORE RULES:
- * - Persistent presence (always visible)
- * - Passive by default
- * - Text-first interaction
- * - Voice only when explicitly triggered
+ * ARCHITECTURE:
+ * - Mira: Core intelligence layer (chat, reasoning, memories)
+ * - Pulse: Voice intent accelerator (fast capture, handoff to Mira)
  * 
  * Activation methods:
- * - User taps Mira icon
- * - User taps mic explicitly
+ * - User taps Mira icon → Opens Mira chat
+ * - User taps Pulse/mic → Opens Pulse (voice capture → Mira)
  * - Auto-show (NOT auto-speak) in Care/Emergency/Farewell
  */
 
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Sparkles, MessageCircle, X, Mic, Phone } from 'lucide-react';
+import { Sparkles, MessageCircle, X, Zap, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import MiraVoiceAssistant from './MiraVoiceAssistant';
+import Pulse from './Pulse';
 
 // Pillars where Mira should auto-show (NOT auto-speak)
 const AUTO_SHOW_PILLARS = ['/care', '/emergency', '/farewell'];
 
-// Pillars where Mira must NEVER auto-speak
+// Pillars where voice must NEVER auto-trigger
 const NO_AUTO_SPEAK = ['/', '/shop', '/checkout', '/celebrate', '/dine', '/stay', '/travel'];
 
 const MiraFloatingButton = () => {
@@ -36,7 +34,7 @@ const MiraFloatingButton = () => {
   const [hasAskedPreference, setHasAskedPreference] = useState(false);
   const [startWithVoice, setStartWithVoice] = useState(false);
   
-  // Listen for openMiraVoice event from floating contact button
+  // Listen for openMiraVoice event from floating contact button (now opens Pulse)
   useEffect(() => {
     const handleOpenMiraVoice = () => {
       setStartWithVoice(true);
