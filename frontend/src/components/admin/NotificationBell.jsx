@@ -177,20 +177,39 @@ const NotificationBell = ({ credentials, onNavigate }) => {
     return date.toLocaleDateString();
   };
 
+  // Check if there are new member notifications
+  const hasNewMemberNotification = notifications.some(
+    n => !n.read && (n.category === 'member' || n.type === 'new_member')
+  );
+
   return (
     <div className="relative">
-      {/* Bell Button */}
+      {/* Bell Button - Buzzes for new members */}
       <Button
         variant="ghost"
         size="icon"
-        className="relative"
+        className={`relative ${hasNewMemberNotification ? 'animate-bounce' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
         data-testid="notification-bell"
       >
-        <Bell className={`w-5 h-5 ${unreadCount > 0 ? 'text-orange-500' : 'text-gray-600'}`} />
+        <Bell className={`w-5 h-5 transition-all ${
+          hasNewMemberNotification 
+            ? 'text-purple-600 animate-wiggle' 
+            : unreadCount > 0 
+              ? 'text-orange-500' 
+              : 'text-gray-600'
+        }`} />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+          <span className={`absolute -top-1 -right-1 w-5 h-5 text-white text-xs font-bold rounded-full flex items-center justify-center ${
+            hasNewMemberNotification ? 'bg-purple-600 animate-ping' : 'bg-red-500 animate-pulse'
+          }`}>
             {unreadCount > 99 ? '99+' : unreadCount}
+          </span>
+        )}
+        {/* New Member Star Badge */}
+        {hasNewMemberNotification && (
+          <span className="absolute -bottom-1 -left-1 w-4 h-4 bg-yellow-400 text-yellow-900 rounded-full flex items-center justify-center text-[8px] animate-bounce">
+            ★
           </span>
         )}
       </Button>
