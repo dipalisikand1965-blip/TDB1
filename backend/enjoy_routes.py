@@ -380,17 +380,24 @@ async def create_rsvp(rsvp: ExperienceRSVP):
     await db.channel_intakes.insert_one(inbox_entry)
     
     # Create Admin Notification
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    
     notification_doc = {
-        "id": f"NOTIF-{uuid.uuid4().hex[:8].upper()}",
+        "id": notification_id,
         "type": "enjoy_rsvp",
         "pillar": "enjoy",
         "title": f"New RSVP: {experience.get('name')}",
         "message": f"{rsvp.user_name} wants to attend {experience.get('name')} with {rsvp.pet_name} ({rsvp.pet_breed})",
+        "read": False,  # IMPORTANT: For API compatibility
         "priority": "normal",
         "status": "unread",
+        "urgency": "medium",
         "source": "enjoy_pillar",
         "reference_id": rsvp_id,
         "reference_type": "rsvp",
+        "ticket_id": rsvp_id,
+        "inbox_id": inbox_id,
         "customer": {
             "name": rsvp.user_name,
             "email": rsvp.user_email,
@@ -400,6 +407,7 @@ async def create_rsvp(rsvp: ExperienceRSVP):
             "name": rsvp.pet_name,
             "breed": rsvp.pet_breed
         },
+        "link": f"/admin?tab=servicedesk&ticket={rsvp_id}",
         "metadata": {
             "experience_id": rsvp.experience_id,
             "experience_name": experience.get("name"),
@@ -411,7 +419,8 @@ async def create_rsvp(rsvp: ExperienceRSVP):
         },
         "action_required": True,
         "action_type": "confirm_rsvp",
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "read_at": None
     }
     await db.admin_notifications.insert_one(notification_doc)
     
