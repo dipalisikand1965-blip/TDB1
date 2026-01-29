@@ -1,39 +1,41 @@
 /**
- * MiraVoiceAssistant - Voice-enabled guidance layer for Mira
+ * PULSE - Voice Intent Accelerator
  * 
- * CORE PRINCIPLE: Text is default. Voice is earned. Silence is acceptable.
+ * Pulse is NOT the core intelligence. That's Mira.
+ * Pulse is the fast voice capture layer that:
+ * - Captures voice input quickly
+ * - Structures user intent
+ * - Hands off to Mira for reasoning
  * 
- * Features:
- * - Text-first by default (80% of interactions)
- * - Voice only when explicitly triggered (mic tap, wake word, Care/Emergency)
- * - Max 10-12 second voice responses
- * - Escalates to Concierge early
- * - Section-aware behaviour
+ * ICON: ⚡ (lightning bolt - speed & energy)
+ * COLOR: Electric blue/cyan gradient
+ * 
+ * All outputs are structured intents designed to speed up Mira's reasoning.
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { 
-  Mic, MicOff, Volume2, VolumeX, X, Sparkles, 
+  Mic, MicOff, Volume2, VolumeX, X, Zap, 
   ShoppingCart, Calendar, Heart, HelpCircle, Loader2,
-  Stethoscope, Gift, PawPrint, MessageCircle, Send
+  Stethoscope, Gift, PawPrint, MessageCircle, Send, Activity
 } from 'lucide-react';
 
-// Mira's voice personality settings - calm, slow, pauses often
-const MIRA_VOICE_CONFIG = {
-  rate: 0.85,  // Slower for clarity
-  pitch: 1.05, // Natural female pitch
+// Pulse voice settings - quick, responsive
+const PULSE_VOICE_CONFIG = {
+  rate: 0.95,  // Slightly faster than Mira
+  pitch: 1.0,
   volume: 0.9
 };
 
-// UNIVERSAL OPENING LINE (MANDATORY - NO VARIATION)
-const MIRA_OPENING = "Hi, I'm Mira. I can help explain things, guide you to the right place, or connect you with our Concierge.";
+// Pulse opening - brief, action-oriented
+const PULSE_OPENING = "Hey! I'm Pulse. Speak or type - I'll get you to Mira fast.";
 
 // Max voice response time in seconds
-const MAX_VOICE_SECONDS = 10;
+const MAX_VOICE_SECONDS = 8; // Shorter than Mira - Pulse is quick
 
-// Command patterns and responses - Care-first, non-medical guidance
+// Command patterns - Pulse captures intent, Mira reasons
 // COMPREHENSIVE PET PARENT COMMAND ENCYCLOPEDIA
 const COMMAND_PATTERNS = [
   // ============================================
