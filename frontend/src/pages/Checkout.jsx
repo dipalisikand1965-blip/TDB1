@@ -1561,53 +1561,7 @@ _GST applicable on final invoice_
                 )}
               </Card>
 
-              {/* Store Pickup Section (only when pickup is selected for bakery-only carts) */}
-              {cartAnalysis.bakeryOnlyCart && deliveryMethod === 'pickup' && (
-                <Card className="p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Store className="w-5 h-5 text-purple-600" />
-                    Pickup Location *
-                  </h2>
-                  
-                  <p className="text-sm text-gray-600 mb-4">
-                    Select your nearest store for pickup (Available in Mumbai, Gurugram & Bangalore):
-                  </p>
-                  
-                  <div className="grid gap-3">
-                    {appSettings.store_locations.map((loc) => (
-                      <div 
-                        key={loc.id}
-                        className={`p-4 border rounded-xl cursor-pointer flex items-center gap-3 transition-all ${
-                          pickupLocation === loc.id 
-                            ? 'border-purple-600 bg-purple-50' 
-                            : 'border-gray-200 hover:border-purple-300'
-                        }`}
-                        onClick={() => {
-                          setPickupLocation(loc.id);
-                          setFormData(prev => ({ ...prev, city: loc.city }));
-                        }}
-                        data-testid={`pickup-location-${loc.id}`}
-                      >
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                          pickupLocation === loc.id ? 'border-purple-600' : 'border-gray-300'
-                        }`}>
-                          {pickupLocation === loc.id && <div className="w-2.5 h-2.5 rounded-full bg-purple-600" />}
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900">{loc.city}</p>
-                          <p className="text-sm text-gray-500">{loc.address}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {formErrors.pickupLocation && <p className="text-red-500 text-xs mt-2">{formErrors.pickupLocation}</p>}
-                  
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-4 text-sm flex gap-2">
-                    <Sparkles className="w-5 h-5 text-green-600" />
-                    <p className="text-green-800">Store pickup is always <strong>FREE</strong>! No shipping charges.</p>
-                  </div>
-                </Card>
-              )}
+              {/* Store Pickup Section removed - delivery only */}
 
               {/* Mixed Cart - Bakery Pickup + Delivery Address */}
               {cartAnalysis.isMixedCart && (
