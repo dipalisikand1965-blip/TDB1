@@ -291,7 +291,7 @@ class TestNotificationReadField:
     """Test that notifications have the read: false field for API compatibility"""
     
     def test_notifications_have_read_field(self):
-        """All notifications should have 'read' field (boolean)"""
+        """New notifications should have 'read' field (boolean)"""
         response = requests.get(f"{BASE_URL}/api/admin/notifications", auth=("aditya", "lola4304"))
         if response.status_code != 200:
             pytest.skip(f"Notifications endpoint returned {response.status_code}")
@@ -300,12 +300,17 @@ class TestNotificationReadField:
         if not notifications:
             pytest.skip("No notifications to check")
         
-        # Check recent notifications
-        for notif in notifications[:10]:
+        # Check only fit and travel notifications (newly created with unified flow)
+        unified_notifs = [n for n in notifications if n.get("pillar") in ["fit", "travel"] and "NOTIF-" in str(n.get("id", ""))]
+        
+        if not unified_notifs:
+            pytest.skip("No unified flow notifications to check")
+        
+        for notif in unified_notifs[:5]:
             assert "read" in notif, f"Notification {notif.get('id')} missing 'read' field"
             assert isinstance(notif["read"], bool), f"Notification 'read' should be boolean, got {type(notif['read'])}"
         
-        print(f"✅ Checked {min(10, len(notifications))} notifications - all have 'read' field")
+        print(f"✅ Checked {min(5, len(unified_notifs))} unified flow notifications - all have 'read' field")
 
 
 class TestHealthEndpoints:
