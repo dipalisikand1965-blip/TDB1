@@ -10,8 +10,10 @@ import os
 import uuid
 import time
 from datetime import datetime
+from requests.auth import HTTPBasicAuth
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+ADMIN_AUTH = HTTPBasicAuth('aditya', 'lola4304')
 
 
 class TestTimestampSorting:
@@ -41,7 +43,7 @@ class TestTimestampSorting:
         time.sleep(0.5)
         
         # Get admin notifications (should be sorted by newest first)
-        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications")
+        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications", auth=ADMIN_AUTH)
         assert notif_response.status_code == 200, f"Failed to get notifications: {notif_response.text}"
         
         notifications = notif_response.json().get("notifications", [])
@@ -98,7 +100,7 @@ class TestTimestampSorting:
         time.sleep(0.5)
         
         # Get service desk tickets
-        tickets_response = requests.get(f"{BASE_URL}/api/admin/service-desk/tickets")
+        tickets_response = requests.get(f"{BASE_URL}/api/admin/tickets", auth=ADMIN_AUTH)
         assert tickets_response.status_code == 200, f"Failed to get tickets: {tickets_response.text}"
         
         tickets = tickets_response.json().get("tickets", [])
@@ -141,7 +143,7 @@ class TestTimestampSorting:
         time.sleep(0.5)
         
         # Get the notification
-        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications")
+        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications", auth=ADMIN_AUTH)
         notifications = notif_response.json().get("notifications", [])
         
         # Find our notification
