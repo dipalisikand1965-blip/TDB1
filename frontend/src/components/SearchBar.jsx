@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Search, X, Loader2, ArrowRight, Tag } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { API_URL } from '../utils/api';
+import { intelligentSearch } from '../utils/unifiedApi';
+import { useAuth } from '../context/AuthContext';
 
 
 const SearchBar = ({ onClose, isOverlay = false }) => {
