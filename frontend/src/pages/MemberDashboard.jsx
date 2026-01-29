@@ -282,6 +282,13 @@ const MemberDashboard = () => {
       navigate('/login');
     }
   }, [authLoading, user, navigate]);
+  
+  // Listen for openSoulExplainer event from footer
+  useEffect(() => {
+    const handleOpenExplainer = () => setShowSoulExplainer(true);
+    window.addEventListener('openSoulExplainer', handleOpenExplainer);
+    return () => window.removeEventListener('openSoulExplainer', handleOpenExplainer);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
