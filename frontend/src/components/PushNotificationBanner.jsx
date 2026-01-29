@@ -41,7 +41,7 @@ const PushNotificationBanner = ({ userId, petName = 'your pup' }) => {
           </div>
           <div>
             <p className="font-semibold text-green-800">Notifications Enabled! 🎉</p>
-            <p className="text-sm text-green-600">You'll now get instant updates about {petName}</p>
+            <p className="text-sm text-green-600">You&apos;ll now get instant updates about {petName}</p>
           </div>
         </div>
       </Card>
