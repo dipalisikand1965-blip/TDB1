@@ -886,6 +886,7 @@ const CareManager = ({ getAuthHeader }) => {
                 <Input 
                   type="number" 
                   value={settings.paw_rewards?.points_per_request || 30}
+                  onChange={(e) => updateSettings('paw_rewards', 'points_per_request', parseInt(e.target.value) || 0)}
                   className="mt-1"
                 />
               </div>
@@ -894,6 +895,7 @@ const CareManager = ({ getAuthHeader }) => {
                 <Input 
                   type="number" 
                   value={settings.paw_rewards?.points_per_purchase || 10}
+                  onChange={(e) => updateSettings('paw_rewards', 'points_per_purchase', parseInt(e.target.value) || 0)}
                   className="mt-1"
                 />
               </div>
@@ -902,6 +904,7 @@ const CareManager = ({ getAuthHeader }) => {
                 <Input 
                   type="number" 
                   value={settings.paw_rewards?.grooming_bonus || 20}
+                  onChange={(e) => updateSettings('paw_rewards', 'grooming_bonus', parseInt(e.target.value) || 0)}
                   className="mt-1"
                 />
               </div>
@@ -910,6 +913,7 @@ const CareManager = ({ getAuthHeader }) => {
                 <Input 
                   type="number" 
                   value={settings.paw_rewards?.repeat_bonus || 15}
+                  onChange={(e) => updateSettings('paw_rewards', 'repeat_bonus', parseInt(e.target.value) || 0)}
                   className="mt-1"
                 />
               </div>
@@ -924,6 +928,7 @@ const CareManager = ({ getAuthHeader }) => {
                 <Input 
                   type="number" 
                   value={settings.birthday_perks?.discount_percent || 15}
+                  onChange={(e) => updateSettings('birthday_perks', 'discount_percent', parseInt(e.target.value) || 0)}
                   className="mt-1"
                 />
               </div>
@@ -932,6 +937,7 @@ const CareManager = ({ getAuthHeader }) => {
                 <Input 
                   type="number" 
                   value={settings.birthday_perks?.valid_days || 7}
+                  onChange={(e) => updateSettings('birthday_perks', 'valid_days', parseInt(e.target.value) || 0)}
                   className="mt-1"
                 />
               </div>
@@ -943,19 +949,31 @@ const CareManager = ({ getAuthHeader }) => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label>Email Notifications</Label>
-                <Switch checked={settings.notifications?.email_enabled !== false} />
+                <Switch 
+                  checked={settings.notifications?.email_enabled !== false} 
+                  onCheckedChange={(val) => updateSettings('notifications', 'email_enabled', val)}
+                />
               </div>
               <div className="flex items-center justify-between">
                 <Label>WhatsApp Notifications</Label>
-                <Switch checked={settings.notifications?.whatsapp_enabled || false} />
+                <Switch 
+                  checked={settings.notifications?.whatsapp_enabled || false} 
+                  onCheckedChange={(val) => updateSettings('notifications', 'whatsapp_enabled', val)}
+                />
               </div>
               <div className="flex items-center justify-between">
                 <Label>SMS Notifications</Label>
-                <Switch checked={settings.notifications?.sms_enabled || false} />
+                <Switch 
+                  checked={settings.notifications?.sms_enabled || false} 
+                  onCheckedChange={(val) => updateSettings('notifications', 'sms_enabled', val)}
+                />
               </div>
               <div className="flex items-center justify-between">
                 <Label>Appointment Reminders (24h before)</Label>
-                <Switch checked={settings.notifications?.appointment_reminder !== false} />
+                <Switch 
+                  checked={settings.notifications?.appointment_reminder !== false} 
+                  onCheckedChange={(val) => updateSettings('notifications', 'appointment_reminder', val)}
+                />
               </div>
             </div>
           </Card>
@@ -965,22 +983,41 @@ const CareManager = ({ getAuthHeader }) => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label>Auto-create tickets for requests</Label>
-                <Switch checked={settings.service_desk?.auto_create_tickets !== false} />
+                <Switch 
+                  checked={settings.service_desk?.auto_create_tickets !== false} 
+                  onCheckedChange={(val) => updateSettings('service_desk', 'auto_create_tickets', val)}
+                />
               </div>
               <div className="flex items-center justify-between">
                 <Label>Route to Partners</Label>
-                <Switch checked={settings.service_desk?.route_to_partners || false} />
+                <Switch 
+                  checked={settings.service_desk?.route_to_partners || false} 
+                  onCheckedChange={(val) => updateSettings('service_desk', 'route_to_partners', val)}
+                />
               </div>
               <div>
                 <Label>Default SLA (hours)</Label>
                 <Input 
                   type="number" 
                   value={settings.service_desk?.default_sla || 48}
+                  onChange={(e) => updateSettings('service_desk', 'default_sla', parseInt(e.target.value) || 48)}
                   className="mt-1 w-32"
                 />
               </div>
             </div>
           </Card>
+          
+          {/* Save Settings Button */}
+          <div className="flex justify-end">
+            <Button 
+              onClick={saveSettings} 
+              disabled={savingSettings}
+              className="bg-gradient-to-r from-purple-600 to-pink-600"
+            >
+              {savingSettings ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Save All Settings
+            </Button>
+          </div>
         </TabsContent>
       </Tabs>
 
