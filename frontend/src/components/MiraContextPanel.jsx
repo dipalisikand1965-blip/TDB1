@@ -487,15 +487,50 @@ const MiraContextPanel = ({
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+          <div className={`w-8 h-8 bg-white/20 rounded-full flex items-center justify-center ${isListening ? 'animate-pulse ring-2 ring-cyan-400' : ''}`}>
             <PawPrint className="w-4 h-4" />
           </div>
           <div>
             <p className="font-semibold text-sm">Mira</p>
-            <p className="text-xs opacity-80">Your Concierge®</p>
+            <p className="text-xs opacity-80">
+              {isListening ? '🎤 Listening...' : isSpeaking ? '🔊 Speaking...' : 'Your Concierge®'}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-1">
+          {/* Pulse Voice Button */}
+          {speechSupported && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleListening();
+                if (!isExpanded) setIsExpanded(true);
+                if (!showChat) setShowChat(true);
+              }}
+              className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 transition-all ${
+                isListening 
+                  ? 'bg-cyan-400 text-gray-900 animate-pulse' 
+                  : 'bg-white/20 hover:bg-white/30 text-white'
+              }`}
+              data-testid="mira-panel-pulse-btn"
+            >
+              <Zap className="w-3 h-3" />
+              Pulse
+            </button>
+          )}
+          {/* Voice Toggle Button */}
+          <button
+            className={`h-7 w-7 rounded-full flex items-center justify-center transition-colors ${voiceEnabled ? 'bg-white/20 text-white' : 'bg-white/10 text-white/50'}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setVoiceEnabled(!voiceEnabled);
+              if (isSpeaking && synthRef.current) synthRef.current.cancel();
+            }}
+            title={voiceEnabled ? "Voice responses ON" : "Voice responses OFF"}
+            data-testid="mira-panel-voice-toggle"
+          >
+            {voiceEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
+          </button>
           <Button
             variant="ghost"
             size="sm"
