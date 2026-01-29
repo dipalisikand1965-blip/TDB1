@@ -1161,24 +1161,37 @@ const Pulse = ({
                   Pulse
                   <Activity className="w-4 h-4 text-yellow-300" />
                 </h2>
-                <p className="text-white/80 text-xs">Voice → Mira</p>
+                <p className="text-white/80 text-xs">Quick Voice Commands</p>
               </div>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-full">
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              {/* Switch to Mira Button */}
+              <button 
+                onClick={() => {
+                  onClose();
+                  window.dispatchEvent(new CustomEvent('openMiraAI'));
+                }}
+                className="px-3 h-8 bg-purple-500/80 hover:bg-purple-500 rounded-full flex items-center gap-1.5 transition-colors text-xs font-medium"
+                title="Switch to Mira for deeper conversations"
+              >
+                <span>🧠</span> Mira
+              </button>
+              <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-full">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
           {/* Flow indicator */}
           <div className="mt-2 flex items-center gap-2 text-xs text-white/80">
             <span className="px-2 py-0.5 bg-white/20 rounded-full flex items-center gap-1">
-              <Mic className="w-3 h-3" /> Capture
+              <Mic className="w-3 h-3" /> Voice
             </span>
             <span className="text-yellow-300">→</span>
             <span className="px-2 py-0.5 bg-white/20 rounded-full flex items-center gap-1">
-              <Zap className="w-3 h-3" /> Structure
+              <Zap className="w-3 h-3" /> Quick
             </span>
             <span className="text-yellow-300">→</span>
-            <span className="px-2 py-0.5 bg-purple-400/50 rounded-full">🧠 Mira</span>
+            <span className="px-2 py-0.5 bg-purple-400/50 rounded-full">🧠 Deep Chat</span>
           </div>
         </div>
         
