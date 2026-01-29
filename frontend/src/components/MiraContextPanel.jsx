@@ -211,9 +211,9 @@ const MiraContextPanel = ({
     care: {
       icon: '💊',
       name: 'Care',
-      color: 'from-green-500 to-emerald-500',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200'
+      color: 'from-rose-500 to-pink-600',
+      bgColor: 'bg-rose-50',
+      borderColor: 'border-rose-200'
     },
     dine: {
       icon: '🍽️',
