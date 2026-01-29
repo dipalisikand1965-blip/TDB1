@@ -233,7 +233,7 @@ class TestFitUnifiedFlow:
         self.__class__.ticket_notification_id = ticket.get("notification_id")
         self.__class__.ticket_inbox_id = ticket.get("inbox_id")
         
-        print(f"✅ Fit service desk ticket created: {request_id}")
+        print(f"✅ Fit service desk ticket created: {ticket_id}")
     
     def test_fit_request_creates_channel_intake(self):
         """POST /api/fit/request should create channel_intakes entry"""
