@@ -108,6 +108,7 @@ import {
   Settings,
   PartyPopper,
   Dumbbell,
+  Megaphone,
   Brain,
   Bell,
   Headphones,
