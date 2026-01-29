@@ -190,66 +190,116 @@ const GamificationBanner = ({ pets, orders, user, onNavigateToPet, onOpenExplain
         </div>
       </div>
       
-      {/* Achievements Row */}
+      {/* Achievements Row - Pawesome Badges */}
       <div className="bg-gradient-to-r from-gray-50 to-purple-50 p-4 border-t">
         <div className="flex items-center justify-between mb-3">
           <h4 className="font-semibold text-gray-800 flex items-center gap-2">
             <Trophy className="w-4 h-4 text-yellow-500" />
-            Achievements
+            Pawesome Badges
             <span className="text-xs font-normal text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full cursor-help" title="Earn badges by completing your pet's Soul Journey. Each badge unlocks Paw Points!">
-              What&apos;s this?
+              Earn rewards!
             </span>
           </h4>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-gray-500 flex items-center gap-1">
+            <span className="text-green-500">●</span>
             {unlockedAchievements.length} of {Object.keys(ACHIEVEMENTS).length} unlocked
           </span>
         </div>
         
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-purple-200">
           {Object.values(ACHIEVEMENTS).slice(0, 8).map((achievement) => {
             const isUnlocked = unlockedAchievements.some(a => a?.id === achievement.id);
             const tierColors = TIER_COLORS[achievement.tier] || TIER_COLORS.bronze;
+            const rarityColors = RARITY_COLORS[achievement.rarity] || RARITY_COLORS.common;
             return (
               <div 
                 key={achievement.id}
-                className={`flex-shrink-0 w-14 h-14 rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer group relative ${
+                className={`flex-shrink-0 transition-all cursor-pointer group relative ${
                   isUnlocked 
-                    ? `${tierColors.bg} ${tierColors.border} border shadow-lg` 
-                    : 'bg-gray-200 opacity-50'
+                    ? `transform hover:scale-105 hover:-translate-y-1` 
+                    : ''
                 }`}
               >
-                <span className={`text-xl ${isUnlocked ? '' : 'grayscale'}`}>{achievement.icon}</span>
+                {/* Badge Card */}
+                <div className={`w-20 h-24 rounded-xl flex flex-col items-center justify-center p-2 transition-all ${
+                  isUnlocked 
+                    ? `${tierColors.bg} ${tierColors.border} border-2 shadow-lg ${rarityColors.glow}` 
+                    : 'bg-gray-200/50 opacity-40 grayscale border border-gray-300'
+                }`}>
+                  {/* Icon with glow effect */}
+                  <div className={`text-2xl mb-1 ${isUnlocked && achievement.rarity === 'legendary' ? 'animate-bounce' : ''}`}>
+                    {achievement.icon}
+                  </div>
+                  {/* Badge Name */}
+                  <span className={`text-[10px] font-bold text-center leading-tight ${
+                    isUnlocked ? tierColors.text : 'text-gray-400'
+                  }`}>
+                    {achievement.name}
+                  </span>
+                  {/* Points */}
+                  <span className={`text-[9px] mt-0.5 ${isUnlocked ? 'text-purple-600' : 'text-gray-400'}`}>
+                    +{achievement.reward} pts
+                  </span>
+                </div>
+                
+                {/* Unlocked checkmark */}
                 {isUnlocked && (
-                  <CheckCircle2 className="absolute -top-1 -right-1 w-4 h-4 text-green-500 bg-white rounded-full" />
+                  <div className="absolute -top-1 -right-1 bg-green-500 rounded-full p-0.5 shadow-lg">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                  </div>
                 )}
-                {/* Enhanced tooltip with full info */}
-                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
-                  <div className="bg-white border border-purple-200 rounded-xl shadow-xl p-3 w-48">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg">{achievement.icon}</span>
-                      <span className="font-bold text-gray-900 text-sm">{achievement.name}</span>
+                
+                {/* Rarity indicator */}
+                {isUnlocked && (achievement.rarity === 'epic' || achievement.rarity === 'legendary') && (
+                  <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase ${
+                    achievement.rarity === 'legendary' 
+                      ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white' 
+                      : 'bg-purple-500 text-white'
+                  }`}>
+                    {achievement.rarity}
+                  </div>
+                )}
+                
+                {/* Enhanced tooltip */}
+                <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-20 transform group-hover:translate-y-0 translate-y-2">
+                  <div className="bg-white border-2 border-purple-200 rounded-2xl shadow-2xl p-4 w-56">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-3xl">{achievement.icon}</span>
+                      <div>
+                        <span className="font-bold text-gray-900 block">{achievement.name}</span>
+                        <span className={`text-xs ${tierColors.text} font-medium`}>
+                          {achievement.title || achievement.tier.toUpperCase()}
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-xs text-gray-600 mb-2">{achievement.description}</p>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className={`font-medium ${isUnlocked ? 'text-green-600' : 'text-gray-400'}`}>
-                        {isUnlocked ? '✓ Earned!' : 'Keep going!'}
+                    <p className="text-sm text-gray-600 mb-3">{achievement.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className={`text-sm font-bold ${isUnlocked ? 'text-green-600' : 'text-gray-400'}`}>
+                        {isUnlocked ? '✓ Unlocked!' : '🔒 Keep going!'}
                       </span>
-                      <span className="text-purple-600 font-semibold">
+                      <span className="bg-purple-100 text-purple-700 text-xs font-bold px-2 py-1 rounded-full">
                         +{achievement.reward} pts
                       </span>
                     </div>
+                    {isUnlocked && achievement.unlockMessage && (
+                      <div className="mt-2 bg-green-50 border border-green-200 rounded-lg p-2 text-xs text-green-700">
+                        {achievement.unlockMessage}
+                      </div>
+                    )}
                   </div>
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white border-r border-b border-purple-200 transform rotate-45"></div>
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-r-2 border-b-2 border-purple-200 transform rotate-45"></div>
                 </div>
               </div>
             );
           })}
           
+          {/* More badges indicator */}
           <div 
-            className="flex-shrink-0 w-14 h-14 rounded-xl bg-purple-100 flex flex-col items-center justify-center cursor-pointer hover:bg-purple-200 transition-colors"
+            className="flex-shrink-0 w-20 h-24 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 border-2 border-dashed border-purple-300 flex flex-col items-center justify-center cursor-pointer hover:from-purple-200 hover:to-pink-200 transition-colors"
           >
-            <span className="text-purple-600 text-xs font-medium">+{Math.max(0, Object.keys(ACHIEVEMENTS).length - 8)}</span>
-            <span className="text-purple-600 text-[10px]">more</span>
+            <span className="text-purple-600 text-lg font-bold">+{Math.max(0, Object.keys(ACHIEVEMENTS).length - 8)}</span>
+            <span className="text-purple-600 text-xs">more badges</span>
+            <ArrowRight className="w-4 h-4 text-purple-400 mt-1" />
           </div>
         </div>
       </div>
