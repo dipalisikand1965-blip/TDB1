@@ -1121,6 +1121,27 @@ const Pulse = ({
           <div ref={messagesEndRef} />
         </div>
         
+        {/* Quick Commands - Personalized with pet name */}
+        {messages.length <= 1 && (
+          <div className="px-4 py-3 bg-gradient-to-r from-cyan-50 to-blue-50 border-t border-cyan-100 flex-shrink-0">
+            <p className="text-xs text-cyan-700 font-medium mb-2 flex items-center gap-1">
+              <Zap className="w-3 h-3" /> Quick actions for {petName || 'your pet'}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {getQuickCommands().slice(0, 6).map((cmd) => (
+                <button
+                  key={cmd.id}
+                  onClick={() => handleQuickCommand(cmd.command)}
+                  className="px-3 py-1.5 text-xs font-medium bg-white border border-cyan-200 rounded-full text-cyan-700 hover:bg-cyan-500 hover:text-white hover:border-cyan-500 transition-all shadow-sm hover:shadow-md active:scale-95"
+                  data-testid={`pulse-quick-${cmd.id}`}
+                >
+                  {cmd.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        
         {/* Input Area - Clean, focused design */}
         <div className="p-4 border-t bg-white flex-shrink-0">
           <div className="flex items-center gap-2">
