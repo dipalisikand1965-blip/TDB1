@@ -1478,6 +1478,19 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
     return userPets.filter(p => selectedPets.includes(p.id));
   };
 
+  // Auto-populate special requests with pet names when pets are selected
+  useEffect(() => {
+    if (selectedPets.length > 0 && !formData.specialRequests) {
+      const petNames = getSelectedPetsInfo().map(p => p.name).join(', ');
+      if (petNames) {
+        setFormData(prev => ({
+          ...prev,
+          specialRequests: `Dining with my pet(s): ${petNames}. `
+        }));
+      }
+    }
+  }, [selectedPets]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
