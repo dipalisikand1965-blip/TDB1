@@ -464,13 +464,19 @@ const MiraVoiceAssistant = ({
                 🐕‍🦺
               </div>
               <div>
-                <h2 className="font-bold text-lg">Chat with Mira</h2>
-                <p className="text-white/80 text-xs">Your AI Pet Concierge</p>
+                <h2 className="font-bold text-lg">Mira</h2>
+                <p className="text-white/80 text-xs">AI Concierge • Voice & Chat</p>
               </div>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-full">
               <X className="w-5 h-5" />
             </button>
+          </div>
+          {/* Unified indicator */}
+          <div className="mt-2 flex items-center gap-2 text-xs text-white/70">
+            <span className="px-2 py-0.5 bg-white/20 rounded-full">💬 Chat</span>
+            <span className="px-2 py-0.5 bg-white/20 rounded-full">🎤 Voice</span>
+            <span className="px-2 py-0.5 bg-white/20 rounded-full">🧠 Memories</span>
           </div>
         </div>
         
