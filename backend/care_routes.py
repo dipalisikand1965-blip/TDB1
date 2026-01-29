@@ -410,6 +410,7 @@ async def create_care_request(request: CareRequestCreate):
             "pillar": "care",
             "title": f"New {care_config['name']} Request - {pet_name}",
             "message": f"{user_name or 'Customer'} needs {care_config['name'].lower()} for {pet_name}",
+            "read": False,  # Use 'read' field for consistency with API
             "status": "unread",
             "urgency": "high" if priority <= 2 else "medium",
             "ticket_id": ticket_id,
