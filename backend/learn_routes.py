@@ -22,28 +22,44 @@ def get_db():
 
 @router.post("/request")
 async def create_training_request(request_data: dict):
-    """Create a new training request with Service Desk integration"""
+    """Create a new training request with FULL UNIFIED FLOW integration
+    
+    UNIFIED FLOW: Every request creates Notification → Ticket → Inbox
+    """
     db = get_db()
+    from timestamp_utils import get_utc_timestamp
     
     request_id = f"LEARN-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    now_iso = get_utc_timestamp()
+    
+    pet_name = request_data.get("pet_name") or "Pet"
+    user_name = request_data.get("user_name") or "Customer"
+    learn_type = request_data.get("learn_type", "basic_obedience")
+    learn_type_title = learn_type.replace('_', ' ').title()
     
     training_request = {
         "id": request_id,
         "request_id": request_id,
-        "learn_type": request_data.get("learn_type", "basic_obedience"),
+        "notification_id": notification_id,
+        "ticket_id": ticket_id,
+        "inbox_id": inbox_id,
+        "learn_type": learn_type,
         "status": "pending",
         "priority": request_data.get("priority", "normal"),
         
         # Pet Details
         "pet_id": request_data.get("pet_id"),
-        "pet_name": request_data.get("pet_name"),
+        "pet_name": pet_name,
         "pet_breed": request_data.get("pet_breed"),
         "pet_age": request_data.get("pet_age"),
         "pet_temperament": request_data.get("pet_temperament"),
         
         # User Details
         "user_id": request_data.get("user_id"),
-        "user_name": request_data.get("user_name"),
+        "user_name": user_name,
         "user_email": request_data.get("user_email"),
         "user_phone": request_data.get("user_phone"),
         
@@ -57,42 +73,123 @@ async def create_training_request(request_data: dict):
         "notes": request_data.get("notes", ""),
         
         # Tracking
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": now_iso,
+        "updated_at": now_iso,
         "assigned_to": None,
-        "trainer_id": None
+        "trainer_id": None,
+        "unified_flow_processed": True
     }
     
     await db.learn_requests.insert_one({k: v for k, v in training_request.items() if k != "_id"})
     
-    # Create Service Desk Ticket
+    # ==================== STEP 1: NOTIFICATION (MANDATORY) ====================
+    await db.admin_notifications.insert_one({
+        "id": notification_id,
+        "type": f"learn_{learn_type}",
+        "pillar": "learn",
+        "title": f"New Training Request: {learn_type_title} - {pet_name}",
+        "message": f"{user_name} needs {learn_type_title} for {pet_name}. Goals: {', '.join(training_request['training_goals'][:2]) if training_request['training_goals'] else 'Not specified'}",
+        "read": False,
+        "status": "unread",
+        "urgency": "medium",
+        "ticket_id": ticket_id,
+        "inbox_id": inbox_id,
+        "customer": {
+            "name": user_name,
+            "email": training_request["user_email"],
+            "phone": training_request["user_phone"]
+        },
+        "pet": {
+            "name": pet_name,
+            "breed": training_request["pet_breed"]
+        },
+        "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+        "created_at": now_iso,
+        "read_at": None
+    })
+    logger.info(f"[UNIFIED FLOW] Learn notification created: {notification_id}")
+    
+    # ==================== STEP 2: SERVICE DESK TICKET (MANDATORY) ====================
     ticket = {
-        "id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
-        "ticket_id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
+        "id": ticket_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
         "source": "learn_pillar",
         "source_type": "learn",
         "source_id": request_id,
         "category": "training",
-        "subcategory": training_request["learn_type"],
+        "subcategory": learn_type,
         "pillar": "learn",
-        "subject": f"Training Request: {training_request['learn_type'].replace('_', ' ').title()} for {training_request['pet_name']}",
-        "original_request": f"New training request from {training_request['user_name']} for {training_request['pet_name']}.\nTraining Type: {training_request['learn_type'].replace('_', ' ').title()}\nGoals: {', '.join(training_request['training_goals'])}",
-        "status": "open",
-        "priority": training_request["priority"],
-        "priority_bucket": "medium",
-        "member_email": training_request["user_email"],
-        "member_name": training_request["user_name"],
-        "pet_name": training_request["pet_name"],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "subject": f"Training Request: {learn_type_title} for {pet_name}",
+        "description": f"New training request from {user_name} for {pet_name}.\nTraining Type: {learn_type_title}\nGoals: {', '.join(training_request['training_goals'])}",
+        "original_request": f"New training request from {user_name} for {pet_name}.\nTraining Type: {learn_type_title}\nGoals: {', '.join(training_request['training_goals'])}",
+        "status": "new",
+        "priority": 3,
+        "urgency": "medium",
+        "member": {
+            "name": user_name,
+            "email": training_request["user_email"],
+            "phone": training_request["user_phone"]
+        },
+        "pet": {
+            "name": pet_name,
+            "id": training_request["pet_id"],
+            "breed": training_request["pet_breed"]
+        },
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "tags": ["learn", learn_type, "unified-flow"],
+        "unified_flow_processed": True
     }
     
     await db.service_desk_tickets.insert_one({k: v for k, v in ticket.items() if k != "_id"})
+    await db.tickets.insert_one({k: v for k, v in ticket.items() if k != "_id"})
+    logger.info(f"[UNIFIED FLOW] Learn ticket created: {ticket_id}")
+    
+    # ==================== STEP 3: UNIFIED INBOX (MANDATORY) ====================
+    inbox_item = {
+        "id": inbox_id,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "channel": "web",
+        "request_type": "learn",
+        "pillar": "learn",
+        "category": learn_type,
+        "status": "new",
+        "urgency": "medium",
+        "customer_name": user_name,
+        "customer_email": training_request["user_email"],
+        "customer_phone": training_request["user_phone"],
+        "member": {
+            "name": user_name,
+            "email": training_request["user_email"],
+            "phone": training_request["user_phone"]
+        },
+        "pet": {
+            "name": pet_name,
+            "breed": training_request["pet_breed"]
+        },
+        "preview": f"{pet_name} - {', '.join(training_request['training_goals'][:2]) if training_request['training_goals'] else learn_type_title}",
+        "message": f"Training Request: {learn_type_title} for {pet_name}",
+        "tags": ["learn", learn_type],
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "unified_flow_processed": True
+    }
+    
+    await db.channel_intakes.insert_one({k: v for k, v in inbox_item.items() if k != "_id"})
+    logger.info(f"[UNIFIED FLOW] Learn inbox created: {inbox_id}")
+    
+    logger.info(f"[UNIFIED FLOW] COMPLETE: Learn request {request_id} | Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id})")
     
     return {
         "success": True,
         "request_id": request_id,
-        "ticket_id": ticket["ticket_id"],
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
         "message": "Training request submitted! Our concierge will match you with the perfect trainer."
     }
 
