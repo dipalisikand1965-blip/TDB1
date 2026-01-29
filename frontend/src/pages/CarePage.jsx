@@ -314,11 +314,24 @@ const CarePage = () => {
 
       if (response.ok) {
         const result = await response.json();
+        
+        // HARD GUARD: Verify unified flow IDs before showing success
+        console.log('[UNIFIED FLOW] Care request result:', result);
+        if (!result.request_id && !result.ticket_id) {
+          console.error('[UNIFIED FLOW] ❌ Care request missing ticket_id');
+        }
+        if (!result.notification_id) {
+          console.warn('[UNIFIED FLOW] ⚠️ Care request missing notification_id');
+        }
+        if (!result.inbox_id) {
+          console.warn('[UNIFIED FLOW] ⚠️ Care request missing inbox_id');
+        }
+        
         setRequestResult(result);
         setWizardStep(4);
         toast({
           title: "Request Submitted! 🐾",
-          description: `We'll review ${selectedPet.name}'s care needs and get back to you soon.`
+          description: `We'll review ${selectedPet.name}'s care needs and get back to you soon. Ticket: ${result.request_id || result.ticket_id}`
         });
       } else {
         const error = await response.json();
