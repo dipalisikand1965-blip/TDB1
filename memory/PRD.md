@@ -117,11 +117,16 @@
 - ✅ Voice Mira Indian English priority
 - ✅ Push Notification Banner (dashboard)
 - ✅ Checkout delivery-only (Store Pickup removed)
+- ✅ FitPage Add to Cart button (bundles)
+- ✅ DinePage date restriction (no past dates)
+- ✅ MiraAI mobile positioning (top-[60px])
+- ✅ Footer explainer video link
+- ✅ Dashboard event listener for explainer
 
 **Testing Results:**
 - Backend: 100% (12/12 tests passed)
 - Frontend: 100% (All features verified)
-- Test report: `/app/test_reports/iteration_115.json`
+- Test reports: `/app/test_reports/iteration_115.json`, `/app/test_reports/iteration_116.json`
 
 ---
 
