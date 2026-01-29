@@ -684,3 +684,387 @@ async def get_intake_stats():
         "by_channel": {s["_id"]: s["count"] for s in channel_stats if s["_id"]},
         "by_pillar": {s["_id"]: s["count"] for s in pillar_stats if s["_id"]}
     }
+
+
+# ==================== WHATSAPP WEBHOOK ====================
+
+class WhatsAppMessage(BaseModel):
+    """WhatsApp incoming message"""
+    from_number: str = Field(..., alias="from")
+    message_body: str = Field(..., alias="body")
+    timestamp: Optional[str] = None
+    message_id: Optional[str] = None
+    message_type: str = "text"  # text, image, voice, location
+    media_url: Optional[str] = None
+    profile_name: Optional[str] = None
+    
+    class Config:
+        populate_by_name = True
+
+class WhatsAppWebhookPayload(BaseModel):
+    """WhatsApp webhook payload structure"""
+    entry: Optional[List[Dict]] = None  # For Meta/Facebook API format
+    messages: Optional[List[WhatsAppMessage]] = None  # Direct format
+    raw: Optional[Dict] = None
+
+
+@channel_router.post("/whatsapp/webhook")
+async def whatsapp_webhook(
+    payload: Dict,
+    background_tasks: BackgroundTasks
+):
+    """
+    WhatsApp Webhook Handler
+    
+    Receives incoming WhatsApp messages and syncs to:
+    1. Channel Intakes (unified inbox)
+    2. Mira conversation thread (for AI responses)
+    3. Service Desk ticket (for human concierge action)
+    
+    Supports both:
+    - Direct webhook format (from simple providers)
+    - Meta Business Platform format (from Facebook/WhatsApp API)
+    """
+    logger.info(f"WhatsApp webhook received: {json.dumps(payload)[:500]}")
+    
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    import secrets
+    
+    # Parse incoming messages based on format
+    messages = []
+    
+    # Handle Meta/Facebook API format
+    if "entry" in payload:
+        for entry in payload.get("entry", []):
+            for change in entry.get("changes", []):
+                if change.get("field") == "messages":
+                    value = change.get("value", {})
+                    contacts = {c.get("wa_id"): c for c in value.get("contacts", [])}
+                    
+                    for msg in value.get("messages", []):
+                        contact = contacts.get(msg.get("from"), {})
+                        messages.append({
+                            "from": msg.get("from"),
+                            "body": msg.get("text", {}).get("body", "") if msg.get("type") == "text" else f"[{msg.get('type')} message]",
+                            "timestamp": msg.get("timestamp"),
+                            "message_id": msg.get("id"),
+                            "message_type": msg.get("type", "text"),
+                            "media_url": msg.get(msg.get("type"), {}).get("link") if msg.get("type") in ["image", "audio", "video", "document"] else None,
+                            "profile_name": contact.get("profile", {}).get("name")
+                        })
+    
+    # Handle direct format
+    elif "messages" in payload:
+        for msg in payload.get("messages", []):
+            messages.append({
+                "from": msg.get("from"),
+                "body": msg.get("body", ""),
+                "timestamp": msg.get("timestamp"),
+                "message_id": msg.get("message_id"),
+                "message_type": msg.get("message_type", "text"),
+                "media_url": msg.get("media_url"),
+                "profile_name": msg.get("profile_name")
+            })
+    
+    # Handle single message format
+    elif "from" in payload or "phone" in payload:
+        messages.append({
+            "from": payload.get("from") or payload.get("phone"),
+            "body": payload.get("body") or payload.get("message", ""),
+            "timestamp": payload.get("timestamp"),
+            "message_id": payload.get("message_id") or payload.get("id"),
+            "message_type": payload.get("type", "text"),
+            "profile_name": payload.get("name") or payload.get("profile_name")
+        })
+    
+    results = []
+    
+    for msg in messages:
+        phone = msg.get("from", "").replace("+", "").strip()
+        message_text = msg.get("body", "")
+        profile_name = msg.get("profile_name", "")
+        
+        if not phone or not message_text:
+            continue
+        
+        # Look up member by phone
+        member = await db.users.find_one({
+            "$or": [
+                {"phone": phone},
+                {"phone": f"+{phone}"},
+                {"phone": {"$regex": phone[-10:]}}
+            ]
+        })
+        
+        # Get or create conversation thread
+        thread_id = f"WA-{phone[-10:]}"
+        existing_thread = await db.whatsapp_threads.find_one({"thread_id": thread_id})
+        
+        if existing_thread:
+            # Append to existing thread
+            await db.whatsapp_threads.update_one(
+                {"thread_id": thread_id},
+                {
+                    "$push": {
+                        "messages": {
+                            "message_id": msg.get("message_id") or secrets.token_hex(4),
+                            "from": "customer",
+                            "text": message_text,
+                            "timestamp": msg.get("timestamp") or datetime.now(timezone.utc).isoformat(),
+                            "type": msg.get("message_type", "text")
+                        }
+                    },
+                    "$set": {
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "last_message": message_text[:100],
+                        "unread": True
+                    }
+                }
+            )
+        else:
+            # Create new thread
+            await db.whatsapp_threads.insert_one({
+                "thread_id": thread_id,
+                "phone": phone,
+                "profile_name": profile_name,
+                "member_email": member.get("email") if member else None,
+                "member_name": member.get("name") if member else profile_name,
+                "messages": [{
+                    "message_id": msg.get("message_id") or secrets.token_hex(4),
+                    "from": "customer",
+                    "text": message_text,
+                    "timestamp": msg.get("timestamp") or datetime.now(timezone.utc).isoformat(),
+                    "type": msg.get("message_type", "text")
+                }],
+                "last_message": message_text[:100],
+                "unread": True,
+                "status": "open",
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            })
+        
+        # Create/update ticket linked to this thread
+        ticket_id = f"WA-{secrets.token_hex(4).upper()}"
+        
+        # Check if there's an open ticket for this phone
+        existing_ticket = await db.service_desk_tickets.find_one({
+            "$or": [
+                {"whatsapp_thread_id": thread_id},
+                {"member.phone": phone},
+                {"member.phone": f"+{phone}"}
+            ],
+            "status": {"$nin": ["completed", "closed", "resolved"]}
+        })
+        
+        if existing_ticket:
+            # Update existing ticket with new message
+            await db.service_desk_tickets.update_one(
+                {"ticket_id": existing_ticket["ticket_id"]},
+                {
+                    "$push": {
+                        "conversation_history": {
+                            "from": "customer",
+                            "channel": "whatsapp",
+                            "message": message_text,
+                            "timestamp": datetime.now(timezone.utc).isoformat()
+                        }
+                    },
+                    "$set": {
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "last_activity": "whatsapp_message"
+                    }
+                }
+            )
+            ticket_id = existing_ticket["ticket_id"]
+            logger.info(f"Updated existing ticket {ticket_id} with WhatsApp message")
+        else:
+            # Create new service desk ticket
+            ticket_doc = {
+                "ticket_id": ticket_id,
+                "title": f"[WhatsApp] Message from {profile_name or phone}",
+                "description": message_text,
+                "original_request": message_text,
+                "member": {
+                    "name": member.get("name") if member else profile_name,
+                    "email": member.get("email") if member else None,
+                    "phone": phone
+                },
+                "source": "whatsapp",
+                "channel": "whatsapp",
+                "whatsapp_thread_id": thread_id,
+                "pillar": "general",  # Will be auto-detected or assigned
+                "status": "pending",
+                "priority": "medium",
+                "conversation_history": [{
+                    "from": "customer",
+                    "channel": "whatsapp",
+                    "message": message_text,
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }],
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            # Auto-detect pillar
+            message_lower = message_text.lower()
+            if any(word in message_lower for word in ["cake", "treat", "bakery", "birthday"]):
+                ticket_doc["pillar"] = "celebrate"
+            elif any(word in message_lower for word in ["restaurant", "dine", "reservation", "table"]):
+                ticket_doc["pillar"] = "dine"
+            elif any(word in message_lower for word in ["stay", "hotel", "resort", "booking"]):
+                ticket_doc["pillar"] = "stay"
+            elif any(word in message_lower for word in ["travel", "flight", "transport"]):
+                ticket_doc["pillar"] = "travel"
+            elif any(word in message_lower for word in ["groom", "vet", "training", "spa"]):
+                ticket_doc["pillar"] = "care"
+            elif any(word in message_lower for word in ["emergency", "urgent", "sick", "hurt"]):
+                ticket_doc["pillar"] = "emergency"
+                ticket_doc["priority"] = "high"
+            
+            await db.service_desk_tickets.insert_one(ticket_doc)
+            logger.info(f"Created new ticket {ticket_id} from WhatsApp message")
+        
+        # Also add to channel_intakes for unified inbox
+        intake_id = f"TDC-WAT-{secrets.token_hex(4).upper()}"
+        await db.channel_intakes.insert_one({
+            "request_id": intake_id,
+            "channel": "whatsapp",
+            "request_type": "inquiry",
+            "customer": {
+                "name": member.get("name") if member else profile_name,
+                "email": member.get("email") if member else None,
+                "phone": phone
+            },
+            "message": message_text,
+            "ticket_id": ticket_id,
+            "whatsapp_thread_id": thread_id,
+            "pillar": ticket_doc.get("pillar", "general") if not existing_ticket else existing_ticket.get("pillar", "general"),
+            "status": "pending",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        results.append({
+            "phone": phone,
+            "thread_id": thread_id,
+            "ticket_id": ticket_id,
+            "is_new_thread": not existing_thread,
+            "is_new_ticket": not existing_ticket
+        })
+    
+    return {
+        "success": True,
+        "messages_processed": len(results),
+        "results": results
+    }
+
+
+@channel_router.get("/whatsapp/threads")
+async def get_whatsapp_threads(
+    status: Optional[str] = None,
+    unread_only: bool = False,
+    limit: int = 50
+):
+    """Get WhatsApp conversation threads (admin)"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    query = {}
+    if status:
+        query["status"] = status
+    if unread_only:
+        query["unread"] = True
+    
+    threads = await db.whatsapp_threads.find(query, {"_id": 0}).sort("updated_at", -1).limit(limit).to_list(limit)
+    
+    return {"threads": threads, "count": len(threads)}
+
+
+@channel_router.get("/whatsapp/threads/{thread_id}")
+async def get_whatsapp_thread(thread_id: str):
+    """Get a specific WhatsApp conversation thread"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    thread = await db.whatsapp_threads.find_one({"thread_id": thread_id}, {"_id": 0})
+    
+    if not thread:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    
+    # Mark as read
+    await db.whatsapp_threads.update_one(
+        {"thread_id": thread_id},
+        {"$set": {"unread": False}}
+    )
+    
+    # Get linked ticket
+    ticket = await db.service_desk_tickets.find_one(
+        {"whatsapp_thread_id": thread_id},
+        {"_id": 0}
+    )
+    
+    return {
+        "thread": thread,
+        "ticket": ticket
+    }
+
+
+@channel_router.post("/whatsapp/threads/{thread_id}/reply")
+async def reply_to_whatsapp_thread(thread_id: str, message: str, send_to_customer: bool = True):
+    """Reply to a WhatsApp thread (admin)"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    import secrets
+    
+    thread = await db.whatsapp_threads.find_one({"thread_id": thread_id})
+    
+    if not thread:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    
+    # Add reply to thread
+    reply_entry = {
+        "message_id": secrets.token_hex(4),
+        "from": "concierge",
+        "text": message,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "type": "text"
+    }
+    
+    await db.whatsapp_threads.update_one(
+        {"thread_id": thread_id},
+        {
+            "$push": {"messages": reply_entry},
+            "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+        }
+    )
+    
+    # Also add to linked ticket's conversation history
+    await db.service_desk_tickets.update_one(
+        {"whatsapp_thread_id": thread_id},
+        {
+            "$push": {
+                "conversation_history": {
+                    "from": "concierge",
+                    "channel": "whatsapp",
+                    "message": message,
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
+            },
+            "$set": {
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "last_activity": "concierge_reply"
+            }
+        }
+    )
+    
+    # TODO: Integrate with actual WhatsApp Business API to send message
+    # For now, we just record the reply
+    
+    return {
+        "success": True,
+        "thread_id": thread_id,
+        "message": "Reply recorded",
+        "note": "WhatsApp Business API integration required to send to customer"
+    }
