@@ -2,6 +2,8 @@
 Travel Pillar Routes
 Handles all travel-related requests: cab, train, flight, relocation
 Every request goes through concierge assessment - never instant confirm
+
+UNIFIED FLOW ENFORCED: All requests create Notification → Ticket → Inbox
 """
 
 from fastapi import APIRouter, HTTPException, Depends
@@ -11,6 +13,9 @@ from datetime import datetime, timezone
 from bson import ObjectId
 import uuid
 import os
+
+# Import unified flow enforcer
+from unified_flow_enforcer import enforce_unified_flow, get_iso_timestamp
 
 router = APIRouter(prefix="/api/travel", tags=["travel"])
 
