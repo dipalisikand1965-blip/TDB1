@@ -1200,6 +1200,51 @@ const Pulse = ({
                 <p className={`text-sm leading-relaxed ${msg.role === 'user' ? 'text-white' : 'text-gray-700'}`}>
                   {msg.text}
                 </p>
+                
+                {/* Product Cards - Show inline when products are suggested */}
+                {msg.products && msg.products.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {msg.products.map((product, pIdx) => (
+                      <div 
+                        key={pIdx} 
+                        className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-2.5 border border-cyan-100 flex gap-2.5 cursor-pointer hover:shadow-md transition-shadow"
+                        onClick={() => onNavigate && onNavigate(`/product/${product.id || product._id}`)}
+                      >
+                        <img 
+                          src={product.image || product.image_url || 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=100'} 
+                          alt={product.name || product.title}
+                          className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-gray-900 text-xs leading-tight line-clamp-2">
+                            {product.name || product.title}
+                          </h4>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="font-bold text-cyan-600 text-sm">
+                              ₹{typeof product.price === 'number' ? product.price.toLocaleString('en-IN') : product.price || '---'}
+                            </span>
+                            {product.tags?.includes('bestseller') && (
+                              <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full">⭐ Bestseller</span>
+                            )}
+                          </div>
+                          <button 
+                            className="mt-1.5 text-[10px] font-medium text-white bg-cyan-500 hover:bg-cyan-600 px-2.5 py-1 rounded-full transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Add to cart logic here
+                              window.dispatchEvent(new CustomEvent('addToCart', { detail: product }));
+                            }}
+                          >
+                            Add to Cart
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    <p className="text-[10px] text-gray-500 text-center mt-2">
+                      Say "show me more" or tap a product to view details
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           ))}
