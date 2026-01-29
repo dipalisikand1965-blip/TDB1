@@ -1561,7 +1561,7 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
             </div>
           )}
           <p className="text-sm text-gray-500 mb-6">
-            The restaurant will confirm your booking shortly via phone or WhatsApp.
+            The restaurant will confirm your booking shortly via WhatsApp. 📱
           </p>
           <Button className="w-full bg-purple-600 hover:bg-purple-700" onClick={onClose}>
             Done
