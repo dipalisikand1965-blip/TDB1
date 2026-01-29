@@ -372,6 +372,7 @@ function MainLayout() {
       <Footer />
       <CartSidebar />
       <MiraAI />
+      <MiraFloatingButton />
       <ConditionalFloatingButton />
       <Toaster />
     </div>
