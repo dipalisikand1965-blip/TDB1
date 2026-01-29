@@ -876,6 +876,12 @@ const MemberDashboard = () => {
           onOpenExplainer={() => setShowSoulExplainer(true)}
         />
         
+        {/* 🔔 PUSH NOTIFICATION BANNER - Encourage enabling notifications */}
+        <PushNotificationBanner 
+          userId={user?.id} 
+          petName={pets?.[0]?.name || 'your pup'} 
+        />
+        
         {/* ⚡ QUICK SCORE BOOST - Show when score is low */}
         {Array.isArray(pets) && pets.length > 0 && pets[0]?.overall_score < 75 && (
           <QuickScoreBoost 
