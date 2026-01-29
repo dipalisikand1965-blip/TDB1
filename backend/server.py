@@ -9475,20 +9475,35 @@ async def get_admin_notifications(
     if category:
         query["category"] = category
     
-    notifications = await db.admin_notifications.find(
-        query, {"_id": 0}
-    ).sort("created_at", -1).limit(limit).to_list(limit)
+    # Use aggregation to handle mixed date formats
+    pipeline = [
+        {"$match": query},
+        {"$addFields": {
+            "sort_date": {
+                "$dateFromString": {
+                    "dateString": "$created_at",
+                    "onError": {"$toDate": "$created_at"},
+                    "onNull": {"$toDate": "1970-01-01"}
+                }
+            }
+        }},
+        {"$sort": {"sort_date": -1}},
+        {"$limit": limit},
+        {"$project": {"_id": 0, "sort_date": 0}}
+    ]
+    
+    notifications = await db.admin_notifications.aggregate(pipeline).to_list(limit)
     
     # Get unread count
     unread_count = await db.admin_notifications.count_documents({"read": False})
     
     # Get counts by category
-    pipeline = [
+    category_pipeline = [
         {"$match": {"read": False}},
         {"$group": {"_id": "$category", "count": {"$sum": 1}}}
     ]
     category_counts = {}
-    async for doc in db.admin_notifications.aggregate(pipeline):
+    async for doc in db.admin_notifications.aggregate(category_pipeline):
         category_counts[doc["_id"]] = doc["count"]
     
     return {
