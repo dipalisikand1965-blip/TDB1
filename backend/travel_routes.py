@@ -271,7 +271,7 @@ async def create_travel_request(request: TravelRequestCreate):
             "updated_at": get_consistent_timestamp(),
             "timeline": [{
                 "action": "created",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": get_consistent_timestamp(),
                 "details": "Travel request submitted via Travel Pillar"
             }],
             "unified_flow_processed": True
