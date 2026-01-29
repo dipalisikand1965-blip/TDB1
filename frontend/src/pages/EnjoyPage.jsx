@@ -791,8 +791,8 @@ const EnjoyPage = () => {
               <h2 className="text-2xl font-bold text-gray-900">Featured Experiences</h2>
             </div>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredExperiences.slice(0, 3).map((exp) => {
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
+              {featuredExperiences.slice(0, 4).map((exp) => {
                 const typeConfig = EXPERIENCE_TYPES[exp.experience_type] || EXPERIENCE_TYPES.event;
                 const Icon = typeConfig.icon;
                 
