@@ -302,7 +302,7 @@ async def create_travel_request(request: TravelRequestCreate):
                 "breed": request.pet_breed
             },
             "link": f"/admin?tab=servicedesk&ticket={request_id}",
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_consistent_timestamp(),
             "read_at": None
         })
         logger.info(f"[UNIFIED FLOW] Travel notification created: {notification_id}")
