@@ -44,7 +44,7 @@ const STORE_LOCATIONS = [
 ];
 
 const UnifiedCheckout = () => {
-  const { cartItems, getCartTotal, clearCart } = useCart();
+  const { cartItems, getCartTotal, clearCart, addToCart } = useCart();
   const { user, token } = useAuth();
   const navigate = useNavigate();
 
