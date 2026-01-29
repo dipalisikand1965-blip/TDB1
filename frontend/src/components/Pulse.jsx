@@ -621,30 +621,31 @@ const findCommand = (text) => {
 
 const getFallbackResponse = (petName) => {
   const responses = [
-    `I'm here to help with anything ${petName} needs! Try asking about treats, grooming, or vaccinations.`,
-    `Not sure I got that. How about ordering some treats for ${petName}?`,
-    `I can help with treats, grooming, vet visits, and more! What would you like?`
+    `Got it! Let me pass this to Mira for ${petName}. One sec...`,
+    `Capturing that. Mira will help with ${petName}'s request.`,
+    `Understood! Routing to Mira now...`
   ];
   return responses[Math.floor(Math.random() * responses.length)];
 };
 
-// Main Voice Assistant Component
-// CORE RULE: Text is default. Voice is earned. Silence is acceptable.
-const MiraVoiceAssistant = ({ 
+// Main Pulse Component - Voice Intent Accelerator
+// PURPOSE: Fast capture, intent structuring, handoff to Mira
+const Pulse = ({ 
   isOpen, 
   onClose, 
   petName = 'your pup', 
   petId,
   petData = {},
   onNavigate,
-  voicePreference = 'text', // 'text' or 'voice'
-  currentPillar = null // Section-aware behaviour
+  voicePreference = 'text',
+  currentPillar = null,
+  startWithVoice = false
 }) => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isMuted, setIsMuted] = useState(voicePreference === 'text'); // Text-first by default
+  const [isMuted, setIsMuted] = useState(voicePreference === 'text');
   const [isProcessing, setIsProcessing] = useState(false);
   const [useElevenLabs, setUseElevenLabs] = useState(true);
   const [hasShownOpening, setHasShownOpening] = useState(false);
@@ -658,7 +659,7 @@ const MiraVoiceAssistant = ({
   
   const API_URL = process.env.REACT_APP_BACKEND_URL;
   
-  // Fetch relevant memories when Mira opens
+  // Fetch relevant memories when Pulse opens
   useEffect(() => {
     const fetchMemories = async () => {
       if (!isOpen || !petId) return;
