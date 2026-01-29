@@ -2,35 +2,67 @@
  * CelebratePage.jsx
  * 
  * The Celebrate pillar - Birthday celebrations, parties, and special moments for pets.
- * Features Elevated Concierge® Experiences for curated celebrations.
+ * Mobile-first world-class design following pillar layout rules.
+ * 
+ * Layout Rules:
+ * - Concierge: Single-column, full-width mobile, centered web, no tiles
+ * - Products: 2 tiles/row mobile, 3-4 tiles/row web, square images
+ * - Categories: Horizontal scroll on mobile
  */
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
-  PartyPopper, Cake, Gift, Crown, Sparkles, Camera, Users, 
+  PartyPopper, Cake, Gift, Crown, Sparkles, Camera, 
   Calendar, MapPin, ChevronRight, Star, Heart, Music,
-  Palette, ShoppingBag
+  Palette, ShoppingBag, MessageCircle, Phone, ArrowRight,
+  Check, Loader2
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { API_URL } from '../utils/api';
-import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
 
 // Product categories for Celebrate pillar
 const celebrateCategories = [
-  { id: 'cakes', name: 'Birthday Cakes', icon: Cake, path: '/celebrate/cakes', color: 'bg-pink-100 text-pink-600' },
-  { id: 'breed-cakes', name: 'Breed Cakes', icon: Heart, path: '/celebrate/breed-cakes', color: 'bg-purple-100 text-purple-600' },
-  { id: 'pupcakes', name: 'Pupcakes & Dognuts', icon: Sparkles, path: '/celebrate/pupcakes', color: 'bg-amber-100 text-amber-600' },
-  { id: 'treats', name: 'Treats', icon: Gift, path: '/celebrate/treats', color: 'bg-green-100 text-green-600' },
-  { id: 'hampers', name: 'Gift Hampers', icon: ShoppingBag, path: '/celebrate/hampers', color: 'bg-blue-100 text-blue-600' },
-  { id: 'accessories', name: 'Party Accessories', icon: PartyPopper, path: '/celebrate/accessories', color: 'bg-rose-100 text-rose-600' },
+  { id: 'cakes', name: 'Birthday Cakes', icon: Cake, emoji: '🎂', color: 'from-pink-500 to-rose-500' },
+  { id: 'breed-cakes', name: 'Breed Cakes', icon: Heart, emoji: '💜', color: 'from-purple-500 to-violet-500' },
+  { id: 'pupcakes', name: 'Pupcakes', icon: Sparkles, emoji: '✨', color: 'from-amber-500 to-orange-500' },
+  { id: 'treats', name: 'Treats', icon: Gift, emoji: '🦴', color: 'from-green-500 to-emerald-500' },
+  { id: 'hampers', name: 'Gift Hampers', icon: ShoppingBag, emoji: '🎁', color: 'from-blue-500 to-cyan-500' },
+  { id: 'accessories', name: 'Party Items', icon: PartyPopper, emoji: '🎈', color: 'from-rose-500 to-pink-500' },
+];
+
+// Concierge experiences - service-led
+const conciergeExperiences = [
+  {
+    id: 'birthday-bash',
+    title: 'Ultimate Birthday Bash®',
+    tagline: 'The complete celebration experience',
+    description: 'Custom cake, decorations, venue, photography & entertainment - all handled for you.',
+    icon: '🎉',
+    popular: true
+  },
+  {
+    id: 'gotcha-day',
+    title: 'Gotcha Day Special®',
+    tagline: 'Celebrate your adoption anniversary',
+    description: 'Memory book, professional photos, custom cake & treats package.',
+    icon: '💜'
+  },
+  {
+    id: 'pawty-planning',
+    title: 'Pawty Planning Pro®',
+    tagline: 'Full-service party planning',
+    description: 'Guest list, venue, catering for pets & humans, entertainment.',
+    icon: '🎈'
+  }
 ];
 
 const CelebratePage = () => {
+  const navigate = useNavigate();
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,7 +72,7 @@ const CelebratePage = () => {
 
   const fetchFeaturedProducts = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/products?category=cakes&limit=6`);
+      const response = await fetch(`${API_URL}/api/products?pillar=celebrate&limit=8`);
       if (response.ok) {
         const data = await response.json();
         setFeaturedProducts(data.products || data || []);
@@ -52,272 +84,374 @@ const CelebratePage = () => {
     }
   };
 
+  const handleConciergeChat = () => {
+    // Open Mira/Pulse with celebrate context
+    window.dispatchEvent(new CustomEvent('openPulse', { detail: { context: 'celebrate' } }));
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
-      {/* SEO Meta Tags */}
+    <div className="min-h-screen bg-white">
       <SEOHead 
         title="Celebrate - Pet Birthday Cakes & Parties | The Doggy Company"
         description="Make your pet's special day unforgettable with custom cakes, treats, and party planning services."
         path="/celebrate"
       />
       
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white py-20 px-4 overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
+      {/* ═══════════════════════════════════════════════════════════════
+          HERO SECTION - Immersive, emotional, mobile-first
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="relative min-h-[70vh] sm:min-h-[60vh] flex items-end overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0">
           <img 
-            src="https://images.unsplash.com/photo-1530041539828-114de669390e?w=1200"
-            alt="Pet Celebration"
+            src="https://images.unsplash.com/photo-1530041539828-114de669390e?w=1200&q=80"
+            alt="Happy dog with birthday cake"
             className="w-full h-full object-cover"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         </div>
         
-        {/* Floating decorations */}
-        <div className="absolute top-10 left-10 text-4xl animate-bounce opacity-50">🎈</div>
-        <div className="absolute top-20 right-20 text-3xl animate-pulse opacity-50">🎉</div>
-        <div className="absolute bottom-10 left-1/4 text-2xl animate-bounce opacity-50" style={{animationDelay: '0.5s'}}>🎂</div>
+        {/* Floating celebration elements - subtle */}
+        <div className="absolute top-20 right-8 text-4xl opacity-60 animate-float">🎈</div>
+        <div className="absolute top-32 left-6 text-3xl opacity-50 animate-float" style={{animationDelay: '1s'}}>🎉</div>
         
-        <div className="relative max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-6">
-            <PartyPopper className="w-5 h-5" />
-            <span className="font-medium">Every Paw Deserves a Party</span>
-          </div>
-          
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            Celebrate
-          </h1>
-          <p className="text-xl md:text-2xl text-pink-100 max-w-2xl mx-auto mb-8">
-            Custom cakes, treats & unforgettable celebrations for your furry family members
-          </p>
-          
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/celebrate/birthday-cakes">
-              <Button size="lg" className="bg-white text-pink-600 hover:bg-pink-50 gap-2">
-                <Cake className="w-5 h-5" />
+        {/* Hero Content */}
+        <div className="relative w-full px-4 pb-8 sm:pb-12 pt-20">
+          <div className="max-w-6xl mx-auto">
+            {/* Pillar Tag */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/15 backdrop-blur-md rounded-full mb-4">
+              <PartyPopper className="w-4 h-4 text-pink-300" />
+              <span className="text-sm font-medium text-white/90">Celebrate Pillar</span>
+            </div>
+            
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-3 leading-tight">
+              Every Paw<br className="sm:hidden" /> Deserves<br className="hidden sm:block" /> a Party
+            </h1>
+            
+            {/* Subheadline - short on mobile */}
+            <p className="text-lg sm:text-xl text-white/80 mb-6 max-w-lg">
+              Custom cakes, treats & unforgettable celebrations
+            </p>
+            
+            {/* CTA Buttons - thumb-friendly */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button 
+                size="lg" 
+                className="bg-white text-pink-600 hover:bg-pink-50 font-semibold h-14 sm:h-12 text-base rounded-xl shadow-lg"
+                onClick={() => navigate('/shop?pillar=celebrate&category=cakes')}
+              >
+                <Cake className="w-5 h-5 mr-2" />
                 Shop Birthday Cakes
               </Button>
-            </Link>
-            <Link to="/celebrate/custom-cake">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/20 gap-2">
-                <Palette className="w-5 h-5" />
-                Design Custom Cake
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white/50 text-white hover:bg-white/20 h-14 sm:h-12 text-base rounded-xl backdrop-blur-sm"
+                onClick={handleConciergeChat}
+              >
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Ask Concierge
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          CATEGORY QUICK ACCESS - Horizontal scroll on mobile
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-6 sm:py-8 border-b border-gray-100">
+        <div className="max-w-6xl mx-auto">
+          {/* Mobile: Horizontal scroll */}
+          <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide sm:grid sm:grid-cols-6 sm:gap-4 sm:overflow-visible">
+            {celebrateCategories.map((cat) => (
+              <Link 
+                key={cat.id} 
+                to={`/shop?pillar=celebrate&category=${cat.id}`}
+                className="flex-shrink-0"
+              >
+                <div className="flex flex-col items-center gap-2 p-3 sm:p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all hover:scale-105 min-w-[80px] sm:min-w-0">
+                  <span className="text-2xl sm:text-3xl">{cat.emoji}</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">{cat.name}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          CONCIERGE SECTION - Single column, calm, NO tiles/grids
+          Purpose: Reassurance, clarity, escalation to human help
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-10 sm:py-16 bg-gradient-to-b from-pink-50/50 to-white">
+        <div className="max-w-2xl mx-auto px-4">
+          {/* Section Header - Centered, calm */}
+          <div className="text-center mb-8">
+            <Badge className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-1.5 mb-4 text-xs font-semibold">
+              <Crown className="w-3 h-3 mr-1.5 inline" /> Elevated Concierge®
+            </Badge>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              We Handle Everything
+            </h2>
+            <p className="text-gray-600 text-base">
+              Tell us your vision. We make it happen.
+            </p>
+          </div>
+
+          {/* Concierge Experiences - Single column list, NOT tiles */}
+          <div className="space-y-4">
+            {conciergeExperiences.map((exp) => (
+              <div 
+                key={exp.id}
+                className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-pink-50 rounded-xl flex items-center justify-center text-2xl sm:text-3xl">
+                    {exp.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-bold text-gray-900 text-base sm:text-lg">{exp.title}</h3>
+                      {exp.popular && (
+                        <Badge className="bg-pink-100 text-pink-600 text-xs px-2 py-0.5">Popular</Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-pink-600 font-medium mb-1">{exp.tagline}</p>
+                    <p className="text-sm text-gray-600 line-clamp-2">{exp.description}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Single CTA - Clear action */}
+          <div className="mt-8 text-center">
+            <Button 
+              size="lg"
+              className="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white h-14 sm:h-12 rounded-xl font-semibold shadow-lg"
+              onClick={handleConciergeChat}
+            >
+              <MessageCircle className="w-5 h-5 mr-2" />
+              Chat with Celebrate Concierge
+            </Button>
+            <p className="text-xs text-gray-500 mt-3">
+              Free consultation • Response within minutes
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          PRODUCT SECTION - 2 tiles mobile, 4 tiles web, square images
+          Card anatomy: Image, Name, Price, Tag, CTA
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-10 sm:py-16">
+        <div className="max-w-6xl mx-auto px-4">
+          {/* Section Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Birthday Cakes & Treats</h2>
+              <p className="text-sm text-gray-500 mt-0.5">Hand-picked for celebrations</p>
+            </div>
+            <Link to="/shop?pillar=celebrate">
+              <Button variant="ghost" size="sm" className="text-pink-600 hover:text-pink-700 hover:bg-pink-50 gap-1">
+                View All <ChevronRight className="w-4 h-4" />
               </Button>
             </Link>
           </div>
-        </div>
-      </div>
 
-      {/* Quick Categories */}
-      <div className="max-w-6xl mx-auto px-4 -mt-8 relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {celebrateCategories.map((cat) => {
-            const Icon = cat.icon;
-            return (
-              <Link key={cat.id} to={cat.path}>
-                <Card className="p-4 text-center hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer bg-white">
-                  <div className={`w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center ${cat.color}`}>
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-medium text-gray-900 text-sm">{cat.name}</h3>
-                </Card>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Elevated Concierge® Experiences */}
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <div className="text-center mb-10">
-          <Badge className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-1 mb-4">
-            <Crown className="w-3 h-3 mr-1 inline" /> Elevated Concierge®
-          </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Celebrations, Perfected
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            More than cakes. Our Celebrate Concierge® orchestrates every detail of your pet&apos;s special day - 
-            from intimate gatherings to grand pawties.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <ConciergeExperienceCard
-            pillar="celebrate"
-            title="Ultimate Birthday Bash®"
-            description="A complete birthday celebration package with custom cake, decorations, venue, photography & entertainment."
-            icon="🎉"
-            gradient="from-pink-500 to-rose-500"
-            badge="Signature"
-            badgeColor="bg-pink-500"
-            highlights={[
-              "Custom themed decorations",
-              "Professional pet photography",
-              "Gourmet cake & treats for all guests",
-              "Activity planning & coordination"
-            ]}
-          />
-          
-          <ConciergeExperienceCard
-            pillar="celebrate"
-            title="Gotcha Day Special®"
-            description="Celebrate the anniversary of when your furry friend joined your family with a meaningful experience."
-            icon="💜"
-            gradient="from-purple-500 to-violet-500"
-            highlights={[
-              "Memory book creation",
-              "Professional photoshoot",
-              "Custom celebration cake",
-              "Special treats package"
-            ]}
-          />
-          
-          <ConciergeExperienceCard
-            pillar="celebrate"
-            title="Pawty Planning Pro®"
-            description="Full-service party planning for pet birthdays, adoption anniversaries, or any celebration."
-            icon="🎈"
-            gradient="from-amber-500 to-orange-500"
-            badge="Popular"
-            badgeColor="bg-amber-500"
-            highlights={[
-              "Guest list management",
-              "Venue sourcing & booking",
-              "Catering for pets & humans",
-              "Entertainment coordination"
-            ]}
-          />
-          
-          <ConciergeExperienceCard
-            pillar="celebrate"
-            title="Puppy Shower®"
-            description="Welcome a new furry family member with a beautifully organized puppy shower celebration."
-            icon="🐾"
-            gradient="from-cyan-500 to-teal-500"
-            highlights={[
-              "Baby shower style setup",
-              "Gift registry coordination",
-              "New parent essentials guide",
-              "Photography included"
-            ]}
-          />
-          
-          <ConciergeExperienceCard
-            pillar="celebrate"
-            title="Pet Wedding Ceremony®"
-            description="A magical ceremony for your pet's special union - complete with outfits, venue & photography."
-            icon="💒"
-            gradient="from-rose-400 to-pink-500"
-            highlights={[
-              "Custom pet outfits",
-              "Venue decoration",
-              "Pet-safe cake & treats",
-              "Ceremony coordination"
-            ]}
-          />
-          
-          <ConciergeExperienceCard
-            pillar="celebrate"
-            title="Milestone Moments®"
-            description="Professional documentation of your pet's special milestones - first birthday, senior celebration, etc."
-            icon="📸"
-            gradient="from-indigo-500 to-purple-500"
-            highlights={[
-              "Professional photography session",
-              "Custom milestone props",
-              "Digital album creation",
-              "Social media-ready photos"
-            ]}
-          />
-        </div>
-      </div>
-
-      {/* How Concierge® Works */}
-      <div className="bg-gradient-to-r from-pink-50 to-purple-50 py-16">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-10">
-            How Celebrate Concierge® Works
-          </h2>
-          
-          <div className="grid md:grid-cols-4 gap-6">
-            {[
-              { step: 1, icon: '💬', title: 'Share Your Vision', desc: 'Tell us about your celebration dreams' },
-              { step: 2, icon: '✨', title: 'Custom Planning', desc: 'We craft a personalized celebration plan' },
-              { step: 3, icon: '🎯', title: 'Perfect Execution', desc: 'Every detail handled with care' },
-              { step: 4, icon: '🎉', title: 'Celebrate!', desc: 'Enjoy a stress-free, magical day' }
-            ].map((item) => (
-              <Card key={item.step} className="p-6 text-center bg-white">
-                <div className="w-12 h-12 mx-auto mb-4 bg-pink-100 rounded-full flex items-center justify-center text-2xl">
-                  {item.icon}
+          {/* Product Grid - HARD RULE: 2 cols mobile, 4 cols web */}
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-square bg-gray-200 rounded-xl mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-3/4 mb-1.5"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                 </div>
-                <div className="text-pink-500 font-bold mb-2">Step {item.step}</div>
-                <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
-                <p className="text-sm text-gray-600">{item.desc}</p>
-              </Card>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+              {featuredProducts.slice(0, 8).map((product) => (
+                <ProductTile key={product._id || product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-gray-50 rounded-2xl">
+              <Cake className="w-12 h-12 text-pink-300 mx-auto mb-3" />
+              <h3 className="font-semibold text-gray-900 mb-1">Coming Soon!</h3>
+              <p className="text-sm text-gray-600">Celebration products loading...</p>
+            </div>
+          )}
+
+          {/* View More CTA for mobile */}
+          {featuredProducts.length > 0 && (
+            <div className="mt-6 text-center sm:hidden">
+              <Link to="/shop?pillar=celebrate">
+                <Button variant="outline" className="w-full h-12 rounded-xl">
+                  View All Celebration Items
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
-      </div>
+      </section>
 
-      {/* Featured Products */}
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Featured Celebration Items</h2>
-            <p className="text-gray-600">Hand-picked treats and cakes for your celebration</p>
-          </div>
-          <Link to="/celebrate/cakes">
-            <Button variant="outline" className="gap-2">
-              View All <ChevronRight className="w-4 h-4" />
-            </Button>
-          </Link>
-        </div>
-
-        {loading ? (
-          <div className="grid md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="p-6 animate-pulse">
-                <div className="h-40 bg-gray-200 rounded-lg mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-              </Card>
-            ))}
-          </div>
-        ) : featuredProducts.length > 0 ? (
-          <div className="grid md:grid-cols-3 gap-6">
-            {featuredProducts.slice(0, 6).map((product) => (
-              <ProductCard key={product._id || product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <Card className="p-12 text-center">
-            <Cake className="w-12 h-12 text-pink-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Coming Soon!</h3>
-            <p className="text-gray-600">Our celebration products will be available shortly.</p>
-          </Card>
-        )}
-      </div>
-
-      {/* Bottom CTA */}
-      <div className="bg-gradient-to-r from-pink-500 to-purple-500 text-white py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Plan the Pawfect Celebration?
+      {/* ═══════════════════════════════════════════════════════════════
+          HOW IT WORKS - Simple steps, single column on mobile
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-10 sm:py-16 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-900 mb-8">
+            How Concierge Works
           </h2>
-          <p className="text-xl text-pink-100 mb-8">
-            Let our Celebrate Concierge® create an unforgettable experience for your furry friend.
+          
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+            {[
+              { step: 1, emoji: '💬', title: 'Share', desc: 'Tell us your vision' },
+              { step: 2, emoji: '✨', title: 'Plan', desc: 'We craft the details' },
+              { step: 3, emoji: '🎯', title: 'Execute', desc: 'Everything handled' },
+              { step: 4, emoji: '🎉', title: 'Celebrate', desc: 'Enjoy the moment' }
+            ].map((item) => (
+              <div key={item.step} className="text-center">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 bg-white rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shadow-sm">
+                  {item.emoji}
+                </div>
+                <h3 className="font-semibold text-gray-900 text-sm sm:text-base">{item.title}</h3>
+                <p className="text-xs sm:text-sm text-gray-500 mt-0.5">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          BOTTOM CTA - Clean, single action
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-12 sm:py-16 bg-gradient-to-r from-pink-500 to-purple-500">
+        <div className="max-w-2xl mx-auto px-4 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+            Ready to Celebrate?
+          </h2>
+          <p className="text-pink-100 mb-6">
+            Let us create something magical for your furry friend.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="bg-white text-pink-600 hover:bg-pink-50 gap-2">
-              <Sparkles className="w-5 h-5" />
-              Ask Concierge®
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button 
+              size="lg" 
+              className="bg-white text-pink-600 hover:bg-pink-50 h-14 sm:h-12 rounded-xl font-semibold"
+              onClick={handleConciergeChat}
+            >
+              <Sparkles className="w-5 h-5 mr-2" />
+              Start Planning
             </Button>
-            <Link to="/celebrate/birthday-cakes">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/20 gap-2">
-                <ShoppingBag className="w-5 h-5" />
+            <Link to="/shop?pillar=celebrate">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white/50 text-white hover:bg-white/20 h-14 sm:h-12 rounded-xl w-full sm:w-auto"
+              >
+                <ShoppingBag className="w-5 h-5 mr-2" />
                 Shop Products
               </Button>
             </Link>
           </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PRODUCT TILE COMPONENT
+   Card anatomy: Square image, Name (max 2 lines), Price, Tag, CTA
+═══════════════════════════════════════════════════════════════════════ */
+const ProductTile = ({ product }) => {
+  const navigate = useNavigate();
+  
+  const productImage = product.image || product.image_url || product.images?.[0] || 
+    'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=400&q=80';
+  
+  const price = product.price || product.variants?.[0]?.price || 0;
+  const comparePrice = product.compare_at_price || product.variants?.[0]?.compare_at_price;
+  const isOnSale = comparePrice && comparePrice > price;
+  
+  // Get key tag (eggless, puppy-safe, etc.)
+  const getKeyTag = () => {
+    if (product.is_eggless || product.tags?.includes('eggless')) return { label: 'Eggless', color: 'bg-green-100 text-green-700' };
+    if (product.tags?.includes('puppy-safe')) return { label: 'Puppy Safe', color: 'bg-blue-100 text-blue-700' };
+    if (product.is_veg || product.tags?.includes('veg')) return { label: 'Veg', color: 'bg-emerald-100 text-emerald-700' };
+    if (product.tags?.includes('bestseller')) return { label: 'Bestseller', color: 'bg-amber-100 text-amber-700' };
+    return null;
+  };
+  
+  const keyTag = getKeyTag();
+
+  return (
+    <div 
+      className="group cursor-pointer"
+      onClick={() => navigate(`/product/${product.id || product._id}`)}
+      data-testid={`product-tile-${product.id || product._id}`}
+    >
+      {/* Square Image Container */}
+      <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-100 mb-2">
+        <img 
+          src={productImage}
+          alt={product.name || product.title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          loading="lazy"
+        />
+        
+        {/* Sale Badge */}
+        {isOnSale && (
+          <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+            Sale
+          </div>
+        )}
+        
+        {/* Quick Add Button - shows on hover (desktop) */}
+        <div className="absolute inset-x-2 bottom-2 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block">
+          <Button 
+            size="sm" 
+            className="w-full bg-white/95 text-gray-900 hover:bg-white text-xs h-8 rounded-lg shadow-lg"
+            onClick={(e) => {
+              e.stopPropagation();
+              // Add to cart logic
+            }}
+          >
+            Quick Add
+          </Button>
+        </div>
+      </div>
+      
+      {/* Product Info */}
+      <div className="px-0.5">
+        {/* Key Tag */}
+        {keyTag && (
+          <span className={`inline-block text-[10px] sm:text-xs font-medium px-1.5 py-0.5 rounded-full mb-1 ${keyTag.color}`}>
+            {keyTag.label}
+          </span>
+        )}
+        
+        {/* Product Name - Max 2 lines */}
+        <h3 className="font-medium text-gray-900 text-sm leading-tight line-clamp-2 mb-1">
+          {product.name || product.title}
+        </h3>
+        
+        {/* Price */}
+        <div className="flex items-center gap-1.5">
+          <span className="font-bold text-gray-900 text-sm">
+            ₹{typeof price === 'number' ? price.toLocaleString('en-IN') : price}
+          </span>
+          {isOnSale && (
+            <span className="text-gray-400 text-xs line-through">
+              ₹{typeof comparePrice === 'number' ? comparePrice.toLocaleString('en-IN') : comparePrice}
+            </span>
+          )}
         </div>
       </div>
     </div>
