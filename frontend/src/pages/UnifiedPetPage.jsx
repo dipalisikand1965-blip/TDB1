@@ -1265,32 +1265,41 @@ const UnifiedPetPage = () => {
                   const colors = colorMap[pillar.color];
                   
                   return (
-                    <div key={pillar.key} className={`rounded-xl border-2 transition-all ${isExpanded ? colors.border + ' shadow-md' : 'border-gray-100 hover:border-gray-200'}`}>
+                    <div 
+                      key={pillar.key} 
+                      className={`rounded-xl border-2 transition-all duration-300 animate-fade-in-up ${isExpanded ? colors.border + ' shadow-md' : 'border-gray-100 hover:border-gray-200 hover:shadow-sm'}`}
+                      style={{ animationDelay: `${['identity_temperament', 'family_pack', 'rhythm_routine', 'home_comforts', 'travel_mobility', 'taste_nutrition', 'training_behavior', 'long_horizon'].indexOf(pillar.key) * 80}ms` }}
+                    >
                       <button
                         onClick={() => setExpandedPillar(isExpanded ? null : pillar.key)}
-                        className={`w-full p-4 flex items-center gap-4 ${isExpanded ? colors.bg : 'bg-white hover:bg-gray-50'} rounded-xl transition-colors`}
+                        className={`w-full p-4 flex items-center gap-4 ${isExpanded ? colors.bg : 'bg-white hover:bg-gray-50'} rounded-xl transition-all duration-200 active:scale-[0.98]`}
                       >
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${colors.bg}`}>
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${colors.bg} transition-transform duration-300 ${isExpanded ? 'scale-110' : ''}`}>
                           {pillar.icon}
                         </div>
                         <div className="flex-1 text-left">
                           <h4 className="font-semibold text-gray-900">{pillar.name}</h4>
                           <div className="flex items-center gap-3 mt-1">
                             <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden max-w-[200px]">
-                              <div className={`h-full ${colors.progress} transition-all`} style={{ width: `${progress}%` }} />
+                              <div 
+                                className={`h-full ${colors.progress} transition-all duration-700 ease-out`} 
+                                style={{ width: `${progress}%` }} 
+                              />
                             </div>
                             <span className="text-sm text-gray-500">{answeredCount}/{totalQuestions}</span>
                           </div>
                         </div>
-                        <Badge className={progress === 100 ? 'bg-green-100 text-green-700' : colors.text + ' ' + colors.bg}>
+                        <Badge className={`transition-all duration-200 ${progress === 100 ? 'bg-green-100 text-green-700 scale-110' : colors.text + ' ' + colors.bg}`}>
                           {progress}%
                         </Badge>
-                        {isExpanded ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+                        <div className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
+                          <ChevronDown className="w-5 h-5 text-gray-400" />
+                        </div>
                       </button>
                       
                       {isExpanded && (
-                        <div className={`p-4 border-t ${colors.border} ${colors.bg} rounded-b-xl space-y-3`}>
-                          {pillar.questions.map((questionId) => {
+                        <div className={`p-4 border-t ${colors.border} ${colors.bg} rounded-b-xl space-y-3 animate-fade-in-up`}>
+                          {pillar.questions.map((questionId, qIndex) => {
                             // For core pet info fields, fall back to pet's root properties
                             const coreFields = {
                               name: pet?.name,
