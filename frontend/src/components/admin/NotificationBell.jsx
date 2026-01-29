@@ -101,10 +101,10 @@ const NotificationBell = ({ credentials, onNavigate }) => {
     }
   }, [filter, credentials]);
 
-  // Poll for new notifications every 30 seconds
+  // Poll for new notifications every 10 seconds (faster updates)
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
+    const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
   }, [fetchNotifications]);
 
@@ -113,7 +113,7 @@ const NotificationBell = ({ credentials, onNavigate }) => {
     if (isOpen) {
       fetchNotifications();
     }
-  }, [isOpen]);
+  }, [isOpen, fetchNotifications]);
 
   const markAsRead = async (notificationId) => {
     try {
