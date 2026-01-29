@@ -632,7 +632,8 @@ const getFallbackResponse = (petName) => {
 
 // Main Pulse Component - Voice Intent Accelerator
 // PURPOSE: Fast capture, intent structuring, handoff to Mira
-const Pulse = ({ 
+const Pulse = ({
+  isOpen,
   onClose, 
   petName = 'your pup', 
   petId,
