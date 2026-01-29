@@ -1068,7 +1068,7 @@ const Pulse = ({
               <div className="bg-white border border-cyan-100 rounded-2xl rounded-bl-md p-3 shadow-sm">
                 <div className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 text-cyan-500 animate-spin" />
-                  <span className="text-sm text-gray-500">Routing to Mira...</span>
+                  <span className="text-sm text-gray-500">Creating ticket & routing to Mira...</span>
                 </div>
               </div>
             </div>
@@ -1077,23 +1077,7 @@ const Pulse = ({
           <div ref={messagesEndRef} />
         </div>
         
-        {/* Quick Commands */}
-        <div className="px-4 py-2 border-t bg-white flex-shrink-0">
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {quickCommands.map((cmd, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleSend(cmd.text)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap ${cmd.color} hover:opacity-80 transition-opacity`}
-              >
-                <cmd.icon className="w-3.5 h-3.5" />
-                {cmd.text}
-              </button>
-            ))}
-          </div>
-        </div>
-        
-        {/* Input Area - Pulse styling */}
+        {/* Input Area - Clean, focused design */}
         <div className="p-4 border-t bg-white flex-shrink-0">
           <div className="flex items-center gap-2">
             {/* Mute Button */}
