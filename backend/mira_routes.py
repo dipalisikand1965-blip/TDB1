@@ -1118,8 +1118,6 @@ async def create_service_desk_ticket(
     logger.info(f"[UNIFIED FLOW] COMPLETE: Mira signal processed | Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id})")
     
     return ticket_id
-    
-    return ticket_id
 
 async def update_pet_soul_travel_dining(
     pets: List[Dict],
