@@ -6992,22 +6992,174 @@ async def get_search_stats():
 async def universal_search(
     q: str = Query(..., min_length=1, description="Search query"),
     limit: int = Query(10, ge=1, le=50),
+    member_email: str = Query(None, description="Member email for context"),
+    member_name: str = Query(None, description="Member name for context"),
+    pet_name: str = Query(None, description="Pet name for context"),
+    current_pillar: str = Query(None, description="Current pillar context"),
+    create_signal: bool = Query(True, description="Create search signal ticket")
 ):
     """
-    Universal search across ALL data types:
+    INTELLIGENT Universal Search - Mira-Driven
+    
+    Search is NOT just a product search box. It is:
+    - An intent capture surface
+    - A routing surface
+    - A Mira intelligence entry point
+    - A ticket creation trigger
+    
+    Typing into search IS a signal. Every search creates a ticket.
+    
+    Searches across ALL data types:
     - Products (cakes, treats, merchandise)
     - Services (concierge, grooming, training)
     - Stays (hotels, resorts, villas)
     - Boarding (pet boarding facilities)
-    - Members (for admin)
     """
     query_lower = q.lower()
+    
+    # ==================== STEP 1: Create Search Signal Ticket ====================
+    signal_result = None
+    if create_signal and len(q) >= 3:  # Only create tickets for meaningful queries
+        try:
+            signal_id = f"SRCH-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:4].upper()}"
+            notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+            inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+            ticket_id = f"TKT-SRCH-{uuid.uuid4().hex[:6].upper()}"
+            now_iso = datetime.now(timezone.utc).isoformat()
+            
+            # Detect intent from query
+            intent_keywords = {
+                "book": "booking_intent",
+                "reserve": "booking_intent",
+                "order": "order_intent",
+                "buy": "order_intent",
+                "find": "discovery_intent",
+                "looking": "discovery_intent",
+                "help": "support_intent",
+                "problem": "support_intent",
+                "how": "question_intent",
+                "what": "question_intent",
+                "where": "question_intent"
+            }
+            
+            detected_intent = "discovery_intent"
+            for keyword, intent in intent_keywords.items():
+                if keyword in query_lower:
+                    detected_intent = intent
+                    break
+            
+            # Create notification (STEP 1)
+            await db.admin_notifications.insert_one({
+                "id": notification_id,
+                "type": "search_signal",
+                "pillar": current_pillar or "search",
+                "title": f"Search: {q[:50]}",
+                "message": f"{member_name or 'Guest'} searched for: {q}",
+                "read": False,
+                "status": "unread",
+                "urgency": "low",
+                "ticket_id": ticket_id,
+                "inbox_id": inbox_id,
+                "customer": {
+                    "name": member_name,
+                    "email": member_email
+                },
+                "pet": {"name": pet_name} if pet_name else None,
+                "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+                "metadata": {
+                    "query": q,
+                    "detected_intent": detected_intent,
+                    "pillar_context": current_pillar
+                },
+                "created_at": now_iso,
+                "read_at": None
+            })
+            
+            # Create ticket (STEP 2)
+            await db.service_desk_tickets.insert_one({
+                "ticket_id": ticket_id,
+                "signal_id": signal_id,
+                "notification_id": notification_id,
+                "inbox_id": inbox_id,
+                "pillar": current_pillar or "search",
+                "category": "search_signal",
+                "sub_category": detected_intent,
+                "status": "signal",  # Search signals start as "signal" state
+                "priority": 4,  # Low priority
+                "urgency": "low",
+                "source": "search",
+                "subject": f"Search: {q[:100]}",
+                "description": f"User searched for: {q}\nDetected Intent: {detected_intent}\nContext: {current_pillar or 'global'}",
+                "member": {
+                    "name": member_name,
+                    "email": member_email
+                },
+                "pet": {"name": pet_name} if pet_name else None,
+                "metadata": {
+                    "query": q,
+                    "detected_intent": detected_intent,
+                    "pillar_context": current_pillar
+                },
+                "tags": ["search", "signal", detected_intent],
+                "created_at": now_iso,
+                "updated_at": now_iso,
+                "unified_flow_processed": True
+            })
+            
+            # Create inbox entry (STEP 3)
+            await db.channel_intakes.insert_one({
+                "id": inbox_id,
+                "ticket_id": ticket_id,
+                "notification_id": notification_id,
+                "signal_id": signal_id,
+                "channel": "search",
+                "pillar": current_pillar or "search",
+                "category": "search_signal",
+                "request_type": detected_intent,
+                "status": "signal",
+                "urgency": "low",
+                "customer_name": member_name,
+                "customer_email": member_email,
+                "member": {
+                    "name": member_name,
+                    "email": member_email
+                },
+                "pet": {"name": pet_name} if pet_name else None,
+                "preview": f"Search: {q[:100]}",
+                "message": q,
+                "metadata": {
+                    "query": q,
+                    "detected_intent": detected_intent,
+                    "pillar_context": current_pillar
+                },
+                "tags": ["search", "signal"],
+                "created_at": now_iso,
+                "updated_at": now_iso,
+                "unified_flow_processed": True
+            })
+            
+            signal_result = {
+                "signal_id": signal_id,
+                "ticket_id": ticket_id,
+                "notification_id": notification_id,
+                "inbox_id": inbox_id,
+                "detected_intent": detected_intent
+            }
+            
+            logger.info(f"[UNIFIED FLOW] Search signal created: {signal_id} | Query: {q[:30]}...")
+            
+        except Exception as e:
+            logger.error(f"Failed to create search signal: {e}")
+    
+    # ==================== STEP 2: Perform Search ====================
     results = {
         "query": q,
+        "signal": signal_result,
         "products": [],
         "services": [],
         "stays": [],
         "boarding": [],
+        "suggestions": [],
         "total": 0
     }
     
@@ -7057,6 +7209,52 @@ async def universal_search(
     results["boarding"] = boarding
     
     results["total"] = len(products) + len(services) + len(stays) + len(boarding)
+    
+    # ==================== STEP 3: Generate Intelligent Suggestions ====================
+    # Based on detected intent and results, provide actionable suggestions
+    suggestions = []
+    
+    if signal_result:
+        detected_intent = signal_result.get("detected_intent", "discovery_intent")
+        
+        if detected_intent == "booking_intent":
+            suggestions.append({
+                "type": "action",
+                "text": "Would you like me to help you book this?",
+                "action": "ask_mira",
+                "cta": "Ask Mira to Book"
+            })
+        elif detected_intent == "order_intent" and products:
+            suggestions.append({
+                "type": "action",
+                "text": f"Found {len(products)} products. Ready to order?",
+                "action": "view_cart",
+                "cta": "Add to Cart"
+            })
+        elif detected_intent == "support_intent":
+            suggestions.append({
+                "type": "action",
+                "text": "Need help? Mira can assist you.",
+                "action": "ask_mira",
+                "cta": "Talk to Mira"
+            })
+        elif detected_intent == "question_intent":
+            suggestions.append({
+                "type": "action",
+                "text": "Have a question? Ask Mira!",
+                "action": "ask_mira",
+                "cta": "Ask Mira"
+            })
+        
+        # Add contextual suggestion based on pet
+        if pet_name:
+            suggestions.append({
+                "type": "context",
+                "text": f"Showing results personalized for {pet_name}",
+                "action": "none"
+            })
+    
+    results["suggestions"] = suggestions
     
     return results
 
