@@ -799,8 +799,8 @@ const Pulse = ({
     
     synthRef.current.cancel();
     const utterance = new SpeechSynthesisUtterance(cleanedText);
-    utterance.rate = MIRA_VOICE_CONFIG.rate;
-    utterance.pitch = MIRA_VOICE_CONFIG.pitch;
+    utterance.rate = PULSE_VOICE_CONFIG.rate;
+    utterance.pitch = PULSE_VOICE_CONFIG.pitch;
     
     const voices = synthRef.current.getVoices();
     
