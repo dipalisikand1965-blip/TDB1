@@ -149,6 +149,22 @@
       - `/app/frontend/src/components/FloatingContactButton.jsx`
       - `/app/frontend/src/components/MiraVoiceAssistant.jsx`
 
+17. **Unified Contact Stack & Mira Integration** (COMPLETED) ✅ (Jan 29, 2025 - Current Session)
+    - **WhatsApp Moved to Contact Stack**: Removed standalone left-side WhatsApp button, added to unified contact stack
+    - **Contact Stack Options** (in order):
+      1. Talk to Mira - AI assistant (purple gradient)
+      2. WhatsApp - Chat with us (green)
+      3. Call Now - +91 96631 85747 (emerald)
+      4. Request Callback - We'll call you (blue)
+    - **Unified Mira Interface**: Header shows "Mira - AI Concierge • Voice & Chat"
+    - **Unified Indicators**: 💬 Chat, 🎤 Voice, 🧠 Memories badges
+    - **Backend Integration**: Voice assistant now calls Mira backend API to save conversations to memories
+    - **Files Modified**:
+      - `/app/frontend/src/components/FloatingContactButton.jsx`
+      - `/app/frontend/src/components/Footer.jsx`
+      - `/app/frontend/src/components/MiraVoiceAssistant.jsx`
+      - `/app/frontend/src/components/MiraFloatingButton.jsx`
+
 **Bug Fixes Verified Working:**
 - ✅ Pet Soul Answer Saving (API tested)
 - ✅ Wishlist Add/Get (API tested)
