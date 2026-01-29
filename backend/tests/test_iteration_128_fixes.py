@@ -102,8 +102,8 @@ class TestCareRequestUnifiedFlow:
         response = requests.post(f"{BASE_URL}/api/care/request", json=payload)
         assert response.status_code == 200
         
-        # Check admin notifications
-        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications?limit=50")
+        # Check admin notifications (requires admin auth)
+        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications?limit=50", auth=ADMIN_AUTH)
         assert notif_response.status_code == 200, f"Notifications API failed: {notif_response.text}"
         
         notifications = notif_response.json()
