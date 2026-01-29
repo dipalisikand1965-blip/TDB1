@@ -394,15 +394,28 @@ const MiraAI = () => {
     }
   };
 
-  // Generate personalized welcome message based on user and pets
+  // Generate personalized welcome message based on user and pets with time-awareness
   const generateWelcomeMessage = useCallback(() => {
+    const hour = new Date().getHours();
+    let timeGreeting = '';
+    
+    if (hour >= 5 && hour < 12) {
+      timeGreeting = 'Good morning';
+    } else if (hour >= 12 && hour < 17) {
+      timeGreeting = 'Good afternoon';
+    } else if (hour >= 17 && hour < 21) {
+      timeGreeting = 'Good evening';
+    } else {
+      timeGreeting = 'Hello';
+    }
+    
     if (user && userPets.length > 0) {
       const petNames = userPets.map(p => p.name).join(', ');
       const firstPet = userPets[0];
       const breed = firstPet.identity?.breed || firstPet.breed || '';
       const allergies = firstPet.health?.allergies?.join(', ') || '';
       
-      let personalizedWelcome = `**Good day, ${user.name || 'valued guest'}.**\n\nI am Mira, your dedicated Pet Concierge®. I see you are here with `;
+      let personalizedWelcome = `**${timeGreeting}, ${user.name || 'valued guest'}.**\n\nI am Mira, your dedicated Pet Concierge®. I see you are here with `;
       
       if (userPets.length === 1) {
         personalizedWelcome += `**${firstPet.name}**`;
@@ -416,13 +429,13 @@ const MiraAI = () => {
       if (allergies) {
         personalizedWelcome += ` — including dietary considerations`;
       }
-      personalizedWelcome += `. Every recommendation I offer will be tailored to their specific needs.\n\n**How may I assist you today?**`;
+      personalizedWelcome += `. Every recommendation I offer will be tailored to their specific needs.\n\n🎤 **Tap the mic to speak, or type below.**`;
       
       return personalizedWelcome;
     } else if (user) {
-      return `**Good day, ${user.name || 'valued guest'}.**\n\nI am Mira, your dedicated Pet Concierge® at The Doggy Company.\n\nI notice you haven't added your pet's profile yet. Creating a **Pet Soul™** profile allows me to personalise every recommendation — from birthday cakes to travel arrangements.\n\n**How may I be of service today?**`;
+      return `**${timeGreeting}, ${user.name || 'valued guest'}.**\n\nI am Mira, your dedicated Pet Concierge® at The Doggy Company.\n\nI notice you haven't added your pet's profile yet. Creating a **Pet Soul™** profile allows me to personalise every recommendation — from birthday cakes to travel arrangements.\n\n🎤 **Tap the mic to speak, or type below.**`;
     } else {
-      return `**Good day.** I am Mira, your dedicated Pet Concierge® at The Doggy Company.\n\nI am here to assist with anything your companion may need — from celebrating special moments to travel arrangements, dining, wellness, and beyond.\n\n[**Join Pet Pass**](/membership) to unlock personalised recommendations and exclusive benefits, or [**Sign In**](/login) if you're already a member.\n\n**How may I be of service today?**`;
+      return `**${timeGreeting}.** I am Mira, your dedicated Pet Concierge® at The Doggy Company.\n\nI am here to assist with anything your companion may need — from celebrating special moments to travel arrangements, dining, wellness, and beyond.\n\n[**Join Pet Pass**](/membership) to unlock personalised recommendations and exclusive benefits, or [**Sign In**](/login) if you're already a member.\n\n🎤 **Tap the mic to speak, or type below.**`;
     }
   }, [user, userPets]);
 
