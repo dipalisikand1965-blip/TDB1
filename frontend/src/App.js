@@ -6,6 +6,7 @@ import { Toaster } from "./components/ui/toaster";
 import { useEffect, useCallback } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import FloatingContactButton from "./components/FloatingContactButton";
+import MiraFloatingButton from "./components/MiraFloatingButton";
 import { useAppBadge } from "./hooks/useAppBadge";
 import { API_URL } from "./utils/api";
 
