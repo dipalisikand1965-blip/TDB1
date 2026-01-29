@@ -300,8 +300,10 @@ class TestNotificationReadField:
         if not notifications:
             pytest.skip("No notifications to check")
         
-        # Check only fit and travel notifications (newly created with unified flow)
-        unified_notifs = [n for n in notifications if n.get("pillar") in ["fit", "travel"] and "NOTIF-" in str(n.get("id", ""))]
+        # Check only fit and travel notifications created by unified flow (have type like fit_* or travel_*)
+        unified_notifs = [n for n in notifications 
+                         if (n.get("type", "").startswith("fit_") or n.get("type", "").startswith("travel_"))
+                         and "NOTIF-" in str(n.get("id", ""))]
         
         if not unified_notifs:
             pytest.skip("No unified flow notifications to check")
