@@ -1241,7 +1241,7 @@ const Pulse = ({
                       </div>
                     ))}
                     <p className="text-[10px] text-gray-500 text-center mt-2">
-                      Say "show me more" or tap a product to view details
+                      Say &quot;show me more&quot; or tap a product to view details
                     </p>
                   </div>
                 )}
