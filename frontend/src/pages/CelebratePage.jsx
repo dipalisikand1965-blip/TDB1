@@ -61,8 +61,8 @@ const CelebratePage = () => {
         path="/celebrate"
       />
       
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white py-20 px-4 overflow-hidden">
+      {/* Hero Section - Enhanced for mobile */}
+      <div className="relative bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white py-12 sm:py-20 px-4 overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <img 
             src="https://images.unsplash.com/photo-1530041539828-114de669390e?w=1200"
@@ -71,33 +71,34 @@ const CelebratePage = () => {
           />
         </div>
         
-        {/* Floating decorations */}
-        <div className="absolute top-10 left-10 text-4xl animate-bounce opacity-50">🎈</div>
-        <div className="absolute top-20 right-20 text-3xl animate-pulse opacity-50">🎉</div>
-        <div className="absolute bottom-10 left-1/4 text-2xl animate-bounce opacity-50" style={{animationDelay: '0.5s'}}>🎂</div>
+        {/* Floating decorations - repositioned for mobile */}
+        <div className="absolute top-6 sm:top-10 left-4 sm:left-10 text-3xl sm:text-4xl animate-bounce opacity-50">🎈</div>
+        <div className="absolute top-12 sm:top-20 right-4 sm:right-20 text-2xl sm:text-3xl animate-pulse opacity-50">🎉</div>
+        <div className="absolute bottom-6 sm:bottom-10 left-1/4 text-xl sm:text-2xl animate-bounce opacity-50" style={{animationDelay: '0.5s'}}>🎂</div>
         
         <div className="relative max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-6">
-            <PartyPopper className="w-5 h-5" />
-            <span className="font-medium">Every Paw Deserves a Party</span>
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4 sm:mb-6 animate-fade-in-up">
+            <PartyPopper className="w-4 sm:w-5 h-4 sm:h-5" />
+            <span className="font-medium text-sm sm:text-base">Every Paw Deserves a Party</span>
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-3 sm:mb-4 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
             Celebrate
           </h1>
-          <p className="text-xl md:text-2xl text-pink-100 max-w-2xl mx-auto mb-8">
+          <p className="text-base sm:text-xl md:text-2xl text-pink-100 max-w-2xl mx-auto mb-6 sm:mb-8 px-2 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
             Custom cakes, treats & unforgettable celebrations for your furry family members
           </p>
           
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/celebrate/birthday-cakes">
-              <Button size="lg" className="bg-white text-pink-600 hover:bg-pink-50 gap-2">
+          {/* Mobile: Stack buttons, Desktop: Side by side */}
+          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4 sm:px-0 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+            <Link to="/celebrate/birthday-cakes" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full sm:w-auto bg-white text-pink-600 hover:bg-pink-50 gap-2 h-12 sm:h-11 text-base font-semibold shadow-lg active:scale-95 transition-transform">
                 <Cake className="w-5 h-5" />
                 Shop Birthday Cakes
               </Button>
             </Link>
-            <Link to="/celebrate/custom-cake">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/20 gap-2">
+            <Link to="/celebrate/custom-cake" className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white/20 gap-2 h-12 sm:h-11 text-base active:scale-95 transition-transform">
                 <Palette className="w-5 h-5" />
                 Design Custom Cake
               </Button>
