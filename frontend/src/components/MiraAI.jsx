@@ -800,6 +800,45 @@ const MiraAI = () => {
                           {message.content}
                         </ReactMarkdown>
                       </div>
+                      
+                      {/* Product Cards - if message contains products */}
+                      {message.products && message.products.length > 0 && (
+                        <div className="mt-3 space-y-2">
+                          {message.products.slice(0, 3).map((product, pIdx) => (
+                            <div 
+                              key={pIdx}
+                              className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-2.5 border border-purple-100 flex gap-2.5 cursor-pointer hover:shadow-md transition-shadow"
+                              onClick={() => window.location.href = `/product/${product.id || product._id}`}
+                            >
+                              <img 
+                                src={product.image || product.image_url || 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=100'} 
+                                alt={product.name || product.title}
+                                className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-gray-900 text-xs leading-tight line-clamp-2">
+                                  {product.name || product.title}
+                                </h4>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <span className="font-bold text-purple-600 text-sm">
+                                    ₹{typeof product.price === 'number' ? product.price.toLocaleString('en-IN') : product.price || '---'}
+                                  </span>
+                                </div>
+                                <button 
+                                  className="mt-1.5 text-[10px] font-medium text-white bg-purple-500 hover:bg-purple-600 px-2.5 py-1 rounded-full transition-colors flex items-center gap-1"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.dispatchEvent(new CustomEvent('addToCart', { detail: product }));
+                                    toast.success('Added to cart!');
+                                  }}
+                                >
+                                  <ShoppingCart className="w-3 h-3" /> Add
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
