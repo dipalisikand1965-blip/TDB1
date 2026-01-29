@@ -5,12 +5,18 @@
  * on pillar pages. It shows personalized notes and suggestions based
  * on the user's Pet Soul data and current browsing context.
  * 
+ * NOW INCLUDES VOICE CAPABILITIES (Pulse integration):
+ * - Voice input via Web Speech API
+ * - Text-to-speech responses
+ * - Time-aware greetings
+ * - Product cards in chat
+ * 
  * Placement:
  * - Desktop: Right-side panel (sticky)
  * - Mobile: Bottom slide-up drawer
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { Button } from './ui/button';
@@ -18,10 +24,11 @@ import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { useMiraSignal } from '../hooks/useMiraSignal';
 import { getApiUrl } from '../utils/api';
+import { toast } from 'sonner';
 import { 
   MessageCircle, ChevronUp, ChevronDown, ChevronRight, PawPrint, 
   Sparkles, ShoppingCart, ArrowRight, X, Send, Loader2,
-  Lightbulb, Calendar, Heart, Plus
+  Lightbulb, Calendar, Heart, Plus, Mic, MicOff, Volume2, VolumeX, Zap
 } from 'lucide-react';
 
 // Generate session ID for Mira conversations
