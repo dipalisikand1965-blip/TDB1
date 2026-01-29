@@ -1903,14 +1903,7 @@ const Admin = () => {
           <AutomatedRemindersManager authHeaders={getAuthHeaders()} />
         )}
 
-        {/* Concierge Command Center */}
-        {activeTab === 'command-center' && (
-          <ConciergeCommandCenter 
-            agentId={username}
-            agentName={username}
-            isAdminMode={true}
-          />
-        )}
+        {/* ConciergeCommandCenter DEPRECATED - Use Service Desk instead */}
 
         {/* Mira Memory Manager */}
         {activeTab === 'mira-memory' && (
