@@ -76,10 +76,37 @@
    - Search by Ticket ID, Pet Parent Name, Phone, Email
    - **File Modified**: `/app/frontend/src/components/admin/ServiceDesk.jsx`
 
-7. **FloatingContactButton Cleanup** (COMPLETED)
+8. **FloatingContactButton Cleanup** (COMPLETED)
    - Removed WhatsApp and Voice Order from floating widget
    - Now shows only: Call Now, Request Callback
    - **File Modified**: `/app/frontend/src/components/FloatingContactButton.jsx`
+
+9. **PWA Push Notification Banner** (COMPLETED) 🔔
+   - Created prominent CTA banner for dashboard
+   - Shows for users who haven't enabled push notifications
+   - One-click enable with success animation
+   - **File Created**: `/app/frontend/src/components/PushNotificationBanner.jsx`
+   - **Integrated in**: `MemberDashboard.jsx`
+
+10. **Mobile Two-Tile Layout** (COMPLETED) 📱
+    - Updated product grids to use `grid-cols-2` on mobile
+    - Affected pages: DinePage, FitPage, StayPage, ShopPage, EnjoyPage
+    - Consistent with CelebratePage design
+
+11. **Voice Mira Indian English Enhancement** (COMPLETED) 🎙️
+    - Added comprehensive Indian English voice priority chain:
+      1. Google en-IN (best quality)
+      2. Any en-IN voice
+      3. Hindi voices (natural accent)
+      4. Microsoft Indian voices (Neerja, Heera)
+    - Emoji removal for natural speech
+    - "Mira" → "Meera" pronunciation fix
+    - **File Modified**: `/app/frontend/src/components/MiraVoiceAssistant.jsx`
+
+12. **Improved Tooltips** (COMPLETED)
+    - Enhanced "Earn rewards!" tooltip in GamificationBanner
+    - More visible hover tooltip instead of browser `title` attribute
+    - **File Modified**: `/app/frontend/src/components/dashboard/GamificationBanner.jsx`
 
 **Bug Fixes Verified Working:**
 - ✅ Pet Soul Answer Saving (API tested)
