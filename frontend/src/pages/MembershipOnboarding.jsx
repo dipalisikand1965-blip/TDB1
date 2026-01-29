@@ -761,43 +761,43 @@ const MembershipOnboarding = () => {
                 </p>
               </div>
 
-              {/* Pet Tabs */}
-              {petsData.length > 1 && (
-                <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-                  {petsData.map((pet, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setActivePetTab(idx)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
-                        activePetTab === idx
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      <PawPrint className="w-4 h-4" />
-                      {pet.name || `Dog ${idx + 1}`}
-                      {petsData.length > 1 && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removePet(idx);
-                          }}
-                          className="ml-1 hover:text-red-400"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      )}
-                    </button>
-                  ))}
+              {/* Pet Tabs - Always show add button */}
+              <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+                {petsData.map((pet, idx) => (
                   <button
-                    onClick={addPet}
-                    className="flex items-center gap-1 px-4 py-2 rounded-full border-2 border-dashed border-purple-300 text-purple-600 hover:bg-purple-50 whitespace-nowrap"
+                    key={idx}
+                    onClick={() => setActivePetTab(idx)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
+                      activePetTab === idx
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
                   >
-                    <Plus className="w-4 h-4" />
-                    Add Dog
+                    <PawPrint className="w-4 h-4" />
+                    {pet.name || `Dog ${idx + 1}`}
+                    {petsData.length > 1 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removePet(idx);
+                        }}
+                        className="ml-1 hover:text-red-400"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
                   </button>
-                </div>
-              )}
+                ))}
+                {/* Always show Add Dog button - supporting 1-15+ pets */}
+                <button
+                  onClick={addPet}
+                  className="flex items-center gap-1 px-4 py-2 rounded-full border-2 border-dashed border-purple-300 text-purple-600 hover:bg-purple-50 whitespace-nowrap"
+                  data-testid="add-more-dogs-btn"
+                >
+                  <Plus className="w-4 h-4" />
+                  {petsData.length === 0 ? 'Add Your Dog' : 'Add Another Dog'}
+                </button>
+              </div>
 
               <Card className="p-6 md:p-8 max-w-xl mx-auto">
                 {petsData.map((pet, idx) => (
