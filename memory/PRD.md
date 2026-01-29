@@ -138,6 +138,17 @@
       - `/app/frontend/src/components/MiraVoiceAssistant.jsx` (text-first, voice-earned)
       - `/app/frontend/src/components/MiraFloatingButton.jsx` (activation rules)
 
+16. **Voice Mira Pet Name Fix & Talk to Mira Integration** (COMPLETED) 🎙️
+    - Fixed pet name extraction (pet.name || pet.pet_name || 'your pup')
+    - Personalized opening: "Hi, I'm Mira! I can help with {petName}'s needs..."
+    - Added "Talk to Mira" to floating contact stack (first option, purple gradient)
+    - Event system: openMiraVoice triggers MiraFloatingButton to open with voice mode
+    - More prominent mic button with hint text "Tap 🎤 to speak or type below"
+    - **Files Modified**:
+      - `/app/frontend/src/components/MiraFloatingButton.jsx`
+      - `/app/frontend/src/components/FloatingContactButton.jsx`
+      - `/app/frontend/src/components/MiraVoiceAssistant.jsx`
+
 **Bug Fixes Verified Working:**
 - ✅ Pet Soul Answer Saving (API tested)
 - ✅ Wishlist Add/Get (API tested)
