@@ -814,24 +814,6 @@ const UnifiedCheckout = () => {
                         </div>
                       </div>
                     </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <Label>Select Pickup Store *</Label>
-                      {STORE_LOCATIONS.map(store => (
-                        <button
-                          key={store.id}
-                          type="button"
-                          onClick={() => setDelivery(prev => ({ ...prev, pickupLocation: store.id }))}
-                          className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
-                            delivery.pickupLocation === store.id ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-200'
-                          }`}
-                        >
-                          <p className="font-medium">{store.city}</p>
-                          <p className="text-sm text-gray-500">{store.address}</p>
-                        </button>
-                      ))}
-                    </div>
-                  )}
                 </Card>
 
                 {/* Navigation */}
