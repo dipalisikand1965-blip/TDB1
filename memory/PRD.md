@@ -206,7 +206,7 @@ User (Voice/Text) → Mira detects intent → Auto-creates ticket → Service De
 - Unified view in Admin Service Desk / Unified Inbox
 
 ### Working Features ✅
-- **Pillar-specific Mira with Voice**: MiraContextPanel on Advisory (purple), Care (pink), Emergency (red) pages with Pulse voice capabilities
+- **Pillar-specific Mira with Voice**: MiraContextPanel on ALL pillars including Advisory (purple), Care (pink), Emergency (red), **Celebrate (pink)** pages with Pulse voice capabilities
 - Product images loading from Shopify CDN
 - Pulse voice assistant opens and processes commands
 - Shop page displays products correctly
@@ -218,9 +218,29 @@ User (Voice/Text) → Mira detects intent → Auto-creates ticket → Service De
 - **Care Settings Toggles**: All toggles save correctly via PUT /api/care/admin/settings
 - **Paw Points Breakdown**: Clickable card opens modal with transaction history
 - **CSV Import/Export**: Full functionality for products
-- **UNIFIED SIGNAL FLOW (CRITICAL)**: All signals now flow through: Notification → Service Desk → Unified Inbox → Contextual Views. Implemented in `/app/backend/concierge_routes.py` and `/app/backend/mira_routes.py`
-- **MIRA AFFIRMATIVE RESPONSE HANDLING (CRITICAL)**: Mira now properly responds to "yes please", "yes", "ok", "go ahead", "sure", "sounds good", "perfect" with follow-up questions. Never goes silent.
+- **UNIFIED SIGNAL FLOW (CRITICAL)**: All signals now flow through: Notification → Service Desk → Unified Inbox → Contextual Views
+- **MIRA AFFIRMATIVE RESPONSE HANDLING (CRITICAL)**: Mira responds to "yes please", "yes", "ok", "go ahead" with follow-up questions. Never goes silent.
 - **MIRA GUARD CHECK**: Prevents empty/short responses - forces recovery response if LLM returns nothing
+- **CARE/GROOMING NOTIFICATIONS**: Grooming and care requests now create notifications (was missing)
+- **MOBILE NAVIGATION FIX**: Replaced window.location.href with navigate() for SPA navigation consistency
+
+### Phase 48: Critical Mobile + Mira Fixes (Jan 29, 2025)
+
+**Mira on Celebrate Pillar:**
+- Added MiraContextPanel to `/app/frontend/src/pages/CelebratePage.jsx`
+- Now consistent across ALL pillars
+
+**Care/Grooming Notification Fix:**
+- `/app/backend/care_routes.py` - create_care_request() now creates admin_notifications
+- Complete unified flow: Notification → Service Desk → Unified Inbox
+
+**Mobile Navigation Fix:**
+- `/app/frontend/src/pages/MemberDashboard.jsx` - Replaced window.location.href with navigate()
+- Affects: /treats, /my-pets, /pet-vault, /pet/{id}, /cakes, /celebrate, /products
+
+**Pet Soul Answer Notifications:**
+- `/app/backend/server.py` - Pet Soul answer endpoint creates milestone notifications
+- Fires on first answer or when crossing 25%, 50%, 75%, 100% completion
 
 ### Mira End States (Valid)
 1. **RESPONDED** - Complete response delivered
@@ -235,7 +255,6 @@ User (Voice/Text) → Mira detects intent → Auto-creates ticket → Service De
 - **Pulse Personalization**: Shows "your pet" when not logged in (expected behavior) - needs logged-in verification
 - **WebSocket Instability**: Non-critical, deprioritized
 - **Razorpay Payments**: Blocked - awaiting API keys
-- **Mobile Save Investigation**: Pending - need specific reproduction steps from user
 
 ### Upcoming Tasks
 1. Complete mobile UI transformation on Member Dashboard
