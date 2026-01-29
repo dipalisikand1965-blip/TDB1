@@ -160,8 +160,9 @@
 - **Admin**: aditya / lola4304
 
 ## Key Files
-- `/app/frontend/src/components/Pulse.jsx` - Voice assistant
-- `/app/frontend/src/components/MiraFloatingButton.jsx` - Floating Pulse button
+- `/app/frontend/src/components/MiraContextPanel.jsx` - Pillar-specific Mira with voice (Pulse) capabilities
+- `/app/frontend/src/components/Pulse.jsx` - Voice assistant (DEPRECATED - now merged into MiraContextPanel)
+- `/app/frontend/src/components/MiraAI.jsx` - Generic floating Mira AI (for non-pillar pages)
 - `/app/frontend/src/pages/DinePage.jsx` - Dining & reservations
 - `/app/frontend/src/pages/ShopPage.jsx` - Product shop
 - `/app/backend/server.py` - Main API
