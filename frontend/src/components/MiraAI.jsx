@@ -864,12 +864,8 @@ const MiraAI = () => {
                       user={user} 
                       pets={userPets} 
                       onLinkClick={(query) => {
-                        setInputValue(query);
-                        // Auto-submit the query
-                        setTimeout(() => {
-                          const submitBtn = document.querySelector('[data-testid="mira-send-btn"]');
-                          if (submitBtn) submitBtn.click();
-                        }, 100);
+                        // Use handleQuickAction for reliable message sending
+                        handleQuickAction(query);
                       }}
                     />
                   </div>
