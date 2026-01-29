@@ -340,8 +340,8 @@ async def create_travel_request(request: TravelRequestCreate):
                 "risk_level": travel_config["risk_level"]
             },
             "tags": ["travel", request.travel_type],
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_consistent_timestamp(),
+            "updated_at": get_consistent_timestamp(),
             "unified_flow_processed": True
         }
         await db.channel_intakes.insert_one(inbox_entry)
