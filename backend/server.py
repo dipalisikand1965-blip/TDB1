@@ -131,6 +131,7 @@ from admin_auth import (
     set_admin_email_func,
     set_admin_env_credentials
 )
+from unified_flow_middleware import init_unified_flow_middleware
 from product_intelligence import ProductIntelligenceEngine, add_stock_images_to_products
 from ai_description_enhancer import AIDescriptionEnhancer
 
