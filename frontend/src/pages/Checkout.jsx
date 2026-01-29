@@ -528,29 +528,20 @@ const Checkout = () => {
     if (!formData.phone.trim()) errors.phone = 'Phone number is required';
     if (!formData.whatsappNumber.trim()) errors.whatsappNumber = 'WhatsApp number is required';
     
-    // Address validation based on delivery method
-    if (deliveryMethod === 'delivery') {
-      if (!formData.address.trim()) errors.address = 'Address is required';
-      
-      // City validation
-      if (isPanIndiaDelivery) {
-        if (!formData.customCity.trim()) errors.customCity = 'City name is required for Pan-India delivery';
-      } else if (formData.city === 'Others') {
-        // User selected "Others" - must provide custom city
-        if (!formData.customCity.trim()) errors.customCity = 'Please enter your city name';
-      } else {
-        if (!formData.city.trim()) errors.city = 'City is required';
-      }
-      
-      if (!formData.pincode.trim()) errors.pincode = 'Pincode is required';
+    // Address validation - always required for delivery
+    if (!formData.address.trim()) errors.address = 'Address is required';
+    
+    // City validation
+    if (isPanIndiaDelivery) {
+      if (!formData.customCity.trim()) errors.customCity = 'City name is required for Pan-India delivery';
+    } else if (formData.city === 'Others') {
+      // User selected "Others" - must provide custom city
+      if (!formData.customCity.trim()) errors.customCity = 'Please enter your city name';
     } else {
-      if (!pickupLocation) errors.pickupLocation = 'Please select a store location';
+      if (!formData.city.trim()) errors.city = 'City is required';
     }
     
-    // For mixed cart, validate that user selected a pickup location for bakery items
-    if (cartAnalysis.isMixedCart && !pickupLocation) {
-      errors.pickupLocation = 'Please select a pickup location for bakery items (cakes)';
-    }
+    if (!formData.pincode.trim()) errors.pincode = 'Pincode is required';
     
     // Pet name is MANDATORY for cakes (goes on the cake!)
     if (cartAnalysis.hasBakeryItems && !formData.petName.trim()) {
