@@ -2734,7 +2734,47 @@ Instead, use this info to inform your response while maintaining concierge owner
         concierge_action_instruction = ""
         if concierge_action.get("action_needed"):
             action_type = concierge_action.get("action_type", "request")
-            concierge_action_instruction = f"""
+            is_affirmative = concierge_action.get("is_affirmative_confirmation", False)
+            
+            if is_affirmative:
+                # SPECIAL HANDLING FOR AFFIRMATIVE RESPONSES - CRITICAL
+                concierge_action_instruction = f"""
+🚨 USER CONFIRMED PREVIOUS SUGGESTION - MUST RESPOND IMMEDIATELY
+Trigger: "{concierge_action.get('trigger_keyword', 'yes')}"
+Service Desk Ticket: {service_desk_ticket_id or 'CREATED'}
+
+THE USER SAID "{user_message}" - THIS IS A CONFIRMATION.
+YOU MUST NOT GO SILENT. YOU MUST RESPOND.
+
+REQUIRED RESPONSE FORMAT (CHOOSE ONE):
+
+OPTION A - ASK QUALIFYING QUESTION:
+"Perfect! Let me help arrange that. Quick questions to get this just right for you:
+- Which area/location would you prefer?
+- What date works best?
+- Any specific time preference?"
+
+OPTION B - CONFIRM ACTION IN PROGRESS:
+"Wonderful! I'm on it. I'm now:
+✓ Checking availability for you
+✓ Looking at the best options
+Our concierge will confirm details shortly - you'll see updates right here."
+
+OPTION C - REQUEST MISSING DATA:
+"Love to help! To proceed, I just need:
+- Your preferred location
+- Date/time preference"
+
+❌ FORBIDDEN:
+- Going silent
+- Just saying "ok" with no action
+- Waiting for more input without asking a question
+- Any response under 50 characters
+
+Your response MUST end with either a question OR a clear "I'm taking action now" statement.
+"""
+            else:
+                concierge_action_instruction = f"""
 🚨 CONCIERGE ACTION REQUIRED - THIS IS A REAL REQUEST
 Action Type: {action_type}
 Service Desk Ticket Created: {service_desk_ticket_id or 'pending'}
