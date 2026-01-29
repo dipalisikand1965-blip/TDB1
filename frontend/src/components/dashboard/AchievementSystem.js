@@ -101,60 +101,86 @@ export const ACHIEVEMENTS = {
     threshold: 5,
     type: 'orders',
     reward: 250,
-    tier: 'silver'
+    tier: 'silver',
+    rarity: 'rare',
+    unlockMessage: "Your pup knows where the treats come from! 💝"
   },
   vip_member: { 
     id: 'vip_member', 
-    name: 'VIP Member', 
-    description: 'Place 10 orders', 
+    name: 'Paw-rent of the Year', 
+    title: 'VIP Status!',
+    description: 'Place 10 orders - You\'re officially a VIP pet parent!', 
     icon: '💎', 
     threshold: 10,
     type: 'orders',
     reward: 500,
-    tier: 'gold'
+    tier: 'gold',
+    rarity: 'epic',
+    unlockMessage: "VIP status achieved! Roll out the red carpet! 🌟"
   },
   // Communication Badges
   chat_initiator: {
     id: 'chat_initiator',
-    name: 'Chat Initiator',
+    name: 'Friendly Pup',
+    title: 'First woof to Meera!',
     description: 'Start your first Mira conversation',
     icon: '💬',
     threshold: 1,
     type: 'chats',
     reward: 25,
-    tier: 'bronze'
+    tier: 'bronze',
+    rarity: 'common',
+    unlockMessage: "Nice to meet you! Let's chat! 💬"
   },
   mira_friend: {
     id: 'mira_friend',
-    name: 'Mira Friend',
-    description: 'Have 10 Mira conversations',
+    name: 'Best Furriend',
+    title: 'Meera\'s favorite!',
+    description: 'Have 10 Mira conversations - Meera loves talking to you!',
     icon: '🤖',
     threshold: 10,
     type: 'chats',
     reward: 150,
-    tier: 'silver'
+    tier: 'silver',
+    rarity: 'rare',
+    unlockMessage: "You're officially Meera's best furriend! 🤗"
   },
   // Profile & Activity
   profile_complete: {
     id: 'profile_complete',
-    name: 'Profile Pro',
-    description: 'Complete your profile',
+    name: 'Show Off Pup',
+    title: 'Profile perfection!',
+    description: 'Complete your profile - Looking paw-fect!',
     icon: '✨',
     threshold: 100,
     type: 'profile',
     reward: 75,
-    tier: 'bronze'
+    tier: 'bronze',
+    rarity: 'uncommon',
+    unlockMessage: "Looking paw-sitively fabulous! 📸"
   },
   early_adopter: {
     id: 'early_adopter',
-    name: 'Early Adopter',
-    description: 'Join in the first month',
+    name: 'Trailblazer',
+    title: 'OG Member!',
+    description: 'Join in the first month - You\'re an original!',
     icon: '🚀',
     threshold: 1,
     type: 'special',
     reward: 200,
-    tier: 'gold'
+    tier: 'gold',
+    rarity: 'legendary',
+    unlockMessage: "OG Status! Thank you for being an early believer! 🚀"
   }
+};
+
+// Rarity colors for badge glow effects
+export const RARITY_COLORS = {
+  common: { glow: 'shadow-gray-300', ring: 'ring-gray-300' },
+  uncommon: { glow: 'shadow-green-300', ring: 'ring-green-400' },
+  rare: { glow: 'shadow-blue-400', ring: 'ring-blue-400' },
+  epic: { glow: 'shadow-purple-500', ring: 'ring-purple-500' },
+  legendary: { glow: 'shadow-yellow-500', ring: 'ring-yellow-400 animate-pulse' }
 };
 
 export const TIER_COLORS = {
