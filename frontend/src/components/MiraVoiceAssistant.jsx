@@ -1,12 +1,14 @@
 /**
- * MiraVoiceAssistant - Voice-activated AI assistant for Mira
+ * MiraVoiceAssistant - Voice-enabled guidance layer for Mira
+ * 
+ * CORE PRINCIPLE: Text is default. Voice is earned. Silence is acceptable.
  * 
  * Features:
- * - Tap to activate (more reliable than wake word)
- * - Speech recognition for commands
- * - Text-to-speech for Mira's responses
- * - Beautiful, dog-friendly UI
- * - Quick command chips for easy interaction
+ * - Text-first by default (80% of interactions)
+ * - Voice only when explicitly triggered (mic tap, wake word, Care/Emergency)
+ * - Max 10-12 second voice responses
+ * - Escalates to Concierge early
+ * - Section-aware behaviour
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -18,12 +20,18 @@ import {
   Stethoscope, Gift, PawPrint, MessageCircle, Send
 } from 'lucide-react';
 
-// Mira's voice personality settings
+// Mira's voice personality settings - calm, slow, pauses often
 const MIRA_VOICE_CONFIG = {
-  rate: 0.95,
-  pitch: 1.1,
-  volume: 1.0
+  rate: 0.85,  // Slower for clarity
+  pitch: 1.05, // Natural female pitch
+  volume: 0.9
 };
+
+// UNIVERSAL OPENING LINE (MANDATORY - NO VARIATION)
+const MIRA_OPENING = "Hi, I'm Mira. I can help explain things, guide you to the right place, or connect you with our Concierge.";
+
+// Max voice response time in seconds
+const MAX_VOICE_SECONDS = 10;
 
 // Command patterns and responses - Care-first, non-medical guidance
 const COMMAND_PATTERNS = [
