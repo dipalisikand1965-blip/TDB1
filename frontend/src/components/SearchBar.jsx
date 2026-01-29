@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 
 
 const SearchBar = ({ onClose, isOverlay = false }) => {
+  const { user } = useAuth();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState({ products: [], collections: [] });
   const [isLoading, setIsLoading] = useState(false);
