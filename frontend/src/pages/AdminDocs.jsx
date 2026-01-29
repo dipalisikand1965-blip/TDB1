@@ -34,6 +34,17 @@ const AdminDocs = () => {
   };
 
   const sections = {
+    'session-updates': {
+      title: '🔥 Session Updates (Jan 29)',
+      icon: AlertTriangle,
+      color: 'bg-red-500',
+      items: [
+        { id: 'unified-flow-fix', title: '✅ Unified Flow Fix (SEV-1)', icon: Check },
+        { id: 'mira-fixes', title: '✅ Mira AI Fixes', icon: Brain },
+        { id: 'tomorrow-tasks', title: '📋 Tomorrow Tasks', icon: FileText },
+        { id: 'pending-bugs', title: '🐛 Pending Bugs', icon: AlertTriangle },
+      ]
+    },
     'core-tools': {
       title: 'Core Tools',
       icon: Command,
