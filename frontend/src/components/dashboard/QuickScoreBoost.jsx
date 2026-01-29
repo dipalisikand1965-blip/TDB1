@@ -173,9 +173,9 @@ const QuickScoreBoost = ({ pet, onAnswerQuestion }) => {
                     size="sm" 
                     className="bg-amber-500 hover:bg-amber-600"
                     onClick={() => handleQuickAnswer(q.id, answerInput)}
-                    disabled={!answerInput.trim()}
+                    disabled={!answerInput.trim() || saving}
                   >
-                    Save
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
                   </Button>
                   <Button 
                     size="sm" 
