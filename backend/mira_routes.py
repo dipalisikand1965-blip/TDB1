@@ -532,14 +532,39 @@ async def create_mira_ticket(
     pet: Dict = None,
     source: str = "web_widget"
 ) -> str:
-    """Create a Mira ticket - EVERY interaction creates one"""
+    """Create a Mira ticket - EVERY interaction creates one
+    
+    UNIFIED FLOW: Creates Notification → Service Desk Ticket → Unified Inbox
+    """
     db = get_db()
+    from timestamp_utils import get_utc_timestamp
     
     ticket_id = await generate_ticket_id(ticket_type)
-    now = datetime.now(timezone.utc).isoformat()
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    now = get_utc_timestamp()
+    
+    member_info = {
+        "id": user.get("id") if user else None,
+        "name": user.get("name") if user else "Website Visitor",
+        "email": user.get("email") if user else None,
+        "phone": user.get("phone") if user else None,
+        "membership_tier": user.get("membership_tier") if user else "guest"
+    }
+    
+    pet_info = {
+        "id": pet.get("id") if pet else None,
+        "name": pet.get("name") if pet else None,
+        "breed": pet.get("breed") if pet else None,
+        "age": pet.get("age") if pet else None,
+    } if pet else None
+    
+    pillar_name = PILLARS.get(pillar, {}).get("name", pillar.title())
     
     ticket_doc = {
         "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
         "mira_session_id": session_id,
         "ticket_type": ticket_type,
         "pillar": pillar,
@@ -549,21 +574,10 @@ async def create_mira_ticket(
         "source": source,
         
         # Member info
-        "member": {
-            "id": user.get("id") if user else None,
-            "name": user.get("name") if user else "Website Visitor",
-            "email": user.get("email") if user else None,
-            "phone": user.get("phone") if user else None,
-            "membership_tier": user.get("membership_tier") if user else "guest"
-        },
+        "member": member_info,
         
         # Pet info
-        "pet": {
-            "id": pet.get("id") if pet else None,
-            "name": pet.get("name") if pet else None,
-            "breed": pet.get("breed") if pet else None,
-            "age": pet.get("age") if pet else None,
-        } if pet else None,
+        "pet": pet_info,
         
         # Full Pet Soul for context
         "pet_soul_snapshot": pet if pet else None,
@@ -610,7 +624,10 @@ async def create_mira_ticket(
             "action": "ticket_created",
             "timestamp": now,
             "performed_by": "mira_ai"
-        }]
+        }],
+        
+        # Unified flow flag
+        "unified_flow_processed": True
     }
     
     await db.mira_tickets.insert_one(ticket_doc)
@@ -623,7 +640,80 @@ async def create_mira_ticket(
         "source_reference": f"mira:{session_id}"
     })
     
-    logger.info(f"Mira ticket created: {ticket_id} | Type: {ticket_type} | Pillar: {pillar}")
+    # ==================== UNIFIED FLOW: NOTIFICATION ====================
+    await db.admin_notifications.insert_one({
+        "id": notification_id,
+        "type": f"mira_{ticket_type}",
+        "pillar": pillar,
+        "title": f"Mira Chat: {pillar_name} - {ticket_type.replace('_', ' ').title()}",
+        "message": description[:150] + "..." if len(description) > 150 else description,
+        "read": False,
+        "status": "unread",
+        "urgency": urgency,
+        "ticket_id": ticket_id,
+        "inbox_id": inbox_id,
+        "customer": {"name": member_info.get("name"), "email": member_info.get("email"), "phone": member_info.get("phone")},
+        "pet": pet_info,
+        "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+        "created_at": now,
+        "read_at": None
+    })
+    logger.info(f"[UNIFIED FLOW] Mira notification created: {notification_id}")
+    
+    # ==================== UNIFIED FLOW: SERVICE DESK TICKET ====================
+    await db.service_desk_tickets.insert_one({
+        "id": ticket_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
+        "type": f"mira_{ticket_type}",
+        "category": pillar,
+        "pillar": pillar,
+        "subject": f"Mira Chat: {pillar_name}",
+        "description": description,
+        "status": "new",
+        "priority": "high" if urgency == "high" else "normal",
+        "urgency": urgency,
+        "channel": source,
+        "member": member_info,
+        "pet": pet_info,
+        "source_reference": f"mira:{session_id}",
+        "mira_session_id": session_id,
+        "created_at": now,
+        "updated_at": now,
+        "unified_flow_processed": True
+    })
+    logger.info(f"[UNIFIED FLOW] Mira service desk ticket created: {ticket_id}")
+    
+    # ==================== UNIFIED FLOW: UNIFIED INBOX ====================
+    await db.channel_intakes.insert_one({
+        "id": inbox_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "request_id": ticket_id,
+        "channel": source,
+        "pillar": pillar,
+        "category": pillar,
+        "request_type": f"mira_{ticket_type}",
+        "status": "new",
+        "urgency": urgency,
+        "customer_name": member_info.get("name"),
+        "customer_email": member_info.get("email"),
+        "customer_phone": member_info.get("phone"),
+        "member": member_info,
+        "pet": pet_info,
+        "preview": f"Mira Chat: {description[:80]}..." if len(description) > 80 else f"Mira Chat: {description}",
+        "message": description,
+        "full_content": description,
+        "metadata": {"mira_session_id": session_id, "ticket_type": ticket_type},
+        "tags": ["mira", pillar, ticket_type],
+        "created_at": now,
+        "updated_at": now,
+        "unified_flow_processed": True
+    })
+    logger.info(f"[UNIFIED FLOW] Mira unified inbox created: {inbox_id}")
+    
+    logger.info(f"[UNIFIED FLOW] COMPLETE: Mira | N:{notification_id} → T:{ticket_id} → I:{inbox_id}")
     
     return ticket_id
 
