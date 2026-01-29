@@ -230,85 +230,170 @@ async def create_experience_request(request: ConciergeExperienceRequest):
     """
     Create a concierge experience request from pillar cards.
     This creates a conversation starter, not a booking.
+    
+    UNIFIED FLOW: Every request creates Notification → Ticket → Inbox
     """
     db = get_db()
     import uuid
+    from timestamp_utils import get_utc_timestamp
     
     request_id = f"conc-{uuid.uuid4().hex[:8]}"
     ticket_id = f"EXP-{uuid.uuid4().hex[:8]}"
-    now = datetime.now(timezone.utc)
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    now_iso = get_utc_timestamp()
+    
+    user_name = request.user_name or "Guest"
+    pet_name = request.pet_name or "Pet"
+    pillar_title = request.pillar.capitalize()
     
     # Create concierge request record
     request_doc = {
         "id": request_id,
         "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
         "type": "experience_request",
         "pillar": request.pillar,
         "experience_type": request.experience_type,
         "experience_title": request.experience_title,
         "message": request.message,
-        "user_name": request.user_name,
+        "user_name": user_name,
         "user_email": request.user_email,
         "user_whatsapp": request.user_whatsapp or request.user_phone,
-        "pet_name": request.pet_name,
+        "pet_name": pet_name,
         "pet_selection": request.pet_selection,
         "source": request.source,
         "status": "new",
         "priority": "normal",
-        "created_at": now,
-        "updated_at": now,
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "unified_flow_processed": True,
         "timeline": [
             {
                 "status": "new",
-                "timestamp": now.isoformat(),
-                "note": f"Request submitted via Concierge Experience Card - {request.pillar.capitalize()} Pillar"
+                "timestamp": now_iso,
+                "note": f"Request submitted via Concierge Experience Card - {pillar_title} Pillar"
             }
         ]
     }
     
     await db.concierge_requests.insert_one(request_doc)
     
-    # Also create a service desk ticket for tracking
-    ticket_doc = {
-        "ticket_id": ticket_id,
-        "type": "concierge_inquiry",
+    # ==================== STEP 1: NOTIFICATION (MANDATORY) ====================
+    await db.admin_notifications.insert_one({
+        "id": notification_id,
+        "type": f"concierge_{request.pillar}",
         "pillar": request.pillar,
+        "title": f"Concierge Request: {request.experience_title} - {pet_name}",
+        "message": f"{user_name} is interested in {request.experience_title}. Message: {request.message[:100]}...",
+        "read": False,
+        "status": "unread",
+        "urgency": "medium",
+        "ticket_id": ticket_id,
+        "inbox_id": inbox_id,
+        "customer": {
+            "name": user_name,
+            "email": request.user_email,
+            "phone": request.user_whatsapp or request.user_phone
+        },
+        "pet": {
+            "name": pet_name
+        },
+        "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+        "created_at": now_iso,
+        "read_at": None
+    })
+    logger.info(f"[UNIFIED FLOW] Concierge notification created: {notification_id}")
+    
+    # ==================== STEP 2: SERVICE DESK TICKET (MANDATORY) ====================
+    ticket_doc = {
+        "id": ticket_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
+        "type": "concierge_inquiry",
+        "source": "concierge_card",
+        "source_id": request_id,
+        "pillar": request.pillar,
+        "category": "concierge",
+        "subcategory": request.experience_type,
         "subject": f"Concierge Request: {request.experience_title}",
         "description": request.message,
-        "original_request": f"[{request.pillar.upper()}] {request.experience_title}: {request.message[:200]}...",
-        "customer_name": request.user_name,
-        "customer_email": request.user_email,
-        "customer_phone": request.user_phone,
+        "original_request": f"[{request.pillar.upper()}] {request.experience_title}: {request.message[:200]}",
+        "status": "new",
+        "priority": 3,
+        "urgency": "medium",
         "member": {
-            "name": request.user_name,
+            "name": user_name,
             "email": request.user_email,
-            "phone": request.user_phone
+            "phone": request.user_whatsapp or request.user_phone
         },
-        "pet_name": request.pet_name,
-        "status": "open",
-        "priority": "normal",
-        "source": "concierge_card",
+        "pet": {
+            "name": pet_name
+        },
         "concierge_request_id": request_id,
-        "created_at": now,
-        "updated_at": now,
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "tags": [request.pillar, "concierge", request.experience_type, "unified-flow"],
+        "unified_flow_processed": True,
         "audit_trail": [
             {
                 "action": "created",
-                "timestamp": now.isoformat(),
+                "timestamp": now_iso,
                 "performed_by": "system",
-                "details": f"Created from {request.pillar} concierge experience card"
+                "details": f"Created from {pillar_title} concierge experience card"
             }
         ]
     }
     
-    await db.tickets.insert_one(ticket_doc)
+    # Insert into BOTH ticket collections for unified visibility
+    await db.service_desk_tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
+    await db.tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
+    logger.info(f"[UNIFIED FLOW] Concierge ticket created: {ticket_id}")
     
-    logger.info(f"Concierge experience request created: {request_id} -> Ticket: {ticket_id}")
+    # ==================== STEP 3: UNIFIED INBOX (MANDATORY) ====================
+    inbox_entry = {
+        "id": inbox_id,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "channel": "web",
+        "request_type": "concierge",
+        "pillar": request.pillar,
+        "category": request.experience_type,
+        "status": "new",
+        "urgency": "medium",
+        "customer_name": user_name,
+        "customer_email": request.user_email,
+        "customer_phone": request.user_whatsapp or request.user_phone,
+        "member": {
+            "name": user_name,
+            "email": request.user_email,
+            "phone": request.user_whatsapp or request.user_phone
+        },
+        "pet": {
+            "name": pet_name
+        },
+        "preview": f"{request.experience_title} - {pet_name}",
+        "message": request.message,
+        "tags": [request.pillar, "concierge", request.experience_type],
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "unified_flow_processed": True
+    }
+    
+    await db.channel_intakes.insert_one({k: v for k, v in inbox_entry.items() if k != "_id"})
+    logger.info(f"[UNIFIED FLOW] Concierge inbox created: {inbox_id}")
+    
+    logger.info(f"[UNIFIED FLOW] COMPLETE: Concierge {request_id} | Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id})")
     
     return {
         "success": True,
         "request_id": request_id,
         "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
         "message": "Your request has been received. Our concierge will reach out within 24 hours."
     }
 
