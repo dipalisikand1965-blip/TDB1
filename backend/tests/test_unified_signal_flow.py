@@ -17,8 +17,14 @@ import os
 import time
 import uuid
 from datetime import datetime
+from requests.auth import HTTPBasicAuth
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+
+# Admin credentials
+ADMIN_USERNAME = "aditya"
+ADMIN_PASSWORD = "lola4304"
+
 
 class TestUnifiedSignalFlow:
     """Test the unified signal flow for concierge requests"""
@@ -31,6 +37,7 @@ class TestUnifiedSignalFlow:
         self.test_phone = "9876543210"
         self.test_pillar = "enjoy"
         self.test_message = f"Test unified flow request - {datetime.now().isoformat()}"
+        self.auth = HTTPBasicAuth(ADMIN_USERNAME, ADMIN_PASSWORD)
         
     def test_01_concierge_request_creates_all_entries(self):
         """
@@ -68,20 +75,12 @@ class TestUnifiedSignalFlow:
         assert "notification_id" in data, "Response should contain notification_id"
         assert "inbox_id" in data, "Response should contain inbox_id"
         
-        # Store IDs for subsequent tests
-        self.request_id = data["request_id"]
-        self.ticket_id = data["ticket_id"]
-        self.notification_id = data["notification_id"]
-        self.inbox_id = data["inbox_id"]
-        
         print(f"\n📋 IDs returned:")
-        print(f"   request_id: {self.request_id}")
-        print(f"   ticket_id: {self.ticket_id}")
-        print(f"   notification_id: {self.notification_id}")
-        print(f"   inbox_id: {self.inbox_id}")
+        print(f"   request_id: {data.get('request_id')}")
+        print(f"   ticket_id: {data.get('ticket_id')}")
+        print(f"   notification_id: {data.get('notification_id')}")
+        print(f"   inbox_id: {data.get('inbox_id')}")
         
-        return data
-    
     def test_02_notification_created_in_admin_notifications(self):
         """Verify notification was created in admin_notifications collection"""
         # First create a request to get the IDs
@@ -101,8 +100,8 @@ class TestUnifiedSignalFlow:
         data = create_response.json()
         notification_id = data.get("notification_id")
         
-        # Now check admin notifications endpoint
-        response = requests.get(f"{BASE_URL}/api/admin/notifications")
+        # Now check admin notifications endpoint (requires auth)
+        response = requests.get(f"{BASE_URL}/api/admin/notifications", auth=self.auth)
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
@@ -253,9 +252,9 @@ class TestUnifiedSignalFlow:
         print(f"   notification_id: {notification_id}")
         print(f"   inbox_id: {inbox_id}")
         
-        # Get notification
-        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications")
-        assert notif_response.status_code == 200
+        # Get notification (requires auth)
+        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications", auth=self.auth)
+        assert notif_response.status_code == 200, f"Notifications endpoint failed: {notif_response.text}"
         notifications = notif_response.json().get("notifications", [])
         notification = next((n for n in notifications if n.get("id") == notification_id), None)
         
@@ -336,9 +335,9 @@ class TestUnifiedSignalFlow:
         assert data.get("notification_id") is not None, "Missing notification_id"
         assert data.get("inbox_id") is not None, "Missing inbox_id"
         
-        # Verify entries exist in all collections
-        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications")
-        assert notif_response.status_code == 200
+        # Verify entries exist in all collections (with auth for notifications)
+        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications", auth=self.auth)
+        assert notif_response.status_code == 200, f"Notifications endpoint failed: {notif_response.text}"
         notifications = notif_response.json().get("notifications", [])
         notification = next((n for n in notifications if n.get("id") == data.get("notification_id")), None)
         assert notification is not None, "Enjoy request notification not found"
@@ -364,9 +363,14 @@ class TestUnifiedSignalFlow:
 class TestEndpointsExist:
     """Verify all required endpoints exist and return data"""
     
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        """Setup auth"""
+        self.auth = HTTPBasicAuth(ADMIN_USERNAME, ADMIN_PASSWORD)
+    
     def test_admin_notifications_endpoint(self):
         """GET /api/admin/notifications should return notifications"""
-        response = requests.get(f"{BASE_URL}/api/admin/notifications")
+        response = requests.get(f"{BASE_URL}/api/admin/notifications", auth=self.auth)
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
