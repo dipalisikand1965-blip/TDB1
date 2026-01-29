@@ -906,7 +906,13 @@ const MemberDashboard = () => {
           pets={pets}
           orders={orders}
           user={user}
-          onNavigateToPet={(petId) => navigate(`/pet/${petId}?tab=personality`)}
+          onNavigateToPet={(petId) => {
+            if (petId) {
+              navigate(`/pet/${petId}?tab=personality`);
+            } else {
+              navigate('/my-pets');
+            }
+          }}
           onOpenExplainer={() => setShowSoulExplainer(true)}
         />
         
