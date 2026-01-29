@@ -129,32 +129,29 @@ const COMMAND_PATTERNS = [
   },
   
   // ============================================
-  // 💈 GROOMING & SPA
+  // 💈 GROOMING & SPA - Conversational, don't auto-navigate
   // ============================================
   {
     patterns: ['groom', 'grooming', 'haircut', 'bath', 'spa', 'fur', 'coat', 'trim'],
     intent: 'book_grooming',
-    response: (petName) => `A grooming session for ${petName}! ${petName} is going to look so beautiful. Let me show you our trusted grooming partners.`,
-    action: 'navigate',
-    path: '/care?type=grooming'
+    response: (petName) => `A grooming session for ${petName}! ${petName} is going to look so beautiful. I know great groomers - say "show me" when you're ready, or ask me something else!`,
+    suggestedPath: '/care?type=grooming'
   },
   {
     patterns: ['nail', 'nails', 'paw', 'paws', 'pedicure', 'nail trim'],
     intent: 'nail_care',
-    response: (petName) => `Time for ${petName}'s nail care? Our groomers can help with that.`,
-    action: 'navigate',
-    path: '/care?type=grooming'
+    response: (petName) => `Time for ${petName}'s nail care? Our groomers can help with that. Say "show me" to find one!`,
+    suggestedPath: '/care?type=grooming'
   },
   {
     patterns: ['shedding', 'hair fall', 'fur falling', 'losing hair', 'bald patch'],
     intent: 'shedding_help',
-    response: (petName) => `Shedding can be normal, but excessive hair loss might need a vet check. Meanwhile, regular grooming helps! Want to book a session for ${petName}?`,
-    action: 'navigate',
-    path: '/care?type=grooming'
+    response: (petName) => `Shedding can be normal, but excessive hair loss might need a vet check. Meanwhile, regular grooming helps! Say "show me" to book a session for ${petName}.`,
+    suggestedPath: '/care?type=grooming'
   },
   
   // ============================================
-  // 🏥 HEALTH & VET
+  // 🏥 HEALTH & VET - These should navigate (important)
   // ============================================
   {
     patterns: ['vaccination', 'vaccine', 'next shot', 'due', 'vet visit', 'immunization', 'booster'],
