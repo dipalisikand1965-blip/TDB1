@@ -68,8 +68,17 @@ const MiraFloatingButton = () => {
         });
         if (res.ok) {
           const data = await res.json();
+          console.log('Mira: Pet data fetched:', data); // Debug log
           if (data.pets?.length > 0) {
-            setPetData(data.pets[0]);
+            const pet = data.pets[0];
+            // Ensure we get the pet name correctly
+            setPetData({
+              id: pet.id,
+              name: pet.name || pet.pet_name || 'your pup',
+              breed: pet.breed,
+              age: pet.age,
+              overall_score: pet.overall_score
+            });
           }
         }
       } catch (err) {
