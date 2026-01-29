@@ -689,36 +689,47 @@ const Pulse = ({
   // Show personalized opening line with memory recall when first opened (TEXT only, no voice)
   useEffect(() => {
     if (isOpen && !hasShownOpening && messages.length === 0) {
-      // PERSONALIZED OPENING LINE with pet name
+      // PULSE OPENING - Quick, action-oriented
       let personalizedOpening = petName && petName !== 'your pup'
-        ? `Hi, I'm Mira! I can help with ${petName}'s needs, guide you to the right place, or connect you with our Concierge.`
-        : MIRA_OPENING;
+        ? `⚡ Hey! I'm Pulse. Tell me what ${petName} needs - I'll route it to Mira instantly.`
+        : PULSE_OPENING;
       
       // Add memory recall if we have relevant memories
       if (memories.length > 0) {
         const recentMemory = memories[0];
         if (recentMemory.content) {
-          personalizedOpening += `\n\n🧠 I remember: "${recentMemory.content}"`;
+          personalizedOpening += `\n\n🧠 Mira remembers: "${recentMemory.content}"`;
         }
       }
       
       setMessages([{
-        role: 'mira',
+        role: 'pulse',
         text: personalizedOpening,
         timestamp: new Date()
       }]);
       setHasShownOpening(true);
-      // DO NOT auto-speak - text is default
+      
+      // If startWithVoice, auto-start listening
+      if (startWithVoice && recognitionRef.current) {
+        setTimeout(() => {
+          try {
+            recognitionRef.current.start();
+            setIsListening(true);
+          } catch (e) {
+            console.log('Could not auto-start listening');
+          }
+        }, 500);
+      }
     }
-  }, [isOpen, hasShownOpening, messages.length, petName, memories]);
+  }, [isOpen, hasShownOpening, messages.length, petName, memories, startWithVoice]);
   
-  // ElevenLabs TTS function - max 10-12 seconds
+  // TTS function - Pulse is quick, max 8 seconds
   const speakWithElevenLabs = useCallback(async (text) => {
     if (isMuted) return;
     
-    // Enforce max length - if text too long, truncate
+    // Enforce max length - Pulse is quick
     const words = text.split(' ');
-    const maxWords = 30; // Roughly 10-12 seconds at normal speech rate
+    const maxWords = 25; // ~8 seconds at normal speech rate
     const truncatedText = words.length > maxWords 
       ? words.slice(0, maxWords).join(' ') + '...'
       : text;
