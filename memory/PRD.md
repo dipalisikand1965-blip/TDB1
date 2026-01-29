@@ -219,6 +219,16 @@ User (Voice/Text) → Mira detects intent → Auto-creates ticket → Service De
 - **Paw Points Breakdown**: Clickable card opens modal with transaction history
 - **CSV Import/Export**: Full functionality for products
 - **UNIFIED SIGNAL FLOW (CRITICAL)**: All signals now flow through: Notification → Service Desk → Unified Inbox → Contextual Views. Implemented in `/app/backend/concierge_routes.py` and `/app/backend/mira_routes.py`
+- **MIRA AFFIRMATIVE RESPONSE HANDLING (CRITICAL)**: Mira now properly responds to "yes please", "yes", "ok", "go ahead", "sure", "sounds good", "perfect" with follow-up questions. Never goes silent.
+- **MIRA GUARD CHECK**: Prevents empty/short responses - forces recovery response if LLM returns nothing
+
+### Mira End States (Valid)
+1. **RESPONDED** - Complete response delivered
+2. **ASKED_QUALIFYING_QUESTION** - Asked follow-up question
+3. **CONFIRMED_ACTION_IN_PROGRESS** - Action initiated
+4. **FAILED_VISIBLE_ERROR** - Error with retry option
+
+**FORBIDDEN**: Silence, empty response, spinner that never resolves
 
 ### Known Issues (P1-P2)
 - **Paw Points Display**: Needs verification that loyalty_points shows correctly in all UI locations
