@@ -25,12 +25,30 @@ const MIRA_VOICE_CONFIG = {
   volume: 1.0
 };
 
-// Command patterns and responses
+// Command patterns and responses - Care-first, non-medical guidance
 const COMMAND_PATTERNS = [
+  // HEALTH ESCALATION - MUST COME FIRST (highest priority)
+  {
+    patterns: ['sick', 'vomiting', 'diarrhea', 'not eating', 'pain', 'bleeding', 'seizure', 'breathing', 'emergency', 'hurt', 'injured', 'collapsed', 'lethargic'],
+    intent: 'health_escalation',
+    response: (petName) => `I can hear you're worried about ${petName}, and that's completely understandable. I can't assess this medically, but our Care Concierge can help you right now. Let me connect you.`,
+    action: 'navigate',
+    path: '/care?urgent=true',
+    escalation: true
+  },
+  {
+    patterns: ['medication', 'medicine', 'dose', 'dosage', 'tablet', 'treatment'],
+    intent: 'medication_escalation',
+    response: (petName) => `For any medication questions about ${petName}, it's safest to speak with a vet or our Care Concierge. I want to make sure you get accurate guidance.`,
+    action: 'navigate',
+    path: '/care',
+    escalation: true
+  },
+  // STANDARD COMMANDS - Non-medical
   {
     patterns: ['order', 'buy', 'get', 'treats', 'food', 'favorite'],
     intent: 'order_treats',
-    response: (petName) => `Absolutely! I'll add ${petName}'s favorite treats to your cart. ${petName} is going to be SO happy! Would you like me to show you some new flavors too?`,
+    response: (petName) => `I'd love to help find something nice for ${petName}! Let me show you some options.`,
     action: 'navigate',
     path: '/shop?category=treats'
   },
@@ -39,9 +57,9 @@ const COMMAND_PATTERNS = [
     intent: 'check_vaccination',
     response: (petName, data) => {
       if (data?.nextVaccination) {
-        return `${petName}'s next vaccination is ${data.nextVaccination}. I've set a reminder for you! Would you like me to book a vet appointment?`;
+        return `${petName}'s next vaccination is coming up on ${data.nextVaccination}. Would you like me to help you prepare?`;
       }
-      return `I don't have ${petName}'s vaccination schedule yet. Would you like to add it to their health records?`;
+      return `I don't have ${petName}'s vaccination schedule yet. Our Care team can help you set this up.`;
     },
     action: 'navigate',
     path: '/pet/{petId}?tab=health'
@@ -49,14 +67,14 @@ const COMMAND_PATTERNS = [
   {
     patterns: ['groom', 'grooming', 'haircut', 'bath', 'spa'],
     intent: 'book_grooming',
-    response: (petName) => `Time for ${petName} to look fabulous! Let me show you our grooming partners.`,
+    response: (petName) => `A grooming session for ${petName}! Let me show you our trusted grooming partners.`,
     action: 'navigate',
     path: '/care?type=grooming'
   },
   {
     patterns: ['birthday', 'celebration', 'party', 'cake'],
     intent: 'birthday',
-    response: (petName) => `Let's celebrate ${petName}! I can help you find birthday cakes, treats, and party essentials!`,
+    response: (petName) => `How exciting! Let's make ${petName}'s celebration special. What kind of celebration are you planning?`,
     action: 'navigate',
     path: '/celebrate'
   },
@@ -65,37 +83,37 @@ const COMMAND_PATTERNS = [
     intent: 'soul_score',
     response: (petName, data) => {
       const score = data?.soulScore || 0;
-      if (score >= 90) return `Amazing! ${petName}'s Soul Score is ${score}%! You're a Soul Master!`;
-      if (score >= 50) return `${petName}'s Soul Score is ${score}%. Great progress! A few more questions to go!`;
-      return `${petName}'s Soul Score is ${score}%. Let's answer some fun questions to know ${petName} better!`;
+      if (score >= 90) return `${petName}'s Soul Score is ${score}%. That's wonderful - we know ${petName} really well now!`;
+      if (score >= 50) return `${petName}'s Soul Score is ${score}%. We're getting to know ${petName} better!`;
+      return `${petName}'s Soul Score is ${score}%. Let's answer some questions to help us understand ${petName} better.`;
     }
   },
   {
     patterns: ['recommend', 'suggestion', 'picks', 'show me'],
     intent: 'recommendations',
-    response: (petName) => `I've curated some special picks just for ${petName}! Let me show you!`,
+    response: (petName) => `Based on what I know about ${petName}, here are some options. Want me to show you?`,
     action: 'navigate',
     path: '/shop'
   },
   {
     patterns: ['help', 'what can you do', 'commands'],
     intent: 'help',
-    response: (petName) => `I can help you order ${petName}'s treats, book grooming, check vaccinations, and much more! Just type or speak!`
+    response: (petName) => `I'm here to help you with ${petName}'s everyday needs - treats, grooming, celebrations, and more. For health concerns, our Care Concierge is your best support.`
   },
   {
     patterns: ['hello', 'hi', 'hey'],
     intent: 'greeting',
-    response: (petName) => `Hey there! How's ${petName} doing today? What can I help you with?`
+    response: (petName) => `Hello! How's ${petName} doing? What can I help you with today?`
   },
   {
     patterns: ['thank', 'thanks', 'awesome'],
     intent: 'thanks',
-    response: (petName) => `You're so welcome! Taking care of ${petName} is my favorite thing!`
+    response: (petName) => `You're welcome! Looking after ${petName} is what I'm here for.`
   },
   {
     patterns: ['bye', 'goodbye'],
     intent: 'goodbye',
-    response: (petName) => `Bye for now! Give ${petName} a belly rub from me!`
+    response: (petName) => `Goodbye for now! Give ${petName} a gentle pat from me.`
   }
 ];
 
