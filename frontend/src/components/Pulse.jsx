@@ -1039,7 +1039,7 @@ const Pulse = ({
     }
     
     setIsProcessing(false);
-  }, [inputText, petName, petData, petId, currentPillar, API_URL, addPulseMessage, onNavigate, onClose, lastSuggestedPath]);
+  }, [inputText, petName, petData, petId, currentPillar, API_URL, addPulseMessage, addProductsToChat, onNavigate, onClose, lastSuggestedPath]);
   
   // Scroll to bottom when messages change
   useEffect(() => {
