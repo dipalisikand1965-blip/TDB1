@@ -280,3 +280,24 @@ User (Voice/Text) → Mira detects intent → Auto-creates ticket → Service De
 - `/app/frontend/src/components/ProductManager.jsx` - Admin product management with CSV import/export
 - `/app/frontend/src/components/admin/CareManager.jsx` - Care pillar admin with working settings toggles
 - `/app/frontend/src/pages/MemberDashboard.jsx` - Member dashboard with Paw Points breakdown modal
+- `/app/backend/concierge_routes.py` - Concierge request handling with UNIFIED SIGNAL FLOW
+- `/app/backend/mira_routes.py` - Mira AI chat with UNIFIED SIGNAL FLOW
+- `/app/backend/unified_signal_flow.py` - Universal signal processor module
+
+## Unified Signal Flow Rule (CRITICAL SYSTEM RULE)
+**This is a hard system rule, not a feature request.**
+
+All signals must flow through:
+1. **NOTIFICATION** (logged first) - `admin_notifications` collection
+2. **SERVICE DESK** (ticket created) - `service_desk_tickets` collection  
+3. **UNIFIED INBOX** (consolidated view) - `channel_intakes` collection
+4. **CONTEXTUAL VIEWS** (pillar-specific) - Only after steps 1-3
+
+There is NO SUCH THING as a silent signal. If it occurs, it is routed.
+
+### Collections Involved:
+- `admin_notifications` - Reflex (immediate awareness)
+- `service_desk_tickets` - Memory (system of record)
+- `channel_intakes` - Awareness (consolidated inbox)
+- Pillar collections - Lenses (contextual views)
+
