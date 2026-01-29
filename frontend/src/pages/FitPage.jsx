@@ -767,7 +767,7 @@ const FitPage = () => {
           
           <div className="mt-10 text-center">
             <p className="text-sm text-gray-500">
-              💬 Not sure where to start? <button onClick={() => setShowConciergeModal(true)} className="text-teal-600 hover:underline font-medium">Tell us about your pet</button> and we'll design a personalized fitness journey.
+              💬 Not sure where to start? <button onClick={() => setShowBookingModal(true)} className="text-teal-600 hover:underline font-medium">Tell us about your pet</button> and we&apos;ll design a personalized fitness journey.
             </p>
           </div>
         </div>
