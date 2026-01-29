@@ -71,6 +71,32 @@ const MiraFloatingButton = () => {
   // Fetch user's pet data for personalization
   useEffect(() => {
     const fetchPetData = async () => {
+      // First try to get pet from URL if we're on a pet page
+      const petMatch = location.pathname.match(/\/pet\/([^/]+)/);
+      if (petMatch) {
+        const petId = petMatch[1];
+        try {
+          const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/pets/${petId}`);
+          if (res.ok) {
+            const pet = await res.json();
+            if (pet && pet.name) {
+              setPetData({
+                id: pet.id,
+                name: pet.name || pet.pet_name || 'your pup',
+                breed: pet.breed,
+                age: pet.age,
+                overall_score: pet.overall_score,
+                next_vaccination: pet.next_vaccination
+              });
+              return; // Got pet data from URL
+            }
+          }
+        } catch (err) {
+          console.log('Could not fetch pet from URL:', err);
+        }
+      }
+      
+      // Fall back to fetching user's pets if logged in
       if (!token) return;
       try {
         const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/pets/my-pets`, {
@@ -78,16 +104,16 @@ const MiraFloatingButton = () => {
         });
         if (res.ok) {
           const data = await res.json();
-          console.log('Mira: Pet data fetched:', data); // Debug log
+          console.log('Mira: Pet data fetched:', data);
           if (data.pets?.length > 0) {
             const pet = data.pets[0];
-            // Ensure we get the pet name correctly
             setPetData({
               id: pet.id,
               name: pet.name || pet.pet_name || 'your pup',
               breed: pet.breed,
               age: pet.age,
-              overall_score: pet.overall_score
+              overall_score: pet.overall_score,
+              next_vaccination: pet.next_vaccination
             });
           }
         }
@@ -96,7 +122,7 @@ const MiraFloatingButton = () => {
       }
     };
     fetchPetData();
-  }, [token]);
+  }, [token, location.pathname]);
   
   // Hide on pages where Mira is already prominent
   const hiddenPaths = ['/mira', '/ask-mira', '/admin'];
