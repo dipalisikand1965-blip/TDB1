@@ -7579,7 +7579,11 @@ async def delete_pet_profile(pet_id: str):
 
 @api_router.post("/pets/{pet_id}/soul-answer")
 async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dict = Depends(get_current_user)):
-    """Save a single Pet Soul answer and recalculate score using weighted scoring"""
+    """
+    Save a single Pet Soul answer and recalculate score using weighted scoring.
+    
+    UNIFIED FLOW: Creates notification + ticket on first answer or milestone.
+    """
     pet = await db.pets.find_one({"id": pet_id})
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
@@ -7592,12 +7596,14 @@ async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dic
     
     # Get current soul answers or initialize
     soul_answers = pet.get("doggy_soul_answers", {})
+    previous_count = sum(1 for v in soul_answers.values() if v and v not in ['', [], None, 'Unknown'])
     soul_answers[question_id] = answer
     
     # Recalculate score using weighted system (consistent with get_my_pets)
     score_data = calculate_pet_soul_score(soul_answers)
     new_score = score_data["total_score"]
     score_tier = score_data["tier"]["key"] if score_data.get("tier") else "newcomer"
+    new_count = score_data["answered_count"]
     
     # Update pet
     await db.pets.update_one(
@@ -7610,6 +7616,52 @@ async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dic
         }}
     )
     
+    # ==================== UNIFIED FLOW: Log milestone events ====================
+    # Create notification on first answer OR milestone (25%, 50%, 75%, 100%)
+    milestone_thresholds = [1, 25, 50, 75, 100]
+    should_notify = (
+        previous_count == 0 or  # First answer ever
+        any(previous_count < t <= new_count for t in milestone_thresholds) or  # Crossed a milestone
+        new_score >= 100  # Profile complete
+    )
+    
+    if should_notify:
+        pet_name = pet.get("name", "Pet")
+        user_email = current_user.get("email")
+        user_name = current_user.get("name", current_user.get("email"))
+        
+        milestone_type = "first_answer" if previous_count == 0 else f"milestone_{new_score}"
+        notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+        
+        # Create notification for Pet Soul progress
+        await db.admin_notifications.insert_one({
+            "id": notification_id,
+            "type": f"pet_soul_{milestone_type}",
+            "pillar": "profile",
+            "title": f"Pet Soul Progress: {pet_name}",
+            "message": f"{user_name} has {'started' if previous_count == 0 else 'updated'} {pet_name}'s Pet Soul™ ({new_score}% complete)",
+            "status": "unread",
+            "urgency": "low",
+            "customer": {
+                "name": user_name,
+                "email": user_email
+            },
+            "pet": {
+                "id": pet_id,
+                "name": pet_name
+            },
+            "metadata": {
+                "previous_score": previous_count,
+                "new_score": new_score,
+                "milestone": milestone_type,
+                "question_answered": question_id
+            },
+            "link": f"/admin?tab=members&pet={pet_id}",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "read_at": None
+        })
+        logger.info(f"[UNIFIED FLOW] Pet Soul milestone notification: {notification_id} for {pet_name} ({new_score}%)")
+    
     return {
         "message": "Answer saved",
         "question_id": question_id,
@@ -7617,7 +7669,8 @@ async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dic
         "new_score": new_score,
         "score_tier": score_tier,
         "pet_name": pet.get("name"),
-        "answers_count": score_data["answered_count"]
+        "answers_count": score_data["answered_count"],
+        "milestone_reached": should_notify
     }
 
 
