@@ -2904,6 +2904,100 @@ async def list_mira_tickets(
     
     return {"tickets": tickets, "total": len(tickets)}
 
+@router.get("/my-requests")
+async def get_my_requests(
+    limit: int = 10,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get user's active requests/tickets.
+    Allows members to check status of their conversations-turned-tickets.
+    """
+    user = await get_user_from_token(authorization)
+    if not user:
+        return {"requests": [], "message": "Sign in to view your requests"}
+    
+    db = get_db()
+    user_email = user.get("email")
+    
+    # Fetch tickets from both mira_tickets and service_desk_tickets
+    mira_tickets = await db.mira_tickets.find(
+        {"member.email": user_email},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    service_tickets = await db.service_desk_tickets.find(
+        {"member.email": user_email},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Format for frontend
+    requests = []
+    for ticket in mira_tickets:
+        requests.append({
+            "id": ticket.get("ticket_id"),
+            "type": ticket.get("ticket_type", "advisory"),
+            "pillar": ticket.get("pillar"),
+            "status": ticket.get("status"),
+            "status_display": get_status_display(ticket.get("status")),
+            "description": ticket.get("description", "")[:100],
+            "created_at": ticket.get("created_at"),
+            "updated_at": ticket.get("updated_at"),
+            "pet_name": ticket.get("pet", {}).get("name") if ticket.get("pet") else None,
+            "source": "mira"
+        })
+    
+    for ticket in service_tickets:
+        requests.append({
+            "id": ticket.get("ticket_id"),
+            "type": ticket.get("action_type", "request"),
+            "pillar": ticket.get("pillar"),
+            "status": ticket.get("status"),
+            "status_display": get_status_display(ticket.get("status")),
+            "description": ticket.get("original_request", "")[:100],
+            "created_at": ticket.get("created_at"),
+            "updated_at": ticket.get("updated_at"),
+            "pet_names": [p.get("name") for p in ticket.get("pets", []) if p.get("name")],
+            "source": "service_desk"
+        })
+    
+    # Sort by created_at descending
+    requests.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    
+    return {
+        "requests": requests[:limit],
+        "total": len(requests),
+        "user": {"name": user.get("name"), "email": user_email}
+    }
+
+def get_status_display(status: str) -> dict:
+    """Convert status to user-friendly display"""
+    status_map = {
+        # Advisory statuses
+        "exploring": {"label": "In Review", "color": "blue", "icon": "🔍"},
+        "informed": {"label": "Response Sent", "color": "green", "icon": "✅"},
+        "converted": {"label": "Action Taken", "color": "purple", "icon": "🎉"},
+        "closed": {"label": "Completed", "color": "gray", "icon": "✔️"},
+        
+        # Concierge statuses
+        "acknowledged": {"label": "Received", "color": "blue", "icon": "📥"},
+        "in_review": {"label": "Being Reviewed", "color": "yellow", "icon": "🔄"},
+        "in_progress": {"label": "Working on it", "color": "orange", "icon": "⚙️"},
+        "confirmed": {"label": "Confirmed", "color": "green", "icon": "✅"},
+        "completed": {"label": "Completed", "color": "green", "icon": "🎉"},
+        
+        # Emergency statuses
+        "immediate_action": {"label": "Urgent Response", "color": "red", "icon": "🚨"},
+        "responder_assigned": {"label": "Help on the Way", "color": "orange", "icon": "🏃"},
+        "resolved": {"label": "Resolved", "color": "green", "icon": "✅"},
+        
+        # Service desk statuses
+        "pending": {"label": "Pending", "color": "yellow", "icon": "⏳"},
+        "assigned": {"label": "Assigned", "color": "blue", "icon": "👤"},
+        "contacted": {"label": "Contacted You", "color": "green", "icon": "📞"},
+    }
+    return status_map.get(status, {"label": status.replace("_", " ").title(), "color": "gray", "icon": "📋"})
+
 class MiraContextRequest(BaseModel):
     current_pillar: Optional[str] = None
     current_category: Optional[str] = None  # Product category for specific suggestions
