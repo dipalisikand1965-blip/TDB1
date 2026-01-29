@@ -118,40 +118,41 @@ const MiraFloatingButton = () => {
       >
         {/* Tooltip */}
         {showTooltip && !isOpen && (
-          <div className="absolute right-16 top-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg animate-bounce whitespace-nowrap">
-            <span className="mr-1">👋</span> Ask Mira!
-            <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-pink-600"></div>
+          <div className="absolute right-16 top-0 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg animate-bounce whitespace-nowrap">
+            <span className="mr-1">⚡</span> Quick Voice!
+            <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-blue-500"></div>
           </div>
         )}
         
-        {/* Main Button */}
+        {/* Main Button - PULSE */}
         <button
           onClick={() => setIsOpen(!isOpen)}
+          data-testid="pulse-floating-btn"
           className={`
             w-14 h-14 rounded-full shadow-xl flex items-center justify-center
             transition-all duration-300 transform hover:scale-110
             ${isOpen 
               ? 'bg-gray-700 rotate-90' 
-              : 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 animate-pulse'
+              : 'bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-500'
             }
           `}
-          aria-label={isOpen ? 'Close Mira' : 'Talk to Mira'}
+          aria-label={isOpen ? 'Close Pulse' : 'Open Pulse'}
         >
           {isOpen ? (
             <X className="w-6 h-6 text-white" />
           ) : (
             <div className="relative">
-              <Sparkles className="w-7 h-7 text-white" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-ping"></span>
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></span>
+              <Zap className="w-7 h-7 text-yellow-300" />
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white animate-ping"></span>
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white"></span>
             </div>
           )}
         </button>
         
-        {/* Quick Label */}
+        {/* Quick Label - PULSE */}
         {!isOpen && (
-          <div className="mt-1 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full shadow text-xs font-medium text-purple-700">
-            Mira ✨
+          <div className="mt-1 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full shadow text-xs font-medium text-blue-600">
+            Pulse ⚡
           </div>
         )}
       </div>
