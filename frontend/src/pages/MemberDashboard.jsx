@@ -915,45 +915,96 @@ const MemberDashboard = () => {
         )}
         
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="bg-white p-1 rounded-xl border shadow-sm w-full flex overflow-x-auto scrollbar-hide">
-            <TabsTrigger value="overview" className="rounded-lg flex-shrink-0 whitespace-nowrap">Overview</TabsTrigger>
-            <TabsTrigger value="services" className="rounded-lg flex-shrink-0 whitespace-nowrap">
-              <Crown className="w-4 h-4 mr-1" />
-              All Services
-            </TabsTrigger>
-            <TabsTrigger value="rewards" className="rounded-lg flex-shrink-0 whitespace-nowrap">
-              <Gift className="w-4 h-4 mr-1" />
-              Rewards
-            </TabsTrigger>
-            <TabsTrigger value="mira" className="rounded-lg flex-shrink-0 whitespace-nowrap">
-              <Sparkles className="w-4 h-4 mr-1" />
-              Mira AI
-            </TabsTrigger>
-            <TabsTrigger value="orders" className="rounded-lg flex-shrink-0 whitespace-nowrap">
-              <Package className="w-4 h-4 mr-1" />
-              Orders
-            </TabsTrigger>
-            <TabsTrigger value="autoship" className="rounded-lg flex-shrink-0 whitespace-nowrap">
-              <RefreshCw className="w-4 h-4 mr-1" />
-              Autoship
-            </TabsTrigger>
-            <TabsTrigger value="reviews" className="rounded-lg flex-shrink-0 whitespace-nowrap">
-              <MessageSquare className="w-4 h-4 mr-1" />
-              Reviews
-            </TabsTrigger>
-            <TabsTrigger value="pets" className="rounded-lg flex-shrink-0 whitespace-nowrap">
-              <PawPrint className="w-4 h-4 mr-1" />
-              Pets
-            </TabsTrigger>
-            <TabsTrigger value="addresses" className="rounded-lg flex-shrink-0 whitespace-nowrap">
-              <MapPin className="w-4 h-4 mr-1" />
-              Addresses
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="rounded-lg flex-shrink-0 whitespace-nowrap">
-              <Settings className="w-4 h-4 mr-1" />
-              Settings
-            </TabsTrigger>
-          </TabsList>
+          {/* Mobile-First Navigation - Clean bottom bar style on mobile, horizontal scroll on desktop */}
+          <div className="sticky top-0 z-20 bg-gradient-to-b from-white via-white to-transparent pb-2">
+            {/* Desktop: Horizontal scroll tabs */}
+            <TabsList className="hidden md:flex bg-white p-1 rounded-xl border shadow-sm w-full overflow-x-auto scrollbar-hide">
+              <TabsTrigger value="overview" className="rounded-lg flex-shrink-0 whitespace-nowrap">Overview</TabsTrigger>
+              <TabsTrigger value="services" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+                <Crown className="w-4 h-4 mr-1" />
+                All Services
+              </TabsTrigger>
+              <TabsTrigger value="rewards" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+                <Gift className="w-4 h-4 mr-1" />
+                Rewards
+              </TabsTrigger>
+              <TabsTrigger value="mira" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+                <Sparkles className="w-4 h-4 mr-1" />
+                Mira AI
+              </TabsTrigger>
+              <TabsTrigger value="orders" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+                <Package className="w-4 h-4 mr-1" />
+                Orders
+              </TabsTrigger>
+              <TabsTrigger value="autoship" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+                <RefreshCw className="w-4 h-4 mr-1" />
+                Autoship
+              </TabsTrigger>
+              <TabsTrigger value="reviews" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+                <MessageSquare className="w-4 h-4 mr-1" />
+                Reviews
+              </TabsTrigger>
+              <TabsTrigger value="pets" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+                <PawPrint className="w-4 h-4 mr-1" />
+                Pets
+              </TabsTrigger>
+              <TabsTrigger value="addresses" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+                <MapPin className="w-4 h-4 mr-1" />
+                Addresses
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+                <Settings className="w-4 h-4 mr-1" />
+                Settings
+              </TabsTrigger>
+            </TabsList>
+            
+            {/* Mobile: Clean 2-row grid navigation */}
+            <div className="md:hidden space-y-2">
+              {/* Primary Row - Most used */}
+              <TabsList className="bg-white p-1 rounded-xl border shadow-sm grid grid-cols-4 gap-1">
+                <TabsTrigger value="overview" className="rounded-lg flex flex-col items-center py-2 px-1 text-xs">
+                  <Home className="w-5 h-5 mb-1" />
+                  Home
+                </TabsTrigger>
+                <TabsTrigger value="services" className="rounded-lg flex flex-col items-center py-2 px-1 text-xs">
+                  <Crown className="w-5 h-5 mb-1" />
+                  Services
+                </TabsTrigger>
+                <TabsTrigger value="mira" className="rounded-lg flex flex-col items-center py-2 px-1 text-xs">
+                  <Sparkles className="w-5 h-5 mb-1" />
+                  Mira
+                </TabsTrigger>
+                <TabsTrigger value="orders" className="rounded-lg flex flex-col items-center py-2 px-1 text-xs">
+                  <Package className="w-5 h-5 mb-1" />
+                  Orders
+                </TabsTrigger>
+              </TabsList>
+              
+              {/* Secondary Row - Less frequent */}
+              <TabsList className="bg-gray-50 p-1 rounded-xl border grid grid-cols-5 gap-1">
+                <TabsTrigger value="rewards" className="rounded-lg flex flex-col items-center py-1.5 px-1 text-[10px]">
+                  <Gift className="w-4 h-4 mb-0.5" />
+                  Rewards
+                </TabsTrigger>
+                <TabsTrigger value="pets" className="rounded-lg flex flex-col items-center py-1.5 px-1 text-[10px]">
+                  <PawPrint className="w-4 h-4 mb-0.5" />
+                  Pets
+                </TabsTrigger>
+                <TabsTrigger value="autoship" className="rounded-lg flex flex-col items-center py-1.5 px-1 text-[10px]">
+                  <RefreshCw className="w-4 h-4 mb-0.5" />
+                  Autoship
+                </TabsTrigger>
+                <TabsTrigger value="addresses" className="rounded-lg flex flex-col items-center py-1.5 px-1 text-[10px]">
+                  <MapPin className="w-4 h-4 mb-0.5" />
+                  Addresses
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="rounded-lg flex flex-col items-center py-1.5 px-1 text-[10px]">
+                  <Settings className="w-4 h-4 mb-0.5" />
+                  Settings
+                </TabsTrigger>
+              </TabsList>
+            </div>
+          </div>
 
           {/* Overview Content */}
           <TabsContent value="overview" className="animate-in fade-in-50 duration-300">
