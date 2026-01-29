@@ -557,10 +557,10 @@ const StayPage = () => {
               <p className="text-gray-500">No boarding facilities found. Try different filters.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
               {boardingFacilities.map((facility) => (
                 <Card key={facility.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="relative h-48">
+                  <div className="relative h-36 md:h-48">
                     <img 
                       src={facility.image || facility.photos?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800'} 
                       alt={facility.name}
