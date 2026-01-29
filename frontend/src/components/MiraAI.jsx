@@ -588,6 +588,19 @@ const MiraAI = () => {
           </div>
         </div>
         <div className="flex items-center gap-1">
+          {/* Pulse Voice Mode Button */}
+          <button
+            className="text-white hover:bg-white/20 h-9 px-3 rounded-full flex items-center justify-center gap-1.5 transition-colors bg-white/10 border border-white/20"
+            onClick={() => {
+              setIsOpen(false);
+              window.dispatchEvent(new CustomEvent('openPulse', { detail: { startWithVoice: true } }));
+            }}
+            title="Switch to Pulse Voice"
+            data-testid="mira-pulse-btn"
+          >
+            <Mic className="w-3.5 h-3.5 text-cyan-300" />
+            <span className="text-xs font-medium">Pulse</span>
+          </button>
           {/* New Conversation Button */}
           <button
             className="text-white/70 hover:text-white hover:bg-white/20 h-9 w-9 rounded-full flex items-center justify-center transition-colors"
