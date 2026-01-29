@@ -4,6 +4,7 @@ import { ShoppingCart, Menu, X, Search, User, ChevronDown, Sparkles, PawPrint, L
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { intelligentSearch } from '../utils/unifiedApi';
+import { API_URL } from '../utils/api';
 
 /**
  * Clean Navbar with all 14 Pillars
