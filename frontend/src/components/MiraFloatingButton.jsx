@@ -71,7 +71,7 @@ const MiraFloatingButton = () => {
         {/* Tooltip */}
         {showTooltip && !isOpen && (
           <div className="absolute right-16 top-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg animate-bounce whitespace-nowrap">
-            <span className="mr-1">👋</span> Ask Meera!
+            <span className="mr-1">👋</span> Ask Mira!
             <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-pink-600"></div>
           </div>
         )}
@@ -87,7 +87,7 @@ const MiraFloatingButton = () => {
               : 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 animate-pulse'
             }
           `}
-          aria-label={isOpen ? 'Close Meera' : 'Talk to Meera'}
+          aria-label={isOpen ? 'Close Mira' : 'Talk to Mira'}
         >
           {isOpen ? (
             <X className="w-6 h-6 text-white" />
@@ -103,7 +103,7 @@ const MiraFloatingButton = () => {
         {/* Quick Label */}
         {!isOpen && (
           <div className="mt-1 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full shadow text-xs font-medium text-purple-700">
-            Meera ✨
+            Mira ✨
           </div>
         )}
       </div>
