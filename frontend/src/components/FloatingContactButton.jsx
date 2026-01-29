@@ -1,15 +1,23 @@
 /**
  * FloatingContactButton.jsx
- * Floating contact button that appears on most pages
- * Allows users to quickly call, WhatsApp, request callback, or Talk to Mira
+ * Unified floating contact stack - consolidated communication hub
  * 
- * Hidden on Mira pages where dedicated contact options exist in the sidebar
+ * Stack includes:
+ * - Talk to Mira (Voice AI assistant)
+ * - WhatsApp Chat (moved from left side)
+ * - Call Now
+ * - Request Callback
+ * 
+ * Mobile-first design with stacked options
  */
 
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Phone, MessageCircle, Mic, X, Headphones, PhoneIncoming, Sparkles } from 'lucide-react';
+import { Phone, MessageCircle, X, Headphones, PhoneIncoming, Sparkles } from 'lucide-react';
 import CallbackRequestModal from './CallbackRequestModal';
+
+const WHATSAPP_NUMBER = '919663185747';
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I'd like to know more about The Doggy Company 🐕")}`;
 
 const FloatingContactButton = () => {
   const location = useLocation();
@@ -36,16 +44,24 @@ const FloatingContactButton = () => {
   const contactOptions = [
     {
       label: 'Talk to Mira',
-      sublabel: 'Voice assistant',
+      sublabel: 'AI assistant',
       icon: Sparkles,
       color: 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600',
       onClick: handleTalkToMira,
     },
     {
+      label: 'WhatsApp',
+      sublabel: 'Chat with us',
+      icon: MessageCircle,
+      color: 'bg-green-500 hover:bg-green-600',
+      href: WHATSAPP_URL,
+      external: true,
+    },
+    {
       label: 'Call Now',
       sublabel: '+91 96631 85747',
       icon: Phone,
-      color: 'bg-green-500 hover:bg-green-600',
+      color: 'bg-emerald-600 hover:bg-emerald-700',
       href: 'tel:+919663185747',
     },
     {
