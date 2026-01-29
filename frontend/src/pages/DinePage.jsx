@@ -1489,7 +1489,8 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
         }));
       }
     }
-  }, [selectedPets]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPets, userPets]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
