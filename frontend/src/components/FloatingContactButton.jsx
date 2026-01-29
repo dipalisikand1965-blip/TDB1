@@ -11,7 +11,7 @@
  * Mobile-first design with stacked options
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Phone, MessageCircle, X, Headphones, PhoneIncoming, Sparkles } from 'lucide-react';
 import CallbackRequestModal from './CallbackRequestModal';
