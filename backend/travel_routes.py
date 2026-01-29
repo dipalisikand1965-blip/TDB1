@@ -1314,8 +1314,8 @@ async def seed_travel_products():
     
     # Insert bundles
     for bundle in default_bundles:
-        bundle["created_at"] = datetime.now(timezone.utc).isoformat()
-        bundle["updated_at"] = datetime.now(timezone.utc).isoformat()
+        bundle["created_at"] = get_consistent_timestamp()
+        bundle["updated_at"] = get_consistent_timestamp()
         await db.product_bundles.update_one(
             {"id": bundle["id"]},
             {"$set": bundle},
