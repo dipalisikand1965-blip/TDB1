@@ -65,21 +65,21 @@ const COMMAND_PATTERNS = [
   {
     patterns: ['order', 'buy', 'get', 'treats', 'favorite', 'snack', 'biscuit', 'chew', 'dental chew'],
     intent: 'order_treats',
-    response: (petName) => `I'd love to help find something nice for ${petName}! Let me show you some options.`,
+    response: (petName) => `Ooh, treats for ${petName}! Great choice. ${petName} deserves something yummy. Let me show you the best options!`,
     action: 'navigate',
     path: '/shop?category=treats'
   },
   {
     patterns: ['food', 'kibble', 'dry food', 'wet food', 'meal', 'diet', 'nutrition', 'feeding'],
     intent: 'order_food',
-    response: (petName) => `Looking for food for ${petName}? Let me show you our quality options.`,
+    response: (petName) => `Time to stock up on food for ${petName}! Good nutrition is key. Let me show you quality options that ${petName} will love.`,
     action: 'navigate',
     path: '/shop?category=food'
   },
   {
     patterns: ['toy', 'toys', 'play', 'ball', 'rope', 'squeaky', 'plush', 'chew toy'],
     intent: 'order_toys',
-    response: (petName) => `Playtime for ${petName}! Let me show you some fun toys.`,
+    response: (petName) => `Playtime for ${petName}! A good toy keeps them happy and entertained. Let me show you some favorites.`,
     action: 'navigate',
     path: '/shop?category=toys'
   },
