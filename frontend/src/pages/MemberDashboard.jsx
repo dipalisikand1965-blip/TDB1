@@ -276,6 +276,11 @@ const MemberDashboard = () => {
   const [myRequests, setMyRequests] = useState([]);
   const [requestsLoading, setRequestsLoading] = useState(false);
   
+  // Paw Points Breakdown Modal State
+  const [showPawPointsBreakdown, setShowPawPointsBreakdown] = useState(false);
+  const [pawPointsHistory, setPawPointsHistory] = useState([]);
+  const [pawPointsLoading, setPawPointsLoading] = useState(false);
+  
   // First Visit Tour
   const { showTour, startTour, endTour } = useTour();
   
