@@ -757,14 +757,21 @@ async def list_tickets(
     except Exception as e:
         logger.warning(f"Error fetching from service_desk_tickets collection: {e}")
     
-    # Sort combined results - handle datetime vs string comparison
+    # Sort combined results - handle datetime vs string comparison properly
     def get_sort_key(x):
         val = x.get(sort_by, "")
         if val is None:
-            return ""
+            return datetime.min if sort_order == "desc" else datetime.max
         if isinstance(val, datetime):
-            return val.isoformat()
-        return str(val)
+            return val
+        if isinstance(val, str):
+            try:
+                # Parse ISO format with or without timezone
+                from dateutil.parser import parse
+                return parse(val)
+            except:
+                return datetime.min if sort_order == "desc" else datetime.max
+        return datetime.min if sort_order == "desc" else datetime.max
     
     all_tickets.sort(key=get_sort_key, reverse=(sort_order == "desc"))
     
