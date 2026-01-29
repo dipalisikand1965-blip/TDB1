@@ -277,6 +277,37 @@ curl -X POST https://YOUR_DOMAIN/api/admin/universal-seed
 All functionality is now available in ServiceDesk.jsx with the same design you love.
 
 Navigate to: **Admin → Service Desk**`
+        }
+      ]
+    },
+    'service-desk': {
+      title: 'Service Desk',
+      subtitle: 'Unified Ticket Management - The ONE Source of Truth',
+      badge: '⭐ Primary',
+      files: {
+        frontend: '/app/frontend/src/components/admin/ServiceDesk.jsx',
+        backend: '/app/backend/concierge_routes.py, /app/backend/ticket_intelligence.py'
+      },
+      sections: [
+        {
+          title: 'Key Features',
+          content: `• **Unified Queue**: ALL tickets from all sources in one place
+• **Real-time SLA Countdown**: Live timer that updates every second
+• **SLA Attention Banner**: Shows breached/critical/warning counts
+• **Audio Alerts**: Optional sound alerts for new SLA breaches
+• **360° Member Profile**: Complete customer view (clickable)
+• **Mira's Intelligence**: AI-powered insights per ticket
+• **Omni-Channel Reply**: Respond via Mira, Email, WhatsApp
+• **Bulk Actions**: Select multiple tickets for mass operations
+• **Kanban View**: Drag-and-drop workflow management`
+        },
+        {
+          title: 'Ticket Sources',
+          content: `| Source | Collection | Description |
+|--------|------------|-------------|
+| Pulse Voice | \`tickets\` | Voice/text commands from Pulse |
+| Mira Requests | \`service_desk_tickets\` | AI concierge escalations |
+| Manual Tickets | \`tickets\` | Staff-created tickets |
 | Orders | \`orders\` | Pending/processing orders |
 | Stay Bookings | \`stay_requests\` | Boarding/hotel requests |
 | Travel Requests | \`travel_requests\` | Pet travel requests |
