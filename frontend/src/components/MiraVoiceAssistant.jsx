@@ -646,6 +646,7 @@ const MiraVoiceAssistant = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [useElevenLabs, setUseElevenLabs] = useState(true);
   const [hasShownOpening, setHasShownOpening] = useState(false);
+  const [memories, setMemories] = useState([]);
   
   const recognitionRef = useRef(null);
   const synthRef = useRef(typeof window !== 'undefined' ? window.speechSynthesis : null);
@@ -655,13 +656,48 @@ const MiraVoiceAssistant = ({
   
   const API_URL = process.env.REACT_APP_BACKEND_URL;
   
-  // Show personalized opening line when first opened (TEXT only, no voice)
+  // Fetch relevant memories when Mira opens
+  useEffect(() => {
+    const fetchMemories = async () => {
+      if (!isOpen || !petId) return;
+      
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
+        const response = await fetch(`${API_URL}/api/mira/memories?pet_id=${petId}&limit=3`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.memories && data.memories.length > 0) {
+            setMemories(data.memories);
+          }
+        }
+      } catch (err) {
+        console.log('Could not fetch memories:', err);
+      }
+    };
+    
+    fetchMemories();
+  }, [isOpen, petId, API_URL]);
+  
+  // Show personalized opening line with memory recall when first opened (TEXT only, no voice)
   useEffect(() => {
     if (isOpen && !hasShownOpening && messages.length === 0) {
       // PERSONALIZED OPENING LINE with pet name
-      const personalizedOpening = petName && petName !== 'your pup'
+      let personalizedOpening = petName && petName !== 'your pup'
         ? `Hi, I'm Mira! I can help with ${petName}'s needs, guide you to the right place, or connect you with our Concierge.`
         : MIRA_OPENING;
+      
+      // Add memory recall if we have relevant memories
+      if (memories.length > 0) {
+        const recentMemory = memories[0];
+        if (recentMemory.content) {
+          personalizedOpening += `\n\n🧠 I remember: "${recentMemory.content}"`;
+        }
+      }
       
       setMessages([{
         role: 'mira',
@@ -671,7 +707,7 @@ const MiraVoiceAssistant = ({
       setHasShownOpening(true);
       // DO NOT auto-speak - text is default
     }
-  }, [isOpen, hasShownOpening, messages.length, petName]);
+  }, [isOpen, hasShownOpening, messages.length, petName, memories]);
   
   // ElevenLabs TTS function - max 10-12 seconds
   const speakWithElevenLabs = useCallback(async (text) => {
