@@ -780,10 +780,8 @@ const MiraContextPanel = ({
                       className="bg-white p-3 rounded-lg border border-gray-100 hover:border-purple-200 transition-colors cursor-pointer"
                       onClick={() => {
                         trackClick(pillar, rec.id, { type: rec.type });
-                        if (rec.cta === 'Book a Cab' || rec.cta === 'Plan Flight') {
-                          setShowChat(true);
-                          setInputValue(rec.title);
-                        }
+                        // Send the recommendation as a message to Mira
+                        sendDirectMessage(rec.title);
                       }}
                     >
                       <p className="text-sm font-medium text-gray-900">{rec.title}</p>
