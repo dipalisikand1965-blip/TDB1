@@ -122,11 +122,13 @@
 - ✅ MiraAI mobile positioning (top-[60px])
 - ✅ Footer explainer video link
 - ✅ Dashboard event listener for explainer
+- ✅ MiraFloatingButton displays "Ask Mira" (not "Ask Meera")
+- ✅ Admin NotificationBell buzzes for new members (wiggle animation)
 
 **Testing Results:**
 - Backend: 100% (12/12 tests passed)
 - Frontend: 100% (All features verified)
-- Test reports: `/app/test_reports/iteration_115.json`, `/app/test_reports/iteration_116.json`
+- Test reports: `/app/test_reports/iteration_115.json`, `/app/test_reports/iteration_116.json`, `/app/test_reports/iteration_117.json`
 
 ---
 
