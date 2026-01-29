@@ -621,10 +621,11 @@ const findCommand = (text) => {
 };
 
 const getFallbackResponse = (petName) => {
+  const name = petName || 'your pet';
   const responses = [
-    `Got it! Let me pass this to Mira for ${petName}. One sec...`,
-    `Capturing that. Mira will help with ${petName}'s request.`,
-    `Understood! Routing to Mira now...`
+    `Got it! Routing to Mira for ${name}...`,
+    `On it! Mira will take care of ${name}'s request.`,
+    `Captured! Sending to Mira now for ${name}.`
   ];
   return responses[Math.floor(Math.random() * responses.length)];
 };
@@ -632,7 +633,6 @@ const getFallbackResponse = (petName) => {
 // Main Pulse Component - Voice Intent Accelerator
 // PURPOSE: Fast capture, intent structuring, handoff to Mira
 const Pulse = ({ 
-  isOpen, 
   onClose, 
   petName = 'your pup', 
   petId,
