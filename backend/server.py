@@ -1053,6 +1053,12 @@ async def lifespan(app: FastAPI):
     set_order_queue_db(db)
     logger.info("Concierge® Order Queue initialized")
     
+    # Initialize UNIFIED FLOW ENFORCER - MANDATORY FOR ALL DEVICES
+    # This ensures Desktop = Mobile = PWA = Any Device
+    init_unified_enforcer(db)
+    logger.info("★★★ UNIFIED FLOW ENFORCER ACTIVE ★★★")
+    logger.info("All action endpoints will be monitored and blocked if unified flow is incomplete")
+    
     # Initialize autoship routes database connection
     set_autoship_db(db)
     set_autoship_deps(get_current_user)
