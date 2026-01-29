@@ -1054,9 +1054,10 @@ async def lifespan(app: FastAPI):
     set_order_queue_db(db)
     logger.info("Concierge® Order Queue initialized")
     
-    # UNIFIED FLOW ENFORCER - DISABLED (was breaking Mira chat)
-    # init_unified_enforcer(db)
-    # logger.info("★★★ UNIFIED FLOW ENFORCER ACTIVE ★★★")
+    # Initialize CENTRAL SIGNAL FLOW - ALL pillars use this
+    from central_signal_flow import init_central_flow
+    init_central_flow(db)
+    logger.info("★★★ CENTRAL SIGNAL FLOW ACTIVE ★★★")
     
     # Initialize autoship routes database connection
     set_autoship_db(db)
