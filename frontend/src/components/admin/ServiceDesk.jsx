@@ -2705,16 +2705,18 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
         {/* Filters Sidebar */}
         <div className="w-48 flex-shrink-0 space-y-4">
           <div>
-            <Label className="text-xs text-slate-500 mb-1.5 block font-medium">Search</Label>
+            <Label className="text-xs text-slate-500 mb-1.5 block font-medium">Smart Search</Label>
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 w-4 h-4 text-slate-400" />
               <Input
-                className="pl-9 h-9 rounded-lg border-slate-200 focus:border-amber-400 focus:ring-amber-400"
-                placeholder="Search tickets..."
+                className="pl-9 h-9 rounded-lg border-slate-200 focus:border-amber-400 focus:ring-amber-400 text-sm"
+                placeholder="ID, name, phone..."
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                title="Search by Ticket ID, Pet Parent Name, Phone, Email, or Subject"
               />
             </div>
+            <p className="text-[10px] text-slate-400 mt-1">Tip: Search by ticket #, name or phone</p>
           </div>
 
           {/* View Mode Toggle - Always Visible */}
