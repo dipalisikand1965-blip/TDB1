@@ -2483,7 +2483,7 @@ const MemberDashboard = () => {
                       <li>• Skip, pause or cancel anytime</li>
                     </ul>
                   </div>
-                  <Button className="mt-6 bg-purple-600 hover:bg-purple-700" onClick={() => window.location.href='/treats'}>
+                  <Button className="mt-6 bg-purple-600 hover:bg-purple-700" onClick={() => navigate('/treats')}>
                     Browse Autoship Products
                   </Button>
                 </div>
