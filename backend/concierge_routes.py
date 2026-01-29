@@ -10,7 +10,8 @@ Everything opens into it, nothing pulls you away from it."
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
+from timestamp_utils import get_utc_timestamp, timedelta
 from bson import ObjectId
 import logging
 import os
@@ -746,7 +747,7 @@ async def get_command_center_queue(
     # 5. Health Alerts (overdue vaccines, appointments)
     if source in [None, "all", "health"]:
         # Check pet_vaccines for overdue
-        now = datetime.now(timezone.utc).isoformat()
+        now = get_utc_timestamp()
         vaccine_query = {
             "next_due_date": {"$lt": now},
             "status": {"$ne": "completed"}
@@ -814,7 +815,7 @@ async def get_command_center_queue(
                             "original_request": f"{pet.get('name', 'Pet')}'s birthday {'TODAY!' if days_until == 0 else f'in {days_until} days'}",
                             "action_type": "birthday_reminder",
                             "status": "pending",
-                            "created_at": datetime.now(timezone.utc).isoformat(),
+                            "created_at": get_utc_timestamp(),
                             "pets": [{"id": pet.get("id"), "name": pet.get("name"), "breed": pet.get("breed")}],
                             "days_until": days_until
                         }
@@ -1259,7 +1260,7 @@ async def get_item_detail(ticket_id: str):
 async def claim_item(ticket_id: str, request: ClaimRequest):
     """Claim a queue item for the concierge."""
     db = get_db()
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     # Try to update in service_desk_tickets
     result = await db.service_desk_tickets.update_one(
@@ -1316,7 +1317,7 @@ async def claim_item(ticket_id: str, request: ClaimRequest):
 async def unclaim_item(ticket_id: str, request: ClaimRequest):
     """Release a claimed item back to the queue."""
     db = get_db()
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     for collection in [db.service_desk_tickets, db.tickets]:
         result = await collection.update_one(
@@ -1349,7 +1350,7 @@ async def unclaim_item(ticket_id: str, request: ClaimRequest):
 async def add_note(ticket_id: str, request: AddNoteRequest):
     """Add a note to a queue item."""
     db = get_db()
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     note = {
         "content": request.note,
@@ -1397,7 +1398,7 @@ async def resolve_item(ticket_id: str, request: ResolveRequest):
     Optionally sends NPS (Net Pawmoter Score) survey.
     """
     db = get_db()
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     # Find the item first to get member info
     item = await db.service_desk_tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
@@ -1504,7 +1505,7 @@ async def resolve_item(ticket_id: str, request: ResolveRequest):
 async def escalate_item(ticket_id: str, request: AddNoteRequest):
     """Escalate priority of an item."""
     db = get_db()
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     for collection in [db.service_desk_tickets, db.tickets]:
         result = await collection.update_one(
@@ -1737,7 +1738,7 @@ async def merge_tickets(request: MergeTicketsRequest):
     All history is preserved on the primary ticket.
     """
     db = get_db()
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     # Find primary ticket
     primary = await db.service_desk_tickets.find_one({"ticket_id": request.primary_ticket_id})
@@ -1981,7 +1982,7 @@ Do NOT include:
                 "$set": {
                     "auto_draft": {
                         "content": draft,
-                        "generated_at": datetime.now(timezone.utc).isoformat(),
+                        "generated_at": get_utc_timestamp(),
                         "context_used": context[:500]
                     }
                 }
@@ -2201,7 +2202,7 @@ async def auto_assign_ticket(ticket_id: str):
         {
             "$set": {
                 "assigned_to": selected_agent,
-                "assigned_at": datetime.now(timezone.utc).isoformat(),
+                "assigned_at": get_utc_timestamp(),
                 "auto_assigned": True
             },
             "$push": {
@@ -2209,7 +2210,7 @@ async def auto_assign_ticket(ticket_id: str):
                     "action": "auto_assigned",
                     "by": "system",
                     "to": selected_agent,
-                    "at": datetime.now(timezone.utc).isoformat()
+                    "at": get_utc_timestamp()
                 }
             }
         }
@@ -2450,7 +2451,7 @@ async def send_email_reply(
                         "to": recipient_email,
                         "subject": email_subject,
                         "message": message,
-                        "sent_at": datetime.now(timezone.utc).isoformat(),
+                        "sent_at": get_utc_timestamp(),
                         "status": "sent",
                         "email_id": response.get("id") if isinstance(response, dict) else str(response)
                     }
@@ -2500,7 +2501,7 @@ async def send_whatsapp_reply(
                     "to": recipient_phone,
                     "message": message,
                     "link": whatsapp_link,
-                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "created_at": get_utc_timestamp(),
                     "status": "link_generated"
                 }
             }
@@ -2643,7 +2644,7 @@ async def member_reply_to_ticket(ticket_id: str, email: str, reply: MemberTicket
         "type": "member_reply",
         "message": reply.message,
         "from": email,
-        "at": datetime.now(timezone.utc).isoformat()
+        "at": get_utc_timestamp()
     }
     
     # Update in appropriate collection
@@ -2655,7 +2656,7 @@ async def member_reply_to_ticket(ticket_id: str, email: str, reply: MemberTicket
             "$push": {"communications": reply_doc},
             "$set": {
                 "status": "open",  # Re-open if resolved
-                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": get_utc_timestamp(),
                 "has_new_reply": True
             }
         }
@@ -2701,7 +2702,7 @@ async def manual_assign_ticket(ticket_id: str, request: ManualAssignRequest):
             {
                 "$set": {
                     "assigned_to": request.agent_username,
-                    "assigned_at": datetime.now(timezone.utc).isoformat(),
+                    "assigned_at": get_utc_timestamp(),
                     "manual_assigned": True
                 },
                 "$push": {
@@ -2710,7 +2711,7 @@ async def manual_assign_ticket(ticket_id: str, request: ManualAssignRequest):
                         "by": "admin",
                         "to": request.agent_username,
                         "reason": request.reason,
-                        "at": datetime.now(timezone.utc).isoformat()
+                        "at": get_utc_timestamp()
                     }
                 }
             }
@@ -2762,8 +2763,8 @@ async def create_ticket(request: CreateTicketRequest):
         "original_request": request.description,
         "description": request.description,
         "source": request.source,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp(),
         "assigned_to": request.assigned_to,
         "member": {
             "name": request.member_name,
@@ -2774,7 +2775,7 @@ async def create_ticket(request: CreateTicketRequest):
         "timeline": [{
             "action": "created",
             "by": "admin",
-            "at": datetime.now(timezone.utc).isoformat()
+            "at": get_utc_timestamp()
         }],
         "communications": []
     }
@@ -2843,7 +2844,7 @@ async def update_ticket(ticket_id: str, request: UpdateTicketRequest):
     if request.assigned_to:
         update_data["assigned_to"] = request.assigned_to
     
-    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update_data["updated_at"] = get_utc_timestamp()
     
     # Try both collections
     for collection_name in ["service_desk_tickets", "tickets"]:
@@ -2857,7 +2858,7 @@ async def update_ticket(ticket_id: str, request: UpdateTicketRequest):
                         "action": "updated",
                         "by": "admin",
                         "changes": list(update_data.keys()),
-                        "at": datetime.now(timezone.utc).isoformat()
+                        "at": get_utc_timestamp()
                     }
                 }
             }
@@ -2887,7 +2888,7 @@ async def delete_ticket(ticket_id: str, permanent: bool = False):
                 {
                     "$set": {
                         "status": "archived",
-                        "archived_at": datetime.now(timezone.utc).isoformat()
+                        "archived_at": get_utc_timestamp()
                     }
                 }
             )
@@ -2980,10 +2981,10 @@ async def ticket_quick_action(ticket_id: str, request: QuickActionRequest):
     """Perform quick action on ticket without opening detail view."""
     db = get_db()
     
-    update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    update_data = {"updated_at": get_utc_timestamp()}
     timeline_entry = {
         "action": request.action,
-        "at": datetime.now(timezone.utc).isoformat()
+        "at": get_utc_timestamp()
     }
     
     if request.action == "claim":
@@ -3015,7 +3016,7 @@ async def ticket_quick_action(ticket_id: str, request: QuickActionRequest):
         update_data["priority"] = "urgent"
         update_data["urgency"] = "critical"
         update_data["escalated"] = True
-        update_data["escalated_at"] = datetime.now(timezone.utc).isoformat()
+        update_data["escalated_at"] = get_utc_timestamp()
         timeline_entry["escalated"] = True
         if request.note:
             timeline_entry["reason"] = request.note
@@ -3437,7 +3438,7 @@ async def add_member_note(email: str, note: MemberNote, added_by: str = "concier
         "content": note.content,
         "note_type": note.note_type,
         "added_by": added_by,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.member_notes.insert_one(note_doc)

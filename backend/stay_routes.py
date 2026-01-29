@@ -17,6 +17,7 @@ import csv
 import io
 import resend
 from datetime import datetime, timezone
+from timestamp_utils import get_utc_timestamp
 from typing import Optional, List, Dict, Any
 from fastapi import APIRouter, HTTPException, Depends, File, UploadFile
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -499,7 +500,7 @@ async def create_booking_request(booking: BookingRequest):
     if not property:
         raise HTTPException(status_code=404, detail="Property not found")
     
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     # Extract pet names from pets array if provided
     pet_names = []
@@ -675,7 +676,7 @@ async def report_policy_mismatch(report: PolicyMismatchReport):
     if not property:
         raise HTTPException(status_code=404, detail="Property not found")
     
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     report_doc = {
         "id": f"mismatch-{uuid.uuid4().hex[:8]}",
@@ -1005,7 +1006,7 @@ async def get_pillar_tags(pillar: Optional[str] = None, category: Optional[str] 
 @stay_admin_router.post("/tags")
 async def create_pillar_tag(tag: PillarTag, username: str = Depends(verify_admin)):
     """Create a new pillar tag"""
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     tag_doc = {
         "id": tag.id or f"tag-{uuid.uuid4().hex[:8]}",
@@ -1023,7 +1024,7 @@ async def create_pillar_tag(tag: PillarTag, username: str = Depends(verify_admin
 @stay_admin_router.put("/tags/{tag_id}")
 async def update_pillar_tag(tag_id: str, updates: dict, username: str = Depends(verify_admin)):
     """Update a pillar tag"""
-    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    updates["updated_at"] = get_utc_timestamp()
     updates["updated_by"] = username
     
     result = await db.pillar_tags.update_one(
@@ -1075,7 +1076,7 @@ async def seed_default_tags(username: str = Depends(verify_admin)):
         {"id": "tag-certified", "name": "Certified Trainer", "pillar": "care", "category": "features", "icon": "🏅", "color": "gold", "description": "Certified professional trainer", "active": True},
     ]
     
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     seeded = 0
     
     for tag in default_tags:
@@ -1100,7 +1101,7 @@ async def update_property_paw_reward(
         {"id": property_id},
         {"$set": {
             "paw_reward": paw_reward.model_dump(),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": get_utc_timestamp(),
             "updated_by": username
         }}
     )
@@ -1178,7 +1179,7 @@ async def admin_create_property(
     username: str = Depends(verify_admin)
 ):
     """Create a new stay property"""
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     # Calculate overall paw rating
     if property.paw_rating:
@@ -1234,7 +1235,7 @@ async def admin_update_property(
     
     update_data = {
         **property.model_dump(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": get_utc_timestamp(),
         "updated_by": username
     }
     
@@ -1265,7 +1266,7 @@ async def admin_patch_property(
         valid_scores = [s for s in scores if s > 0]
         update_data["paw_rating"]["overall"] = round(sum(valid_scores) / len(valid_scores), 1) if valid_scores else 0
     
-    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update_data["updated_at"] = get_utc_timestamp()
     update_data["updated_by"] = username
     
     await db.stay_properties.update_one({"id": property_id}, {"$set": update_data})
@@ -1294,7 +1295,7 @@ async def admin_update_status(
     if status not in valid_statuses:
         raise HTTPException(status_code=400, detail=f"Invalid status. Must be: {valid_statuses}")
     
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     update = {
         "status": status,
@@ -1319,7 +1320,7 @@ async def admin_update_pet_policy(
     username: str = Depends(verify_admin)
 ):
     """Update pet policy for a property"""
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     policy_data = policy.model_dump()
     policy_data["last_updated"] = now
@@ -1366,7 +1367,7 @@ async def admin_update_paw_rating(
     valid_scores = [s for s in scores if s > 0]
     rating.overall = round(sum(valid_scores) / len(valid_scores), 1) if valid_scores else 0
     
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     await db.stay_properties.update_one(
         {"id": property_id},
@@ -1392,7 +1393,7 @@ async def admin_update_badges(
         {"id": property_id},
         {"$set": {
             "badges": badges,
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }}
     )
     return {"message": "Badges updated"}
@@ -1405,7 +1406,7 @@ async def admin_log_incident(
     username: str = Depends(verify_admin)
 ):
     """Log an incident for a property"""
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     incident_doc = {
         "id": f"inc-{uuid.uuid4().hex[:8]}",
@@ -1457,7 +1458,7 @@ async def admin_update_pet_menu(
             "pet_menu_available": len(menu_items) > 0,
             "pet_menu_items": [item.model_dump() for item in menu_items],
             "pet_menu_prepared_by": prepared_by,
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }}
     )
     
@@ -1479,7 +1480,7 @@ async def admin_update_add_ons(
         {"id": property_id},
         {"$set": {
             "add_ons": [a.model_dump() for a in add_ons],
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }}
     )
     
@@ -1499,7 +1500,7 @@ async def admin_update_commercials(
         {"id": property_id},
         {"$set": {
             "commercials": commercials.model_dump(),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }}
     )
     return {"message": "Commercials updated"}
@@ -1581,7 +1582,7 @@ async def admin_update_booking_status(
         raise HTTPException(status_code=404, detail="Booking not found")
     
     old_status = booking.get("status")
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     update = {
         "status": status,
@@ -1698,7 +1699,7 @@ async def admin_update_mismatch_report(
     username: str = Depends(verify_admin)
 ):
     """Update mismatch report status"""
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     update = {
         "status": status,
@@ -1821,7 +1822,7 @@ async def admin_import_csv(
                     "status": row.get('status', 'live'),
                     "featured": str(row.get('featured', '')).lower() in ['true', '1', 'yes'],
                     "verified": str(row.get('verified', '')).lower() in ['true', '1', 'yes'],
-                    "updated_at": datetime.now(timezone.utc).isoformat()
+                    "updated_at": get_utc_timestamp()
                 }
                 
                 # Handle list fields
@@ -1852,7 +1853,7 @@ async def admin_import_csv(
                 else:
                     import secrets
                     property_data["id"] = f"stay-{secrets.token_hex(8)}"
-                    property_data["created_at"] = datetime.now(timezone.utc).isoformat()
+                    property_data["created_at"] = get_utc_timestamp()
                     await db.stay_properties.insert_one(property_data)
                     imported += 1
                     

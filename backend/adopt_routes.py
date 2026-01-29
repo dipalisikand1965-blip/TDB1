@@ -14,6 +14,7 @@ from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
+from timestamp_utils import get_utc_timestamp
 from bson import ObjectId
 import uuid
 import os
@@ -196,8 +197,8 @@ async def add_adoptable_pet(pet: AdoptablePet):
     pet_doc = {
         "pet_id": pet_id,
         **pet.dict(),
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp(),
         "views": 0,
         "inquiries": 0
     }
@@ -213,7 +214,7 @@ async def update_adoptable_pet(pet_id: str, updates: Dict[str, Any]):
     """Update adoptable pet details"""
     db = get_db()
     
-    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    updates["updated_at"] = get_utc_timestamp()
     updates.pop("_id", None)
     updates.pop("pet_id", None)
     
@@ -274,11 +275,11 @@ async def submit_adoption_application(application: AdoptionApplication):
         "pet_name": pet.get("name"),
         "shelter_id": pet.get("shelter_id"),
         "status": "pending",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp(),
         "timeline": [{
             "status": "submitted",
-            "at": datetime.now(timezone.utc).isoformat()
+            "at": get_utc_timestamp()
         }]
     }
     
@@ -361,7 +362,7 @@ async def update_application_status(application_id: str, status: str, notes: Opt
     
     update = {
         "status": status,
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_utc_timestamp()
     }
     
     result = await db.adoption_applications.update_one(
@@ -372,7 +373,7 @@ async def update_application_status(application_id: str, status: str, notes: Opt
                 "timeline": {
                     "status": status,
                     "notes": notes,
-                    "at": datetime.now(timezone.utc).isoformat()
+                    "at": get_utc_timestamp()
                 }
             }
         }
@@ -405,8 +406,8 @@ async def submit_foster_application(application: FosterApplication):
         "foster_id": foster_id,
         **application.dict(),
         "status": "pending",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.foster_applications.insert_one(foster_doc)
@@ -486,7 +487,7 @@ async def create_adoption_event(event: AdoptionEvent):
         "event_id": event_id,
         **event.dict(),
         "attendees": [],
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.adoption_events.insert_one(event_doc)
@@ -527,7 +528,7 @@ async def register_for_event(event_id: str, name: str, email: str, phone: Option
             "name": name, 
             "email": email, 
             "phone": phone, 
-            "registered_at": datetime.now(timezone.utc).isoformat()
+            "registered_at": get_utc_timestamp()
         }}}
     )
     
@@ -551,7 +552,7 @@ async def register_for_event(event_id: str, name: str, email: str, phone: Option
             "venue": event.get("venue")
         },
         "action_required": False,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     await db.admin_notifications.insert_one(notification_doc)
     
@@ -572,8 +573,8 @@ async def register_for_event(event_id: str, name: str, email: str, phone: Option
             "event_title": event.get("title"),
             "event_date": event.get("event_date")
         },
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     await db.service_desk_tickets.insert_one(ticket_doc)
     
@@ -589,7 +590,7 @@ async def register_for_event(event_id: str, name: str, email: str, phone: Option
         "customer_phone": phone,
         "message": f"Registered for {event.get('title')} on {event.get('event_date')}",
         "metadata": {"event_id": event_id, "registration_id": registration_id},
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     await db.channel_intakes.insert_one(inbox_entry)
     
@@ -642,7 +643,7 @@ async def add_shelter(
         "website": website,
         "description": description,
         "active": True,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.adopt_shelters.insert_one(shelter_doc)
@@ -724,7 +725,7 @@ async def seed_adopt_data():
             ],
             "status": "available",
             "adoption_fee": 2500,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
@@ -756,7 +757,7 @@ async def seed_adopt_data():
             ],
             "status": "available",
             "adoption_fee": 3000,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
@@ -788,7 +789,7 @@ async def seed_adopt_data():
             ],
             "status": "available",
             "adoption_fee": 1500,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
@@ -820,7 +821,7 @@ async def seed_adopt_data():
             ],
             "status": "available",
             "adoption_fee": 3500,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
@@ -852,7 +853,7 @@ async def seed_adopt_data():
             ],
             "status": "available",
             "adoption_fee": 5000,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
@@ -884,7 +885,7 @@ async def seed_adopt_data():
             ],
             "status": "available",
             "adoption_fee": 2000,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
@@ -916,7 +917,7 @@ async def seed_adopt_data():
             ],
             "status": "available",
             "adoption_fee": 1500,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"adopt-pet-{uuid.uuid4().hex[:8]}",
@@ -948,7 +949,7 @@ async def seed_adopt_data():
             ],
             "status": "available",
             "adoption_fee": 4000,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         }
     ]
     
@@ -967,7 +968,7 @@ async def seed_adopt_data():
             "pets_count": 45,
             "adoptions_completed": 320,
             "founded_year": 2015,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": "shelter-hope",
@@ -982,7 +983,7 @@ async def seed_adopt_data():
             "pets_count": 78,
             "adoptions_completed": 520,
             "founded_year": 2012,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": "shelter-meow",
@@ -997,7 +998,7 @@ async def seed_adopt_data():
             "pets_count": 35,
             "adoptions_completed": 180,
             "founded_year": 2018,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": "shelter-golden",
@@ -1012,7 +1013,7 @@ async def seed_adopt_data():
             "pets_count": 22,
             "adoptions_completed": 95,
             "founded_year": 2019,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         }
     ]
     
@@ -1032,7 +1033,7 @@ async def seed_adopt_data():
             "registration_required": False,
             "pets_available": 25,
             "status": "upcoming",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"event-{uuid.uuid4().hex[:8]}",
@@ -1049,7 +1050,7 @@ async def seed_adopt_data():
             "registration_fee": 500,
             "max_participants": 20,
             "status": "upcoming",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"event-{uuid.uuid4().hex[:8]}",
@@ -1065,7 +1066,7 @@ async def seed_adopt_data():
             "registration_required": False,
             "pets_available": 15,
             "status": "upcoming",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"event-{uuid.uuid4().hex[:8]}",
@@ -1081,7 +1082,7 @@ async def seed_adopt_data():
             "registration_required": False,
             "pets_available": 18,
             "status": "upcoming",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         }
     ]
     
