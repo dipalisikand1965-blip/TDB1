@@ -255,7 +255,8 @@ This caused requests to appear successful but never show up in Admin Panel.`
         },
         {
           title: '🟠 P1 - After Production Deploy',
-          content: `• Pet Profile crash for "Mynx"
+          content: `• **Stay Page Layout Redo** - Pet properties should be on TOP
+• Pet Profile crash for "Mynx"
 • Paw Points display bug for specific user
 • Mobile UI transformation for Member Dashboard
 • Service Booking Flow mobile optimization`
