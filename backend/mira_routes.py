@@ -1020,7 +1020,69 @@ async def create_service_desk_ticket(
     # Insert into service desk collection
     await db.service_desk_tickets.insert_one(ticket_doc)
     
-    # Also add to unified inbox
+    # ==================== UNIFIED FLOW: ADD TO CHANNEL_INTAKES (Unified Inbox) ====================
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    await db.channel_intakes.insert_one({
+        "id": inbox_id,
+        "request_id": ticket_id,
+        "ticket_id": ticket_id,
+        "channel": "mira",
+        "request_type": action_details.get("action_type"),
+        "pillar": pillar,
+        "category": action_details.get("category"),
+        "status": "new",
+        "urgency": action_details.get("priority", "medium"),
+        "customer_name": user.get("name") if user else "Guest",
+        "customer_email": user.get("email") if user else None,
+        "customer_phone": user.get("phone") if user else None,
+        "member": {
+            "name": user.get("name") if user else "Guest",
+            "email": user.get("email") if user else None,
+            "phone": user.get("phone") if user else None
+        },
+        "preview": message[:200] if message else "Mira AI request",
+        "message": message,
+        "full_content": message,
+        "metadata": {
+            "mira_session_id": session_id,
+            "action_type": action_details.get("action_type"),
+            "trigger_keyword": action_details.get("trigger_keyword"),
+            "pet_count": len(pets)
+        },
+        "tags": ["mira", "ai", pillar, action_details.get("action_type", "general")],
+        "created_at": now,
+        "updated_at": now,
+        "processed_at": None,
+        "archived_at": None
+    })
+    logger.info(f"[UNIFIED FLOW] Mira → Unified Inbox entry created: {inbox_id}")
+    
+    # ==================== UNIFIED FLOW: ADD TO ADMIN_NOTIFICATIONS ====================
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    await db.admin_notifications.insert_one({
+        "id": notification_id,
+        "type": f"mira_{action_details.get('action_type', 'request')}",
+        "pillar": pillar,
+        "title": f"Mira AI Request: {action_details.get('action_type', 'General').replace('_', ' ').title()}",
+        "message": f"{user.get('name') if user else 'Guest'} requested via Mira AI: {message[:100]}...",
+        "priority": action_details.get("priority", "medium"),
+        "urgency": action_details.get("priority", "medium"),
+        "status": "unread",
+        "ticket_id": ticket_id,
+        "inbox_id": inbox_id,
+        "mira_session_id": session_id,
+        "customer": {
+            "name": user.get("name") if user else "Guest",
+            "email": user.get("email") if user else None,
+            "phone": user.get("phone") if user else None
+        },
+        "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+        "created_at": now,
+        "read_at": None
+    })
+    logger.info(f"[UNIFIED FLOW] Mira → Notification created: {notification_id}")
+    
+    # Also add to unified_inbox collection (legacy)
     await db.unified_inbox.insert_one({
         **ticket_doc,
         "inbox_type": "service_request",
@@ -1034,21 +1096,28 @@ async def create_service_desk_ticket(
         {
             "$set": {
                 "service_desk_ticket_id": ticket_id,
+                "notification_id": notification_id,
+                "inbox_id": inbox_id,
                 "requires_concierge_action": True,
-                "action_type": action_details.get("action_type")
+                "action_type": action_details.get("action_type"),
+                "unified_flow_processed": True
             },
             "$push": {
                 "audit_trail": {
                     "action": "service_desk_ticket_created",
                     "timestamp": now,
                     "ticket_id": ticket_id,
+                    "notification_id": notification_id,
+                    "inbox_id": inbox_id,
                     "action_type": action_details.get("action_type")
                 }
             }
         }
     )
     
-    logger.info(f"Service Desk ticket created: {ticket_id} | Action: {action_details.get('action_type')} | Member: {user.get('email') if user else 'Guest'}")
+    logger.info(f"[UNIFIED FLOW] COMPLETE: Mira signal processed | Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id})")
+    
+    return ticket_id
     
     return ticket_id
 
