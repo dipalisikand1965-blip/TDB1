@@ -16,7 +16,7 @@ import { Card } from '../components/ui/card';
 const AdminDocs = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSections, setExpandedSections] = useState(['core-tools']);
-  const [selectedDoc, setSelectedDoc] = useState('command-center');
+  const [selectedDoc, setSelectedDoc] = useState('service-desk');
   const [copied, setCopied] = useState(false);
 
   const toggleSection = (section) => {
