@@ -454,6 +454,27 @@ const MemberDashboard = () => {
     }
   }, [token, user, API_URL]);
 
+  // Fetch My Requests (Mira Tickets)
+  useEffect(() => {
+    const fetchMyRequests = async () => {
+      if (!token || !user) return;
+      
+      setRequestsLoading(true);
+      try {
+        const response = await axios.get(`${API_URL}/api/mira/my-requests`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setMyRequests(response.data.requests || []);
+      } catch (error) {
+        console.error('Failed to fetch requests:', error);
+      } finally {
+        setRequestsLoading(false);
+      }
+    };
+    
+    fetchMyRequests();
+  }, [token, user, API_URL]);
+
   // Extract unique addresses from orders
   const savedAddresses = orders
     .map(o => o.delivery)
