@@ -196,8 +196,12 @@ const GamificationBanner = ({ pets, orders, user, onNavigateToPet, onOpenExplain
           <h4 className="font-semibold text-gray-800 flex items-center gap-2">
             <Trophy className="w-4 h-4 text-yellow-500" />
             Pawesome Badges
-            <span className="text-xs font-normal text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full cursor-help" title="Earn badges by completing your pet's Soul Journey. Each badge unlocks Paw Points!">
-              Earn rewards!
+            <span className="text-xs font-normal text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full cursor-pointer hover:bg-purple-200 transition-colors relative group">
+              Earn rewards! ℹ️
+              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-gray-900 text-white text-xs p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
+                Earn badges by completing your pet's Soul Journey. Each badge unlocks Paw Points! 🎁
+                <span className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></span>
+              </span>
             </span>
           </h4>
           <span className="text-xs text-gray-500 flex items-center gap-1">
