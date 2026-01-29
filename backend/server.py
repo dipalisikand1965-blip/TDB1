@@ -1036,9 +1036,9 @@ async def lifespan(app: FastAPI):
     set_escalation_db(db)
     logger.info("Escalation engine initialized")
     
-    # Initialize unified flow middleware
+    # Initialize Unified Flow Middleware (CRITICAL - ensures all actions trigger unified flow)
     init_unified_flow_middleware(db)
-    logger.info("Unified flow middleware initialized")
+    logger.info("Unified Flow Middleware initialized - ALL actions will trigger Notification → Ticket → Inbox")
     
     # Initialize Shopify sync database connection
     set_shopify_db(db)
