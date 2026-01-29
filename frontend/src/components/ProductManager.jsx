@@ -169,14 +169,17 @@ const ProductManager = ({ credentials }) => {
         }
       }
       
-      // Send to backend
+      // Send to backend as FormData (file upload)
+      const formData = new FormData();
+      formData.append('file', file);
+      
       const response = await fetch(`${API_URL}/api/admin/products/import-csv`, {
         method: 'POST',
         headers: {
-          'Authorization': getAuthHeader(),
-          'Content-Type': 'application/json'
+          'Authorization': getAuthHeader()
+          // Don't set Content-Type - browser will set it with boundary for FormData
         },
-        body: JSON.stringify({ products })
+        body: formData
       });
       
       if (response.ok) {
