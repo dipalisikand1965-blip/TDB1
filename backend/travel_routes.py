@@ -480,7 +480,7 @@ async def update_travel_request(request_id: str, update: TravelRequestUpdate):
             {"ticket_id": request_id},
             {"$set": {
                 "status": ticket_status_map.get(update.status, "in_progress"),
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "updated_at": get_consistent_timestamp()
             }}
         )
     
