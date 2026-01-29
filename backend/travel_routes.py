@@ -14,10 +14,11 @@ from bson import ObjectId
 import uuid
 import os
 
-# Import unified flow enforcer
-from unified_flow_enforcer import enforce_unified_flow, get_iso_timestamp
-
 router = APIRouter(prefix="/api/travel", tags=["travel"])
+
+def get_consistent_timestamp() -> str:
+    """Get ISO timestamp with consistent format (always with +00:00 timezone)"""
+    return datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + '+00:00'
 
 # Get MongoDB connection from server.py
 def get_db():
