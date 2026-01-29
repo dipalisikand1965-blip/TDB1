@@ -2904,6 +2904,14 @@ const MemberDashboard = () => {
           />
         )}
       </div>
+      
+      {/* Mobile Bottom Navigation - Pet Life OS */}
+      <MobileNavBar 
+        onPulseClick={() => setShowPulse(true)}
+      />
+      
+      {/* Extra bottom padding for mobile nav */}
+      <div className="h-24 md:hidden" />
     </div>
   );
 };
