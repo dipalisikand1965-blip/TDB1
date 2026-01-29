@@ -959,6 +959,13 @@ const MemberDashboard = () => {
                 <Sparkles className="w-4 h-4 mr-1" />
                 Mira AI
               </TabsTrigger>
+              <TabsTrigger value="requests" className="rounded-lg flex-shrink-0 whitespace-nowrap">
+                <MessageCircle className="w-4 h-4 mr-1" />
+                My Requests
+                {myRequests.length > 0 && (
+                  <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">{myRequests.length}</Badge>
+                )}
+              </TabsTrigger>
               <TabsTrigger value="orders" className="rounded-lg flex-shrink-0 whitespace-nowrap">
                 <Package className="w-4 h-4 mr-1" />
                 Orders
