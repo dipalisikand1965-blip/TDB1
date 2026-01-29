@@ -60,42 +60,37 @@ const COMMAND_PATTERNS = [
   },
   
   // ============================================
-  // 🛒 SHOPPING & TREATS
+  // 🛒 SHOPPING & TREATS - Respond first, offer to navigate
   // ============================================
   {
     patterns: ['order', 'buy', 'get', 'treats', 'favorite', 'snack', 'biscuit', 'chew', 'dental chew'],
     intent: 'order_treats',
-    response: (petName) => `Ooh, treats for ${petName}! Great choice. ${petName} deserves something yummy. Let me show you the best options!`,
-    action: 'navigate',
-    path: '/shop?category=treats'
+    response: (petName) => `Ooh, treats for ${petName}! Great choice. ${petName} deserves something yummy. I can show you our best treats - just say "show me" or ask me something else!`,
+    suggestedPath: '/shop?category=treats'
   },
   {
     patterns: ['food', 'kibble', 'dry food', 'wet food', 'meal', 'diet', 'nutrition', 'feeding'],
     intent: 'order_food',
-    response: (petName) => `Time to stock up on food for ${petName}! Good nutrition is key. Let me show you quality options that ${petName} will love.`,
-    action: 'navigate',
-    path: '/shop?category=food'
+    response: (petName) => `Time to stock up on food for ${petName}! Good nutrition is key. Say "show me" to see quality options, or ask me anything else!`,
+    suggestedPath: '/shop?category=food'
   },
   {
     patterns: ['toy', 'toys', 'play', 'ball', 'rope', 'squeaky', 'plush', 'chew toy'],
     intent: 'order_toys',
-    response: (petName) => `Playtime for ${petName}! A good toy keeps them happy and entertained. Let me show you some favorites.`,
-    action: 'navigate',
-    path: '/shop?category=toys'
+    response: (petName) => `Playtime for ${petName}! A good toy keeps them happy. Say "show me" to browse toys, or what else can I help with?`,
+    suggestedPath: '/shop?category=toys'
   },
   {
     patterns: ['bed', 'mattress', 'blanket', 'cushion', 'crate', 'carrier', 'kennel'],
     intent: 'order_bedding',
-    response: (petName) => `A cozy spot for ${petName} to rest! Let me show you our bedding options.`,
-    action: 'navigate',
-    path: '/shop?category=bedding'
+    response: (petName) => `A cozy spot for ${petName} to rest! I can show you bedding options - say "show me" or ask something else!`,
+    suggestedPath: '/shop?category=bedding'
   },
   {
     patterns: ['collar', 'leash', 'harness', 'tag', 'id tag', 'muzzle'],
     intent: 'order_accessories',
-    response: (petName) => `Looking for walking gear for ${petName}? Let me show you our collection.`,
-    action: 'navigate',
-    path: '/shop?category=accessories'
+    response: (petName) => `Looking for walking gear for ${petName}? Say "show me" to browse, or ask me anything!`,
+    suggestedPath: '/shop?category=accessories'
   },
   {
     patterns: ['bowl', 'feeder', 'water bowl', 'fountain', 'slow feeder'],
