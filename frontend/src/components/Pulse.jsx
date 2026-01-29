@@ -604,6 +604,13 @@ const COMMAND_PATTERNS = [
     patterns: ['speak', 'talk', 'unmute', 'voice on', 'turn on voice'],
     intent: 'unmute',
     response: (petName) => `I'm here and ready to help ${petName}! What do you need?`
+  },
+  // "Show me" command - triggers navigation to last suggested path
+  {
+    patterns: ['show me', 'take me', 'go there', 'yes show', 'yes please', 'let me see', 'open it', 'browse'],
+    intent: 'show_suggested',
+    response: (petName) => `Taking you there now!`,
+    action: 'navigate_suggested'
   }
 ];
 
