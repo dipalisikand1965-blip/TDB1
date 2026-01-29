@@ -3403,6 +3403,88 @@ const Admin = () => {
           <EnhancedCollectionManager getAuthHeader={getAuthHeaders} />
         )}
 
+        {/* Proactive Notifications Tab */}
+        {activeTab === 'proactive' && (
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                  <Bell className="w-6 h-6 text-rose-600" />
+                  Proactive Notifications
+                </h2>
+                <p className="text-gray-600">Automatic reminders for vaccinations, birthdays, and ticket updates</p>
+              </div>
+              <Button 
+                onClick={async () => {
+                  try {
+                    const response = await fetch(`${API_URL}/api/notifications/check`, {
+                      method: 'POST',
+                      headers: getAuthHeaders()
+                    });
+                    const data = await response.json();
+                    toast({
+                      title: '✅ Notification Check Complete',
+                      description: `Sent: ${data.total_sent}, Failed: ${data.total_failed}`
+                    });
+                  } catch (error) {
+                    toast({ title: 'Error', description: error.message, variant: 'destructive' });
+                  }
+                }}
+                className="bg-rose-600 hover:bg-rose-700"
+              >
+                <Bell className="w-4 h-4 mr-2" />
+                Run Check Now
+              </Button>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-4 mb-6">
+              <Card className="p-4 bg-blue-50 border-blue-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    💉
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-blue-900">Vaccination Reminders</h3>
+                    <p className="text-sm text-blue-600">7 days before due date</p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-4 bg-pink-50 border-pink-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
+                    🎂
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-pink-900">Birthday Reminders</h3>
+                    <p className="text-sm text-pink-600">7 days before birthday</p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-4 bg-purple-50 border-purple-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                    📋
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-purple-900">Ticket Updates</h3>
+                    <p className="text-sm text-purple-600">Status change notifications</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+            
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="font-semibold mb-2">How it works:</h3>
+              <ol className="list-decimal list-inside space-y-1 text-sm text-gray-600">
+                <li>System checks for upcoming vaccinations, birthdays, and ticket changes</li>
+                <li>Matching users are sent push notifications (if subscribed)</li>
+                <li>Notifications are logged to prevent duplicates</li>
+                <li>Run manually or set up a scheduled job (recommended: every hour)</li>
+              </ol>
+            </div>
+          </Card>
+        )}
+
         {/* Partner Management Tab */}
         {activeTab === 'partners' && (
           <PartnerManager getAuthHeader={getAuthHeaders} />
