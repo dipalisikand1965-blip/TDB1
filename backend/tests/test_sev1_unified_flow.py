@@ -289,7 +289,7 @@ class TestNotificationReadField:
     
     def test_notifications_have_read_field(self):
         """All notifications should have 'read' field (boolean)"""
-        response = requests.get(f"{BASE_URL}/api/admin/notifications")
+        response = requests.get(f"{BASE_URL}/api/admin/notifications", auth=("aditya", "lola4304"))
         if response.status_code != 200:
             pytest.skip(f"Notifications endpoint returned {response.status_code}")
         
