@@ -1130,14 +1130,14 @@ const Pulse = ({
           {/* Pulse hint */}
           {!isListening && !inputText && (
             <p className="text-center text-xs text-gray-400 mt-1">
-              Tap 🎤 to speak or type below
+              ⚡ Tap to speak or type below
             </p>
           )}
           
           {/* Voice Status */}
           {isListening && (
-            <p className="text-center text-xs text-purple-600 mt-2 animate-pulse">
-              🎤 Listening... Speak now!
+            <p className="text-center text-xs text-cyan-600 mt-2 animate-pulse">
+              ⚡ Capturing... Speak now!
             </p>
           )}
         </div>
@@ -1146,16 +1146,16 @@ const Pulse = ({
   );
 };
 
-// Floating button to trigger voice assistant
-export const MiraVoiceButton = ({ onClick, petName }) => {
+// Floating button to trigger Pulse
+export const PulseButton = ({ onClick, petName }) => {
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-24 right-20 z-40 w-14 h-14 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 rounded-full shadow-lg flex items-center justify-center text-white hover:scale-110 transition-transform group"
-      title={`Chat with Mira`}
-      data-testid="mira-voice-button"
+      className="fixed bottom-24 right-20 z-40 w-14 h-14 bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-500 rounded-full shadow-lg flex items-center justify-center text-white hover:scale-110 transition-transform group"
+      title="Pulse - Quick Voice"
+      data-testid="pulse-button"
     >
-      <MessageCircle className="w-6 h-6" />
+      <Zap className="w-6 h-6" />
       
       {/* Tooltip */}
       <span className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
