@@ -933,7 +933,7 @@ async def update_travel_partner(partner_id: str, partner: TravelPartnerCreate):
     
     update_doc = {
         **partner.dict(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_consistent_timestamp()
     }
     
     result = await db.travel_partners.update_one(
