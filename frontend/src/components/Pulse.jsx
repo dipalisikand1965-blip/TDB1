@@ -849,13 +849,13 @@ const Pulse = ({
     }
   }, [isMuted, useElevenLabs, speakWithElevenLabs, speakWithWebSpeech]);
   
-  const addMiraMessage = useCallback((text) => {
-    setMessages(prev => [...prev, { role: 'mira', text, timestamp: new Date() }]);
+  const addPulseMessage = useCallback((text) => {
+    setMessages(prev => [...prev, { role: 'pulse', text, timestamp: new Date() }]);
     if (!isMuted) speak(text);
   }, [isMuted, speak]);
   
   // Session ID for tracking conversations
-  const sessionIdRef = useRef(`voice-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+  const sessionIdRef = useRef(`pulse-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
   
   const handleSend = useCallback(async (text = inputText) => {
     if (!text.trim()) return;
@@ -866,7 +866,7 @@ const Pulse = ({
     setIsProcessing(true);
     
     try {
-      // Call Mira backend API to save conversation and get response
+      // Call Mira backend API - Pulse captures, Mira reasons
       const response = await fetch(`${API_URL}/api/mira/chat`, {
         method: 'POST',
         headers: {
