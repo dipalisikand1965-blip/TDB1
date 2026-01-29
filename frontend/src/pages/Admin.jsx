@@ -1737,6 +1737,28 @@ const Admin = () => {
             ))}
           </div>
           
+          {/* Marketing Tools */}
+          <div className="flex gap-2 flex-wrap items-center mb-4">
+            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-rose-100 rounded">📣 Marketing</span>
+            {[
+              { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
+              { id: 'proactive', label: 'Proactive', icon: Bell },
+              { id: 'notifications', label: 'Push', icon: Bell },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? 'default' : 'ghost'}
+                className={activeTab === tab.id ? 'bg-rose-600 text-white' : ''}
+                onClick={() => setActiveTab(tab.id)}
+                size="sm"
+                data-testid={`admin-tab-${tab.id}`}
+              >
+                <tab.icon className="w-4 h-4 mr-1" />
+                {tab.label}
+              </Button>
+            ))}
+          </div>
+          
           {/* Analytics & Reports */}
           <div className="flex gap-2 flex-wrap items-center mb-4">
             <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-amber-100 rounded">📈 Analytics</span>
