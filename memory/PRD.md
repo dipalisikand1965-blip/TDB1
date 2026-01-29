@@ -41,11 +41,22 @@
 - ✅ Ask Concierge (Fit) → Notification + Ticket + Inbox
 - ✅ Grooming (Care) → Notification + Ticket + Inbox
 - ✅ Celebrate → Mira present + same flow
+- ✅ **Enjoy RSVP** → Notification + Ticket + Inbox (verified)
+- ✅ **Stay Booking** → Notification + Ticket + Inbox (verified)
+- ✅ **Universal Search** → Creates search signal ticket with intent detection
+
+### Intelligent Search Features:
+- Search is now an **intent capture surface**, not just product search
+- Every search (≥3 chars) creates:
+  - Signal ticket (status: "signal")
+  - Notification
+  - Unified Inbox entry
+- **Intent Detection**: booking_intent, order_intent, discovery_intent, question_intent, support_intent
+- **Intelligent Suggestions**: Returns actionable CTAs based on detected intent
+- Context-aware: Uses member_email, pet_name, current_pillar for personalization
 
 ### Remaining Pillars to Verify:
-- Enjoy Pet Dining (need to check if unified flow working)
-- Stay reservations
-- Advisory requests
+- Advisory requests (need to check)
 
 ---
 
