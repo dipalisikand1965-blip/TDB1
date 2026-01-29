@@ -34,10 +34,13 @@ const MIRA_OPENING = "Hi, I'm Mira. I can help explain things, guide you to the 
 const MAX_VOICE_SECONDS = 10;
 
 // Command patterns and responses - Care-first, non-medical guidance
+// COMPREHENSIVE PET PARENT COMMAND ENCYCLOPEDIA
 const COMMAND_PATTERNS = [
-  // HEALTH ESCALATION - MUST COME FIRST (highest priority)
+  // ============================================
+  // 🚨 HEALTH ESCALATION - ALWAYS FIRST (highest priority)
+  // ============================================
   {
-    patterns: ['sick', 'vomiting', 'diarrhea', 'not eating', 'pain', 'bleeding', 'seizure', 'breathing', 'emergency', 'hurt', 'injured', 'collapsed', 'lethargic'],
+    patterns: ['sick', 'vomiting', 'diarrhea', 'not eating', 'pain', 'bleeding', 'seizure', 'breathing', 'emergency', 'hurt', 'injured', 'collapsed', 'lethargic', 'fever', 'shaking', 'trembling', 'swelling', 'limping', 'paralysis', 'unconscious', 'choking', 'poisoned', 'toxic', 'ate chocolate', 'ate grapes', 'ate onion', 'bloated', 'stomach twisted'],
     intent: 'health_escalation',
     response: (petName) => `I can hear you're worried about ${petName}, and that's completely understandable. I can't assess this medically, but our Care Concierge can help you right now. Let me connect you.`,
     action: 'navigate',
@@ -45,23 +48,118 @@ const COMMAND_PATTERNS = [
     escalation: true
   },
   {
-    patterns: ['medication', 'medicine', 'dose', 'dosage', 'tablet', 'treatment'],
+    patterns: ['medication', 'medicine', 'dose', 'dosage', 'tablet', 'treatment', 'antibiotic', 'steroid', 'pain killer', 'deworming', 'flea treatment', 'tick medicine'],
     intent: 'medication_escalation',
     response: (petName) => `For any medication questions about ${petName}, it's safest to speak with a vet or our Care Concierge. I want to make sure you get accurate guidance.`,
     action: 'navigate',
     path: '/care',
     escalation: true
   },
-  // STANDARD COMMANDS - Non-medical
+  
+  // ============================================
+  // 🛒 SHOPPING & TREATS
+  // ============================================
   {
-    patterns: ['order', 'buy', 'get', 'treats', 'food', 'favorite'],
+    patterns: ['order', 'buy', 'get', 'treats', 'favorite', 'snack', 'biscuit', 'chew', 'dental chew'],
     intent: 'order_treats',
     response: (petName) => `I'd love to help find something nice for ${petName}! Let me show you some options.`,
     action: 'navigate',
     path: '/shop?category=treats'
   },
   {
-    patterns: ['vaccination', 'vaccine', 'next shot', 'due', 'vet visit'],
+    patterns: ['food', 'kibble', 'dry food', 'wet food', 'meal', 'diet', 'nutrition', 'feeding'],
+    intent: 'order_food',
+    response: (petName) => `Looking for food for ${petName}? Let me show you our quality options.`,
+    action: 'navigate',
+    path: '/shop?category=food'
+  },
+  {
+    patterns: ['toy', 'toys', 'play', 'ball', 'rope', 'squeaky', 'plush', 'chew toy'],
+    intent: 'order_toys',
+    response: (petName) => `Playtime for ${petName}! Let me show you some fun toys.`,
+    action: 'navigate',
+    path: '/shop?category=toys'
+  },
+  {
+    patterns: ['bed', 'mattress', 'blanket', 'cushion', 'crate', 'carrier', 'kennel'],
+    intent: 'order_bedding',
+    response: (petName) => `A cozy spot for ${petName} to rest! Let me show you our bedding options.`,
+    action: 'navigate',
+    path: '/shop?category=bedding'
+  },
+  {
+    patterns: ['collar', 'leash', 'harness', 'tag', 'id tag', 'muzzle'],
+    intent: 'order_accessories',
+    response: (petName) => `Looking for walking gear for ${petName}? Let me show you our collection.`,
+    action: 'navigate',
+    path: '/shop?category=accessories'
+  },
+  {
+    patterns: ['bowl', 'feeder', 'water bowl', 'fountain', 'slow feeder'],
+    intent: 'order_feeding',
+    response: (petName) => `Feeding essentials for ${petName}! Here are our options.`,
+    action: 'navigate',
+    path: '/shop?category=feeding'
+  },
+  {
+    patterns: ['shampoo', 'conditioner', 'brush', 'nail clipper', 'ear cleaner', 'grooming kit'],
+    intent: 'order_grooming_products',
+    response: (petName) => `Grooming supplies for ${petName}! Let me show you what we have.`,
+    action: 'navigate',
+    path: '/shop?category=grooming'
+  },
+  {
+    patterns: ['reorder', 're-order', 'order again', 'same order', 'repeat order', 'last order'],
+    intent: 'reorder',
+    response: (petName) => `Let me check ${petName}'s previous orders so you can quickly reorder.`,
+    action: 'navigate',
+    path: '/dashboard?tab=orders'
+  },
+  {
+    patterns: ['cart', 'checkout', 'basket', 'pay', 'payment'],
+    intent: 'checkout',
+    response: (petName) => `Ready to checkout? Let me take you to your cart.`,
+    action: 'navigate',
+    path: '/checkout'
+  },
+  {
+    patterns: ['wishlist', 'saved', 'favorites', 'save for later'],
+    intent: 'wishlist',
+    response: (petName) => `Let me show you ${petName}'s wishlist!`,
+    action: 'navigate',
+    path: '/wishlist'
+  },
+  
+  // ============================================
+  // 💈 GROOMING & SPA
+  // ============================================
+  {
+    patterns: ['groom', 'grooming', 'haircut', 'bath', 'spa', 'fur', 'coat', 'trim'],
+    intent: 'book_grooming',
+    response: (petName) => `A grooming session for ${petName}! Let me show you our trusted grooming partners.`,
+    action: 'navigate',
+    path: '/care?type=grooming'
+  },
+  {
+    patterns: ['nail', 'nails', 'paw', 'paws', 'pedicure', 'nail trim'],
+    intent: 'nail_care',
+    response: (petName) => `Time for ${petName}'s nail care? Our groomers can help with that.`,
+    action: 'navigate',
+    path: '/care?type=grooming'
+  },
+  {
+    patterns: ['shedding', 'hair fall', 'fur falling', 'losing hair', 'bald patch'],
+    intent: 'shedding_help',
+    response: (petName) => `Shedding can be normal, but excessive hair loss might need a vet check. Meanwhile, regular grooming helps! Want to book a session for ${petName}?`,
+    action: 'navigate',
+    path: '/care?type=grooming'
+  },
+  
+  // ============================================
+  // 🏥 HEALTH & VET
+  // ============================================
+  {
+    patterns: ['vaccination', 'vaccine', 'next shot', 'due', 'vet visit', 'immunization', 'booster'],
     intent: 'check_vaccination',
     response: (petName, data) => {
       if (data?.nextVaccination) {
@@ -73,55 +171,441 @@ const COMMAND_PATTERNS = [
     path: '/pet/{petId}?tab=health'
   },
   {
-    patterns: ['groom', 'grooming', 'haircut', 'bath', 'spa'],
-    intent: 'book_grooming',
-    response: (petName) => `A grooming session for ${petName}! Let me show you our trusted grooming partners.`,
+    patterns: ['vet', 'veterinarian', 'doctor', 'clinic', 'hospital', 'checkup', 'check up', 'health check'],
+    intent: 'find_vet',
+    response: (petName) => `Looking for a vet for ${petName}? Our Care Concierge can connect you with trusted veterinarians.`,
     action: 'navigate',
-    path: '/care?type=grooming'
+    path: '/care'
   },
   {
-    patterns: ['birthday', 'celebration', 'party', 'cake'],
+    patterns: ['tick', 'flea', 'parasite', 'worm', 'deworming', 'itching', 'scratching'],
+    intent: 'parasite_help',
+    response: (petName) => `Parasites can be uncomfortable for ${petName}. Our Care team can recommend the right treatment. Let me connect you.`,
+    action: 'navigate',
+    path: '/care'
+  },
+  {
+    patterns: ['allergy', 'allergic', 'skin problem', 'rash', 'hot spot', 'red skin'],
+    intent: 'allergy_help',
+    response: (petName) => `Skin issues can have many causes. For ${petName}'s comfort, it's best to consult with our Care Concierge or a vet.`,
+    action: 'navigate',
+    path: '/care'
+  },
+  {
+    patterns: ['weight', 'overweight', 'underweight', 'fat', 'thin', 'obese', 'diet plan'],
+    intent: 'weight_management',
+    response: (petName) => `Managing ${petName}'s weight is important for health! Our Care team can help with a diet plan.`,
+    action: 'navigate',
+    path: '/care'
+  },
+  {
+    patterns: ['spay', 'neuter', 'sterilize', 'castrate', 'fix'],
+    intent: 'sterilization',
+    response: (petName) => `Thinking about spaying/neutering ${petName}? Our Care Concierge can guide you through the process and connect you with trusted vets.`,
+    action: 'navigate',
+    path: '/care'
+  },
+  {
+    patterns: ['teeth', 'dental', 'mouth', 'bad breath', 'tooth', 'gum', 'tartar'],
+    intent: 'dental_care',
+    response: (petName) => `Dental health is so important for ${petName}! Our Care team can recommend dental care options.`,
+    action: 'navigate',
+    path: '/care'
+  },
+  {
+    patterns: ['ear', 'ears', 'ear infection', 'ear cleaning', 'head shaking'],
+    intent: 'ear_care',
+    response: (petName) => `Ear issues can be uncomfortable. Let me connect you with our Care team to help ${petName}.`,
+    action: 'navigate',
+    path: '/care'
+  },
+  {
+    patterns: ['eye', 'eyes', 'eye discharge', 'red eye', 'watery eye', 'cloudy eye'],
+    intent: 'eye_care',
+    response: (petName) => `Eye problems need prompt attention. Let me connect you with our Care team for ${petName}.`,
+    action: 'navigate',
+    path: '/care'
+  },
+  
+  // ============================================
+  // 🎂 CELEBRATIONS
+  // ============================================
+  {
+    patterns: ['birthday', 'celebration', 'party', 'cake', 'bday', 'birth day', 'gotcha day', 'adoption day'],
     intent: 'birthday',
     response: (petName) => `How exciting! Let's make ${petName}'s celebration special. What kind of celebration are you planning?`,
     action: 'navigate',
     path: '/celebrate'
   },
   {
-    patterns: ['soul score', 'profile', 'score', 'completion'],
+    patterns: ['gift', 'present', 'surprise', 'treat box', 'gift box'],
+    intent: 'gift',
+    response: (petName) => `A special gift for ${petName}! Let me show you our celebration options.`,
+    action: 'navigate',
+    path: '/celebrate'
+  },
+  
+  // ============================================
+  // 🏨 BOARDING & DAYCARE
+  // ============================================
+  {
+    patterns: ['boarding', 'board', 'kennel', 'stay overnight', 'pet hotel', 'hostel'],
+    intent: 'boarding',
+    response: (petName) => `Looking for boarding for ${petName}? Let me show you our trusted partners.`,
+    action: 'navigate',
+    path: '/stay'
+  },
+  {
+    patterns: ['daycare', 'day care', 'creche', 'drop off', 'pet sitting', 'dog sitting'],
+    intent: 'daycare',
+    response: (petName) => `Need daycare for ${petName}? We have great options!`,
+    action: 'navigate',
+    path: '/stay?type=daycare'
+  },
+  {
+    patterns: ['pet sitter', 'sitter', 'home visit', 'someone to watch', 'house sitting'],
+    intent: 'pet_sitter',
+    response: (petName) => `A pet sitter for ${petName}! Our Stay pillar has trusted options.`,
+    action: 'navigate',
+    path: '/stay'
+  },
+  
+  // ============================================
+  // ✈️ TRAVEL
+  // ============================================
+  {
+    patterns: ['travel', 'trip', 'vacation', 'holiday', 'travelling with', 'road trip'],
+    intent: 'travel_planning',
+    response: (petName) => `Planning to travel with ${petName}? Let me help you prepare!`,
+    action: 'navigate',
+    path: '/travel'
+  },
+  {
+    patterns: ['pet friendly', 'dog friendly', 'allows dogs', 'allows pets', 'pet allowed'],
+    intent: 'pet_friendly',
+    response: (petName) => `Looking for pet-friendly places? Our Travel pillar has everything you need!`,
+    action: 'navigate',
+    path: '/travel'
+  },
+  {
+    patterns: ['flight', 'flying', 'airplane', 'airline', 'air travel'],
+    intent: 'air_travel',
+    response: (petName) => `Flying with ${petName}? Our Travel Concierge can help with all the requirements and documentation.`,
+    action: 'navigate',
+    path: '/travel?type=air'
+  },
+  {
+    patterns: ['train', 'railway', 'rail travel'],
+    intent: 'train_travel',
+    response: (petName) => `Taking ${petName} on a train? Let me show you the requirements and options.`,
+    action: 'navigate',
+    path: '/travel?type=train'
+  },
+  {
+    patterns: ['cab', 'taxi', 'uber', 'ola', 'car ride'],
+    intent: 'cab_travel',
+    response: (petName) => `Need a pet-friendly cab for ${petName}? Let me help you find one!`,
+    action: 'navigate',
+    path: '/travel?type=cab'
+  },
+  {
+    patterns: ['documents', 'papers', 'certificate', 'health certificate', 'travel documents'],
+    intent: 'travel_documents',
+    response: (petName) => `Travel documentation for ${petName}? Our Paperwork pillar can help you get everything ready.`,
+    action: 'navigate',
+    path: '/paperwork'
+  },
+  
+  // ============================================
+  // 🍽️ DINING
+  // ============================================
+  {
+    patterns: ['restaurant', 'cafe', 'eat out', 'dining', 'brunch', 'lunch', 'dinner out', 'pet cafe'],
+    intent: 'dining',
+    response: (petName) => `Looking for a pet-friendly place to dine with ${petName}? Let me show you some options!`,
+    action: 'navigate',
+    path: '/dine'
+  },
+  
+  // ============================================
+  // 🎾 ACTIVITIES & FITNESS
+  // ============================================
+  {
+    patterns: ['walk', 'walking', 'walker', 'dog walker', 'exercise'],
+    intent: 'walking',
+    response: (petName) => `Looking for walking services for ${petName}? Our Fit pillar has great options!`,
+    action: 'navigate',
+    path: '/fit'
+  },
+  {
+    patterns: ['training', 'trainer', 'obedience', 'behavior', 'puppy training', 'basic commands'],
+    intent: 'training',
+    response: (petName) => `Training for ${petName}? Great idea! Let me show you our trusted trainers.`,
+    action: 'navigate',
+    path: '/fit?type=training'
+  },
+  {
+    patterns: ['swimming', 'swim', 'pool', 'hydrotherapy'],
+    intent: 'swimming',
+    response: (petName) => `Swimming for ${petName}? It's great exercise! Let me find options near you.`,
+    action: 'navigate',
+    path: '/fit?type=swimming'
+  },
+  {
+    patterns: ['park', 'dog park', 'play area', 'off leash', 'play date'],
+    intent: 'parks',
+    response: (petName) => `Looking for a place for ${petName} to play? Let me show you nearby options!`,
+    action: 'navigate',
+    path: '/enjoy'
+  },
+  
+  // ============================================
+  // 📋 PET PROFILE & SOUL SCORE
+  // ============================================
+  {
+    patterns: ['soul score', 'profile', 'score', 'completion', 'pet profile', 'my pet', 'pet details'],
     intent: 'soul_score',
     response: (petName, data) => {
       const score = data?.soulScore || 0;
       if (score >= 90) return `${petName}'s Soul Score is ${score}%. That's wonderful - we know ${petName} really well now!`;
       if (score >= 50) return `${petName}'s Soul Score is ${score}%. We're getting to know ${petName} better!`;
       return `${petName}'s Soul Score is ${score}%. Let's answer some questions to help us understand ${petName} better.`;
+    },
+    action: 'navigate',
+    path: '/pet/{petId}'
+  },
+  {
+    patterns: ['add pet', 'new pet', 'register pet', 'another pet', 'second dog'],
+    intent: 'add_pet',
+    response: (petName) => `Adding a new furry family member? Let me help you get them registered!`,
+    action: 'navigate',
+    path: '/my-pets'
+  },
+  {
+    patterns: ['update', 'edit', 'change', 'modify', 'update profile', 'edit profile'],
+    intent: 'edit_profile',
+    response: (petName) => `Want to update ${petName}'s profile? Let me take you there.`,
+    action: 'navigate',
+    path: '/pet/{petId}'
+  },
+  {
+    patterns: ['photo', 'picture', 'image', 'upload photo', 'change photo'],
+    intent: 'update_photo',
+    response: (petName) => `Want to update ${petName}'s photo? Let me take you to the profile.`,
+    action: 'navigate',
+    path: '/pet/{petId}'
+  },
+  {
+    patterns: ['breed', 'what breed', 'breed info', 'breed characteristics'],
+    intent: 'breed_info',
+    response: (petName, data) => {
+      if (data?.breed) {
+        return `${petName} is a ${data.breed}! Each breed has unique traits. Would you like breed-specific tips?`;
+      }
+      return `What's ${petName}'s breed? Knowing this helps me give better recommendations!`;
     }
   },
   {
-    patterns: ['recommend', 'suggestion', 'picks', 'show me'],
+    patterns: ['age', 'how old', 'birthday', 'born', 'years old', 'months old'],
+    intent: 'age_info',
+    response: (petName, data) => {
+      if (data?.age) {
+        return `${petName} is ${data.age}! Different life stages need different care. Want some age-specific tips?`;
+      }
+      return `How old is ${petName}? This helps me personalize recommendations!`;
+    }
+  },
+  
+  // ============================================
+  // 📱 ACCOUNT & SETTINGS
+  // ============================================
+  {
+    patterns: ['account', 'my account', 'profile settings', 'settings', 'preferences'],
+    intent: 'settings',
+    response: (petName) => `Let me take you to your account settings.`,
+    action: 'navigate',
+    path: '/dashboard?tab=settings'
+  },
+  {
+    patterns: ['orders', 'my orders', 'order history', 'past orders', 'order status'],
+    intent: 'orders',
+    response: (petName) => `Let me show you your order history.`,
+    action: 'navigate',
+    path: '/dashboard?tab=orders'
+  },
+  {
+    patterns: ['address', 'delivery address', 'change address', 'add address'],
+    intent: 'address',
+    response: (petName) => `Let me take you to manage your addresses.`,
+    action: 'navigate',
+    path: '/dashboard?tab=settings'
+  },
+  {
+    patterns: ['points', 'paw points', 'rewards', 'loyalty', 'redeem'],
+    intent: 'rewards',
+    response: (petName) => `Let me show you your Paw Points and rewards!`,
+    action: 'navigate',
+    path: '/dashboard'
+  },
+  {
+    patterns: ['notifications', 'alerts', 'notify', 'reminders'],
+    intent: 'notifications',
+    response: (petName) => `Managing your notifications? Let me take you to settings.`,
+    action: 'navigate',
+    path: '/dashboard?tab=settings'
+  },
+  
+  // ============================================
+  // 🔍 RECOMMENDATIONS & DISCOVERY
+  // ============================================
+  {
+    patterns: ['recommend', 'suggestion', 'picks', 'show me', 'what should', 'best for'],
     intent: 'recommendations',
     response: (petName) => `Based on what I know about ${petName}, here are some options. Want me to show you?`,
     action: 'navigate',
     path: '/shop'
   },
   {
-    patterns: ['help', 'what can you do', 'commands'],
-    intent: 'help',
-    response: (petName) => `I'm here to help you with ${petName}'s everyday needs - treats, grooming, celebrations, and more. For health concerns, our Care Concierge is your best support.`
+    patterns: ['new', "what's new", 'latest', 'arrivals', 'new products'],
+    intent: 'new_arrivals',
+    response: (petName) => `Let me show you what's new for ${petName}!`,
+    action: 'navigate',
+    path: '/shop?sort=newest'
   },
   {
-    patterns: ['hello', 'hi', 'hey'],
+    patterns: ['sale', 'discount', 'offer', 'deal', 'cheap', 'affordable'],
+    intent: 'deals',
+    response: (petName) => `Looking for deals? Let me show you current offers!`,
+    action: 'navigate',
+    path: '/shop?filter=sale'
+  },
+  {
+    patterns: ['popular', 'best seller', 'trending', 'top rated', 'most bought'],
+    intent: 'popular',
+    response: (petName) => `Let me show you what other pet parents love!`,
+    action: 'navigate',
+    path: '/shop?sort=popular'
+  },
+  
+  // ============================================
+  // 📚 LEARNING & INFORMATION
+  // ============================================
+  {
+    patterns: ['learn', 'how to', 'guide', 'tips', 'advice', 'information'],
+    intent: 'learn',
+    response: (petName) => `I'd love to help you learn more about caring for ${petName}! What topic interests you?`
+  },
+  {
+    patterns: ['puppy', 'new dog', 'first dog', 'just got', 'adopted recently'],
+    intent: 'new_pet_parent',
+    response: (petName) => `Congratulations on ${petName}! Being a new pet parent is exciting. Let me guide you through the essentials.`,
+    action: 'navigate',
+    path: '/care'
+  },
+  {
+    patterns: ['senior', 'old dog', 'aging', 'elderly', 'geriatric'],
+    intent: 'senior_care',
+    response: (petName) => `Caring for a senior pet like ${petName} requires special attention. Our Care team can help with age-appropriate recommendations.`,
+    action: 'navigate',
+    path: '/care'
+  },
+  
+  // ============================================
+  // 💔 SENSITIVE TOPICS
+  // ============================================
+  {
+    patterns: ['farewell', 'end of life', 'passing', 'cremation', 'memorial', 'euthanasia', 'put to sleep', 'dying', 'lost my pet'],
+    intent: 'farewell',
+    response: (petName) => `I'm so sorry you're going through this. Our Farewell pillar is here to support you with compassion and care during this difficult time.`,
+    action: 'navigate',
+    path: '/farewell'
+  },
+  {
+    patterns: ['adopt', 'adoption', 'rescue', 'shelter', 'foster', 'looking for dog'],
+    intent: 'adoption',
+    response: (petName) => `Thinking about adoption? That's wonderful! Let me show you pets looking for their forever home.`,
+    action: 'navigate',
+    path: '/adopt'
+  },
+  {
+    patterns: ['lost', 'missing', 'runaway', 'escaped', 'find my dog', 'lost dog'],
+    intent: 'lost_pet',
+    response: (petName) => `Oh no, I'm so sorry to hear that. Let me connect you with our Care Concierge immediately to help.`,
+    action: 'navigate',
+    path: '/care?urgent=true'
+  },
+  
+  // ============================================
+  // 🤝 SUPPORT & HELP
+  // ============================================
+  {
+    patterns: ['help', 'what can you do', 'commands', 'how do i', 'where is'],
+    intent: 'help',
+    response: (petName) => `I'm here to help you with ${petName}'s everyday needs - treats, grooming, celebrations, travel, boarding, and more. For health concerns, our Care Concierge is your best support. Just ask me anything!`
+  },
+  {
+    patterns: ['contact', 'call', 'phone', 'customer service', 'support', 'talk to human', 'real person'],
+    intent: 'contact_support',
+    response: (petName) => `I'll connect you with our Care Concierge right away. They're here to help!`,
+    action: 'navigate',
+    path: '/care'
+  },
+  {
+    patterns: ['complaint', 'problem', 'issue', 'not working', 'bug', 'error'],
+    intent: 'complaint',
+    response: (petName) => `I'm sorry you're having trouble. Let me connect you with our team to resolve this.`,
+    action: 'navigate',
+    path: '/care'
+  },
+  {
+    patterns: ['refund', 'return', 'cancel order', 'wrong order', 'damaged'],
+    intent: 'refund',
+    response: (petName) => `I understand you need help with an order issue. Let me connect you with our team.`,
+    action: 'navigate',
+    path: '/dashboard?tab=orders'
+  },
+  
+  // ============================================
+  // 🗣️ SOCIAL RESPONSES
+  // ============================================
+  {
+    patterns: ['hello', 'hi', 'hey', 'namaste', 'good morning', 'good afternoon', 'good evening'],
     intent: 'greeting',
     response: (petName) => `Hello! How's ${petName} doing? What can I help you with today?`
   },
   {
-    patterns: ['thank', 'thanks', 'awesome'],
+    patterns: ['thank', 'thanks', 'awesome', 'great', 'perfect', 'amazing'],
     intent: 'thanks',
     response: (petName) => `You're welcome! Looking after ${petName} is what I'm here for.`
   },
   {
-    patterns: ['bye', 'goodbye'],
+    patterns: ['bye', 'goodbye', 'see you', 'later', 'talk later'],
     intent: 'goodbye',
     response: (petName) => `Goodbye for now! Give ${petName} a gentle pat from me.`
+  },
+  {
+    patterns: ['good boy', 'good girl', 'good dog', 'cute', 'adorable', 'love my dog'],
+    intent: 'pet_love',
+    response: (petName) => `Aww, ${petName} is lucky to have such a loving pet parent! Is there anything I can help you with today?`
+  },
+  
+  // ============================================
+  // 🎤 VOICE SPECIFIC COMMANDS
+  // ============================================
+  {
+    patterns: ['stop', 'quiet', 'silence', 'mute', 'stop talking'],
+    intent: 'mute',
+    response: (petName) => `Okay, I'll stay quiet. Tap the mic when you need me!`
+  },
+  {
+    patterns: ['repeat', 'say again', 'what did you say', "didn't hear"],
+    intent: 'repeat',
+    response: (petName) => `Sure! I said... Actually, you can see our conversation above. Is there something specific I can help with?`
+  },
+  {
+    patterns: ['speak', 'talk', 'unmute', 'voice on', 'turn on voice'],
+    intent: 'unmute',
+    response: (petName) => `I'm here and ready to help ${petName}! What do you need?`
   }
 ];
 
