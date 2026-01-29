@@ -108,6 +108,20 @@
     - More visible hover tooltip instead of browser `title` attribute
     - **File Modified**: `/app/frontend/src/components/dashboard/GamificationBanner.jsx`
 
+13. **Mira Dog Knowledge & Guidance Framework** (COMPLETED) 📚
+    - Added comprehensive non-medical guidance rules to Mira's system prompt
+    - Knowledge sources: The Spruce Pets (primary), AKC & RSPCA (secondary checks)
+    - Health escalation: Auto-routes to Care Concierge for medical concerns
+    - Tone rules: Plain English, calm, supportive, non-diagnostic
+    - Adoption/Farewell sensitivity protocols added
+    - **File Modified**: `/app/backend/mira_routes.py`
+
+14. **Voice Mira Health Escalation** (COMPLETED) 🎙️
+    - Added health escalation command patterns (vomiting, pain, seizure, etc.)
+    - Auto-routes to Care page with urgent flag
+    - Non-medical responses for everyday queries
+    - **File Modified**: `/app/frontend/src/components/MiraVoiceAssistant.jsx`
+
 **Bug Fixes Verified Working:**
 - ✅ Pet Soul Answer Saving (API tested)
 - ✅ Wishlist Add/Get (API tested)
