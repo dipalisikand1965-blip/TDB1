@@ -775,19 +775,20 @@ const UnifiedPetPage = () => {
         </div>
       </div>
 
-      {/* Pet Profile Header - More Attractive Design */}
-      <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 py-10 relative overflow-hidden">
-        {/* Decorative Background Elements */}
+      {/* Pet Profile Header - Premium Mobile-First Design */}
+      <div className="bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-700 py-8 md:py-10 relative overflow-hidden">
+        {/* Animated Decorative Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-0 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-pink-400/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-0 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-pink-400/10 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute top-1/2 right-0 w-40 h-40 bg-amber-400/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
         
         <div className="max-w-6xl mx-auto px-4 relative">
-          <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
-            {/* Pet Photo - Larger and More Prominent */}
-            <div className="relative group">
-              <div className="w-40 h-40 rounded-3xl bg-white shadow-2xl overflow-hidden border-4 border-white/50 ring-4 ring-white/20">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start">
+            {/* Pet Photo - Animated and Prominent */}
+            <div className="relative group animate-fade-in-up">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-white shadow-2xl overflow-hidden border-4 border-white/50 ring-4 ring-white/20 transition-transform duration-500 hover:scale-105">
                 <img src={petPhoto} alt={safePet.name} className="w-full h-full object-cover" />
                 {token && (
                   <>
