@@ -156,9 +156,9 @@ const MiraFloatingButton = () => {
         )}
       </div>
       
-      {/* Mira Voice Assistant Modal - Unified Interface */}
+      {/* Pulse Voice Assistant Modal - Opens when triggered */}
       {isOpen && (
-        <MiraVoiceAssistant
+        <Pulse
           isOpen={isOpen}
           onClose={() => {
             setIsOpen(false);
