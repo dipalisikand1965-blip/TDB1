@@ -257,8 +257,13 @@ async def process_intake(request: ChannelRequest) -> IntakeResponse:
             
             # Create ticket
             ticket_id = f"TKT-{secrets.token_hex(4).upper()}"
+            notification_id = f"NOTIF-{secrets.token_hex(4).upper()}"
+            inbox_id = request_id  # Use request_id as inbox_id
+            
             ticket_doc = {
                 "ticket_id": ticket_id,
+                "notification_id": notification_id,
+                "inbox_id": inbox_id,
                 "title": f"[{request.channel.upper()}] {request.request_type.title()} Request - {customer_name}",
                 "description": f"**Channel:** {request.channel}\n**Message:**\n{request.message}\n\n**Extracted Data:** {json.dumps(extracted_data, indent=2) if extracted_data else 'None'}",
                 "customer_name": customer_name,
@@ -280,9 +285,11 @@ async def process_intake(request: ChannelRequest) -> IntakeResponse:
                 "pillar": detected_pillar,
                 "suggested_pillar": detected_pillar,
                 "category": "channel_order",
-                "status": "open",
-                "priority": "normal",
+                "status": "new",
+                "priority": 3,
+                "urgency": "medium",
                 "assigned_to": None,
+                "tags": ["channel-intake", request.channel, detected_pillar],
                 "messages": [{
                     "id": f"msg-{secrets.token_hex(4)}",
                     "sender": "system",
@@ -298,15 +305,28 @@ async def process_intake(request: ChannelRequest) -> IntakeResponse:
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "updated_at": datetime.now(timezone.utc).isoformat()
             }
+            # Insert into BOTH service_desk_tickets and tickets for backward compatibility
+            await db.service_desk_tickets.insert_one(ticket_doc)
             await db.tickets.insert_one(ticket_doc)
             
             # Also create admin notification
             await db.admin_notifications.insert_one({
+                "id": notification_id,
                 "type": f"channel_intake_{request.channel}",
-                "title": f"📥 New {request.channel.title()} Order - {customer_name}",
+                "title": f"New {request.channel.title()} Order - {customer_name}",
                 "message": f"{request.message[:100]}..." if len(request.message) > 100 else request.message,
-                "read": False,
+                "status": "unread",
+                "ticket_id": ticket_id,
+                "inbox_id": inbox_id,
+                "pillar": detected_pillar,
+                "urgency": "medium",
+                "customer": {
+                    "name": customer_name,
+                    "email": customer_email,
+                    "phone": request.customer_phone
+                },
                 "created_at": datetime.now(timezone.utc).isoformat(),
+                "read_at": None,
                 "link": f"/admin?tab=servicedesk&ticket={ticket_id}"
             })
             
