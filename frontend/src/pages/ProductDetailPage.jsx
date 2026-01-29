@@ -400,14 +400,19 @@ const ProductDetailPage = () => {
                   }
                   try {
                     if (isWishlisted) {
-                      await fetch(`${API_URL}/api/member/wishlist/${product.id}`, {
+                      const res = await fetch(`${API_URL}/api/member/wishlist/${product.id}`, {
                         method: 'DELETE',
                         headers: { 'Authorization': `Bearer ${token}` }
                       });
-                      setIsWishlisted(false);
-                      toast({ title: "Removed from Wishlist", description: `${product.name || product.title}` });
+                      if (res.ok) {
+                        setIsWishlisted(false);
+                        toast({ title: "Removed from Wishlist", description: `${product.name || product.title}` });
+                      } else {
+                        const errData = await res.json().catch(() => ({}));
+                        toast({ title: "Error", description: errData.detail || "Failed to remove", variant: "destructive" });
+                      }
                     } else {
-                      await fetch(`${API_URL}/api/member/wishlist/add`, {
+                      const res = await fetch(`${API_URL}/api/member/wishlist/add`, {
                         method: 'POST',
                         headers: { 
                           'Content-Type': 'application/json',
@@ -420,11 +425,17 @@ const ProductDetailPage = () => {
                           product_price: price
                         })
                       });
-                      setIsWishlisted(true);
-                      toast({ title: "Added to Wishlist ❤️", description: `${product.name || product.title}` });
+                      if (res.ok) {
+                        setIsWishlisted(true);
+                        toast({ title: "Added to Wishlist ❤️", description: `${product.name || product.title}` });
+                      } else {
+                        const errData = await res.json().catch(() => ({}));
+                        toast({ title: "Error", description: errData.detail || "Failed to add", variant: "destructive" });
+                      }
                     }
                   } catch (err) {
                     console.error('Wishlist error:', err);
+                    toast({ title: "Network Error", description: "Please try again", variant: "destructive" });
                   }
                 }}
                 className="py-6"
