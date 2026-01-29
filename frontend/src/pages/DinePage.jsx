@@ -1617,9 +1617,12 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Phone</label>
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                <MessageCircle className="w-3 h-3 text-green-600" /> WhatsApp
+              </label>
               <Input 
                 type="tel"
+                placeholder="+91 98765 43210"
                 value={formData.phone}
                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
                 required
