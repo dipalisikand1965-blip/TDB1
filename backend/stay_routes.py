@@ -570,21 +570,39 @@ async def create_booking_request(booking: BookingRequest):
         except Exception as e:
             logger.error(f"Failed to send stay booking email: {e}")
     
-    # Create admin notification
+    # Create admin notification with FULL unified flow fields
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    
     try:
         notif_doc = {
-            "id": f"notif-{uuid.uuid4().hex[:8]}",
+            "id": notification_id,
             "type": "stay_booking",
-            "title": f"🏨 New Stay Booking - {property.get('name')}",
+            "pillar": "stay",
+            "title": f"New Stay Booking - {property.get('name')}",
             "message": f"{booking.guest_name} requested stay for {booking.check_in_date} ({pet_display})",
+            "read": False,  # IMPORTANT: For API compatibility
+            "status": "unread",
+            "urgency": "high",
             "category": "stay",
             "related_id": booking_doc["id"],
-            "link_to": "/admin?tab=stay&subtab=bookings",
-            "read": False,
-            "created_at": now
+            "ticket_id": f"STAY-{booking_doc['id']}",
+            "inbox_id": inbox_id,
+            "link": f"/admin?tab=stay&subtab=bookings",
+            "customer": {
+                "name": booking.guest_name,
+                "email": booking.guest_email,
+                "phone": booking.guest_phone
+            },
+            "pet": {
+                "name": booking.pet_name,
+                "breed": booking.pet_breed
+            },
+            "created_at": now,
+            "read_at": None
         }
         notif_result = await db.admin_notifications.insert_one(notif_doc)
-        logger.info(f"Created notification for stay booking: {notif_result.inserted_id}")
+        logger.info(f"[UNIFIED FLOW] Stay booking notification created: {notification_id}")
     except Exception as e:
         logger.error(f"Failed to create notification for stay booking: {e}")
     
