@@ -1659,54 +1659,16 @@ _GST applicable on final invoice_
                     {cartAnalysis.isMixedCart ? 'Delivery Address (For Shippable Items) *' : 'Delivery Address *'}
                   </h2>
 
-                  {/* Delivery Method Toggle - Show for bakery-only and shippable-only carts */}
-                  {!cartAnalysis.isMixedCart && (
-                    <div className="mb-6">
-                      <p className="text-sm text-gray-600 mb-3">How would you like to receive your order?</p>
-                      <div className="flex gap-4">
-                        <button
-                          type="button"
-                          onClick={() => setDeliveryMethod('delivery')}
-                          className={`flex-1 p-4 border rounded-xl flex flex-col items-center gap-2 transition-all ${
-                            deliveryMethod === 'delivery'
-                              ? 'border-purple-600 bg-purple-50 text-purple-700'
-                              : 'border-gray-200 hover:bg-gray-50'
-                          }`}
-                          data-testid="delivery-method-delivery"
-                        >
-                          <Truck className="w-6 h-6" />
-                          <span className="font-semibold">Home Delivery</span>
-                          <span className="text-xs text-gray-500">Ships to any city</span>
-                        </button>
-                        {/* Only show pickup option if user is in a pickup city */}
-                        <button
-                          type="button"
-                          onClick={() => setDeliveryMethod('pickup')}
-                          className={`flex-1 p-4 border rounded-xl flex flex-col items-center gap-2 transition-all ${
-                            deliveryMethod === 'pickup'
-                              ? 'border-purple-600 bg-purple-50 text-purple-700'
-                              : 'border-gray-200 hover:bg-gray-50'
-                          }`}
-                          data-testid="delivery-method-pickup"
-                        >
-                          <Store className="w-6 h-6" />
-                          <span className="font-semibold">Store Pickup</span>
-                          <span className="text-xs text-gray-500">Mumbai, Gurugram, Bangalore</span>
-                        </button>
+                  {/* Delivery Info Banner */}
+                  <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                    <div className="flex items-center gap-3">
+                      <Truck className="w-6 h-6 text-green-600" />
+                      <div>
+                        <p className="font-semibold text-green-800">Free Delivery on orders above ₹3000!</p>
+                        <p className="text-sm text-green-600">We deliver fresh treats across India 🇮🇳</p>
                       </div>
-                      
-                      {/* Info about fresh bakery items */}
-                      {cartAnalysis.hasBakeryItems && deliveryMethod === 'delivery' && (
-                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mt-4 text-sm flex gap-2">
-                          <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                          <div className="text-amber-800">
-                            <p className="font-medium">Fresh Bakery Items</p>
-                            <p className="text-xs mt-1">Your cakes and fresh treats will be carefully packaged and shipped to ensure freshness. Delivery typically takes 2-4 days.</p>
-                          </div>
-                        </div>
-                      )}
                     </div>
-                  )}
+                  </div>
 
                   {/* Delivery address form (for delivery method or mixed carts) */}
                   {(deliveryMethod === 'delivery' || cartAnalysis.isMixedCart) && (
