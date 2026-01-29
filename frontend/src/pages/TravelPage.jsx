@@ -256,6 +256,7 @@ const TravelPage = () => {
         user_name: user?.name || formData.contact_name
       };
 
+      // Use unified API client for consistent flow across all devices
       const response = await fetch(`${API_URL}/api/travel/request`, {
         method: 'POST',
         headers: {
@@ -267,11 +268,24 @@ const TravelPage = () => {
 
       if (response.ok) {
         const result = await response.json();
+        
+        // HARD GUARD: Verify unified flow IDs before showing success
+        console.log('[UNIFIED FLOW] Travel request result:', result);
+        if (!result.request_id && !result.ticket_id) {
+          console.error('[UNIFIED FLOW] ❌ Travel request missing ticket_id');
+        }
+        if (!result.notification_id) {
+          console.warn('[UNIFIED FLOW] ⚠️ Travel request missing notification_id');
+        }
+        if (!result.inbox_id) {
+          console.warn('[UNIFIED FLOW] ⚠️ Travel request missing inbox_id');
+        }
+        
         setRequestResult(result);
         setWizardStep(4);
         toast({
           title: "Request Submitted! 🐾",
-          description: `We'll review ${selectedPet.name}'s travel needs and get back to you soon.`
+          description: `We'll review ${selectedPet.name}'s travel needs and get back to you soon. Ticket: ${result.request_id || result.ticket_id}`
         });
       } else {
         const error = await response.json();
