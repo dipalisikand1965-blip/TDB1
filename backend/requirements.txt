@@ -142,3 +142,4 @@ svix==1.84.1
 pywebpush==2.2.0
 py-vapid==1.9.4
 openpyxl==3.1.5
+elevenlabs==2.32.0
