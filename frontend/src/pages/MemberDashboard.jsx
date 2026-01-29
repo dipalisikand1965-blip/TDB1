@@ -8,13 +8,14 @@ import { Input } from '../components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Switch } from '../components/ui/switch';
 import { Textarea } from '../components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { 
   ShoppingBag, PawPrint, Star, User, LogOut, Package, 
   MapPin, Settings, Lock, Bell, Shield, Phone, Mail, MessageCircle,
   RefreshCw, Calendar, Pause, Play, X, MessageSquare, Edit2, Trash2, Loader2,
   UtensilsCrossed, Users, Clock, Stethoscope, Sparkles, Home, Plane, Cake, Gift, Crown, Heart,
   ChevronRight, Trophy, Zap, Target, Flame, Award, Medal, CheckCircle2, ArrowRight, TrendingUp, Wallet,
-  BellRing, Smartphone, HelpCircle
+  BellRing, Smartphone, HelpCircle, Plus, Minus, History
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../hooks/use-toast';
