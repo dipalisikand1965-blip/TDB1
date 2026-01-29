@@ -179,32 +179,72 @@ const MiraVoiceAssistant = ({
     return false;
   }, [API_URL, isMuted]);
   
-  // Web Speech API fallback (with Meera pronunciation fix)
+  // Remove emojis from text for natural speech
+  const cleanTextForSpeech = useCallback((text) => {
+    // Remove common emojis
+    let cleaned = text
+      .replace(/[\u{1F600}-\u{1F64F}]/gu, '') // Emoticons
+      .replace(/[\u{1F300}-\u{1F5FF}]/gu, '') // Symbols & pictographs
+      .replace(/[\u{1F680}-\u{1F6FF}]/gu, '') // Transport & map
+      .replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '') // Flags
+      .replace(/[\u{2600}-\u{26FF}]/gu, '')   // Misc symbols
+      .replace(/[\u{2700}-\u{27BF}]/gu, '')   // Dingbats
+      .replace(/🐾|🐕|🐶|🎂|🎉|❤️|💜|✨|🌟|⭐|😊|💪|🏆|🔥|💯|🎁|🦴|💊|🛒|📦/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    // Fix "Mira" pronunciation to "Meera"
+    cleaned = cleaned.replace(/\bMira\b/gi, 'Meera');
+    
+    return cleaned;
+  }, []);
+  
+  // Web Speech API with Indian English voice preference
   const speakWithWebSpeech = useCallback((text) => {
     if (!synthRef.current || isMuted) return;
     
-    // Fix "Mira" pronunciation to "Meera"
-    const fixedText = text.replace(/\bMira\b/gi, 'Meera');
+    const cleanedText = cleanTextForSpeech(text);
+    if (!cleanedText) return;
     
     synthRef.current.cancel();
-    const utterance = new SpeechSynthesisUtterance(fixedText);
+    const utterance = new SpeechSynthesisUtterance(cleanedText);
     utterance.rate = MIRA_VOICE_CONFIG.rate;
     utterance.pitch = MIRA_VOICE_CONFIG.pitch;
     
     const voices = synthRef.current.getVoices();
-    // Try to find an Indian voice, or fall back to female voice
-    const indianVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('en-IN'));
-    const femaleVoice = voices.find(v => 
-      v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Google')
-    );
-    if (indianVoice) utterance.voice = indianVoice;
-    else if (femaleVoice) utterance.voice = femaleVoice;
+    
+    // Priority order for voice selection (best Indian female voices)
+    const voicePreference = [
+      // Google Indian English (best quality)
+      v => v.name.includes('Google') && v.lang === 'en-IN',
+      // Any Indian English voice
+      v => v.lang === 'en-IN' || v.lang === 'en_IN',
+      // Hindi voices (natural Indian accent)
+      v => v.lang.startsWith('hi'),
+      // Microsoft Indian voices
+      v => v.name.includes('Neerja') || v.name.includes('Heera'),
+      // Google UK female (similar intonation)
+      v => v.name.includes('Google UK English Female'),
+      // Any female voice
+      v => v.name.toLowerCase().includes('female') || 
+           v.name.includes('Samantha') || 
+           v.name.includes('Zira') ||
+           v.name.includes('Karen')
+    ];
+    
+    for (const preference of voicePreference) {
+      const voice = voices.find(preference);
+      if (voice) {
+        utterance.voice = voice;
+        break;
+      }
+    }
     
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     
     synthRef.current.speak(utterance);
-  }, [isMuted]);
+  }, [isMuted, cleanTextForSpeech]);
   
   // Main speak function - tries ElevenLabs first, then falls back
   const speak = useCallback(async (text) => {
