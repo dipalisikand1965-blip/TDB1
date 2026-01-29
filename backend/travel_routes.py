@@ -267,8 +267,8 @@ async def create_travel_request(request: TravelRequestCreate):
                 "risk_factors": risk_factors
             },
             "tags": ["travel", request.travel_type, "unified-flow"],
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_consistent_timestamp(),
+            "updated_at": get_consistent_timestamp(),
             "timeline": [{
                 "action": "created",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
