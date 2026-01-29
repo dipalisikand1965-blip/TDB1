@@ -476,11 +476,15 @@ async def create_rsvp(rsvp: ExperienceRSVP):
             }}
         )
     
-    logger.info(f"RSVP created: {rsvp_id} for experience {rsvp.experience_id}")
+    logger.info(f"[UNIFIED FLOW] RSVP created: {rsvp_id} | Notification({notification_id}) → Ticket({rsvp_id}) → Inbox({inbox_id})")
     
+    # Return ALL unified flow IDs for frontend validation
     return {
         "success": True,
         "rsvp_id": rsvp_id,
+        "ticket_id": rsvp_id,  # RSVP ID is also the ticket ID
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
         "status": "pending",
         "message": f"Your RSVP for {experience.get('name')} has been submitted. We'll confirm shortly!"
     }
