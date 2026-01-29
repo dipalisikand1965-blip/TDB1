@@ -34,6 +34,18 @@ const MiraFloatingButton = () => {
   const [showTooltip, setShowTooltip] = useState(true);
   const [voicePreference, setVoicePreference] = useState('text'); // 'text' or 'voice'
   const [hasAskedPreference, setHasAskedPreference] = useState(false);
+  const [startWithVoice, setStartWithVoice] = useState(false);
+  
+  // Listen for openMiraVoice event from floating contact button
+  useEffect(() => {
+    const handleOpenMiraVoice = () => {
+      setStartWithVoice(true);
+      setVoicePreference('voice');
+      setIsOpen(true);
+    };
+    window.addEventListener('openMiraVoice', handleOpenMiraVoice);
+    return () => window.removeEventListener('openMiraVoice', handleOpenMiraVoice);
+  }, []);
   
   // Check for Care/Emergency/Farewell pillars - auto-show (not auto-speak)
   useEffect(() => {
