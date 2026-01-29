@@ -335,13 +335,19 @@ async def create_general_concierge_request(request: ConciergeGeneralRequest):
     import uuid
     
     request_id = f"conc-{uuid.uuid4().hex[:8]}"
-    ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
+    ticket_id = f"TKT-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
     now = datetime.now(timezone.utc)
+    
+    logger.info(f"[UNIFIED FLOW] Processing Concierge request: {request_id} for pillar: {request.pillar}")
     
     # 1. Create concierge request record
     request_doc = {
         "id": request_id,
         "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
         "type": "general_inquiry",
         "pillar": request.pillar,
         "experience_id": request.experience_id,
@@ -354,6 +360,7 @@ async def create_general_concierge_request(request: ConciergeGeneralRequest):
         "user_id": request.user_id,
         "source": request.source,
         "status": "new",
+        "unified_flow_processed": True,
         "created_at": now,
         "updated_at": now,
         "timeline": [
@@ -366,16 +373,120 @@ async def create_general_concierge_request(request: ConciergeGeneralRequest):
     }
     
     await db.concierge_requests.insert_one(request_doc)
+    logger.info(f"[UNIFIED FLOW] STEP 0: Concierge request created: {request_id}")
     
-    # 2. Create ticket for Service Desk tracking (UNIVERSAL RULE)
-    ticket_doc = {
-        "ticket_id": ticket_id,
-        "id": ticket_id,
+    # ==================== STEP 1: NOTIFICATION (ALWAYS FIRST) ====================
+    notification_doc = {
+        "id": notification_id,
         "type": "concierge_request",
         "pillar": request.pillar,
+        "title": f"New Concierge® Request: {request.pillar.capitalize()}",
+        "message": f"{request.name} submitted a Concierge® request for {request.experience_name or request.pillar}",
+        "priority": "normal",
+        "urgency": "medium",
+        "status": "unread",
+        "ticket_id": ticket_id,
+        "concierge_request_id": request_id,
+        "inbox_id": inbox_id,
+        "customer": {
+            "name": request.name,
+            "email": request.email,
+            "phone": request.phone
+        },
+        "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+        "created_at": now,
+        "read_at": None,
+        "action_url": f"/admin/concierge?request={request_id}"
+    }
+    
+    await db.admin_notifications.insert_one(notification_doc)
+    logger.info(f"[UNIFIED FLOW] STEP 1 COMPLETE: Notification created: {notification_id}")
+    
+    # ==================== STEP 2: SERVICE DESK TICKET (ALWAYS SECOND) ====================
+    service_desk_doc = {
+        "ticket_id": ticket_id,
+        "id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
+        "concierge_request_id": request_id,
+        
+        "category": request.pillar,
+        "sub_category": "concierge_request",
+        "pillar": request.pillar,
+        
         "subject": f"Concierge® Request: {request.experience_name or request.pillar.capitalize()}",
         "description": request.message or f"Concierge® inquiry for {request.pillar} pillar",
         "original_request": request.message,
+        
+        "member": {
+            "name": request.name,
+            "email": request.email,
+            "phone": request.phone
+        },
+        
+        "status": "new",
+        "priority": 3,
+        "urgency": "medium",
+        "source": "concierge_card",
+        "channel": "web",
+        
+        "assigned_to": None,
+        "tags": ["concierge", request.pillar, "unified-flow"],
+        
+        "messages": [{
+            "id": str(uuid.uuid4()),
+            "type": "request_received",
+            "content": request.message or f"Concierge® inquiry for {request.pillar}",
+            "sender": "customer",
+            "sender_name": request.name,
+            "channel": "web",
+            "timestamp": now.isoformat(),
+            "is_internal": False
+        }],
+        
+        "internal_notes": "",
+        "attachments": [],
+        
+        "created_at": now,
+        "updated_at": now,
+        "first_response_at": None,
+        "resolved_at": None,
+        "closed_at": None,
+        
+        "audit_trail": [
+            {
+                "action": "created",
+                "timestamp": now.isoformat(),
+                "performed_by": "system",
+                "details": f"Created from {request.pillar} Concierge® card via Unified Flow"
+            }
+        ]
+    }
+    
+    await db.service_desk_tickets.insert_one(service_desk_doc)
+    logger.info(f"[UNIFIED FLOW] STEP 2 COMPLETE: Service Desk ticket created: {ticket_id}")
+    
+    # Also insert into legacy tickets collection for backward compatibility
+    await db.tickets.insert_one({
+        **service_desk_doc,
+        "type": "concierge_request"
+    })
+    
+    # ==================== STEP 3: UNIFIED INBOX (ALWAYS THIRD) ====================
+    inbox_doc = {
+        "id": inbox_id,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        
+        "channel": "web",
+        "request_type": "concierge_request",
+        "pillar": request.pillar,
+        "category": request.pillar,
+        
+        "status": "new",
+        "urgency": "medium",
+        
         "customer_name": request.name,
         "customer_email": request.email,
         "customer_phone": request.phone,
@@ -384,53 +495,38 @@ async def create_general_concierge_request(request: ConciergeGeneralRequest):
             "email": request.email,
             "phone": request.phone
         },
-        "status": "open",
-        "priority": "normal",
-        "source": "concierge_card",
-        "concierge_request_id": request_id,
+        
+        "preview": (request.message or f"Concierge® inquiry for {request.pillar}")[:200],
+        "message": request.message or f"Concierge® inquiry for {request.pillar}",
+        "full_content": request.message,
+        
+        "metadata": {
+            "experience_id": request.experience_id,
+            "experience_name": request.experience_name,
+            "source": request.source,
+            "preferred_contact": request.preferred_contact
+        },
+        
+        "tags": ["concierge", request.pillar],
+        
         "created_at": now,
         "updated_at": now,
-        "audit_trail": [
-            {
-                "action": "created",
-                "timestamp": now.isoformat(),
-                "performed_by": "system",
-                "details": f"Created from {request.pillar} Concierge® card"
-            }
-        ]
+        "processed_at": None,
+        "archived_at": None
     }
     
-    await db.tickets.insert_one(ticket_doc)
+    await db.channel_intakes.insert_one(inbox_doc)
+    logger.info(f"[UNIFIED FLOW] STEP 3 COMPLETE: Unified Inbox entry created: {inbox_id}")
     
-    # 3. Create admin notification (UNIVERSAL RULE)
-    notification_doc = {
-        "id": f"notif-{uuid.uuid4().hex[:8]}",
-        "type": "concierge_request",
-        "pillar": request.pillar,
-        "title": f"New Concierge® Request: {request.pillar.capitalize()}",
-        "message": f"{request.name} submitted a Concierge® request for {request.experience_name or request.pillar}",
-        "priority": "normal",
-        "status": "unread",
-        "ticket_id": ticket_id,
-        "concierge_request_id": request_id,
-        "customer": {
-            "name": request.name,
-            "email": request.email,
-            "phone": request.phone
-        },
-        "created_at": now,
-        "read_at": None,
-        "action_url": f"/admin/concierge?request={request_id}"
-    }
-    
-    await db.admin_notifications.insert_one(notification_doc)
-    
-    logger.info(f"Concierge® request created: {request_id} -> Ticket: {ticket_id} -> Notification sent")
+    # ==================== STEP 4: CONTEXTUAL (already done - concierge_requests) ====================
+    logger.info(f"[UNIFIED FLOW] COMPLETE: {request_id} | Flow: Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id}) → Context(concierge_requests)")
     
     return {
         "success": True,
         "request_id": request_id,
         "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
         "message": "Request received. We'll be in touch soon!"
     }
 
