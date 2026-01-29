@@ -504,6 +504,9 @@ async def create_care_request(request: CareRequestCreate):
         return {
             "success": True,
             "request_id": request_id,
+            "ticket_id": ticket_id,
+            "notification_id": notification_id,
+            "inbox_id": inbox_id,
             "status": "submitted",
             "priority": priority,
             "message": f"Your care request has been submitted. Our concierge will review and contact you within {care_config['typical_response_time']}.",

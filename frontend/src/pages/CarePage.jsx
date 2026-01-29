@@ -7,6 +7,7 @@ import { Badge } from '../components/ui/badge';
 import { Textarea } from '../components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { API_URL } from '../utils/api';
+import { createCareRequest, showUnifiedFlowSuccess, showUnifiedFlowError } from '../utils/unifiedApi';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
@@ -303,49 +304,35 @@ const CarePage = () => {
         user_name: user?.name || formData.contact_name
       };
 
-      const response = await fetch(`${API_URL}/api/care/request`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify(requestPayload)
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        
-        // HARD GUARD: Verify unified flow IDs before showing success
-        console.log('[UNIFIED FLOW] Care request result:', result);
-        if (!result.request_id && !result.ticket_id) {
-          console.error('[UNIFIED FLOW] ❌ Care request missing ticket_id');
-        }
-        if (!result.notification_id) {
-          console.warn('[UNIFIED FLOW] ⚠️ Care request missing notification_id');
-        }
-        if (!result.inbox_id) {
-          console.warn('[UNIFIED FLOW] ⚠️ Care request missing inbox_id');
-        }
-        
-        setRequestResult(result);
-        setWizardStep(4);
-        toast({
-          title: "Request Submitted! 🐾",
-          description: `We'll review ${selectedPet.name}'s care needs and get back to you soon. Ticket: ${result.request_id || result.ticket_id}`
-        });
-      } else {
-        const error = await response.json();
-        toast({
-          title: "Error",
-          description: error.detail || "Failed to submit request",
-          variant: "destructive"
-        });
+      // Use centralized unifiedApi client for unified flow enforcement
+      const result = await createCareRequest(requestPayload, token);
+      
+      // HARD GUARD: Verify unified flow IDs
+      console.log('[UNIFIED FLOW] Care request result:', result);
+      if (!result.ticket_id) {
+        console.error('[UNIFIED FLOW] ❌ Care request missing ticket_id');
+        throw new Error('Care request missing unified flow IDs');
       }
+      
+      // Show success with unified flow confirmation
+      showUnifiedFlowSuccess('care_request', {
+        ticket_id: result.ticket_id,
+        notification_id: result.notification_id,
+        inbox_id: result.inbox_id
+      });
+      
+      setRequestResult(result);
+      setWizardStep(4);
+      toast({
+        title: "Request Submitted! 🐾",
+        description: `We'll review ${selectedPet?.name || 'your pet'}'s care needs and get back to you soon. Ticket: ${result.ticket_id}`
+      });
     } catch (error) {
-      console.error('Error submitting request:', error);
+      console.error('Error submitting care request:', error);
+      showUnifiedFlowError('care_request', error);
       toast({
         title: "Error",
-        description: "Failed to submit request. Please try again.",
+        description: error.message || "Failed to submit request. Please try again.",
         variant: "destructive"
       });
     } finally {
