@@ -883,13 +883,56 @@ CONCIERGE_ACTION_TRIGGERS = {
     }
 }
 
-def detect_concierge_action_needed(message: str, pillar: str = None) -> Dict:
+def detect_concierge_action_needed(message: str, pillar: str = None, conversation_history: list = None) -> Dict:
     """
     Detect if a message requires concierge action (booking, reservation, verification).
     Returns action details if needed, None otherwise.
-    """
-    message_lower = message.lower()
     
+    CRITICAL: Also detects AFFIRMATIVE RESPONSES to previous Mira suggestions.
+    "yes please", "go ahead", "ok", etc. MUST trigger action.
+    """
+    message_lower = message.lower().strip()
+    
+    # ==================== AFFIRMATIVE RESPONSE DETECTION (CRITICAL) ====================
+    # If user says "yes", "yes please", "go ahead", etc., this is a CONFIRMATION
+    # of a previous suggestion. We MUST take action.
+    
+    affirmative_patterns = [
+        "yes", "yes please", "yes pls", "yea", "yeah", "yep", "yup",
+        "ok", "okay", "ok please", "sure", "sure thing", "go ahead",
+        "proceed", "do it", "let's do it", "let's go", "sounds good",
+        "perfect", "great", "that works", "i confirm", "confirmed",
+        "book it", "reserve it", "arrange it", "make it happen",
+        "please do", "please proceed", "go for it", "i'm in", "count me in"
+    ]
+    
+    # Check for exact match or starts with affirmative
+    is_affirmative = (
+        message_lower in affirmative_patterns or
+        any(message_lower.startswith(p + " ") for p in affirmative_patterns) or
+        any(message_lower.startswith(p + ",") for p in affirmative_patterns) or
+        any(message_lower.startswith(p + ".") for p in affirmative_patterns) or
+        any(message_lower.startswith(p + "!") for p in affirmative_patterns)
+    )
+    
+    if is_affirmative:
+        # User is confirming a previous suggestion - THIS MUST CREATE ACTION
+        # Determine action type from pillar or context
+        action_type = "confirmed_request"
+        if pillar:
+            action_type = f"{pillar}_confirmed"
+        
+        return {
+            "action_needed": True,
+            "category": pillar or "general",
+            "action_type": action_type,
+            "priority": "high",  # Confirmations are high priority
+            "trigger_keyword": message_lower,
+            "is_affirmative_confirmation": True,  # Flag for special handling
+            "requires_followup": True  # Mira MUST respond with next steps
+        }
+    
+    # ==================== STANDARD KEYWORD DETECTION ====================
     for category, config in CONCIERGE_ACTION_TRIGGERS.items():
         for keyword in config["keywords"]:
             if keyword in message_lower:
@@ -902,7 +945,7 @@ def detect_concierge_action_needed(message: str, pillar: str = None) -> Dict:
                 }
     
     # Also check pillar-based triggers
-    if pillar in ["dine", "stay", "travel", "care"]:
+    if pillar in ["dine", "stay", "travel", "care", "enjoy"]:
         # For these pillars, most requests need concierge action
         action_words = ["want", "need", "looking for", "find me", "book", "reserve", "arrange"]
         if any(word in message_lower for word in action_words):
