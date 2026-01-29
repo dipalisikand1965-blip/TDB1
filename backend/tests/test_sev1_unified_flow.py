@@ -182,16 +182,19 @@ class TestFitUnifiedFlow:
         request_id = data.get("request_id")
         assert request_id is not None, "No request_id returned"
         
-        # Store for other tests
+        # Store for other tests - use ticket_id for lookups
         self.__class__.fit_request_id = request_id
+        self.__class__.fit_ticket_id = data.get("ticket_id")  # This is what we search by
         self.__class__.test_pet_name = payload["pet_name"]
         
         # Verify notification was created (requires auth)
         notif_response = requests.get(f"{BASE_URL}/api/admin/notifications", auth=("aditya", "lola4304"))
         if notif_response.status_code == 200:
             notifications = notif_response.json().get("notifications", [])
-            matching = [n for n in notifications if n.get("ticket_id") == request_id]
-            assert len(matching) > 0, f"No notification found for fit request {request_id}"
+            # Search by ticket_id returned from the response
+            ticket_id = data.get("ticket_id")
+            matching = [n for n in notifications if n.get("ticket_id") == ticket_id]
+            assert len(matching) > 0, f"No notification found for fit ticket {ticket_id}"
             
             # Verify read: false field exists
             notif = matching[0]
