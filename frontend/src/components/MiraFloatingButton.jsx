@@ -155,6 +155,8 @@ const MiraFloatingButton = () => {
           petId={petData?.id}
           petData={petData}
           onNavigate={handleNavigate}
+          voicePreference={voicePreference}
+          currentPillar={location.pathname.split('/')[1] || 'home'}
         />
       )}
     </>
