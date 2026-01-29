@@ -649,8 +649,8 @@ const MemberDashboard = () => {
         </button>
       )}
       
-      {/* 🎙️ Voice Assistant Button */}
-      <MiraVoiceButton 
+      {/* ⚡ Pulse Voice Button */}
+      <PulseButton 
         onClick={() => setShowVoiceAssistant(true)}
         petName={primaryPet?.name || 'your pet'}
       />
