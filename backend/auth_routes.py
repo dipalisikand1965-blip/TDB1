@@ -355,7 +355,8 @@ async def login_user(user: UserLogin):
             "name": db_user.get("name") or db_user.get("full_name") or db_user["email"].split('@')[0],
             "phone": db_user.get("phone") or db_user.get("mobile"),
             "membership_tier": db_user.get("membership_tier", "free"),
-            "membership_expires": db_user.get("membership_expires")
+            "membership_expires": db_user.get("membership_expires"),
+            "loyalty_points": db_user.get("loyalty_points", 0)
         },
         "mira_access": access
     }
