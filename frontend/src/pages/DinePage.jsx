@@ -1812,7 +1812,10 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
               onChange={(e) => setFormData({...formData, specialRequests: e.target.value})}
               className="w-full p-3 border rounded-lg text-sm"
               rows={3}
-              placeholder="Any special requirements for you or your pet..."
+              placeholder={selectedPets.length > 0 
+                ? `Special requests for you and ${getSelectedPetsInfo().map(p => p.name).join(', ')}...`
+                : "Any special requirements for you or your pet..."
+              }
             />
           </div>
 
