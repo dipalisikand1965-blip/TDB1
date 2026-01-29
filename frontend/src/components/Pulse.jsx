@@ -905,16 +905,27 @@ const Pulse = ({
       
       addPulseMessage(pulseResponse);
       
-      // Handle navigation actions - only navigate if explicitly set
-      // Commands without navigation will stay in Pulse for conversation
+      // Store suggested path if command has one
+      if (command.suggestedPath) {
+        setLastSuggestedPath(command.suggestedPath);
+      }
+      
+      // Handle navigation actions
       if (command.action === 'navigate' && command.path && onNavigate) {
+        // Immediate navigation for important actions (health, urgent)
         const finalPath = command.path.replace('{petId}', petId || '');
         setTimeout(() => {
           onNavigate(finalPath);
           onClose();
-        }, 2000); // Give user time to hear the response
+        }, 2000);
+      } else if (command.action === 'navigate_suggested' && lastSuggestedPath && onNavigate) {
+        // Navigate to last suggested path
+        setTimeout(() => {
+          onNavigate(lastSuggestedPath);
+          onClose();
+        }, 1000);
       }
-      // For 'respond' action or no action, stay in Pulse and continue conversation
+      // For commands without action or suggestedPath only, stay in Pulse
       
       // Ensure ticket is created before finishing
       await createTicketPromise;
@@ -936,7 +947,7 @@ const Pulse = ({
           setTimeout(() => {
             onNavigate(data.action.path);
             onClose();
-          }, 2500); // Give user time to hear response
+          }, 2500);
         }
         // Otherwise stay in Pulse for continued conversation
       } else {
@@ -948,7 +959,7 @@ const Pulse = ({
     }
     
     setIsProcessing(false);
-  }, [inputText, petName, petData, petId, currentPillar, API_URL, addPulseMessage, onNavigate, onClose]);
+  }, [inputText, petName, petData, petId, currentPillar, API_URL, addPulseMessage, onNavigate, onClose, lastSuggestedPath]);
   
   // Scroll to bottom when messages change
   useEffect(() => {
