@@ -878,15 +878,15 @@ const Pulse = ({
           session_id: sessionIdRef.current,
           current_pillar: currentPillar,
           selected_pet_id: petId,
-          source: 'voice_assistant'
+          source: 'pulse_voice'  // Mark as coming from Pulse
         })
       });
       
       if (response.ok) {
         const data = await response.json();
-        // Use Mira's actual response from backend
+        // Mira's response from backend - Pulse hands off to Mira
         const miraResponse = data.response || data.message || getFallbackResponse(petName);
-        addMiraMessage(miraResponse);
+        addPulseMessage(`🧠 Mira says: ${miraResponse}`);
         
         // Handle navigation if backend suggests it
         if (data.action?.type === 'navigate' && data.action?.path && onNavigate) {
@@ -901,7 +901,7 @@ const Pulse = ({
         const fallbackResponse = command 
           ? command.response(petName, { soulScore: petData?.overall_score || 0 })
           : getFallbackResponse(petName);
-        addMiraMessage(fallbackResponse);
+        addPulseMessage(fallbackResponse);
         
         if (command?.action === 'navigate' && command.path && onNavigate) {
           setTimeout(() => {
@@ -911,25 +911,22 @@ const Pulse = ({
         }
       }
     } catch (err) {
-      console.error('Mira API error:', err);
+      console.error('Pulse → Mira error:', err);
       // Fallback to local processing
       const command = findCommand(text);
       const fallbackResponse = command 
         ? command.response(petName, { soulScore: petData?.overall_score || 0 })
         : getFallbackResponse(petName);
-      addMiraMessage(fallbackResponse);
+      addPulseMessage(fallbackResponse);
     }
     
     setIsProcessing(false);
-  }, [inputText, petName, petData, petId, currentPillar, API_URL, addMiraMessage, onNavigate, onClose]);
+  }, [inputText, petName, petData, petId, currentPillar, API_URL, addPulseMessage, onNavigate, onClose]);
   
   // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-  
-  // REMOVED: Old welcome message useEffect - replaced by MIRA_OPENING in lines 175-186
-  // The mandatory opening line is now set in the hasShownOpening useEffect above
   
   // Initialize speech recognition
   useEffect(() => {
