@@ -328,11 +328,21 @@ async def get_restaurant(restaurant_id: str):
 
 @dine_router.post("/dine/reservations")
 async def create_reservation(reservation: ReservationRequest):
-    """Create a reservation request"""
+    """Create a reservation request
+    
+    ENFORCES UNIFIED FLOW: Notification → Service Desk Ticket → Unified Inbox
+    """
     # Verify restaurant exists
     restaurant = await db.restaurants.find_one({"id": reservation.restaurant_id})
     if not restaurant:
         raise HTTPException(status_code=404, detail="Restaurant not found")
+    
+    # Generate unified flow IDs
+    reservation_id = f"res-{uuid.uuid4().hex[:12]}"
+    ticket_id = f"TKT-DINE-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    now = datetime.now(timezone.utc).isoformat()
     
     # Handle pets field - can be int or list of pet objects
     pet_count = 1
@@ -354,22 +364,123 @@ async def create_reservation(reservation: ReservationRequest):
     reservation_data["pet_names"] = pet_names  # Store all pet names
     
     reservation_doc = {
-        "id": f"res-{uuid.uuid4().hex[:12]}",
+        "id": reservation_id,
         **reservation_data,
         "restaurant_name": restaurant.get("name"),
         "restaurant_city": restaurant.get("city"),
         "restaurant_area": restaurant.get("area"),
         "status": "pending",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
+        "created_at": now,
+        "updated_at": now,
+        "unified_flow_processed": True
     }
     
     await db.reservations.insert_one(reservation_doc)
     
-    logger.info(f"New reservation: {reservation_doc['id']} at {restaurant.get('name')}")
+    logger.info(f"New reservation: {reservation_id} at {restaurant.get('name')}")
     
     # Build pet display string for email
     pet_display = ', '.join(pet_names) if pet_names else reservation.pet_name or f'{pet_count} pet(s)'
+    
+    description = f"Dine Reservation at {restaurant.get('name')} on {reservation.date} at {reservation.time}. {reservation.guests} guests, {pet_count} pets. Customer: {reservation.name} ({reservation.phone})"
+    
+    # ==================== STEP 1: NOTIFICATION (MANDATORY) ====================
+    await db.admin_notifications.insert_one({
+        "id": notification_id,
+        "type": "dine_reservation",
+        "pillar": "dine",
+        "title": f"🍽️ New Reservation - {restaurant.get('name')}",
+        "message": f"{reservation.name} booked for {reservation.date} at {reservation.time}",
+        "read": False,
+        "status": "unread",
+        "urgency": "medium",
+        "ticket_id": ticket_id,
+        "inbox_id": inbox_id,
+        "reservation_id": reservation_id,
+        "customer": {"name": reservation.name, "email": reservation.email, "phone": reservation.phone},
+        "pet": {"name": reservation.pet_name, "breed": reservation.pet_breed},
+        "link": f"/admin?tab=dine&subtab=reservations&id={reservation_id}",
+        "created_at": now,
+        "read_at": None
+    })
+    logger.info(f"[UNIFIED FLOW] Dine reservation notification created: {notification_id}")
+    
+    # ==================== STEP 2: SERVICE DESK TICKET (MANDATORY) ====================
+    ticket_doc = {
+        "id": ticket_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
+        "reservation_id": reservation_id,
+        "type": "dine_reservation",
+        "category": "dine",
+        "sub_category": "reservation",
+        "subject": f"Dine Reservation - {restaurant.get('name')} ({reservation.date})",
+        "description": description,
+        "status": "open",
+        "priority": "normal",
+        "channel": "web",
+        "pillar": "dine",
+        "member": {"name": reservation.name, "email": reservation.email, "phone": reservation.phone},
+        "pet": {"name": reservation.pet_name, "breed": reservation.pet_breed},
+        "metadata": {
+            "restaurant_name": restaurant.get("name"),
+            "restaurant_area": restaurant.get("area"),
+            "restaurant_city": restaurant.get("city"),
+            "date": reservation.date,
+            "time": reservation.time,
+            "guests": reservation.guests,
+            "pets": pet_count
+        },
+        "created_at": now,
+        "updated_at": now,
+        "unified_flow_processed": True
+    }
+    await db.service_desk_tickets.insert_one(ticket_doc)
+    await db.tickets.insert_one(ticket_doc)
+    logger.info(f"[UNIFIED FLOW] Dine service desk ticket created: {ticket_id}")
+    
+    # ==================== STEP 3: UNIFIED INBOX (MANDATORY) ====================
+    inbox_entry = {
+        "id": inbox_id,
+        "request_id": reservation_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "channel": "web",
+        "pillar": "dine",
+        "request_type": "reservation",
+        "category": "dine",
+        "status": "new",
+        "urgency": "medium",
+        "customer_name": reservation.name,
+        "customer_email": reservation.email,
+        "customer_phone": reservation.phone,
+        "member": {"name": reservation.name, "email": reservation.email, "phone": reservation.phone},
+        "pet": {"name": reservation.pet_name, "breed": reservation.pet_breed},
+        "preview": f"Dine Reservation: {restaurant.get('name')} on {reservation.date} at {reservation.time}",
+        "message": description,
+        "full_content": description,
+        "metadata": {
+            "reservation_id": reservation_id,
+            "restaurant_id": reservation.restaurant_id,
+            "restaurant_name": restaurant.get("name"),
+            "date": reservation.date,
+            "time": reservation.time,
+            "guests": reservation.guests,
+            "pets": pet_count
+        },
+        "tags": ["dine", "reservation"],
+        "created_at": now,
+        "updated_at": now,
+        "unified_flow_processed": True
+    }
+    await db.channel_intakes.insert_one(inbox_entry)
+    logger.info(f"[UNIFIED FLOW] Dine unified inbox entry created: {inbox_id}")
+    
+    logger.info(f"[UNIFIED FLOW] COMPLETE: Dine reservation {reservation_id} | Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id})")
     
     # Send confirmation email to customer
     if RESEND_API_KEY and reservation.email:
