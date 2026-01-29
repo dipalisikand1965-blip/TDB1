@@ -214,12 +214,17 @@ User (Voice/Text) → Mira detects intent → Auto-creates ticket → Service De
 - Service Desk ticket management
 - Pet Soul Journey with animations
 - Mobile bottom navigation
+- **Admin Product Refresh**: Product counts update immediately after delete (functional state updates)
+- **Care Settings Toggles**: All toggles save correctly via PUT /api/care/admin/settings
+- **Paw Points Breakdown**: Clickable card opens modal with transaction history
+- **CSV Import/Export**: Full functionality for products
 
 ### Known Issues (P1-P2)
 - **Paw Points Display**: Needs verification that loyalty_points shows correctly in all UI locations
 - **Pulse Personalization**: Shows "your pet" when not logged in (expected behavior) - needs logged-in verification
 - **WebSocket Instability**: Non-critical, deprioritized
 - **Razorpay Payments**: Blocked - awaiting API keys
+- **Mobile Save Investigation**: Pending - need specific reproduction steps from user
 
 ### Upcoming Tasks
 1. Complete mobile UI transformation on Member Dashboard
@@ -234,6 +239,30 @@ User (Voice/Text) → Mira detects intent → Auto-creates ticket → Service De
 - Partner Portal for B2B clients
 - Mira memory recall feature
 
+### Phase 47: Admin Panel Bug Fixes (Jan 29, 2025)
+
+**Product Refresh Fix (`/app/frontend/src/components/ProductManager.jsx`):**
+- Fixed stale closure issue in deleteProduct function
+- Uses functional state update: `setProducts(prevProducts => prevProducts.filter(...))`
+- Product count updates immediately after delete
+- Added success/error feedback with alerts
+
+**Care Settings Toggles (`/app/frontend/src/components/admin/CareManager.jsx`):**
+- Added `onCheckedChange` handlers to all Switch components
+- Implemented `updateSettings()` helper for nested state updates
+- Added `saveSettings()` function to persist changes via PUT API
+- Added "Save All Settings" button with loading state
+
+**Paw Points Breakdown Modal (`/app/frontend/src/pages/MemberDashboard.jsx`):**
+- Made Paw Points card clickable with `data-testid="paw-points-card"`
+- Added Dialog modal showing current balance and transaction history
+- Fetches from `GET /api/paw-points/history` endpoint
+- Includes "Redeem Points" button to navigate to rewards tab
+
+**CSV Import Fix (`/app/frontend/src/components/ProductManager.jsx`):**
+- Fixed import to use FormData instead of JSON body
+- Backend expects file upload via multipart/form-data
+
 ---
 
 ## Test Credentials
@@ -247,3 +276,6 @@ User (Voice/Text) → Mira detects intent → Auto-creates ticket → Service De
 - `/app/frontend/src/pages/DinePage.jsx` - Dining & reservations
 - `/app/frontend/src/pages/ShopPage.jsx` - Product shop
 - `/app/backend/server.py` - Main API
+- `/app/frontend/src/components/ProductManager.jsx` - Admin product management with CSV import/export
+- `/app/frontend/src/components/admin/CareManager.jsx` - Care pillar admin with working settings toggles
+- `/app/frontend/src/pages/MemberDashboard.jsx` - Member dashboard with Paw Points breakdown modal
