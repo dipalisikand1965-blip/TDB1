@@ -21,7 +21,7 @@ import { toast } from '../hooks/use-toast';
 import {
   ArrowLeft, CreditCard, Truck, MapPin, Phone, CheckCircle,
   User, Mail, PawPrint, Gift, Sparkles, Crown, AlertCircle,
-  Loader2, Shield, FileText, Download, Store, ChevronRight,
+  Loader2, Shield, FileText, Download, ChevronRight,
   ChevronDown, ChevronUp, Package, Plus
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
