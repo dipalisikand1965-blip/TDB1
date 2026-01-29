@@ -776,7 +776,7 @@ async def update_travel_bundle(bundle_id: str, bundle: TravelBundleCreate):
     
     update_doc = {
         **bundle.dict(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_consistent_timestamp()
     }
     
     result = await db.product_bundles.update_one(
