@@ -218,6 +218,7 @@ User (Voice/Text) → Mira detects intent → Auto-creates ticket → Service De
 - **Care Settings Toggles**: All toggles save correctly via PUT /api/care/admin/settings
 - **Paw Points Breakdown**: Clickable card opens modal with transaction history
 - **CSV Import/Export**: Full functionality for products
+- **UNIFIED SIGNAL FLOW (CRITICAL)**: All signals now flow through: Notification → Service Desk → Unified Inbox → Contextual Views. Implemented in `/app/backend/concierge_routes.py` and `/app/backend/mira_routes.py`
 
 ### Known Issues (P1-P2)
 - **Paw Points Display**: Needs verification that loyalty_points shows correctly in all UI locations
