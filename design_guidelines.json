@@ -1,147 +1,173 @@
 {
-  "brand_identity": {
-    "name": "The Doggy Company (TDC)",
-    "archetype": "Organic & Earthy (The Nurturer meets The Innovator)",
-    "vibe": "Premium Concierge, Warm, Intelligent, Soulful",
-    "core_values": ["Trust", "Efficiency", "Love", "Masterpiece"],
-    "voice_tone": "Warm, Professional, Empathetic, Intelligent (Mira)"
+  "identity": {
+    "name": "E1",
+    "role": "Creative Designer",
+    "mission": "Build the world's first Pet Life Operating System - a mobile-first masterpiece."
+  },
+  "design_philosophy": {
+    "core_concept": "Pet Life OS",
+    "emotional_tone": "Warm, Intelligent, Caring, Playful, Sophisticated",
+    "visual_style": "Organic Modernism meets Tech Precision. Think 'Apple Health' meets 'Headspace' for pets.",
+    "key_principles": [
+      "Fusion over Imitation: Mix botanical warmth with architectural precision.",
+      "Emotion First: Every interaction should feel like a hug or a high-five.",
+      "Content is King: The pet is the hero. Use large, emotive imagery.",
+      "Zoom In: Focus on details - a wet nose, a wagging tail.",
+      "Negative Space: Luxurious spacing (2-3x standard) to create a premium feel."
+    ]
   },
   "typography": {
-    "headings": {
-      "font_family": "Syne, sans-serif",
-      "weights": ["700", "800"],
-      "usage": "Hero titles, Section headers, Impact statements",
-      "letter_spacing": "tracking-tight"
+    "font_family": {
+      "headings": "Manrope, sans-serif",
+      "body": "Inter, sans-serif",
+      "special": "Syne, sans-serif"
     },
-    "body": {
-      "font_family": "Manrope, sans-serif",
-      "weights": ["400", "500", "600"],
-      "usage": "Paragraphs, UI labels, Buttons",
-      "line_height": "leading-relaxed"
-    },
-    "mono": {
-      "font_family": "JetBrains Mono, monospace",
-      "usage": "Technical data, Order IDs, Mira debug info"
+    "usage": {
+      "h1": "font-manrope font-extrabold text-4xl tracking-tight leading-none",
+      "h2": "font-manrope font-bold text-3xl tracking-tight",
+      "h3": "font-manrope font-bold text-2xl tracking-tight",
+      "body_large": "font-inter text-lg leading-relaxed",
+      "body_default": "font-inter text-base leading-relaxed text-stone-600",
+      "caption": "font-inter text-sm font-medium tracking-wide uppercase text-stone-500",
+      "soul_title": "font-syne font-bold text-5xl tracking-tighter"
     }
   },
   "colors": {
-    "light_theme": {
-      "background": "#F5F1E8",
-      "foreground": "#1A4D2E",
-      "primary": "#1A4D2E",
-      "primary_foreground": "#FFFFFF",
-      "secondary": "#E6DCC8",
-      "secondary_foreground": "#1A4D2E",
-      "accent": "#FF9F1C",
-      "accent_foreground": "#000000",
-      "muted": "#E6DCC8",
-      "muted_foreground": "#5C7A66",
-      "card": "#FFFFFF",
-      "card_foreground": "#1A4D2E",
-      "border": "#D4C5A8",
-      "input": "#FFFFFF",
-      "ring": "#1A4D2E"
+    "palette": {
+      "primary": {
+        "DEFAULT": "#0F766E",
+        "foreground": "#FFFFFF",
+        "description": "Deep Teal - Represents Trust, Health, and Veterinary Science."
+      },
+      "secondary": {
+        "DEFAULT": "#D97706",
+        "foreground": "#FFFFFF",
+        "description": "Warm Amber - Represents Energy, Play, and Sunshine."
+      },
+      "accent": {
+        "DEFAULT": "#BE185D",
+        "foreground": "#FFFFFF",
+        "description": "Deep Pink - Represents Love, Heart, and Bonding."
+      },
+      "background": {
+        "DEFAULT": "#FAFAF9",
+        "description": "Warm Stone - Organic, natural background. Avoid clinical white."
+      },
+      "surface": {
+        "DEFAULT": "#FFFFFF",
+        "description": "Pure White - For cards and elevated elements."
+      },
+      "text": {
+        "primary": "#1C1917",
+        "secondary": "#57534E",
+        "muted": "#A8A29E"
+      }
     },
-    "dark_theme": {
-      "background": "#051F12",
-      "foreground": "#F5F1E8",
-      "primary": "#F5F1E8",
-      "primary_foreground": "#051F12",
-      "secondary": "#0F2E1D",
-      "secondary_foreground": "#F5F1E8",
-      "accent": "#FF9F1C",
-      "accent_foreground": "#000000",
-      "muted": "#0F2E1D",
-      "muted_foreground": "#8FA396",
-      "card": "#0A2617",
-      "card_foreground": "#F5F1E8",
-      "border": "#1A4D2E",
-      "input": "#0A2617",
-      "ring": "#F5F1E8"
-    },
-    "semantic": {
-      "success": "#2E7D32",
-      "warning": "#F9A825",
-      "error": "#C62828",
-      "info": "#1565C0",
-      "mira_glow": "0 0 20px rgba(255, 159, 28, 0.5)"
+    "gradients": {
+      "soul_aura": "bg-gradient-to-br from-amber-200 via-orange-100 to-rose-200",
+      "premium_glass": "bg-white/80 backdrop-blur-xl border-white/20",
+      "night_mode": "bg-stone-900"
     }
   },
-  "layout_system": {
-    "grid_strategy": "Bento Grid (Asymmetric)",
-    "spacing_scale": "Generous (2x standard)",
-    "container_padding": "p-6 md:p-12",
-    "border_radius": {
-      "cards": "rounded-3xl",
-      "buttons": "rounded-full",
-      "inputs": "rounded-xl"
+  "layout": {
+    "grid_system": {
+      "mobile": "grid-cols-1 gap-6 p-6",
+      "tablet": "grid-cols-2 gap-8 p-8",
+      "desktop": "grid-cols-12 gap-10 p-12"
     },
-    "mobile_first": true,
-    "bottom_nav": "Glassmorphism Sticky Bar"
+    "bento_grid": {
+      "wrapper": "grid grid-cols-2 md:grid-cols-4 gap-4",
+      "hero_cell": "col-span-2 row-span-2 aspect-square rounded-3xl overflow-hidden relative",
+      "standard_cell": "col-span-1 row-span-1 aspect-square rounded-3xl bg-white p-4 shadow-sm border border-stone-100",
+      "tall_cell": "col-span-1 row-span-2 rounded-3xl bg-white p-4 shadow-sm border border-stone-100"
+    },
+    "spacing": {
+      "container_padding": "p-6 md:p-12",
+      "section_gap": "gap-12 md:gap-24"
+    }
   },
   "components": {
     "buttons": {
-      "primary": "bg-primary text-primary-foreground hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300 rounded-full px-8 py-4 font-bold tracking-wide",
-      "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-full px-6 py-3 font-medium",
-      "ghost": "hover:bg-muted/50 text-foreground rounded-full px-4 py-2"
+      "primary": "rounded-full bg-teal-700 text-white px-8 py-4 font-manrope font-bold shadow-lg shadow-teal-900/20 hover:scale-105 transition-transform",
+      "secondary": "rounded-full bg-stone-100 text-stone-800 px-8 py-4 font-manrope font-bold hover:bg-stone-200 transition-colors",
+      "ghost": "rounded-full text-stone-600 hover:bg-stone-100 px-6 py-3 font-medium"
     },
     "cards": {
-      "default": "bg-card text-card-foreground border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 rounded-3xl p-6",
-      "glass": "bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-white/20 shadow-lg rounded-3xl",
-      "interactive": "cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200"
+      "base": "bg-white rounded-3xl border border-stone-100 shadow-sm hover:shadow-md transition-shadow duration-300",
+      "glass": "bg-white/70 backdrop-blur-lg border border-white/50 shadow-lg"
     },
     "inputs": {
-      "default": "bg-input border-border focus:ring-2 focus:ring-primary/20 rounded-xl px-4 py-3 transition-all"
+      "base": "bg-stone-50 border-stone-200 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all outline-none text-stone-800 placeholder:text-stone-400"
     },
-    "mira_assistant": {
-      "trigger": "Floating Action Button (FAB) or Bottom Sheet Handle",
-      "visuals": "Pulse animation, glowing amber ring",
-      "voice_ui": "Waveform visualization when active"
+    "navigation": {
+      "mobile_bottom_bar": "fixed bottom-6 left-6 right-6 bg-white/90 backdrop-blur-xl rounded-full shadow-2xl border border-white/20 h-20 flex items-center justify-around z-50",
+      "pulse_fab": "absolute -top-6 left-1/2 -translate-x-1/2 w-16 h-16 bg-teal-700 rounded-full shadow-xl shadow-teal-700/30 flex items-center justify-center text-white text-2xl border-4 border-stone-50"
     }
   },
   "visual_enhancers": {
-    "textures": "Subtle noise overlay (opacity 0.03) on backgrounds",
-    "shadows": "Soft, diffuse shadows (colored shadows preferred)",
-    "glassmorphism": "Used for overlays, sticky headers, and bottom nav",
-    "gradients": "No full-screen gradients. Use subtle mesh gradients for 'Soul Score' backgrounds."
-  },
-  "motion": {
-    "library": "framer-motion",
-    "transitions": {
-      "page": "opacity: 0, y: 20 -> opacity: 1, y: 0 (duration: 0.4s)",
-      "hover": "scale: 1.02 (duration: 0.2s)",
-      "tap": "scale: 0.98 (duration: 0.1s)"
-    },
-    "micro_interactions": "Heart beat for Soul Score, Ripple for buttons, Slide-up for Mira"
-  },
-  "image_urls": {
-    "hero": {
-      "url": "https://images.unsplash.com/photo-1695026169114-77e9452ec7f0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGRvZyUyMHJ1bm5pbmclMjBpbiUyMG5hdHVyZSUyMGdvbGRlbiUyMGhvdXJ8ZW58MHx8fHwxNzY5NjYwMDc0fDA&ixlib=rb-4.1.0&q=85",
-      "alt": "Happy white dog in nature",
-      "category": "Hero"
-    },
-    "pillars": {
-      "dine": "https://images.unsplash.com/photo-1745252798506-29500efc5b39?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwxfHxwcmVtaXVtJTIwZG9nJTIwZm9vZCUyMGJvd2wlMjBoZWFsdGh5JTIwZnJlc2h8ZW58MHx8fHwxNzY5NjYwMDc3fDA&ixlib=rb-4.1.0&q=85",
-      "care": "https://images.pexels.com/photos/6234607/pexels-photo-6234607.jpeg",
-      "learn": "https://images.pexels.com/photos/7516477/pexels-photo-7516477.jpeg",
-      "play": "https://images.unsplash.com/photo-1763989980207-74f823253cd9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwyfHxkb2clMjB0cmFpbmluZyUyMHNlc3Npb24lMjBvdXRkb29ycyUyMHBvc2l0aXZlJTIwcmVpbmZvcmNlbWVudHxlbnwwfHx8fDE3Njk2NjAwNzl8MA&ixlib=rb-4.1.0&q=85"
-    },
-    "lifestyle": {
-      "indian_owner": "https://images.pexels.com/photos/32710698/pexels-photo-32710698.jpeg",
-      "family": "https://images.pexels.com/photos/22179125/pexels-photo-22179125.jpeg"
+    "radius": "rounded-3xl",
+    "shadows": "shadow-[0_8px_30px_rgb(0,0,0,0.04)]",
+    "textures": "bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]",
+    "animations": {
+      "hover_lift": "hover:-translate-y-1 transition-transform duration-300 ease-out",
+      "fade_in": "animate-in fade-in duration-700 slide-in-from-bottom-4"
     }
   },
-  "instructions_to_main_agent": [
-    "1. IMPLEMENT THEME: Update tailwind.config.js with the new color palette (Organic & Earthy).",
-    "2. TYPOGRAPHY: Ensure Syne and Manrope are correctly applied. Syne for headings, Manrope for body.",
-    "3. LAYOUT: Refactor the Dashboard to use a 'Bento Grid' layout. It should feel like a command center.",
-    "4. MIRA AI: Create a prominent 'Mira' trigger (FAB or bottom bar center). When active, use a slide-up drawer with voice visualization.",
-    "5. MOBILE FIRST: Ensure all touch targets are at least 44px. Bottom navigation is mandatory for mobile.",
-    "6. SOUL SCORE: Make this the centerpiece of the dashboard. Use a circular progress or pulse animation.",
-    "7. IMAGES: Use the provided image URLs. Do not use placeholders.",
-    "8. SHADCN: Customize Shadcn components to match the 'rounded-3xl' and 'organic' aesthetic. Remove default sharp corners.",
-    "9. DATA-TESTID: Add data-testid to all interactive elements."
-  ],
+  "image_urls": {
+    "hero_lifestyle": [
+      {
+        "url": "https://images.unsplash.com/photo-1765029340734-30d290266ca9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDR8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGRvZyUyMG93bmVyJTIwbGlmZXN0eWxlfGVufDB8fHx8MTc2OTY2OTc2NHww&ixlib=rb-4.1.0&q=85",
+        "description": "Fluffy pomeranian on leash - Hero Header"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1768629863707-d5aeac7f68de?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDR8MHwxfHNlYXJjaHwyfHxoYXBweSUyMGRvZyUyMG93bmVyJTIwbGlmZXN0eWxlfGVufDB8fHx8MTc2OTY2OTc2NHww&ixlib=rb-4.1.0&q=85",
+        "description": "Happy Corgi at cafe - Dashboard Widget"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1761959939997-bde7210e7b1f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDR8MHwxfHNlYXJjaHwzfHxoYXBweSUyMGRvZyUyMG93bmVyJTIwbGlmZXN0eWxlfGVufDB8fHx8MTc2OTY2OTc2NHww&ixlib=rb-4.1.0&q=85",
+        "description": "Corgi on grass - Onboarding Slide 1"
+      }
+    ],
+    "services": [
+      {
+        "url": "https://images.unsplash.com/photo-1625321171045-1fea4ac688e9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwxfHxkb2clMjBncm9vbWluZyUyMHZldCUyMGNsaW5pY3xlbnwwfHx8fDE3Njk2Njk3Nzl8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Dog Bath/Grooming - Service Card"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1644675443401-ea4c14bad0e6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwyfHxkb2clMjBncm9vbWluZyUyMHZldCUyMGNsaW5pY3xlbnwwfHx8fDE3Njk2Njk3Nzl8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Vet Consultation - Service Card"
+      }
+    ],
+    "products": [
+      {
+        "url": "https://images.unsplash.com/photo-1743648774074-1b7fc8781180?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHwyfHxwcmVtaXVtJTIwcGV0JTIwZm9vZCUyMHRveXN8ZW58MHx8fHwxNzY5NjY5NzY2fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Dog with Toy - Shop Section"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1743648773958-0715973a12d5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHw0fHxwcmVtaXVtJTIwcGV0JTIwZm9vZCUyMHRveXN8ZW58MHx8fHwxNzY5NjY5NzY2fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Treats and Products - Shop Section"
+      }
+    ],
+    "soul_journey": [
+      {
+        "url": "https://images.unsplash.com/photo-1548661710-8c51cd849410?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwxfHxldGhlcmVhbCUyMGFic3RyYWN0JTIwcGV0JTIwYXJ0fGVufDB8fHx8MTc2OTY2OTc2OHww&ixlib=rb-4.1.0&q=85",
+        "description": "Abstract Blue/Purple Art - Soul Journey Background"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1746470320824-6491a582096d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwzfHxldGhlcmVhbCUyMGFic3RyYWN0JTIwcGV0JTIwYXJ0fGVufDB8fHx8MTc2OTY2OTc2OHww&ixlib=rb-4.1.0&q=85",
+        "description": "Abstract Magenta/Yellow - Soul Journey Result"
+      }
+    ]
+  },
+  "instructions_to_main_agent": {
+    "general": "You are building a Premium Pet Life OS. It must feel like a native, high-end mobile app. Do not build a generic website.",
+    "mobile_first": "Always design for mobile width first. Use 'md:' and 'lg:' prefixes for larger screens, but the core experience is on the phone.",
+    "navigation": "Implement the 'Pulse' floating action button in the bottom navigation bar. This is the heart of the OS.",
+    "soul_journey": "The 'Soul Journey' is a unique feature. Use the 'Syne' font and the abstract art images to create a mystical, personality-test vibe.",
+    "dashboard": "The dashboard is a 'Bento Grid'. It should feel dense but organized. Use the 'hero_cell' for the main pet status.",
+    "components": "Use Shadcn components but HEAVILY customize them with the classes provided in 'components' section. Remove default sharp corners and use 'rounded-3xl'.",
+    "animations": "Add 'hover-lift' and 'fade-in' classes to all interactive elements. The app must feel alive."
+  },
   "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
     "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
     "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
@@ -160,6 +186,6 @@
     "Examine existing components to understand the project's component patterns before creating new ones",
     "Components MUST use named exports (export const ComponentName = ...)",
     "Pages MUST use default exports (export default function PageName() {...})",
-    "Use sonner for toasts"
+    "Use 'sonner' for toasts. Sonner component are located in /app/src/components/ui/sonner.tsx"
   ]
 }
