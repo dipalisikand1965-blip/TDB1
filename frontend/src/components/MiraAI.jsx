@@ -442,6 +442,16 @@ const MiraAI = () => {
       fetchChatHistory();
     }
   }, [isOpen, isMinimized, token]);
+  
+  // Listen for openMiraAI events from Pulse
+  useEffect(() => {
+    const handleOpenMira = () => {
+      setIsOpen(true);
+    };
+    
+    window.addEventListener('openMiraAI', handleOpenMira);
+    return () => window.removeEventListener('openMiraAI', handleOpenMira);
+  }, []);
 
   const sendMessage = async (e) => {
     e?.preventDefault();
