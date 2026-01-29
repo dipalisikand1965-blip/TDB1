@@ -46,7 +46,8 @@ const QuickScoreBoost = ({ pet, onAnswerQuestion }) => {
     if (!token || !answer.trim()) return;
     
     try {
-      const res = await fetch(`${API_URL}/api/pet-score/${pet.id}/answer`, {
+      // Use the correct endpoint: /api/pets/{pet_id}/soul-answer
+      const res = await fetch(`${API_URL}/api/pets/${pet.id}/soul-answer`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,6 +61,8 @@ const QuickScoreBoost = ({ pet, onAnswerQuestion }) => {
         setAnswering(null);
         setAnswerInput('');
         if (onAnswerQuestion) onAnswerQuestion();
+      } else {
+        console.error('Failed to save answer:', res.status);
       }
     } catch (err) {
       console.error('Error submitting answer:', err);
