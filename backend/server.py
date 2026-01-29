@@ -11093,6 +11093,7 @@ app.include_router(soul_drip_router)  # Soul drip at /api/soul-drip/*
 app.include_router(mira_router)  # Mira AI routes at /api/mira/*
 app.include_router(mira_intelligence_router)  # Mira Intelligence at /api/mira/intelligence/*
 app.include_router(mira_memory_router)  # Mira Relationship Memory at /api/mira/memory/*
+app.include_router(tts_router, prefix="/api")  # TTS at /api/tts/*
 set_mira_db(db)  # Initialize Mira with database
 set_intelligence_db(db)  # Initialize Intelligence with database
 set_memory_routes_db(db)  # Initialize Memory with database
