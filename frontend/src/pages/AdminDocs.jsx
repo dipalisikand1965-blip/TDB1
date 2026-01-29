@@ -251,33 +251,32 @@ curl -X POST https://YOUR_DOMAIN/api/admin/universal-seed
       ]
     },
     'command-center': {
-      title: 'Command Center',
-      subtitle: 'The "All-Seeing Eye" - Central Hub for Concierge Operations',
-      badge: '⭐ Most Important',
+      title: 'Command Center (DEPRECATED)',
+      subtitle: 'Features merged into Service Desk - Use Service Desk instead',
+      badge: '⚠️ Deprecated',
       files: {
-        frontend: '/app/frontend/src/components/admin/ConciergeCommandCenter.jsx',
+        frontend: '/app/frontend/src/components/admin/ServiceDesk.jsx',
         backend: '/app/backend/concierge_routes.py, /app/backend/ticket_intelligence.py'
       },
       sections: [
         {
-          title: 'What It Contains',
-          content: `• **Unified Queue**: ALL tickets from all sources in one place
-• **Real-time Event Stream**: Live business activity feed (slide-out panel)
-• **360° Member Profile**: Complete customer view (clickable)
-• **Mira's Intelligence**: AI-powered insights per ticket
-• **Omni-Channel Reply**: Respond via Mira, Email, WhatsApp
-• **SLA Timers**: Real-time countdown with breach alerts
-• **Bulk Actions**: Select multiple tickets for mass operations
-• **Sentiment Analysis** 🆕: AI analyzes incoming requests (😊😐😠🆘😡)
-• **Ticket Merge** 🆕: Merge duplicate tickets from same member
-• **NPS Surveys** 🆕: Automatic satisfaction surveys on resolution`
+          title: '🔄 Migrated to Service Desk',
+          content: `All Command Center features have been merged into Service Desk:
+
+• **Real-time SLA Countdown** ✅ - Now in Service Desk
+• **SLA Attention Banner** ✅ - Now in Service Desk  
+• **Audio Alerts** ✅ - Now in Service Desk
+• **Unified Queue** ✅ - Already in Service Desk
+• **360° Member Profile** ✅ - Already in Service Desk
+
+**Use Service Desk** for all ticket management operations.`
         },
         {
-          title: 'Ticket Sources',
-          content: `| Source | Collection | Description |
-|--------|------------|-------------|
-| Mira Requests | \`service_desk_tickets\` | AI concierge escalations |
-| Manual Tickets | \`tickets\` | Staff-created tickets |
+          title: 'Migration Note',
+          content: `The ConciergeCommandCenter.jsx file has been deprecated.
+All functionality is now available in ServiceDesk.jsx with the same design you love.
+
+Navigate to: **Admin → Service Desk**`
 | Orders | \`orders\` | Pending/processing orders |
 | Stay Bookings | \`stay_requests\` | Boarding/hotel requests |
 | Travel Requests | \`travel_requests\` | Pet travel requests |
